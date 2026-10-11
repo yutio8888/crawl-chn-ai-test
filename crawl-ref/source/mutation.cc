@@ -785,13 +785,13 @@ static vector<pair<string, string>> _get_fakemuts()
     {
         if (species::is_draconian(you.species))
         {
-            result.push_back(_annotate_form_based({short_fakemut[i], long_fakemut[i]},
+            result.push_back(_annotate_form_based({short_fakemut[i], T_(long_fakemut[i].c_str())},
                                 form_changes_anatomy() && you.form != transformation::dragon));
         }
         else
         {
             result.push_back({_innatemut(short_fakemut[i], true),
-                              _innatemut(long_fakemut[i], false)});
+                              _innatemut(T_(long_fakemut[i].c_str()), false)});
         }
     }
 

@@ -200,7 +200,7 @@ bool dump_char(const string &fname, bool quiet, bool full_id,
 
 string seed_description()
 {
-    const string seed_str = make_stringf("%" PRIu64, crawl_state.seed);
+    const string seed_str = to_string(crawl_state.seed);
     return make_stringf(T_("Game seed: %s%s"), seed_str.c_str(),
         crawl_state.type == GAME_TYPE_CUSTOM_SEED
         ? T_(" (custom seed)")
@@ -281,8 +281,8 @@ static void _sdump_visits(dump_params &par)
 
     text += make_stringf_p(T_("You %1$svisited %2$d branch"),
                          have, (int)branches_visited.size());
-    if (branches_visited.size() != 1)
-        text += T_("es");
+    if (Options.language != lang_t::ZH && branches_visited.size() != 1)
+        text += "es";
     if (brdepth[root_branch] > 1 || branches_visited.size() != 1)
     {
         text += make_stringf_p(T_(" of the dungeon, and %1$s %2$d of its levels.\n"),
@@ -295,8 +295,8 @@ static void _sdump_visits(dump_params &par)
         {
             text += make_stringf_p(T_("You %1$svisited Pandemonium %2$d time"),
                                  have, place_info.num_visits);
-            if (place_info.num_visits > 1)
-                text += T_("s");
+            if (Options.language != lang_t::ZH && place_info.num_visits > 1)
+                text += "s";
             text += make_stringf_p(T_(", and %1$s %2$d of its levels.\n"),
                                  seen, place_info.levels_seen);
         }
@@ -308,8 +308,8 @@ static void _sdump_visits(dump_params &par)
         {
             text += make_stringf_p(T_("You %1$svisited the Abyss %2$d time"),
                                  have, place_info.num_visits);
-            if (place_info.num_visits > 1)
-                text += T_("s");
+            if (Options.language != lang_t::ZH && place_info.num_visits > 1)
+                text += "s";
             text += ".\n";
         }
     }
@@ -320,8 +320,8 @@ static void _sdump_visits(dump_params &par)
         {
             text += make_stringf_p(T_("You %1$svisited %2$d bazaar"),
                                  have, place_info.num_visits);
-            if (place_info.num_visits > 1)
-                text += T_("s");
+            if (Options.language != lang_t::ZH && place_info.num_visits > 1)
+                text += "s";
             text += ".\n";
         }
     }
@@ -332,8 +332,8 @@ static void _sdump_visits(dump_params &par)
         {
             text += make_stringf_p(T_("You %1$svisited the chambers of the Necropolis %2$d time"),
                                  have, place_info.num_visits);
-            if (place_info.num_visits > 1)
-                text += T_("s");
+            if (Options.language != lang_t::ZH && place_info.num_visits > 1)
+                text += "s";
             text += ".\n";
         }
     }
@@ -348,8 +348,8 @@ static void _sdump_visits(dump_params &par)
                                  (num_zigs == you.zigs_completed) ? T_("completed")
                                                                   : T_("visited"),
                                  num_zigs);
-            if (num_zigs > 1)
-                text += T_("s");
+            if (Options.language != lang_t::ZH && num_zigs > 1)
+                text += "s";
             if (num_zigs != you.zigs_completed && you.zigs_completed)
                 text += make_stringf(T_(" (completing %d)"), you.zigs_completed);
             text += make_stringf_p(T_(", and %1$s %2$d of %3$s levels"),
@@ -1383,7 +1383,7 @@ static string _describe_action(caction_type type)
     case CACT_MELEE:
         return T_("Melee");
     case CACT_FIRE:
-        return T_("Fire");
+        return C_("verb", "Fire");
     case CACT_THROW:
         return T_("Throw");
     case CACT_ARMOUR:
@@ -1798,7 +1798,7 @@ void dump_map(FILE *fp, bool debug, bool dist, bool log)
         fprintf(fp, "Vaults used:\n");
         for (size_t i = 0; i < env.level_vaults.size(); ++i)
         {
-            const vault_placement &vp(*env.level_vaults[i]);
+            const vault_placement &vp = *env.level_vaults[i];
             fprintf(fp, "  \e[3%dm%s\e[0m at (%d,%d) size (%d,%d)\n",
                     6 - (int)i % 6, vp.map.name.c_str(),
                     vp.pos.x, vp.pos.y, vp.size.x, vp.size.y);
@@ -1934,11 +1934,13 @@ static bool _write_dump(const string &fname, const dump_params &par, bool quiet)
         fclose(handle);
         succeeded = true;
         if (!quiet)
+        {
 #ifdef DGAMELAUNCH
             mpr(T_("Char dumped successfully."));
 #else
             mprf(T_("Char dumped to '%s'."), file_name.c_str());
 #endif
+        }
     }
     else
         mprf(MSGCH_ERROR, T_("Error opening file '%s'"), file_name.c_str());

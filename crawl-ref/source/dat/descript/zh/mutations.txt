@@ -940,7 +940,7 @@ contaminating mutation
 %%%%
 contamination susceptible mutation
 
-你更容易受到魔法污染的影响，使其更快积累。
+你从魔法污染中吸收双倍的诱变能量。
 %%%%
 devouring maw mutation
 
@@ -1186,7 +1186,7 @@ runic magic mutation
 
 你借助刻在护甲上的符文施法，大幅减少原本需要的复杂动作。
 
-（计算施法成功率时，你穿戴的所有护甲的负重评级减半。）
+（计算施法成功率时，你穿戴的所有护甲的负重等级减半。）
 %%%%
 slime shroud mutation
 

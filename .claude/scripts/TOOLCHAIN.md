@@ -612,6 +612,12 @@ Makefile 导出器仍拒绝 header 和不属于所选构建目标的条目。头
 一批头文件按每个 DB 的 TU 流式展开，不为每个头文件重复启动编译器；生命周期
 索引另需一轮 TU 展开。进程内复用基础 TU 结果，不使用后台服务或持久缓存。
 
+原始 annotation 适配保留 Windows `static BOOL WINAPI` 回调的调用约定，
+仅在实际函数声明前缀中等长置空 `WINAPI`，签名和函数体仍严格解析。
+显式展开入口将实际 clang/GCC diagnostic push/pop/ignored pragma 等长
+置空，使 Catch2 的 if 与函数体之间的警告控制不干扰语法；不处理其他 pragma，
+不改风险表达式、字节偏移或换行，真实语法错误仍阻断。
+
 完整替换的剩余语法、header 上下文和平台覆盖边界见
 `docs/issue120-scanner-preproc-report.md` 的显式实验记录。
 

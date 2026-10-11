@@ -25,6 +25,8 @@ SPEC.loader.exec_module(MODULE)
 BASELINE = "306d9099ae08a94a64f051d487dfed0a9675e178"
 PRE_FIX = "4859eb33f1d2a4dc597273c7e11daa0c310b3602"
 FIXED = "a65287716072a3c73874c44b08a276ff6b39b4da"
+# The schema hash fixture must use the glossary bytes that produced it.
+GLOSSARY_FIXTURE_REF = "96814e0e7995b70241c936df79c2ab04168c8092"
 
 
 def _git_plumbing(arguments: list, input_text: str | None = None) -> str:
@@ -209,7 +211,8 @@ class DecorlinesInventoryTests(unittest.TestCase):
         cls.zh_path.write_text(json.dumps(cls.zh, ensure_ascii=False),
                                encoding="utf-8")
         cls.inventory = MODULE.build_inventory(
-            BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md"
+            BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md",
+            glossary_ref=GLOSSARY_FIXTURE_REF,
         )
 
     @classmethod

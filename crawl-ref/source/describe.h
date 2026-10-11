@@ -18,6 +18,7 @@
 #include "trap-type.h"
 
 struct monster_info;
+class formatted_string;
 
 // If you add any more description types, remember to also
 // change item_description in externs.h
@@ -79,6 +80,8 @@ void desc_randart_props(const item_def &item, vector<string> &lines);
 string damage_rating(const item_def *item, int *rating_value = nullptr);
 
 int describe_monster(const monster_info &mi, const string& footer = "");
+// The status pane used by describe_monster, with localized titles and bodies.
+formatted_string get_monster_status_descriptions(const monster_info& mi);
 
 void get_monster_db_desc(const monster_info &mi, describe_info &inf,
                          bool &has_stat_desc, bool mark_spells=false);

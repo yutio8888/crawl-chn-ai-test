@@ -1388,7 +1388,7 @@ class CppCompilationDatabase:
 
 
 def parse_preprocessed_cpp(parser, source: bytes, *, preprocessed=None, filepath=None):
-    """Parse expanded C++; adapt two verified tree-sitter grammar gaps.
+    """Parse expanded C++; adapt verified tree-sitter grammar gaps.
 
     Deleted free functions are misread as initialized declarations. Validate
     their exact '= delete;' shape, then blank only the initializer, leaving
@@ -1401,6 +1401,10 @@ def parse_preprocessed_cpp(parser, source: bytes, *, preprocessed=None, filepath
     that operand with a same-length expression. The complete first operand
     remains available to every risk scanner. Unsupported intrinsic syntax
     blocks instead of becoming a parse-error exemption.
+
+    Catch2 emits diagnostic push/pop between an if condition and its body.
+    Only actual clang/GCC warning-control directives become equal-length
+    whitespace; executable tokens and physical offsets remain intact.
     """
     def fail(message, node):
         if preprocessed is not None:
@@ -1439,6 +1443,13 @@ def parse_preprocessed_cpp(parser, source: bytes, *, preprocessed=None, filepath
                 normalized[declarator.end_byte:node.end_byte] = bytes(
                     10 if byte == 10 else 32 for byte in suffix)
                 changed = True
+        if node.type == "preproc_call" and re.fullmatch(
+                rb"[ \t]*#pragma[ \t]+(?:clang|GCC)[ \t]+diagnostic[ \t]+"
+                rb"(?:push|pop|ignored[ \t]+\"-W[A-Za-z0-9_-]+\")"
+                rb"[ \t]*(?:\r?\n)?", node.text):
+            normalized[node.start_byte:node.end_byte] = bytes(
+                char if char in (10, 13) else 32 for char in node.text)
+            changed = True
         if node.type == "call_expression":
             function = node.child_by_field_name("function")
             args = node.child_by_field_name("arguments")
@@ -2432,6 +2443,7 @@ def parse_cpp_annotations(parser, source: bytes):
     prefixes = (
         rb"(?P<annotation>NORETURN)\s+(?:static\s+)?void\s+",
         rb"static\s+void\s+(?P<annotation>CALLBACK)\s+",
+        rb"static\s+BOOL\s+(?P<annotation>WINAPI)\s+",
         rb"(?P<annotation>JNIEXPORT)\s+void\s+(?P<calling>JNICALL)\s+",
     )
     while stack:

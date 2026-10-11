@@ -19,6 +19,9 @@ assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 BASELINE = "888354b254f86a6b2de13e7ec6b1b73992a629f7"
+# Immutable glossary input for historical inventory/hash fixtures.
+GLOSSARY_FIXTURE_REF = "96814e0e7995b70241c936df79c2ab04168c8092"
+
 RESULTS = ROOT / "docs/graffiti-review-results.md"
 
 
@@ -90,7 +93,8 @@ class GraffitiInventoryTests(unittest.TestCase):
         cls.en_path.write_text(json.dumps(cls.en, ensure_ascii=False), encoding="utf-8")
         cls.zh_path.write_text(json.dumps(cls.zh, ensure_ascii=False), encoding="utf-8")
         cls.inventory = MODULE.build_inventory(
-            BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md"
+            BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md",
+            glossary_ref=GLOSSARY_FIXTURE_REF,
         )
 
     @classmethod

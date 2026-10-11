@@ -3244,7 +3244,8 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         break;
 
     case KILLED_BY_ZOT:
-        desc += chinese ? (terse ? T_("Zot") : T_("Tarried too long and was consumed by Zot"))
+        desc += chinese ? (terse ? C_("death cause terse", "Zot")
+                                 : T_("Tarried too long and was consumed by Zot"))
                         : (terse ? "Zot" : "Tarried too long and was consumed by Zot");
         break;
 

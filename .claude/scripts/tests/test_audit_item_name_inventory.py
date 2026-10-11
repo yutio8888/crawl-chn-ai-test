@@ -1040,6 +1040,22 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         expected = (
             MODULE.ROOT / "docs/item-extended-review-results.md"
         ).read_bytes()
+        # The historical ledger records its original glossary provenance.
+        # Default writers record the current bytes; every other byte remains
+        # covered by the full artifact comparison below.
+        summary_line = expected.splitlines()[3]
+        recorded_digest = json.loads(summary_line)["glossary_sha256"]
+        current_digest = hashlib.sha256(
+            (MODULE.ROOT / "docs/glossary.md").read_bytes()
+        ).hexdigest()
+        for recorded, current in (
+            (f'"glossary_sha256":"{recorded_digest}"',
+             f'"glossary_sha256":"{current_digest}"'),
+            (f"- Glossary SHA-256: `{recorded_digest}`",
+             f"- Glossary SHA-256: `{current_digest}`"),
+        ):
+            self.assertEqual(1, expected.count(recorded.encode()))
+            expected = expected.replace(recorded.encode(), current.encode())
         with tempfile.TemporaryDirectory(
             dir=MODULE.ROOT / ".claude"
         ) as directory:
