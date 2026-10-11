@@ -784,7 +784,7 @@ static vector<pair<string, string>> _get_fakemuts()
     {
         // XX message is probably wrong for penance?
         result.push_back({"reduced essence",
-                          _badmut("Your life essence is reduced to manifest your ancestor. (-10% HP)")});
+                          _badmut(T_("Your life essence is reduced to manifest your ancestor. (-10% HP)"))});
     }
 
     // Innate abilities which haven't been implemented as mutations yet.

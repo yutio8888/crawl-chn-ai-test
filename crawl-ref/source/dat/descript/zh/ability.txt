@@ -577,7 +577,7 @@ Ancestor Life: Elementalist ability
 %%%%
 Ancestor Life: Hexer ability
 
-回想起你的先祖是个妖术师，一个掌握熟练刀法和衰败魔法技能的狡猾的贼。
+回想起你的先祖是个诅咒师，一个刀法迅捷、擅长施展削弱性法术的狡猾贼人。
 此选择是永久的，不能撤消。
 %%%%
 Ancestor Identity ability

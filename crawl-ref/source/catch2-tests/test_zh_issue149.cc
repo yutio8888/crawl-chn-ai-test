@@ -6,8 +6,11 @@
 #include <iterator>
 #include <map>
 #include <set>
+#include <tuple>
 #include <utility>
 
+#include "ability.h"
+#include "areas.h"
 #include "beam.h"
 #include "chardump.h"
 #include "colour.h"
@@ -22,12 +25,16 @@
 #include "item-name.h"
 #include "items.h"
 #include "i18n.h"
+#include "losglobal.h"
 #include "mon-info.h"
 #include "mon-death.h"
 #include "monster.h"
 #include "mon-util.h"
+#include "mon-place.h"
+#include "mutation.h"
 #include "notes.h"
 #include "options.h"
+#include "output.h"
 #include "player.h"
 #include "player-equip.h"
 #include "religion.h"
@@ -747,5 +754,197 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             CHECK(string(branches[BRANCH_TEMPLE].abbrevname) == "Temple");
             CHECK(string(branches[BRANCH_DUNGEON].abbrevname) == "D");
         }
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Issue 149 ancestor and neutral monsters localize actual lists and dumps",
+                 "[zh-translation][issue149][issue154][monsters][morgue]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    init_properties();
+    init_monsters();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> started(crawl_state.game_started, false);
+    unwind_var<bool> testing(crawl_state.test, true);
+    unwind_var<vector<string>> order(Options.dump_order, {"monlist"});
+    unwind_var<string> directory(Options.morgue_dir, ".");
+    const mid_t old_last_mid = you.last_mid;
+    const int old_max_mon_index = env.max_mon_index;
+    const auto old_mid_cache = env.mid_cache;
+    vector<tuple<coord_def, dungeon_feature_type, unsigned short, uint32_t>> cells;
+    vector<monster*> monsters;
+    issue149_player();
+    you.last_mid = old_last_mid;
+    you.on_current_level = true;
+    you.current_vision = LOS_DEFAULT_RANGE;
+    you.wizard_vision = true;
+    // Match the existing lit-floor monster consumer fixture. Preserve every
+    // grid cell and allocator identity that this test changes.
+    unwinder restore_world([&]() {
+        for (monster* mon : monsters)
+            mon->reset();
+        env.mid_cache = old_mid_cache;
+        env.max_mon_index = old_max_mon_index;
+        for (const auto& cell : cells)
+        {
+            env.grid(get<0>(cell)) = get<1>(cell);
+            env.mgrid(get<0>(cell)) = get<2>(cell);
+            env.level_map_ids(get<0>(cell)) = get<3>(cell);
+        }
+        invalidate_los();
+        invalidate_agrid();
+    });
+    for (int x = 12; x <= 28; ++x)
+        for (int y = 12; y <= 28; ++y)
+        {
+            const coord_def pos(x, y);
+            cells.emplace_back(pos, env.grid(pos), env.mgrid(pos), env.level_map_ids(pos));
+            env.grid(pos) = DNGN_FLOOR;
+            env.mgrid(pos) = NON_MONSTER;
+            env.level_map_ids(pos) = INVALID_MAP_INDEX;
+        }
+    invalidate_los();
+    invalidate_agrid();
+    for (int which : {0, 1})
+    {
+        monster* mon = get_free_monster();
+        REQUIRE(mon != nullptr);
+        monsters.push_back(mon);
+        mon->type = which == 0 ? MONS_ANCESTOR_HEXER : MONS_GOBLIN;
+        mon->mname = which == 0 ? "Xochitl" : "";
+        mon->props["issue149_identity"] = "English identity";
+        mon->set_hit_dice(1);
+        mon->hit_points = mon->max_hit_points = 30;
+        mon->speed = 10;
+        mon->base_attitude = which == 0 ? ATT_FRIENDLY : ATT_NEUTRAL;
+        mon->behaviour = BEH_SEEK;
+        mon->foe = MHITYOU;
+        mon->set_position(coord_def(20 + which, 21));
+        mon->set_new_monster_id();
+        env.mgrid(mon->pos()) = mon->mindex();
+    }
+    const string filename = "catch2-issue149-monlist-" + to_string(getpid());
+    unwinder cleanup([filename]() {
+        unlink_u((filename + ".txt").c_str());
+        unlink_u((filename + ".lst").c_str());
+    });
+    const scorefile_entry death;
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (bool past : {false, true})
+        {
+            const string listed = mpr_monster_list(past);
+            INFO(listed);
+            CHECK(listed.find(language == lang_t::ZH ? "友善" : "friendly") != string::npos);
+            CHECK(listed.find(language == lang_t::ZH ? "中立" : "neutral") != string::npos);
+            CHECK(listed.find(language == lang_t::ZH ? "诅咒师Xochitl" : "Xochitl the hexer") != string::npos);
+            if (language == lang_t::ZH)
+            {
+                CHECK(listed.find("friendly") == string::npos);
+                CHECK(listed.find("neutral") == string::npos);
+            }
+            REQUIRE(dump_char(filename, true, false, past ? &death : nullptr));
+            ifstream file(filename + ".txt");
+            REQUIRE(file.good());
+            const string dump((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+            INFO(dump);
+            CHECK(dump.find(listed) != string::npos);
+            CHECK(monsters[0]->base_attitude == ATT_FRIENDLY);
+            CHECK(monsters[1]->base_attitude == ATT_NEUTRAL);
+            CHECK(monsters[0]->mname == "Xochitl");
+            CHECK(monsters[0]->type == MONS_ANCESTOR_HEXER);
+            CHECK(monsters[0]->props["issue149_identity"].get_string() == "English identity");
+            CHECK(monsters[1]->props["issue149_identity"].get_string() == "English identity");
+            CHECK(monsters[1]->mname.empty());
+            CHECK(monsters[1]->type == MONS_GOBLIN);
+            CHECK(mons_type_name_en(monsters[0]->type, DESC_PLAIN) == "hexer");
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Issue 154 ancestor life descriptions agree across actual consumers",
+                 "[zh-translation][issue149][issue154][abilities][mutations][morgue]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    init_properties();
+    init_monsters();
+    init_spell_descs();
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<vector<string>> order(Options.dump_order, {"mutations"});
+    unwind_var<string> directory(Options.morgue_dir, ".");
+    issue149_player();
+    you.religion = GOD_HEPLIAKLQANA;
+    you.raw_piety = 80;
+    you.props[HEPLIAKLQANA_ALLY_NAME_KEY] = "Xochitl";
+    you.props[HEPLIAKLQANA_ALLY_TYPE_KEY] = MONS_ANCESTOR_HEXER;
+    // The dump includes the mutation section only for a mutated player; use
+    // the ordinary innate caster mutation of the reported deep elf character.
+    you.species = SP_DEEP_ELF;
+    you.mutation[MUT_INNATE_CASTER] = you.innate_mutation[MUT_INNATE_CASTER] = 1;
+    REQUIRE(you.has_any_mutations());
+    const string filename = "catch2-issue154-life-" + to_string(getpid());
+    unwinder cleanup([filename]() {
+        unlink_u((filename + ".txt").c_str());
+        unlink_u((filename + ".lst").c_str());
+    });
+    const string english_life = "Your life essence is reduced to manifest your ancestor. (-10% HP)";
+    const string chinese_life = "你的生命精华因显现先祖而减少。（-10% 生命值）";
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string life = language == lang_t::ZH ? chinese_life : english_life;
+        const string mutations = describe_muts_for_chardump(false);
+        INFO(mutations);
+        CHECK(mutations.find(life) != string::npos);
+        REQUIRE(dump_char(filename, true));
+        ifstream file(filename + ".txt");
+        REQUIRE(file.good());
+        const string dump((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+        INFO(dump);
+        CHECK(dump.find(life) != string::npos);
+        if (language == lang_t::ZH)
+        {
+            CHECK(mutations.find(english_life) == string::npos);
+            CHECK(dump.find(english_life) == string::npos);
+        }
+        const string menu = ability_name(ABIL_HEPLIAKLQANA_TYPE_HEXER, false);
+        CHECK(menu == (language == lang_t::ZH ? "先祖生命：诅咒师" : "Ancestor Life: Hexer"));
+        CHECK(ability_name(ABIL_HEPLIAKLQANA_TYPE_HEXER, true) == "Ancestor Life: Hexer");
+        const string details = get_ability_desc(ABIL_HEPLIAKLQANA_TYPE_HEXER, false);
+        INFO(details);
+        CHECK(details.find(language == lang_t::ZH
+            ? "回想起你的先祖是个诅咒师，一个刀法迅捷、擅长施展削弱性法术的狡猾贼人。"
+            : "Remembers your ancestor as a hexer") != string::npos);
+        const string type_name = language == lang_t::ZH
+            ? mons_type_name(MONS_ANCESTOR_HEXER, DESC_PLAIN)
+            : mons_type_name_en(MONS_ANCESTOR_HEXER, DESC_A);
+        const string confirmation = make_stringf(
+            T_("Are you sure you want to remember your ancestor as %s?"), type_name.c_str());
+        CHECK(confirmation == (language == lang_t::ZH
+            ? "你确定要记住你的先祖作为诅咒师吗？"
+            : "Are you sure you want to remember your ancestor as a hexer?"));
+        monster_info ancestor(MONS_ANCESTOR_HEXER);
+        ancestor.mname = "Xochitl";
+        CHECK(ancestor.full_name() == (language == lang_t::ZH ? "诅咒师Xochitl" : "Xochitl the hexer"));
+        const string identity = mons_type_name_en(MONS_ANCESTOR_HEXER, DESC_A);
+        const Note note(NOTE_ANCESTOR_TYPE, 0, 0, identity);
+        const string displayed_note = note.describe(false, false);
+        INFO(displayed_note);
+        CHECK(displayed_note.find(language == lang_t::ZH ? "诅咒师" : "a hexer") != string::npos);
+        CHECK(note.name == "a hexer");
+        CHECK(identity == "a hexer");
+        CHECK(you.props[HEPLIAKLQANA_ALLY_NAME_KEY].get_string() == "Xochitl");
+        CHECK(you.props[HEPLIAKLQANA_ALLY_TYPE_KEY].get_int() == MONS_ANCESTOR_HEXER);
+        CHECK(you.raw_piety == 80);
     }
 }
