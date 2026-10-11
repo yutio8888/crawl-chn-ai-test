@@ -42983,3 +42983,6 @@ move.bare|fly up
 %%%%
 move.bare|fly down
 飞了下去
+%%%%
+<magenta>[]</magenta>: Transient mutations.\n
+<magenta>[]</magenta>: 临时变异。\n
