@@ -6529,7 +6529,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         REQUIRE_FALSE(player_can_join_god(GOD_BEOGH));
         REQUIRE(get_form()->player_prayer_action() == row.action);
         const int time = you.time_taken;
-        const auto piety = you.piety;
+        const auto piety = you.piety();
         const string god = god_name(GOD_BEOGH);
         const string expected = make_stringf(T_(row.key), god.c_str());
         string messages;
@@ -6548,7 +6548,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(you.form == row.form);
         CHECK(you.duration[DUR_FLIGHT] == (row.flying ? 10 : 0));
         CHECK(you.religion == GOD_NO_GOD);
-        CHECK(you.piety == piety);
+        CHECK(you.piety() == piety);
         CHECK(you.time_taken == time);
         CHECK_FALSE(you.turn_is_over);
         CHECK(Options.language == language);
@@ -6708,7 +6708,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         you.species = SP_HUMAN;
         you.hp = you.hp_max = 100;
         you.religion = passive ? GOD_HEPLIAKLQANA : GOD_NO_GOD;
-        you.piety = 100;
+        you.raw_piety = 100;
         you.penance[GOD_HEPLIAKLQANA] = penance ? 10 : 0;
         const string expected = T_("Your life essence is reduced to manifest your ancestor. (-10% HP)");
         const string described = describe_mutations(true);
@@ -6723,7 +6723,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(you.hp == 100);
         CHECK(you.hp_max == 100);
         CHECK(you.religion == (passive ? GOD_HEPLIAKLQANA : GOD_NO_GOD));
-        CHECK(you.piety == 100);
+        CHECK(you.piety() == 100);
         CHECK(you.penance[GOD_HEPLIAKLQANA] == (penance ? 10 : 0));
         i18n_cache_clear();
         CHECK(describe_mutations(true) == described);

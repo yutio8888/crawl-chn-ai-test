@@ -1242,8 +1242,10 @@ static string _origin_monster_name(const item_def &item)
 {
     const monster_type monnum = static_cast<monster_type>(item.orig_monnum);
     if (monnum == MONS_PLAYER_GHOST)
+    {
         return Options.language == lang_t::ZH ? T_("player ghost")
                                               : "a player ghost";
+    }
     else if (monnum == MONS_PANDEMONIUM_LORD)
         return Options.language == lang_t::ZH ? T_("pandemonium lord")
                                               : "a pandemonium lord";
