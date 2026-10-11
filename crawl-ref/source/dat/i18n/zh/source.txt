@@ -45929,3 +45929,6 @@ panlord body adjective|mantis
 %%%%
 panlord body adjective|slithering
 蜿蜒
+%%%%
+<magenta>[]</magenta>: Transient mutations.\n
+<magenta>[]</magenta>: 临时变异。\n
