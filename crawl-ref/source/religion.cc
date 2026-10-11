@@ -642,6 +642,10 @@ void maybe_clear_traitor(god_type god)
 
 bool active_penance(god_type god)
 {
+#if TAG_MAJOR_VERSION == 34
+    if (god == GOD_PAKELLAS)
+        return false;
+#endif
     // Good gods only have active wrath when they hate your current god.
     return player_under_penance(god)
            && !is_unavailable_god(god)
@@ -649,9 +653,6 @@ bool active_penance(god_type god)
            && god != GOD_GOZAG
            && god != GOD_RU
            && god != GOD_HEPLIAKLQANA
-#if TAG_MAJOR_VERSION == 34
-           && god != GOD_PAKELLAS
-#endif
            && god != GOD_ELYVILON
            && (god == you.religion && !(is_good_god(god) || god == GOD_BEOGH)
                || god_hates_your_god(god, you.religion));
@@ -4007,9 +4008,14 @@ void god_pitch(god_type which_god)
         mpr(T_("You bow before the missionary of Beogh."));
     else
     {
-        mprf(T_("You %s the altar of %s."),
-             get_form()->player_prayer_action().c_str(),
-             god_name(which_god).c_str());
+        const string action = get_form()->player_prayer_action();
+        const string god = god_name(which_god);
+        if (action == "sit before")
+            mprf(T_("You sit before the altar of %s."), god.c_str());
+        else if (action == "curl up in front of")
+            mprf(T_("You curl up in front of the altar of %s."), god.c_str());
+        else
+            mprf(T_("You %s the altar of %s."), T_(action.c_str()), god.c_str());
     }
     // these are included in default force_more_message
 

@@ -534,6 +534,7 @@ bool Form::player_can_swim() const
 
 /**
  * What message should be printed when the player prays at an altar?
+ * Returns an English action; god_pitch translates it at display time.
  * To be inserted into "You %s the altar of foo."
  *
  * If the form has a valid custom action, print that; otherwise, default to the
@@ -551,7 +552,7 @@ string Form::player_prayer_action() const
     // XXX: if we ever get a default-permaflying species again that wants to
     // have a separate verb, we'll want to check for that right here.
     if (you.airborne())
-        return T_("hover solemnly before");
+        return "hover solemnly before";
     // Otherwise, if you have a verb, use that...
     if (!prayer_action.empty())
         return prayer_action;
@@ -1637,7 +1638,7 @@ string hand_transform_parts(bool terse)
 {
     // there's special casing in base_hand_name to use "eel" everywhere, so
     // use the non-temp name
-    // Chinese does not mark plurality on these body-part names.  Using the
+    // Chinese does not mark plurality on these body-part names. Using the
     // singular form also lets the localized modifiers below form natural
     // compounds (e.g. 前爪 and 主触手), rather than "front " + a translated
     // English plural.
@@ -1646,15 +1647,19 @@ string hand_transform_parts(bool terse)
 
     // creatures with paws (aka felids) have four paws, but only two of them transform.
     if (!terse && you.has_mutation(MUT_PAWS, false))
+    {
         str = make_stringf_p(C_("hand transform parts", "front %1$s"),
                              str.c_str());
+    }
     else if (!terse && you.arm_count() > 2)
         str = make_stringf_p(C_("hand transform parts", "main %1$s"),
                              str.c_str()); // Op have four main tentacles
 
     if (you.arm_count() == 1)
+    {
         str = make_stringf_p(C_("hand transform parts", "a %1$s"),
                              str.c_str());
+    }
 
     return str;
 }
@@ -2404,9 +2409,7 @@ void merfolk_start_swimming()
     mpr(T_("Your legs become a tail as you dive into the water."));
 
     if (you.invisible())
-    {
         mpr(T_("...but don't expect to remain undetected."));
-    }
 
     you.fishtail = true;
     you.redraw_evasion = true;

@@ -8,6 +8,7 @@
 #include "acquire.h"
 #include "art-enum.h"
 #include "artefact.h"
+#include "chardump.h"
 #include "database.h"
 #include "decks.h"
 #include "describe.h"
@@ -18,6 +19,7 @@
 #include "env.h"
 #include "english.h"
 #include "feature.h"
+#include "files.h"
 #include "god-conduct.h"
 #include "hiscores.h"
 #include "item-status-flag-type.h"
@@ -55,6 +57,7 @@
 #include "state.h"
 #include "stringutil.h"
 #include "status.h"
+#include "syscalls.h"
 #include "tags.h"
 #include "terrain.h"
 #include "transform.h"
@@ -65,6 +68,8 @@
 #include "xom.h"
 
 #include <cstring>
+#include <fstream>
+#include <iterator>
 #include <array>
 #include <string>
 #include <tuple>
@@ -5205,5 +5210,217 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(en_dislikes.find("或") == string::npos);
         CHECK(en_likes.find("、") == string::npos);
         CHECK(en_likes.find("或") == string::npos);
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 147 species mutations localize descriptions and real dumps",
+                 "[zh-translation][issue147][mutations][morgue]")
+{
+#if defined(UNIX) && !defined(__ANDROID__)
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    init_properties();
+    init_monsters();
+    init_spell_descs();
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> testing(crawl_state.test, true);
+    unwind_var<vector<string>> order(Options.dump_order, {"mutations"});
+    unwind_var<string> directory(Options.morgue_dir, ".");
+    // Catch2 cases run sequentially in the isolated verification directory.
+    // Refuse to overwrite an existing artifact on any platform.
+    const string filename = "catch2-issue147-mutations";
+    REQUIRE_FALSE(file_exists(filename + ".txt"));
+    REQUIRE_FALSE(file_exists(filename + ".lst"));
+    unwinder cleanup([filename]() {
+        unlink_u((filename + ".txt").c_str());
+        unlink_u((filename + ".lst").c_str());
+    });
+    for (species_type species : {SP_OCTOPODE, SP_POLTERGEIST})
+    {
+        const vector<string> original_short = species::fake_mutations(species, true);
+        const vector<string> original_long = species::fake_mutations(species, false);
+        REQUIRE(original_long.size() == 1);
+        CHECK(original_short[0] == (species == SP_OCTOPODE ? "almost no armour" : "insubstantial"));
+        CHECK(original_long[0] == (species == SP_OCTOPODE
+            ? "You cannot wear most types of armour."
+            : "You are insubstantial and cannot be petrified, ensnared, or set on fire."));
+        for (lang_t language : {lang_t::ZH, lang_t::EN})
+        {
+            TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+            you = player();
+            you.species = species;
+            you.set_position(coord_def(20, 20));
+            you.hp = you.hp_max = 20;
+            you.experience_level = 1;
+            give_basic_mutations(species);
+            REQUIRE(you.has_any_mutations());
+            const string long_expected = language == lang_t::EN ? original_long[0]
+                : species == SP_OCTOPODE ? "你无法穿戴大多数类型的护甲。"
+                                        : "你处于虚体状态，无法被石化、束缚或点燃。";
+            const string short_expected = language == lang_t::EN ? original_short[0]
+                : species == SP_OCTOPODE ? "几乎无法穿戴护甲" : "虚体";
+            // Stable's actual chardump consumer uses describe_mutations(false).
+            const string described = describe_mutations(false);
+            const string terse = terse_mutation_list();
+            INFO(described);
+            INFO(terse);
+            CHECK(described.find(long_expected) != string::npos);
+            CHECK(terse.find(short_expected) != string::npos);
+            if (species == SP_OCTOPODE)
+            {
+                CHECK(described.find(language == lang_t::ZH ? "你是两栖的。" : "You are amphibious.") != string::npos);
+                CHECK(terse.find(language == lang_t::ZH ? "两栖" : "amphibious") != string::npos);
+            }
+            REQUIRE(dump_char(filename, true));
+            ifstream file(filename + ".txt");
+            REQUIRE(file.good());
+            const string dump((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+            INFO(dump);
+            CHECK(dump.find(long_expected) != string::npos);
+            if (language == lang_t::ZH)
+            {
+                CHECK(described.find(original_long[0]) == string::npos);
+                CHECK(dump.find(original_long[0]) == string::npos);
+                CHECK(terse.find(original_short[0]) == string::npos);
+            }
+            CHECK(species::fake_mutations(species, true) == original_short);
+            CHECK(species::fake_mutations(species, false) == original_long);
+        }
+    }
+    // An untranslated draconian entry still uses English fallback in both
+    // normal and anatomy-changing forms; annotations stay display-only.
+    you = player();
+    you.species = SP_GREY_DRACONIAN;
+    you.set_position(coord_def(20, 20));
+    you.hp = you.hp_max = 20;
+    you.experience_level = 1;
+    give_basic_mutations(you.species);
+    const vector<string> draconian_traits = species::fake_mutations(you.species, false);
+    CHECK(find(draconian_traits.begin(), draconian_traits.end(),
+               "You are unimpeded by mud.") != draconian_traits.end());
+    for (transformation form : {transformation::none, transformation::pig})
+    {
+        you.form = form;
+        const string described = describe_mutations(true);
+        CHECK(described.find("You are unimpeded by mud.") != string::npos);
+        if (form == transformation::pig)
+            CHECK(described.find("<darkgrey>((You are unimpeded by mud.))</darkgrey>") != string::npos);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 147 altar prayers preserve species and form actions",
+                 "[zh-translation][issue147][religion]")
+{
+#if defined(UNIX) && !defined(__ANDROID__)
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    init_properties();
+    init_monsters();
+    init_spell_descs();
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> testing(crawl_state.test, true);
+    unwind_var<bool> started(crawl_state.game_started, false);
+    const coord_def pos(20, 20);
+    unwind_var<dungeon_feature_type> altar(env.grid(pos), DNGN_ALTAR_BEOGH);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (species_type species : {SP_FELID, SP_OCTOPODE})
+        {
+            you = player();
+            you.species = species;
+            you.set_position(pos);
+            you.hp = you.hp_max = 20;
+            give_basic_mutations(species);
+            // Real rejection keeps this production consumer out of the
+            // interactive join menu without bypassing its prayer output.
+            you.mutation[MUT_FORLORN] = 1;
+            REQUIRE_FALSE(player_can_join_god(GOD_BEOGH));
+            const string action = species == SP_FELID ? "sit before" : "curl up in front of";
+            CHECK(species::prayer_action(species) == action);
+            for (int state : {0, 1, 2})
+            {
+                you.form = state == 1 ? transformation::tree : transformation::none;
+                you.duration[DUR_FLIGHT] = state == 2 ? 10 : 0;
+                const string raw = state == 1 ? "sway towards"
+                    : state == 2 ? "hover solemnly before" : action;
+                CHECK(get_form()->player_prayer_action() == raw);
+                REQUIRE_FALSE(player_can_join_god(GOD_BEOGH));
+                const string history_before = get_last_messages(NUM_STORED_MESSAGES, true);
+                string messages;
+                string displayed;
+                {
+                    msgwin_temporary_mode temporary;
+                    temporary_message_rollback rollback;
+                    msg::tee tee(messages);
+                    god_pitch(GOD_BEOGH);
+                    displayed = get_last_messages(2, true);
+                }
+                INFO(messages);
+                INFO(displayed);
+                if (language == lang_t::EN || state == 0)
+                {
+                    const string expected = language == lang_t::EN
+                        ? "You " + raw + " the altar of Beogh."
+                        : species == SP_FELID ? "你坐在比欧弗的祭坛前。" : "你蜷伏在比欧弗的祭坛前。";
+                    CHECK(messages.find(expected) != string::npos);
+                    CHECK(displayed.find(expected) != string::npos);
+                }
+                else
+                {
+                    CHECK(messages.find("你坐在比欧弗的祭坛前。") == string::npos);
+                    CHECK(messages.find("你蜷伏在比欧弗的祭坛前。") == string::npos);
+                }
+                CHECK(get_last_messages(NUM_STORED_MESSAGES, true) == history_before);
+                CHECK(you.religion == GOD_NO_GOD);
+                CHECK(you.species == species);
+                CHECK(species::prayer_action(species) == action);
+            }
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: issue 147 stable Four Winds uses the actual unrand description",
+                 "[zh-translation][issue147][descriptions][unrand]")
+{
+#if defined(UNIX) && !defined(__ANDROID__)
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.set_position(coord_def(20, 20));
+    you.hp = you.hp_max = 20;
+    item_def item;
+    item.quantity = 1;
+    const auto status = get_unique_item_status(UNRAND_FOUR_WINDS);
+    unwinder restore_status([&item, status]() { set_unique_item_status(item, status); });
+    REQUIRE(make_item_unrandart(item, UNRAND_FOUR_WINDS));
+    item.flags |= ISFLAG_IDENTIFIED;
+    const string original_appearance = item.props[ARTEFACT_APPEAR_KEY].get_string();
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string described = get_item_description(item);
+        INFO(described);
+        CHECK(described.find(language == lang_t::ZH
+            ? "这个垂饰是用纯净的玉制成的。"
+            : "A pendant made of purest jade.") != string::npos);
+        CHECK(item.unrand_idx == UNRAND_FOUR_WINDS);
+        CHECK(string(get_unrand_entry(item.unrand_idx)->name) == "amulet of the Four Winds");
+        CHECK(item.props[ARTEFACT_APPEAR_KEY].get_string() == original_appearance);
     }
 }
