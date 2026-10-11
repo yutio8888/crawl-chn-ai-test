@@ -741,6 +741,8 @@ void scorefile_entry::init_from(const scorefile_entry &se)
     death_type         = se.death_type;
     death_source       = se.death_source;
     death_source_name  = se.death_source_name;
+    death_source_name_zh = se.death_source_name_zh;
+    auxkilldata_zh     = se.auxkilldata_zh;
     death_source_flags = se.death_source_flags;
     auxkilldata        = se.auxkilldata;
     indirectkiller     = se.indirectkiller;
@@ -1024,6 +1026,8 @@ static int _species_by_name(const string& name)
 
 void scorefile_entry::init_with_fields()
 {
+    death_source_name_zh.clear();
+    auxkilldata_zh.clear();
     version = fields->str_field("v");
     save_rcs_version = fields->str_field("vsavrv");
     save_tag_version = fields->str_field("vsav");
@@ -1348,6 +1352,8 @@ void scorefile_entry::init_death_cause(int dam, mid_t dsrc,
                                        int dtype, const char *aux,
                                        const char *dsrc_name)
 {
+    death_source_name_zh.clear();
+    auxkilldata_zh.clear();
     death_source = dsrc;
     death_type   = dtype;
     damage       = dam;
@@ -1404,9 +1410,19 @@ void scorefile_entry::init_death_cause(int dam, mid_t dsrc,
             // we do care about the above identification. -- bwr
             if (!mons_class_is_animated_weapon(mons->type))
             {
-                auxkilldata = env.item[mons->inv[MSLOT_WEAPON]].name(DESC_A);
-                if (mons->has_ench(ENCH_ARMED))
-                    auxkilldata += T_(" (from an undying armoury)");
+                const item_def &weapon = env.item[mons->inv[MSLOT_WEAPON]];
+                const auto weapon_name = [&]() {
+                    string name = weapon.name(DESC_A);
+                    if (mons->has_ench(ENCH_ARMED))
+                        name += T_(" (from an undying armoury)");
+                    return name;
+                };
+                {
+                    ScopedLangEn canonical_language;
+                    auxkilldata = weapon_name();
+                }
+                if (Options.language == lang_t::ZH)
+                    auxkilldata_zh = weapon_name();
             }
         }
 
@@ -1415,30 +1431,41 @@ void scorefile_entry::init_death_cause(int dam, mid_t dsrc,
         const description_level_type desc =
             death_type == KILLED_BY_DEATH_EXPLOSION ? DESC_PLAIN : DESC_A;
 
-        death_source_name = mons->name(desc, death);
+        // Capture both representations while the source still exists. Only the
+        // canonical value reaches xlog; the owning ZH snapshot is display-only.
+        const auto source_name = [&]() {
+            string name = mons->name(desc, death);
 
-        if (death || you.can_see(*mons))
-            death_source_name = mons->full_name(desc);
+            if (death || you.can_see(*mons))
+                name = mons->full_name(desc);
 
-        if (mons_is_player_shadow(*mons))
-            death_source_name = T_("their own shadow"); // heh
+            if (mons_is_player_shadow(*mons))
+                name = T_("their own shadow"); // heh
 
-        if (mons->mid == MID_YOU_FAULTLESS)
-            death_source_name = T_("themself");
+            if (mons->mid == MID_YOU_FAULTLESS)
+                name = T_("themself");
 
-        if (mons->mid == MID_ANON_FRIEND)
-            death_source_name = T_("an ally");
+            if (mons->mid == MID_ANON_FRIEND)
+                name = T_("an ally");
 
-        if (mons->has_ench(ENCH_SHAPESHIFTER))
-            death_source_name += T_(" (shapeshifter)");
-        else if (mons->has_ench(ENCH_GLOWING_SHAPESHIFTER))
-            death_source_name += T_(" (glowing shapeshifter)");
+            if (mons->has_ench(ENCH_SHAPESHIFTER))
+                name += T_(" (shapeshifter)");
+            else if (mons->has_ench(ENCH_GLOWING_SHAPESHIFTER))
+                name += T_(" (glowing shapeshifter)");
 
-        if (mons->type == MONS_PANDEMONIUM_LORD)
-            death_source_name += T_(" the pandemonium lord");
+            if (mons->type == MONS_PANDEMONIUM_LORD)
+                name += T_(" the pandemonium lord");
 
-        if (mons->has_ench(ENCH_PHANTOM_MIRROR))
-            death_source_name += T_(" (illusionary)");
+            if (mons->has_ench(ENCH_PHANTOM_MIRROR))
+                name += T_(" (illusionary)");
+            return name;
+        };
+        {
+            ScopedLangEn canonical_language;
+            death_source_name = source_name();
+        }
+        if (Options.language == lang_t::ZH)
+            death_source_name_zh = source_name();
 
         if (mons_is_unique(mons->type))
             death_source_flags.insert("unique");
@@ -1495,12 +1522,16 @@ void scorefile_entry::init_death_cause(int dam, mid_t dsrc,
 
     if (death_type == KILLED_BY_POISON)
     {
+        death_source_name_zh.clear();
+        auxkilldata_zh.clear();
         death_source_name = you.props[POISONER_KEY].get_string();
         auxkilldata = you.props[POISON_AUX_KEY].get_string();
     }
 
     if (death_type == KILLED_BY_BURNING)
     {
+        death_source_name_zh.clear();
+        auxkilldata_zh.clear();
         death_source_name = you.props[STICKY_FLAMER_KEY].get_string();
         auxkilldata = you.props[STICKY_FLAME_AUX_KEY].get_string();
     }
@@ -1511,6 +1542,8 @@ void scorefile_entry::init_death_cause(int dam, mid_t dsrc,
 
     if (death_type == KILLED_BY_BLINKING)
     {
+        death_source_name_zh.clear();
+        auxkilldata_zh.clear();
         death_source_name = you.props[BLINKITIS_SOURCE_KEY].get_string();
         auxkilldata = you.props[BLINKITIS_AUX_KEY].get_string();
     }
@@ -1536,7 +1569,9 @@ void scorefile_entry::reset()
     death_type           = KILLED_BY_SOMETHING;
     death_source         = MID_NOBODY;
     death_source_name.clear();
+    death_source_name_zh.clear();
     auxkilldata.clear();
+    auxkilldata_zh.clear();
     indirectkiller.clear();
     killerpath.clear();
     last_banisher.clear();
@@ -1931,6 +1966,8 @@ static string _death_source_display_desc(const string &death_source_name)
 
 string scorefile_entry::death_source_display_desc() const
 {
+    if (Options.language == lang_t::ZH && !death_source_name_zh.empty())
+        return death_source_name_zh;
     return _death_source_display_desc(death_source_name);
 }
 
@@ -2285,6 +2322,8 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
     const bool oneline = (verbosity == DDV_ONELINE);
     const bool chinese = Options.language == lang_t::ZH;
 
+    const string &weapon_display = chinese && !auxkilldata_zh.empty()
+                                   ? auxkilldata_zh : auxkilldata;
     string desc;
 
     if (oneline)
@@ -3307,7 +3346,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         if (death_type == KILLED_BY_MONSTER && !auxkilldata.empty())
         {
             desc += "/";
-            desc += strip_article_a(auxkilldata);
+            desc += strip_article_a(weapon_display);
             needs_damage = true;
         }
         else if (needs_beam_cause_line)
@@ -3352,12 +3391,12 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                 if (!semiverbose)
                 {
                     desc += make_stringf(T_("... wielding %s"),
-                             auxkilldata.c_str());
+                             weapon_display.c_str());
                     needs_damage = true;
                     desc += _hiscore_newline_string();
                 }
                 else
-                    desc += make_stringf(" (%s)", auxkilldata.c_str());
+                    desc += make_stringf(" (%s)", weapon_display.c_str());
             }
             else if (needs_beam_cause_line)
             {

@@ -29,9 +29,11 @@
 #include "hiscores.h"
 #include "item-status-flag-type.h"
 #include "item-name.h"
+#include "items.h"
 #include "item-prop.h"
 #include "item-prop-enum.h"
 #include "jobs.h"
+#include "lang-en-guard.h"
 #include "losglobal.h"
 #include "macro.h"
 #include "mapdef.h"
@@ -5792,4 +5794,268 @@ TEST_CASE("issue147: terrain trap Lua API and safety hook share canonical tokens
         INFO(clua.error);
         REQUIRE(result == 0);
     }
+}
+
+// Exercise capture -> score xlog and capture -> death UI separately. These
+// tests do not replace the normal-death logfile/morgue acceptance run.
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: death capture preserves canonical killer and weapon",
+                 "[zh-translation][death-protocol][issue-167]")
+{
+    init_properties();
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+    const int hp = GENERATE(10, 0);
+    const bool armed = GENERATE(false, true);
+    const int modifier = GENERATE(0, 1, 2);
+    const bool custom_name = GENERATE(false, true);
+    you.hp = hp;
+    you.gold = 123;
+    you.num_turns = 42;
+    you.elapsed_time = 420;
+    no_notes suppress_notes;
+    const bool old_autoinscribe = need_to_autoinscribe();
+    unwinder restore_autoinscribe([old_autoinscribe]() {
+        request_autoinscribe(old_autoinscribe);
+    });
+    request_autoinscribe(false);
+    const size_t notes_before = note_list.size();
+
+    scoped_env_monster_slot slot(coord_def(20, 21));
+    monster *killer = slot.place(MONS_ORC);
+    REQUIRE(killer != nullptr);
+    if (custom_name)
+        killer->mname = "自定义名字";
+    if (armed)
+        killer->add_ench(mon_enchant(ENCH_ARMED, killer, 100));
+    if (modifier == 1)
+        killer->add_ench(mon_enchant(ENCH_SHAPESHIFTER, killer, 100));
+    if (modifier == 2)
+    {
+        killer->add_ench(mon_enchant(ENCH_GLOWING_SHAPESHIFTER, killer, 100));
+        killer->add_ench(mon_enchant(ENCH_PHANTOM_MIRROR, killer, 100));
+    }
+
+    // Reserve an empty real item slot, without stealing an existing item.
+    int weapon_index = NON_ITEM;
+    for (int i = 0; i < MAX_ITEMS; ++i)
+        if (!env.item[i].defined())
+        {
+            weapon_index = i;
+            break;
+        }
+    REQUIRE(weapon_index != NON_ITEM);
+    unwind_var<item_def> restore_weapon(env.item[weapon_index]);
+    item_def &weapon = env.item[weapon_index];
+    weapon = item_def();
+    weapon.base_type = OBJ_WEAPONS;
+    weapon.sub_type = WPN_DAGGER;
+    weapon.quantity = 1;
+    killer->inv[MSLOT_WEAPON] = weapon_index;
+    weapon.set_holding_monster(*killer);
+    const int monster_hp = killer->hit_points;
+
+    scorefile_entry chinese(7, killer->mid, KILLED_BY_MONSTER, nullptr, true);
+    REQUIRE(Options.language == lang_t::ZH);
+    CHECK(weapon.is_identified() == (hp <= 0));
+    CHECK(need_to_autoinscribe() == (hp <= 0));
+    const auto flags_after_capture = weapon.flags;
+    const string weapon_zh = weapon.name(DESC_A)
+        + (armed ? T_(" (from an undying armoury)") : "");
+    const bool reveal_source = hp <= 0 || you.can_see(*killer);
+    const string monster_zh = reveal_source ? killer->full_name(DESC_A)
+                                           : killer->name(DESC_A, false);
+    const string raw_zh = chinese.raw_string();
+    const xlog_fields zh_fields = chinese.get_fields();
+    CHECK(zh_fields.str_field("dam") == "7");
+    {
+        ScopedLangEn english;
+        const string expected_weapon = weapon.name(DESC_A)
+            + (armed ? " (from an undying armoury)" : "");
+        string expected_killer = reveal_source ? killer->full_name(DESC_A)
+                                               : killer->name(DESC_A, false);
+        if (hp <= 0 && !custom_name)
+            CHECK(expected_killer == "an orc");
+        if (hp <= 0 && custom_name)
+            CHECK(expected_killer.find("自定义名字") != string::npos);
+        if (modifier == 1)
+            expected_killer += " (shapeshifter)";
+        if (modifier == 2)
+            expected_killer += " (glowing shapeshifter) (illusionary)";
+        scorefile_entry english_entry(7, killer->mid, KILLED_BY_MONSTER,
+                                     nullptr, true);
+        const xlog_fields raw_en(english_entry.raw_string());
+        CHECK(raw_en.str_field("killer") == zh_fields.str_field("killer"));
+        CHECK(raw_en.str_field("kaux") == zh_fields.str_field("kaux"));
+        CHECK(english_entry.get_fields().str_field("killer") == expected_killer);
+        CHECK(english_entry.get_fields().str_field("kaux") == expected_weapon);
+        CHECK(zh_fields.str_field("killer") == expected_killer);
+        CHECK(zh_fields.str_field("kaux") == expected_weapon);
+        const string description = chinese.death_description(scorefile_entry::DDV_VERBOSE);
+        CHECK(description.find(expected_killer) != string::npos);
+        CHECK(description.find(expected_weapon) != string::npos);
+        CHECK(Options.language == lang_t::EN);
+    }
+    REQUIRE(Options.language == lang_t::ZH);
+    i18n_cache_clear();
+    scorefile_entry copied(chinese);
+    scorefile_entry assigned;
+    assigned = chinese;
+    for (const scorefile_entry *entry : {&chinese, &copied, &assigned})
+    {
+        for (auto verbosity : {scorefile_entry::DDV_TERSE,
+                               scorefile_entry::DDV_LOGVERBOSE,
+                               scorefile_entry::DDV_VERBOSE})
+        {
+            const string description = entry->death_description(verbosity);
+            CHECK(description.find(monster_zh) != string::npos);
+            CHECK(description.find(weapon_zh) != string::npos);
+            if (armed)
+                CHECK(description.find(T_(" (from an undying armoury)")) != string::npos);
+            if (modifier == 1)
+                CHECK(description.find(T_(" (shapeshifter)")) != string::npos);
+            if (modifier == 2)
+            {
+                CHECK(description.find(T_(" (glowing shapeshifter)")) != string::npos);
+                CHECK(description.find(T_(" (illusionary)")) != string::npos);
+            }
+        }
+        CHECK(entry->raw_string() == raw_zh);
+    }
+    // Reusing an entry for parsed scores must discard the live snapshots.
+    scorefile_entry quitting(0, MID_NOBODY, KILLED_BY_QUITTING, "", true);
+    REQUIRE(assigned.parse(quitting.raw_string()));
+    CHECK(assigned.death_description(scorefile_entry::DDV_VERBOSE).find(weapon_zh)
+          == string::npos);
+    CHECK(you.hp == hp);
+    CHECK(you.gold == 123);
+    CHECK(you.num_turns == 42);
+    CHECK(you.elapsed_time == 420);
+    CHECK(killer->hit_points == monster_hp);
+    CHECK(killer->inv[MSLOT_WEAPON] == weapon_index);
+    CHECK(weapon.flags == flags_after_capture);
+    CHECK(weapon.held_by_monster());
+    CHECK(note_list.size() == notes_before);
+    CHECK_FALSE(notes_are_active());
+    CHECK(need_to_autoinscribe() == (hp <= 0));
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: special death sources retain canonical identities",
+                 "[zh-translation][death-protocol][issue-167]")
+{
+    init_properties();
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+    you.hp = 0;
+    const auto type = GENERATE(MONS_SIGMUND, MONS_PLAYER_SHADOW,
+                               MONS_PANDEMONIUM_LORD);
+    scoped_env_monster_slot slot(coord_def(20, 21));
+    monster *killer = slot.place(type);
+    REQUIRE(killer != nullptr);
+    if (type == MONS_PLAYER_SHADOW)
+        killer->base_attitude = ATT_FRIENDLY;
+    if (type == MONS_PANDEMONIUM_LORD)
+        killer->mname = "自定义领主";
+    const string display = type == MONS_PLAYER_SHADOW
+        ? string(T_("their own shadow"))
+        : killer->full_name(DESC_A)
+          + (type == MONS_PANDEMONIUM_LORD ? T_(" the pandemonium lord") : "");
+    scorefile_entry entry(3, killer->mid, KILLED_BY_MONSTER, nullptr, true);
+    const xlog_fields fields(entry.raw_string());
+    REQUIRE(Options.language == lang_t::ZH);
+    {
+        ScopedLangEn english;
+        const string canonical = type == MONS_PLAYER_SHADOW
+            ? "their own shadow"
+            : killer->full_name(DESC_A)
+              + (type == MONS_PANDEMONIUM_LORD ? " the pandemonium lord" : "");
+        CHECK(fields.str_field("killer") == canonical);
+        CHECK(entry.death_description(scorefile_entry::DDV_VERBOSE).find(canonical)
+              != string::npos);
+        if (type == MONS_PANDEMONIUM_LORD)
+            CHECK(canonical.find("自定义领主") != string::npos);
+    }
+    REQUIRE(Options.language == lang_t::ZH);
+    i18n_cache_clear();
+    CHECK(entry.death_description(scorefile_entry::DDV_VERBOSE).find(display)
+          != string::npos);
+    if (type == MONS_SIGMUND)
+        CHECK(fields.str_field("killer_flags") == "unique");
+    CHECK(you.hp == 0);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: rune and gem milestone producer feeds canonical sentences",
+                 "[zh-translation][milestone-protocol][issue-168]")
+{
+    init_properties();
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.char_class = JOB_MONK;
+    you.chr_class_name = get_job_name(you.char_class);
+    you.set_position(coord_def(20, 20));
+    const auto base = GENERATE(OBJ_RUNES, OBJ_GEMS);
+    item_def collectible;
+    collectible.base_type = base;
+    collectible.sub_type = base == OBJ_RUNES ? int(RUNE_SWAMP) : int(GEM_DUNGEON);
+    collectible.quantity = 1;
+    const auto flags = collectible.flags;
+    const string display_name = collectible.name(DESC_A);
+    REQUIRE(contains_non_ascii(display_name));
+    string canonical_name;
+    string english_sentence;
+    {
+        ScopedLangEn english;
+        canonical_name = collectible.name(DESC_A);
+        english_sentence = collectible_milestone(collectible);
+        CHECK(Options.language == lang_t::EN);
+    }
+    REQUIRE(Options.language == lang_t::ZH);
+    CHECK(english_sentence == "found " + canonical_name + ".");
+    CHECK(collectible_milestone(collectible) == english_sentence);
+    i18n_cache_clear();
+    CHECK(collectible_milestone(collectible) == english_sentence);
+    CHECK(collectible.name(DESC_A) == display_name);
+    CHECK(collectible.flags == flags);
+    const size_t notes_before = note_list.size();
+    const auto runes_before = you.runes;
+    const auto gems_before = you.gems_found;
+    const int turns_before = you.num_turns;
+#if (defined(USE_TILE_WEB) || defined(DGL_MILESTONES)) \
+    && !defined(SCORE_WIZARD_CHARACTERS)
+    // Exercise the real writer's saved protocol bundle without external file
+    // or websocket output. This is not normal-character file evidence.
+    unwind_var<bool> need_save(crawl_state.need_save, true);
+    unwind_var<bool> crashed(crawl_state.game_crashed, true);
+    you.wizard = true;
+    const string type = base == OBJ_RUNES ? "rune" : "gem.found";
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        unwind_var<lang_t> lang(Options.language, language);
+        you.props.erase("last_milestone");
+        you.props.erase("last_milestone_type");
+        you.props.erase("last_milestone_turn");
+        milestone_check(collectible);
+        CHECK(you.props["last_milestone"].get_string() == english_sentence);
+        CHECK(you.props["last_milestone_type"].get_string() == type);
+        CHECK(you.props["last_milestone_turn"].get_int() == turns_before);
+        CHECK(Options.language == language);
+    }
+#endif
+    REQUIRE(Options.language == lang_t::ZH);
+    CHECK(collectible.flags == flags);
+    CHECK(collectible.quantity == 1);
+    CHECK(note_list.size() == notes_before);
+    for (int i = 0; i < NUM_RUNE_TYPES; ++i)
+        CHECK(you.runes[i] == runes_before[i]);
+    for (int i = 0; i < NUM_GEM_TYPES; ++i)
+        CHECK(you.gems_found[i] == gems_before[i]);
+    CHECK(you.num_turns == turns_before);
 }

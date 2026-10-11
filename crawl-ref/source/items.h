@@ -147,6 +147,8 @@ bool origin_describable(const item_def &item);
 string origin_desc(const item_def &item);
 void origin_purchased(item_def &item);
 void origin_acquired(item_def &item, int agent);
+// Canonical protocol sentence; display names stay at their UI consumers.
+string collectible_milestone(const item_def &item);
 void milestone_check(const item_def &item);
 void origin_set_startequip(item_def &item);
 void origin_set_unknown(item_def &item);

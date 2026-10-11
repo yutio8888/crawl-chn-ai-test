@@ -92,6 +92,9 @@ private:
     string      death_source_name;  // overrides death_source
     set<string> death_source_flags; // misc flags about killer
     string      auxkilldata;        // weapon wielded, spell cast, etc
+    // Owning display snapshots for live entries, never serialized to xlog.
+    string      death_source_name_zh;
+    string      auxkilldata_zh;
     string      indirectkiller;     // the effect or real monster that summoned
     string      killerpath;         // colon-separated intermediate killers
     string      last_banisher;      // the name of the last thing that banished
