@@ -536,12 +536,14 @@ python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ --format json -
 ### 显式预处理实验入口（Issue #120）
 
 三个扫描器均可重复指定 `--compile-commands DB`，在原始源码风险结果之外，
-增加每个数据库配置下的目标 TU 展开扫描。默认门禁仍使用原有模式；此入口
-不代表完整跨文件、全部平台预处理已经完成。每个请求文件必须在每个 DB 中
-有且仅有一个条目；缺条目、缺依赖、CPP 失败或展开后的解析错误均退出 2。
+增加每个数据库配置下的真实 TU 展开扫描。默认门禁仍使用原有模式；此入口
+不代表完整跨文件、全部平台预处理已经完成。请求的 `.cc` 必须在每个 DB 中
+有且仅有一个条目；请求的头文件则检查该 DB 内每个实际包含它的 TU，不要求
+伪造头文件编译命令。缺配置、没有生效的包含上下文、缺依赖、CPP 失败或目标
+上下文展开后的解析错误均退出 2；一个 TU 成功不能抵消另一个 TU 的失败。
 
-先按正常构建流程准备依赖和生成头，再从同一配置的 Makefile 导出普通 core
-`.cc` 的真实参数。以下目标不编译，也不生成缺失的依赖：
+先按正常构建流程准备依赖和生成头，再从同一配置的 Makefile 导出目标 `.cc`
+的真实参数。以下目标不编译，也不生成缺失的依赖：
 
 ```bash
 make -C crawl-ref/source i18n-compile-commands FORCE_CXX=clang++ PYTHON=python3 \
@@ -554,9 +556,41 @@ python3 .claude/scripts/scan_varargs_string.py \
 
 分别用原构建选项 `TILES=y`、`WEBTILES=y` 或
 `EXTRA_FLAGS=-DDEBUG_DIAGNOSTICS` 导出不同 DB，并重复传入扫描器。
+`I18N_BUILD_GOAL` 默认 `crawl`，也接受 `debug`、`debug-lite`、`profile`、
+`monster` 及已有 Catch2 构建目标；它复用原目标的标准、debug 和 coverage
+设置。`I18N_SCAN_FILES=all` 导出该目标下全部 C++ 编译单元，显式列表则必须
+属于该目标。utility、生成的 `rltiles/tiledef-*.cc` 和 Catch2 的参数从与对象
+目标共享的 Make 变量规则取得。生成的 levcomp 使用实际编译路径 `util/`，
+不把 `prebuilt/` 副本冒充独立编译单元。例如：
+
+```bash
+make -C crawl-ref/source i18n-compile-commands FORCE_CXX=clang++ PYTHON=python3 \
+  I18N_BUILD_GOAL=catch2-tests I18N_SCAN_FILES=all \
+  I18N_COMPILE_COMMANDS="${TMPDIR:-/tmp}/crawl-catch2-commands.json"
+make -C crawl-ref/source/rltiles i18n-compile-commands HOSTCXX=clang++ PYTHON=python3 \
+  TILES=y I18N_SCAN_FILES=all \
+  I18N_COMPILE_COMMANDS="${TMPDIR:-/tmp}/crawl-tilegen-commands.json"
+```
+
+tilegen 是宿主工具，使用其自身 Makefile 的 `HOSTCXX`、`CFLAGS` 和真实宿主
+构建选项，单独导出 DB；生成的 tiledef 对象仍属于游戏目标。不同范围的 DB
+应分别扫描各自的文件，不能把 tilegen DB 当成游戏 DB 的另一个全覆盖配置。
+导出目标须单独调用，不能与实际构建目标混用。导出跳过旧 `.d` 的读取与修复，
+只写临时条目和最终 JSON；全部条目成功后才原子替换输出，失败保留旧 DB。
+`I18N_COMPILE_COMMANDS` 的相对路径以仓库根目录为基准。导出本身可先于生成
+源码执行，但扫描器仍要求 DB 中的源码及预处理依赖存在。
+
 `scan_string_concat.py` 使用相同参数；`scan_i18n_lifetime.py` 的 `--files`
-接受以空格分隔的路径。JSON 中的 `configuration` 区分展开来源；宏诊断定位
-到原调用行，展开列不冒充原始拼写列。源码中的 `#line` 暂不支持并明确拒绝。
+接受以空格分隔的路径。JSON 中的 `configuration` 区分展开配置，
+`translation_unit` 标识包含头文件的实际 TU，`file`/`line` 回溯物理来源。
+宏诊断定位到调用行，展开列不冒充原始拼写列。同一个头文件被不同 TU 或不同
+宏状态重复包含时，分别保留上下文；目标外的上下文代码不增加该头文件的
+finding。源码中的 `#line` 暂不支持并明确拒绝，包括所含头文件中的指令。
+展开后的合法 deleted free-function 声明（如 `mpr(const formatted_string &) = delete;`）
+通过受限适配解析：只将确认为函数声明的 `= delete` 等长置空，保留完整签名、
+分号和换行。本适配范围内的非法 delete 操作数、缺分号及周围语法错误仍阻断；
+其他声明形式保持 tree-sitter 原生解析能力，不声称完整 C++ 语法或类型检查。
+不添加 ERROR 白名单。
 
 支持 Unix 风格 Clang（包括 Android NDK Clang），暂不支持 GCC、响应文件、
 外部 driver config 和间接预处理参数。自动 driver config 被关闭；所需
@@ -564,12 +598,19 @@ defines/includes/target 必须明确出现在编译命令中。对象和依赖�
 移除，编译器及数据库本身应来自可信构建配置。Android 需使用 NDK 对应
 ABI/API 的真实 TU 命令，不能把主机 Makefile 的宏当作完整 NDK 配置。
 
-Makefile 导出器拒绝 header、utility、rltiles、Catch2 等有特殊上下文或
-目标参数的条目。已有标准 `compile_commands.json` 可直接输入，但当前只
-保留指定文件本身的展开文本，不扫描其包含文件的定义。生命周期 helper
-索引仅对该 DB 明确配置的文件使用展开内容，其余仍用原 lexical 索引；
-不同 DB 的 helper 不混合。原始源码结果始终保留，宏配置不能删掉已有风险。
-进程内复用同一 DB 的展开结果，不使用后台服务或持久缓存。
+Makefile 导出器仍拒绝 header 和不属于所选构建目标的条目。头文件扫描输入
+真实 TU 的 DB，例如先导出 `macro.cc coord.cc perlin.cc database.cc`，再将
+`--files` 设为 `cmd-keys.h`、`coord.h`、`perlin.h`、`database.h` 的源码路径。
+扫描器保留目标头文件及其实际包含祖先，恢复类、函数、初始化器等包围结构。
+其他头文件不自动成为已扫描目标；若遗漏的片段仍是解析所必需，解析失败继续
+阻断。显式子集 DB 只证明该子集的上下文，完整覆盖须使用对应构建的完整 DB。
+
+生命周期 helper 索引使用 DB 中 TU 的展开内容，并加入当前 TU 的非系统头
+展开定义；同一头文件在其他 TU 中的宏定义不混入。未配置文件仍只提供原始
+源码证据，不算该配置的 helper 事实。helper 索引目前仍是 lexical 分析，
+跨 TU 完整语义和索引输入的完整语法验证尚未完成。原始源码风险结果继续保留。
+一批头文件按每个 DB 的 TU 流式展开，不为每个头文件重复启动编译器；生命周期
+索引另需一轮 TU 展开。进程内复用基础 TU 结果，不使用后台服务或持久缓存。
 
 原始 annotation 适配保留 Windows `static BOOL WINAPI` 回调的调用约定，
 仅在实际函数声明前缀中等长置空 `WINAPI`，签名和函数体仍严格解析。

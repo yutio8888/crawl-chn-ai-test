@@ -418,3 +418,161 @@ concat=1 advisory、lifetime=0，coverage.failed 均为空。concat 同时报告
 
 绑定候选的 code profile、领域复审和 CI 由编排者统一执行；本节不预先宣称
 它们已经通过，也不以本轮显式入口关闭整个方案 3。
+
+## 后续推进：真实目标编译命令导出
+
+本轮从 `b27476622d` 继续，范围是剩余验收第 1、2 项所需的构建配置来源。
+普通 core 导出器已扩展到所选实际构建目标的 C++ 编译单元：utility、生成
+的 tiledef 和 Catch2。`I18N_BUILD_GOAL` 复用现有目标的标准及 debug/coverage
+分支；`I18N_SCAN_FILES=all` 从对应对象清单导出，无需维护另一份源文件清单。
+各文件的导出目标与真实对象目标共享专属变量声明，保留 YACC 参数、tiledef
+参数和 Catch2 自定义 main 宏。tilegen 使用其自身 Makefile 的宿主编译参数，
+单独导出；不能用游戏目标或 NDK 的参数代替宿主工具参数。
+
+新增的 `export_compile_commands.py` 只负责序列化 Make 已求值的参数和汇总，
+不选择编译器、不推断宏、不运行编译。临时条目随命令结束删除，全部条目收齐
+后才原子替换输出。导出时不读取或修复旧依赖文件，不生成源码，也不编译对象。
+具体用法和范围在 TOOLCHAIN 的显式预处理章节。
+
+这一阶段没有改变三个扫描器的解析或风险规则。既有 44 个 CPP/TS 缺口的原始
+清单已用于范围分析：其中有头文件独立解析缺少宏/包含上下文、合法 C++ 的
+parser 限制、平台头及生成代码的源内行号指令。新增导出能力不等于这些缺口
+已经修复，也不把未编译的源文件登记为已验证。真实 TU 中的头文件上下文、
+跨文件 helper、源内 `#line`、剩余语法适配和完整 Windows/macOS/Android
+矩阵仍待完成。默认门禁和旧模式保留，Issue #120 继续 Open。
+
+### 本轮验证与边界
+
+通过 `run_isolated.sh` 使用 Python 3.13.14 验证，证据位于当前工作树的
+`.claude/metrics/verify/issue120-tu-export/`（gitignored）：
+
+- `preprocessor.log`：现有预处理回归文件 26 项通过，包含三个扫描器的宏风险、
+  原始风险保留及缺配置/真实语法错误负例。新增导出测试把实际对象编译 recipe
+  的 Make dry-run 参数与导出条目逐项比对，覆盖 console、local tiles、webtiles、
+  debug、Catch2、monster；这验证参数来源，不代表这些平台的全量风险扫描完成。
+- `dryrun-path-tests.log`：最终 `make -n`、相对路径、旧数据库保留、旧依赖文件
+  不读取和不生成构建产物的补充回归通过；全量目标清单和并行收集也在回归中。
+- `tilegen-commands.json` 和 `tilegen-real-cli.log`：实际 Linux tilegen、
+  `TILES=y DEBUG=y` 配置的 5 个 TU 使用导出 DB 执行三个真实 CLI，全部
+  `coverage.failed=[]`。varargs/lifetime 退出 0；concat 退出 1，保留 90 项
+  原始及展开来源的 advisory，不把重复来源计作新增游戏缺陷。
+- `verify_zh.sh --profile code` 最终退出 0，零阻断。
+  原始报告：`.claude/metrics/verify/20260912T065608775572998+0000-1317597-b27476622deb/verify.log`。
+  首轮失败是新工作树尚未初始化/构建已锁定的 Lua 子模块；按现有 CI 的命令
+  补齐 luac 后复验通过，没有跳过语法门禁。
+
+审阅路由为 `zh-code-reviewer`，本轮按该领域在同一会话内自查，未进行独立
+审阅。以上是未提交工作树的开发验证；尚无绑定提交的合并审阅或 GitHub CI，
+不宣称已满足整个 Issue 的关闭条件。
+
+## 后续推进：头文件的真实包含上下文
+
+这一阶段在同一候选工作树中扩展三个扫描器的显式 `--compile-commands`
+入口。验收范围是：无需给头文件编造独立编译命令，能保留真实 TU 的宏状态和
+包围结构；诊断回到目标物理文件；任何必需上下文的失败继续阻断。完整平台
+矩阵、源内 `#line` 支持、跨 TU 完整语义和默认门禁替换不属于本阶段完成项。
+
+共享预处理器按 Clang 的 include 进入/返回标记记录每次包含，保留目标文件
+及其实际包含祖先。类成员片段、函数参数片段和初始化器片段因此能在包围结构
+内解析。同一文件重复包含仍保留各次宏状态；一批头文件按 DB 内 TU 流式展开，
+不对每个头文件重跑全部命令，也没有新增后台服务或持久缓存。
+
+三个 CLI 按上下文扫描，再将风险表达式定位到请求文件的物理行；上下文代码
+不混入目标文件的 finding。JSON 增加 `translation_unit`，与配置路径一起
+区分同一行在不同 TU 中的结果。头文件未被任何所选 TU 生效包含、CPP 失败、
+目标上下文语法错误或原始行号无法保证时退出 2；某个 TU 成功不能掩盖后续
+失败。源内 `#line` 仍明确拒绝，包含文件也执行检查。
+
+生命周期索引使用当前 TU 的非系统头文件展开定义，避免把另一个 TU 对同一
+头文件的宏状态合并进来。未配置文件的 lexical 事实不再冒充配置事实；原始
+源码风险扫描继续保留。索引自身仍是 lexical 分析，其他 TU 的包含定义、完整
+跨文件语义与索引输入的完整语法验证仍待后续推进。头文件回归另发现直接借用
+指针的类成员初始化被误归为全局 advisory，本阶段已将其识别为 HIGH，并验证
+普通方法局部变量、函数静态变量、局部类成员和命名空间变量的区别。
+
+### 验证证据与剩余缺口
+
+证据位于 `.claude/metrics/verify/issue120-header-context/`（gitignored）：
+
+- `preprocessor.log`：完整预处理回归通过，包含三个真实 CLI 的头文件风险、
+  重复包含、Unicode/空格路径、跨 TU 宏隔离、原始风险保留，以及缺上下文、
+  后续上下文失败、CPP/语法错误、源内行号指令等负例。导出 recipe 比对也在
+  已有对象文件的工作树中复验通过，测试不依赖对象尚未构建。
+- `lifetime.log`：生命周期回归通过，含类成员初始化的作用域正反例。
+- `core-commands.json`、`core-contexts.log`、`core-real-cli.log`：使用当前
+  Linux console Make 配置的 `macro.cc coord.cc perlin.cc database.cc`，
+  扫描 `cmd-keys.h coord.h perlin.h database.h`；三个 CLI 均退出 0，
+  各自 `discovered=4, scanned=4, failed=[]`。当前机器单次 varargs、concat、
+  lifetime 分别约 6.35、6.34、10.34 秒，仅表示该子集成本。
+- `host-commands.json`、`host-real-cli.log`：使用 tilegen 的实际宿主 DB，
+  扫描其四个工具头文件；三个 CLI 均退出 0，覆盖失败为空。
+- `lifetime-raw-full.json`：全库原始源码生命周期检查退出 0、无 HIGH，保留
+  `branch-data.h`、`macros.h`、`threads.h` 的原有 lexical 前置条件。该证据
+  验证默认风险规则的兼容性，不计作全库配置预处理覆盖。
+- `mpr-gap.log`：同一核心 DB 中的 `mpr.h:109` 在 `macro.cc` 和 `database.cc`
+  上下文仍触发 tree-sitter 的 missing identifier；保留物理头文件和 TU 定位，
+  继续作为阻断项。本阶段没有增加解析错误白名单，也没有据此重写旧 44 项
+  全范围缺口清单的通过数。
+- 项目规定的 `verify_zh.sh --profile code` 退出 0、零阻断。原始报告：
+  `.claude/metrics/verify/20260912T072838950747257+0000-1545439-b27476622deb/verify.log`。
+  验证后仅补齐本节证据记录。
+
+真实依赖和生成头通过现有 Make 目标准备，命令日志保存在上述证据目录。
+显式子集 DB 的成功只证明所列 TU；全量头文件包含关系、utility/Catch2 的
+实际风险覆盖、合法 C++ parser 缺口、源内 `#line` 和 Windows/macOS/Android
+真实构建矩阵仍未完成。审阅路由为 `zh-code-reviewer`，本阶段执行同会话领域
+自查；未提交、未进行独立合并审阅或 GitHub CI。默认门禁继续使用现有模式，
+Issue #120 仍不满足关闭条件。
+
+
+## 2026-10-10 续办：有限 TU/header 候选恢复
+
+当前候选基于 `d1a7d2d36bce4aa819b4494770dc3b55ac83ad65`，位于
+`.worktrees/issue120-tu-recovery` / `codex/issue120-tu-recovery`。
+从旧 `issue120-tu-context` 原样保留导出器和 TU/header 的 tracked WIP，
+未清理旧工作树、旧证据或其他分支。上两节的日志属于旧开发验证，尤其旧
+未绑定 base/head 的 profile 不能作为本候选的最终门禁。
+
+本阶段接受范围是 Make 求值的真实对象编译参数导出，以及显式配置下的
+有限头文件包含上下文。没有改默认验证入口，没有删除方案 2 模式或旧适配，
+没有反向迁移 trunk 生产代码，也没有引入依赖、后台服务或持久缓存。
+基线 Makefile 的实际对象 recipe、utility/tiledef/Catch2 专属变量及
+C++14/自定义 Catch2 main 分支与导出目标一并核查；跨目标参数仍须通过
+现有 recipe 比对回归复证，不能凭补丁适用或历史输出推断通过。
+
+旧 `mpr.h` 缺口的最小修复位于 `parse_preprocessed_cpp`。tree-sitter 将
+合法 deleted free function 误解析为 initialized function declaration
+和缺 operand 的 delete expression。适配只接受单个具名函数声明的精确
+`= delete;` 形状，等长置空 initializer，继续解析其签名、参数、终止分号及
+相邻代码。成员 deleted function 保持原生解析能力；本适配范围内的非法
+delete 操作数、缺分号和错误签名继续阻断，不使用节点/文件 ERROR 白名单。
+这不保证原生 parser 拒绝所有其他声明形式的非法操作数。现有测试文件
+扩展了源位置/字节边界正反例和三个真实 CLI 的头文件上下文回归，保留
+varargs、concat、lifetime 风险以及准确的头文件/TU/调用行身份。
+
+独立审阅的仅 `.cc` 输入负例发现：varargs/concat 未检查所含头文件中的
+同文件 `#line`。现将所有实际 include frame 的源指令检查覆盖 TU-only 和
+header 两种请求；新增三个 CLI 对该头文件路径的失败回归。旧候选与负例
+证据保留，未经实际测试不将新候选宣称通过。
+
+源码 `#line` 仍 fail-closed。后续必须区分物理文件/行与 compiler presumed
+file/line，并验证 generated input 和 marker 的进入、返回及伪造边界，
+不能直接把 presumed linemarker 当成物理调用位置。本阶段不实现该映射。
+其他 TU 的完整语义、索引输入的完整语法验证、完整 Windows/macOS/Android
+ABI/API/debug 矩阵及全范围运行成本仍未完成；explicit 子集成功不意味着
+整个 Issue #120 完成，不能切换默认门禁或关闭 Issue。
+
+当前仅完成轻量 AST 探针与 `git diff --check`；未运行 Make 构建、重 Python
+套件或完整 profile。集中验证按现有隔离入口执行以下 focused 回归，再对
+最终提交运行匹配的 bound code profile；结果需由本轮实际日志补充：
+
+```bash
+bash .claude/scripts/run_isolated.sh python3 .claude/scripts/tests/test_preprocessor_patterns.py
+bash .claude/scripts/run_isolated.sh python3 .claude/scripts/tests/test_scan_i18n_lifetime.py
+bash .claude/scripts/run_isolated.sh python3 .claude/scripts/tests/test_scanner_completeness.py
+```
+
+真实核心头文件复验需先按现有构建流程准备依赖/生成头，再使用当前
+console DB 的 `macro.cc coord.cc perlin.cc database.cc`，显式请求
+`cmd-keys.h coord.h perlin.h database.h mpr.h`。这能核对旧 mpr 缺口；
+未准备依赖或未覆盖全部上下文时仍应退出 2，不把缺输入视作通过。

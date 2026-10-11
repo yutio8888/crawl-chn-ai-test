@@ -115,6 +115,7 @@ class ParsedFile:
     path: str
     source: bytes
     tree: object
+    preprocessed: object = None
 
     @property
     def root(self):
@@ -733,12 +734,21 @@ def _source_text(source_node, source: bytes) -> str:
 
 def _make_finding(rule: str, risk: str, pf: ParsedFile, node, storage: str,
                   sink_type: str, field_path: str, source_expr: str,
-                  message: str) -> dict:
+                  message: str) -> Optional[dict]:
     line, column = _line_column(node)
+    origin = pf.path
+    if pf.preprocessed is not None:
+        expression = _source_text(node, pf.source)
+        location = pf.preprocessed.finding_location(
+            line - 1, line - 1 + expression.count("\n"), pf.path)
+        if location is None:
+            return None
+        origin, line = location
+        column = 1
     return {
         "rule": rule,
         "risk": risk,
-        "file": pf.path,
+        "file": origin,
         "line": line,
         "column": column,
         "storage": storage,
@@ -1035,7 +1045,7 @@ def _deduplicate(findings: Iterable[dict]) -> List[dict]:
     for finding in findings:
         key = (finding["rule"], finding["file"], finding["line"],
                finding["column"], finding["storage"], finding["field_path"],
-               finding.get("configuration"))
+               finding.get("configuration"), finding.get("translation_unit"))
         by_key.setdefault(key, finding)
     return sorted(by_key.values(), key=lambda f: (
         os.path.normcase(f["file"]), f["line"], f["column"], f["rule"],
@@ -1478,7 +1488,7 @@ def _lexical_source_fact(source: str, masked: str, absolute: int) -> SourceFact:
 def _scan_large_lexical(path: str, index: Index,
                         validate: bool = True,
                         source: Optional[str] = None,
-                        masked: Optional[str] = None) -> List[dict]:
+                        masked: Optional[str] = None, preprocessed=None) -> List[dict]:
     if source is None:
         source = open(path, "r", encoding="utf-8", errors="replace").read()
     if masked is None:
@@ -1490,7 +1500,7 @@ def _scan_large_lexical(path: str, index: Index,
     findings = []
     function_ranges = _function_ranges(masked)
     parenthesis_depths = _parenthesis_depth_index(masked)
-    fake = ParsedFile(os.path.abspath(path), source.encode(), None)
+    fake = ParsedFile(os.path.abspath(path), source.encode(), None, preprocessed)
     aggregate_ranges: List[Tuple[int, int, Set[str], Set[str]]] = []
     for aggregate in re.finditer(
             r"\b(?:struct|class|union)\s+([A-Za-z_]\w*)[^;{]*\{", masked):
@@ -1536,10 +1546,17 @@ def _scan_large_lexical(path: str, index: Index,
             continue
         absolute = declaration.start("assign") + call.start()
         local = _inside_lexical_function(declaration.start(), function_ranges)
-        if local and not declaration.group("static"):
+        function_opening = max((opening for opening, closing in function_ranges
+                                if opening < declaration.start() < closing), default=-1)
+        member = any(opening > function_opening and opening < declaration.start() < closing
+                     for opening, closing, _, _ in aggregate_ranges)
+        if local and not member and not declaration.group("static"):
             continue
         fact = _lexical_source_fact(source, masked, absolute)
-        if local:
+        if member:
+            rule, risk, storage = "LIFE001", "HIGH", "member"
+            message = "borrowed translation stored in a raw member initializer"
+        elif local:
             rule, risk, storage = "LIFE001", "HIGH", "function-static"
             message = "borrowed translation stored in static raw storage"
         else:
@@ -1809,7 +1826,7 @@ def _scan_large_lexical(path: str, index: Index,
                 "LIFE001", "HIGH", fake, fact, "function-static", "container",
                 f"[].{fields[field_index].name}", fact.text,
                 "borrowed translation stored in static raw storage"))
-    return findings
+    return [finding for finding in findings if finding is not None]
 
 
 def _split_files(values: Optional[Sequence[str]]) -> List[str]:
@@ -1850,7 +1867,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser_cli.add_argument("--require-parser", action="store_true",
                             help="compatibility flag; parser failures always exit 2")
     parser_cli.add_argument("--compile-commands", action="append", default=[], metavar="DB",
-                            help="Supplement raw findings with expanded target TUs; helper definitions expand only when listed in that DB")
+                            help="Supplement raw findings with real TU/header inclusion contexts and this TU's expanded header helpers")
     args = parser_cli.parse_args(argv)
 
     if not TREE_SITTER_AVAILABLE:
@@ -1914,12 +1931,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                     as source_stream:
                 source_text = source_stream.read()
             masked, lexical_error = _lex_cpp(source_text)
-            if production_root:
+            if production_root and not args.compile_commands:
                 prerequisite = _production_lexical_prerequisite(
                     os.path.relpath(target, source_arg), lexical_error)
                 if prerequisite:
                     lexical_prerequisites.append(prerequisite)
-            elif lexical_error:
+            elif lexical_error and not args.compile_commands:
                 raise ValueError(
                     f"lexical integrity error in target {target}: "
                     f"{lexical_error}")
@@ -1937,27 +1954,29 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 str(path): database.source(path).source.decode("utf-8")
                 for path in database.commands
             }
-            # DB keys are physical paths. A source alias must not add a second
-            # raw helper definition beside this configuration's expanded one.
-            configured_paths = list(dict.fromkeys(
-                os.path.realpath(path) for path in [*index_paths, *expanded_sources]))
-            configured_index = _build_lexical_index(configured_paths, expanded_sources)
             cpp_parser = _Parser(_Language(_tscpp.language()))
-            for target in targets:
-                expanded = database.source(target)
+            for expanded in database.contexts(targets, include_index=True):
+                target = expanded.translation_unit
                 parse_preprocessed_cpp(cpp_parser, expanded.source,
                                        preprocessed=expanded, filepath=target)
+                # Only this TU's expanded headers supply its inline helper
+                # facts. Another TU can include the same header with different
+                # local defines; merging those bodies would lose that context.
+                # Unconfigured lexical definitions remain raw-source evidence,
+                # never masquerading as facts verified for this configuration.
+                context_sources = {**expanded_sources,
+                                   target: expanded.index_source.decode("utf-8")}
+                configured_index = _build_lexical_index(list(context_sources), context_sources)
                 source_text = expanded.source.decode("utf-8")
                 masked, lexical_error = _lex_cpp(source_text)
                 if lexical_error:
                     raise ValueError(f"preprocessed lexical integrity error in {target}: {lexical_error}")
                 additions = _scan_large_lexical(
                     target, configured_index, validate=False,
-                    source=source_text, masked=masked)
+                    source=source_text, masked=masked, preprocessed=expanded)
                 for finding in additions:
-                    finding["line"] = expanded.original_line(finding["line"] - 1)
-                    finding["column"] = 1
                     finding["configuration"] = str(database.path)
+                    finding["translation_unit"] = target
                 pre_findings.extend(additions)
     except Exception as exc:
         print(f"ERROR: cannot initialize/build tree-sitter index: {exc}", file=sys.stderr)

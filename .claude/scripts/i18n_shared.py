@@ -1056,7 +1056,7 @@ def read_utf8(path: str) -> str:
 
 @dataclass(frozen=True)
 class CppPreprocessedSource:
-    """One target's expanded text, mapped to original physical source lines.
+    """Requested text and its enclosing TU, mapped to physical source lines.
 
     Columns in the expanded text are not columns in the original file. Macro
     findings point to the invocation line; no spelling-column claim is made.
@@ -1065,6 +1065,33 @@ class CppPreprocessedSource:
     source: bytes
     original_lines: tuple[int, ...]
     diagnostics: str = ""
+    original_files: tuple[str, ...] = ()
+    translation_unit: str = ""
+    covered_files: tuple[str, ...] = ()
+    index_source: bytes = b""
+
+    def original_file(self, expanded_row: int, fallback: str = "") -> str:
+        if self.original_files:
+            if 0 <= expanded_row < len(self.original_files):
+                return self.original_files[expanded_row]
+            if expanded_row == len(self.original_files):
+                return self.original_files[-1]
+            raise ValueError(f"invalid preprocessed source row: {expanded_row}")
+        return fallback or self.translation_unit
+
+    def finding_location(self, start_row: int, end_row: int, fallback: str):
+        """Locate a finding in requested text, including include fragments."""
+        if not self.covered_files:
+            return self.original_file(start_row, fallback), self.original_line(start_row)
+        for row in range(start_row, min(end_row + 1, len(self.original_lines))):
+            origin = self.original_file(row, fallback)
+            if origin in self.covered_files and self._nonempty_rows[row]:
+                return origin, self.original_line(row)
+        return None
+
+    @functools.cached_property
+    def _nonempty_rows(self):
+        return tuple(bool(line.strip()) for line in self.source.split(b"\n"))
 
     def original_line(self, expanded_row: int) -> int:
         if 0 <= expanded_row < len(self.original_lines):
@@ -1093,7 +1120,8 @@ def _reject_source_line_directives(source: bytes) -> None:
 
 
 def _extract_cpp_preprocessed(path: Path, output: bytes,
-                              diagnostics: str = "", directory=None) -> CppPreprocessedSource:
+                              diagnostics: str = "", directory=None, *,
+                              targets=None, include_index=False) -> CppPreprocessedSource:
     """Read clang -E markers without treating raw-string contents as markers."""
     from scan_i18n import CPP_LITERAL_RE
 
@@ -1106,7 +1134,13 @@ def _extract_cpp_preprocessed(path: Path, output: bytes,
     previous = 0
     current_path, current_line = None, None
     target_seen = False
-    pieces, origins = [], []
+    requested = ({str(Path(target).resolve()) for target in targets}
+                 if targets is not None else {str(path)})
+    # Each inclusion gets its own frame: a header may occur more than once,
+    # under different macro definitions or enclosing classes in the same TU.
+    frame_paths, parents, system_frames = [str(path)], [-1], [False]
+    stack = [0]
+    records = []
 
     def inside_literal(position):
         before = bisect.bisect_right(literal_starts, position) - 1
@@ -1117,9 +1151,8 @@ def _extract_cpp_preprocessed(path: Path, output: bytes,
         # Only LF is a preprocessing output line separator. str.splitlines()
         # would also split legitimate form feeds and Unicode literal content.
         for line in re.finditer(r"[^\n]*\n|[^\n]+$", chunk):
-            if current_path == str(path):
-                pieces.append(line[0])
-                origins.append(current_line)
+            if current_line is not None:
+                records.append((line[0], current_line, stack[-1]))
             # Clang emits multiline raw tokens, then separately pads to the
             # next logical line. Their internal LF bytes must not count twice.
             if current_line is not None and not inside_literal(begin + line.end() - 1):
@@ -1139,6 +1172,21 @@ def _extract_cpp_preprocessed(path: Path, output: bytes,
         if (current_path is not None and next_path != current_path
                 and not flags.intersection({1, 2})):
             raise ValueError("unsupported filename change in preprocessor linemarker")
+        if 1 in flags and 2 in flags:
+            raise ValueError("ambiguous preprocessor include marker")
+        if 1 in flags:
+            frame_paths.append(next_path)
+            parents.append(stack[-1])
+            system_frames.append(3 in flags)
+            stack.append(len(frame_paths) - 1)
+        elif 2 in flags:
+            if len(stack) == 1 or frame_paths[stack[-2]] != next_path:
+                raise ValueError("unbalanced preprocessor include return")
+            stack.pop()
+        elif current_path is None and next_path != str(path):
+            raise ValueError("preprocessor did not begin at target provenance")
+        if 3 in flags:
+            system_frames[stack[-1]] = True
         current_line = int(marker[1])
         current_path = next_path
         target_seen |= current_path == str(path)
@@ -1148,12 +1196,38 @@ def _extract_cpp_preprocessed(path: Path, output: bytes,
     append(text[previous:], previous)
     if not target_seen:
         raise ValueError(f"preprocessor did not emit target provenance: {path}")
-    return CppPreprocessedSource("".join(pieces).encode("utf-8"),
-                                 tuple(origins), diagnostics)
+    # A source-authored same-file #line can otherwise forge physical rows.
+    # Check every real input for both TU-only and header requests, including
+    # excluded descendants that could forge an include return. #line remains
+    # fail-closed until physical/presumed provenance is implemented.
+    for name in dict.fromkeys(frame_paths):
+        if not (name.startswith("<") and name.endswith(">")):
+            try:
+                _reject_source_line_directives(Path(name).read_bytes())
+            except ValueError as exc:
+                raise ValueError(f"{name}: {exc}") from exc
+    needed = {i for i, name in enumerate(frame_paths) if name in requested}
+    covered = tuple(sorted(requested.intersection(frame_paths)))
+    for frame in tuple(needed):
+        while parents[frame] >= 0:
+            frame = parents[frame]
+            needed.add(frame)
+    retained = [(text, line, frame_paths[frame]) for text, line, frame in records
+                if frame in needed]
+    index_source = b""
+    if include_index:
+        index_source = "".join(text for text, _, frame in records
+                               if not system_frames[frame]
+                               and not frame_paths[frame].startswith("<")).encode("utf-8")
+    return CppPreprocessedSource(
+        "".join(text for text, _, _ in retained).encode("utf-8"),
+        tuple(line for _, line, _ in retained), diagnostics,
+        tuple(name for _, _, name in retained), str(path), covered, index_source)
 
 
 def preprocess_cpp(filepath, compiler: str, flags=(), *, directory=None,
-                   source_argument=None, timeout=30) -> CppPreprocessedSource:
+                   source_argument=None, timeout=30, targets=None,
+                   include_index=False) -> CppPreprocessedSource:
     """Expand one real translation-unit configuration; required failures block.
 
     The caller supplies build-derived compiler flags. This helper does not
@@ -1175,7 +1249,8 @@ def preprocess_cpp(filepath, compiler: str, flags=(), *, directory=None,
     if result.returncode:
         raise ValueError(
             f"preprocessor failed for {path} (exit {result.returncode}): {diagnostics.strip()}")
-    return _extract_cpp_preprocessed(path, result.stdout, diagnostics, directory)
+    return _extract_cpp_preprocessed(path, result.stdout, diagnostics, directory,
+                                     targets=targets, include_index=include_index)
 
 
 class CppCompilationDatabase:
@@ -1278,9 +1353,47 @@ class CppCompilationDatabase:
                 print(self._sources[target].diagnostics, end="", file=sys.stderr)
         return self._sources[target]
 
+    def contexts(self, filenames, *, include_index=False):
+        """Yield requested files in every containing TU of this configuration.
+
+        A header request inspects all DB commands, once per TU for the whole
+        request set. Output is streamed, not cached per header/TU pair. Only
+        requested files and their actual include ancestors enter the target
+        parser; other headers can supply expanded lifetime helper facts.
+        """
+        requested = {Path(name).resolve(strict=True) for name in filenames}
+        headers = {path for path in requested if path.suffix in {".h", ".hh", ".hpp", ".hxx"}}
+        missing = requested - headers - self.commands.keys()
+        if missing:
+            raise ValueError(f"missing compile configuration in {self.path}: {sorted(map(str, missing))}")
+        candidates = self.commands if headers else sorted(requested)
+        covered = set()
+        for target in candidates:
+            if headers or include_index:
+                compiler, flags, directory, source_argument = self.commands[target]
+                expanded = preprocess_cpp(
+                    target, compiler, flags, directory=directory,
+                    source_argument=source_argument, targets=requested,
+                    include_index=include_index)
+                if expanded.diagnostics:
+                    print(expanded.diagnostics, end="", file=sys.stderr)
+            else:
+                expanded = self.source(target)
+            covered.update(expanded.covered_files)
+            if expanded.covered_files:
+                yield expanded
+        missing = set(map(str, requested)) - covered
+        if missing:
+            raise ValueError(f"no compiled inclusion context in {self.path}: {sorted(missing)}")
+
 
 def parse_preprocessed_cpp(parser, source: bytes, *, preprocessed=None, filepath=None):
-    """Parse expanded C++; lower va_arg types and diagnostic-only pragmas.
+    """Parse expanded C++; adapt verified tree-sitter grammar gaps.
+
+    Deleted free functions are misread as initialized declarations. Validate
+    their exact '= delete;' shape, then blank only the initializer, leaving
+    the signature and terminating semicolon to the parser. This does not
+    suppress ERROR nodes or validate C++ types.
 
     __builtin_va_arg remains a compiler intrinsic after real preprocessing.
     Its second operand is a type, which tree-sitter's ordinary call grammar
@@ -1296,7 +1409,10 @@ def parse_preprocessed_cpp(parser, source: bytes, *, preprocessed=None, filepath
     def fail(message, node):
         if preprocessed is not None:
             line = preprocessed.original_line(node.start_point[0])
-            message = f"{filepath}:{line}: {message}"
+            origin = preprocessed.original_file(node.start_point[0], str(filepath))
+            message = f"{origin}:{line}: {message}"
+            if preprocessed.translation_unit and preprocessed.translation_unit != origin:
+                message += f" (translation unit: {preprocessed.translation_unit})"
         raise ValueError(message)
 
     tree = parser.parse(source)
@@ -1305,6 +1421,28 @@ def parse_preprocessed_cpp(parser, source: bytes, *, preprocessed=None, filepath
     stack = [tree.root_node]
     while stack:
         node = stack.pop()
+        if node.type == "init_declarator":
+            declarator = node.child_by_field_name("declarator")
+            value = node.child_by_field_name("value")
+            if (declarator is not None and declarator.type == "function_declarator"
+                    and value is not None and value.type == "delete_expression"):
+                name = declarator.child_by_field_name("declarator")
+                declaration = node.parent
+                suffix = source[declarator.end_byte:node.end_byte]
+                if (name is None or name.type not in {"identifier", "qualified_identifier"}
+                        or declarator.has_error or declaration.type != "declaration"
+                        or declaration.child_by_field_name("declarator") != node
+                        or sum(child.type == "init_declarator"
+                               for child in declaration.named_children) != 1
+                        or not declaration.text.rstrip().endswith(b";")
+                        or not re.fullmatch(rb"\s*=\s*delete", suffix)):
+                    fail("unsupported deleted function declaration", node)
+                # Preserve offsets and line boundaries, including multiline
+                # signatures and '= delete' clauses. Missing semicolons and
+                # malformed surrounding code remain strict parser failures.
+                normalized[declarator.end_byte:node.end_byte] = bytes(
+                    10 if byte == 10 else 32 for byte in suffix)
+                changed = True
         if node.type == "preproc_call" and re.fullmatch(
                 rb"[ \t]*#pragma[ \t]+(?:clang|GCC)[ \t]+diagnostic[ \t]+"
                 rb"(?:push|pop|ignored[ \t]+\"-W[A-Za-z0-9_-]+\")"
