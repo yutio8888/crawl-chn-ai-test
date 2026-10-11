@@ -126,6 +126,35 @@ class MoveI18nAuditTest(unittest.TestCase):
             "move.through-obstacle: unclassified reachable verbs: burrow",
             result.stderr)
 
+    def test_bare_and_actor_specific_verbs_do_not_cross_contexts(self):
+        for context, cpp_context in (("move.bare", "bare"),
+                                     ("move.onto-actor", "onto_actor")):
+            with self.subTest(context=context):
+                self.contexts["move.bare"] = []
+                self.contexts["move.onto-actor"] = []
+                self.contexts[context] = ["climb up"]
+                self.write_manifest()
+                self.write_source_txt()
+                (self.source / "new-move.cc").write_text(
+                    'void f() { translated_move_phrase("climb up", '
+                    f'move_phrase_context::{cpp_context}); }}\n',
+                    encoding="utf-8")
+                result = self.run_audit()
+                self.assertEqual(result.returncode, 0, result.stderr)
+                # Removing only the actual context classification still blocks,
+                # without inventing reachability in the other context.
+                self.contexts[context] = []
+                self.write_manifest()
+                result = self.run_audit()
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(
+                    f"{context}: unclassified reachable verbs: climb up",
+                    result.stderr)
+                other = "move.onto-actor" if context == "move.bare" else "move.bare"
+                self.assertNotIn(
+                    f"{other}: unclassified reachable verbs: climb up",
+                    result.stderr)
+
     def test_non_verb_literal_argument_is_not_inventory(self):
         (self.source / "new-move.cc").write_text(
             'void f() { check_moveto_terrain(destination, move_verb, '

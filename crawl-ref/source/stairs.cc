@@ -1383,8 +1383,8 @@ static void _update_level_state()
             env.level_state |= LSTATE_SLIMY_WALL;
 
         if (is_icecovered(*ri))
-#if TAG_MAJOR_VERSION == 34
         {
+#if TAG_MAJOR_VERSION == 34
             // Buggy versions of Frozen Ramparts didn't properly clear
             // FPROP_ICY from walls in some cases, so we detect invalid walls
             // and remove the flag.
@@ -1392,14 +1392,14 @@ static void _update_level_state()
                 && ramparts_pos.distance_from(*ri) <= 3
                 && cell_see_cell(*ri, ramparts_pos, LOS_NO_TRANS))
             {
-#endif
-            env.level_state |= LSTATE_ICY_WALL;
-#if TAG_MAJOR_VERSION == 34
+                env.level_state |= LSTATE_ICY_WALL;
             }
             else
                 env.pgrid(*ri) &= ~FPROP_ICY;
-        }
+#else
+            env.level_state |= LSTATE_ICY_WALL;
 #endif
+        }
     }
 
     env.orb_pos = coord_def();

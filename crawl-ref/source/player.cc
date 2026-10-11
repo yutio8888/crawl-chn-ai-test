@@ -4432,11 +4432,13 @@ int get_real_mp(bool include_items)
 /// Does the player currently regenerate hp? Used for resting.
 bool player_regenerates_hp()
 {
-    return !regeneration_is_inhibited()
+    if (regeneration_is_inhibited())
+        return false;
 #if TAG_MAJOR_VERSION == 34
-    && !you.has_mutation(MUT_NO_REGENERATION)
+    if (you.has_mutation(MUT_NO_REGENERATION))
+        return false;
 #endif
-    ;
+    return true;
 }
 
 bool player_regenerates_mp()
@@ -4526,11 +4528,11 @@ void contaminate_player(int change, bool controlled, bool msg)
 
     if (change > 0)
     {
-        const int mul = you.has_mutation(MUT_CONTAMINATION_SUSCEPTIBLE)
+        bool amplified = you.has_mutation(MUT_CONTAMINATION_SUSCEPTIBLE);
 #if TAG_MAJOR_VERSION == 34
-                            || you.unrand_equipped(UNRAND_ETHERIC_CAGE)
+        amplified = amplified || you.unrand_equipped(UNRAND_ETHERIC_CAGE);
 #endif
-                            ? 2 : 1;
+        const int mul = amplified ? 2 : 1;
 
         change *= mul;
     }
@@ -4888,11 +4890,11 @@ int poison_survival()
     int regen_beats_poison;
     if (rr <= (int) min_poison_rate)
     {
-        regen_beats_poison =
 #if TAG_MAJOR_VERSION == 34
-         dd ? 25000 :
+        regen_beats_poison = dd ? 25000 : 0;
+#else
+        regen_beats_poison = 0;
 #endif
-              0;
     }
     else
     {
@@ -4995,15 +4997,15 @@ bool sticky_flame_player(int intensity, int duration, string source, string sour
 
     if (you.duration[DUR_STICKY_FLAME] > 0)
     {
-        mpr(intense ? T_("You are covered in even more intense liquid fire!")
-                    : T_("You are covered in even more liquid fire!"),
-            MSGCH_WARN);
+        mprf(MSGCH_WARN, "%s",
+             intense ? T_("You are covered in even more intense liquid fire!")
+                     : T_("You are covered in even more liquid fire!"));
     }
     else
     {
-        mpr(intense ? T_("You are covered in intense liquid fire! Move or burn!")
-                    : T_("You are covered in liquid fire! Move or burn!"),
-            MSGCH_WARN);
+        mprf(MSGCH_WARN, "%s",
+             intense ? T_("You are covered in intense liquid fire! Move or burn!")
+                     : T_("You are covered in liquid fire! Move or burn!"));
     }
 
     you.increase_duration(DUR_STICKY_FLAME, duration, 35);
@@ -7228,13 +7230,17 @@ bool player::res_torment() const
     if (you.get_mutation_level(MUT_TORMENT_RESISTANCE) >= 2)
         return true;
 
-    return get_form()->res_neg() == 3
-           || you.petrified()
-           || bool(you.holiness() & MH_PLANT)
+    if (get_form()->res_neg() == 3
+        || you.petrified()
+        || bool(you.holiness() & MH_PLANT))
+    {
+        return true;
+    }
 #if TAG_MAJOR_VERSION == 34
-           || you.unrand_equipped(UNRAND_ETERNAL_TORMENT)
+    return you.unrand_equipped(UNRAND_ETERNAL_TORMENT);
+#else
+    return false;
 #endif
-           ;
 }
 
 bool player::res_polar_vortex() const

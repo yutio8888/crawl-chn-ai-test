@@ -206,10 +206,10 @@ def discover(source: Path) -> dict[str, set[str]]:
             | fixed_by_call["check_move_over"])
     over = full | terrain
     discovered = {
-        "move.bare": cblink,
+        "move.bare": set(cblink),
         "move.enter-area": enter,
         "move.onto-surface": onto,
-        "move.onto-actor": cblink,
+        "move.onto-actor": set(cblink),
         "move.through-obstacle": dynamic,
         "move.toward-target": dynamic & {"stride", "roll", "rampage"},
         "move.over-terrain": over,
