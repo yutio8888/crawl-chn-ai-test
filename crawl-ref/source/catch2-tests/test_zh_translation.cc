@@ -27,6 +27,7 @@
 #include "hiscores.h"
 #include "item-status-flag-type.h"
 #include "item-name.h"
+#include "items.h"
 #include "item-prop.h"
 #include "item-prop-enum.h"
 #include "jobs.h"
@@ -80,6 +81,7 @@
 #include "xom.h"
 
 #include <cstring>
+#include <cstdlib>
 #include <fstream>
 #include <iterator>
 #include <queue>
@@ -6074,3 +6076,274 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         }
     }
 }
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "issue167: captured killers and weapons stay canonical in xlog",
+                 "[zh-translation][issue167][hiscores]")
+{
+    init_monsters();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> need_save(crawl_state.need_save, false);
+    no_notes suppress_notes;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool dead : {false, true})
+    for (bool armed : {false, true})
+    for (enchant_type modifier : {ENCH_NONE, ENCH_SHAPESHIFTER,
+                                  ENCH_GLOWING_SHAPESHIFTER})
+    for (bool custom_name : {false, true})
+    {
+        CAPTURE(language, dead, armed, modifier, custom_name);
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.your_name = "Issue167";
+        you.birth_time = 1599999900;
+        you.species = SP_HUMAN;
+        you.char_class = JOB_MONK;
+        you.chr_class_name = get_job_name(you.char_class);
+        you.hp = dead ? 0 : 20;
+        you.hp_max = 20;
+        scoped_monspeak_world world;
+        monster *mons = world.place(MONS_ORC);
+        REQUIRE(mons != nullptr);
+        if (custom_name)
+            mons->mname = "自定名字";
+        // Direct test fixture enchantments avoid unrelated gameplay effects.
+        const auto enchant = [&](enchant_type type) {
+            mons->enchantments[type] = mon_enchant(type);
+            mons->ench_cache.set(type);
+        };
+        if (modifier != ENCH_NONE)
+        {
+            enchant(modifier);
+            enchant(ENCH_PHANTOM_MIRROR);
+        }
+        if (armed)
+            enchant(ENCH_ARMED);
+        const char *modifier_key = modifier == ENCH_NONE ? ""
+            : modifier == ENCH_SHAPESHIFTER ? " (shapeshifter)"
+                                           : " (glowing shapeshifter)";
+        const char *illusion_key = modifier == ENCH_NONE ? "" : " (illusionary)";
+        const int slot = MAX_ITEMS - 1;
+        unwind_var<item_def> restore_item(env.item[slot]);
+        item_def &weapon = env.item[slot];
+        weapon = item_def();
+        weapon.base_type = OBJ_WEAPONS;
+        weapon.sub_type = WPN_DAGGER;
+        weapon.quantity = 1;
+        weapon.plus = 2;
+        mons->inv[MSLOT_WEAPON] = slot;
+        string expected_source, expected_weapon;
+        {
+            EnTranslationFixture english;
+            expected_source = mons->full_name(DESC_A)
+                              + modifier_key + illusion_key;
+            item_def identified = weapon;
+            if (dead)
+                identified.flags |= ISFLAG_IDENTIFIED;
+            expected_weapon = identified.name(DESC_A)
+                              + (armed ? " (from an undying armoury)" : "");
+        }
+        const int hp = you.hp;
+        const int turns = you.num_turns;
+        const int monster_hp = mons->hit_points;
+        scorefile_entry entry;
+        entry.init_death_cause(7, mons->mid, KILLED_BY_MONSTER, nullptr, nullptr);
+        CHECK(Options.language == language);
+        CHECK(you.hp == hp);
+        CHECK(you.num_turns == turns);
+        CHECK(mons->hit_points == monster_hp);
+        CHECK(weapon.is_identified() == dead);
+        CHECK(mons->inv[MSLOT_WEAPON] == slot);
+        const string display_source = mons->full_name(DESC_A)
+            + T_(modifier_key) + T_(illusion_key);
+        const string display_weapon = weapon.name(DESC_A)
+            + (armed ? T_(" (from an undying armoury)") : "");
+        entry.init(1600000000);
+        entry.raw_string(); // real xlog field consumer
+        CHECK(entry.get_fields().str_field("killer") == expected_source);
+        CHECK(entry.get_fields().str_field("kaux") == expected_weapon);
+        CHECK(entry.get_fields().int_field("dam") == 7);
+        i18n_cache_clear();
+        const string display = entry.death_description(scorefile_entry::DDV_VERBOSE);
+        for (scorefile_entry::death_desc_verbosity verbosity : {
+                 scorefile_entry::DDV_TERSE, scorefile_entry::DDV_ONELINE,
+                 scorefile_entry::DDV_NORMAL, scorefile_entry::DDV_VERBOSE,
+                 scorefile_entry::DDV_LOGVERBOSE})
+        {
+            const string rendered = entry.death_description(verbosity);
+            CHECK(rendered.find(display_source) != string::npos);
+            if (verbosity == scorefile_entry::DDV_TERSE
+                || verbosity == scorefile_entry::DDV_VERBOSE
+                || verbosity == scorefile_entry::DDV_LOGVERBOSE)
+            {
+                const string weapon_fragment = verbosity == scorefile_entry::DDV_TERSE
+                    && language == lang_t::EN
+                    ? (starts_with(display_weapon, "a ") ? display_weapon.substr(2)
+                       : starts_with(display_weapon, "an ") ? display_weapon.substr(3)
+                                                           : display_weapon) : display_weapon;
+                CHECK(rendered.find(weapon_fragment) != string::npos);
+            }
+        }
+        if (language == lang_t::ZH)
+        {
+            CHECK(contains_non_ascii(display));
+            CHECK(display.find("dagger") == string::npos);
+            CHECK(display.find("shapeshifter") == string::npos);
+            CHECK(display.find("illusionary") == string::npos);
+        }
+        // Copying an entry preserves owning display snapshots after cache clear.
+        scorefile_entry copied(entry);
+        CHECK(copied.death_description(scorefile_entry::DDV_VERBOSE) == display);
+        {
+            EnTranslationFixture english;
+            const string english_display = entry.death_description(scorefile_entry::DDV_VERBOSE);
+            CHECK(english_display.find(expected_source) != string::npos);
+            CHECK(english_display.find(expected_weapon) != string::npos);
+            entry.raw_string();
+            CHECK(entry.get_fields().str_field("killer") == expected_source);
+            CHECK(entry.get_fields().str_field("kaux") == expected_weapon);
+        }
+        CHECK(Options.language == language);
+        entry.raw_string();
+        CHECK(entry.get_fields().str_field("killer") == expected_source);
+        CHECK(entry.get_fields().str_field("kaux") == expected_weapon);
+        entry.init_death_cause(0, MID_NOBODY, KILLED_BY_QUITTING, nullptr, nullptr);
+        CHECK(entry.death_description(scorefile_entry::DDV_VERBOSE)
+              .find(display_source) == string::npos);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "issue168: collectible milestone producers preserve full English sentences",
+                 "[zh-translation][issue168][milestone]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> need_save(crawl_state.need_save, false);
+    you = player();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (object_class_type type : {OBJ_RUNES, OBJ_GEMS})
+    {
+        CAPTURE(language, type);
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        item_def item;
+        item.base_type = type;
+        item.sub_type = type == OBJ_RUNES ? int(RUNE_SWAMP) : int(GEM_DUNGEON);
+        item.quantity = 1;
+        item.flags |= ISFLAG_IDENTIFIED;
+        string expected;
+        {
+            EnTranslationFixture english;
+            expected = "found " + item.name(DESC_A) + ".";
+        }
+        const auto flags = item.flags;
+        const auto runes = you.runes;
+        const auto gems = you.gems_found;
+        const int turns = you.num_turns;
+        const bool notes = notes_are_active();
+        const string display_name = item.name(DESC_A);
+        const string protocol = collectible_milestone(item);
+        CHECK(protocol == expected);
+        CHECK(Options.language == language);
+        i18n_cache_clear();
+        CHECK(protocol == expected);
+        CHECK(collectible_milestone(item) == expected);
+        // Exercise the normal consumer with saving disabled: the macro writer
+        // must retain its gate, without fabricating a milestone or identity.
+        milestone_check(item);
+        CHECK(item.flags == flags);
+        CHECK(item.quantity == 1);
+        for (unsigned i = 0; i < NUM_RUNE_TYPES; ++i)
+            CHECK(you.runes[i] == runes[i]);
+        for (unsigned i = 0; i < NUM_GEM_TYPES; ++i)
+            CHECK(you.gems_found[i] == gems[i]);
+        CHECK(you.num_turns == turns);
+        CHECK(notes_are_active() == notes);
+        CHECK(item.name(DESC_A) == display_name);
+        if (language == lang_t::ZH)
+        {
+            CHECK(contains_non_ascii(display_name));
+            CHECK_FALSE(contains_non_ascii(protocol));
+        }
+#if defined(USE_TILE_WEB) || defined(DGL_MILESTONES)
+        CHECK(you.props["last_milestone_turn"].get_int() == -1);
+        CHECK(you.props["last_milestone"].get_string().empty());
+        CHECK(you.props["last_milestone_type"].get_string().empty());
+#endif
+    }
+}
+
+
+#if defined(DGL_MILESTONES) && defined(UNIX)
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "issue168: DGL writer consumes collectible English protocol fields",
+                 "[zh-translation][issue168][milestone][dgl]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> need_save(crawl_state.need_save, true);
+    // This is the file-consumer test, not a web transport test.
+    unwind_var<bool> crashed(crawl_state.game_crashed, true);
+    char temporary[] = "/tmp/catch2-issue168-XXXXXX";
+    REQUIRE(mkdtemp(temporary) != nullptr);
+    const string directory = temporary;
+    const string filename = catpath(directory,
+        "milestones" + crawl_state.game_type_qualifier());
+    unwinder cleanup([&]() {
+        unlink_u(filename.c_str());
+        rmdir(directory.c_str());
+    });
+    unwind_var<string> shared_dir(Options.shared_dir, directory);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (object_class_type type : {OBJ_RUNES, OBJ_GEMS})
+    {
+        CAPTURE(language, type);
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.your_name = "Issue168";
+        you.birth_time = 1599999900;
+        you.species = SP_HUMAN;
+        you.char_class = JOB_MONK;
+        you.chr_class_name = get_job_name(you.char_class);
+        you.hp = you.hp_max = 20;
+        scoped_monspeak_world world;
+        REQUIRE_FALSE(crawl_state.game_is_arena());
+        REQUIRE_FALSE(you.wizard);
+        REQUIRE_FALSE(you.explore);
+        REQUIRE_FALSE(you.suppress_wizard);
+        item_def item;
+        item.base_type = type;
+        item.sub_type = type == OBJ_RUNES ? int(RUNE_SWAMP) : int(GEM_DUNGEON);
+        item.quantity = 1;
+        item.flags |= ISFLAG_IDENTIFIED;
+        string expected;
+        {
+            EnTranslationFixture english;
+            expected = "found " + item.name(DESC_A) + ".";
+        }
+        unlink_u(filename.c_str());
+        milestone_check(item);
+        CHECK(Options.language == language);
+        CHECK(you.props["last_milestone"].get_string() == expected);
+        CHECK(you.props["last_milestone_type"].get_string()
+              == (type == OBJ_RUNES ? "rune" : "gem.found"));
+        ifstream file(filename);
+        REQUIRE(file.good());
+        string line;
+        REQUIRE(static_cast<bool>(getline(file, line)));
+        const xlog_fields fields(line);
+        CHECK(fields.str_field("milestone") == expected);
+        CHECK(fields.str_field("type") == (type == OBJ_RUNES ? "rune" : "gem.found"));
+        CHECK(fields.int_field("turn") == you.num_turns);
+        string duplicate;
+        CHECK_FALSE(static_cast<bool>(getline(file, duplicate)));
+        // The real duplicate gate must suppress a second write on this turn.
+        milestone_check(item);
+        ifstream repeated(filename);
+        REQUIRE(static_cast<bool>(getline(repeated, line)));
+        CHECK_FALSE(static_cast<bool>(getline(repeated, duplicate)));
+    }
+}
+#endif

@@ -91,7 +91,11 @@ private:
     mid_t       death_source;       // killer (maybe be MID_NOBODY)
     string      death_source_name;  // overrides death_source
     set<string> death_source_flags; // misc flags about killer
-    string      auxkilldata;        // weapon wielded, spell cast, etc
+    string      auxkilldata;        // canonical weapon, spell, etc for xlog
+    // Owning display snapshots for a live death; never serialized. Legacy
+    // records continue to use the display helper on their English killer.
+    string      death_source_name_zh;
+    string      weapon_name_zh;
     string      indirectkiller;     // the effect or real monster that summoned
     string      killerpath;         // colon-separated intermediate killers
     string      last_banisher;      // the name of the last thing that banished
