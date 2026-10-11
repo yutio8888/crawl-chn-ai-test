@@ -1017,9 +1017,11 @@ static bool _can_generically_use(operation_types oper)
             && you.transform_uncancellable)
         {
             if (you.has_mutation(MUT_NO_JEWELLERY))
+            {
                 mprf(MSGCH_PROMPT, "%s",
                      oper == OPER_PUTON ? T_("You can't wear jewellery.")
                                         : T_("You can't remove jewellery."));
+            }
             else
                 mprf(MSGCH_PROMPT, "%s",
                      oper == OPER_PUTON
