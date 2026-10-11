@@ -33,6 +33,8 @@
 class actor;
 class monster;
 
+void announce_player_kill(const monster& mons, bool exploded, bool destroyed);
+
 #define MONSTER_DIES_LUA_KEY "monster_dies_lua_key"
 
 // Mid of the monster who left this corpse (used to identify apostle corpses)

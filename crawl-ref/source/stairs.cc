@@ -37,6 +37,7 @@
 #include "mon-death.h"
 #include "mon-transit.h" // untag_followers
 #include "movement.h"
+#include "movement-i18n.h"
 #include "mutation.h"
 #include "notes.h"
 #include "orb-type.h"
@@ -210,8 +211,8 @@ static bool _stair_moves_pre(dungeon_feature_type stair)
     return true;
 }
 
-static void _climb_message(dungeon_feature_type stair, bool going_up,
-                           branch_type old_branch)
+void climb_message(dungeon_feature_type stair, bool going_up,
+                   branch_type old_branch)
 {
     if (!is_connected_branch(old_branch))
         return;
@@ -247,9 +248,14 @@ static void _climb_message(dungeon_feature_type stair, bool going_up,
     }
     else if (stair != DNGN_ALTAR_IGNIS)
     {
-        mprf(T_("You %s %s."),
-             you.airborne() ? T_("fly") : T_("climb"),
-             going_up ? T_("up") : T_("down"));
+        // Direction is part of the phrase: translating the verb and direction
+        // separately cannot express Chinese stair movement grammar.
+        const string action = you.airborne()
+            ? (going_up ? translated_move_phrase("fly up", move_phrase_context::bare)
+                        : translated_move_phrase("fly down", move_phrase_context::bare))
+            : (going_up ? translated_move_phrase("climb up", move_phrase_context::bare)
+                        : translated_move_phrase("climb down", move_phrase_context::bare));
+        mprf(T_("You %s."), action.c_str());
     }
 }
 
@@ -984,7 +990,7 @@ void floor_transition(dungeon_feature_type how,
     default:
         // This hits both cases.
         if (!shaft)
-            _climb_message(how, going_up, old_level.branch);
+            climb_message(how, going_up, old_level.branch);
         break;
     }
 
@@ -1377,8 +1383,8 @@ static void _update_level_state()
             env.level_state |= LSTATE_SLIMY_WALL;
 
         if (is_icecovered(*ri))
-#if TAG_MAJOR_VERSION == 34
         {
+#if TAG_MAJOR_VERSION == 34
             // Buggy versions of Frozen Ramparts didn't properly clear
             // FPROP_ICY from walls in some cases, so we detect invalid walls
             // and remove the flag.
@@ -1386,14 +1392,14 @@ static void _update_level_state()
                 && ramparts_pos.distance_from(*ri) <= 3
                 && cell_see_cell(*ri, ramparts_pos, LOS_NO_TRANS))
             {
-#endif
-            env.level_state |= LSTATE_ICY_WALL;
-#if TAG_MAJOR_VERSION == 34
+                env.level_state |= LSTATE_ICY_WALL;
             }
             else
                 env.pgrid(*ri) &= ~FPROP_ICY;
-        }
+#else
+            env.level_state |= LSTATE_ICY_WALL;
 #endif
+        }
     }
 
     env.orb_pos = coord_def();

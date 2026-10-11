@@ -1015,6 +1015,23 @@ static bool _has_transient_muts()
     return false;
 }
 
+string mutation_menu_legend(bool has_future_muts)
+{
+    string extra;
+    // TODO: also handle suppressed fakemuts
+    if (_has_suppressed_muts())
+        extra += T_("<darkgrey>()</darkgrey>: Suppressed.\n");
+    if (_has_transient_muts())
+        extra += "<magenta>[]</magenta>: Transient mutations.\n";
+    if (has_future_muts)
+    {
+        extra += "<darkgrey>[]</darkgrey>: ";
+        extra += T_("Gained at a future XL.");
+        extra += "\n";
+    }
+    return extra;
+}
+
 static bool _fakemut_has_description(string fakemut_name)
 {
     const string key = make_stringf("%s mutation", fakemut_name.c_str());
@@ -1165,19 +1182,7 @@ private:
 
     void update_more()
     {
-        string extra = "";
-        // TODO: also handle suppressed fakemuts
-        if (_has_suppressed_muts())
-            extra += "<darkgrey>()</darkgrey>: Suppressed.\n";
-        if (_has_transient_muts())
-            extra += "<magenta>[]</magenta>: Transient mutations.\n";
-        if (has_future_muts)
-        {
-            extra += "<darkgrey>[]</darkgrey>: ";
-            extra += T_("Gained at a future XL.");
-            extra += "\n";
-        }
-        set_more(extra);
+        set_more(mutation_menu_legend(has_future_muts));
     }
 
     bool examine_index(int i) override
