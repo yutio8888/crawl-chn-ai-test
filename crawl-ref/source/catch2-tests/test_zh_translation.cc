@@ -40,6 +40,7 @@
 #include "mgen-data.h"
 #include "mon-place.h"
 #include "mon-act.h"
+#include "mon-death.h"
 #include "mon-speak.h"
 #include "mon-util.h"
 #include "movement-i18n.h"
@@ -65,6 +66,7 @@
 #include "spl-summoning.h"
 #include "spell-type.h"
 #include "state.h"
+#include "stairs.h"
 #include "stringutil.h"
 #include "status.h"
 #include "syscalls.h"
@@ -5865,5 +5867,210 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         }
         CHECK(Options.language == language);
         CHECK(info.is(MB_CLOUD_RING_MUTATION));
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: suppressed mutation legend consumes the real Octopode state",
+                 "[zh-translation][issue165][display-residuals][mutations]")
+{
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_OCTOPODE;
+    you.set_position(coord_def(20, 20));
+    give_basic_mutations(you.species);
+    REQUIRE(you.get_base_mutation_level(MUT_NIMBLE_SWIMMER) == 1);
+    const auto original_mutations = you.mutation;
+    const auto original_innate = you.innate_mutation;
+    unwind_var<dungeon_feature_type> terrain(env.grid(you.pos()), DNGN_FLOOR);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        env.grid(you.pos()) = DNGN_FLOOR;
+        REQUIRE_FALSE(mut_is_compatible(MUT_NIMBLE_SWIMMER));
+        const string legend = mutation_menu_legend(false);
+        CHECK(legend == (language == lang_t::ZH
+            ? "<darkgrey>()</darkgrey>: 被抑制的变异。\n"
+            : "<darkgrey>()</darkgrey>: Suppressed.\n"));
+        // The actual compatibility predicate controls disappearance in water.
+        env.grid(you.pos()) = DNGN_SHALLOW_WATER;
+        REQUIRE(mut_is_compatible(MUT_NIMBLE_SWIMMER));
+        CHECK(mutation_menu_legend(false).empty());
+        CHECK(std::equal(you.mutation.begin(), you.mutation.end(),
+                         original_mutations.begin()));
+        CHECK(std::equal(you.innate_mutation.begin(), you.innate_mutation.end(),
+                         original_innate.begin()));
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: sticky flame messages consume complete intensity templates",
+                 "[zh-translation][issue147][display-residuals][sticky-flame]")
+{
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<game_type> normal_game(crawl_state.type, GAME_TYPE_NORMAL);
+    const coord_def pos(20, 20);
+    unwind_var<dungeon_feature_type> terrain(env.grid(pos), DNGN_FLOOR);
+    // intensity 5/6 straddles the display threshold. The final row proves a
+    // weaker second application keeps the stronger old power and its blame.
+    for (const auto &row : {make_tuple(5, 0), make_tuple(6, 0),
+                            make_tuple(5, 5), make_tuple(6, 5),
+                            make_tuple(5, 6)})
+    {
+        const int intensity = get<0>(row);
+        const int old_power = get<1>(row);
+        const bool already_burning = old_power > 0;
+        const bool intense = max(intensity, old_power) > 5;
+        for (lang_t language : {lang_t::ZH, lang_t::EN})
+        {
+            TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+            you = player();
+            you.species = SP_HUMAN;
+            you.set_position(pos);
+            you.duration[DUR_STICKY_FLAME] = already_burning ? 10 : 0;
+            if (already_burning)
+            {
+                you.props[STICKY_FLAME_POWER_KEY] = old_power;
+                you.props[STICKY_FLAMER_KEY] = "old source";
+                you.props[STICKY_FLAME_AUX_KEY] = "old auxiliary";
+            }
+            const string expected = language == lang_t::ZH
+                ? (already_burning
+                    ? (intense ? "你被更多炽烈的液态火焰覆盖了！"
+                               : "你被更多液态火焰覆盖了！")
+                    : (intense ? "你被炽烈的液态火焰覆盖了！移动，否则就会被灼烧！"
+                               : "你被液态火焰覆盖了！移动，否则就会被灼烧！"))
+                : (already_burning
+                    ? (intense ? "You are covered in even more intense liquid fire!"
+                               : "You are covered in even more liquid fire!")
+                    : (intense ? "You are covered in intense liquid fire! Move or burn!"
+                               : "You are covered in liquid fire! Move or burn!"));
+            const string history = get_last_messages(NUM_STORED_MESSAGES, true);
+            string emitted;
+            {
+                msgwin_temporary_mode temporary;
+                temporary_message_rollback rollback;
+                channel_capturing_tee capture(emitted);
+                REQUIRE(sticky_flame_player(intensity, 2, "new source", "new auxiliary"));
+                CHECK(capture.appends == 1);
+                CHECK(capture.channel == MSGCH_WARN);
+                CHECK(get_last_messages(1, true).find(expected) != string::npos);
+            }
+            CAPTURE(language, intensity, old_power, emitted);
+            CHECK(emitted == expected + "\n");
+            CHECK(get_last_messages(NUM_STORED_MESSAGES, true) == history);
+            CHECK(you.props[STICKY_FLAME_POWER_KEY].get_int() == max(intensity, old_power));
+            const bool changes_source = intensity > old_power;
+            CHECK(you.props[STICKY_FLAMER_KEY].get_string()
+                  == (changes_source ? "new source" : "old source"));
+            CHECK(you.props[STICKY_FLAME_AUX_KEY].get_string()
+                  == (changes_source ? "new auxiliary" : "old auxiliary"));
+            CHECK(you.duration[DUR_STICKY_FLAME] == (already_burning ? 10 : 0) + 20);
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: standard player kill sink consumes names with one article",
+                 "[zh-translation][issue147][display-residuals][combat]")
+{
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    you = player();
+    // This is the exact sink used by the guarded melee/missile/confusion
+    // branches of monster_die, not a reimplementation of death mechanics.
+    for (monster_type type : {MONS_RAT, MONS_SIGMUND, MONS_ROYAL_JELLY})
+    {
+        scoped_monspeak_world world;
+        monster *placed = world.place(type);
+        REQUIRE(placed != nullptr);
+        monster &target = *placed;
+        target.hit_points = target.max_hit_points = 20;
+        REQUIRE(you.can_see(target));
+        for (lang_t language : {lang_t::ZH, lang_t::EN})
+        {
+            TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+            const string name = target.name(DESC_THE);
+            if (language == lang_t::EN)
+            {
+                CHECK(name == (type == MONS_RAT ? "the rat"
+                    : type == MONS_SIGMUND ? "Sigmund" : "the Royal Jelly"));
+            }
+            for (int action : {0, 1, 2})
+            {
+                const string verb = language == lang_t::EN
+                    ? (action == 0 ? "kill" : action == 1 ? "destroy" : "blow up")
+                    : (action == 0 ? "杀死" : action == 1 ? "摧毁" : "炸毁");
+                const string expected = language == lang_t::EN
+                    ? "You " + verb + " " + name + "!"
+                    : "你" + verb + "了" + name + "！";
+                const string history = get_last_messages(NUM_STORED_MESSAGES, true);
+                string emitted;
+                {
+                    msgwin_temporary_mode temporary;
+                    temporary_message_rollback rollback;
+                    channel_capturing_tee capture(emitted);
+                    announce_player_kill(target, action == 2, action == 1);
+                    CHECK(capture.appends == 1);
+                    CHECK(capture.channel == MSGCH_MONSTER_DAMAGE);
+                    CHECK(get_last_messages(1, true).find(expected) != string::npos);
+                }
+                CAPTURE(type, language, action, emitted);
+                CHECK(emitted == expected + "\n");
+                CHECK(emitted.find("the the ") == string::npos);
+                CHECK(get_last_messages(NUM_STORED_MESSAGES, true) == history);
+                CHECK(target.name(DESC_THE) == name);
+                CHECK(target.type == type);
+                CHECK(target.hit_points == 20);
+            }
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: real stair announcement binds whole directional phrases",
+                 "[zh-translation][issue149][display-residuals][movement-i18n]")
+{
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.set_position(coord_def(20, 20));
+    unwind_var<dungeon_feature_type> terrain(env.grid(you.pos()), DNGN_FLOOR);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (bool flying : {false, true})
+        {
+            you.duration[DUR_FLIGHT] = flying ? 10 : 0;
+            REQUIRE(you.airborne() == flying);
+            for (bool going_up : {false, true})
+            {
+                const string expected = language == lang_t::EN
+                    ? string("You ") + (flying ? "fly " : "climb ")
+                                     + (going_up ? "up." : "down.")
+                    : string("你") + (flying ? "飞了" : "沿楼梯爬了")
+                                    + (going_up ? "上去。" : "下去。");
+                const string history = get_last_messages(NUM_STORED_MESSAGES, true);
+                string emitted;
+                {
+                    msgwin_temporary_mode temporary;
+                    temporary_message_rollback rollback;
+                    channel_capturing_tee capture(emitted);
+                    climb_message(going_up ? DNGN_STONE_STAIRS_UP_I : DNGN_STONE_STAIRS_DOWN_I,
+                                  going_up, BRANCH_DUNGEON);
+                    CHECK(capture.appends == 1);
+                    CHECK(capture.channel == MSGCH_PLAIN);
+                    CHECK(get_last_messages(1, true).find(expected) != string::npos);
+                }
+                CAPTURE(language, flying, going_up, emitted);
+                CHECK(emitted == expected + "\n");
+                CHECK(get_last_messages(NUM_STORED_MESSAGES, true) == history);
+                CHECK(you.duration[DUR_FLIGHT] == (flying ? 10 : 0));
+            }
+        }
     }
 }

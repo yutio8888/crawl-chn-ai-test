@@ -6,6 +6,8 @@
 #pragma once
 
 bool check_next_floor_warning();
+void climb_message(dungeon_feature_type stair, bool going_up,
+                   branch_type old_branch);
 void maybe_destroy_shaft(const coord_def &p);
 level_id stair_destination(dungeon_feature_type feat, const string &dst,
                            bool for_real = false);

@@ -4991,17 +4991,19 @@ bool sticky_flame_player(int intensity, int duration, string source, string sour
         you.props[STICKY_FLAME_POWER_KEY] = intensity;
     }
 
-    const string intensity_str = max(intensity, old_pow) > 5 ? "intense " : "";
+    const bool intense = max(intensity, old_pow) > 5;
 
     if (you.duration[DUR_STICKY_FLAME] > 0)
     {
-        mprf(MSGCH_WARN, T_("You are covered in even more %sliquid fire!"),
-                          intensity_str.c_str());
+        mpr(intense ? T_("You are covered in even more intense liquid fire!")
+                    : T_("You are covered in even more liquid fire!"),
+            MSGCH_WARN);
     }
     else
     {
-        mprf(MSGCH_WARN, T_("You are covered in %sliquid fire! Move or burn!"),
-                         intensity_str.c_str());
+        mpr(intense ? T_("You are covered in intense liquid fire! Move or burn!")
+                    : T_("You are covered in liquid fire! Move or burn!"),
+            MSGCH_WARN);
     }
 
     you.increase_duration(DUR_STICKY_FLAME, duration, 35);

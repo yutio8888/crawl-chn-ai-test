@@ -2535,6 +2535,15 @@ static void _player_on_kill_effects(monster& mons, killer_type killer,
     }
 }
 
+void announce_player_kill(const monster& mons, bool exploded, bool destroyed)
+{
+    // DESC_THE already supplies the English article when the name needs one.
+    mprf(MSGCH_MONSTER_DAMAGE, MDAM_DEAD, T_("You %s %s!"),
+         exploded  ? T_("blow up") :
+         destroyed ? T_("destroy") : T_("kill"),
+         mons.name(DESC_THE).c_str());
+}
+
 /**
  * Kill off a monster.
  *
@@ -3068,13 +3077,7 @@ item_def* monster_die(monster& mons, killer_type killer,
                                     : T_("killed"));
                 }
                 else
-                {
-                    mprf(MSGCH_MONSTER_DAMAGE, MDAM_DEAD, T_("You %s the %s!"),
-                         exploded  ? T_("blow up") :
-                         destroyed ? T_("destroy")
-                                   : T_("kill"),
-                         mons.name(DESC_THE).c_str());
-                }
+                    announce_player_kill(mons, exploded, destroyed);
             }
 
             // do this for some of the `silent` cases, if they explicitly set
