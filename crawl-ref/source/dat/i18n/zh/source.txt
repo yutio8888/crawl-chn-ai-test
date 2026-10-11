@@ -42950,3 +42950,36 @@ verb|hit
 %%%%
 death cause terse|Zot
 佐特
+%%%%
+<darkgrey>()</darkgrey>: Suppressed.\n
+<darkgrey>()</darkgrey>: 被抑制的变异。\n
+%%%%
+You are covered in liquid fire! Move or burn!
+你被液态火焰覆盖了！移动，否则就会被灼烧！
+%%%%
+You are covered in intense liquid fire! Move or burn!
+你被炽烈的液态火焰覆盖了！移动，否则就会被灼烧！
+%%%%
+You are covered in even more liquid fire!
+你被更多液态火焰覆盖了！
+%%%%
+You are covered in even more intense liquid fire!
+你被更多炽烈的液态火焰覆盖了！
+%%%%
+You %s %s!
+你%s了%s！
+%%%%
+You %s.
+你%s。
+%%%%
+move.bare|climb up
+沿楼梯爬了上去
+%%%%
+move.bare|climb down
+沿楼梯爬了下去
+%%%%
+move.bare|fly up
+飞了上去
+%%%%
+move.bare|fly down
+飞了下去
