@@ -1,3 +1,4 @@
+model = "gpt-6.1-sol"
 name = "translation-reviewer"
 description = "DCSS Chinese translation quality reviewer — semantic parity, contextual glossary use, completeness, naturalness, terminology, and character voice"
 developer_instructions = '''

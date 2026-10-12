@@ -1,8 +1,8 @@
 ---
 name: worker
 description: General project implementation agent for explicitly assigned work without a specialized project writer
-model: openai-codex/gpt-5.6-sol
-fallbackModels: command-code/muse-spark-1.2-contributor
+model: openai-codex/gpt-6.1-sol
+fallbackModels: openai-codex/gpt-6.1-sol
 thinking: medium
 systemPromptMode: replace
 inheritProjectContext: true

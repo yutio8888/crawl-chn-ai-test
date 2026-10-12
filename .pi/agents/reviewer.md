@@ -1,8 +1,8 @@
 ---
 name: reviewer
 description: Independent read-only reviewer for code diffs, plans, proposed solutions, codebase health, and PR/issue validation
-model: opencode-go/glm-5.2
-fallbackModels: opencode-go/glm-5.2
+model: openai-codex/gpt-6.1-sol
+fallbackModels: openai-codex/gpt-6.1-sol
 tools: read, grep, find, ls, bash, intercom
 thinking: medium
 systemPromptMode: replace

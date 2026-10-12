@@ -1,3 +1,4 @@
+model = "gpt-6.1-sol"
 sandbox_mode = "workspace-write"
 
 [sandbox_workspace_write]

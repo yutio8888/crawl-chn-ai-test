@@ -1,3 +1,4 @@
+model = "gpt-6.1-sol"
 name = "zh-translator"
 description = "DCSS Chinese translator — translates English game text to Chinese following project conventions"
 developer_instructions = '''
