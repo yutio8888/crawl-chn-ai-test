@@ -4010,10 +4010,56 @@ void god_pitch(god_type which_god)
     {
         const string action = get_form()->player_prayer_action();
         const string god = god_name(which_god);
-        if (action == "sit before")
-            mprf(T_("You sit before the altar of %s."), god.c_str());
-        else if (action == "curl up in front of")
-            mprf(T_("You curl up in front of the altar of %s."), god.c_str());
+        // Actions remain English identities. Translate complete sentences
+        // only here, so Chinese need not follow English preposition order.
+        static const struct prayer_sentence
+        {
+            const char *action;
+            const char *key;
+        } prayers[] =
+        {
+            { "kneel at",
+              N_("You kneel at the altar of %s.") },
+            { "sit before",
+              N_("You sit before the altar of %s.") },
+            { "curl up in front of",
+              N_("You curl up in front of the altar of %s.") },
+            { "coil in front of",
+              N_("You coil in front of the altar of %s.") },
+            { "hover solemnly before",
+              N_("You hover solemnly before the altar of %s.") },
+            { "sway towards",
+              N_("You sway towards the altar of %s.") },
+            { "perch on",
+              N_("You perch on the altar of %s.") },
+            { "swirl around",
+              N_("You swirl around the altar of %s.") },
+            { "bow your head before",
+              N_("You bow your head before the altar of %s.") },
+            { "release spores on",
+              N_("You release spores on the altar of %s.") },
+            { "squish down before",
+              N_("You squish down before the altar of %s.") },
+            { "crawl onto",
+              N_("You crawl onto the altar of %s.") },
+            { "place yourself before",
+              N_("You place yourself before the altar of %s.") },
+            { "curl up before",
+              N_("You curl up before the altar of %s.") },
+            { "unroll yourself before",
+              N_("You unroll yourself before the altar of %s.") },
+            { "scuttle before",
+              N_("You scuttle before the altar of %s.") },
+        };
+        const char *key = nullptr;
+        for (const auto &prayer : prayers)
+            if (action == prayer.action)
+            {
+                key = prayer.key;
+                break;
+            }
+        if (key)
+            mprf(T_(key), god.c_str());
         else
             mprf(T_("You %s the altar of %s."), T_(action.c_str()), god.c_str());
     }

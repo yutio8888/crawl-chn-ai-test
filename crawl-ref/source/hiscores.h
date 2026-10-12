@@ -53,7 +53,12 @@ public:
     JsonWrapper xlog_json() const;
 #endif
 
-    void add_field(const string &key, PRINTF(2, ));
+#ifdef __GNUC__
+    void add_field(const string &key, const char *format, ...)
+        __attribute__((format(CRAWL_PRINTF_FORMAT, 3, 4)));
+#else
+    void add_field(const string &key, const char *format, ...);
+#endif
 
     string str_field(const string &) const;
     int int_field(const string &) const;
@@ -91,7 +96,11 @@ private:
     mid_t       death_source;       // killer (maybe be MID_NOBODY)
     string      death_source_name;  // overrides death_source
     set<string> death_source_flags; // misc flags about killer
-    string      auxkilldata;        // weapon wielded, spell cast, etc
+    string      auxkilldata;        // canonical weapon, spell, etc for xlog
+    // Owning display snapshots for a live death; never serialized. Legacy
+    // records continue to use the display helper on their English killer.
+    string      death_source_name_zh;
+    string      weapon_name_zh;
     string      indirectkiller;     // the effect or real monster that summoned
     string      killerpath;         // colon-separated intermediate killers
     string      last_banisher;      // the name of the last thing that banished

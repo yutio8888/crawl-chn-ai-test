@@ -775,7 +775,7 @@ static vector<pair<string, string>> _get_fakemuts()
     {
         // XX message is probably wrong for penance?
         result.push_back({"reduced essence",
-                          _badmut("Your life essence is reduced to manifest your ancestor. (-10% HP)")});
+                          _badmut(T_("Your life essence is reduced to manifest your ancestor. (-10% HP)"))});
     }
 
     // Innate abilities which haven't been implemented as mutations yet.
@@ -1022,7 +1022,7 @@ string mutation_menu_legend(bool has_future_muts)
     if (_has_suppressed_muts())
         extra += T_("<darkgrey>()</darkgrey>: Suppressed.\n");
     if (_has_transient_muts())
-        extra += "<magenta>[]</magenta>: Transient mutations.\n";
+        extra += T_("<magenta>[]</magenta>: Transient mutations.\n");
     if (has_future_muts)
     {
         extra += "<darkgrey>[]</darkgrey>: ";

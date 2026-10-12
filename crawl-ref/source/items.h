@@ -144,9 +144,14 @@ void origin_set(const coord_def& where);
 void origin_set_monster(item_def &item, const monster* mons);
 bool origin_known(const item_def &item);
 bool origin_describable(const item_def &item);
+// Canonical monster-loot origin for item notes; other origins keep their contract.
 string origin_desc(const item_def &item);
+// Localized UI origin, without final punctuation.
+string origin_display_desc(const item_def &item);
 void origin_purchased(item_def &item);
 void origin_acquired(item_def &item, int agent);
+// Complete canonical English protocol sentence; independent of display language.
+string collectible_milestone(const item_def &item);
 void milestone_check(const item_def &item);
 void origin_set_startequip(item_def &item);
 void origin_set_unknown(item_def &item);
