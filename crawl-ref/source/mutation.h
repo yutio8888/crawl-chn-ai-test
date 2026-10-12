@@ -57,6 +57,8 @@ void use_mutation_catalyst();
 int mut_check_conflict(mutation_type mut, bool innate_only = false);
 bool mut_is_compatible(mutation_type mut, bool base_only = false);
 
+// Shared by the A-menu footer and its state/translation consumer tests.
+string mutation_menu_legend(bool has_future_muts);
 void display_mutations();
 string describe_muts_for_chardump(bool center_title);
 string terse_mutation_list();

@@ -24,14 +24,18 @@
 #include "env.h"
 #include "english.h"
 #include "feature.h"
+#include "files.h"
 #include "god-conduct.h"
 #include "god-abil.h"
 #include "hiscores.h"
 #include "item-status-flag-type.h"
+#include "item-use.h"
 #include "item-name.h"
+#include "items.h"
 #include "item-prop.h"
 #include "item-prop-enum.h"
 #include "jobs.h"
+#include "lang-en-guard.h"
 #include "losglobal.h"
 #include "macro.h"
 #include "mapdef.h"
@@ -77,6 +81,8 @@
 #include "xom.h"
 
 #include <cstring>
+#include <cstdlib>
+#include <fstream>
 #include <array>
 #include <string>
 #include <tuple>
@@ -5791,5 +5797,838 @@ TEST_CASE("issue147: terrain trap Lua API and safety hook share canonical tokens
             "end); c_trap_is_safe = old_hook; assert(ok, err)");
         INFO(clua.error);
         REQUIRE(result == 0);
+    }
+}
+
+// Exercise capture -> score xlog and capture -> death UI separately. These
+// tests do not replace the normal-death logfile/morgue acceptance run.
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: death capture preserves canonical killer and weapon",
+                 "[zh-translation][death-protocol][issue-167]")
+{
+    init_monsters();
+    init_properties();
+    init_duration_index();
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.your_name = "Issue167Trunk";
+    you.birth_time = 1599999900;
+    you.last_keypress_time = chrono::system_clock::from_time_t(you.birth_time);
+    you.species = SP_HUMAN;
+    you.char_class = JOB_MONK;
+    you.chr_class_name = get_job_name(you.char_class);
+    you.hp_max = 20;
+    you.base_stats.init(10);
+    you.where_are_you = BRANCH_DUNGEON;
+    you.depth = 1;
+    you.skills[SK_FIGHTING] = 1;
+    you.equipment.update();
+    you.set_position(coord_def(20, 20));
+    const coord_def player_position = you.pos();
+    const unsigned old_map_id = env.level_map_ids(player_position);
+    unwinder restore_map_id([player_position, old_map_id]() {
+        env.level_map_ids(player_position) = old_map_id;
+    });
+    env.level_map_ids(player_position) = INVALID_MAP_INDEX;
+    const int hp = GENERATE(10, 0);
+    const bool armed = GENERATE(false, true);
+    const int modifier = GENERATE(0, 1, 2);
+    const bool custom_name = GENERATE(false, true);
+    you.hp = hp;
+    you.gold = 123;
+    you.num_turns = 42;
+    you.elapsed_time = 420;
+    no_notes suppress_notes;
+    const bool old_autoinscribe = need_to_autoinscribe();
+    unwinder restore_autoinscribe([old_autoinscribe]() {
+        request_autoinscribe(old_autoinscribe);
+    });
+    request_autoinscribe(false);
+    const size_t notes_before = note_list.size();
+
+    scoped_env_monster_slot slot(coord_def(20, 21));
+    monster *killer = slot.place(MONS_ORC);
+    REQUIRE(killer != nullptr);
+    if (custom_name)
+        killer->mname = "自定义名字";
+    if (armed)
+        killer->add_ench(mon_enchant(ENCH_ARMED, killer, 100));
+    if (modifier == 1)
+        killer->add_ench(mon_enchant(ENCH_SHAPESHIFTER, killer, 100));
+    if (modifier == 2)
+    {
+        killer->add_ench(mon_enchant(ENCH_GLOWING_SHAPESHIFTER, killer, 100));
+        killer->add_ench(mon_enchant(ENCH_PHANTOM_MIRROR, killer, 100));
+    }
+
+    // Reserve an empty real item slot, without stealing an existing item.
+    int weapon_index = NON_ITEM;
+    for (int i = 0; i < MAX_ITEMS; ++i)
+        if (!env.item[i].defined())
+        {
+            weapon_index = i;
+            break;
+        }
+    REQUIRE(weapon_index != NON_ITEM);
+    unwind_var<item_def> restore_weapon(env.item[weapon_index]);
+    item_def &weapon = env.item[weapon_index];
+    weapon = item_def();
+    weapon.base_type = OBJ_WEAPONS;
+    weapon.sub_type = WPN_DAGGER;
+    weapon.quantity = 1;
+    killer->inv[MSLOT_WEAPON] = weapon_index;
+    weapon.set_holding_monster(*killer);
+    const int monster_hp = killer->hit_points;
+
+    scorefile_entry chinese(7, killer->mid, KILLED_BY_MONSTER, nullptr, true);
+    REQUIRE(Options.language == lang_t::ZH);
+    CHECK(weapon.is_identified() == (hp <= 0));
+    CHECK(need_to_autoinscribe() == (hp <= 0));
+    const auto flags_after_capture = weapon.flags;
+    const string weapon_zh = weapon.name(DESC_A)
+        + (armed ? T_(" (from an undying armoury)") : "");
+    const bool reveal_source = hp <= 0 || you.can_see(*killer);
+    const string monster_zh = reveal_source ? killer->full_name(DESC_A)
+                                           : killer->name(DESC_A, false);
+    // Death-cause-only capture must be completed before score serialization.
+    chinese.init(1600000000);
+    const string raw_zh = chinese.raw_string();
+    const xlog_fields zh_fields = chinese.get_fields();
+    CHECK(zh_fields.str_field("dam") == "7");
+    {
+        ScopedLangEn english;
+        const string expected_weapon = weapon.name(DESC_A)
+            + (armed ? " (from an undying armoury)" : "");
+        string expected_killer = reveal_source ? killer->full_name(DESC_A)
+                                               : killer->name(DESC_A, false);
+        if (hp <= 0 && !custom_name)
+            CHECK(expected_killer == "an orc");
+        if (hp <= 0 && custom_name)
+            CHECK(expected_killer.find("自定义名字") != string::npos);
+        if (modifier == 1)
+            expected_killer += " (shapeshifter)";
+        if (modifier == 2)
+            expected_killer += " (glowing shapeshifter) (illusionary)";
+        scorefile_entry english_entry(7, killer->mid, KILLED_BY_MONSTER,
+                                     nullptr, true);
+        english_entry.init(1600000000);
+        const xlog_fields raw_en(english_entry.raw_string());
+        CHECK(raw_en.str_field("killer") == zh_fields.str_field("killer"));
+        CHECK(raw_en.str_field("kaux") == zh_fields.str_field("kaux"));
+        CHECK(english_entry.get_fields().str_field("killer") == expected_killer);
+        CHECK(english_entry.get_fields().str_field("kaux") == expected_weapon);
+        CHECK(zh_fields.str_field("killer") == expected_killer);
+        CHECK(zh_fields.str_field("kaux") == expected_weapon);
+        const string description = chinese.death_description(scorefile_entry::DDV_VERBOSE);
+        CHECK(description.find(expected_killer) != string::npos);
+        CHECK(description.find(expected_weapon) != string::npos);
+        CHECK(Options.language == lang_t::EN);
+    }
+    REQUIRE(Options.language == lang_t::ZH);
+    i18n_cache_clear();
+    scorefile_entry copied(chinese);
+    scorefile_entry assigned;
+    assigned = chinese;
+    for (const scorefile_entry *entry : {&chinese, &copied, &assigned})
+    {
+        for (auto verbosity : {scorefile_entry::DDV_TERSE,
+                               scorefile_entry::DDV_LOGVERBOSE,
+                               scorefile_entry::DDV_VERBOSE})
+        {
+            const string description = entry->death_description(verbosity);
+            const auto terse_name = [verbosity](string name) {
+                if (verbosity == scorefile_entry::DDV_TERSE)
+                {
+                    if (starts_with(name, "a "))
+                        name.erase(0, 2);
+                    else if (starts_with(name, "an "))
+                        name.erase(0, 3);
+                }
+                return name;
+            };
+            CHECK(description.find(terse_name(monster_zh)) != string::npos);
+            CHECK(description.find(terse_name(weapon_zh)) != string::npos);
+            if (armed)
+                CHECK(description.find(T_(" (from an undying armoury)")) != string::npos);
+            if (modifier == 1)
+                CHECK(description.find(T_(" (shapeshifter)")) != string::npos);
+            if (modifier == 2)
+            {
+                CHECK(description.find(T_(" (glowing shapeshifter)")) != string::npos);
+                CHECK(description.find(T_(" (illusionary)")) != string::npos);
+            }
+        }
+        CHECK(entry->raw_string() == raw_zh);
+    }
+    // Reusing an entry for parsed scores must discard the live snapshots.
+    scorefile_entry quitting(0, MID_NOBODY, KILLED_BY_QUITTING, "", true);
+    quitting.init(1600000000);
+    REQUIRE(assigned.parse(quitting.raw_string()));
+    CHECK(assigned.death_description(scorefile_entry::DDV_VERBOSE).find(weapon_zh)
+          == string::npos);
+    CHECK(you.hp == hp);
+    CHECK(you.gold == 123);
+    CHECK(you.num_turns == 42);
+    CHECK(you.elapsed_time == 420);
+    CHECK(killer->hit_points == monster_hp);
+    CHECK(killer->inv[MSLOT_WEAPON] == weapon_index);
+    CHECK(weapon.flags == flags_after_capture);
+    CHECK(weapon.held_by_monster());
+    CHECK(note_list.size() == notes_before);
+    CHECK_FALSE(notes_are_active());
+    CHECK(need_to_autoinscribe() == (hp <= 0));
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: special death sources retain canonical identities",
+                 "[zh-translation][death-protocol][issue-167]")
+{
+    init_monsters();
+    init_properties();
+    init_duration_index();
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.your_name = "Issue167Trunk";
+    you.birth_time = 1599999900;
+    you.last_keypress_time = chrono::system_clock::from_time_t(you.birth_time);
+    you.species = SP_HUMAN;
+    you.char_class = JOB_MONK;
+    you.chr_class_name = get_job_name(you.char_class);
+    you.hp_max = 20;
+    you.base_stats.init(10);
+    you.where_are_you = BRANCH_DUNGEON;
+    you.depth = 1;
+    you.skills[SK_FIGHTING] = 1;
+    you.equipment.update();
+    you.set_position(coord_def(20, 20));
+    const coord_def player_position = you.pos();
+    const unsigned old_map_id = env.level_map_ids(player_position);
+    unwinder restore_map_id([player_position, old_map_id]() {
+        env.level_map_ids(player_position) = old_map_id;
+    });
+    env.level_map_ids(player_position) = INVALID_MAP_INDEX;
+    you.hp = 0;
+    const auto type = GENERATE(MONS_SIGMUND, MONS_PLAYER_SHADOW,
+                               MONS_PANDEMONIUM_LORD);
+    scoped_env_monster_slot slot(coord_def(20, 21));
+    monster *killer = slot.place(type);
+    REQUIRE(killer != nullptr);
+    if (type == MONS_PLAYER_SHADOW)
+        killer->base_attitude = ATT_FRIENDLY;
+    if (type == MONS_PANDEMONIUM_LORD)
+        killer->mname = "自定义领主";
+    const string display = type == MONS_PLAYER_SHADOW
+        ? string(T_("their own shadow"))
+        : killer->full_name(DESC_A)
+          + (type == MONS_PANDEMONIUM_LORD ? T_(" the pandemonium lord") : "");
+    scorefile_entry entry(3, killer->mid, KILLED_BY_MONSTER, nullptr, true);
+    entry.init(1600000000);
+    const xlog_fields fields(entry.raw_string());
+    REQUIRE(Options.language == lang_t::ZH);
+    {
+        ScopedLangEn english;
+        const string canonical = type == MONS_PLAYER_SHADOW
+            ? "their own shadow"
+            : killer->full_name(DESC_A)
+              + (type == MONS_PANDEMONIUM_LORD ? " the pandemonium lord" : "");
+        CHECK(fields.str_field("killer") == canonical);
+        CHECK(entry.death_description(scorefile_entry::DDV_VERBOSE).find(canonical)
+              != string::npos);
+        if (type == MONS_PANDEMONIUM_LORD)
+            CHECK(canonical.find("自定义领主") != string::npos);
+    }
+    REQUIRE(Options.language == lang_t::ZH);
+    i18n_cache_clear();
+    CHECK(entry.death_description(scorefile_entry::DDV_VERBOSE).find(display)
+          != string::npos);
+    if (type == MONS_SIGMUND)
+        CHECK(fields.str_field("killer_flags") == "unique");
+    CHECK(you.hp == 0);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: rune and gem milestone producer feeds canonical sentences",
+                 "[zh-translation][milestone-protocol][issue-168]")
+{
+    init_properties();
+    init_duration_index();
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.your_name = "Issue168Trunk";
+    you.hp = you.hp_max = 20;
+    you.base_stats.init(10);
+    you.species = SP_HUMAN;
+    you.char_class = JOB_MONK;
+    you.chr_class_name = get_job_name(you.char_class);
+    you.set_position(coord_def(20, 20));
+    unwind_var<unsigned> map_id(env.level_map_ids(you.pos()), INVALID_MAP_INDEX);
+    const auto base = GENERATE(OBJ_RUNES, OBJ_GEMS);
+    item_def collectible;
+    collectible.base_type = base;
+    collectible.sub_type = base == OBJ_RUNES ? int(RUNE_SWAMP) : int(GEM_DUNGEON);
+    collectible.quantity = 1;
+    const auto flags = collectible.flags;
+    const string display_name = collectible.name(DESC_A);
+    REQUIRE(contains_non_ascii(display_name));
+    string canonical_name;
+    string english_sentence;
+    {
+        ScopedLangEn english;
+        canonical_name = collectible.name(DESC_A);
+        english_sentence = collectible_milestone(collectible);
+        CHECK(Options.language == lang_t::EN);
+    }
+    REQUIRE(Options.language == lang_t::ZH);
+    CHECK(english_sentence == "found " + canonical_name + ".");
+    CHECK(collectible_milestone(collectible) == english_sentence);
+    i18n_cache_clear();
+    CHECK(collectible_milestone(collectible) == english_sentence);
+    CHECK(collectible.name(DESC_A) == display_name);
+    CHECK(collectible.flags == flags);
+    const size_t notes_before = note_list.size();
+    const auto runes_before = you.runes;
+    const auto gems_before = you.gems_found;
+    const int turns_before = you.num_turns;
+#if (defined(USE_TILE_WEB) || defined(DGL_MILESTONES)) \
+    && !defined(SCORE_WIZARD_CHARACTERS)
+    // Exercise the real writer's saved protocol bundle without external file
+    // or websocket output. This is not normal-character file evidence.
+    unwind_var<bool> need_save(crawl_state.need_save, true);
+    unwind_var<bool> crashed(crawl_state.game_crashed, true);
+    you.wizard = true;
+    const string type = base == OBJ_RUNES ? "rune" : "gem.found";
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        unwind_var<lang_t> lang(Options.language, language);
+        you.props.erase("last_milestone");
+        you.props.erase("last_milestone_type");
+        you.props.erase("last_milestone_turn");
+        milestone_check(collectible);
+        CHECK(you.props["last_milestone"].get_string() == english_sentence);
+        CHECK(you.props["last_milestone_type"].get_string() == type);
+        CHECK(you.props["last_milestone_turn"].get_int() == turns_before);
+        CHECK(Options.language == language);
+    }
+#endif
+    REQUIRE(Options.language == lang_t::ZH);
+    CHECK(collectible.flags == flags);
+    CHECK(collectible.quantity == 1);
+    CHECK(note_list.size() == notes_before);
+    for (int i = 0; i < NUM_RUNE_TYPES; ++i)
+        CHECK(you.runes[i] == runes_before[i]);
+    for (int i = 0; i < NUM_GEM_TYPES; ++i)
+        CHECK(you.gems_found[i] == gems_before[i]);
+    CHECK(you.num_turns == turns_before);
+}
+
+#if defined(DGL_MILESTONES) && defined(UNIX)
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: DGL file writer consumes rune and gem English milestones",
+                 "[zh-translation][milestone-protocol][issue-168][dgl]")
+{
+    init_properties();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    unwind_var<bool> need_save(crawl_state.need_save, true);
+    // Suppress only web transport in combined builds. The normal-character
+    // DGL file gate remains active and is exercised below.
+    unwind_var<bool> crashed(crawl_state.game_crashed, true);
+    char temporary[] = "/tmp/catch2-trunk-issue168-XXXXXX";
+    REQUIRE(mkdtemp(temporary) != nullptr);
+    const string directory = temporary;
+    const string filename = catpath(directory,
+        "milestones" + crawl_state.game_type_qualifier());
+    unwinder cleanup([&]() {
+        unlink_u(filename.c_str());
+        rmdir(directory.c_str());
+    });
+    unwind_var<string> shared_dir(Options.shared_dir, directory);
+    const coord_def position(20, 20);
+    unwind_var<unsigned> map_id(env.level_map_ids(position), INVALID_MAP_INDEX);
+
+    const auto read_records = [&]() {
+        std::ifstream file(filename);
+        REQUIRE(file.good());
+        vector<string> records;
+        string line;
+        while (std::getline(file, line))
+            records.push_back(line);
+        REQUIRE(file.eof());
+        return records;
+    };
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (object_class_type base : {OBJ_RUNES, OBJ_GEMS})
+    {
+        CAPTURE(language, base);
+        TranslationFixture translation(language,
+            language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.your_name = "Issue168Trunk";
+        you.birth_time = 1599999900;
+        you.species = SP_HUMAN;
+        you.char_class = JOB_MONK;
+        you.chr_class_name = get_job_name(you.char_class);
+        you.hp = you.hp_max = 20;
+        you.where_are_you = BRANCH_DUNGEON;
+        you.depth = 1;
+        you.num_turns = 42;
+        you.set_position(position);
+        REQUIRE_FALSE(crawl_state.game_is_arena());
+        REQUIRE(crawl_state.need_save);
+        REQUIRE_FALSE(you.wizard);
+        REQUIRE_FALSE(you.explore);
+        REQUIRE_FALSE(you.suppress_wizard);
+        item_def collectible;
+        collectible.base_type = base;
+        collectible.sub_type = base == OBJ_RUNES ? int(RUNE_SWAMP) : int(GEM_DUNGEON);
+        collectible.quantity = 1;
+        collectible.flags |= ISFLAG_IDENTIFIED;
+        string expected;
+        {
+            ScopedLangEn english;
+            expected = "found " + collectible.name(DESC_A) + ".";
+        }
+        const string type = base == OBJ_RUNES ? "rune" : "gem.found";
+        unlink_u(filename.c_str());
+        milestone_check(collectible);
+        REQUIRE(Options.language == language);
+        const vector<string> records = read_records();
+        REQUIRE(records.size() == 1);
+        const xlog_fields fields(records.front());
+        CHECK(fields.str_field("type") == type);
+        CHECK(fields.str_field("milestone") == expected);
+        CHECK(fields.int_field("turn") == you.num_turns);
+        CHECK(fields.str_field("name") == you.your_name);
+        CHECK(you.props["last_milestone"].get_string() == expected);
+        CHECK(you.props["last_milestone_type"].get_string() == type);
+        CHECK(you.props["last_milestone_turn"].get_int() == you.num_turns);
+        // The same normal player repeats the real producer/consumer call;
+        // the duplicate gate must leave the complete file unchanged.
+        milestone_check(collectible);
+        CHECK(Options.language == language);
+        CHECK(read_records() == records);
+        CHECK_FALSE(you.wizard);
+        CHECK_FALSE(you.explore);
+        CHECK_FALSE(you.suppress_wizard);
+    }
+    CHECK(Options.language == lang_t::ZH);
+}
+#endif
+
+TEST_CASE("issue169: sticky flame cleanup follows real duration consumers",
+          "[zh-translation][issue-169][sticky-flame]")
+{
+    init_properties();
+    init_duration_index();
+    init_mut_index();
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    unwind_var<bool> need_save(crawl_state.need_save, false);
+    no_notes suppress_notes;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool invisible : {false, true})
+    for (int power : {1, 6})
+    {
+        CAPTURE(language, invisible, power);
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 1000;
+        you.duration[DUR_INVIS] = invisible ? 50 : 0;
+        const int invis_duration = you.duration[DUR_INVIS];
+        you.equipment.update();
+        scoped_monspeak_world world;
+        msgwin_temporary_mode temporary;
+        temporary_message_rollback rollback;
+        rng::subgenerator fixed_rng(169, power);
+        const auto check_cleared = []() {
+            CHECK(you.duration[DUR_STICKY_FLAME] == 0);
+            CHECK_FALSE(you.props.exists(STICKY_FLAMER_KEY));
+            CHECK_FALSE(you.props.exists(STICKY_FLAME_AUX_KEY));
+            CHECK_FALSE(you.props.exists(STICKY_FLAME_POWER_KEY));
+        };
+        REQUIRE(sticky_flame_player(power, 3, "an orc", "sticky flame"));
+        REQUIRE(you.duration[DUR_STICKY_FLAME] == 30);
+        const int hp_before = you.hp;
+        const int turns_before = you.num_turns;
+        const string finished = T_("The liquid flame finally runs out.");
+        {
+            msg::tee messages;
+            dec_sticky_flame_player(BASELINE_DELAY);
+            CHECK(you.duration[DUR_STICKY_FLAME] == 20);
+            CHECK(you.props[STICKY_FLAMER_KEY].get_string() == "an orc");
+            CHECK(you.props[STICKY_FLAME_AUX_KEY].get_string() == "sticky flame");
+            CHECK(you.props[STICKY_FLAME_POWER_KEY].get_int() == power);
+            CHECK(messages.get_store().find(finished) == string::npos);
+        }
+        CHECK(you.hp < hp_before);
+        CHECK(you.hp >= hp_before - 2 * power);
+        CHECK(you.duration[DUR_INVIS] == invis_duration);
+        {
+            msg::tee messages;
+            // The consumer clamps this delay to the remaining 20 aut.
+            dec_sticky_flame_player(100);
+            CHECK(messages.get_store().find(finished) != string::npos);
+            check_cleared();
+        }
+        CHECK(you.hp > 0);
+        CHECK(you.duration[DUR_INVIS] == invis_duration);
+        CHECK(you.num_turns == turns_before);
+
+        REQUIRE(sticky_flame_player(power, 9, "an orc", "sticky flame"));
+        const int hp_before_moving = you.hp;
+        shake_off_sticky_flame();
+        CHECK(you.duration[DUR_STICKY_FLAME] == 30);
+        CHECK(you.props.exists(STICKY_FLAME_POWER_KEY));
+        {
+            msg::tee messages;
+            shake_off_sticky_flame();
+            CHECK(messages.get_store().find(T_("You shake off the liquid flame."))
+                  != string::npos);
+            check_cleared();
+        }
+        CHECK(you.hp == hp_before_moving);
+        REQUIRE(sticky_flame_player(power, 3, "an orc", "sticky flame"));
+        env.grid(you.pos()) = DNGN_SHALLOW_WATER;
+        const int hp_before_water = you.hp;
+        {
+            msg::tee messages;
+            dec_sticky_flame_player(BASELINE_DELAY);
+            CHECK(messages.get_store().find(
+                T_("You dive into the water, extinguishing the flames!")) != string::npos);
+            check_cleared();
+        }
+        CHECK(you.hp == hp_before_water);
+        CHECK(you.duration[DUR_INVIS] == invis_duration);
+        CHECK(Options.language == language);
+    }
+}
+
+TEST_CASE("issue170: god pitch emits complete altar sentences and keeps default pauses",
+          "[zh-translation][issue-170][altar][force-more]")
+{
+    init_properties();
+    init_mut_index();
+    init_duration_index();
+    game_options defaults;
+    defaults.include_utf8(datafile_path("defaults/messages.txt"), false, false);
+    // Use the parsed production filters, rather than a test-only regex copy.
+    const message_filter *english_pause = nullptr;
+    const message_filter *chinese_pause = nullptr;
+    for (const auto &filter : defaults.force_more_message)
+    {
+        if (filter.pattern.tostring() == "You .* the altar of")
+            english_pause = &filter;
+        if (filter.pattern.tostring() == "你.*的祭坛")
+            chinese_pause = &filter;
+    }
+    REQUIRE(english_pause != nullptr);
+    REQUIRE(chinese_pause != nullptr);
+    struct prayer_case
+    {
+        species_type species;
+        transformation form;
+        bool flying;
+        const char *action;
+    };
+    const prayer_case prayers[] = {
+        {SP_HUMAN, transformation::none, false, "kneel at"},
+        {SP_FELID, transformation::none, false, "sit before"},
+        {SP_OCTOPODE, transformation::none, false, "curl up in front of"},
+        {SP_NAGA, transformation::none, false, "coil in front of"},
+        {SP_HUMAN, transformation::none, true, "hover solemnly before"},
+        {SP_HUMAN, transformation::tree, false, "sway towards"},
+        {SP_HUMAN, transformation::bat, true, "perch on"},
+        {SP_HUMAN, transformation::wisp, true, "swirl around"},
+        {SP_HUMAN, transformation::dragon, false, "bow your head before"},
+        {SP_HUMAN, transformation::fungus, false, "release spores on"},
+        {SP_HUMAN, transformation::jelly, false, "squish down before"},
+        {SP_HUMAN, transformation::spider, false, "crawl onto"},
+        {SP_HUMAN, transformation::storm, true, "place yourself before"},
+        {SP_HUMAN, transformation::sphinx, false, "curl up before"},
+        {SP_HUMAN, transformation::walking_scroll, false, "unroll yourself before"},
+        {SP_HUMAN, transformation::fortress_crab, false, "scuttle before"},
+        // Flying overrides the species verb but not a naturally flying form's
+        // custom action; a form that forbids flight keeps its ground action.
+        {SP_NAGA, transformation::none, true, "hover solemnly before"},
+        {SP_HUMAN, transformation::tree, true, "sway towards"},
+    };
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    // Keep this test noninteractive; filter matching is checked explicitly.
+    unwind_var<vector<message_filter>> mores(Options.force_more_message, {});
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (const auto &prayer : prayers)
+    {
+        CAPTURE(language, prayer.action);
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = prayer.species;
+        you.form = prayer.form;
+        you.duration[DUR_FLIGHT] = prayer.flying ? 10 : 0;
+        you.penance[GOD_TROG] = 1; // real early refusal, after the announcement
+        you.turn_is_over = true;
+        you.equipment.update();
+        scoped_monspeak_world world;
+        const string key = "You " + string(prayer.action) + " the altar of %s.";
+        string expected;
+        const string god = god_name(GOD_TROG);
+        {
+            ScopedLangEn canonical;
+            CHECK(get_form()->player_prayer_action() == prayer.action);
+        }
+        CHECK(Options.language == language);
+        expected = make_stringf(T_(key.c_str()), god.c_str());
+        if (language == lang_t::ZH)
+        {
+            REQUIRE(string(T_(key.c_str())) != key);
+            CHECK(contains_non_ascii(god));
+            CHECK(expected.find(prayer.action) == string::npos);
+        }
+        const player before = you;
+        msgwin_temporary_mode temporary;
+        temporary_message_rollback rollback;
+        msg::tee messages;
+        god_pitch(GOD_TROG);
+        const string first_line = strip_tee_colour_tag(
+            messages.get_store().substr(0, messages.get_store().find('\n')));
+        CHECK(first_line == expected);
+        CHECK((language == lang_t::ZH ? chinese_pause : english_pause)
+              ->is_filtered(MSGCH_PLAIN, first_line));
+        CHECK(Options.language == language);
+        CHECK(you.religion == before.religion);
+        CHECK(you.penance[GOD_TROG] == before.penance[GOD_TROG]);
+        CHECK(you.raw_piety == before.raw_piety);
+        CHECK(you.species == before.species);
+        CHECK(you.form == before.form);
+        CHECK(you.duration[DUR_FLIGHT] == before.duration[DUR_FLIGHT]);
+        CHECK_FALSE(you.turn_is_over);
+    }
+    // The missionary route is a separate preexisting complete sentence.
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.penance[GOD_BEOGH] = 1;
+        you.equipment.update();
+        scoped_monspeak_world world;
+        REQUIRE(env.grid(you.pos()) != DNGN_ALTAR_BEOGH);
+        msgwin_temporary_mode temporary;
+        temporary_message_rollback rollback;
+        msg::tee messages;
+        god_pitch(GOD_BEOGH);
+        CHECK(strip_tee_colour_tag(messages.get_store()).find(
+            T_("You bow before the missionary of Beogh.")) == 0);
+        CHECK(you.religion == GOD_NO_GOD);
+        CHECK(Options.language == language);
+    }
+}
+
+TEST_CASE("issue171: A-menu legend follows temporary mutation state",
+          "[zh-translation][issue-171][mutation-legend]")
+{
+    init_mut_index();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool transient : {false, true})
+    for (bool future : {false, true})
+    for (bool suppressed : {false, true})
+    {
+        CAPTURE(language, transient, future, suppressed);
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.form = suppressed ? transformation::tree : transformation::none;
+        if (transient)
+        {
+            you.mutation[MUT_STRONG] = 1;
+            you.temp_mutation[MUT_STRONG] = 1;
+        }
+        if (suppressed)
+            you.mutation[MUT_CLAWS] = 1;
+        const player before = you;
+        const char *transient_key = "<magenta>[]</magenta>: Transient mutations.\n";
+        const string expected_transient = T_(transient_key);
+        string expected;
+        if (suppressed)
+            expected += "<darkgrey>()</darkgrey>: Suppressed.\n";
+        if (transient)
+            expected += expected_transient;
+        if (future)
+        {
+            expected += "<darkgrey>[]</darkgrey>: "
+                + string(T_("Gained at a future XL.")) + "\n";
+        }
+        const string legend = mutation_menu_legend(future);
+        CHECK(legend == expected);
+        if (transient && language == lang_t::ZH)
+        {
+            CHECK(expected_transient != transient_key);
+            CHECK(expected_transient.find("<magenta>[]</magenta>") == 0);
+            CHECK(expected_transient.back() == '\n');
+        }
+        i18n_cache_clear();
+        CHECK(mutation_menu_legend(future) == legend);
+        CHECK(Options.language == language);
+        for (int i = 0; i < NUM_MUTATIONS; ++i)
+        {
+            CHECK(you.mutation[i] == before.mutation[i]);
+            CHECK(you.temp_mutation[i] == before.temp_mutation[i]);
+            CHECK(you.innate_mutation[i] == before.innate_mutation[i]);
+        }
+    }
+}
+
+TEST_CASE("issue172: complete equipment refusals preserve the real operation gate",
+          "[zh-translation][issue-172][equipment-refusal]")
+{
+    init_properties();
+    init_mut_index();
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool wear : {false, true})
+    for (int domain : {0, 1, 2})
+    {
+        CAPTURE(language, wear, domain);
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.form = domain == 2 ? transformation::none : transformation::wisp;
+        you.transform_uncancellable = true;
+        if (domain == 2)
+            you.mutation[MUT_NO_JEWELLERY] = 1;
+        you.equipment.update();
+        scoped_monspeak_world world;
+        const operation_types oper = domain == 0
+            ? (wear ? OPER_WEAR : OPER_TAKEOFF)
+            : (wear ? OPER_PUTON : OPER_REMOVE);
+        const char *key = domain == 0
+            ? (wear ? "You can't wear anything in your present form."
+                    : "You can't remove anything in your present form.")
+            : domain == 1
+                ? (wear ? "You can't wear jewellery in your present form."
+                        : "You can't remove jewellery in your present form.")
+                : (wear ? "You can't wear jewellery."
+                        : "You can't remove jewellery.");
+        if (domain == 0)
+            REQUIRE_FALSE(form_can_wear());
+        else
+        {
+            REQUIRE(you_can_wear(SLOT_RING, true) == false);
+            REQUIRE(you_can_wear(SLOT_AMULET, true) == false);
+        }
+        you.hp = you.hp_max = 100;
+        you.gold = 123;
+        you.time_taken = 10;
+        you.turn_is_over = false;
+        item_def &target = you.inv[0];
+        target.base_type = domain == 0 ? OBJ_ARMOUR : OBJ_JEWELLERY;
+        target.sub_type = domain == 0 ? int(ARM_ROBE) : int(RING_PROTECTION);
+        target.quantity = 1;
+        target.flags = ISFLAG_IDENTIFIED;
+        target.pos = ITEM_IN_INVENTORY;
+        target.link = 0;
+        const player before = you;
+        const string expected = T_(key);
+        msgwin_temporary_mode temporary;
+        temporary_message_rollback rollback;
+        msg::tee messages;
+        CHECK_FALSE(use_an_item(oper, &target));
+        CHECK(strip_tee_colour_tag(messages.get_store()) == expected + "\n");
+        if (language == lang_t::ZH)
+        {
+            CHECK(expected != key);
+            CHECK_FALSE(contains_non_ascii(key));
+            CHECK(contains_non_ascii(expected));
+            CHECK(messages.get_store().find(" in your present form") == string::npos);
+        }
+        CHECK(Options.language == language);
+        CHECK(you.hp == before.hp);
+        CHECK(you.gold == before.gold);
+        CHECK(you.time_taken == before.time_taken);
+        CHECK(you.turn_is_over == before.turn_is_over);
+        CHECK(you.form == before.form);
+        CHECK(you.inv[0].flags == before.inv[0].flags);
+        CHECK(you.inv[0].quantity == before.inv[0].quantity);
+        CHECK(you.equipment.get_slot_items(SLOT_ALL_EQUIPMENT).empty());
+    }
+}
+
+TEST_CASE("issue172: real weapon removal and equipment preview use unwield",
+          "[zh-translation][issue-172][unwield]")
+{
+    init_properties();
+    init_mut_index();
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    unwind_var<bool> need_save(crawl_state.need_save, true);
+    no_notes suppress_notes;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 100;
+        you.equipment.update();
+        scoped_monspeak_world world;
+        item_def &weapon = you.inv[0];
+        weapon.base_type = OBJ_WEAPONS;
+        weapon.sub_type = WPN_SHORTBOW;
+        weapon.quantity = 1;
+        weapon.flags = ISFLAG_IDENTIFIED;
+        weapon.pos = ITEM_IN_INVENTORY;
+        weapon.link = 0;
+        weapon.slot = 'a';
+        rng::subgenerator fixed_rng(172, 172);
+        REQUIRE(make_item_randart(weapon, true));
+        weapon.flags |= ISFLAG_IDENTIFIED;
+        for (int prop = 0; prop < ART_PROPERTIES; ++prop)
+            artefact_set_property(weapon, static_cast<artefact_prop_type>(prop), 0);
+        artefact_set_property(weapon, ARTP_AC, 3);
+        equip_item(SLOT_WEAPON, 0, false, true);
+        REQUIRE(you.weapon() == &weapon);
+        const string verb = T_("unwield");
+        CHECK(item_unequip_verb(weapon) == verb);
+        if (language == lang_t::EN)
+            CHECK(verb == "unwield");
+        else
+            CHECK(verb != "unwield");
+        const string preview = get_item_description(weapon);
+        const string preview_prefix = T_("If you ") + verb + T_(" this ");
+        CHECK(preview.find(preview_prefix) != string::npos);
+        CHECK(preview.find("take off weapon") == string::npos);
+        const string expected = make_stringf(T_("You %s %s."), verb.c_str(),
+                                             weapon.name(DESC_YOUR).c_str());
+        string canonical;
+        {
+            ScopedLangEn english;
+            canonical = weapon.name(DESC_A);
+        }
+        const auto flags = weapon.flags;
+        you.time_taken = BASELINE_DELAY;
+        msgwin_temporary_mode temporary;
+        temporary_message_rollback rollback;
+        msg::tee messages;
+        do_equipment_change(nullptr, SLOT_WEAPON, {&weapon}, false);
+        CHECK(strip_tee_colour_tag(messages.get_store()).find(expected + "\n") == 0);
+        CHECK(messages.get_store().find("take off weapon") == string::npos);
+        CHECK(you.weapon() == nullptr);
+        CHECK(you.time_taken == BASELINE_DELAY / 2);
+        CHECK(weapon.flags == flags);
+        CHECK(weapon.quantity == 1);
+        CHECK(you.hp == 100);
+        CHECK(Options.language == language);
+        {
+            ScopedLangEn english;
+            CHECK(weapon.name(DESC_A) == canonical);
+        }
+        CHECK(Options.language == language);
     }
 }

@@ -48,6 +48,7 @@
 #include "item-status-flag-type.h"
 #include "item-use.h"
 #include "items.h"
+#include "lang-en-guard.h"
 #include "level-state-type.h"
 #include "libutil.h"
 #include "makeitem.h"
@@ -656,33 +657,51 @@ void maybe_clear_traitor(god_type god)
 bool active_penance(god_type god)
 {
     // Good gods only have active wrath when they hate your current god.
+#if TAG_MAJOR_VERSION == 34
     return player_under_penance(god)
            && !is_unavailable_god(god)
            && god != GOD_ASHENZARI
            && god != GOD_GOZAG
            && god != GOD_RU
            && god != GOD_HEPLIAKLQANA
-#if TAG_MAJOR_VERSION == 34
            && god != GOD_PAKELLAS
-#endif
            && god != GOD_ELYVILON
            && (god == you.religion && !(is_good_god(god) || god == GOD_BEOGH)
                || god_hates_your_god(god, you.religion));
+#else
+    return player_under_penance(god)
+           && !is_unavailable_god(god)
+           && god != GOD_ASHENZARI
+           && god != GOD_GOZAG
+           && god != GOD_RU
+           && god != GOD_HEPLIAKLQANA
+           && god != GOD_ELYVILON
+           && (god == you.religion && !(is_good_god(god) || god == GOD_BEOGH)
+               || god_hates_your_god(god, you.religion));
+#endif
 }
 
 // True for gods whose wrath is passive and expires with XP gain.
 bool xp_penance(god_type god)
 {
+#if TAG_MAJOR_VERSION == 34
     return player_under_penance(god)
            && !is_unavailable_god(god)
            && (god == GOD_ASHENZARI
                || god == GOD_GOZAG
                || god == GOD_HEPLIAKLQANA
-#if TAG_MAJOR_VERSION == 34
                || god == GOD_PAKELLAS
-#endif
                || god == GOD_ELYVILON)
            && god_hates_your_god(god, you.religion);
+#else
+    return player_under_penance(god)
+           && !is_unavailable_god(god)
+           && (god == GOD_ASHENZARI
+               || god == GOD_GOZAG
+               || god == GOD_HEPLIAKLQANA
+               || god == GOD_ELYVILON)
+           && god_hates_your_god(god, you.religion);
+#endif
 }
 
 void dec_penance(god_type god, int val)
@@ -4054,9 +4073,49 @@ void god_pitch(god_type which_god)
         mpr(T_("You bow before the missionary of Beogh."));
     else
     {
-        mprf(T_("You %s the altar of %s."),
-             get_form()->player_prayer_action().c_str(),
-             god_name(which_god).c_str());
+        string action;
+        {
+            ScopedLangEn canonical_language;
+            action = get_form()->player_prayer_action();
+        }
+        // Route by the canonical action; only the complete UI sentence and
+        // god name are translated. Form/species/flying priority stays upstream.
+        static const struct
+        {
+            const char *action;
+            const char *sentence;
+        } prayers[] =
+        {
+            { "kneel at", N_("You kneel at the altar of %s.") },
+            { "sit before", N_("You sit before the altar of %s.") },
+            { "curl up in front of", N_("You curl up in front of the altar of %s.") },
+            { "coil in front of", N_("You coil in front of the altar of %s.") },
+            { "hover solemnly before", N_("You hover solemnly before the altar of %s.") },
+            { "sway towards", N_("You sway towards the altar of %s.") },
+            { "perch on", N_("You perch on the altar of %s.") },
+            { "swirl around", N_("You swirl around the altar of %s.") },
+            { "bow your head before", N_("You bow your head before the altar of %s.") },
+            { "release spores on", N_("You release spores on the altar of %s.") },
+            { "squish down before", N_("You squish down before the altar of %s.") },
+            { "crawl onto", N_("You crawl onto the altar of %s.") },
+            { "place yourself before", N_("You place yourself before the altar of %s.") },
+            { "curl up before", N_("You curl up before the altar of %s.") },
+            { "unroll yourself before", N_("You unroll yourself before the altar of %s.") },
+            { "scuttle before", N_("You scuttle before the altar of %s.") },
+        };
+        const char *sentence = nullptr;
+        for (const auto &prayer : prayers)
+            if (action == prayer.action)
+            {
+                sentence = prayer.sentence;
+                break;
+            }
+        const string god = god_name(which_god);
+        if (sentence)
+            mprf(T_(sentence), god.c_str());
+        else
+            mprf(T_("You %s the altar of %s."),
+                 get_form()->player_prayer_action().c_str(), god.c_str());
     }
     // these are included in default force_more_message
 

@@ -1170,19 +1170,18 @@ void origin_acquired(item_def &item, int agent)
     item.orig_monnum = -agent;
 }
 
-static string _milestone_collectible(const item_def &item)
+string collectible_milestone(const item_def &item)
 {
-    return string(T_("found "))
-           + item.name(DESC_A)
-           + (T_("."));
+    ScopedLangEn canonical_language;
+    return "found " + item.name(DESC_A) + ".";
 }
 
 void milestone_check(const item_def &item)
 {
     if (item.base_type == OBJ_RUNES)
-        mark_milestone("rune", _milestone_collectible(item));
+        mark_milestone("rune", collectible_milestone(item));
     else if (item.base_type == OBJ_GEMS)
-        mark_milestone("gem.found", _milestone_collectible(item));
+        mark_milestone("gem.found", collectible_milestone(item));
     else if (item_is_orb(item))
         mark_milestone("orb", "found the Orb of Zot!");
 }

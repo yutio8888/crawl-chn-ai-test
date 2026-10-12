@@ -4583,11 +4583,14 @@ int get_real_mp(bool include_items)
 /// Does the player currently regenerate hp? Used for resting.
 bool player_regenerates_hp()
 {
-    return !regeneration_is_inhibited()
 #if TAG_MAJOR_VERSION == 34
+    return !regeneration_is_inhibited()
     && !you.has_mutation(MUT_NO_REGENERATION)
-#endif
     ;
+#else
+    return !regeneration_is_inhibited()
+    ;
+#endif
 }
 
 bool player_regenerates_mp()
@@ -4677,11 +4680,14 @@ void contaminate_player(int change, bool controlled, bool msg)
 
     if (change > 0)
     {
-        const int mul = you.has_mutation(MUT_CONTAMINATION_SUSCEPTIBLE)
 #if TAG_MAJOR_VERSION == 34
+        const int mul = you.has_mutation(MUT_CONTAMINATION_SUSCEPTIBLE)
                             || you.unrand_equipped(UNRAND_ETHERIC_CAGE)
-#endif
                             ? 2 : 1;
+#else
+        const int mul = you.has_mutation(MUT_CONTAMINATION_SUSCEPTIBLE)
+                            ? 2 : 1;
+#endif
 
         change *= mul;
     }
@@ -5034,11 +5040,14 @@ int poison_survival()
     int regen_beats_poison;
     if (rr <= (int) min_poison_rate)
     {
-        regen_beats_poison =
 #if TAG_MAJOR_VERSION == 34
+        regen_beats_poison =
          dd ? 25000 :
-#endif
               0;
+#else
+        regen_beats_poison =
+              0;
+#endif
     }
     else
     {
@@ -5184,7 +5193,7 @@ void dec_sticky_flame_player(int delay)
         max(0, you.duration[DUR_STICKY_FLAME]
                     - (delay * (1 + you.wearing_jewellery(AMU_DISSIPATION))));
 
-    if (you.duration[DUR_STICKY_FLAME == 0])
+    if (you.duration[DUR_STICKY_FLAME] == 0)
     {
         mprf(MSGCH_RECOVERY, T_("The liquid flame finally runs out."));
         end_sticky_flame_player();
@@ -7415,11 +7424,14 @@ bool player::res_torment() const
     if (you.get_mutation_level(MUT_TORMENT_RESISTANCE) >= 2)
         return true;
 
-    return get_form()->res_neg() == 3
 #if TAG_MAJOR_VERSION == 34
+    return get_form()->res_neg() == 3
            || you.unrand_equipped(UNRAND_ETERNAL_TORMENT)
-#endif
            ;
+#else
+    return get_form()->res_neg() == 3
+           ;
+#endif
 }
 
 bool player::res_polar_vortex() const
