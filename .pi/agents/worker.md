@@ -1,7 +1,7 @@
 ---
 name: worker
 description: General project implementation agent for explicitly assigned work without a specialized project writer
-model: openai-codex/gpt-6.1-sol
+model: opencode-go/deepseek-v4.1-flash
 fallbackModels: openai-codex/gpt-6.1-sol
 thinking: medium
 systemPromptMode: replace
