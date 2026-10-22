@@ -1423,7 +1423,7 @@ public:
      */
     string get_untransform_message() const override
     {
-        return T_("Your hands return to normal.");
+        return T_("Your third eye closes.");
     }
 };
 
@@ -1460,10 +1460,23 @@ public:
         return T_("Your mantle of jade crumbles away.");
     }
 
-    // Percentage HP increase of crystals
+    // HP of crystals
     int get_effect_size(int skill = -1) const override
     {
-        return max(0, scaling_value(FormScaling().Base(100).Scaling(75), skill));
+        return max(0, scaling_value(FormScaling().Base(13).Scaling(12), skill));
+    }
+
+    // Indomitable HP on fully charging. (...not really a 'chance')
+    int get_effect_chance(int skill = -1) const override
+    {
+        return max(10, scaling_value(FormScaling().Base(15).Scaling(20), skill));
+    }
+
+    // Flat bonus to elemental magic skills (x10).
+    // Caps at +2 at minskill, but is worse below that.
+    int get_skill_bonus(int skill = -1) const
+    {
+        return min(20, max(0, scaling_value(FormScaling().Base(20).Scaling(20), skill)));
     }
 };
 
@@ -1475,10 +1488,10 @@ private:
 public:
     static const FormHypnogecko &instance() { static FormHypnogecko inst; return inst; }
 
-    // Percentage HP increase of shed tail
+    // HP of shed tail
     int get_effect_size(int skill = -1) const override
     {
-        return max(0, scaling_value(FormScaling().Base(100).Scaling(100), skill));
+        return max(0, scaling_value(FormScaling().Base(12).Scaling(12), skill));
     }
 
     // Additional chance to land distraction stabs
@@ -2191,6 +2204,11 @@ static void _on_enter_form(transformation which_trans)
         you.redraw_evasion = true;
         break;
 
+    case transformation::vision:
+        mpr(T_("You can see so much more now...."));
+        update_vision_range();
+        break;
+
     case transformation::jademantle:
         jademantle_handle_crystal_revival(true);
         break;
@@ -2502,6 +2520,11 @@ void untransform(bool skip_move, bool scale_hp, bool preserve_equipment,
         you.redraw_armour_class = true;
         you.redraw_evasion = true;
     }
+    else if (old_form == transformation::vision)
+    {
+        mpr(T_("Your vision is no longer so expansive."));
+        update_vision_range();
+    }
     else if (old_form == transformation::jademantle)
     {
         for (monster_iterator mi; mi; ++mi)
@@ -2739,6 +2762,33 @@ void clear_form_info_on_exit()
         delete entry.special_dice;
 }
 
+// Returns whether the player's current form was the only base form the player
+// gained XP in, starting at a specific XL. (In other words, they stayed in
+// their current default form essentially the entire time from that point onward.)
+bool player_exclusively_used_form_since(int xl)
+{
+    if (you.experience_level < xl)
+        return false;
+
+    // First check that this form was at least used for every XL since then.
+    for (int i = xl - 1; i < you.experience_level; ++i)
+        if (you.xp_by_form[i][static_cast<int>(you.default_form)] == 0)
+            return false;
+
+    // Now see if any *other* form was used at any point.
+    for (int form = 0; form < NUM_TRANSFORMS; ++form)
+    {
+        if (form == static_cast<int>(you.default_form))
+            continue;
+
+        for (int i = xl - 1; i < you.experience_level; ++i)
+            if (you.xp_by_form[i][form] != 0)
+                return false;
+    }
+
+    return true;
+}
+
 void sphinx_notice_riddle_target(monster* mon)
 {
     if (!mon->is_peripheral() && !mons_aligned(&you, mon))
@@ -2912,6 +2962,7 @@ static monster* _jademantle_make_crystal(monster_type type, bool quiet)
 {
     mgen_data mg(type, BEH_FRIENDLY, you.pos(), MHITYOU);
     mg.set_summoned(&you, MON_SUMM_JADEMANTLE, 0, false, false);
+    mg.hp = get_form()->get_effect_size();
     coord_def pos = you.pos();
     switch (type)
     {
@@ -2935,10 +2986,6 @@ static monster* _jademantle_make_crystal(monster_type type, bool quiet)
         mon->behaviour = BEH_SEEK;
         mon->speed_increment = 80;
         you.props.erase(JADEMANTLE_CRYSTAL_REVIVAL_KEY + to_string(mon->type));
-
-        // Scale HP with shapeshifting skill.
-        mon->max_hit_points = mon->max_hit_points * get_form()->get_effect_size() / 100;
-        mon->hit_points = mon->max_hit_points;
 
         if (!quiet)
             mprf(T_("%s finishes recrystalising."), mon->name(DESC_THE).c_str());
@@ -3090,7 +3137,7 @@ void jademantle_crystal_charge(spell_type spell)
         mprf(MSGCH_DURATION, T_("Your mantle thrums with power."));
         const int dur = random_range(15, 20);
         you.increase_duration(DUR_RESISTANCE, dur);
-        you.duration[DUR_INDOMITABLE] += random_range(1500, 2500);
+        you.duration[DUR_INDOMITABLE] += get_form()->get_effect_chance() * random_range(90, 110);
 
         // Set their charge timers to the same duration, so that you can't have
         // just one uncharge and immediately rebuff yourself.
@@ -3208,7 +3255,10 @@ void mistmane_spew_potion(const coord_def& target)
     cloud.decay = 100;
     cloud_info ci(cloud.type, get_cloud_colour(cloud), 3, 0, you.pos(), KILL_YOU);
 
-    bolt visual = bolt::visual_beam(you.pos(), path.path_taken.front(), 10, ci.colour, tileidx_cloud(ci));
+    bolt visual = bolt::visual_beam(you.pos(),
+                                    path.path_taken.size() > 0 ? path.path_taken.front()
+                                                               : target,
+                                    10, ci.colour, tileidx_cloud(ci));
     visual.range = max_range;
     visual.aimed_at_spot = false;
     multi_beam multi(visual, MULTI_BEAM_WIDE, 3);

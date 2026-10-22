@@ -1067,7 +1067,7 @@ this gem. The people of the Swamp, who first carried this stone, struggled
 against insurmountable odds. They failed, but there is much to admire even in
 the ruin of their efforts.
 %%%%
-my sojourn through swampland
+my sojourns in swampland
 
 While purporting itself to be the personal account of a famous naturalist, it
 becomes clear upon reading that this book was compiled from multiple unrelated
@@ -1853,10 +1853,18 @@ collateral damage'.
 vision talisman
 
 A small charm bearing the likeness of an eye. It gives the wearer supernatural
-insight, allowing them to see invisible creatures and also the clouds of magical
-residue left behind whenever beings cast spells. Touching those clouds allows
-them to convert that leftover magic into unnerring projectiles against nearby foes.
-Alas, such wisdom comes at the cost of frailty.
+sight, allowing them to perceive the clouds of magical residue left behind
+whenever beings cast spells. Touching those clouds allows them to convert that
+leftover magic into unnerring projectiles against nearby foes.
+
+This third eye even allows one to see from further distances than would
+otherwise be possible{{
+    if you.get_base_mutation_level("+LOS") > 0 then
+        return " (but your own vision is already as long as possible)."
+    else
+        return ", but be warned - creatures perceived this way will perceive you back."
+    end
+}}
 %%%%
 wand of acid
 

@@ -1186,3 +1186,37 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(Options.language == language);
     }
 }
+
+
+TEST_CASE("trunk sync: new Lua bindings retain English identities",
+          "[zh-translation][trunk-sync][lua-protocol]")
+{
+    init_properties();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore_player(you);
+        issue149_player();
+        you.mutation[MUT_CLARITY] = 1;
+        you.attribute[ATTR_CHANNELLED_SPELL] = SPELL_NO_SPELL;
+        int result = clua.execstring(
+            "assert(you.channelled_spell() == nil, 'idle channel identity'); "
+            "local found = false; for _, value in ipairs(you.passives()) do "
+            "if value == 'clarity' then found = true end end; "
+            "assert(found, 'canonical passive identity')");
+        INFO(clua.error);
+        REQUIRE(result == 0);
+        CHECK(Options.language == language);
+        const auto displayed = player_passive_effects();
+        CHECK(find(displayed.begin(), displayed.end(), string(T_("clarity"))) != displayed.end());
+        if (language == lang_t::ZH)
+            CHECK(string(T_("clarity")) != "clarity");
+        you.attribute[ATTR_CHANNELLED_SPELL] = SPELL_SEARING_RAY;
+        result = clua.execstring(
+            "assert(you.channelled_spell() == 'Searing Ray', 'canonical channel identity')");
+        INFO(clua.error);
+        REQUIRE(result == 0);
+        CHECK(Options.language == language);
+        CHECK(you.attribute[ATTR_CHANNELLED_SPELL] == SPELL_SEARING_RAY);
+    }
+}

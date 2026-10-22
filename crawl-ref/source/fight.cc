@@ -389,7 +389,7 @@ static void _do_medusa_stinger()
     vector<monster*> targs;
     for (monster_near_iterator mi(&you, LOS_NO_TRANS); mi; ++mi)
     {
-        if (mi->attitude() == ATT_HOSTILE && !mi->is_firewood()
+        if (mi->hostile() && !mi->is_firewood()
             && grid_distance(you.pos(), mi->pos()) <= 2)
         {
             targs.push_back(*mi);
@@ -1154,12 +1154,15 @@ bool player_unrand_bad_target(const item_def *weapon,
  */
 bool should_cleave_into(const actor &attacker, const actor &defender)
 {
+    // The player should only cleave into neutrals if they're frenzied.
+    if (attacker.is_player() && defender.attitude() == ATT_NEUTRAL
+        && !defender.as_monster()->has_ench(ENCH_FRENZIED))
+    {
+        return false;
+    }
+
     if (could_harm_enemy(&attacker, &defender))
         return true;
-
-    // The player should only cleave into neutrals if they're frenzied.
-    if (attacker.is_player() && defender.attitude() == ATT_NEUTRAL)
-        return defender.as_monster()->has_ench(ENCH_FRENZIED);
 
     // The defender is either immune to the attack's efforts or not an enemy.
     return false;

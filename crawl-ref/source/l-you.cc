@@ -1087,7 +1087,7 @@ static int you_have_rune(lua_State *ls)
 /*** Are you intrinsically immune to this particular hex spell?
  * @tparam string spell name
  * @treturn boolean
- * @function you_immune_to_hex
+ * @function immune_to_hex
  */
 static int you_immune_to_hex(lua_State *ls)
 {
@@ -1396,6 +1396,42 @@ LUAFN(you_status)
     PLUARET(string, status_effects.c_str());
 }
 
+/*** List passive effects.
+ * @treturn table A table of strings describing each passive
+ * @function passives
+ */
+LUAFN(you_passives)
+{
+    vector<string> passives;
+    {
+        ScopedLangEn english;
+        passives = player_passive_effects();
+    }
+    return clua_stringtable(ls, passives);
+}
+
+/*** Checks which spell you are channelling.
+ * @treturn string|nil The name of the spell being channelled or nil if the
+ * player is not channelling a spell.
+ * @function channelled_spell
+ */
+LUAFN(you_channelled_spell)
+{
+    const spell_type spell = (spell_type)you.attribute[ATTR_CHANNELLED_SPELL];
+    if (spell == SPELL_NO_SPELL)
+        lua_pushnil(ls);
+    else
+    {
+        string title;
+        {
+            ScopedLangEn english;
+            title = spell_title(spell);
+        }
+        lua_pushstring(ls, title.c_str());
+    }
+    return 1;
+}
+
 /*** Is your quivered action valid?
  * @treturn boolean
  * @function quiver_valid
@@ -1600,7 +1636,9 @@ static const struct luaL_Reg you_clib[] =
     { "constricted",  you_constricted },
     { "constricting", you_constricting },
     { "status",       you_status },
+    { "passives",     you_passives },
     { "immune_to_hex", you_immune_to_hex },
+    { "channelled_spell", you_channelled_spell},
     { "reach_range", you_reach_range },
     { "movement_cost", you_movement_cost },
 

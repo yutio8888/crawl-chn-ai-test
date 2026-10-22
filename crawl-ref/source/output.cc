@@ -3453,7 +3453,7 @@ static string _rampage_passive_string()
     return desc;
 }
 
-static string _extra_passive_effects()
+vector<string> player_passive_effects()
 {
     vector<string> passives;
 
@@ -3557,6 +3557,12 @@ static string _extra_passive_effects()
                                                           : "MP").c_str());
     }
 
+    return passives;
+}
+
+static string _extra_passive_effects()
+{
+    const vector<string> passives = player_passive_effects();
     if (passives.empty())
         return T_("no passive effects");
     else

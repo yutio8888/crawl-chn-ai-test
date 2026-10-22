@@ -1529,8 +1529,8 @@ string sub_type_string(const item_def &item, bool known)
             return T_("Handbook of Applied Construction");
         case BOOK_TRAPS:
             return T_("Treatise on Traps");
-        case BOOK_SWAMP_SOJOURN:
-            return T_("My Sojourn through Swampland");
+        case BOOK_SWAMP_SOJOURNS:
+            return T_("My Sojourns in Swampland");
 #if TAG_MAJOR_VERSION == 34
         case BOOK_AKASHIC_RECORD:
             return "Akashic Record";
