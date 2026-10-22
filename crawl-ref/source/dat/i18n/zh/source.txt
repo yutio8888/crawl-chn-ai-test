@@ -46109,3 +46109,102 @@ piety conduct|Tithed
 %%%%
 DLua errors:\n
 DLua错误：\n
+%%%%
+the equivalent of %d.%d XLs
+相当于%d.%d个角色等级的经验
+%%%%
+about %d.%d XLs
+约%d.%d个角色等级的经验
+%%%%
+you would reach %1$d.%2$d in %3$s.
+你将用%3$s达到%1$d.%2$d。
+%%%%
+you reach %1$d.%2$d in %3$s.
+你用%3$s达到%1$d.%2$d。
+%%%%
+You cannot currently reach %d.%d.
+你目前无法达到%d.%d。
+%%%%
+%s, your spell failure would %s:\n
+%s，你的法术失败率会%s：\n
+%%%%
+If you %s this item
+如果你%s这件物品
+%%%%
+If you mastered this skill
+如果你精通此技能
+%%%%
+If you trained 1 level of this skill
+如果你将此技能提升1级
+%%%%
+\nWith your current stats and equipment, %s this skill would
+\n以你当前的属性和装备，%s此技能会
+%%%%
+\nIt would also
+\n此外还会
+%%%%
+ worsen
+提高
+%%%%
+ improve
+降低
+%%%%
+ your spell failure
+你的法术失败率
+%%%%
+ by up to %d%%%s.
+，最多%d%%%s。
+%%%%
+ (press '!' for details)
+（按'!'查看详情）
+%%%%
+You cannot reach a failure rate of %d%% for this spell by training only its schools.\n
+仅训练此法术所属的学派，无法将其失败率降至%d%%。\n
+%%%%
+With your current stats and equipment, training %s to %d.%d would reduce your failure rate to %d%%.
+以你当前的属性和装备，将%s训练至%d.%d可使失败率降至%d%%。
+%%%%
+ This would take %s.
+这需要%s。
+%%%%
+Charge heal
+充能治疗
+%%%%
+Elem skill
+元素技能
+%%%%
+LoS
+视野
+%%%%
+Non-elemental magic skill
+非元素魔法技能
+%%%%
+My Sojourns in Swampland
+我的沼泽之旅
+%%%%
+amulet of Tranquillity
+宁静项链
+%%%%
+ permits no harm to come to the repentant %s.
+不容许悔过的%s受到伤害。
+%%%%
+Elyvilon prevents you from doing harm to neutral creatures.
+艾利维隆阻止你伤害中立生物。
+%%%%
+Your third eye closes.
+你的第三只眼闭合了。
+%%%%
+You can see so much more now....
+你现在能看到更远的地方了……
+%%%%
+Your vision is no longer so expansive.
+你的视野不再那么辽阔了。
+%%%%
+It provides +5 SH for each of five conditions: You have at least 20 intelligence; at least 25 base EV; at least 15 base Invocations skill; at least +++++ stealth; your Staves skill is your highest skill, or is at the maximum skill level.
+以下五项条件每满足一项，就提供+5护盾值：智力至少20；基础闪避至少25；基础祈祷技能至少15；潜行至少+++++；棍杖技能是你最高的技能，或已达到最高等级。
+%%%%
+jademantle-form
+玉衣形态
+%%%%
+skill training| trivially.
+，幅度极小。

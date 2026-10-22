@@ -1390,8 +1390,8 @@ static string _skill_target_desc(skill_type skill, int scaled_target,
                                     training);
 
     description += make_stringf_p(
-        T_("you %1$sreach %2$d.%3$d in %4$s."),
-        hypothetical ? T_("would ") : "",
+        hypothetical ? T_("you would reach %1$d.%2$d in %3$s.")
+                     : T_("you reach %1$d.%2$d in %3$s."),
         scaled_target / 10, scaled_target % 10,
         _xl_cost_desc(diffs.experience).c_str());
     if (you.wizard)
@@ -4919,7 +4919,7 @@ static string _get_skill_training_change(skill_type skill,
         description += (fail_change > 0) ? T_(" worsen") : T_(" improve");
         description += T_(" your spell failure");
         if (visible_fail_change == 0)
-            description += T_(" trivially.");
+            description += C_("skill training", " trivially.");
         else
         {
             description += make_stringf(T_(" by up to %d%%%s."),

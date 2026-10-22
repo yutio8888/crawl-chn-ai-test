@@ -54,8 +54,9 @@ amorphous state	无定形	domain=mutations; source=EN/ZH; 依据 / 作用域=for
 amphisbaena-form	双头蛇形态	domain=magic; source=EN/ZH; 依据 / 作用域=form 名称／伤害标签；serpent:long_name；decision=D-C-098
 amulet	项链	domain=items; source=EN/ZH
 amulet of the Air	空气项链	domain=items; source=EN/ZH; Scope / comment=unrand; decision=D-B-021
-amulet of the Four Winds	四方之风项链	domain=items; source=EN/ZH; 依据 / 作用域=旧神器名仅保留兼容；当前改用 amulet of Tranquility；decision=D-C-095
-amulet of Tranquility	宁静项链	domain=items; source=EN/ZH; 依据 / 作用域=art-data.txt；Four Winds 改名，保留 tranquility 字面意象；decision=D-C-095
+amulet of the Four Winds	四方之风项链	domain=items; source=EN/ZH; 依据 / 作用域=旧神器名仅保留兼容；当前改用 amulet of Tranquillity；decision=D-C-099
+amulet of Tranquility	宁静项链	domain=items; source=EN/ZH; 依据 / 作用域=旧拼写兼容；当前上游名为 amulet of Tranquillity；decision=D-C-099
+amulet of Tranquillity	宁静项链	domain=items; source=EN/ZH; 依据 / 作用域=art-data.txt；上游双 l 拼写修正，沿用既有译名；decision=D-C-099
 anaconda	水蟒	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 ancestor	先祖	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Ancestor Life: Elementalist	先祖生涯：元素师	domain=abilities; source=EN/ZH; 依据 / 作用域=ability.cc；先祖类型 Elementalist，非新玩家背景；decision=D-C-095

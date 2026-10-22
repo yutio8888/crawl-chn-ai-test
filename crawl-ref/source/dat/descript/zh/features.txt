@@ -1412,7 +1412,7 @@ an empty mutation catalyst
 an earthen dragon vein
 
 一条暴露在外的土魔法地脉。踏上它便能汲取其力量，
-引发冲击波，伤害距离最近的三个敌人。对远处和飞行中的敌人造成的伤害会大幅降低。
+引发冲击波，伤害距离最近的两个敌人。对远处和飞行中的敌人造成的伤害会大幅降低。
 %%%%
 a fiery dragon vein
 
