@@ -43,7 +43,7 @@ PRODUCTION_ZH_ARTIFACT_SHA256 = (
     "1d6505e1923a3cb021dafd4457a14ae7dba6e825445bdf9e670232a4bdcb4eca"
 )
 CURRENT_INVENTORY_SHA256 = (
-    "f392cc087c2633b61e595fd9849c3262e6d1cb3990b1b6acbde30e8594980e33"
+    "35de5cdfe4f82942d71be3f1e16045bf603a3c0fc8efc604c26243c91ae3e2cb"
 )
 
 
@@ -2198,6 +2198,10 @@ class MonspellInventoryTests(unittest.TestCase):
 
 
 class TrunkLedgerScopeTests(unittest.TestCase):
+    TRUNK_ADDITIONS = {
+        "shadow creatures strange machine cast",
+        "summon illusion strange machine cast",
+    }
     BASELINES = {
         "monspell": PRODUCTION_BASELINE,
         "wpnnoise": "7b56bccf9ce06646b65acf056b1445ad2999512d",
@@ -2223,10 +2227,15 @@ class TrunkLedgerScopeTests(unittest.TestCase):
         self.assertIn("不能当成当前 trunk 的全量通过结论", text)
         for label, data in [("EN", en_input.bytes), ("ZH", zh_input.bytes)]:
             self.assertIn(f"{label} source SHA-256: `{hashlib.sha256(data).hexdigest()}`", text)
-        self.assertEqual(
-            AuditSnapshot(ROOT, _git_plumbing(["rev-parse", "c55cf7f7a5"]),
-                          require_head=False).read(zh_path).bytes, zh_input.bytes,
-        )
+        frozen_zh = {
+            e.canonical_key: e for e in parse_entries_physical(
+                AuditSnapshot(ROOT, _git_plumbing(["rev-parse", "c55cf7f7a5"]),
+                              require_head=False).read(zh_path))
+        }
+        additions = self.TRUNK_ADDITIONS if domain == "monspell" else set()
+        self.assertEqual(set(frozen_zh) | additions, set(zh))
+        for key, entry in frozen_zh.items():
+            self.assertEqual(entry.value, zh[key].value, key)
 
         def variants(entry):
             result, error = MODULE.shared._parse_weighted_entry(
@@ -2293,7 +2302,7 @@ class TrunkLedgerScopeTests(unittest.TestCase):
         drift = json.loads((ROOT / ".claude/data/message-overlay/monspell-drift-audit.json").read_text())
         self.assertEqual(
             {r[0] for r in rows if r[2] == "new-key"},
-            {entry["key"] for entry in drift["new-uncovered"]},
+            {entry["key"] for entry in drift["new-uncovered"]} | self.TRUNK_ADDITIONS,
         )
         self.assertEqual(
             self.RENAMES,

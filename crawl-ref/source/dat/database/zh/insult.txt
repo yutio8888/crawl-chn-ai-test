@@ -32,13 +32,13 @@ w:3
 %%%%
 demon_taunt_special
 
-你的@body_or_spiritual_part@将成为我的@meal@！
+现在，@thy_body_or_spiritual_part@将成为我的@meal@！
 
 @give_up@，你这美味的@meal@！
 
 @run_away@，@whilst_thou_can@！
 
-我@will_or_shall@@feast_or_devour@你的@body_or_spiritual_part@！
+我@will_or_shall@@feast_or_devour@@thy_body_or_spiritual_part@！
 %%%%
 # 首字母大写的"逃跑"动词
 run_away
@@ -182,65 +182,65 @@ whilst_thou_can
 
 趁你还活着
 %%%%
-body_or_spiritual_part
+thy_body_or_spiritual_part
 
 w:3
-@important_body_part@
+@thine_important_body_part@
 
 w:1
-@important_spiritual_part@
+@thine_important_spiritual_part@
 %%%%
-important_body_part
+thine_important_body_part
 
-头
+你的头
 
-脑子
+你的脑子
 
-心脏
+你的心脏
 
-内脏
+你的内脏
 
-眼睛
+你的眼睛
 
-肺
+你的肺
 
-肝
+你的肝
 
-喉咙
+你的喉咙
 
-脖子
+你的脖子
 
-胃
+你的胃
 
-颅骨
+你的颅骨
 
-脊梁
+你的脊梁
 %%%%
-important_spiritual_part
+thine_important_spiritual_part
 
-灵魂
+你的灵魂
 
-精神
+你的精神
 
-内心之光
+你的内心之光
 
-希望
+你的希望
 
-信念
+你的信念
 
-意志
+你的意志
 
-心灵
+你的心灵
 
-心智
+你的心智
 
-理智
+你的理智
 
-毅力
+你的毅力
 
-生命力
+你的生命力
 
-元气
+你的元气
 %%%%
 will_or_shall
 

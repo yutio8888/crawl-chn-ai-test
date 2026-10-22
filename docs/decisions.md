@@ -4502,6 +4502,10 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ### D-C-099 — 2026-10-22 trunk 同步中的 Tranquillity 拼写修正
 
+- **Type**: C — Upstream spelling alignment
+- **Status**: active
+- **Date**: 2026-10-22
+
 - 上游范围：`43d89d912df097cc41fa7509e05999a01c92d1b3` → `32f959a6b094e375b291c6452be3bc58c622a7bf`。
 - `art-data.txt` 与 TextDB 的当前英文身份统一为 `amulet of Tranquillity`（双 l），中文仍沿用 D-C-095 的“宁静项链”。
 - `amulet of Tranquility` 仅作为旧拼写兼容项保留；不把已更正的上游 lookup key 翻译成中文，也不把本次拼写修正当成另一件神器。
