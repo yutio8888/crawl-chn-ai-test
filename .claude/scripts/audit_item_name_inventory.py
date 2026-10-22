@@ -1120,11 +1120,11 @@ RANDART_METRICS = {
     },
     "rand_wpn.txt": {
         "grammar_keys": 45,
-        "physical_variant_identities": 846,
-        "raw_nonempty_grammar_lines": 868,
+        "physical_variant_identities": 848,
+        "raw_nonempty_grammar_lines": 870,
         "explicit_weight_marker_lines": 22,
         "continuation_lines": 0,
-        "weight_mass": 8356,
+        "weight_mass": 8376,
     },
     "rand_arm.txt": {
         "grammar_keys": 19,
@@ -1311,9 +1311,9 @@ def unrand_rows(db, source_db, base_db, base_source_db, review_base):
         if base_source_db.get(key) != source_db.get(key):
             changed_names.add(key)
     expected_changed_names = {
-        # Issue #147: 13 new upstream definitions, Prune and Tranquility
+        # Issue #147: 13 new upstream definitions, Prune and Tranquillity
         # renames, plus the three surviving pre-trunk reviewed name changes.
-        "amulet of the air", "amulet of tranquility", "arcane splint mail",
+        "amulet of the air", "amulet of tranquillity", "arcane splint mail",
         'athame "fimbulwinter"', "bone scales", "coolibah bardiche",
         "fire dragon occultist's scales", "forgewarden's cuirass",
         "ghost crab claws", 'giant spiked club "carina at dusk"',
@@ -2346,7 +2346,7 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
         "special": 23,
         "gizmo": 543,
         "item-description": 317,
-        "randart-component": 2443,
+        "randart-component": 2445,
         "randart-grammar": 115,
     }
     if dict(counts) != expected_counts:
@@ -2408,11 +2408,11 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
     }
     expected_randart_totals = {
         "grammar_keys": 115,
-        "physical_variant_identities": 2443,
-        "raw_nonempty_grammar_lines": 2737,
+        "physical_variant_identities": 2445,
+        "raw_nonempty_grammar_lines": 2739,
         "explicit_weight_marker_lines": 293,
         "continuation_lines": 1,
-        "weight_mass": 27334,
+        "weight_mass": 27354,
     }
     if randart_totals != expected_randart_totals:
         raise RuntimeError(

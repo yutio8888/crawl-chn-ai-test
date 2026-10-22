@@ -913,7 +913,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                          payload["schema"])
         self.assertEqual(398, payload["count"])
         self.assertEqual(
-            "0089c11c7a248d4503ea18f6708f3420f03acf75859395062ff479d4e6428413",
+            "35a9b6065482079f501befbee3aeb40220b6c78d334fb89f097631c3babef43c",
             payload["inventory_sha256"],
         )
         self.assertEqual(payload["count"], len(payload["rows"]))
@@ -1120,7 +1120,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                 "special": 23,
                 "gizmo": 543,
                 "item-description": 317,
-                "randart-component": 2443,
+                "randart-component": 2445,
                 "randart-grammar": 115,
             },
             payload["category_counts"],
@@ -1135,11 +1135,11 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertEqual(
             {
                 "grammar_keys": 115,
-                "physical_variant_identities": 2443,
-                "raw_nonempty_grammar_lines": 2737,
+                "physical_variant_identities": 2445,
+                "raw_nonempty_grammar_lines": 2739,
                 "explicit_weight_marker_lines": 293,
                 "continuation_lines": 1,
-                "weight_mass": 27334,
+                "weight_mass": 27354,
             },
             payload["scope"]["randart_component_metrics"]["totals"],
         )
