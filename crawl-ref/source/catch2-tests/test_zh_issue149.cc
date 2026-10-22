@@ -28,6 +28,7 @@
 #include "item-name.h"
 #include "items.h"
 #include "i18n.h"
+#include "lang-en-guard.h"
 #include "losglobal.h"
 #include "message.h"
 #include "mon-info.h"
@@ -58,6 +59,14 @@ extern map<branch_type, set<level_id>> stair_level;
 
 namespace
 {
+bool contains_non_ascii(const string &text)
+{
+    for (unsigned char c : text)
+        if (c >= 0x80)
+            return true;
+    return false;
+}
+
 void issue149_player()
 {
     you = player();
