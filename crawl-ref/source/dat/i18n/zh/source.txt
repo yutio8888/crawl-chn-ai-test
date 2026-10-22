@@ -19652,7 +19652,7 @@ Spells you cast may paralyse nearby enemies.
 你施放的法术可能会麻痹附近的敌人。
 %%%%
 The East Wind leaves your foes to susceptible to magic after you Rampage.
-东风使你在狂暴后敌人更容易受到魔法影响。
+东风会在你冲锋后使敌人更容易受到魔法影响。
 %%%%
 The North Wind lets you shrug off injuries taken while stampeding.
 北风让你能够无视奔踏时受到的伤害。
@@ -19661,7 +19661,7 @@ The South Wind quickens your rampage movements after stabbing.
 南风在刺击后加速你的冲锋移动。
 %%%%
 The West Wind empowers your ranged attacks as you Rampage.
-西风在你狂暴时增强你的远程攻击。
+西风在你冲锋时增强你的远程攻击。
 %%%%
 You feel the indomitable North Wind bolstering your fortitude.
 你感到刚毅的北风正使你更加坚韧。
@@ -23842,7 +23842,7 @@ destroy
 kill
 杀死
 %%%%
-You %s the %s!
+You %s %s!
 你%s了%s！
 %%%%
 That felt strangely unrewarding.
@@ -46001,3 +46001,111 @@ You can't remove jewellery in your present form.
 %%%%
 unwield
 卸下
+%%%%
+piety conduct|Evil
+邪恶行为
+%%%%
+piety conduct|Holy
+神圣行为
+%%%%
+piety conduct|Attack Holy
+攻击神圣生物
+%%%%
+piety conduct|Attack Neutral
+攻击中立生物
+%%%%
+piety conduct|Attack Friend
+攻击友方
+%%%%
+piety conduct|Kill Living
+杀死生灵
+%%%%
+piety conduct|Kill Undead
+杀死亡灵
+%%%%
+piety conduct|Kill Demon
+杀死恶魔
+%%%%
+piety conduct|Kill Natural Evil
+杀死邪恶的自然生物
+%%%%
+piety conduct|Kill Unclean
+杀死不洁生物
+%%%%
+piety conduct|Kill Chaotic
+杀死混沌生物
+%%%%
+piety conduct|Kill Wizard
+杀死施法者
+%%%%
+piety conduct|Kill Priest
+杀死祭司
+%%%%
+piety conduct|Kill Holy
+杀死神圣生物
+%%%%
+piety conduct|Kill Fast
+杀死快速生物
+%%%%
+piety conduct|Banishment
+放逐
+%%%%
+piety conduct|Spell Memorise
+记忆法术
+%%%%
+piety conduct|Spell Cast
+施放法术
+%%%%
+piety conduct|Spell Practise
+练习法术
+%%%%
+piety conduct|Cannibalism
+同类相食
+%%%%
+piety conduct|Deliberate Mutation
+主动变异
+%%%%
+piety conduct|Cause Glowing
+引发魔法污染
+%%%%
+piety conduct|Use Unclean
+使用不洁力量
+%%%%
+piety conduct|Use Chaos
+使用混沌力量
+%%%%
+piety conduct|Desecrate Orcish Remains
+亵渎兽人遗骸
+%%%%
+piety conduct|Kill Slime
+杀死史莱姆
+%%%%
+piety conduct|Was Hasty
+行动加速
+%%%%
+piety conduct|Attack In Sanctuary
+在庇护所内攻击
+%%%%
+piety conduct|Kill Nonliving
+杀死无生命生物
+%%%%
+piety conduct|Exploration
+探索
+%%%%
+piety conduct|Seen Monster
+发现怪物
+%%%%
+piety conduct|Sacrificed Love
+献祭爱
+%%%%
+piety conduct|Hurt Foe
+伤害敌人
+%%%%
+piety conduct|Use Wizardly Item
+使用施法物品
+%%%%
+piety conduct|Tithed
+缴纳什一奉献
+%%%%
+DLua errors:\n
+DLua错误：\n

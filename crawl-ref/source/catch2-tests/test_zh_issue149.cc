@@ -14,18 +14,23 @@
 #include "beam.h"
 #include "chardump.h"
 #include "colour.h"
+#include "clua.h"
 #include "branch.h"
 #include "dgn-overview.h"
 #include "dungeon.h"
 #include "env.h"
 #include "describe.h"
 #include "files.h"
+#include "format.h"
 #include "hiscores.h"
+#include "god-conduct.h"
 #include "item-prop.h"
 #include "item-name.h"
 #include "items.h"
 #include "i18n.h"
+#include "lang-en-guard.h"
 #include "losglobal.h"
+#include "message.h"
 #include "mon-info.h"
 #include "mon-death.h"
 #include "monster.h"
@@ -54,6 +59,14 @@ extern map<branch_type, set<level_id>> stair_level;
 
 namespace
 {
+bool contains_non_ascii(const string &text)
+{
+    for (unsigned char c : text)
+        if (c >= 0x80)
+            return true;
+    return false;
+}
+
 void issue149_player()
 {
     you = player();
@@ -946,5 +959,230 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(you.props[HEPLIAKLQANA_ALLY_NAME_KEY].get_string() == "Xochitl");
         CHECK(you.props[HEPLIAKLQANA_ALLY_TYPE_KEY].get_int() == MONS_ANCESTOR_HEXER);
         CHECK(you.raw_piety == 80);
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Issue 147 player kill sink emits one article and preserves identities",
+                 "[zh-translation][issue147][combat]")
+{
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> started(crawl_state.game_started, false);
+    unwind_var<bool> testing(crawl_state.test, true);
+    const mid_t old_last_mid = you.last_mid;
+    const int old_max_mon_index = env.max_mon_index;
+    const auto old_mid_cache = env.mid_cache;
+    vector<tuple<coord_def, dungeon_feature_type, unsigned short, uint32_t>> cells;
+    monster *target = nullptr;
+    issue149_player();
+    you.last_mid = old_last_mid;
+    you.on_current_level = true;
+    you.current_vision = LOS_DEFAULT_RANGE;
+    you.wizard_vision = true;
+    // Use the real allocator and lit-floor convention of the monster-list
+    // consumer test above; restore all touched world and allocator state.
+    unwinder restore_world([&]() {
+        if (target)
+            target->reset();
+        env.mid_cache = old_mid_cache;
+        env.max_mon_index = old_max_mon_index;
+        for (const auto& cell : cells)
+        {
+            env.grid(get<0>(cell)) = get<1>(cell);
+            env.mgrid(get<0>(cell)) = get<2>(cell);
+            env.level_map_ids(get<0>(cell)) = get<3>(cell);
+        }
+        invalidate_los();
+        invalidate_agrid();
+    });
+    for (int x = 12; x <= 28; ++x)
+        for (int y = 12; y <= 28; ++y)
+        {
+            const coord_def pos(x, y);
+            cells.emplace_back(pos, env.grid(pos), env.mgrid(pos), env.level_map_ids(pos));
+            env.grid(pos) = DNGN_FLOOR;
+            env.mgrid(pos) = NON_MONSTER;
+            env.level_map_ids(pos) = INVALID_MAP_INDEX;
+        }
+    invalidate_los();
+    invalidate_agrid();
+    target = get_free_monster();
+    REQUIRE(target != nullptr);
+    target->set_hit_dice(1);
+    target->hit_points = target->max_hit_points = 20;
+    target->base_attitude = ATT_HOSTILE;
+    target->set_position(coord_def(20, 21));
+    target->set_new_monster_id();
+    env.mgrid(target->pos()) = target->mindex();
+    struct kill_capture : msg::tee
+    {
+        msg_channel_type channel = MSGCH_PLAIN;
+        int appends = 0;
+        void append(const string &s, msg_channel_type ch) override
+        {
+            ++appends;
+            channel = ch;
+            msg::tee::append(s, ch);
+        }
+    };
+    struct rollback_messages
+    {
+        ~rollback_messages() { msgwin_clear_temporary(); }
+    };
+    // The exact production sink used by monster_die's existing guarded
+    // melee/missile/confusion branches; no death mechanics are recreated.
+    for (monster_type type : {MONS_RAT, MONS_SIGMUND, MONS_ROYAL_JELLY})
+    {
+        target->type = type;
+        REQUIRE(you.can_see(*target));
+        string canonical;
+        {
+            ScopedLangEn english;
+            canonical = target->name(DESC_THE);
+            CHECK(canonical == (type == MONS_RAT ? "the rat" :
+                type == MONS_SIGMUND ? "Sigmund" : "the Royal Jelly"));
+        }
+        for (lang_t language : {lang_t::ZH, lang_t::EN})
+        {
+            TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+            const string name = target->name(DESC_THE);
+            for (int action : {0, 1, 2})
+            {
+                const string verb = T_(action == 0 ? "kill" :
+                                       action == 1 ? "destroy" : "blow up");
+                const string expected = language == lang_t::EN
+                    ? "You " + verb + " " + name + "!"
+                    : "你" + verb + "了" + name + "！";
+                const player before = you;
+                const string history = get_last_messages(NUM_STORED_MESSAGES, true);
+                {
+                    msgwin_temporary_mode temporary;
+                    rollback_messages rollback;
+                    kill_capture capture;
+                    announce_player_kill(*target, action == 2, action == 1);
+                    const string emitted = formatted_string::parse_string(capture.get_store()).tostring();
+                    CAPTURE(type, language, action, emitted);
+                    CHECK(emitted == expected + "\n");
+                    CHECK(capture.appends == 1);
+                    CHECK(capture.channel == MSGCH_MONSTER_DAMAGE);
+                    CHECK(get_last_messages(1, true).find(expected) != string::npos);
+                }
+                CHECK(get_last_messages(NUM_STORED_MESSAGES, true) == history);
+                CHECK(target->name(DESC_THE) == name);
+                CHECK(target->type == type);
+                CHECK(target->hit_points == 20);
+                CHECK(you.time_taken == before.time_taken);
+                CHECK(you.num_turns == before.num_turns);
+                CHECK(you.turn_is_over == before.turn_is_over);
+                {
+                    ScopedLangEn english;
+                    CHECK(target->name(DESC_THE) == canonical);
+                }
+                CHECK(Options.language == language);
+            }
+        }
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Issue 147 actual diagnostic dumps translate labels but preserve canonical data",
+                 "[zh-translation][issue147][morgue][protocol]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    unwind_var<player> restore_player(you);
+    unwind_var<vector<string>> order(Options.dump_order, {"piety_info", "dlua_errors"});
+    unwind_var<string> directory(Options.morgue_dir, ".");
+    unwind_var<vector<CLuaError>> restore_errors(dlua_errors);
+    issue149_player();
+    you.max_level = 9;
+    you.religion = GOD_TROG;
+    auto &conducts = you.piety_info.conduct_info_by_god[GOD_TROG][1];
+    map<conduct_type, string> canonical;
+    for (int i = 0; i < NUM_CONDUCTS; ++i)
+    {
+        const auto conduct = static_cast<conduct_type>(i);
+        canonical[conduct] = conduct_description(conduct);
+        if (!canonical[conduct].empty())
+        {
+            conducts.piety_from_conducts[conduct] = 42.0f;
+            conducts.conducts_count[conduct] = 17;
+        }
+    }
+    const auto original_piety = conducts.piety_from_conducts;
+    const auto original_counts = conducts.conducts_count;
+    dlua_errors.clear();
+    CLuaError error;
+    error.message = "dlua test failure: Kill Living [source.lua:42]";
+    error.stack_trace = "stack traceback:\n  source.lua:42: in function 'Kill Demon'";
+    dlua_errors.push_back(error);
+    const string name = "catch2-issue147-diagnostics-" + to_string(getpid());
+    unwinder cleanup([name]() {
+        unlink_u((name + ".txt").c_str());
+        unlink_u((name + ".lst").c_str());
+    });
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        // An ordinary living-character dump still hides numeric piety;
+        // the diagnostic header and raw error remain available.
+        you.wizard = false;
+        you.suppress_wizard = false;
+        REQUIRE(dump_char(name, true, false));
+        {
+            ifstream live_file(name + ".txt");
+            REQUIRE(live_file.good());
+            const string live_dump((istreambuf_iterator<char>(live_file)), istreambuf_iterator<char>());
+            CHECK(live_dump.find(T_("Piety from conduct\n")) == string::npos);
+            CHECK(live_dump.find(string(T_("DLua errors:\n")) + error.message + "\n" + error.stack_trace + "\n") != string::npos);
+        }
+        // full_id permits the real post-game numeric piety section without
+        // broadening its normal living-character information gate.
+        REQUIRE(dump_char(name, true, true));
+        ifstream file(name + ".txt");
+        REQUIRE(file.good());
+        const string dump((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+        const string title = T_("DLua errors:\n");
+        CHECK(dump.find(title + error.message + "\n" + error.stack_trace + "\n") != string::npos);
+        if (language == lang_t::ZH)
+        {
+            CHECK(title != "DLua errors:\n");
+            CHECK(contains_non_ascii(title));
+        }
+        const size_t diagnostics = dump.find(title);
+        REQUIRE(diagnostics != string::npos);
+        const string piety_dump = dump.substr(0, diagnostics);
+        for (const auto &entry : canonical)
+        {
+            CHECK(conduct_description(entry.first) == entry.second);
+            if (entry.second.empty())
+                continue;
+            const string displayed = C_("piety conduct", entry.second.c_str());
+            CAPTURE(language, entry.second, displayed);
+            if (language == lang_t::ZH)
+            {
+                CHECK(displayed != entry.second);
+                CHECK(contains_non_ascii(displayed));
+            }
+            // Exercise both production conduct tables, including their values
+            // and totals, rather than formatting a substitute table in a test.
+            const string prefix = make_stringf("%20s ", displayed.c_str());
+            const size_t gain = piety_dump.find(prefix);
+            REQUIRE(gain != string::npos);
+            CHECK(piety_dump.substr(gain, piety_dump.find('\n', gain) - gain).find("42") != string::npos);
+            const size_t count = piety_dump.find(prefix, gain + prefix.size());
+            REQUIRE(count != string::npos);
+            CHECK(piety_dump.substr(count, piety_dump.find('\n', count) - count).find("17") != string::npos);
+        }
+        CHECK(conducts.piety_from_conducts == original_piety);
+        CHECK(conducts.conducts_count == original_counts);
+        REQUIRE(dlua_errors.size() == 1);
+        CHECK(dlua_errors[0].message == error.message);
+        CHECK(dlua_errors[0].stack_trace == error.stack_trace);
+        CHECK(Options.language == language);
     }
 }

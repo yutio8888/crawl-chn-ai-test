@@ -52,6 +52,9 @@ class monster;
 
 struct bolt;
 
+// Standard player-caused death announcement, shared by melee/missile/confusion.
+void announce_player_kill(const monster& mons, bool exploded, bool destroyed);
+
 item_def* monster_die(monster& mons, const actor *killer, bool silent = false,
                       bool mount_death = false);
 
