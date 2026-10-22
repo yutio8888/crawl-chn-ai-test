@@ -645,7 +645,8 @@ static string _sdump_god_conduct_info(god_type god, const map<int, ConductPietyI
     for (auto &pair : grouped_conducts.back().piety_from_conducts)
     {
         conduct_type conduct = pair.first;
-        out += make_stringf("%20s ", conduct_description(conduct).c_str());
+        const string description = conduct_description(conduct);
+        out += make_stringf("%20s ", C_("piety conduct", description.c_str()));
         for (int lt = 0; lt <= max_lt; lt++)
         {
             float piety = 0.0f;
@@ -667,7 +668,8 @@ static string _sdump_god_conduct_info(god_type god, const map<int, ConductPietyI
     for (auto &pair : grouped_conducts.back().conducts_count)
     {
         conduct_type conduct = pair.first;
-        out += make_stringf("%20s ", conduct_description(conduct).c_str());
+        const string description = conduct_description(conduct);
+        out += make_stringf("%20s ", C_("piety conduct", description.c_str()));
         for (int lt = 0; lt <= max_lt; lt++)
         {
             int count = 0;
@@ -1338,7 +1340,7 @@ static void _sdump_vault_list(dump_params &par)
 
 static void _sdump_dlua_errors(dump_params &par)
 {
-    par.text += "DLua errors:\n";
+    par.text += T_("DLua errors:\n");
     for (const CLuaError &error : dlua_errors)
     {
         par.text += error.message + "\n";

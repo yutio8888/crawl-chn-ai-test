@@ -2,6 +2,8 @@
 
 #include "god-conduct.h"
 
+#include "i18n.h"
+
 #include "areas.h"
 #include "env.h"
 #include "fprop.h"
@@ -62,33 +64,50 @@ static const char *conducts[] =
 {
     "",
 #if TAG_MAJOR_VERSION == 34
-    "Evil", "Holy",
+    NC_("piety conduct", "Evil"),
+    NC_("piety conduct", "Holy"),
 #endif
-    "Attack Holy", "Attack Neutral", "Attack Friend",
-    "Kill Living", "Kill Undead", "Kill Demon", "Kill Natural Evil",
-    "Kill Unclean", "Kill Chaotic", "Kill Wizard", "Kill Priest", "Kill Holy",
-    "Kill Fast", "Banishment",
+    NC_("piety conduct", "Attack Holy"),
+    NC_("piety conduct", "Attack Neutral"),
+    NC_("piety conduct", "Attack Friend"),
+    NC_("piety conduct", "Kill Living"),
+    NC_("piety conduct", "Kill Undead"),
+    NC_("piety conduct", "Kill Demon"),
+    NC_("piety conduct", "Kill Natural Evil"),
+    NC_("piety conduct", "Kill Unclean"),
+    NC_("piety conduct", "Kill Chaotic"),
+    NC_("piety conduct", "Kill Wizard"),
+    NC_("piety conduct", "Kill Priest"),
+    NC_("piety conduct", "Kill Holy"),
+    NC_("piety conduct", "Kill Fast"),
+    NC_("piety conduct", "Banishment"),
 #if TAG_MAJOR_VERSION == 34
-    "Spell Memorise", "Spell Cast", "Spell Practise",
-    "Cannibalism", "Deliberate Mutation",
+    NC_("piety conduct", "Spell Memorise"),
+    NC_("piety conduct", "Spell Cast"),
+    NC_("piety conduct", "Spell Practise"),
+    NC_("piety conduct", "Cannibalism"),
+    NC_("piety conduct", "Deliberate Mutation"),
 #endif
-    "Cause Glowing",
+    NC_("piety conduct", "Cause Glowing"),
 #if TAG_MAJOR_VERSION == 34
-    "Use Unclean", "Use Chaos",
-    "Desecrate Orcish Remains", "Kill Slime",
-    "Was Hasty",
-    "Attack In Sanctuary",
+    NC_("piety conduct", "Use Unclean"),
+    NC_("piety conduct", "Use Chaos"),
+    NC_("piety conduct", "Desecrate Orcish Remains"),
+    NC_("piety conduct", "Kill Slime"),
+    NC_("piety conduct", "Was Hasty"),
+    NC_("piety conduct", "Attack In Sanctuary"),
 #endif
-    "Kill Nonliving", "Exploration",
-    "Seen Monster",
+    NC_("piety conduct", "Kill Nonliving"),
+    NC_("piety conduct", "Exploration"),
+    NC_("piety conduct", "Seen Monster"),
 #if TAG_MAJOR_VERSION == 34
-    "Sacrificed Love",
+    NC_("piety conduct", "Sacrificed Love"),
 #endif
-    "Hurt Foe",
+    NC_("piety conduct", "Hurt Foe"),
 #if TAG_MAJOR_VERSION == 34
-    "Use Wizardly Item",
+    NC_("piety conduct", "Use Wizardly Item"),
 #endif
-    "Tithed"
+    NC_("piety conduct", "Tithed")
 };
 COMPILE_CHECK(ARRAYSZ(conducts) == NUM_CONDUCTS);
 
