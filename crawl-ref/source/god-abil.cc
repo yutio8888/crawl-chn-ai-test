@@ -2238,6 +2238,7 @@ struct curse_data
     string name;
     string abbr;
     vector<skill_type> boosted;
+    int weight;
 };
 
 static map<curse_type, curse_data> _ashenzari_curses =
@@ -2245,7 +2246,7 @@ static map<curse_type, curse_data> _ashenzari_curses =
     { CURSE_MELEE, {
         "Melee Combat", "Melee",
         { SK_SHORT_BLADES, SK_LONG_BLADES, SK_AXES, SK_MACES_FLAILS,
-            SK_POLEARMS, SK_STAVES, SK_UNARMED_COMBAT },
+            SK_POLEARMS, SK_STAVES, SK_UNARMED_COMBAT }, 3
     } },
     { CURSE_RANGED, {
         "Ranged Combat", "Range",
@@ -2331,7 +2332,7 @@ static map<curse_type, curse_data> _ashenzari_curses =
     } },
     { CURSE_SPELLCASTING, {
         N_("Spellcasting"), NC_("curse abbreviation", "Splcast"),
-        { SK_SPELLCASTING },
+        { SK_SPELLCASTING }, 2
     } },
     { CURSE_ARMOUR, {
         N_("Armour"), NC_("curse abbreviation", "Arm"),
@@ -2351,7 +2352,7 @@ static map<curse_type, curse_data> _ashenzari_curses =
     } },
     { CURSE_FIGHTING, {
         N_("Fighting"), NC_("curse abbreviation", "Fight"),
-        { SK_FIGHTING },
+        { SK_FIGHTING }, 2
     } },
     { CURSE_EVOCATIONS, {
         N_("Evocations"), NC_("curse abbreviation", "Evo"),
@@ -2448,21 +2449,24 @@ static void _choose_curse_knowledge()
 {
     // Updated from a reservoir sample to shuffling an array since we now use
     // three curse choices rather than two.
-    vector <curse_type> valid_curses;
+    vector <pair<curse_type, int>> valid_curses;
     for (auto const& curse : _ashenzari_curses)
     {
         if (_can_use_curse(curse.second) && !_curse_is_removed(curse.first))
-            valid_curses.push_back(curse.first);
+            valid_curses.push_back({curse.first, max(1, curse.second.weight)});
     }
 
     you.props.erase(CURSE_KNOWLEDGE_KEY);
     CrawlVector &curses = you.props[CURSE_KNOWLEDGE_KEY].get_vector();
 
-    shuffle_array(valid_curses);
     int num_valid = static_cast<int>(valid_curses.size());
 
     for (int i = 0; i < min(num_valid, 3); ++i)
-        curses.push_back(valid_curses[i]);
+    {
+        curse_type curse = *random_choose_weighted(valid_curses);
+        curses.push_back(curse);
+        erase_if(valid_curses, [curse](const pair<curse_type, int>& a) { return a.first == curse;});
+    }
 
     // It's not an error for this to be empty, curses are still useful for
     // piety alone
@@ -4275,7 +4279,7 @@ spret qazlal_upheaval(coord_def target, bool quiet, bool fail, dist *player_targ
         switch (beam.flavour)
         {
             case BEAM_LAVA:
-                if (env.grid(pos) == DNGN_FLOOR && !actor_at(pos) && coinflip())
+                if (feat_is_floor(env.grid(pos)) && !actor_at(pos) && coinflip())
                 {
                     temp_change_terrain(
                         pos, DNGN_LAVA,

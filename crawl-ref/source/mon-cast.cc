@@ -3383,7 +3383,7 @@ static bool _can_force_door_shut(const vector<coord_def>& door_spots)
         {
             // Only attempt to push players and non-hostile monsters out of
             // doorways
-            if (act->attitude() == ATT_HOSTILE)
+            if (act->hostile())
                 return false;
         }
     }
@@ -7161,7 +7161,7 @@ static void _mons_upheaval(monster& mons, actor& /*foe*/, bool randomize)
         switch (beam.flavour)
         {
             case BEAM_LAVA:
-                if (env.grid(pos) == DNGN_FLOOR && !actor_at(pos)
+                if (feat_is_floor(env.grid(pos)) && !actor_at(pos)
                     && (!made_lava || coinflip()))
                 {
                     temp_change_terrain(
@@ -8113,6 +8113,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
 
     case SPELL_UFETUBI_SWARM:
         sumcount2 = random_range(3, 4);
+
         for (sumcount = 0; sumcount < sumcount2; ++sumcount)
         {
             mgen_data mg(MONS_UFETUBUS, SAME_ATTITUDE(mons), mons->pos(),
@@ -8138,6 +8139,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         if (!foe)
             return;
         sumcount2 = 2 + random2(mons->spell_hd(spell_cast) / 4 + 1);
+
         duration  = min(2 + mons->spell_hd(spell_cast) / 5, 6);
         for (int i = 0; i < sumcount2; ++i)
         {
@@ -8318,9 +8320,8 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
     case SPELL_SUMMON_HOLIES: // Holy monsters.
         sumcount2 = 1 + random2(2); // sequence point
         sumcount2 += random2(mons->spell_hd(spell_cast) / 4 + 1);
-
-        // Spell has a summon cap of 4
-        sumcount2 = min(sumcount2, 4);
+        // Account for the summon cap.
+        sumcount2 = clamp_to_unsummoned_limit(sumcount2, mons, spell_cast);
 
         duration  = min(2 + mons->spell_hd(spell_cast) / 5, 6);
         for (int i = 0; i < sumcount2; ++i)

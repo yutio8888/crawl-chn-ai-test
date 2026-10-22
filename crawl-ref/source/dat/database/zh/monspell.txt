@@ -1451,3 +1451,11 @@ Call Down Lightning telencephalon cast
 thorn hunter cast
 
 @The_monster@伸出@possessive@根须。
+%%%%
+Shadow Creatures strange machine cast
+
+VISUAL:阴影掠过@the_monster@的表面，仿佛活了过来。
+%%%%
+Summon Illusion strange machine cast
+
+VISUAL:在@the_monster@上舞动的阴影凝成了残酷而熟悉的形象。

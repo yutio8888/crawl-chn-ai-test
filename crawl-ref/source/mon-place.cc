@@ -177,12 +177,12 @@ bool monster_habitable_feat(monster_type mt, dungeon_feature_type feat)
 
 bool monster_habitable_grid(const monster* mon, const coord_def& pos)
 {
-    return monster_habitable_feat(mon, env.grid(pos));
+    return in_bounds(pos) && monster_habitable_feat(mon, env.grid(pos));
 }
 
 bool monster_habitable_grid(monster_type mt, const coord_def& pos)
 {
-    return monster_habitable_feat(mt, env.grid(pos));
+    return in_bounds(pos) && monster_habitable_feat(mt, env.grid(pos));
 }
 
 /**
@@ -1372,8 +1372,8 @@ static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
                 mon->props[SUMMON_ID_KEY].get_int() = leader->mid;
             else
             {
-                summoned_monster(mon, mg.summoner,
-                                static_cast<spell_type>(mg.summon_type));
+                spell_type spellty = static_cast<spell_type>(mg.summon_type);
+                expire_oldest_summon_if_capped(mon, mg.summoner, spellty);
             }
         }
 

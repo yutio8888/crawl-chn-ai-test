@@ -877,9 +877,9 @@ assert invalid_classify_calls == [], invalid_classify_calls
 with open(sys.argv[4], "r", encoding="utf-8") as stream:
     production_content = stream.read()
 production_blocks = list(module._iter_decision_blocks(production_content))
-# Issue #147 adds D-C-095 (trunk terms), 096 (missing terms/mutagenic),
-# 097 (glossary ownership) and 098 (shared catalog keys); no old blocks retire.
-assert len(production_blocks) == 176, len(production_blocks)
+# Issue #147 adds D-C-095 through 098; PR #178 adds D-C-099
+# (Tranquillity spelling alignment). No old decision blocks retire.
+assert len(production_blocks) == 177, len(production_blocks)
 for decision_id, block in production_blocks:
     fields = module._decision_metadata_fields(block)
     assert fields.get("Status") == ["active"], (decision_id, fields)
@@ -1371,8 +1371,8 @@ try:
         actual_identities,
         expected_identities,
     )
-    # Four active Status declarations and D-C-095's Choice add five fields.
-    assert len(production_declarations) == 428, len(
+    # D-C-099 adds one active Status declaration to the prior fixture.
+    assert len(production_declarations) == 429, len(
         production_declarations
     )
     assert all(

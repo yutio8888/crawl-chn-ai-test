@@ -492,8 +492,9 @@
 | athame | 仪式匕首 | item-prop.cc / items.txt；由历史兼容恢复为现行武器；decision=D-C-095 |
 | detected item | 探测到的物品 | item-name.cc / items.txt；未知类别的探测物标记；decision=D-C-095 |
 | partisan of Prune | 梅干阔头枪 | art-data.txt；Prune 双关沿用 D-B-021，武器采用现行 partisan 基词；decision=D-C-095 |
-| amulet of Tranquility | 宁静项链 | art-data.txt；Four Winds 改名，保留 tranquility 字面意象；decision=D-C-095 |
-| amulet of the Four Winds | 四方之风项链 | 旧神器名仅保留兼容；当前改用 amulet of Tranquility；decision=D-C-095 |
+| amulet of Tranquillity | 宁静项链 | art-data.txt；上游双 l 拼写修正，沿用既有译名；decision=D-C-099 |
+| amulet of Tranquility | 宁静项链 | 旧拼写兼容；当前上游名为 amulet of Tranquillity；decision=D-C-099 |
+| amulet of the Four Winds | 四方之风项链 | 旧神器名仅保留兼容；当前改用 amulet of Tranquillity；decision=D-C-099 |
 | swamp witch's dragon scales | 沼泽女巫龙鳞甲 | unrand.txt；保留归属，不武断确定龙鳞来源；decision=D-C-095 |
 | athame "Fimbulwinter" | 仪式匕首"芬布尔之冬" | unrand.txt；末日前三年冬季的专名，武器基词复用；decision=D-C-095 |
 | fire dragon occultist's scales | 火龙神秘学者鳞甲 | unrand.txt；属于火龙神秘学者 Zmysua；decision=D-C-095 |

@@ -340,7 +340,9 @@ public:
     FixedBitVector<NUM_MISCELLANY>     seen_misc;
     FixedBitVector<NUM_TALISMANS>      seen_talisman;
 
-    uint8_t normal_vision;        // how far the species gets to see
+    uint8_t normal_vision;        // how far you can normally see, including
+                                  // equipment and form, but not other temporary
+                                  // effects.
     uint8_t current_vision;       // current sight radius (cells)
 
     set<coord_def> rampage_hints; // TODO: move this somewhere else
@@ -997,8 +999,9 @@ public:
 
     // Combat-related adjusted penalty calculation methods
     int unadjusted_body_armour_penalty(bool archery = false) const;
-    int adjusted_body_armour_penalty(int scale = 1, bool archery = false) const;
-    int adjusted_shield_penalty(int scale = 1) const;
+    int adjusted_body_armour_penalty(int scale = 1, bool archery = false,
+                                     bool include_temp = true) const;
+    int adjusted_shield_penalty(int scale = 1, bool include_temp = true) const;
 
     // Calculate the bonus (or penalty) the player has to their defenses from
     // temporary effects.
@@ -1163,7 +1166,7 @@ bool is_effectively_light_armour(const item_def *item);
 bool player_effectively_in_light_armour();
 
 int player_shield_racial_factor();
-int player_armour_shield_spell_penalty();
+int player_armour_shield_spell_penalty(bool include_temp = true);
 int player_armour_stealth_penalty();
 
 int player_icemail_armour_class();

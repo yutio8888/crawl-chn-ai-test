@@ -408,6 +408,12 @@ class MiscnameInventoryTests(unittest.TestCase):
         )
         self.assertEqual(len(self.inventory["entries"]), len(evidence["cards"]))
 
+    def test_stale_glossary_authority_is_rejected(self):
+        records = self.records()
+        records[0]["glossary_sha256"] = "0" * 64
+        with self.assertRaisesRegex(MODULE.InventoryError, "metadata mismatch"):
+            MODULE.validate_results(ROOT / "unused", self.inventory, records=records)
+
     def test_missing_review_card_is_rejected(self):
         records = self.records()
         records.pop()

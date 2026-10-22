@@ -83,7 +83,7 @@ Crawl 选项指南
                 force_more_message, flash_screen_message, monster_alert,
                 cloud_status, always_show_zot, always_show_gems, more_gem_info,
                 action_panel, action_panel_filter,
-                action_panel_show_unidentified, _panel_scale,
+                action_panel_show_unidentified, action_panel_scale,
                 action_panel_orientation, action_panel_font_family,
                 action_panel_font_size, show_resist_percent
 3-i     颜色（消息与菜单）。
@@ -1590,6 +1590,7 @@ monster_alert += <monster name or symbol>
           -uniques                      所有独有怪物。
           -unusual                     携带异常物品的任何怪物
                                         （由 unusual_monster_items 定义）。
+        默认值为 `uniques`。
 
 cloud_status = true
         是否显示 "Cloud"（云）状态指示灯；默认值为 true，但贴图版中可以直接
