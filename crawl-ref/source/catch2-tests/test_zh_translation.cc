@@ -6713,7 +6713,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             if (string(name) != "untranslated custom weapon")
             {
                 REQUIRE_FALSE(database_description.empty());
-                CHECK(inspection.find(database_description) != string::npos);
+                REQUIRE(database_description.back() == '\n');
+                // get_item_description replaces the DB's final newline with
+                // a blank before appending weapon properties.
+                CHECK(inspection.find(database_description.substr(
+                          0, database_description.size() - 1)) != string::npos);
             }
             else
                 CHECK(database_description.empty());
