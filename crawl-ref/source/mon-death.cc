@@ -436,7 +436,8 @@ static void _create_monster_wand(monster_type mtyp, coord_def pos, bool silent)
     if (you.see_cell(pos) && !silent && !feat_eliminates_items(env.grid(pos)))
     {
         mprf(T_("%s's bones magically twist into %s."),
-             mons_type_name(mtyp, DESC_A).c_str(),
+             mons_type_name(mtyp, Options.language == lang_t::ZH
+                                  ? DESC_PLAIN : DESC_A).c_str(),
              item.name(DESC_A).c_str());
     }
 

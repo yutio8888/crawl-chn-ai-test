@@ -12,10 +12,12 @@
 #include "format.h"
 #include "i18n.h"
 #include "item-prop.h"
+#include "item-status-flag-type.h"
 #include "item-use.h"
 #include "items.h"
 #include "losglobal.h"
 #include "message.h"
+#include "mon-death.h"
 #include "mon-info.h"
 #include "mon-place.h"
 #include "mon-util.h"
@@ -23,6 +25,7 @@
 #include "options.h"
 #include "player.h"
 #include "player-equip.h"
+#include "random.h"
 #include "spl-selfench.h"
 #include "spl-summoning.h"
 #include "spl-util.h"
@@ -510,4 +513,67 @@ TEST_CASE("issue 10 Xom cleaving describes both weapon variants completely",
         CHECK(message.find(item.name(DESC_YOUR) + suffix) != string::npos);
     }
     CHECK(you.duration[DUR_CLEAVE] > 0);
+}
+
+TEST_CASE("monster wand drops localize articles only at the death message sink",
+          "[zh-translation][playtest-fixes][wand-drop]")
+{
+    const monster_type type = GENERATE(MONS_ELEIONOMA, MONS_FENSTRIDER_WITCH);
+    issue10_world world;
+    const coord_def pos(20, 21);
+    unwind_var<int> saved_grid(env.igrid(pos), NON_ITEM);
+    const string identity = mons_type_name_en(type, DESC_PLAIN);
+    item_def english_drop;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        rng::subgenerator scoped_rng(0x221023ddULL, 0x221023eeULL);
+        REQUIRE(you.see_cell(pos));
+        string message = observe_message([&] {
+            maybe_drop_monster_organ(type, type, pos, false);
+        });
+        trim_string_right(message);
+        const int index = env.igrid(pos);
+        REQUIRE(index != NON_ITEM);
+        unwinder cleanup([index] { destroy_item(index); });
+        const item_def &drop = env.item[index];
+        CHECK(drop.base_type == OBJ_WANDS);
+        CHECK(drop.quantity == 1);
+        CHECK(drop.plus > 0);
+        CHECK((drop.flags & ISFLAG_IDENTIFIED) == ISFLAG_IDENTIFIED);
+        CHECK(drop.link == NON_ITEM);
+        CHECK(mons_type_name_en(type, DESC_PLAIN) == identity);
+
+        // The production message precedes identification of this item. Recover
+        // that display state from the actual drop, rather than guessing its
+        // randomly chosen type or appearance.
+        item_def unidentified = drop;
+        unidentified.flags &= ~ISFLAG_IDENTIFIED;
+        const string subject = mons_type_name(type, language == lang_t::ZH
+                                                    ? DESC_PLAIN : DESC_A);
+        const string expected = make_stringf(T_("%s's bones magically twist into %s."),
+                                            subject.c_str(),
+                                            unidentified.name(DESC_A).c_str());
+        INFO("actual death message: " << message);
+        CHECK(message == expected);
+        if (language == lang_t::EN)
+        {
+            english_drop = drop;
+            CHECK((message.find("an " + identity + "'s bones") == 0
+                   || message.find("a " + identity + "'s bones") == 0));
+        }
+        else
+        {
+            // Reject the original mixed-language a/an prefix independently
+            // of the complete-template comparison above.
+            CHECK(message.find(subject) == 0);
+            CHECK(message.find("a ") != 0);
+            CHECK(message.find("an ") != 0);
+            CHECK(drop.sub_type == english_drop.sub_type);
+            CHECK(drop.plus == english_drop.plus);
+            CHECK(drop.quantity == english_drop.quantity);
+            CHECK(drop.flags == english_drop.flags);
+            CHECK(drop.rnd == english_drop.rnd);
+        }
+    }
 }
