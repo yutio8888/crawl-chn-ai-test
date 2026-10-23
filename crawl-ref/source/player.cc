@@ -5164,7 +5164,7 @@ bool sticky_flame_player(int intensity, int duration, string source, string sour
         you.props[STICKY_FLAME_POWER_KEY] = intensity;
     }
 
-    const string intensity_str = max(intensity, old_pow) > 5 ? "intense " : "";
+    const string intensity_str = max(intensity, old_pow) > 5 ? T_("intense ") : "";
 
     if (you.duration[DUR_STICKY_FLAME] > 0)
     {

@@ -111,8 +111,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                            "%1$s is susceptible to %2$s.\n"), "P", "R")
           == "P易受R影响。\n");
     CHECK(make_stringf(C_("monster description",
-                         "Despite %s appearance, it can open doors.\n"), "P")
-          == "尽管外表P，但它能开门。\n");
+                         "Despite %s appearance, it can open doors.\n"), "它的")
+          == "尽管它的外表如此，它仍能开门。\n");
     CHECK(make_stringf(C_("attack prompt", "fire in %s direction"), "M")
           == "向M的方向");
     CHECK(string(C_("attack prompt", "your ally ")) == "你的盟友");

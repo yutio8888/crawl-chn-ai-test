@@ -1202,7 +1202,8 @@ bool attack::apply_damage_brand(const char *what)
         break;
 
     case SPWPN_FREEZING:
-        calc_elemental_brand_damage(BEAM_COLD, T_("freeze"), what);
+        calc_elemental_brand_damage(BEAM_COLD,
+                                    C_("elemental brand verb", "freeze"), what);
         special_damage_flavour = BEAM_COLD;
         defender->expose_to_element(BEAM_COLD, 2, attacker);
         break;
@@ -1461,7 +1462,7 @@ void attack::calc_elemental_brand_damage(beam_type flavour,
     if (needs_message && special_damage > 0 && verb)
     {
         special_damage_message = make_stringf_p(
-            T_("%s %s %s%s%s"),
+            C_("elemental brand hit", "%1$s %2$s %3$s%4$s%5$s"),
             what ? what : atk_name(DESC_THE).c_str(),
             verb,
             defender_name(!what).c_str(),

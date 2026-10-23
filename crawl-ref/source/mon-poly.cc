@@ -641,7 +641,8 @@ bool monster_polymorph(monster* mons, monster_type targetc,
     if (could_see)
     {
         string verb = "";
-        string obj = can_see ? mons_type_name(targetc, DESC_A)
+        string obj = can_see ? mons_type_name(targetc,
+                                Options.language == lang_t::ZH ? DESC_PLAIN : DESC_A)
                              : T_("something you cannot see");
 
         if (oldc == MONS_OGRE && targetc == MONS_TWO_HEADED_OGRE)
