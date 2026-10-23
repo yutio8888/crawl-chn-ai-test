@@ -46238,3 +46238,9 @@ You break free of %s!
 %%%%
 %s breaks free of %s!
 %s挣脱了%s的束缚！
+%%%%
+This staircase leads to a travel-excluded area!
+这座楼梯通往旅行禁区！
+%%%%
+This staircase is marked as excluded!
+这座楼梯已被标记为旅行禁区！
