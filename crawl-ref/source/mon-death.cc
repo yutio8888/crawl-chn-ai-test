@@ -2395,7 +2395,7 @@ static void _player_on_kill_effects(monster& mons, killer_type killer,
             you.increase_duration(DUR_BERSERK, bonus);
 
             mprf(MSGCH_GOD, you.religion,
-                 "You feel the power of %s in you as your rage grows.",
+                 T_("You feel the power of %s in you as your rage grows."),
                  uppercase_first(god_name(you.religion)).c_str());
         }
         else if (you.unrand_equipped(UNRAND_BLOODLUST) && coinflip())

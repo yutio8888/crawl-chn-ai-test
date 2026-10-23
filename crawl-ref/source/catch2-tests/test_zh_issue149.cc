@@ -24,6 +24,7 @@
 #include "format.h"
 #include "hiscores.h"
 #include "god-conduct.h"
+#include "god-abil.h"
 #include "item-prop.h"
 #include "item-name.h"
 #include "items.h"
@@ -51,6 +52,7 @@
 #include "stringutil.h"
 #include "test_zh_fixture.h"
 #include "travel.h"
+#include "traps.h"
 #include "unicode.h"
 #include "unwind.h"
 
@@ -1266,5 +1268,79 @@ TEST_CASE("playtest: timed indomitable display preserves duration identity",
         you.duration[DUR_INDOMITABLE] = 0;
         status_info inactive;
         CHECK_FALSE(fill_status_info(DUR_INDOMITABLE, inactive));
+    }
+}
+
+TEST_CASE("playtest: autofight formats localized caught states in production Lua",
+          "[zh-translation][playtest-fixes][autofight]")
+{
+    unwind_var<player> restore_player(you);
+    CLua lua;
+    lua.init_libraries();
+    REQUIRE(lua.execstring("chk_lua_option = {}") == 0);
+    REQUIRE(lua.execfile("clua/autofight.lua", true) == 0);
+    REQUIRE(lua.execstring(
+        "caught_messages = {}; "
+        "crawl.mpr = function(message) table.insert(caught_messages, message) end; "
+        "function verify_caught(expected, held) "
+        "  assert(you.caught() == held); caught_messages = {}; "
+        "  assert(autofight_check_preconditions(true) == false); "
+        "  assert(#caught_messages == 1 and caught_messages[1] == expected); "
+        "  assert(autofight_check_preconditions(false) == true); "
+        "  AUTOFIGHT_CAUGHT = true; "
+        "  assert(autofight_check_preconditions(true) == true); "
+        "  AUTOFIGHT_CAUGHT = false; assert(#caught_messages == 1); "
+        "end") == 0);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        issue149_player();
+        for (bool net : {false, true})
+        {
+            you.attribute[ATTR_HELD] = 1;
+            if (net)
+                you.props[NET_IS_REAL_KEY] = true;
+            else
+                you.props.erase(NET_IS_REAL_KEY);
+            const string held = held_status(&you);
+            const string expected = make_stringf(T_("You are %s!"), held.c_str());
+            if (language == lang_t::ZH)
+                CHECK(expected != "You are " + held + "!");
+            INFO(lua.error);
+            REQUIRE(lua.callfn("verify_caught", "ss", expected.c_str(), held.c_str()));
+            CHECK(you.caught());
+            CHECK(you.caught_by() == (net ? CAUGHT_NET : CAUGHT_WEB));
+            CHECK(Options.language == language);
+        }
+        you.attribute[ATTR_HELD] = 0;
+        REQUIRE(lua.execstring(
+            "caught_messages = {}; assert(you.caught() == nil); "
+            "assert(autofight_check_preconditions(true) == true); "
+            "assert(#caught_messages == 0)") == 0);
+    }
+}
+
+TEST_CASE("playtest: Trogs Hand activation localizes its full message",
+          "[zh-translation][playtest-fixes][trog]")
+{
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> started(crawl_state.game_started, false);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        issue149_player();
+        const string expected = string(T_("Your skin crawls.")) + "\n"
+                                + T_("You feel resolute.") + "\n";
+        msgwin_temporary_mode temporary;
+        unwinder clear_messages([]() { msgwin_clear_temporary(); });
+        msg::tee capture;
+        trog_do_trogs_hand(30);
+        const string emitted = formatted_string::parse_string(capture.get_store()).tostring();
+        CHECK(emitted == expected);
+        if (language == lang_t::ZH)
+            CHECK(emitted.find("Your skin crawls.") == string::npos);
+        CHECK(you.duration[DUR_TROGS_HAND] > 0);
+        CHECK(you.duration[DUR_TROGS_HAND] <= 100 * BASELINE_DELAY);
+        CHECK(Options.language == language);
     }
 }

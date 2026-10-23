@@ -46223,3 +46223,12 @@ surge of tremors
 %%%%
 The barbs in your skin will harm you if you move.
 如果移动，扎在你皮肤里的倒刺会对你造成伤害。
+%%%%
+You are %s!
+你%s！
+%%%%
+Your skin crawls.
+你的皮肤一阵发麻。
+%%%%
+You feel the power of %s in you as your rage grows.
+你感到%s的力量在体内涌动，狂暴也随之延长。
