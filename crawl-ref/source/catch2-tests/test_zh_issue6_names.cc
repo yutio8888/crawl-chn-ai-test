@@ -3,6 +3,11 @@
 #include "AppHdr.h"
 
 #include "database.h"
+#include "directn.h"
+#include "mon-util.h"
+#include "mutation.h"
+#include "notes.h"
+#include "transform.h"
 #include "english.h"
 #include "item-name.h"
 #include "item-prop.h"
@@ -287,4 +292,103 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     item.brand = SPARM_FIRE_RESISTANCE;
     const string ego = armour_ego_name(item, false);
     CHECK(item.name(DESC_PLAIN) == "+0 " + ego + "之" + item_base_name(item));
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: round2 type display articles preserve English identity",
+                 "[zh-translation][round2][names]")
+{
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    you = player();
+    const monster_type types[] = { MONS_ORB_OF_WINTER, MONS_ORC,
+                                   MONS_ROYAL_JELLY, MONS_ENCHANTRESS };
+    const description_level_type descriptions[] = { DESC_PLAIN, DESC_A, DESC_THE,
+                                                   DESC_DBNAME };
+    for (monster_type type : types)
+    {
+        for (description_level_type desc : descriptions)
+        {
+            const string display = mons_type_name(type, desc);
+            CHECK(display == mons_type_name(type, DESC_PLAIN));
+            const string identity = mons_type_name_en(type, desc);
+            ScopedLangEn english;
+            CHECK(mons_type_name(type, desc) == identity);
+            CHECK(mons_type_name_en(type, desc) == identity);
+        }
+    }
+    you.zot_orb_monster_known = true;
+    you.zot_orb_monster = MONS_ORB_OF_WINTER;
+    const string statue = feature_description(DNGN_ZOT_STATUE, "", DESC_A);
+    CHECK(statue == "寒冬之球雕像");
+    const Note note(NOTE_SEEN_FEAT, 0, 0, statue + ".");
+    CHECK(note.describe(false, false).find("a ") == string::npos);
+    CHECK(note.name == statue + ".");
+    // Existing persisted snapshots are neither mutated nor retrotranslated.
+    const Note historic(NOTE_SEEN_FEAT, 0, 0, "a historic statue.");
+    CHECK(historic.name == "a historic statue.");
+    {
+        ScopedLangEn english;
+        CHECK(feature_description(DNGN_ZOT_STATUE, "", DESC_A)
+              == "a statue of an orb of winter");
+        CHECK(note.name == statue + ".");
+        CHECK(historic.name == "a historic statue.");
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: round2 clear potion appearance keeps action and identity",
+                 "[zh-translation][round2][names]")
+{
+#if TAG_MAJOR_VERSION == 34
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    item_def potion;
+    potion.base_type = OBJ_POTIONS;
+    potion.sub_type = POT_MUTATION;
+    potion.quantity = 1;
+    potion.rnd = 1;
+    potion.subtype_rnd = PDESCQ(PDQ_NONE, PDC_CLEAR);
+    CHECK(potion.name(DESC_PLAIN) == "透明药水");
+    CHECK(string(T_("clear")) == "清除");
+    CHECK(potion.sub_type == POT_MUTATION);
+    CHECK(potion.subtype_rnd == PDESCQ(PDQ_NONE, PDC_CLEAR));
+    {
+        ScopedLangEn english;
+        CHECK(potion.name(DESC_PLAIN) == "clear potion");
+        CHECK(potion.name(DESC_DBNAME, false, true) == "potion of mutation");
+    }
+    CHECK(potion.name(DESC_PLAIN) == "透明药水");
+#endif
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: round2 morgue physiology summaries translate display only",
+                 "[zh-translation][round2][names]")
+{
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.form = transformation::tree;
+    const string tree_summary = terse_mutation_list();
+    CHECK(tree_summary.find("植物生理") != string::npos);
+    CHECK(tree_summary.find("两栖") != string::npos);
+    CHECK(tree_summary.find("plant physiology") == string::npos);
+    CHECK(you.form == transformation::tree);
+    {
+        ScopedLangEn english;
+        CHECK(terse_mutation_list().find("plant physiology") != string::npos);
+        CHECK(terse_mutation_list().find("amphibious") != string::npos);
+    }
+    you.form = transformation::none;
+    you.species = SP_GARGOYLE;
+    CHECK(terse_mutation_list().find("无肉生理") != string::npos);
+    CHECK(you.species == SP_GARGOYLE);
+    {
+        ScopedLangEn english;
+        CHECK(terse_mutation_list().find("fleshless physiology") != string::npos);
+    }
 }

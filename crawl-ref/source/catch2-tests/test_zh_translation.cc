@@ -24,6 +24,7 @@
 #include "env.h"
 #include "english.h"
 #include "feature.h"
+#include "fineff.h"
 #include "files.h"
 #include "god-conduct.h"
 #include "god-abil.h"
@@ -43,6 +44,8 @@
 #include "message.h"
 #include "mgen-data.h"
 #include "mon-place.h"
+#include "mon-behv.h"
+#include "mon-explode.h"
 #include "mon-poly.h"
 #include "mon-info.h"
 #include "target.h"
@@ -7107,5 +7110,194 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         }
         else
             CHECK(text.find("Despite its appearance, it can open doors.") != string::npos);
+    }
+}
+
+
+TEST_CASE("round2: production mindburst messages preserve locale and identity",
+          "[zh-translation][round2][messages]")
+{
+    init_monsters();
+    init_zap_index();
+    init_spell_descs();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (int heads : {1, 3})
+    {
+        CAPTURE(language, heads);
+        TranslationFixture translation(language, language == lang_t::EN ? "en" : "zh");
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = SP_HUMAN;
+        scoped_monspeak_world world;
+        monster* victim = world.place(MONS_HYDRA);
+        REQUIRE(victim);
+        victim->num_heads = heads;
+        victim->hit_points = victim->max_hit_points = 1000;
+        const string identity = victim->name(DESC_DBNAME);
+        bolt beam;
+        beam.flavour = BEAM_MINDBURST;
+        beam.thrower = KILL_YOU;
+        beam.source_id = MID_PLAYER;
+        beam.damage = dice_def(1, 1);
+        msg::tee messages;
+        CHECK(beam.apply_enchantment_to_monster(victim) == MON_AFFECTED);
+        const string output = messages.get_store();
+        if (language == lang_t::ZH)
+        {
+            CHECK(output.find("精神受到冲击") != string::npos);
+            CHECK(output.find("的的") == string::npos);
+            CHECK(output.find(" is") == string::npos);
+            CHECK(output.find(" are") == string::npos);
+        }
+        else
+            CHECK(output.find(heads > 1 ? "minds are blasted" : "mind is blasted")
+                  != string::npos);
+        CHECK(victim->name(DESC_DBNAME) == identity);
+        CHECK(victim->num_heads == heads);
+    }
+}
+
+TEST_CASE("round2: discovery uses the real statue feature and keeps note snapshot",
+          "[zh-translation][round2][notes]")
+{
+    init_monsters();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::EN ? "en" : "zh");
+        unwind_var<player> restore_player(you);
+        you = player();
+        scoped_monspeak_world world;
+        const coord_def pos(21, 20);
+        unwind_var<map_cell> restore_cell(env.map_knowledge(pos));
+        unwind_var<vector<Note>> restore_notes(note_list);
+        const bool old_notes_active = notes_are_active();
+        unwinder restore_notes_active([&]() { activate_notes(old_notes_active); });
+        activate_notes(true);
+        note_list.clear();
+        you.zot_orb_monster_known = true;
+        you.zot_orb_monster = MONS_ORB_OF_WINTER;
+        env.grid(pos) = DNGN_ZOT_STATUE;
+        env.map_knowledge(pos) = map_cell();
+        env.map_knowledge(pos).set_feature(DNGN_ZOT_STATUE);
+        const string description = feature_description_at(pos, false, DESC_A);
+        CHECK(description == (language == lang_t::ZH ? "寒冬之球雕像"
+                             : "a statue of an orb of winter"));
+        set_terrain_seen(pos);
+        REQUIRE(note_list.size() == 1);
+        CHECK(note_list[0].type == NOTE_SEEN_FEAT);
+        CHECK(note_list[0].name == description + ".");
+        CHECK(note_list[0].describe(false, false).find(description) != string::npos);
+    }
+}
+
+
+TEST_CASE("round2: cornered fallback preserves speech protocol and monster identity",
+          "[zh-translation][round2][messages]")
+{
+    init_monsters();
+    init_spell_descs();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::EN ? "en" : "zh");
+        unwind_var<player> restore_player(you);
+        you = player();
+        scoped_monspeak_world world;
+        monster* mon = world.place(MONS_ORC);
+        REQUIRE(mon);
+        mon->behaviour = BEH_CORNERED;
+        const string identity = mon->name(DESC_DBNAME);
+        REQUIRE(getSpeakString(identity + " cornered").empty());
+        msg::tee messages;
+        behaviour_event(mon, ME_CORNERED, &you);
+        const string output = messages.get_store();
+        if (language == lang_t::ZH)
+        {
+            CHECK(output.find("转身反击") != string::npos);
+            CHECK(output.find("Cornered") == string::npos);
+        }
+        else
+            CHECK(output.find("Cornered, the orc turns to fight!") != string::npos);
+        CHECK(output.find("PLAIN:") == string::npos);
+        CHECK(output.find("@the_monster@") == string::npos);
+        CHECK(mon->name(DESC_DBNAME) == identity);
+        CHECK(mon->behaviour == BEH_SEEK);
+    }
+}
+
+TEST_CASE("round2: real digging wall messages preserve agent grammar",
+          "[zh-translation][round2][messages]")
+{
+    init_monsters();
+    init_zap_index();
+    init_spell_descs();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool player_agent : {true, false})
+    {
+        CAPTURE(language, player_agent);
+        TranslationFixture translation(language, language == lang_t::EN ? "en" : "zh");
+        unwind_var<player> restore_player(you);
+        you = player();
+        scoped_monspeak_world world;
+        monster* mon = world.place(MONS_ORC);
+        REQUIRE(mon);
+        const coord_def wall(21, 20);
+        unwind_var<map_cell> restore_wall(env.map_knowledge(wall));
+        env.grid(wall) = DNGN_ROCK_WALL;
+        bolt beam;
+        zappy(ZAP_DIG, 50, !player_agent, beam);
+        beam.source_id = player_agent ? MID_PLAYER : mon->mid;
+        beam.thrower = player_agent ? KILL_YOU : KILL_MON;
+        beam.target = wall;
+        beam.use_target_as_pos = true;
+        msg::tee messages;
+        beam.affect_cell();
+        CHECK(env.grid(wall) == DNGN_FLOOR);
+        const string output = messages.get_store();
+        if (language == lang_t::ZH)
+        {
+            CHECK(output.find("岩石碎成了小片") != string::npos);
+            CHECK(output.find("The") == string::npos);
+            CHECK(output.find("Some") == string::npos);
+        }
+        else
+            CHECK(output.find(player_agent ? "The rock shatters into small pieces."
+                                           : "Some rock shatters into small pieces.")
+                  != string::npos);
+    }
+}
+
+TEST_CASE("round2: summoned explosion residue uses a complete display sentence",
+          "[zh-translation][round2][messages]")
+{
+    init_monsters();
+    init_spell_descs();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::EN ? "en" : "zh");
+        unwind_var<player> restore_player(you);
+        unwind_var<bool> restore_need_save(crawl_state.need_save, false);
+        unwind_var<use_animations_type> restore_animations(
+            Options.use_animations, use_animations_type());
+        you = player();
+        you.hp = you.hp_max = 10000;
+        scoped_monspeak_world world;
+        monster* mon = world.place(MONS_ORC, coord_def(25, 25));
+        REQUIRE(mon);
+        mon->mark_summoned(SPELL_SUMMON_SMALL_MAMMAL, 20, false, true);
+        mon->add_ench(mon_enchant(ENCH_INNER_FLAME, &you, 10, 1));
+        const string name = mon->name(DESC_PLAIN);
+        msg::tee messages;
+        REQUIRE(explode_monster(mon, KILL_YOU, false));
+        fire_final_effects();
+        const string output = messages.get_store();
+        if (language == lang_t::ZH)
+        {
+            CHECK(output.find(name + "的残留物") != string::npos);
+            CHECK(output.find("residue") == string::npos);
+            CHECK(output.find("The ") == string::npos);
+        }
+        else
+            CHECK(output.find("The orc residue disappears in a puff of smoke.")
+                  != string::npos);
     }
 }

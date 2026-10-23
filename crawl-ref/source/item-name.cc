@@ -2018,7 +2018,8 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
                                    "bogus" : potion_colours[pcolour];
 
             const char *t_qual = T_(qualifier);
-            const char *t_clr   = T_(clr);
+            const char *t_clr = strcmp(clr, "clear") == 0
+                ? C_("potion appearance colour", "clear") : T_(clr);
 
             // Structural: ZH "药水" suffix vs EN " potion"
             // EN keys have no trailing spaces; add them explicitly here.

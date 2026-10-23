@@ -1374,7 +1374,8 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
             {
                 msg = getSpeakString(mon->name(DESC_DBNAME) + " cornered");
                 if (msg.empty())
-                    msg = "PLAIN:Cornered, @the_monster@ turns to fight!";
+                    msg = string("PLAIN:")
+                          + T_("Cornered, @the_monster@ turns to fight!");
             }
             mon->del_ench(ENCH_FEAR, true);
             mon->behaviour = BEH_SEEK;

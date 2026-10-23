@@ -3188,7 +3188,10 @@ static string _mons_type_name(monster_type mc, description_level_type desc,
 {
     string result;
 
-    if (!mons_is_unique(mc))
+    // Canonical accessors retain English articles; display names follow the UI.
+    const bool english_grammar = canonical_english
+                                 || Options.language != lang_t::ZH;
+    if (english_grammar && !mons_is_unique(mc))
     {
         switch (desc)
         {

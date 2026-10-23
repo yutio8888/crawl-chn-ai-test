@@ -6577,7 +6577,7 @@ Something shoots a net at you.
 有什么东西向你发射了一张网。
 %%%%
 Something tries to affect you, but you %s.
-有什么东西试图影响你，但你%s了。
+有什么东西试图影响你，但你%s。
 %%%%
 Something unexpectedly blocks you, preventing you from leaping!
 有什么东西意外地挡住了你，阻止了你的跳跃！
@@ -46442,4 +46442,49 @@ trumpets
 %%%%
 whispers
 低语
+%%%%
+%s mind is blasted%s
+%s精神受到冲击%s
+%%%%
+%s minds are blasted%s
+%s精神受到冲击%s
+%%%%
+You are sucked into a shaft and fall %d level!
+你被吸入竖井，掉了%d层！
+%%%%
+You are sucked into a shaft and fall %d levels!
+你被吸入竖井，掉了%d层！
+%%%%
+You fall into a shaft and fall %d level!
+你掉入竖井，掉了%d层！
+%%%%
+You fall into a shaft and fall %d levels!
+你掉入竖井，掉了%d层！
+%%%%
+Cornered, @the_monster@ turns to fight!
+走投无路的@the_monster@转身反击！
+%%%%
+The %s shatters into small pieces.
+%s碎成了小片。
+%%%%
+Some %s shatters into small pieces.
+一些%s碎成了小片。
+%%%%
+amphibious
+两栖
+%%%%
+plant physiology
+植物生理
+%%%%
+fleshless physiology
+无肉生理
+%%%%
+Here
+这里
+%%%%
+The %s residue %s.
+%s的残留物%s。
+%%%%
+potion appearance colour|clear
+透明
 %%%%

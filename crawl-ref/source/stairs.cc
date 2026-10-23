@@ -668,10 +668,14 @@ static level_id _travel_destination(const dungeon_feature_type how,
                                     + shaft_dest.describe() + ".");
         }
 
-        mprf_p(T_("You %1$s into a shaft and fall %2$d level%3$s!"),
-               you.airborne() ? T_("are sucked") : T_("fall"),
-               shaft_depth,
-               shaft_depth > 1 ? T_("s") : "");
+        mprf(you.airborne()
+                 ? (shaft_depth > 1
+                    ? T_("You are sucked into a shaft and fall %d levels!")
+                    : T_("You are sucked into a shaft and fall %d level!"))
+                 : (shaft_depth > 1
+                    ? T_("You fall into a shaft and fall %d levels!")
+                    : T_("You fall into a shaft and fall %d level!")),
+             shaft_depth);
 
         // Shafts are one-time-use.
         mpr(T_("The shaft crumbles and collapses."));

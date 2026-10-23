@@ -925,8 +925,9 @@ void bolt::digging_wall_effect()
             else
                 wall = T_("rock");
 
-            mprf(T_("%s %s shatters into small pieces."),
-                 agent() && agent()->is_player() ? T_("The") : T_("Some"),
+            mprf(agent() && agent()->is_player()
+                     ? T_("The %s shatters into small pieces.")
+                     : T_("Some %s shatters into small pieces."),
                  wall.c_str());
         }
     }
@@ -4964,9 +4965,11 @@ void bolt::enchantment_affect_monster(monster* mon)
     // enchant it if it's still here. If the monster did leave the level, set
     // obvious_effect so we don't get "Nothing appears to happen".
     int res_margin = 0;
-    const mon_resist_type ench_result = mon->alive()
-                                      ? try_enchant_monster(mon, res_margin)
-                                      : (obvious_effect = true, MON_OTHER);
+    mon_resist_type ench_result = MON_OTHER;
+    if (mon->alive())
+        ench_result = try_enchant_monster(mon, res_margin);
+    else
+        obvious_effect = true;
 
     if (mon->alive())           // Aftereffects.
     {
@@ -6304,9 +6307,9 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
                      mon->name(DESC_THE).c_str(),
                      attack_strength_punctuation(dam).c_str());
             } else {
-                mprf(T_("%s mind%s blasted%s"),
+                mprf(mon->heads() > 1 ? T_("%s minds are blasted%s")
+                                      : T_("%s mind is blasted%s"),
                      mon->name(DESC_ITS).c_str(),
-                     mon->heads() > 1 ? T_("s are") : T_(" is"),
                      attack_strength_punctuation(dam).c_str());
             }
             obvious_effect = true;
