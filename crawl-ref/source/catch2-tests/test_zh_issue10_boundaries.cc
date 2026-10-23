@@ -309,6 +309,66 @@ TEST_CASE("issue 10 blink escapes use contextual movement at the real sink",
         CHECK(announcement.find(movement + "s") == string::npos);
 }
 
+TEST_CASE("playtest: ordinary constriction escapes use complete display sentences",
+          "[zh-translation][playtest-fixes][constriction]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const bool player_victim = GENERATE(false, true);
+    const constrict_type type = GENERATE(CONSTRICT_MELEE, CONSTRICT_BVC,
+                                         CONSTRICT_ROOTS, CONSTRICT_ENTANGLE);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *constrictor = world.place(MONS_BALL_PYTHON, coord_def(21, 21));
+    actor *victim = player_victim ? static_cast<actor *>(&you)
+        : world.place(MONS_ORC, coord_def(20, 21));
+    constrictor->start_constricting(*victim, type);
+    REQUIRE(victim->is_constricted());
+    const string attacker = type == CONSTRICT_BVC ? T_("the zombie hands")
+        : type == CONSTRICT_ROOTS ? T_("the grasping roots")
+        : type == CONSTRICT_ENTANGLE ? T_("the vines")
+        : constrictor->name(DESC_THE);
+    const string name = victim->name(DESC_THE);
+    const mid_t id = victim->mid;
+    const string expected = player_victim
+        ? make_stringf(T_("You break free of %s!"), attacker.c_str())
+        : make_stringf(T_("%s breaks free of %s!"), name.c_str(), attacker.c_str());
+    const string escaped = observe_message([&] { victim->stop_being_constricted(); });
+    CHECK(escaped == expected + "\n");
+    if (language == lang_t::EN)
+        CHECK(escaped == (player_victim ? "You break" : name + " breaks")
+                         + " free of " + attacker + "!\n");
+    else
+        CHECK(escaped.find("break") == string::npos);
+    CHECK_FALSE(victim->is_constricted());
+    CHECK_FALSE(constrictor->is_constricting());
+    CHECK(victim->mid == id);
+    CHECK(victim->name(DESC_THE) == name);
+}
+
+TEST_CASE("playtest: player escape movement retains its grammar context",
+          "[zh-translation][playtest-fixes][constriction]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const char *verb = GENERATE("blink", "hop", "leap");
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *constrictor = world.place(MONS_BALL_PYTHON, coord_def(21, 21));
+    constrictor->start_constricting(you, CONSTRICT_MELEE);
+    REQUIRE(you.is_constricted());
+    const string movement = language == lang_t::ZH
+        ? translated_move_phrase(verb, move_phrase_context::bare) : verb;
+    const string player_name = you.name(DESC_THE);
+    const string attacker = constrictor->name(DESC_THE);
+    const string expected = make_stringf(T_("%s %s free of %s!"),
+        player_name.c_str(), movement.c_str(), attacker.c_str());
+    const string escaped = observe_message([&] {
+        you.stop_being_constricted(false, verb);
+    });
+    CHECK(escaped == expected + "\n");
+    CHECK_FALSE(you.is_constricted());
+    CHECK_FALSE(constrictor->is_constricting());
+}
+
 TEST_CASE("issue 10 monster target descriptions preserve direction and list shape",
           "[zh-translation][issue10]")
 {

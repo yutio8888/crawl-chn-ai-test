@@ -46232,3 +46232,9 @@ Your skin crawls.
 %%%%
 You feel the power of %s in you as your rage grows.
 你感到%s的力量在体内涌动，狂暴也随之延长。
+%%%%
+You break free of %s!
+你挣脱了%s的束缚！
+%%%%
+%s breaks free of %s!
+%s挣脱了%s的束缚！

@@ -490,13 +490,25 @@ void actor::end_constriction(mid_t whom, bool intentional, bool quiet,
         // blinking or similar
         if (!intentional)
         {
-            const bool contextual_move = escape_verb == "blink"
-                || escape_verb == "hop" || escape_verb == "leap";
-            mprf(T_("%s %s free of %s!"),
-                 constrictee->name(DESC_THE).c_str(),
-                 constrictee->verb_for_display(escape_verb.c_str(),
-                     contextual_move ? "move.bare" : nullptr).c_str(),
-                 attacker_desc.c_str());
+            if (escape_verb == "break")
+            {
+                if (constrictee->is_player())
+                    mprf(T_("You break free of %s!"), attacker_desc.c_str());
+                else
+                    mprf(T_("%s breaks free of %s!"),
+                         constrictee->name(DESC_THE).c_str(),
+                         attacker_desc.c_str());
+            }
+            else
+            {
+                const bool contextual_move = escape_verb == "blink"
+                    || escape_verb == "hop" || escape_verb == "leap";
+                mprf(T_("%s %s free of %s!"),
+                     constrictee->name(DESC_THE).c_str(),
+                     constrictee->verb_for_display(escape_verb.c_str(),
+                         contextual_move ? "move.bare" : nullptr).c_str(),
+                     attacker_desc.c_str());
+            }
         }
         else
         {
