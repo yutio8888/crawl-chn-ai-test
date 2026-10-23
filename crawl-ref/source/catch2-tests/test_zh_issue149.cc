@@ -46,6 +46,7 @@
 #include "spl-cast.h"
 #include "spl-util.h"
 #include "state.h"
+#include "status.h"
 #include "syscalls.h"
 #include "stringutil.h"
 #include "test_zh_fixture.h"
@@ -1192,6 +1193,7 @@ TEST_CASE("trunk sync: new Lua bindings retain English identities",
           "[zh-translation][trunk-sync][lua-protocol]")
 {
     init_properties();
+    init_spell_descs();
     for (lang_t language : {lang_t::EN, lang_t::ZH})
     {
         TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
@@ -1218,5 +1220,51 @@ TEST_CASE("trunk sync: new Lua bindings retain English identities",
         REQUIRE(result == 0);
         CHECK(Options.language == language);
         CHECK(you.attribute[ATTR_CHANNELLED_SPELL] == SPELL_SEARING_RAY);
+    }
+}
+
+TEST_CASE("playtest: timed indomitable display preserves duration identity",
+          "[zh-translation][playtest-fixes][status]")
+{
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        issue149_player();
+        for (int duration : {100, 3350})
+        {
+            you.duration[DUR_INDOMITABLE] = duration;
+            status_info displayed;
+            REQUIRE(fill_status_info(DUR_INDOMITABLE, displayed));
+            CHECK(displayed.light_text
+                  == make_stringf(T_("Indom (%d)"), duration / 100));
+            CHECK(displayed.short_text
+                  == make_stringf(T_("indomitable (%d)"), duration / 100));
+            CHECK(displayed.db_key == "Indom");
+            CHECK(displayed.short_db_key
+                  == make_stringf("indomitable (%d)", duration / 100));
+            CHECK(duration_by_name("Indom") == DUR_INDOMITABLE);
+            CHECK(you.duration[DUR_INDOMITABLE] == duration);
+            const string light = displayed.light_text;
+            const string short_text = displayed.short_text;
+            if (language == lang_t::ZH)
+            {
+                CHECK(light != make_stringf("Indom (%d)", duration / 100));
+                CHECK(short_text != make_stringf("indomitable (%d)", duration / 100));
+                ScopedLangEn protocol_language;
+                status_info english;
+                REQUIRE(fill_status_info(DUR_INDOMITABLE, english));
+                CHECK(english.light_text == make_stringf("Indom (%d)", duration / 100));
+                CHECK(english.short_text == displayed.short_db_key);
+            }
+            i18n_cache_clear();
+            CHECK(displayed.light_text == light);
+            CHECK(displayed.short_text == short_text);
+            CHECK(Options.language == language);
+        }
+        you.duration[DUR_INDOMITABLE] = 0;
+        status_info inactive;
+        CHECK_FALSE(fill_status_info(DUR_INDOMITABLE, inactive));
     }
 }

@@ -1089,8 +1089,12 @@ bool fill_status_info(int status, status_info& inf)
         break;
 
     case DUR_INDOMITABLE:
-        inf.light_text = make_stringf("Indom (%d)", you.duration[DUR_INDOMITABLE] / 100);
-        inf.short_text = make_stringf("indomitable (%d)", you.duration[DUR_INDOMITABLE] / 100);
+        inf.light_text = make_stringf(T_("Indom (%d)"),
+                                     you.duration[DUR_INDOMITABLE] / 100);
+        inf.short_db_key = make_stringf("indomitable (%d)",
+                                       you.duration[DUR_INDOMITABLE] / 100);
+        inf.short_text = make_stringf(T_("indomitable (%d)"),
+                                     you.duration[DUR_INDOMITABLE] / 100);
         break;
 
     case DUR_SALVO:

@@ -4613,10 +4613,10 @@ indifferent
 中立
 %%%%
 Indom (%d)
-不屈（%d）
+刚毅（%d）
 %%%%
 indomitable (%d)
-不屈（%d）
+刚毅（%d）
 %%%%
 infuse magic (%d %s)
 魔法注入（%d %s）
@@ -8639,7 +8639,7 @@ You acquired
 你获得了
 %%%%
 You add the spell%1$s %2$s to your library.
-你将法术<yellow>%2$s</yellow>添加到你的法术书中。
+你将法术<yellow>%2$s</yellow>添加到你的法术库中。
 %%%%
 You already have all the faith you need.
 你已拥有所需的全部信仰。
@@ -29929,7 +29929,7 @@ Put travel exclusion on door? (Y/n)
 ；仍然使用吗？
 %%%%
 Spend multiple turns changing equipment while %s?
-在%s的情况下花费多回合更换装备吗？
+%s时，仍要花费多回合更换装备吗？
 %%%%
 Really %s? This action would place you under penance%s!
 确定要%s吗？此行为会让你遭受苦修%s！
@@ -46208,3 +46208,18 @@ jademantle-form
 %%%%
 skill training| trivially.
 ，幅度极小。
+%%%%
+surge of fire
+火焰涌流
+%%%%
+surge of cold
+寒气涌流
+%%%%
+surge of electricity
+电流涌流
+%%%%
+surge of tremors
+震波涌流
+%%%%
+The barbs in your skin will harm you if you move.
+如果移动，扎在你皮肤里的倒刺会对你造成伤害。
