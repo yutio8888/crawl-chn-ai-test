@@ -29929,7 +29929,7 @@ Put travel exclusion on door? (Y/n)
 ；仍然使用吗？
 %%%%
 Spend multiple turns changing equipment while %s?
-%s时，仍要花费多回合更换装备吗？
+仍要花费多回合更换装备吗？（%s）
 %%%%
 Really %s? This action would place you under penance%s!
 确定要%s吗？此行为会让你遭受苦修%s！
