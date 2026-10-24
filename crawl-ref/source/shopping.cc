@@ -526,7 +526,7 @@ unsigned int item_value(item_def item, bool ident)
                 valued += 10;
                 break;
 
-            CASE_REMOVED_POTIONS(item.sub_type)
+            CASE_REMOVED_POTIONS(item.sub_type);
             }
         }
         break;
@@ -787,12 +787,12 @@ unsigned int item_value(item_def item, bool ident)
             // more expensive per spell than books
             valued = level * level * 6 + 34;
         }
-#if TAG_MAJOR_VERSION == 34
-        else if (book == BOOK_BUGGY_DESTRUCTION)
-            break;
-#endif
         else
         {
+#if TAG_MAJOR_VERSION == 34
+            if (book == BOOK_BUGGY_DESTRUCTION)
+                break;
+#endif
             const vector<spell_type> spells = spells_in_book(item);
             for (spell_type spell : spells)
             {
@@ -847,7 +847,7 @@ bool is_worthless_consumable(const item_def &item)
             return true;
         default:
             return false;
-        CASE_REMOVED_POTIONS(item.sub_type)
+        CASE_REMOVED_POTIONS(item.sub_type);
         }
     case OBJ_SCROLLS:
         return item.sub_type == SCR_NOISE;
@@ -1554,7 +1554,7 @@ bool ShopMenu::process_key(int keyin)
         const auto index = letter_to_index(keyin) % 26;
         auto entry = dynamic_cast<ShopEntry*>(items[index]);
         entry->selected_qty = 0;
-        const item_def& item(*entry->item);
+        const item_def& item = *entry->item;
         if (shopping_list.is_on_list(item, &pos))
             shopping_list.del_thing(item, &pos);
         else
