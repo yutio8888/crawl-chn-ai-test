@@ -19,3 +19,6 @@ int current_horror_level(); // XXX: move?
 // Non-static so targeted i18n tests can drive the real production path
 // without the player_reacts 1-in-500 gate.
 void do_eel_flavour_msg();
+
+// Attunement notification/update shared by player_reacts and production-path tests.
+void maybe_attune_regen_items();

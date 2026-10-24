@@ -677,7 +677,7 @@ static vector<pair<string,string>> _get_form_fakemuts()
     {
         result.push_back({"boosted hp",
                             _formmut(make_stringf(T_("Your maximum health is %sincreased."),
-                                                    hp_mod < 13 ? "" : "greatly "))});
+                                                    hp_mod < 13 ? "" : T_("greatly ")))});
     } // see badmuts section below for max health reduction
 
     // Bad effects
@@ -687,7 +687,7 @@ static vector<pair<string,string>> _get_form_fakemuts()
     {
         result.push_back({"reduced hp",
                             _badmut(make_stringf(T_("Your maximum health is decreased%s."),
-                                form->underskilled() ? ", since you lack skill for your form"
+                                form->underskilled() ? T_(", since you lack skill for your form")
                                 : ""))});
     }
 
@@ -706,7 +706,7 @@ static vector<pair<string,string>> _get_form_fakemuts()
         if (you.res_cold())
         {
             result.push_back({"(cold-blooded)",
-                "<darkgray>((You are cold-blooded and may be slowed by cold attacks.))</darkgray>"});
+                "<darkgray>((" + string(T_("You are cold-blooded and may be slowed by cold attacks.")) + "))</darkgray>"});
         }
         else
         {
@@ -1062,7 +1062,7 @@ string mutation_menu_legend(bool has_future_muts)
     string extra = "";
     // TODO: also handle suppressed fakemuts
     if (_has_suppressed_muts())
-        extra += "<darkgrey>()</darkgrey>: Suppressed.\n";
+        extra += T_("<darkgrey>()</darkgrey>: Suppressed.\n");
     if (_has_transient_muts())
         extra += T_("<magenta>[]</magenta>: Transient mutations.\n");
     if (has_future_muts)

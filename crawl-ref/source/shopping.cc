@@ -1721,7 +1721,7 @@ string shop_name(const shop_struct& shop)
 #if TAG_MAJOR_VERSION == 34
     // xref ShopInfo::load
     if (shop.shop_name == " ")
-        return shop.shop_type_name;
+        return C_("shop name type", shop.shop_type_name.c_str());
 #endif
     if (!shop.shop_name.empty())
         sh_name += apostrophise(shop.shop_name) + separator;
@@ -1735,12 +1735,12 @@ string shop_name(const shop_struct& shop)
     }
 
     if (!shop.shop_type_name.empty())
-        sh_name += shop.shop_type_name;
+        sh_name += C_("shop name type", shop.shop_type_name.c_str());
     else
         sh_name += shop_type_name(type);
 
     if (!shop.shop_suffix_name.empty())
-        sh_name += separator + shop.shop_suffix_name;
+        sh_name += separator + C_("shop name suffix", shop.shop_suffix_name.c_str());
     else
     {
         string sh_suffix = _shop_type_suffix(type, shop.pos);

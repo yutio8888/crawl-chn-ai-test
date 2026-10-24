@@ -114,3 +114,6 @@ void mons_felid_revive(monster* mons);
 bool mons_bennu_can_revive(const monster* mons);
 
 void blorkula_bat_merge(monster& bat);
+
+// Shared by the single-bat revival and multi-bat merge paths.
+void blorkula_bat_merge_message(monster* blork, int bat_count);

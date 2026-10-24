@@ -1071,7 +1071,7 @@ mimic reveal plural|%s are mimics!
 %1$s%2$.0s抽搐了一下。
 %%%%
 %1$s attack snaps %2$s out of %3$s fear.
-%1$s的攻击将%2$s从%3$s恐惧中惊醒。
+%1$s攻击将%2$s从%3$s恐惧中惊醒。
 %%%%
 %1$s can %2$s water.\n
 %1$s能在%2$s中行动。\n
@@ -1083,7 +1083,7 @@ mimic reveal plural|%s are mimics!
 %1$s继续给%2$s发条蜜蜂上弦……
 %%%%
 %1$s fails to defend %2$s.
-%1$s未能防守%2$s。
+%1$s未能保护%2$s。
 %%%%
 %1$s loses %2$s in your eye%3$s.
 %1$s在你的眼中%2$s失去了自我。
@@ -1350,7 +1350,7 @@ You grip the centipede bauble in your %s and it winds around your %s and fuses w
 你用%s握住蜈蚣球，它缠上你的%s并与之融合。
 %%%%
 %s crushes %s against %s and falls apart!
-%s把%s压在%s上撞碎了！
+%s将%s压在%s上，自身随即碎裂！
 %%%%
 %s dances into the air!
 %s舞到了空中！
@@ -8505,7 +8505,7 @@ With a terrible screech, the alarm sounds!
 以惊人的势头
 %%%%
 With Pikel's spell broken, his former %s freedom.
-皮克尔的法术被打破了，他曾经的%s自由了。
+皮克尔的法术被打破了，他曾经的%s自由。
 %%%%
  withdraws the vision and curse.
  收回了幻象和诅咒。
@@ -9866,7 +9866,7 @@ You feel %sfirmly anchored in space.
 你感到%s牢牢固定在空间中。
 %%%%
 You feel %sprotected from %s.
-你感到%s抵御了%s。
+你感到%s能抵御%s。
 %%%%
 You feel %sweakened.
 你感觉%s被削弱了。
@@ -10955,7 +10955,7 @@ You set the figurine down, and a mystic portal to a ziggurat forms.
 你放下了雕像，一道通往金字塔的神秘传送门形成了。
 %%%%
 You shatter%s
-你%s碎裂了
+你碎裂了%s
 %%%%
 You should not fight recklessly!
 你不应该鲁莽战斗！
@@ -11227,7 +11227,7 @@ your
 你的
 %%%%
 Your %1$s attune%2$s to your body, and you begin to %3$s.
-%1$s适应了你的身体，你开始%3$s。
+你的%1$s适应了你的身体，你开始%3$s。
 %%%%
 Your %1$s meld%2$s into your body.
 你的%1$s融入了你的身体。
@@ -29518,8 +29518,7 @@ half of
 半个
 %%%%
 helpless 
-
-无助
+无助的
 %%%%
 invisible 
 隐形的 
@@ -46487,4 +46486,84 @@ The %s residue %s.
 %%%%
 potion appearance colour|clear
 透明
+%%%%
+
+The attack snaps %1$s out of %2$s fear.
+这次攻击将%1$s从%2$s恐惧中惊醒。
+%%%%
+
+state intensity|more 
+更加
+%%%%
+
+You are more confused.
+你的混乱加重了。
+%%%%
+
+You are poisoned.
+你中毒了。
+%%%%
+
+You are more poisoned.
+你的中毒加重了。
+%%%%
+
+The bat shimmers and %s reappears in a puff of iridescent mist.
+蝙蝠微微闪烁，%s在一团虹彩迷雾中重新出现。
+%%%%
+
+The bats swarm back together and %s reappears in a puff of iridescent mist.
+蝙蝠重新聚集，%s在一团虹彩迷雾中重新出现。
+%%%%
+
+Gang up on whom?
+集火攻击谁？
+%%%%
+
+<darkgrey>()</darkgrey>: Suppressed.\n
+<darkgrey>()</darkgrey>：被抑制。\n
+%%%%
+
+, since you lack skill for your form
+，因为你驾驭该形态的技能不足
+%%%%
+
+shop name type|Information
+信息
+%%%%
+
+shop name suffix|Kiosk
+亭
+%%%%
+
+You become %1$stransparent, but the glow from %2$s %3$s prevents you from becoming completely invisible.
+你变得%1$s透明了，但%2$s%3$s的光芒使你无法完全隐形。
+%%%%
+
+You are invisible (but backlit and visible).
+你处于隐形状态，但发光使你依然可见。
+%%%%
+
+invisibility blocker|halo
+光环
+%%%%
+
+invisibility blocker|magical contamination
+魔法污染
+%%%%
+
+invisibility blocker|corona
+光晕
+%%%%
+
+invisibility blocker|liquid flames
+液体火焰
+%%%%
+
+invisibility blocker|!!!QUAD DAMAGE!!!
+！！！四倍伤害！！！
+%%%%
+
+invisibility blocker|form
+形态
 %%%%

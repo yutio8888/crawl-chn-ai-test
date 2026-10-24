@@ -165,9 +165,16 @@ static void _mark_expiring(status_info& inf, bool expiring)
     if (expiring)
     {
         if (!inf.short_text.empty())
-            inf.short_text += T_(" (expiring)");
+        {
+            // Keep the canonical English key separate from display suffixes.
+            if (inf.short_db_key.empty())
+                inf.short_db_key = inf.short_text + " (expiring)";
+            inf.short_text = string(C_("status", inf.short_text.c_str()))
+                             + T_(" (expiring)");
+        }
         if (!inf.long_text.empty())
-            inf.long_text = (T_("Expiring: ")) + inf.long_text;
+            inf.long_text = string(T_("Expiring: "))
+                            + C_("status", inf.long_text.c_str());
     }
 }
 
@@ -1462,13 +1469,16 @@ static void _describe_invisible(status_info& inf)
     inf.light_colour = _dur_colour(BLUE, dur_expiring(DUR_INVIS));
     inf.light_text   = T_("Invis");
     inf.db_key       = "Invis";
-    inf.short_text   = "invisible";
+    inf.short_db_key = "invisible";
+    inf.short_text = C_("status", "invisible");
+    inf.long_text = T_("You are invisible.");
     if (you.backlit())
     {
         inf.light_colour = DARKGREY;
-        inf.short_text += T_(" (but backlit and visible)");
+        inf.short_db_key += " (but backlit and visible)";
+        inf.short_text += C_("status", " (but backlit and visible)");
+        inf.long_text = T_("You are invisible (but backlit and visible).");
     }
-    inf.long_text = T_("You are ") + inf.short_text + T_(".");
     _mark_expiring(inf, dur_expiring(DUR_INVIS));
 }
 

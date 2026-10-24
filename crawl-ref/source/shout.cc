@@ -604,7 +604,7 @@ static bool _issue_order(int keyn, int &mons_targd)
             args.restricts = DIR_TARGET;
             args.mode = TARG_HOSTILE;
             args.needs_path = false;
-            args.top_prompt = "Gang up on whom?";
+            args.top_prompt = T_("Gang up on whom?");
             dist targ;
             direction(targ, args);
 

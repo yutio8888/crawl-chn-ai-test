@@ -125,7 +125,9 @@ function TimedMessaging:emit_message(cm, msg)
       return
     end
 
-    crawl.mpr(util.expand_entity(self.entity, translate_key(msg)), self:channel())
+    -- Localize the entity before grammar expansion, leaving saved marker data intact.
+    local entity = self.entity and translate_key(self.entity)
+    crawl.mpr(util.expand_entity(entity, translate_key(msg)), self:channel())
   end
 end
 

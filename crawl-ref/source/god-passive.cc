@@ -792,7 +792,7 @@ void qazlal_element_adapt(beam_type flavour, int strength)
     }
 
     mprf(MSGCH_GOD, T_("You feel %sprotected from %s."),
-         you.duration[dur] > 0 ? T_("more ") : "",
+         you.duration[dur] > 0 ? C_("state intensity", "more ") : "",
          C_("element", descript.c_str()));
 
     // was scaled by 10 * strength. But the strength parameter is used so inconsistently that

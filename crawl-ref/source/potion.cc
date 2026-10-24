@@ -321,7 +321,7 @@ public:
     {
         const bool were_brilliant = you.duration[DUR_BRILLIANCE] > 0;
 
-        const char* feel_clever = were_brilliant ? T_("more ") : "";
+        const char* feel_clever = were_brilliant ? C_("state intensity", "more ") : "";
         mprf(MSGCH_DURATION, T_("You feel %sclever all of a sudden."), feel_clever);
         const int dur = _scale_pot_duration(35 + random2(pow), is_potion);
         you.increase_duration(DUR_BRILLIANCE, dur);
@@ -348,7 +348,7 @@ public:
     {
         const bool was_attractive = you.duration[DUR_ATTRACTIVE] > 0;
 
-        const char* attractive_more = was_attractive ? T_("more ") : "";
+        const char* attractive_more = was_attractive ? C_("state intensity", "more ") : "";
         mprf(MSGCH_DURATION, T_("You feel %sattractive to monsters."), attractive_more);
 
         const int dur = _scale_pot_duration((20 + random2(pow)/2), is_potion);
@@ -467,21 +467,21 @@ public:
         {
             vector<const char *> afflictions;
             if (you.haloed() && !you.umbraed())
-                afflictions.push_back("halo");
+                afflictions.push_back(C_("invisibility blocker", "halo"));
             if (player_harmful_contamination())
-                afflictions.push_back("magical contamination");
+                afflictions.push_back(C_("invisibility blocker", "magical contamination"));
             if (you.duration[DUR_CORONA])
-                afflictions.push_back("corona");
+                afflictions.push_back(C_("invisibility blocker", "corona"));
             if (you.duration[DUR_STICKY_FLAME])
-                afflictions.push_back("liquid flames");
+                afflictions.push_back(C_("invisibility blocker", "liquid flames"));
             if (you.duration[DUR_QUAD_DAMAGE])
-                afflictions.push_back("!!!QUAD DAMAGE!!!");
+                afflictions.push_back(C_("invisibility blocker", "!!!QUAD DAMAGE!!!"));
             if (you.form == transformation::flux)
-                afflictions.push_back("form");
-            mprf(MSGCH_DURATION,
-                 T_("You become %stransparent, but the glow from %s "
-                    "%s prevents you from becoming completely invisible."),
-                 you.duration[DUR_INVIS] ? T_("more ") : "",
+                afflictions.push_back(C_("invisibility blocker", "form"));
+            mprf_p(MSGCH_DURATION,
+                 T_("You become %1$stransparent, but the glow from %2$s "
+                    "%3$s prevents you from becoming completely invisible."),
+                 you.duration[DUR_INVIS] ? C_("state intensity", "more ") : "",
                  you.haloed() && you.halo_radius() == -1 ? T_("the") : T_("your"),
                  comma_separated_line(afflictions.begin(),
                                       afflictions.end()).c_str());

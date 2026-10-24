@@ -1142,7 +1142,7 @@ static void _handle_emergency_flight()
 // Regeneration and Magic Regeneration items only work if the player has reached
 // max hp/mp while they are being worn. This scans and updates such items when
 // the player refills their hp/mp.
-static void _maybe_attune_regen_items()
+void maybe_attune_regen_items()
 {
     bool attune_regen = you.check_hp_regen_attunement;
     bool attune_mana_regen = you.check_mp_regen_attunement;
@@ -1179,7 +1179,7 @@ static void _maybe_attune_regen_items()
                 gained_mana_regen = true;
 
             eq_list.push_back(is_artefact(arm) ? get_artefact_name(arm) :
-                entry.slot == SLOT_AMULET ? "amulet" :
+                entry.slot == SLOT_AMULET ? T_("amulet") :
                     lowercase_string(equip_slot_name(entry.slot, true)));
 
             if (entry.slot == SLOT_BOOTS || entry.slot == SLOT_GLOVES)
@@ -1207,9 +1207,9 @@ static void _maybe_attune_regen_items()
     plural = plural || eq_list.size() > 1;
     string eq_str = comma_separated_line(eq_list.begin(), eq_list.end());
     string msg_str = comma_separated_line(msgs.begin(), msgs.end());
-    const char* verb_form = plural ? "attune themselves" : "attunes itself";
+    const char* verb_suffix = plural ? " themselves" : "s itself";
     mprf_p(T_("Your %1$s attune%2$s to your body, and you begin to %3$s."),
-           eq_str.c_str(), verb_form, msg_str.c_str());
+           eq_str.c_str(), verb_suffix, msg_str.c_str());
 }
 
 // cjo: Handles player hp and mp regeneration. If the counter
@@ -1396,7 +1396,7 @@ void player_reacts()
     _regenerate_hp_and_mp(you.time_taken);
 
     // Update attunement of regeneration items if our hp/mp has refilled.
-    _maybe_attune_regen_items();
+    maybe_attune_regen_items();
 
     _decrement_durations();
 
