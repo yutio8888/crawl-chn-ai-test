@@ -1836,7 +1836,7 @@ string item_warning_prompt(const item_def& item, operation_types oper)
                                           : item.name(DESC_A);
     const string circumstance = needs_notele_warning(item, oper)
         ? T_(" while about to teleport") : "";
-    const string prompt = make_stringf(T_("Really %s %s%s?"),
+    const string prompt = make_stringf_p(T_("Really %s %s%s?"),
         verb.c_str(), name.c_str(), circumstance.c_str());
     return prompt;
 }
