@@ -39747,7 +39747,7 @@ Error! The help for "%s" is missing!
 <lightgray>（选择以%1$s、%2$s以检视）</lightgray>
 %%%%
  while about to teleport
-，即将传送
+（即将传送）
 %%%%
  You'd be excommunicated if you did!
 如果你这样做将被逐出教会！
@@ -43194,13 +43194,13 @@ Menu
 <w>/ 方向</w>、<w>Shift-方向</w>：长距离移动\n<w>* 方向</w>、<w>Ctrl-方向</w>：原地攻击\n
 %%%%
 <h>Autofight:\n<w>Tab</w>          : attack nearest monster,\n               moving if necessary\n<w>Shift-Tab</w>, <w>p</w> : trigger quivered action;\n               if targeted, aims at\n               nearest monster\n
-<h>自动战斗：\n<w>Tab</w>          ：攻击最近的怪物，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发已装填的动作；\n               若已瞄准，则瞄准\n               最近的怪物\n
+<h>自动战斗：\n<w>Tab</w>          ：攻击最近的怪物，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发已装填的动作；\n               若需要目标，则瞄准\n               最近的怪物\n
 %%%%
 <brown>(</brown> : missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
 <brown>(</brown> ：弹药（<w>%</w>装填、<w>%</w>瞄准、<w>%</w>/<w>%</w>切换）
 %%%%
 </lightcyan> : books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pick up to add to library)
-</lightcyan> ：书籍（<w>%</w>记忆、<w>%</w>翻阅、<w>%</w>翻阅、\n    捡起以添加至法术库）
+</lightcyan> ：书籍（<w>%</w>记忆、<w>%</w>施法、<w>%</w>强制施法、\n    捡起以添加至法术库）
 %%%%
 <lightmagenta>0</lightmagenta> : the Orb of Zot\n    Carry it to the surface and win!\n
 <lightmagenta>0</lightmagenta> ：佐特宝珠\n    带上它回到地面即可获胜！\n
@@ -43242,7 +43242,7 @@ Memorise spells and view spell\n    library (get books to add to it)
 <console><lightgrey>/</lightgrey> ：</console>魔杖（<w>%</w>激发）
 %%%%
 </lightcyan> : </console>books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pick up to add to spell library)
-</lightcyan> ：</console>书籍（<w>%</w>记忆、<w>%</w>翻阅、<w>%</w>翻阅、\n    捡起以添加至法术库）
+</lightcyan> ：</console>书籍（<w>%</w>记忆、<w>%</w>施法、<w>%</w>强制施法、\n    捡起以添加至法术库）
 %%%%
 </brown> : </console>staves (<w>%</w>ield)
 </brown> ：</console>法杖（<w>%</w>持）
@@ -47634,4 +47634,468 @@ drained resource|magic
 
 drained resource|power
 力量
+%%%%
+
+Really %s %s%s?
+确定要%s%s%s吗？
+%%%%
+
+item operation|wield
+持握
+%%%%
+
+item operation|quaff
+饮用
+%%%%
+
+item operation|drop
+丢弃
+%%%%
+
+item operation|take off
+脱下
+%%%%
+
+item operation|wear
+穿戴
+%%%%
+
+item operation|put on
+戴上
+%%%%
+
+item operation|remove
+卸下
+%%%%
+
+item operation|read
+阅读
+%%%%
+
+item operation|memorise from
+从中记忆法术：
+%%%%
+
+item operation|zap
+释放魔杖：
+%%%%
+
+item operation|fire
+发射
+%%%%
+
+item operation|evoke
+发动
+%%%%
+
+item operation|quiver
+加入箭袋：
+%%%%
+
+item operation|equip
+装备
+%%%%
+
+item operation|unequip
+卸下
+%%%%
+
+item operation|choose
+选择
+%%%%
+
+missile effect|frenzy
+使目标狂乱
+%%%%
+
+missile effect|blind
+使目标失明
+%%%%
+
+immune
+免疫
+%%%%
+
+immune to nets
+免疫投网
+%%%%
+
+can blink free
+能闪烁脱困
+%%%%
+
+You hear a faint sloshing from %s as it returns to readiness.
+你听见%s中传来轻微的水声，它又能使用了。
+%%%%
+
+Water glimmers in %s, now refilled and ready to use.
+水在%s中泛着微光，它已重新注满，可以使用了。
+%%%%
+
+You hear chittering from %s. It's ready.
+你听见%s中传来吱吱声。它又能使用了。
+%%%%
+
+%s twitches, refilled and ready to use.
+%s抽动着，已重新充满，可以使用了。
+%%%%
+
+%s jingles faintly as it regains its power.
+%s发出轻微的叮当声，恢复了力量。
+%%%%
+
+%s shakes itself petulantly as it silently regains its power.
+%s赌气般地自行晃动，悄然恢复了力量。
+%%%%
+
+         and quit the game\n
+         并退出游戏\n
+%%%%
+
+         in view\n
+         视野内的目标\n
+%%%%
+
+         pickup part of a single stack\n
+         拾取单堆物品中的一部分\n
+%%%%
+
+    (press twice for pick up menu)\n
+    （按两次打开拾取菜单）\n
+%%%%
+
+<h>Additional help:\n
+<h>更多帮助：\n
+%%%%
+
+<h>Additional important commands\n
+<h>其他重要命令\n
+%%%%
+
+<h>Dungeon Interaction and Information:\n
+<h>地牢交互与信息：\n
+%%%%
+
+<h>Game Saving and Quitting:\n
+<h>保存与退出：\n
+%%%%
+
+<h>Inventory management:\n
+<h>物品管理：\n
+%%%%
+
+<h>Item Interaction:\n
+<h>物品交互：\n
+%%%%
+
+<h>Item types and inventory management\n
+<h>物品种类与物品管理\n
+%%%%
+
+<h>Non-Gameplay Commands / Info\n
+<h>非游戏行动命令／信息\n
+%%%%
+
+<h>Other Gameplay Actions:\n
+<h>其他游戏行动：\n
+%%%%
+
+<h>Player Character Information:\n
+<h>角色信息：\n
+%%%%
+
+<h>Rest:\n
+<h>休息：\n
+%%%%
+
+<w>%#</w>: Drop exact number of items
+<w>%#</w>：丢弃指定数量的物品
+%%%%
+
+<w>%</w> or <w>%</w> : ascend/descend the stairs
+<w>%</w> 或 <w>%</w>：上楼／下楼
+%%%%
+
+<w>%</w> to throw/fire missiles
+<w>%</w>：投掷／发射投射物
+%%%%
+
+<w>%</w>/<w>%</w>    : Open/Close door
+<w>%</w>/<w>%</w>    ：开门／关门
+%%%%
+
+<w>%</w>/<w>%</w>    : use staircase
+<w>%</w>/<w>%</w>    ：使用楼梯
+%%%%
+
+<w>%</w>/<w>%</w> : zoom out/in
+<w>%</w>/<w>%</w>：缩小／放大
+%%%%
+
+<w>F12</w> : read messages (online play only)
+<w>F12</w>：阅读消息（仅限在线游戏）
+%%%%
+
+<w>Shift-Dir.</w> runs into one direction
+<w>Shift-Dir.</w>：沿一个方向奔跑
+%%%%
+
+Abandon the current character
+放弃当前角色
+%%%%
+
+Clear main and level maps
+清除主地图和楼层地图
+%%%%
+
+Drop an item
+丢弃物品
+%%%%
+
+Drop the last item(s) you picked up
+丢弃最后拾取的物品
+%%%%
+
+Find items
+查找物品
+%%%%
+
+Fire the currently quivered action
+触发当前箭袋动作
+%%%%
+
+Key help
+按键帮助
+%%%%
+
+Memorise a spell from your library
+从法术库中记忆法术
+%%%%
+
+Redraw screen
+重绘屏幕
+%%%%
+
+Save and exit without query
+不经确认保存并退出
+%%%%
+
+Save game and exit
+保存游戏并退出
+%%%%
+
+Save the game and exit
+保存游戏并退出
+%%%%
+
+add note (use <w>%:</w> to read notes)
+添加笔记（用 <w>%:</w> 阅读笔记）
+%%%%
+
+annotate the dungeon level
+为地牢楼层添加注释
+%%%%
+
+auto-explore
+自动探索
+%%%%
+
+autoexplore
+自动探索
+%%%%
+
+cast spell, abort without targets
+施放法术，无目标则取消
+%%%%
+
+cast spell, no matter what
+无论有无目标都施放法术
+%%%%
+
+character overview
+角色概览
+%%%%
+
+display character status
+显示角色状态
+%%%%
+
+display experience info
+显示经验值信息
+%%%%
+
+display gold in possession
+显示持有的金币
+%%%%
+
+display worn armour
+显示穿戴的护甲
+%%%%
+
+display worn jewellery
+显示佩戴的首饰
+%%%%
+
+drop item
+丢弃物品
+%%%%
+
+dump character to file
+将角色信息导出至文件
+%%%%
+
+eXamine level map (<w>%?</w> for help)
+查看楼层地图（<w>%?</w> 查看帮助）
+%%%%
+
+eXamine surroundings/targets
+查看周围环境／目标
+%%%%
+
+examine occupied tile and
+查看脚下地块，并
+%%%%
+
+game menu
+游戏菜单
+%%%%
+
+inscribe item
+为物品添加铭文
+%%%%
+
+interlevel travel
+跨层旅行
+%%%%
+
+inventory (select item to view)
+物品栏（选择物品以查看）
+%%%%
+
+list all memorised spells
+列出所有已记忆的法术
+%%%%
+
+list monsters, items, features
+列出怪物、物品、地形
+%%%%
+
+mute/unmute sound effects
+静音／启用音效
+%%%%
+
+pick up item from ground (also <w>g</w>)
+从地上拾取物品（也可按 <w>g</w>）
+%%%%
+
+pick up items (also <w>g</w>)
+拾取物品（也可按 <w>g</w>）
+%%%%
+
+quick add macro
+快速添加宏
+%%%%
+
+re-do previous command
+重做上一个命令
+%%%%
+
+read messages (online play only)
+阅读消息（仅限在线游戏）
+%%%%
+
+reassign inventory/spell letters
+重新分配物品／法术的字母
+%%%%
+
+repeat next command # of times
+将下一个命令重复指定次数
+%%%%
+
+rest and long wait; stops when
+休息或长时间等待；在以下情况停止：
+%%%%
+
+select an item and Fire it
+选择物品并投掷／发射
+%%%%
+
+set Waypoint
+设置路标
+%%%%
+
+show Abilities/mutations
+显示能力／变异
+%%%%
+
+show Inventory list
+显示物品栏列表
+%%%%
+
+show Previous messages
+显示先前的消息
+%%%%
+
+show character overview
+显示角色概览
+%%%%
+
+show dungeon Overview
+显示地牢概览
+%%%%
+
+show item knowledge
+显示已知物品信息
+%%%%
+
+show map of the whole level
+显示整层地图
+%%%%
+
+show religion overview
+显示宗教概览
+%%%%
+
+show religion screen
+显示宗教界面
+%%%%
+
+show runes collected
+显示收集的符文
+%%%%
+
+show skill screen
+显示技能界面
+%%%%
+
+show your spell library
+显示法术库
+%%%%
+
+suppress invisible monster warnings
+关闭隐形怪物警告
+%%%%
+
+tell allies (<w>%t</w> to shout)
+命令盟友（<w>%t</w> 喊叫）
+%%%%
+
+toggle auto-pickup
+切换自动拾取
+%%%%
+
+toggle view layers
+切换视图图层
+%%%%
+
+use an ability
+使用能力
+%%%%
+
+use special Ability (<w>%!</w> for help)
+使用特殊能力（<w>%!</w> 查看帮助）
+%%%%
+
+wait a turn (also <w>s</w>, <w>Del</w>)
+等待一回合（也可按 <w>s</w>、<w>Del</w>）
 %%%%

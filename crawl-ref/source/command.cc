@@ -543,7 +543,7 @@ static string _help_file_title(const help_file& file)
 string help_header_suffix(int page)
 {
     if (page == '?')
-        return ": Key help";
+        return string(": ") + T_("Key help");
     if (page == tiles_help_file.hotkey)
         return ": " + _help_file_title(tiles_help_file);
     for (int i = 0; help_files[i] != nullptr; ++i)
@@ -995,11 +995,10 @@ static void _add_formatted_keyhelp(column_composer &cols)
                            CMD_MOVE_DOWN_RIGHT });
 
     cols.add_formatted(
-            0,
-            "<h>Rest:\n");
+            0, T_("<h>Rest:\n"));
 
-    _add_command(cols, 0, CMD_WAIT, "wait a turn (also <w>s</w>, <w>Del</w>)", 2);
-    _add_command(cols, 0, CMD_REST, "rest and long wait; stops when", 2);
+    _add_command(cols, 0, CMD_WAIT, T_("wait a turn (also <w>s</w>, <w>Del</w>)"), 2);
+    _add_command(cols, 0, CMD_REST, T_("rest and long wait; stops when"), 2);
     cols.add_formatted(
             0,
             T_("    Health or Magic become full or\n"
@@ -1012,10 +1011,10 @@ static void _add_formatted_keyhelp(column_composer &cols)
             0,
             T_("<h>Extended Movement:\n"));
 
-    _add_command(cols, 0, CMD_EXPLORE, "auto-explore");
-    _add_command(cols, 0, CMD_INTERLEVEL_TRAVEL, "interlevel travel");
-    _add_command(cols, 0, CMD_SEARCH_STASHES, "Find items");
-    _add_command(cols, 0, CMD_FIX_WAYPOINT, "set Waypoint");
+    _add_command(cols, 0, CMD_EXPLORE, T_("auto-explore"));
+    _add_command(cols, 0, CMD_INTERLEVEL_TRAVEL, T_("interlevel travel"));
+    _add_command(cols, 0, CMD_SEARCH_STASHES, T_("Find items"));
+    _add_command(cols, 0, CMD_FIX_WAYPOINT, T_("set Waypoint"));
 
     cols.add_formatted(
             0,
@@ -1079,140 +1078,131 @@ static void _add_formatted_keyhelp(column_composer &cols)
             false);
 
     cols.add_formatted(
-            0,
-            "<h>Other Gameplay Actions:\n");
+            0, T_("<h>Other Gameplay Actions:\n"));
 
     _add_insert_commands(cols, 0, 2, CMD_USE_ABILITY,
-                         "use special Ability (<w>%!</w> for help)",
+                          T_("use special Ability (<w>%!</w> for help)"),
                          { CMD_USE_ABILITY });
-    _add_command(cols, 0, CMD_CAST_SPELL, "cast spell, abort without targets", 2);
-    _add_command(cols, 0, CMD_FORCE_CAST_SPELL, "cast spell, no matter what", 2);
-    _add_command(cols, 0, CMD_DISPLAY_SPELLS, "list all memorised spells", 2);
-    _add_command(cols, 0, CMD_MEMORISE_SPELL, "Memorise a spell from your library", 2);
+    _add_command(cols, 0, CMD_CAST_SPELL, T_("cast spell, abort without targets"), 2);
+    _add_command(cols, 0, CMD_FORCE_CAST_SPELL, T_("cast spell, no matter what"), 2);
+    _add_command(cols, 0, CMD_DISPLAY_SPELLS, T_("list all memorised spells"), 2);
+    _add_command(cols, 0, CMD_MEMORISE_SPELL, T_("Memorise a spell from your library"), 2);
 
     _add_insert_commands(cols, 0, 2, CMD_SHOUT,
-                         "tell allies (<w>%t</w> to shout)",
+                          T_("tell allies (<w>%t</w> to shout)"),
                          { CMD_SHOUT });
-    _add_command(cols, 0, CMD_PREV_CMD_AGAIN, "re-do previous command", 2);
-    _add_command(cols, 0, CMD_REPEAT_CMD, "repeat next command # of times", 2);
+    _add_command(cols, 0, CMD_PREV_CMD_AGAIN, T_("re-do previous command"), 2);
+    _add_command(cols, 0, CMD_REPEAT_CMD, T_("repeat next command # of times"), 2);
 
     cols.add_formatted(
-            0,
-            "<h>Non-Gameplay Commands / Info\n");
+            0, T_("<h>Non-Gameplay Commands / Info\n"));
 
-    _add_command(cols, 0, CMD_GAME_MENU, "game menu", 2);
-    _add_command(cols, 0, CMD_REPLAY_MESSAGES, "show Previous messages");
-    _add_command(cols, 0, CMD_REDRAW_SCREEN, "Redraw screen");
-    _add_command(cols, 0, CMD_CLEAR_MAP, "Clear main and level maps");
-    _add_command(cols, 0, CMD_MACRO_ADD, "quick add macro");
-    _add_command(cols, 0, CMD_MACRO_MENU, "edit macros");
-    _add_command(cols, 0, CMD_ANNOTATE_LEVEL, "annotate the dungeon level", 2);
-    _add_command(cols, 0, CMD_CHARACTER_DUMP, "dump character to file", 2);
+    _add_command(cols, 0, CMD_GAME_MENU, T_("game menu"), 2);
+    _add_command(cols, 0, CMD_REPLAY_MESSAGES, T_("show Previous messages"));
+    _add_command(cols, 0, CMD_REDRAW_SCREEN, T_("Redraw screen"));
+    _add_command(cols, 0, CMD_CLEAR_MAP, T_("Clear main and level maps"));
+    _add_command(cols, 0, CMD_MACRO_ADD, T_("quick add macro"));
+    _add_command(cols, 0, CMD_MACRO_MENU, T_("edit macros"));
+    _add_command(cols, 0, CMD_ANNOTATE_LEVEL, T_("annotate the dungeon level"), 2);
+    _add_command(cols, 0, CMD_CHARACTER_DUMP, T_("dump character to file"), 2);
     _add_insert_commands(cols, 0, 2, CMD_MAKE_NOTE,
-                         "add note (use <w>%:</w> to read notes)",
+                          T_("add note (use <w>%:</w> to read notes)"),
                          { CMD_DISPLAY_COMMANDS });
-    _add_command(cols, 0, CMD_ADJUST_INVENTORY, "reassign inventory/spell letters", 2);
+    _add_command(cols, 0, CMD_ADJUST_INVENTORY, T_("reassign inventory/spell letters"), 2);
 #ifdef USE_TILE_LOCAL
-    _add_command(cols, 0, CMD_EDIT_PLAYER_TILE, "edit player doll", 2);
+    _add_command(cols, 0, CMD_EDIT_PLAYER_TILE, T_("edit player doll"), 2);
 #else
 #ifdef USE_TILE_WEB
     if (tiles.is_controlled_from_web())
     {
-        cols.add_formatted(0, "<w>F12</w> : read messages (online play only)",
+        cols.add_formatted(0, T_("<w>F12</w> : read messages (online play only)"),
                            false);
     }
     else
     {
-        _add_command(cols, 0, CMD_READ_MESSAGES,
-                     "read messages (online play only)", 2);
+        _add_command(cols, 0, CMD_READ_MESSAGES, T_("read messages (online play only)"), 2);
     }
 #else
-    _add_command(cols, 0, CMD_READ_MESSAGES, "read messages (online play only)", 2);
+    _add_command(cols, 0, CMD_READ_MESSAGES, T_("read messages (online play only)"), 2);
 #endif
 #endif
 
     cols.add_formatted(
-            1,
-            "<h>Game Saving and Quitting:\n");
+            1, T_("<h>Game Saving and Quitting:\n"));
 
-    _add_command(cols, 1, CMD_SAVE_GAME, "Save game and exit");
-    _add_command(cols, 1, CMD_SAVE_GAME_NOW, "Save and exit without query");
-    _add_command(cols, 1, CMD_QUIT, "Abandon the current character");
-    cols.add_formatted(1, "         and quit the game\n",
+    _add_command(cols, 1, CMD_SAVE_GAME, T_("Save game and exit"));
+    _add_command(cols, 1, CMD_SAVE_GAME_NOW, T_("Save and exit without query"));
+    _add_command(cols, 1, CMD_QUIT, T_("Abandon the current character"));
+    cols.add_formatted(1, T_("         and quit the game\n"),
                        false);
 
     cols.add_formatted(
-            1,
-            "<h>Player Character Information:\n");
+            1, T_("<h>Player Character Information:\n"));
 
-    _add_command(cols, 1, CMD_DISPLAY_CHARACTER_STATUS, "display character status", 2);
-    _add_command(cols, 1, CMD_DISPLAY_SKILLS, "show skill screen", 2);
-    _add_command(cols, 1, CMD_RESISTS_SCREEN, "character overview", 2);
-    _add_command(cols, 1, CMD_DISPLAY_RELIGION, "show religion screen", 2);
-    _add_command(cols, 1, CMD_DISPLAY_MUTATIONS, "show Abilities/mutations", 2);
-    _add_command(cols, 1, CMD_DISPLAY_KNOWN_OBJECTS, "show item knowledge", 2);
-    _add_command(cols, 1, CMD_MEMORISE_SPELL, "show your spell library", 2);
-    _add_command(cols, 1, CMD_DISPLAY_RUNES, "show runes collected", 2);
-    _add_command(cols, 1, CMD_LIST_ARMOUR, "display worn armour", 2);
-    _add_command(cols, 1, CMD_LIST_JEWELLERY, "display worn jewellery", 2);
-    _add_command(cols, 1, CMD_LIST_GOLD, "display gold in possession", 2);
-    _add_command(cols, 1, CMD_EXPERIENCE_CHECK, "display experience info", 2);
+    _add_command(cols, 1, CMD_DISPLAY_CHARACTER_STATUS, T_("display character status"), 2);
+    _add_command(cols, 1, CMD_DISPLAY_SKILLS, T_("show skill screen"), 2);
+    _add_command(cols, 1, CMD_RESISTS_SCREEN, T_("character overview"), 2);
+    _add_command(cols, 1, CMD_DISPLAY_RELIGION, T_("show religion screen"), 2);
+    _add_command(cols, 1, CMD_DISPLAY_MUTATIONS, T_("show Abilities/mutations"), 2);
+    _add_command(cols, 1, CMD_DISPLAY_KNOWN_OBJECTS, T_("show item knowledge"), 2);
+    _add_command(cols, 1, CMD_MEMORISE_SPELL, T_("show your spell library"), 2);
+    _add_command(cols, 1, CMD_DISPLAY_RUNES, T_("show runes collected"), 2);
+    _add_command(cols, 1, CMD_LIST_ARMOUR, T_("display worn armour"), 2);
+    _add_command(cols, 1, CMD_LIST_JEWELLERY, T_("display worn jewellery"), 2);
+    _add_command(cols, 1, CMD_LIST_GOLD, T_("display gold in possession"), 2);
+    _add_command(cols, 1, CMD_EXPERIENCE_CHECK, T_("display experience info"), 2);
 
     cols.add_formatted(
-            1,
-            "<h>Dungeon Interaction and Information:\n");
+            1, T_("<h>Dungeon Interaction and Information:\n"));
 
-    _add_insert_commands(cols, 1, "<w>%</w>/<w>%</w>    : Open/Close door",
+    _add_insert_commands(cols, 1,  T_("<w>%</w>/<w>%</w>    : Open/Close door"),
                          { CMD_OPEN_DOOR, CMD_CLOSE_DOOR });
-    _add_insert_commands(cols, 1, "<w>%</w>/<w>%</w>    : use staircase",
+    _add_insert_commands(cols, 1,  T_("<w>%</w>/<w>%</w>    : use staircase"),
                          { CMD_GO_UPSTAIRS, CMD_GO_DOWNSTAIRS });
 
-    _add_command(cols, 1, CMD_INSPECT_FLOOR, "examine occupied tile and");
-    cols.add_formatted(1, "         pickup part of a single stack\n",
+    _add_command(cols, 1, CMD_INSPECT_FLOOR, T_("examine occupied tile and"));
+    cols.add_formatted(1, T_("         pickup part of a single stack\n"),
                        false);
 
-    _add_command(cols, 1, CMD_LOOK_AROUND, "eXamine surroundings/targets");
+    _add_command(cols, 1, CMD_LOOK_AROUND, T_("eXamine surroundings/targets"));
     _add_insert_commands(cols, 1, 7, CMD_DISPLAY_MAP,
-                         "eXamine level map (<w>%?</w> for help)",
+                          T_("eXamine level map (<w>%?</w> for help)"),
                          { CMD_DISPLAY_MAP });
-    _add_command(cols, 1, CMD_FULL_VIEW, "list monsters, items, features");
-    cols.add_formatted(1, "         in view\n",
+    _add_command(cols, 1, CMD_FULL_VIEW, T_("list monsters, items, features"));
+    cols.add_formatted(1, T_("         in view\n"),
                        false);
-    _add_command(cols, 1, CMD_SHOW_TERRAIN, "toggle view layers");
-    _add_command(cols, 1, CMD_DISPLAY_OVERMAP, "show dungeon Overview");
-    _add_command(cols, 1, CMD_TOGGLE_AUTOPICKUP, "toggle auto-pickup");
-    _add_command(cols, 1, CMD_IGNORE_INVISIBLE, "suppress invisible monster warnings");
+    _add_command(cols, 1, CMD_SHOW_TERRAIN, T_("toggle view layers"));
+    _add_command(cols, 1, CMD_DISPLAY_OVERMAP, T_("show dungeon Overview"));
+    _add_command(cols, 1, CMD_TOGGLE_AUTOPICKUP, T_("toggle auto-pickup"));
+    _add_command(cols, 1, CMD_IGNORE_INVISIBLE, T_("suppress invisible monster warnings"));
 #ifdef USE_SOUND
-    _add_command(cols, 1, CMD_TOGGLE_SOUND, "mute/unmute sound effects");
+    _add_command(cols, 1, CMD_TOGGLE_SOUND, T_("mute/unmute sound effects"));
 #endif
 #ifdef USE_TILE_LOCAL
-    _add_insert_commands(cols, 1, "<w>%</w>/<w>%</w> : zoom out/in",
+    _add_insert_commands(cols, 1,  T_("<w>%</w>/<w>%</w> : zoom out/in"),
                         { CMD_ZOOM_OUT, CMD_ZOOM_IN });
 #endif
 
     cols.add_formatted(
-            1,
-            "<h>Inventory management:\n");
+            1, T_("<h>Inventory management:\n"));
 
-    _add_command(cols, 1, CMD_DISPLAY_INVENTORY, "show Inventory list", 2);
-    _add_command(cols, 1, CMD_PICKUP, "pick up items (also <w>g</w>)", 2);
+    _add_command(cols, 1, CMD_DISPLAY_INVENTORY, T_("show Inventory list"), 2);
+    _add_command(cols, 1, CMD_PICKUP, T_("pick up items (also <w>g</w>)"), 2);
     cols.add_formatted(
-            1,
-            "    (press twice for pick up menu)\n",
+            1, T_("    (press twice for pick up menu)\n"),
             false);
 
-    _add_command(cols, 1, CMD_DROP, "Drop an item", 2);
-    _add_insert_commands(cols, 1, "<w>%#</w>: Drop exact number of items",
+    _add_command(cols, 1, CMD_DROP, T_("Drop an item"), 2);
+    _add_insert_commands(cols, 1,  T_("<w>%#</w>: Drop exact number of items"),
                          { CMD_DROP });
-    _add_command(cols, 1, CMD_DROP_LAST, "Drop the last item(s) you picked up", 2);
+    _add_command(cols, 1, CMD_DROP_LAST, T_("Drop the last item(s) you picked up"), 2);
 
     cols.add_formatted(
-            1,
-            "<h>Item Interaction:\n");
+            1, T_("<h>Item Interaction:\n"));
 
-    _add_command(cols, 1, CMD_INSCRIBE_ITEM, "inscribe item", 2);
-    _add_command(cols, 1, CMD_FIRE, "Fire the currently quivered action", 2);
-    _add_command(cols, 1, CMD_FIRE_ITEM_NO_QUIVER, "select an item and Fire it", 2);
+    _add_command(cols, 1, CMD_INSCRIBE_ITEM, T_("inscribe item"), 2);
+    _add_command(cols, 1, CMD_FIRE, T_("Fire the currently quivered action"), 2);
+    _add_command(cols, 1, CMD_FIRE_ITEM_NO_QUIVER, T_("select an item and Fire it"), 2);
     _add_command(cols, 1, CMD_QUIVER_ITEM,
         T_("select action to be Quivered"), 2);
     _add_command(cols, 1, CMD_SWAP_QUIVER_RECENT,
@@ -1246,8 +1236,7 @@ static void _add_formatted_keyhelp(column_composer &cols)
                          { CMD_WEAR_JEWELLERY, CMD_REMOVE_JEWELLERY });
 
     cols.add_formatted(
-            1,
-            "<h>Additional help:\n");
+            1, T_("<h>Additional help:\n"));
 
     string text = T_(
             "Many commands have context sensitive "
@@ -1291,18 +1280,17 @@ static void _add_formatted_hints_help(column_composer &cols)
                            CMD_MOVE_DOWN_RIGHT });
 
     cols.add_formatted(0, " ", false);
-    cols.add_formatted(0, "<w>Shift-Dir.</w> runs into one direction",
+    cols.add_formatted(0, T_("<w>Shift-Dir.</w> runs into one direction"),
                        false);
-    _add_insert_commands(cols, 0, "<w>%</w> or <w>%</w> : ascend/descend the stairs",
+    _add_insert_commands(cols, 0,  T_("<w>%</w> or <w>%</w> : ascend/descend the stairs"),
                          { CMD_GO_UPSTAIRS, CMD_GO_DOWNSTAIRS });
-    _add_command(cols, 0, CMD_EXPLORE, "autoexplore", 2);
+    _add_command(cols, 0, CMD_EXPLORE, T_("autoexplore"), 2);
 
     cols.add_formatted(
-            0,
-            "<h>Rest:\n");
+            0, T_("<h>Rest:\n"));
 
-    _add_command(cols, 0, CMD_WAIT, "wait a turn (also <w>s</w>, <w>Del</w>)", 2);
-    _add_command(cols, 0, CMD_REST, "rest and long wait; stops when", 2);
+    _add_command(cols, 0, CMD_WAIT, T_("wait a turn (also <w>s</w>, <w>Del</w>)"), 2);
+    _add_command(cols, 0, CMD_REST, T_("rest and long wait; stops when"), 2);
     cols.add_formatted(
             0,
             T_("    Health or Magic become full or\n"
@@ -1321,7 +1309,7 @@ static void _add_formatted_hints_help(column_composer &cols)
             T_("\n<h>Ranged combat and magic\n"),
             false);
 
-    _add_insert_commands(cols, 0, "<w>%</w> to throw/fire missiles",
+    _add_insert_commands(cols, 0,  T_("<w>%</w> to throw/fire missiles"),
                          { CMD_FIRE });
     _add_insert_commands(cols, 0, T_("<w>%</w>/<w>%</w> to cast spells "
                                      "(<w>%?/%</w> lists spells)"),
@@ -1332,7 +1320,7 @@ static void _add_formatted_hints_help(column_composer &cols)
 
     // Second column.
     cols.add_formatted(
-            1, "<h>Item types and inventory management\n",
+            1, T_("<h>Item types and inventory management\n"),
             false);
 
     _add_insert_commands(cols, 1,
@@ -1394,22 +1382,21 @@ static void _add_formatted_hints_help(column_composer &cols)
                          { CMD_WIELD_WEAPON });
 
     cols.add_formatted(1, " ", false);
-    _add_command(cols, 1, CMD_DISPLAY_INVENTORY, "inventory (select item to view)", 2);
-    _add_command(cols, 1, CMD_PICKUP, "pick up item from ground (also <w>g</w>)", 2);
-    _add_command(cols, 1, CMD_DROP, "drop item", 2);
-    _add_command(cols, 1, CMD_DROP_LAST, "drop the last item(s) you picked up", 2);
+    _add_command(cols, 1, CMD_DISPLAY_INVENTORY, T_("inventory (select item to view)"), 2);
+    _add_command(cols, 1, CMD_PICKUP, T_("pick up item from ground (also <w>g</w>)"), 2);
+    _add_command(cols, 1, CMD_DROP, T_("drop item"), 2);
+    _add_command(cols, 1, CMD_DROP_LAST, T_("drop the last item(s) you picked up"), 2);
 
     cols.add_formatted(
-            1,
-            "<h>Additional important commands\n");
+            1, T_("<h>Additional important commands\n"));
 
-    _add_command(cols, 1, CMD_SAVE_GAME_NOW, "Save the game and exit", 2);
-    _add_command(cols, 1, CMD_REPLAY_MESSAGES, "show previous messages", 2);
-    _add_command(cols, 1, CMD_USE_ABILITY, "use an ability", 2);
-    _add_command(cols, 1, CMD_RESISTS_SCREEN, "show character overview", 2);
-    _add_command(cols, 1, CMD_DISPLAY_RELIGION, "show religion overview", 2);
-    _add_command(cols, 1, CMD_DISPLAY_MAP, "show map of the whole level", 2);
-    _add_command(cols, 1, CMD_DISPLAY_OVERMAP, "show dungeon overview", 2);
+    _add_command(cols, 1, CMD_SAVE_GAME_NOW, T_("Save the game and exit"), 2);
+    _add_command(cols, 1, CMD_REPLAY_MESSAGES, T_("show previous messages"), 2);
+    _add_command(cols, 1, CMD_USE_ABILITY, T_("use an ability"), 2);
+    _add_command(cols, 1, CMD_RESISTS_SCREEN, T_("show character overview"), 2);
+    _add_command(cols, 1, CMD_DISPLAY_RELIGION, T_("show religion overview"), 2);
+    _add_command(cols, 1, CMD_DISPLAY_MAP, T_("show map of the whole level"), 2);
+    _add_command(cols, 1, CMD_DISPLAY_OVERMAP, T_("show dungeon overview"), 2);
 
     cols.add_formatted(
             1,

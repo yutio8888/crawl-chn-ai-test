@@ -206,21 +206,32 @@ vector<string> fire_target_behaviour::get_monster_desc(const monster_info& mi)
     describe_to_hit(mi, result, ranged ? launcher : item);
     descs.emplace_back(result.str());
 
-    if (get_ammo_brand(*item) == SPMSL_SILVER && mi.is(MB_CHAOTIC))
-        descs.emplace_back("chaotic");
-    if (item->is_type(OBJ_MISSILES, MI_THROWING_NET))
+    const auto additional = missile_target_descriptions(mi, *item);
+    descs.insert(descs.end(), additional.begin(), additional.end());
+    return descs;
+}
+
+// Display-only annotations shared by the live targeting prompt and verification.
+// Monster resistance, dart probability and item identities remain unchanged.
+vector<string> missile_target_descriptions(const monster_info& mi,
+                                           const item_def& item)
+{
+    vector<string> descs;
+    if (get_ammo_brand(item) == SPMSL_SILVER && mi.is(MB_CHAOTIC))
+        descs.emplace_back(T_("chaotic"));
+    if (item.is_type(OBJ_MISSILES, MI_THROWING_NET))
     {
         if (mi.net_immune())
-            descs.emplace_back("immune to nets");
+            descs.emplace_back(T_("immune to nets"));
         else if (mi.net_escape_capable())
-            descs.emplace_back("can blink free");
+            descs.emplace_back(T_("can blink free"));
     }
 
     // Display the chance for a dart of para/confuse/sleep/frenzy
     // to affect monster
-    if (item->is_type(OBJ_MISSILES, MI_DART))
+    if (item.is_type(OBJ_MISSILES, MI_DART))
     {
-        special_missile_type brand = get_ammo_brand(*item);
+        special_missile_type brand = get_ammo_brand(item);
         if (brand == SPMSL_FRENZY || brand == SPMSL_BLINDING)
         {
             int chance = _get_dart_chance(mi.hd);
@@ -230,9 +241,11 @@ vector<string> fire_target_behaviour::get_monster_desc(const monster_info& mi)
             if (brand == SPMSL_FRENZY && !mi.can_go_frenzy)
                 immune = true;
 
-            string verb = brand == SPMSL_FRENZY ? "frenzy" : "blind";
+            const string verb = brand == SPMSL_FRENZY
+                ? C_("missile effect", "frenzy")
+                : C_("missile effect", "blind");
 
-            string chance_string = immune ? "immune" :
+            string chance_string = immune ? T_("immune") :
                                    make_stringf(T_("chance to %s on hit: %d%%"),
                                                 verb.c_str(), chance);
             descs.emplace_back(chance_string);

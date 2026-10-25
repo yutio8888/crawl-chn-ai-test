@@ -4,9 +4,11 @@
 
 #include "database.h"
 #include "directn.h"
+#include "describe.h"
 #include "mon-util.h"
 #include "mutation.h"
 #include "notes.h"
+#include "ng-init.h"
 #include "transform.h"
 #include "english.h"
 #include "item-name.h"
@@ -430,5 +432,97 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                 CHECK(en.find(" of disjunction") != string::npos);
             CHECK(item.name(DESC_DBNAME) == "dart");
         }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "acceptance: colliding scroll labels stay distinguishable across all saved types",
+                 "[zh-translation][acceptance-fixes][scroll]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    // All these valid label seeds shared one physical appearance before the
+    // fix. Keep a full type registry, including compatibility types.
+    vector<uint32_t> seeds;
+    for (int type = 0; type < NUM_SCROLLS; ++type)
+    {
+        const uint32_t seed = (OBJ_SCROLLS << 16) | (((type / 16) * 3) << 8) | (type % 16);
+        you.item_description[IDESC_SCROLLS][type] = seed;
+        seeds.push_back(seed);
+    }
+    rng::subgenerator scoped_rng(20261025);
+    const auto state = rng::current_generator().get_state();
+    const auto count = rng::current_generator().get_count();
+    map<uint32_t, string> names;
+    set<string> unique_names;
+    for (uint32_t seed : seeds)
+    {
+        item_def scroll;
+        scroll.base_type = OBJ_SCROLLS;
+        scroll.sub_type = SCR_BLINKING;
+        scroll.quantity = 1;
+        scroll.rnd = 1;
+        scroll.subtype_rnd = seed;
+        const string display = scroll.name(DESC_PLAIN);
+        REQUIRE_FALSE(display.empty());
+        CHECK(unique_names.insert(display).second);
+        names[seed] = display;
+        vector<unsigned char> bytes;
+        writer output(&bytes);
+        marshallItem(output, scroll, true);
+        reader input(bytes);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        item_def loaded;
+        unmarshallItem(input, loaded);
+        CHECK(loaded.subtype_rnd == seed);
+        CHECK(loaded.name(DESC_PLAIN) == display);
+        {
+            ScopedLangEn english;
+            CHECK(scroll.name(DESC_PLAIN) == "scroll labelled " + make_name(seed, MNAME_SCROLL));
+        }
+        CHECK(scroll.name(DESC_PLAIN) == display);
+    }
+    // Reordering the subtype entries cannot turn this into a subtype identity
+    // leak. Unidentified and identified inventory order is never consulted.
+    for (int type = 0; type < NUM_SCROLLS; ++type)
+        you.item_description[IDESC_SCROLLS][type] = seeds[NUM_SCROLLS - type - 1];
+    i18n_cache_clear();
+    for (const auto &entry : names)
+        CHECK(translated_scroll_appearance(entry.first) == entry.second);
+    for (int type = 0; type < NUM_SCROLLS; ++type)
+        CHECK(you.item_description[IDESC_SCROLLS][type] == seeds[NUM_SCROLLS - type - 1]);
+    CHECK(rng::current_generator().get_state() == state);
+    CHECK(rng::current_generator().get_count() == count);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "acceptance: generated scroll registries have unique stable physical appearances",
+                 "[zh-translation][acceptance-fixes][scroll]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    for (uint64_t seed : {625102501ULL, 425202670ULL, 425202671ULL, 1ULL, 2ULL, 3ULL})
+    {
+        rng::subgenerator scoped_rng(seed);
+        initialise_item_descriptions();
+        vector<uint32_t> saved;
+        for (int type = 0; type < NUM_SCROLLS; ++type)
+            saved.push_back(you.item_description[IDESC_SCROLLS][type]);
+        const auto state = rng::current_generator().get_state();
+        const auto count = rng::current_generator().get_count();
+        set<string> appearances;
+        for (uint32_t label : saved)
+        {
+            const string display = translated_scroll_appearance(label);
+            REQUIRE_FALSE(display.empty());
+            CHECK(appearances.insert(display).second);
+            CHECK(translated_scroll_appearance(label) == display);
+        }
+        for (int type = 0; type < NUM_SCROLLS; ++type)
+            CHECK(you.item_description[IDESC_SCROLLS][type] == saved[type]);
+        CHECK(rng::current_generator().get_state() == state);
+        CHECK(rng::current_generator().get_count() == count);
     }
 }
