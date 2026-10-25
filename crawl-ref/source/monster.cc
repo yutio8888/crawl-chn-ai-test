@@ -2159,15 +2159,15 @@ string monster::name(description_level_type desc, bool force_vis,
         mi.mb.set(MB_NAME_UNQUALIFIED, false);
     if (force_vis)
         mi.mb.set(MB_KNOWN_INVIS, false);
-    return mi.proper_name(desc)
+    s = mi.proper_name(desc);
 #ifdef DEBUG_MONINDEX
     // This is incredibly spammy, too bad for regular debug builds, but
     // I keep re-adding this over and over during debugging.
-           + (Options.quiet_debug_messages[DIAG_MONINDEX]
-              ? string()
-              : make_stringf("«%d:%d»", mindex(), mid))
+    s += (Options.quiet_debug_messages[DIAG_MONINDEX]
+          ? string()
+          : make_stringf("«%d:%d»", mindex(), mid));
 #endif
-    ;
+    return s;
 }
 
 string monster::base_name(description_level_type desc, bool force_vis) const
