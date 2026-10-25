@@ -2387,7 +2387,7 @@ comfort your suffering allies
 <w>%</w>/<w>%</w> : 佩戴或摘下首饰
 %%%%
 <w>%</w>/<w>%</w> : Wear or Take off armour
-<w>%</w>/<w>%</w> : 穿戴或脱下防具
+<w>%</w>/<w>%</w> : 穿戴或脱下护甲
 %%%%
 <w>Cast</w>|Describe|Hide|Show
 <w>施放</w>|描述|隐藏|显示
@@ -38363,16 +38363,16 @@ You cannot shatter the chains on %s while it is melded with your body!
 <h>物品类型（及常用命令）\n
 %%%%
 <lightgreen>}</lightgreen> : miscellaneous items (e<w>%</w>oke)
-<lightgreen>}</lightgreen>：杂项物品（<w>%</w>唤醒）
+<lightgreen>}</lightgreen>：杂项物品（<w>%</w>激活）
 %%%%
 <lightgrey>(nothing)</lightgrey>
 <lightgrey>（无）</lightgrey>
 %%%%
 <lightgrey>/</lightgrey> : wands (e<w>%</w>oke)
-<lightgrey>/</lightgrey>：魔杖（<w>%</w>唤醒）
+<lightgrey>/</lightgrey>：魔杖（<w>%</w>激活）
 %%%%
 <lightred>percent</lightred> : talismans (e<w>%</w>oke)
-<lightred>percent</lightred>：护符（<w>%</w>唤醒）
+<lightred>percent</lightred>：护符（<w>%</w>激活）
 %%%%
 <magenta>!</magenta> : potions (<w>%</w>uaff)
 <magenta>!</magenta>：药水（<w>%</w>喝下）
@@ -43197,7 +43197,7 @@ Menu
 <h>自动战斗：\n<w>Tab</w>          ：攻击最近的怪物，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发已装填的动作；\n               若需要目标，则瞄准\n               最近的怪物\n
 %%%%
 <brown>(</brown> : missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
-<brown>(</brown> ：弹药（<w>%</w>装填、<w>%</w>瞄准、<w>%</w>/<w>%</w>切换）
+<brown>(</brown> ：弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
 %%%%
 </lightcyan> : books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pick up to add to library)
 </lightcyan> ：书籍（<w>%</w>记忆、<w>%</w>施法、<w>%</w>强制施法、\n    捡起以添加至法术库）
@@ -43218,7 +43218,7 @@ Memorise spells and view spell\n    library (get books to add to it)
 <console><cyan>)</cyan> ：</console>手持武器（<w>%</w>持）
 %%%%
 <console><brown>(</brown> : </console>missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
-<console><brown>(</brown> ：</console>弹药（<w>%</w>装填、<w>%</w>瞄准、<w>%</w>/<w>%</w>切换）
+<console><brown>(</brown> ：</console>弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
 %%%%
 <console><cyan>[</cyan> : </console>armour (<w>%</w>ear and <w>%</w>ake off)
 <console><cyan>[</cyan> ：</console>护甲（<w>%</w>穿上和<w>%</w>脱下）
@@ -47673,7 +47673,7 @@ item operation|read
 %%%%
 
 item operation|memorise from
-从中记忆法术：
+从书中记忆法术：
 %%%%
 
 item operation|zap
@@ -47685,7 +47685,7 @@ item operation|fire
 %%%%
 
 item operation|evoke
-发动
+激活
 %%%%
 
 item operation|quiver
@@ -47753,7 +47753,7 @@ You hear chittering from %s. It's ready.
 %%%%
 
          in view\n
-         视野内的目标\n
+         （限视野内）\n
 %%%%
 
          pickup part of a single stack\n
