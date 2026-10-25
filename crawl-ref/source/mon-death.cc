@@ -2501,7 +2501,7 @@ static void _player_on_kill_effects(monster& mons, killer_type killer,
         }
 
         if (visible_effect)
-            mprf(T_("%s's allies are healed!"), mons.name(DESC_ITS).c_str());
+            mprf(T_("%s allies are healed!"), mons.name(DESC_ITS).c_str());
     }
 
     if (gives_player_xp && you.attribute[ATTR_TEMP_MUTATIONS]

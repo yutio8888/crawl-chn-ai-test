@@ -1820,8 +1820,11 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 
         if (!terse && !dbname && !basename)
         {
-            if (_missile_brand_is_prefix(msl_brand)) // see below for postfix brands
+            if (_missile_brand_is_prefix(msl_brand))
                 buff << missile_brand_name(*this, MBN_NAME) << ' ';
+            else if (Options.language == lang_t::ZH && _missile_brand_is_postfix(msl_brand))
+                buff << make_stringf(C_("item ego prefix", "of %s"),
+                                     missile_brand_name(*this, MBN_NAME));
         }
 
         buff << missile_name(static_cast<missile_type>(item_typ));
@@ -1831,17 +1834,8 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         {
             if (terse)
                 buff << " (" <<  missile_brand_name(*this, MBN_TERSE) << ")";
-            else if (_missile_brand_is_postfix(msl_brand)) // see above for prefix brands
-            {
-                // Structural: ZH prefix "之" vs EN " of "
-                if (Options.language == lang_t::ZH)
-                {
-                    buff << make_stringf(C_("item ego prefix", "of %s"),
-                                         missile_brand_name(*this, MBN_NAME));
-                }
-                else
-                    buff << " of " << missile_brand_name(*this, MBN_NAME);
-            }
+            else if (Options.language != lang_t::ZH && _missile_brand_is_postfix(msl_brand))
+                buff << " of " << missile_brand_name(*this, MBN_NAME);
         }
 
         break;

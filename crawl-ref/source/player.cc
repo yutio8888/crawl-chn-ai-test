@@ -8822,7 +8822,7 @@ bool player::attempt_escape()
     }
     else
     {
-        mprf(T_("%s's hold on you weakens, but your attempt to escape fails."),
+        mprf(T_("%s hold on you weakens, but your attempt to escape fails."),
              object.c_str());
         turn_is_over = true;
         return false;

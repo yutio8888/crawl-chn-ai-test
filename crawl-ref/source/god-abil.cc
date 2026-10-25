@@ -1892,7 +1892,7 @@ void yred_make_bound_soul(monster* mon, bool force_hostile)
     // schedule our actual revival for the end of this combat round
     schedule_avoided_death_fineff(mon);
 
-    mprf(T_("The soul of %s %s."), whose.c_str(),
+    mprf(T_("%s soul %s."), whose.c_str(),
              !force_hostile ? T_("is now yours") : T_("fights you"));
 }
 

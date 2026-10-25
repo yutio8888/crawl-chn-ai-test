@@ -1173,7 +1173,7 @@ The alarm trap emits a blaring wail!
 %s了竖井！
 %%%%
 %s abandons %s pursuit.
-%s放弃了%s的追击。
+%s放弃了%s追击。
 %%%%
 %s absorbs %d nearby slime creatures and %s.
 %s吸收了附近的%d只粘液生物和%s。
@@ -1194,7 +1194,7 @@ The alarm trap emits a blaring wail!
 %s和%s
 %%%%
 %s answers %s call!
-%s响应了%s的召唤！
+%s响应了%s召唤！
 %%%%
 %s answers the call of its master!
 %s响应了主人的命令！
@@ -1311,7 +1311,7 @@ The alarm trap emits a blaring wail!
 %s无法被转移到那里。
 %%%%
 %s chant is interrupted.
-%s的吟唱被打断了。
+%s吟唱被打断了。
 %%%%
 %s comes into view.
 %s进入了视野。
@@ -1323,7 +1323,7 @@ The alarm trap emits a blaring wail!
 %s腐蚀了%s！
 %%%%
 %s corrosive artefact
-%s的腐蚀性神器
+%s腐蚀性神器
 %%%%
 %s corrupts the dungeon around %s!
 %s腐化了%s周围的地城！
@@ -1422,10 +1422,10 @@ You grip the centipede bauble in your %s and it winds around your %s and fuses w
 %s只对你感到仇恨！
 %%%%
 %s fire resistance burns away.
-%s的火焰抗性被烧尽了。
+%s火焰抗性被烧尽了。
 %%%%
 %s floods into %s %s!
-%s涌入了%s的%s！
+%s涌入了%s%s！
 %%%%
 %s forbids the use of this item.
 %s禁止使用此物品。
@@ -1434,10 +1434,10 @@ You grip the centipede bauble in your %s and it winds around your %s and fuses w
 %s禁止使用这样的武器！
 %%%%
 %s forges a quick-moving defender to stand alongside %s.
-%s锻造了一个快速移动的防御者站在%s身边。
+%s锻造了一个快速移动的防御者站在%s的身边。
 %%%%
 %s gaze reveals you to all!
-%s的凝视将你暴露给所有人！
+%s凝视将你暴露给所有人！
 %%%%
 %s gleams with a vicious edge.
 %s闪烁着凶残的锋芒。
@@ -1613,7 +1613,7 @@ The potion decomposes into %s within you.
 %s被重力钉住了。
 %%%%
 %s is pinned to %s own shadow.
-%s被钉在了%s自己的影子上。
+%s被钉在了%s影子上。
 %%%%
 %s is recalled away.
 %s被召回。
@@ -1646,7 +1646,7 @@ The potion decomposes into %s within you.
 %s 离开了你的视野。
 %%%%
 %s life force is offered up.
-%s的生命力被献祭了。
+%s生命力被献祭了。
 %%%%
 %s liquefies the ground around %s!
 %s将%s周围的地面液化！
@@ -1658,7 +1658,7 @@ The potion decomposes into %s within you.
 %s看起来生病了。
 %%%%
 %s magic leaks into the air.
-%s的魔力泄漏到了空气中。
+%s魔力泄漏到了空气中。
 %%%%
 %s merges with something you can't see.
 %s与你无法看见的某种存在融合了。
@@ -1703,10 +1703,10 @@ barrage of energy
 %s向%s开火了！
 %%%%
 %s orb emits a pulse of dizzying energy.
-%s的球体释放出一阵令人眩晕的能量脉冲。
+%s球体释放出一阵令人眩晕的能量脉冲。
 %%%%
 %s orb unleashes a flurry of shooting stars!
-%s的宝珠释放出一阵流星雨！
+%s宝珠释放出一阵流星雨！
 %%%%
 %s orders the %s explosives to detonate!
 %s命令%s炸药引爆！
@@ -1772,10 +1772,10 @@ barrage of energy
 %s用冰雕刻了两门大炮！
 %%%%
 %s searing ray is interrupted.
-%s的灼热射线被打断了。
+%s灼热射线被打断了。
 %%%%
 %s seems less certain of %s magic.
-%s似乎对%s的魔力不那么自信了。
+%s似乎对%s魔力不那么自信了。
 %%%%
 %s seems to be corroded for longer.
 %s似乎被腐蚀得更久了。
@@ -1799,7 +1799,7 @@ barrage of energy
 %s从%s分离了出来。
 %%%%
 %s shadow slips away and your performance ends.
-%s的影子溜走了，你的表演结束了。
+%s影子溜走了，你的表演结束了。
 %%%%
 %s shapes itself into a furious %s!
 %s将自己塑造成了一只狂怒的%s！
@@ -1838,16 +1838,16 @@ barrage of energy
 %s散发出柔和的神圣光辉！
 %%%%
 %s song is interrupted.
-%s的歌声被打断了。
+%s歌声被打断了。
 %%%%
 %s soul is no longer bound.
-%s的灵魂不再被束缚。
+%s灵魂不再被束缚。
 %%%%
 %s spells grow weaker yet longer.
-%s的法术变得更弱了。
+%s法术变弱了，但持续时间更长了。
 %%%%
 %s spells grow weaker.
-%s的法术变弱了。
+%s法术变弱了。
 %%%%
 %s spits out %s more jellies.
 %s又吐出了%s只果冻。
@@ -1934,7 +1934,7 @@ barrage of energy
 %s折磨着你。
 %%%%
 %s toxic aura wanes.
-%s的毒性光环减弱了。
+%s毒性光环减弱了。
 %%%%
 %s tunnels through space-time and arrives with you!
 %s穿越时空而来，与你一同抵达！
@@ -1943,16 +1943,16 @@ You feel the abyssal rune grow more distant.
 你感到深渊符文变得更远了。
 %%%%
 %s turn aside %s attack!
-%s挡开了%s的攻击！
+%s挡开了%s攻击！
 %%%%
 %s turn%s aside %s attack!
 %s%s挡开了%s的攻击！
 %%%%
 %s turns %s attention toward your shadow.
-%s将%s的注意力转向了你的影子。
+%s将%s注意力转向了你的影子。
 %%%%
 %s turns aside %s attack!
-%s挡开了%s的攻击！
+%s挡开了%s攻击！
 %%%%
 %s turns into %s.
 %s变成了%s。
@@ -1979,7 +1979,7 @@ You feel the abyssal rune grow more distant.
 %s清楚地记得你的罪过。
 %%%%
 %s willpower is stripped away!
-%s的意志力被剥夺了！
+%s意志力被剥夺了！
 %%%%
 %s%s.
 %s%s。
@@ -2648,7 +2648,7 @@ A fragment of %s is already outside their body!
 %s的灵魂碎片已经在其体外了！
 %%%%
 A fragment of %s soul is dislodged from %s body.
-%s的一片灵魂从%s体内被剥离。
+%s一片灵魂从%s体内被剥离。
 %%%%
 A freezing vortex appears %s%s%s!
 一股冰封漩涡出现%s%s%s！
@@ -2708,7 +2708,7 @@ A mysterious force pulls you upwards.
 一股神秘的力量将你向上拉。
 %%%%
 A pair of sphinxes answers %s call!
-一对斯芬克斯回应了%s的召唤！
+一对斯芬克斯回应了%s召唤！
 %%%%
 A part of your body evaporates into steam!
 你身体的一部分蒸发成了蒸汽！
@@ -2950,7 +2950,7 @@ Ancestor Upgrades:\n\n<white>XL              Upgrade\n</white>
 并碎裂造成额外伤害
 %%%%
 Angry insects surge out from beneath %s foliage!
-愤怒的昆虫从%s的枝叶下涌出！
+愤怒的昆虫从%s枝叶下涌出！
 %%%%
 Angry insects swarm out of your body to defend their hive!
 愤怒的昆虫从你体内蜂拥而出保卫蜂巢！
@@ -3214,7 +3214,7 @@ Beogh
 比欧弗
 %%%%
 Beogh appreciates your bravery.
-比奥格赞赏你的勇敢。
+比欧弗赞赏你的勇敢。
 %%%%
 Beogh is disappointed with your cowardice.
 比欧弗对你的懦弱感到失望。
@@ -5039,7 +5039,7 @@ Its scales and tail are adapted to the water.
 它的鳞片和尾巴适应了水域生活。
 %%%%
 Jet-black ravens fly out from beneath %s foliage!
-乌黑的乌鸦从%s的枝叶下飞出！
+乌黑的乌鸦从%s枝叶下飞出！
 %%%%
 jewellery
 珠宝
@@ -6141,7 +6141,7 @@ roots
 根须
 %%%%
 Rot billows forth from %s wounds!
-腐烂从%s的伤口中涌出！
+腐烂从%s伤口中涌出！
 %%%%
 rPois
 毒抗
@@ -6384,13 +6384,13 @@ Setting a skill training target for %s at %d.%d.
 正在为%s设定%d.%d的技能训练目标。
 %%%%
 Shadowy forms rise from the deep at %s song!
-暗影形体在%s的歌声中从深渊中升起！
+暗影形体在%s歌声中从深渊中升起！
 %%%%
  shakes eagerly.
  急切地摇晃着。
 %%%%
  shakes off %s lethargy.
-摆脱了%s的昏沉。
+摆脱了%s昏沉。
 %%%%
 Shards of ice erupt from %s body!
 冰碎片从%s身上迸发出来！
@@ -6661,7 +6661,7 @@ Space contracts around you and %s and then re-expands violently!
 你与%s周围的空间收缩，然后猛烈地重新扩张！
 %%%%
 Space folds impossibly around %s blade!
-空间在%s的刀锋周围以不可能的方式折叠！
+空间在%s刀锋周围以不可能的方式折叠！
 %%%%
 Space momentarily warps into an impossible shape!
 空间短暂地扭曲成了不可能的形态！
@@ -6940,7 +6940,7 @@ Tentacles reach out from the kraken!
 触手从海妖身上伸出！
 %%%%
 Terrible wounds open up all over %s body!
-可怕的伤口遍布了%s的全身！
+可怕的伤口遍布了%s全身！
 %%%%
 Terrible wounds spread across more of %s body!
 可怕的伤口在%s身上蔓延了更多！
@@ -7510,7 +7510,7 @@ The priest grants you succour and welcomes you into the fold.
 祭司给予你援助，欢迎你加入教团。
 %%%%
 The pull of %s song draws you forwards.
-%s的歌声将你向前吸引。
+%s歌声将你向前吸引。
 %%%%
 The rain has left you waist-deep in water!
 雨水让你陷入了齐腰深的水中！
@@ -8484,7 +8484,7 @@ With a burst of heat and light, you rocket upwards!
 随着一阵热与光的爆发，你像火箭一样向上冲！
 %%%%
 With a deafening crack, the ground splits apart in the path of %s chthonic artillery!
-伴随着一声震耳欲聋的巨响，大地沿着%s的地狱火炮路径裂开！
+伴随着一声震耳欲聋的巨响，大地沿着%s地狱火炮路径裂开！
 %%%%
 With a frightful flash, the power of Zot shatters the %s gem into ten thousand fragments!
 伴随着可怕的闪光，佐特的力量将%s宝石粉碎成了无数碎片！
@@ -8493,7 +8493,7 @@ With a frightful flash, the power of Zot shatters your %s gem into ten thousand 
 伴随着可怕的闪光，佐特的力量将你的%s宝石粉碎成了无数碎片！
 %%%%
 With a metallic buzz, %s clockwork bee launches itself at %s.
-伴随着金属的嗡鸣声，%s的发条蜜蜂向%s发射出去。
+伴随着金属的嗡鸣声，%s发条蜜蜂向%s飞扑而去。
 %%%%
 With a soft hiss, the gate opens fully!
 随着一声轻柔的嘶嘶声，大门完全打开了！
@@ -8984,7 +8984,7 @@ You attempt to attack %s, but flinch away in fear!
 你尝试攻击%s，却因恐惧而退缩了！
 %%%%
 You attempt to bind %s soul, but %s is merely a clone!
-你试图束缚%s的灵魂，但%s只是个克隆体！
+你试图束缚%s灵魂，但%s只是个克隆体！
 %%%%
 You avoid being caught in the net.
 你避免了被网困住。
@@ -9758,7 +9758,7 @@ you donate money
 你捐赠金钱
 %%%%
 You drain %s %s.
-你从%s吸取了%s。
+你吸取了%s%s。
 %%%%
 You draw in some of the released energy.
 你吸收了部分释放的能量。
@@ -10406,7 +10406,7 @@ You freeze %s%s%s
 你冻结了%s%s%s
 %%%%
 You grasp %s shadow with your own and put on a performance!
-你用自己的影子抓住%s的影子，开始表演！
+你用自己的影子抓住%s影子，开始表演！
 %%%%
 You have %1$d gold piece%2$s.
 你持有%1$d枚金币。
@@ -10610,7 +10610,7 @@ you kill living or demonic beings while their torch is lit
 你在火炬点燃时杀死活物或恶魔生物
 %%%%
 You knock %s out of %s grip!
-你将%s从%s的掌握中击落！
+你将%s从%s掌握中击落！
 %%%%
 You lack sufficient magical power to recharge your bee.
 你没有足够的魔力来给你的蜜蜂充能。
@@ -10904,7 +10904,7 @@ You rip the net and break free!
 你把网撕裂，挣脱出来！
 %%%%
 You sap %s willpower!
-你削弱了%s的意志力！
+你削弱了%s意志力！
 %%%%
 You savour every drop.
 你细细品味每一滴。
@@ -10976,7 +10976,7 @@ You sink your fangs into %s and drain %s dry!
 你把獠牙插入%s，吸干了%s！
 %%%%
 You sink your fangs into %s and drink %s %s.
-你把獠牙插入%s，畅饮了%s的%s。
+你把獠牙插入%s，畅饮了%s%s。
 %%%%
 You slam the %s%s shut%s!
 你%s把%s关上了%s！
@@ -11092,7 +11092,7 @@ You swap places with your shadow and weave the vestiges of your form into it.
 你与影子交换了位置，并把你形态的残余编织进去。
 %%%%
 You swear to avenge %s death!
-你发誓要为%s的死复仇！
+你发誓要为%s死复仇！
 %%%%
 You swing at nothing.
 你挥向了空处。
@@ -11164,7 +11164,7 @@ You will suffer for embracing such %s
 你将因拥抱这样的%s而受苦
 %%%%
 You wrap your dark will around %s soul!
-你用黑暗意志包裹了%s的灵魂！
+你用黑暗意志包裹了%s灵魂！
 %%%%
 You writhe in agony!
 你在痛苦中扭动！
@@ -11638,7 +11638,7 @@ Your paragon attacks with you!
 你的典范与你一同攻击！
 %%%%
 Your paragon deflects %s attack away from you.
-你的典范将%s的攻击偏转开了。
+你的典范将%s攻击偏转开了。
 %%%%
 Your paragon expends all of its energy in an overwhelming flurry of blows!
 你的典范耗尽所有能量，发动了一轮压倒性的猛攻！
@@ -13235,7 +13235,7 @@ That species isn't available.
 %%%%
 With your torch unlit, %s soul goes wasted...
 
-火炬未燃，%s的灵魂白白消散了……
+火炬未燃，%s灵魂白白消散了……
 %%%%
 With your torch unlit, a soul goes wasted...
 
@@ -18509,7 +18509,7 @@ A shaft opens beneath you!
 你身下出现了一个竖井！
 %%%%
 You break free of %s.
-你挣脱了%s的掌控。
+你挣脱了%s掌控。
 %%%%
 The mark on you glows brighter.
 你身上的印记变得更亮了。
@@ -24077,7 +24077,7 @@ You slip past the binding sigil.
 你滑过了束缚符文。
 %%%%
 %s cannot be bound by the sigil due to %s high momentum!
-%s由于%s的高速移动而无法被符文束缚！
+%s由于%s高速移动而无法被符文束缚！
 %%%%
 You move over the binding sigil and are bound in place!
 你踩过束缚符文，被固定在原地！
@@ -24158,7 +24158,7 @@ Walls emerge from the floor!
 墙壁从地面升起！
 %%%%
 Beogh will not strike down an ally of the cause.
-贝奥不会击倒同道中人。
+比欧弗不会击倒同道中人。
 %%%%
  booms: This is a trial of mortal prowess. Fight with your own strength!
 低沉地说：这是对凡人之力的考验。用你自己的力量战斗吧！
@@ -26298,7 +26298,7 @@ You are suddenly pulled into a different region of the Abyss!
 你突然被拉入了深渊的另一个区域！
 %%%%
 You can no longer hear %1$s singing!
-你再也听不到%1$s的歌声了！
+你再也听不到%1$s歌声了！
 %%%%
 You can't see anything there. Try transferring anyway?
 你在那里什么也看不到。仍然尝试传送吗？
@@ -26364,7 +26364,7 @@ dismisses
 消散
 %%%%
 from %s prison
-从%s的囚牢中
+从%s囚牢中
 %%%%
 glares at
 怒视
@@ -31323,7 +31323,7 @@ release
 %s%s紧紧缠绕%s%s
 %%%%
 %s %s flashes viciously!
-%s的%s猛烈闪光！
+%s%s猛烈闪光！
 %%%%
 %s %s free of %s!
 %s%s挣脱了%s！
@@ -31359,7 +31359,7 @@ The residue of %s spell condenses into glimmer.
 %s的精神%s被冲击%s
 %%%%
 %s remembers %s %s %s.
-%s记起了%s%s的%s。
+%s记起了%s%s%s。
 %%%%
 %s remembers more of %s old skill.
 %s回忆起更多%s昔日技能。
@@ -31374,7 +31374,7 @@ The residue of %s spell condenses into glimmer.
 %s闪烁了一下，似乎变成了%s！
 %%%%
 %s spells are empowered by the prayer of brilliance!
-%s的法术被光辉祈祷强化了！
+%s法术被光辉祈祷强化了！
 %%%%
 a nearby %s withers and dies.
 附近的%s枯萎而死。
@@ -33186,7 +33186,7 @@ spines
 %s%s倒刺刺穿。
 %%%%
 %s %s struck by %s %s.
-%s%s%s的%s击中。
+%s%s%s%s击中。
 %%%%
 %s %s %s%s
 %s%s了%s%s
@@ -33462,7 +33462,7 @@ Channel Magic
 魔力引导
 %%%%
 Convert to Beogh
-皈依贝奥格
+皈依比欧弗
 %%%%
 Donate Gold
 捐赠金币
@@ -33612,7 +33612,7 @@ Recruit Apostle
 %s%s守护你的生命。\n
 %%%%
 Orcs frequently recognise you as Beogh's chosen one.\n
-兽人经常认出你是贝奥格的选民。\n
+兽人经常认出你是比欧弗的选民。\n
 %%%%
 Orcs sometimes recognise you as one of them.\n
 兽人有时认出你是他们的一员。\n
@@ -35953,7 +35953,7 @@ Zot clock should be between 0 and %d
 猛烈地
 %%%%
 %s trance deepens.
-%s的恍惚状态加深了。
+%s恍惚状态加深了。
 %%%%
 %s is mesmerised by %s!
 %1$s被%2$s迷住了！
@@ -36254,7 +36254,7 @@ As you close the %s%s%s, it creaks loudly!
 当你关上%s%s%s时，它发出了响亮的吱嘎声！
 %%%%
 %s drains %s %s.
-%s吸取了%s的%s。
+%s吸取了%s%s。
 %%%%
 You %s!
 你%s！
@@ -37061,7 +37061,7 @@ hp as a bound soul: ~%d
 缚魂生命值：~%d
 %%%%
 insults %s ancestors.
-辱骂了%s的祖先。
+辱骂了%s祖先。
 %%%%
 lash out against %s attempt to control you!
 反抗%s控制你的企图！
@@ -37115,7 +37115,7 @@ summons friendly %s
 召唤了友善的%s
 %%%%
 ties %s tail in a knot.
-把%s的尾巴打了个结。
+把%s尾巴打了个结。
 %%%%
 trickster (+%d AC)
 欺诈者（AC +%d）
@@ -37190,7 +37190,7 @@ weapon of %s
 组装了%s！
 %%%%
  discards %s horn.
-丢弃了%s的角。
+丢弃了%s角。
 %%%%
  donates %s equipment to the cause.
 将%s装备捐献给了事业。
@@ -39666,7 +39666,7 @@ Your stasis prevents you from being paralysed, but everything else in sight stop
 质疑
 %%%%
  magic when faced with ultimate truth!
-的魔法在终极真相面前毫无意义！
+魔法在终极真相面前毫无意义！
 %%%%
 You cannot wall jump against 
 你无法蹬墙跳越
@@ -40323,7 +40323,7 @@ status|Bearserk
 熊狂
 %%%%
 status|Beogh
-贝奥
+比欧弗
 %%%%
 status|Berserk
 狂暴
@@ -46566,4 +46566,1072 @@ invisibility blocker|!!!QUAD DAMAGE!!!
 
 invisibility blocker|form
 形态
+%%%%
+
+shop name suffix|Accessories
+配饰
+%%%%
+
+shop name suffix|Aerie
+鹰巢
+%%%%
+
+shop name suffix|Armaments
+武装
+%%%%
+
+shop name suffix|Armour
+护甲
+%%%%
+
+shop name suffix|Armours
+护甲
+%%%%
+
+shop name suffix|Armoury
+军械库
+%%%%
+
+shop name suffix|Artefacts
+神器
+%%%%
+
+shop name suffix|Bar
+酒吧
+%%%%
+
+shop name suffix|Bin
+货箱
+%%%%
+
+shop name suffix|Books
+书籍
+%%%%
+
+shop name suffix|Boutique
+精品店
+%%%%
+
+shop name suffix|Cache
+储藏处
+%%%%
+
+shop name suffix|Catalogue
+目录
+%%%%
+
+shop name suffix|Centre
+中心
+%%%%
+
+shop name suffix|Chaos Theory
+混沌理论
+%%%%
+
+shop name suffix|Clinic
+诊所
+%%%%
+
+shop name suffix|Collection
+系列
+%%%%
+
+shop name suffix|Corner
+街角
+%%%%
+
+shop name suffix|Deal
+交易
+%%%%
+
+shop name suffix|Deals
+特惠
+%%%%
+
+shop name suffix|Depository
+仓库
+%%%%
+
+shop name suffix|Depot
+仓库
+%%%%
+
+shop name suffix|Elixirs
+灵药
+%%%%
+
+shop name suffix|Emporium
+商场
+%%%%
+
+shop name suffix|Escapes
+逃生用品
+%%%%
+
+shop name suffix|Fire
+火焰
+%%%%
+
+shop name suffix|Forbidden Knowledge
+禁忌知识
+%%%%
+
+shop name suffix|Fripperies
+华饰
+%%%%
+
+shop name suffix|Galleria
+商廊
+%%%%
+
+shop name suffix|Gallery
+展馆
+%%%%
+
+shop name suffix|Garage
+车库
+%%%%
+
+shop name suffix|Goods
+货品
+%%%%
+
+shop name suffix|Haberdashery
+服饰店
+%%%%
+
+shop name suffix|Hardware
+五金
+%%%%
+
+shop name suffix|Hoard
+宝藏库
+%%%%
+
+shop name suffix|Hole
+小铺
+%%%%
+
+shop name suffix|Hut
+小屋
+%%%%
+
+shop name suffix|Inventory
+存货
+%%%%
+
+shop name suffix|Junkyard
+废品场
+%%%%
+
+shop name suffix|Loot
+战利品
+%%%%
+
+shop name suffix|Magic
+魔法
+%%%%
+
+shop name suffix|Manuscripts
+手稿
+%%%%
+
+shop name suffix|Market
+市场
+%%%%
+
+shop name suffix|Merchandise
+商品
+%%%%
+
+shop name suffix|Millinery
+帽店
+%%%%
+
+shop name suffix|Mysteries
+奥秘
+%%%%
+
+shop name suffix|Niceties
+精巧之物
+%%%%
+
+shop name suffix|Offerings
+货品
+%%%%
+
+shop name suffix|Outfitters
+装备店
+%%%%
+
+shop name suffix|Outlet
+特卖店
+%%%%
+
+shop name suffix|Paraphernalia
+用具
+%%%%
+
+shop name suffix|Potions
+药水
+%%%%
+
+shop name suffix|Products
+产品
+%%%%
+
+shop name suffix|Quintessences
+精髓
+%%%%
+
+shop name suffix|Rack
+架
+%%%%
+
+shop name suffix|Range
+靶场
+%%%%
+
+shop name suffix|Readings
+解读
+%%%%
+
+shop name suffix|Reliquary
+圣物库
+%%%%
+
+shop name suffix|Resellers
+转售商
+%%%%
+
+shop name suffix|Reserve
+储备库
+%%%%
+
+shop name suffix|Resort
+休憩所
+%%%%
+
+shop name suffix|Rings
+戒指
+%%%%
+
+shop name suffix|Rocks
+石头
+%%%%
+
+shop name suffix|Room
+间
+%%%%
+
+shop name suffix|Runway
+秀场
+%%%%
+
+shop name suffix|Sales
+销售处
+%%%%
+
+shop name suffix|Scales
+鳞甲
+%%%%
+
+shop name suffix|Scrolls
+卷轴
+%%%%
+
+shop name suffix|Secrets
+秘密
+%%%%
+
+shop name suffix|Smithy
+锻造坊
+%%%%
+
+shop name suffix|Spoils
+战利品
+%%%%
+
+shop name suffix|Stash
+藏货处
+%%%%
+
+shop name suffix|Station
+站
+%%%%
+
+shop name suffix|Stock
+库存
+%%%%
+
+shop name suffix|Store
+商店
+%%%%
+
+shop name suffix|Sundries
+杂货
+%%%%
+
+shop name suffix|Supermarket
+超市
+%%%%
+
+shop name suffix|Supplies
+用品
+%%%%
+
+shop name suffix|Supply
+补给处
+%%%%
+
+shop name suffix|Talismans
+护符
+%%%%
+
+shop name suffix|Tomes
+典籍
+%%%%
+
+shop name suffix|Training
+培训
+%%%%
+
+shop name suffix|Trifles
+小玩意
+%%%%
+
+shop name suffix|Trove
+宝藏库
+%%%%
+
+shop name suffix|Utilities
+实用品
+%%%%
+
+shop name suffix|Venue
+场所
+%%%%
+
+shop name suffix|Wands
+魔杖
+%%%%
+
+shop name suffix|Warehouse
+仓库
+%%%%
+
+shop name suffix|Wares
+货物
+%%%%
+
+shop name suffix|Weapons
+武器
+%%%%
+
+shop name suffix|Wisdom
+智慧
+%%%%
+
+shop name suffix|Xenodochy
+客栈
+%%%%
+
+shop name suffix|Yield
+收获
+%%%%
+
+shop name suffix|Zone
+区
+%%%%
+
+shop name type|Acquisitions
+收购
+%%%%
+
+shop name type|Advanced
+高级
+%%%%
+
+shop name type|All or Nothing
+孤注一掷
+%%%%
+
+shop name type|Alliterative
+头韵
+%%%%
+
+shop name type|Antique
+古董
+%%%%
+
+shop name type|Assorted
+各式
+%%%%
+
+shop name type|Avant-Garde
+先锋
+%%%%
+
+shop name type|Basic
+基础
+%%%%
+
+shop name type|Bespoke
+定制
+%%%%
+
+shop name type|Blasphemy
+亵神
+%%%%
+
+shop name type|Blood
+鲜血
+%%%%
+
+shop name type|Bottled
+瓶装
+%%%%
+
+shop name type|Bounteous
+丰盛
+%%%%
+
+shop name type|CLEARANCE SALE!
+清仓大甩卖！
+%%%%
+
+shop name type|Changing
+变装
+%%%%
+
+shop name type|Comfort
+舒适
+%%%%
+
+shop name type|Commerce
+贸易
+%%%%
+
+shop name type|Delphic
+神谕
+%%%%
+
+shop name type|Demolitions
+爆破
+%%%%
+
+shop name type|Demonic Rune
+恶魔符文
+%%%%
+
+shop name type|Desiderata
+心仪之物
+%%%%
+
+shop name type|Do-It-Yourself
+自助
+%%%%
+
+shop name type|Dragon-Slaying
+屠龙
+%%%%
+
+shop name type|Easily-Learnt
+易学
+%%%%
+
+shop name type|Eclectic
+兼收并蓄
+%%%%
+
+shop name type|Elemental
+元素
+%%%%
+
+shop name type|Elven
+精灵
+%%%%
+
+shop name type|Ever-Affordable
+始终实惠的
+%%%%
+
+shop name type|Evil
+邪恶
+%%%%
+
+shop name type|Exquisite
+精美
+%%%%
+
+shop name type|Fabulous
+非凡
+%%%%
+
+shop name type|Fathomable
+可解的
+%%%%
+
+shop name type|Fine
+优质
+%%%%
+
+shop name type|Fine Metal
+精良金属
+%%%%
+
+shop name type|Fire
+火焰
+%%%%
+
+shop name type|Firing
+射击
+%%%%
+
+shop name type|Gadget
+小装置
+%%%%
+
+shop name type|General
+综合
+%%%%
+
+shop name type|Gilded
+镀金
+%%%%
+
+shop name type|Globular
+球形
+%%%%
+
+shop name type|Goods
+货品
+%%%%
+
+shop name type|Hallowed
+神圣
+%%%%
+
+shop name type|Hat
+帽子
+%%%%
+
+shop name type|Haute Couture
+高级时装
+%%%%
+
+shop name type|Humble
+朴实
+%%%%
+
+shop name type|Humungous
+海量
+%%%%
+
+shop name type|Hydra
+多头蛇
+%%%%
+
+shop name type|Incredible
+惊人
+%%%%
+
+shop name type|Infernal
+地狱
+%%%%
+
+shop name type|Island
+海岛
+%%%%
+
+shop name type|Jewellery
+珠宝
+%%%%
+
+shop name type|Jolly
+欢乐
+%%%%
+
+shop name type|Killer
+致命
+%%%%
+
+shop name type|Last-Chance
+最后机会
+%%%%
+
+shop name type|Legendary
+传奇
+%%%%
+
+shop name type|Lightly-Used
+近新
+%%%%
+
+shop name type|Luxury
+奢华
+%%%%
+
+shop name type|Magical
+魔法
+%%%%
+
+shop name type|Magnificent
+华丽
+%%%%
+
+shop name type|Mail-Order
+邮购
+%%%%
+
+shop name type|Mass
+大众
+%%%%
+
+shop name type|Mayhem
+浩劫
+%%%%
+
+shop name type|Merfolk
+人鱼
+%%%%
+
+shop name type|Merry
+欢快
+%%%%
+
+shop name type|Miraculous
+奇迹
+%%%%
+
+shop name type|Miscellaneous
+各类
+%%%%
+
+shop name type|Must-Have
+必备
+%%%%
+
+shop name type|Neck
+颈饰
+%%%%
+
+shop name type|Needful
+必需
+%%%%
+
+shop name type|Offbeat
+另类
+%%%%
+
+shop name type|One-of-a-Kind
+独一无二
+%%%%
+
+shop name type|Orb
+法球
+%%%%
+
+shop name type|Overcharged
+超载
+%%%%
+
+shop name type|Party
+派对
+%%%%
+
+shop name type|Pet
+宠物
+%%%%
+
+shop name type|Platinum
+白金
+%%%%
+
+shop name type|Practical
+实用
+%%%%
+
+shop name type|Premium
+上等
+%%%%
+
+shop name type|Profane
+亵渎
+%%%%
+
+shop name type|Purification
+净化
+%%%%
+
+shop name type|Quality
+优质
+%%%%
+
+shop name type|Quotidian
+日常
+%%%%
+
+shop name type|Rarities
+珍品
+%%%%
+
+shop name type|Ready-to-Wear
+成衣
+%%%%
+
+shop name type|Retail
+零售
+%%%%
+
+shop name type|Round
+圆形
+%%%%
+
+shop name type|Sacrilege
+渎圣
+%%%%
+
+shop name type|Self-Improvement
+自我提升
+%%%%
+
+shop name type|Self-Published
+自出版
+%%%%
+
+shop name type|Serpentskin
+蛇皮
+%%%%
+
+shop name type|Specialty
+特制
+%%%%
+
+shop name type|Specific
+专项
+%%%%
+
+shop name type|Sphere
+球体
+%%%%
+
+shop name type|Spherical
+球形
+%%%%
+
+shop name type|Staff
+长杖
+%%%%
+
+shop name type|Store
+商店
+%%%%
+
+shop name type|Superb
+卓越
+%%%%
+
+shop name type|Superior
+优等
+%%%%
+
+shop name type|Superlative
+顶级
+%%%%
+
+shop name type|Tempting
+诱人
+%%%%
+
+shop name type|Timeless
+永恒
+%%%%
+
+shop name type|Tiny
+微型
+%%%%
+
+shop name type|Tremendous
+巨型
+%%%%
+
+shop name type|Trivially-Accessible
+轻松可得的
+%%%%
+
+shop name type|Unparalleled
+无双
+%%%%
+
+shop name type|Vending
+售货
+%%%%
+
+shop name type|Visitors'
+访客
+%%%%
+
+shop name type|Vocational
+职业
+%%%%
+
+shop name type|Wardrobe
+衣橱
+%%%%
+
+shop name type|Weapon
+武器
+%%%%
+
+shop name type|Whimsical
+奇趣
+%%%%
+
+shop name type|Wicked
+邪恶
+%%%%
+
+shop name type|Wondrous
+奇妙
+%%%%
+
+shop name type|Xenial
+好客
+%%%%
+
+shop name type|Yearning
+渴望
+%%%%
+
+shop name type|Zaibatsu
+财阀
+%%%%
+
+High Orc
+高等兽人
+%%%%
+
+Deep Orc
+深地兽人
+%%%%
+
+Sludge Orc
+污泥兽人
+%%%%
+
+Halflorc
+半身兽人
+%%%%
+
+Antique Orc
+古早兽人
+%%%%
+
+Orcobold
+狗头兽人
+%%%%
+
+Orcish Mummy
+兽人木乃伊
+%%%%
+
+Nagorc
+娜迦兽人
+%%%%
+
+Big Orc
+大兽人
+%%%%
+
+Trorc
+巨魔兽人
+%%%%
+
+Red Orconian
+红色龙人兽人
+%%%%
+
+White Orconian
+白色龙人兽人
+%%%%
+
+Green Orconian
+绿色龙人兽人
+%%%%
+
+Yellow Orconian
+黄色龙人兽人
+%%%%
+
+Grey Orconian
+灰色龙人兽人
+%%%%
+
+Black Orconian
+黑色龙人兽人
+%%%%
+
+Purple Orconian
+紫色龙人兽人
+%%%%
+
+Mottled Orconian
+斑驳龙人兽人
+%%%%
+
+Pale Orconian
+苍白龙人兽人
+%%%%
+
+Orconian
+龙人兽人
+%%%%
+
+Centorc
+半人马兽人
+%%%%
+
+Buggy Orc
+故障兽人
+%%%%
+
+Spriggorc
+小精灵兽人
+%%%%
+
+Minotorc
+牛头兽人
+%%%%
+
+Demon Orc
+恶魔兽人
+%%%%
+
+Rotting Orc
+腐烂兽人
+%%%%
+
+Tengorc
+天狗兽人
+%%%%
+
+Merforc
+人鱼兽人
+%%%%
+
+Orcula
+吸血兽人
+%%%%
+
+Deep Dworc
+深地矮人兽人
+%%%%
+
+Orcat
+猫兽人
+%%%%
+
+Orctopode
+章鱼兽人
+%%%%
+
+Orcfreeti
+灯神兽人
+%%%%
+
+Lava Orc Orc
+熔岩兽人兽人
+%%%%
+
+Gargorcle
+石像鬼兽人
+%%%%
+
+Orcmicid
+蚁兽人
+%%%%
+
+Orchid Stalker
+兰花兽人行者
+%%%%
+
+Orcphibian
+两栖兽人
+%%%%
+
+Hyenorc
+豺狼兽人
+%%%%
+
+Mayflyorc
+蜉蝣兽人
+%%%%
+
+Meteorc
+流星兽人
+%%%%
+
+Mountain Orc
+山地兽人
+%%%%
+
+Exo-Orc
+外骨骼兽人
+%%%%
+
+Phantasmorc
+幻影兽人
+%%%%
+
+Skeletorc
+骷髅兽人
+%%%%
+
+%s fire resistance is burned away.
+%s火焰抗性被烧掉了。
+%%%%
+
+%s fire resistance is stripped away!
+%s火焰抗性被剥离了！
+%%%%
+
+%s allies are healed!
+%s盟友被治愈了！
+%%%%
+
+ prevents the banishment of %s from the Arena!
+阻止了%s被放逐出竞技场！
+%%%%
+
+%s hold on you weakens, but your attempt to escape fails.
+%s束缚减弱了，但你逃脱的尝试失败了。
+%%%%
+
+%s clockwork bee locks onto %s.
+%s发条蜜蜂锁定了%s。
+%%%%
+
+Your clockwork bee winds down and falls to the ground.
+你的发条蜜蜂发条走完了，掉到了地上。
+%%%%
+
+The clockwork bee winds down and falls to the ground.
+发条蜜蜂发条走完了，掉到了地上。
+%%%%
+
+someone's
+某人的
+%%%%
+
+%s soul %s.
+%s灵魂%s。
+%%%%
+
+drained resource|magic
+魔力
+%%%%
+
+drained resource|power
+力量
 %%%%

@@ -2023,7 +2023,7 @@ spret cast_scorch(const actor& agent, int pow, bool fail)
             monster* mon = targ->as_monster();
             if (you.can_see(*mon) && !mon->has_ench(ENCH_FIRE_VULN))
             {
-                mprf(T_("%s's fire resistance is burned away."),
+                mprf(T_("%s fire resistance is burned away."),
                     mon->name(DESC_ITS).c_str());
             }
             mon->add_ench(mon_enchant(ENCH_FIRE_VULN, &agent, dur * BASELINE_DELAY));
@@ -2534,7 +2534,7 @@ spret cast_ignite_poison(actor* agent, int pow, bool fail, bool tracer)
     mprf_p(T_("%1$s %2$s the poison around %3$s!"),
            agent->name(DESC_THE).c_str(),
            agent->conj_verb("ignite").c_str(),
-           agent->pronoun(PRONOUN_POSSESSIVE).c_str());
+           agent->pronoun(PRONOUN_OBJECTIVE).c_str());
 
     // this could conceivably cause crashes if the player dies midway through
     // maybe split it up...?

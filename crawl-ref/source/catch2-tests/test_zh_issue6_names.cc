@@ -286,7 +286,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     item.brand = SPMSL_CHAOS;
     const string missile = missile_name(MI_JAVELIN);
     const string missile_brand = missile_brand_name(item, MBN_NAME);
-    CHECK(item.name(DESC_PLAIN) == missile + missile_brand + "之");
+    CHECK(item.name(DESC_PLAIN) == missile_brand + "之" + missile);
     item.base_type = OBJ_ARMOUR;
     item.sub_type = ARM_ROBE;
     item.brand = SPARM_FIRE_RESISTANCE;
@@ -390,5 +390,45 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     {
         ScopedLangEn english;
         CHECK(terse_mutation_list().find("fleshless physiology") != string::npos);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "family: every missile brand keeps its modifier before the Chinese noun",
+                 "[zh-translation][family-fixes][names]")
+{
+    init_properties();
+    for (int brand = SPMSL_NORMAL; brand < NUM_SPECIAL_MISSILES; ++brand)
+    for (int quantity : {1, 3})
+    {
+        item_def item;
+        item.base_type = OBJ_MISSILES;
+        item.sub_type = MI_DART;
+        item.brand = brand;
+        item.quantity = quantity;
+        item.flags = ISFLAG_IDENTIFIED;
+        const string noun = missile_name(MI_DART);
+        const string full = item.name(DESC_PLAIN);
+        const string terse = item.name(DESC_PLAIN, true);
+        INFO("brand=" << brand << " full=" << full);
+        REQUIRE(full.find(noun) != string::npos);
+        if (brand != SPMSL_NORMAL)
+        {
+            const string modifier = missile_brand_name(item, MBN_NAME);
+            REQUIRE(full.find(modifier) != string::npos);
+            CHECK(full.find(modifier) < full.find(noun));
+            CHECK(full.substr(full.size() - noun.size()) == noun);
+            CHECK(terse.find(" (") != string::npos);
+        }
+        CHECK(item.name(DESC_BASENAME) == noun);
+        CHECK(item.name(DESC_DBNAME) == noun);
+        {
+            ScopedLangEn english;
+            const string en = item.name(DESC_PLAIN);
+            CHECK(en.find(quantity == 1 ? "dart" : "darts") != string::npos);
+            if (brand == SPMSL_DISJUNCTION)
+                CHECK(en.find(" of disjunction") != string::npos);
+            CHECK(item.name(DESC_DBNAME) == "dart");
+        }
     }
 }

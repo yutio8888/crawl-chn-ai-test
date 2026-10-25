@@ -1896,7 +1896,7 @@ void monster::apply_enchantment(const mon_enchant &me)
             if (you.can_see(*this))
             {
                 mprf_p(T_("%1$s stops winding %2$s clockwork bee."),
-                     name(DESC_ITS).c_str(),
+                     name(DESC_THE).c_str(),
                      pronoun(PRONOUN_POSSESSIVE).c_str());
             }
             break;

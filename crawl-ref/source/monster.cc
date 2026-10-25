@@ -2749,8 +2749,8 @@ void monster::banish(const actor *agent, const string &, bool force)
 
     if (!force && player_in_branch(BRANCH_ARENA))
     {
-        string msg = make_stringf(T_(" prevents %s banishment from the Arena!"),
-                                  name(DESC_ITS).c_str());
+        string msg = make_stringf(T_(" prevents the banishment of %s from the Arena!"),
+                                  name(DESC_THE).c_str());
         simple_god_message(msg.c_str(), false, GOD_OKAWARU);
         return;
     }

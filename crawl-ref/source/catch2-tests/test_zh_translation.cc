@@ -7721,3 +7721,62 @@ TEST_CASE("grouped: real fragmentation puts damage punctuation after the player 
             CHECK(text.find("You shatter") != string::npos);
     }
 }
+
+TEST_CASE("family: all valid Beogh species displays translate without altering species keys",
+          "[zh-translation][family-fixes][names]")
+{
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        you.religion = GOD_BEOGH;
+        for (int sp = 0; sp < NUM_SPECIES; ++sp)
+        {
+            const species_type species_id = static_cast<species_type>(sp);
+            if (!species::is_valid(species_id))
+                continue;
+            you.species = species_id;
+            const string key = species::orc_name(species_id);
+            const string display = player_species_name();
+            INFO(key << " => " << display);
+            if (language == lang_t::ZH)
+                CHECK(display != key);
+            else
+                CHECK(display == key);
+            CHECK(species::orc_name(species_id) == key);
+            if (species_id == SP_GARGOYLE && language == lang_t::ZH)
+                CHECK(display == "石像鬼兽人");
+        }
+    }
+}
+
+TEST_CASE("family: custom shop fragments use shop context rather than unrelated global senses",
+          "[zh-translation][family-fixes][shops]")
+{
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (const char* fragment : {"Tomes", "Deal", "Range", "Timeless"})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        shop_struct shop;
+        shop.type = SHOP_GENERAL;
+        shop.pos = coord_def(20, 20);
+        shop.shop_name = "Fixture";
+        shop.shop_type_name = string(fragment) == "Timeless" ? fragment : "Information";
+        shop.shop_suffix_name = string(fragment) == "Timeless" ? "Tomes" : fragment;
+        const string text = shop_name(shop);
+        INFO(text);
+        if (language == lang_t::ZH)
+        {
+            CHECK(text.find(fragment) == string::npos);
+            CHECK(text.find("Tomes") == string::npos);
+            CHECK(text.find("发牌") == string::npos);
+            CHECK(text.find("射程") == string::npos);
+            CHECK(text.find("永恒者") == string::npos);
+        }
+        else
+            CHECK(text.find(fragment) != string::npos);
+        CHECK(shop.shop_type_name == (string(fragment) == "Timeless" ? fragment : "Information"));
+        CHECK(shop.shop_suffix_name == (string(fragment) == "Timeless" ? "Tomes" : fragment));
+    }
+}

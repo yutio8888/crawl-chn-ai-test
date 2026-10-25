@@ -2,6 +2,7 @@
 
 #include "AppHdr.h"
 
+#include "act-iter.h"
 #include "areas.h"
 #include "cloud.h"
 #include "database.h"
@@ -575,5 +576,134 @@ TEST_CASE("monster wand drops localize articles only at the death message sink",
             CHECK(drop.flags == english_drop.flags);
             CHECK(drop.rnd == english_drop.rnd);
         }
+    }
+}
+
+TEST_CASE("family: real player escape attempts consume every constrictor possessive once",
+          "[zh-translation][family-fixes][constriction]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const constrict_type type = GENERATE(CONSTRICT_MELEE, CONSTRICT_BVC,
+                                         CONSTRICT_ROOTS, CONSTRICT_ENTANGLE);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *constrictor = world.place(MONS_BALL_PYTHON, coord_def(21, 21));
+    rng::subgenerator scoped_rng(20261025, 7);
+    bool succeeded = false;
+    bool failed = false;
+    for (int trial = 0; trial < 40 && !(succeeded && failed); ++trial)
+    {
+        you.duration[DUR_CONSTRICTION_IMMUNITY] = 0;
+        constrictor->start_constricting(you, type);
+        REQUIRE(you.is_constricted());
+        you.escape_attempts = 0;
+        bool escaped = false;
+        const string text = observe_message([&] { escaped = you.attempt_escape(); });
+        INFO(text);
+        succeeded |= escaped;
+        failed |= !escaped;
+        CHECK(you.is_constricted() == !escaped);
+        if (language == lang_t::ZH)
+        {
+            CHECK(text.find("的的") == string::npos);
+            CHECK(text.find("的对") == string::npos);
+            CHECK(text.find(escaped ? "掌控" : "束缚减弱") != string::npos);
+        }
+        else
+        {
+            CHECK(text.find("'s's") == string::npos);
+            CHECK(text.find(escaped ? "You break free of" : "hold on you weakens") != string::npos);
+        }
+        if (!escaped)
+            you.stop_being_constricted(true);
+    }
+    CHECK(succeeded);
+    CHECK(failed);
+}
+
+TEST_CASE("family: real clockwork bee target and dormancy messages keep owner grammar",
+          "[zh-translation][family-fixes][bee]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const bool player_owner = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *target = world.place(MONS_ORC, coord_def(21, 21));
+    monster *bee = world.place(MONS_CLOCKWORK_BEE, coord_def(20, 21));
+    bee->base_attitude = ATT_FRIENDLY;
+    bee->summoner = player_owner ? MID_PLAYER : MID_NOBODY;
+    bee->props[CLOCKWORK_BEE_TARGET].get_int() = target->mid;
+    const string targeted = observe_message([&] { clockwork_bee_pick_new_target(*bee); });
+    INFO(targeted);
+    CHECK(bee->props[CLOCKWORK_BEE_TARGET].get_int() == target->mid);
+    CHECK(bee->has_ench(ENCH_HAUNTING));
+    if (language == lang_t::ZH)
+    {
+        CHECK(targeted.find("的的") == string::npos);
+        CHECK(targeted.find(player_owner ? "你的发条蜜蜂" : "某人的发条蜜蜂") != string::npos);
+    }
+    else
+    {
+        CHECK(targeted.find("your's") == string::npos);
+        CHECK(targeted.find("someone's's") == string::npos);
+    }
+    bee->add_ench(mon_enchant(ENCH_SUMMON_TIMER, &you, 300));
+    const string dormant = observe_message([&] { clockwork_bee_go_dormant(*bee); });
+    INFO(dormant);
+    CHECK(bee->type == MONS_CLOCKWORK_BEE_INACTIVE);
+    CHECK(bee->get_ench(ENCH_SUMMON_TIMER).duration <= 120);
+    if (language == lang_t::ZH)
+    {
+        CHECK(dormant.find("Your") == string::npos);
+        CHECK(dormant.find("The") == string::npos);
+        CHECK(dormant.find("的的") == string::npos);
+        CHECK(dormant.find("发条蜜蜂") != string::npos);
+    }
+    else
+        CHECK(dormant.find(player_owner ? "Your clockwork bee" : "The clockwork bee") != string::npos);
+}
+
+TEST_CASE("family: real monster bee launch and interrupted winding use a subject and one owner",
+          "[zh-translation][family-fixes][bee]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *caster = world.place(MONS_ORC_WIZARD, coord_def(21, 21));
+    caster->props[CLOCKWORK_BEE_TARGET].get_int() = MID_PLAYER;
+    const string launched = observe_message([&] { launch_clockwork_bee(*caster); });
+    INFO(launched);
+    monster *bee = nullptr;
+    for (monster_iterator mi; mi; ++mi)
+        if (mi->type == MONS_CLOCKWORK_BEE && mi->summoner == caster->mid)
+        {
+            bee = *mi;
+            world.monsters.push_back(bee);
+        }
+    REQUIRE(bee);
+    CHECK(bee->props[CLOCKWORK_BEE_TARGET].get_int() == MID_PLAYER);
+    if (language == lang_t::ZH)
+    {
+        CHECK(launched.find("的的") == string::npos);
+        CHECK(launched.find("发条蜜蜂") != string::npos);
+    }
+    else
+        CHECK(launched.find("clockwork bee launches itself at you") != string::npos);
+
+    caster->add_ench(mon_enchant(ENCH_CLOCKWORK_BEE_CAST, caster, 100));
+    caster->behaviour = BEH_SLEEP;
+    const string interrupted = observe_message([&] { caster->apply_enchantments(); });
+    INFO(interrupted);
+    CHECK_FALSE(caster->has_ench(ENCH_CLOCKWORK_BEE_CAST));
+    if (language == lang_t::ZH)
+    {
+        CHECK(interrupted.find("的停止") == string::npos);
+        CHECK(interrupted.find("的的") == string::npos);
+        CHECK(interrupted.find("停止") != string::npos);
+    }
+    else
+    {
+        CHECK(interrupted.find("wizard stops winding") != string::npos);
+        CHECK(interrupted.find("wizard's stops") == string::npos);
     }
 }

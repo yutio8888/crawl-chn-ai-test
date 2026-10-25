@@ -8,12 +8,15 @@ the T_() call uses a variable (not a string literal):
 1. Monster names from dat/mons/*.yaml (translated via T_(en.c_str()) at runtime)
 2. Duration strings from duration-data.h (translated via T_(endmsg) at runtime)
 3. Feature names from feature-data.h (translated via T_(get_feature_def().name))
+4. Custom shop type/suffix fields (exact C_() contexts, including finite Lua pools)
+5. Species orc names (including compatibility entries and the Orc fallback)
 """
 
 import re
 import os
 import sys
-from collections import OrderedDict
+from pathlib import Path
+import json
 
 # Use shared parser for consistency with scan_i18n.py
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -216,6 +219,150 @@ def check_corrosion_sources(source_dir: str, source_txt: str):
     return 0 if not missing else 1
 
 
+
+def collect_shop_fields(source_dir: str):
+    """Return (context, key) identities from the current .des tag grammar.
+
+    Literal fields can occur in Lua continuation/conditional strings, so scan
+    all non-comment lines, not just lines containing ``shop``. The only
+    supported computed fields are finite local string arrays selected by the
+    standard crawl.random2(#array) idiom. Other computations fail closed.
+    Empty fields explicitly mean no custom word and need no translation.
+    """
+    des_dir = Path(source_dir) / 'dat/des'
+    # pan.des contains the computed pool; its absence must not shrink coverage.
+    if not des_dir.is_dir() or not (des_dir / 'branches/pan.des').is_file():
+        raise ValueError('Required shop source dat/des/branches/pan.des is missing')
+    paths = sorted(des_dir.rglob('*.des'))
+    identities = set()
+    tag = re.compile(r'(?<![\w_])(type|suffix):')
+    for path in paths:
+        text = path.read_text(encoding='utf-8')
+        text = '\n'.join('' if line.lstrip().startswith(('#', '--')) else line
+                         for line in text.splitlines())
+        for match in tag.finditer(text):
+            context = 'shop name ' + match.group(1)
+            tail = text[match.end():]
+            literal = re.match(r'([^\s"\\]+)', tail)
+            if literal:
+                continuation = tail[literal.end():]
+                if re.match(r'"\s*\.\.\s*(?:"[^\s;"]|[^"\s])', continuation):
+                    raise ValueError(f'{path}: computed extension of literal shop field')
+                identities.add((context, literal.group(1).replace('_', ' ')))
+                continue
+            # A closing quote followed by concatenation is a computed value;
+            # do not confuse it with the deliberately empty ``suffix: ``.
+            computed = re.match(r'"\s*\.\.\s*([A-Za-z_]\w*)', tail)
+            if tail.startswith('"') and re.match(r'"\s*\.\.', tail):
+                if not computed:
+                    raise ValueError(f'{path}: unsupported computed shop field')
+                variable = computed.group(1)
+                if not re.match(r'\s*(?:\.\.\s*"[\s;]|[),])',
+                                tail[computed.end():]):
+                    raise ValueError(f'{path}: unsupported extension of computed shop field')
+                assignments = re.findall(
+                    r'local\s+' + re.escape(variable) + r'\s*=\s*'
+                    r'(\w+)\s*\[\s*crawl\.random2\(\s*#\s*\1\s*\)'
+                    r'\s*\+\s*1\s*\]', text)
+                if len(assignments) != 1:
+                    raise ValueError(f'{path}: unsupported shop field variable {variable}')
+                pool = assignments[0]
+                if (len(re.findall(r'\b' + re.escape(variable) + r'\s*=', text)) != 1
+                        or len(re.findall(r'\b' + re.escape(pool) + r'\s*=', text)) != 1
+                        or re.search(r'\b' + re.escape(pool) + r'\s*\[[^\n]*\]\s*=', text)
+                        or re.search(r'table\.(?:insert|remove)\s*\(\s*'
+                                     + re.escape(pool) + r'\b', text)):
+                    raise ValueError(f'{path}: mutated shop field pool or selector')
+                arrays = re.findall(r'local\s+' + re.escape(pool)
+                                    + r'\s*=\s*\{([^{}]*)\}', text, re.S)
+                if len(arrays) != 1:
+                    raise ValueError(f'{path}: missing/ambiguous shop field pool {pool}')
+                values = re.findall(r'"([^"\\]*)"', arrays[0])
+                residue = re.sub(r'"[^"\\]*"', '', arrays[0])
+                if not values or residue.strip(' \t\r\n,'):
+                    raise ValueError(f'{path}: nonliteral shop field pool {pool}')
+                identities.update((context, value.replace('_', ' '))
+                                  for value in values if value)
+            elif tail.startswith('"'):
+                # Empty field ending at a Lua string boundary is supported.
+                continue
+            elif not tail or tail[0].isspace():
+                continue
+            else:
+                raise ValueError(f'{path}: unsupported shop field')
+    if not identities:
+        raise ValueError('No custom shop fields found')
+    return identities
+
+
+def collect_orc_names(source_dir: str):
+    """Parse all generated species entries, including inactive compatibility.
+
+    Validate the schema's five final pointer fields and each initializer tail
+    together. This deliberately rejects an unfamiliar layout instead of silently
+    reading the wrong field as an orc name.
+    """
+    root = Path(source_dir)
+    schema = (root / 'species-def.h').read_text(encoding='utf-8')
+    schema = re.sub(r'//[^\n]*|/\*.*?\*/', '', schema, flags=re.S)
+    if not re.search(
+            r'const char\* walking_verb;\s*const char\* altar_action;\s*'
+            r'const char\* child_name;\s*const char\* orc_name;\s*'
+            r'const char\* orcification_msg;\s*};', schema):
+        raise ValueError('species_def final fields no longer match the orc-name schema')
+    data = (root / 'species-data.h').read_text(encoding='utf-8')
+    data = re.sub(r'//[^\n]*', '', data)
+    rows = list(re.finditer(r'^\{\s+(SP_\w+),[^\n]*\n(.*?)^\},?', data, re.M | re.S))
+    if not rows or len(rows) != len(re.findall(r'^\{\s+SP_\w+,', data, re.M)):
+        raise ValueError('Malformed or missing species initializers')
+    names = {'Orc'}  # species::orc_name() uses this for nullptr.
+    scalar = r'(nullptr|"(?:\\.|[^"\\])*")'
+    tail = re.compile(r'\n    \{[^\n]*\},\n'
+                      + ''.join('    ' + scalar + r',\n' for _ in range(5)) + r'\Z')
+    for row in rows:
+        if row.group(1) == 'SP_UNKNOWN':
+            # The non-playable sentinel omits all remaining aggregate fields.
+            if not re.search(r'\n    \{\},[ \t]*\n    nullptr,[ \t]*\n'
+                             r'    nullptr,[ \t]*\n\Z', row.group(2)):
+                raise ValueError('Unsupported SP_UNKNOWN initializer tail')
+            continue
+        fields = tail.search(row.group(2))
+        if not fields:
+            raise ValueError(f'{row.group(1)}: unsupported species initializer tail')
+        if fields.group(4) != 'nullptr':
+            names.add(json.loads(fields.group(4)))
+    return names
+
+
+def _check_collected_fields(title, collect, source_dir, source_txt, contextual=False):
+    print(f"\n--- {title} translation coverage ---")
+    try:
+        identities = collect(source_dir)
+        entries = parse_source_txt(source_txt)
+    except (OSError, ValueError) as error:
+        print(f'ERROR: {error}')
+        return 1
+    keys = sorted(f'{context}|{key}' for context, key in identities) if contextual \
+        else sorted(identities)
+    missing = [key for key in keys if not entries.get(key.lower(), '').strip()]
+    print(f'Total identities: {len(keys)}')
+    print(f'  Covered: {len(keys) - len(missing)}')
+    print(f'  MISSING: {len(missing)}')
+    for key in missing:
+        print(f'    - {key}')
+    return int(bool(missing))
+
+
+def check_shop_fields(source_dir: str, source_txt: str):
+    return _check_collected_fields('Custom shop fields', collect_shop_fields,
+                                   source_dir, source_txt, contextual=True)
+
+
+def check_orc_names(source_dir: str, source_txt: str):
+    return _check_collected_fields('Species orc names', collect_orc_names,
+                                   source_dir, source_txt)
+
+
 def main():
     if len(sys.argv) < 3:
         print("Usage: audit_data_i18n.py <source_dir> --source-txt <source.txt>")
@@ -234,6 +381,8 @@ def main():
     rc |= check_feature_names(source_dir, source_txt)
     rc |= check_cloud_names(source_dir, source_txt)
     rc |= check_corrosion_sources(source_dir, source_txt)
+    rc |= check_shop_fields(source_dir, source_txt)
+    rc |= check_orc_names(source_dir, source_txt)
 
     print(f"\n=== audit_data_i18n.py complete (exit {rc}) ===")
     return rc
