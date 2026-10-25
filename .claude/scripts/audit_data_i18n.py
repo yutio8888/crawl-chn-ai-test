@@ -260,13 +260,23 @@ def collect_shop_fields(source_dir: str):
                 if not re.match(r'\s*(?:\.\.\s*"[\s;]|[),])',
                                 tail[computed.end():]):
                     raise ValueError(f'{path}: unsupported extension of computed shop field')
-                assignments = re.findall(
+                assignments = list(re.finditer(
                     r'local\s+' + re.escape(variable) + r'\s*=\s*'
                     r'(\w+)\s*\[\s*crawl\.random2\(\s*#\s*\1\s*\)'
-                    r'\s*\+\s*1\s*\]', text)
+                    r'\s*\+\s*1\s*\]'
+                    r'(?=[ \t]*(?:;[ \t]*)?(?:--[^\n]*)?(?:\n|$))', text))
                 if len(assignments) != 1:
                     raise ValueError(f'{path}: unsupported shop field variable {variable}')
-                pool = assignments[0]
+                selector = assignments[0]
+                # Lua permits concatenation on the following line too. A
+                # selector is only supported as a complete finite-pool lookup.
+                after_selector = text[selector.end():]
+                if re.match(r'[ \t]*(?:--[^\n]*)?\n'
+                            r'(?:\s*--[^\n]*\n)*\s*'
+                            r'(?:\.\.|[+*/%^<>=~-]|\b(?:and|or)\b)',
+                            after_selector):
+                    raise ValueError(f'{path}: extended shop field selector')
+                pool = selector.group(1)
                 if (len(re.findall(r'\b' + re.escape(variable) + r'\s*=', text)) != 1
                         or len(re.findall(r'\b' + re.escape(pool) + r'\s*=', text)) != 1
                         or re.search(r'\b' + re.escape(pool) + r'\s*\[[^\n]*\]\s*=', text)
@@ -312,23 +322,31 @@ def collect_orc_names(source_dir: str):
         raise ValueError('species_def final fields no longer match the orc-name schema')
     data = (root / 'species-data.h').read_text(encoding='utf-8')
     data = re.sub(r'//[^\n]*', '', data)
-    rows = list(re.finditer(r'^\{\s+(SP_\w+),[^\n]*\n(.*?)^\},?', data, re.M | re.S))
-    if not rows or len(rows) != len(re.findall(r'^\{\s+SP_\w+,', data, re.M)):
-        raise ValueError('Malformed or missing species initializers')
+    # Enumerate every enum-headed initializer independently of accepted row
+    # formatting. An indented/new-layout row must not disappear from both the
+    # parser and its coverage comparison. Bind identities AND opening offsets.
+    starts = [(match.group(1), match.start()) for match in
+              re.finditer(r'\{\s*(SP_\w+)\s*,', data)]
+    rows = list(re.finditer(r'^[ \t]*(\{)[ \t]*(SP_\w+),[^\n]*\n'
+                            r'(.*?)^[ \t]*\},?', data, re.M | re.S))
+    parsed_starts = [(row.group(2), row.start(1)) for row in rows]
+    if (not rows or parsed_starts != starts
+            or len({identity for identity, _ in starts}) != len(starts)):
+        raise ValueError('Malformed, duplicate, or unsupported species initializers')
     names = {'Orc'}  # species::orc_name() uses this for nullptr.
     scalar = r'(nullptr|"(?:\\.|[^"\\])*")'
     tail = re.compile(r'\n    \{[^\n]*\},\n'
                       + ''.join('    ' + scalar + r',\n' for _ in range(5)) + r'\Z')
     for row in rows:
-        if row.group(1) == 'SP_UNKNOWN':
+        if row.group(2) == 'SP_UNKNOWN':
             # The non-playable sentinel omits all remaining aggregate fields.
             if not re.search(r'\n    \{\},[ \t]*\n    nullptr,[ \t]*\n'
-                             r'    nullptr,[ \t]*\n\Z', row.group(2)):
+                             r'    nullptr,[ \t]*\n\Z', row.group(3)):
                 raise ValueError('Unsupported SP_UNKNOWN initializer tail')
             continue
-        fields = tail.search(row.group(2))
+        fields = tail.search(row.group(3))
         if not fields:
-            raise ValueError(f'{row.group(1)}: unsupported species initializer tail')
+            raise ValueError(f'{row.group(2)}: unsupported species initializer tail')
         if fields.group(4) != 'nullptr':
             names.add(json.loads(fields.group(4)))
     return names

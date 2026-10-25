@@ -123,6 +123,24 @@ class DataDrivenCoverageTests(unittest.TestCase):
                                                 '.. shopsuffix .. "Stock ; any"'))
         self.assertEqual(self.check_shop(), 1)
 
+    def test_selector_expression_extension_rejected(self):
+        for extension in [' .. "Stock"', '\n  .. "Stock"',
+                          ' -- selector comment\n  .. "Stock"',
+                          '\n  and "Stock"']:
+            with self.subTest(extension=extension):
+                self.pan.write_text(SHOP_FIXTURE.replace(
+                    'local shopsuffix = shops[ crawl.random2(#shops) + 1 ]',
+                    'local shopsuffix = shops[ crawl.random2(#shops) + 1 ]' + extension))
+                self.assertEqual(self.check_shop(), 1)
+
+    def test_selector_comment_or_statement_terminator_supported(self):
+        for terminator in [' -- finite selector', ';', '; -- finite selector']:
+            with self.subTest(terminator=terminator):
+                self.pan.write_text(SHOP_FIXTURE.replace(
+                    'local shopsuffix = shops[ crawl.random2(#shops) + 1 ]',
+                    'local shopsuffix = shops[ crawl.random2(#shops) + 1 ]' + terminator))
+                self.assertEqual(self.check_shop(), 0)
+
     def test_mutated_finite_pool_rejected(self):
         for mutation in ['shops[3] = "Other"', 'table.insert(shops, "Other")',
                          'shopsuffix = computed_suffix()']:
@@ -146,6 +164,29 @@ class DataDrivenCoverageTests(unittest.TestCase):
     def test_orc_missing_compatibility_name_rejected(self):
         self.species_fixture()
         self.write_translations(['Orc'])
+        self.assertEqual(self.check_orc(), 1)
+
+    def test_indented_orc_initializer_cannot_escape_coverage(self):
+        self.species_fixture()
+        self.data.write_text(self.human + '\n  '
+                             + self.elf.replace('"High Orc"', '"Uncovered Orc"') + '\n')
+        self.assertEqual(audit.collect_orc_names(str(self.source)),
+                         {'Orc', 'Uncovered Orc'})
+        self.assertEqual(self.check_orc(), 1)
+
+    def test_unknown_orc_row_layout_rejected(self):
+        self.species_fixture()
+        # Inline layout is outside the supported generated grammar, but the
+        # independent enum-headed initializer discovery must still see it.
+        self.data.write_text(self.human + '\n' + ' '.join(self.elf.splitlines())
+                             .replace('"High Orc"', '"Uncovered Orc"') + '\n')
+        with self.assertRaises(ValueError):
+            audit.collect_orc_names(str(self.source))
+        self.assertEqual(self.check_orc(), 1)
+
+    def test_duplicate_species_identity_rejected(self):
+        self.species_fixture()
+        self.data.write_text(self.data.read_text() + '\n' + self.human + '\n')
         self.assertEqual(self.check_orc(), 1)
 
     def test_orc_missing_fallback_rejected(self):
