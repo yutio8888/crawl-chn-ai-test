@@ -257,10 +257,11 @@ def release_rules(tag: str, source_root: Path) -> tuple[ArtifactRule, ...]:
 
 
 def _validate_member_names(
-    names: list[str], *, root: str | None, archive_name: str
+    names: list[str], *, root: str | None, archive_name: str,
+    case_sensitive_prefix: str | None = None,
 ) -> None:
     seen: set[str] = set()
-    seen_casefolded: set[str] = set()
+    seen_casefolded: dict[str, str] = {}
     root_prefix = f"{root}/" if root is not None else None
     for name in names:
         if not name or "\\" in name or "//" in name:
@@ -282,12 +283,19 @@ def _validate_member_names(
                 f"{archive_name}: duplicate archive member {canonical!r}"
             )
         folded = canonical.casefold()
-        if folded in seen_casefolded:
+        previous = seen_casefolded.get(folded)
+        # AAPT2 shortens compiled APK resource paths using case-sensitive names.
+        # Keep desktop archives and APK runtime assets/native libraries strict.
+        if previous is not None and not (
+            case_sensitive_prefix is not None
+            and canonical.startswith(case_sensitive_prefix)
+            and previous.startswith(case_sensitive_prefix)
+        ):
             raise ReleaseArtifactError(
                 f"{archive_name}: case-insensitive member collision {canonical!r}"
             )
         seen.add(canonical)
-        seen_casefolded.add(folded)
+        seen_casefolded[folded] = canonical
         if (
             root is not None
             and canonical != root
@@ -402,6 +410,7 @@ def _validate_apk(path: Path, rule: ArtifactRule, source_root: Path) -> None:
                 [info.filename for info in infos],
                 root=None,
                 archive_name=path.name,
+                case_sensitive_prefix="res/",
             )
             _validate_zh_member_set(
                 path.name,
