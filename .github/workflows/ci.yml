@@ -335,7 +335,7 @@ jobs:
       contents: read
 
     name: Linux Console (GCC)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
         with:
@@ -362,8 +362,25 @@ jobs:
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh
       - name: Build Linux console
-        run: make -j4
+        run: make package-linux-console -j4
         working-directory: crawl-ref/source
+
+      - name: Smoke packaged Linux console
+        shell: bash
+        run: |
+          set -euo pipefail
+          package=$(find crawl-ref/source -maxdepth 1 -name 'stone_soup-*-console-linux-x86_64.zip' -type f)
+          unzip -q "$package" -d "$RUNNER_TEMP/linux-console-smoke"
+          cd "$RUNNER_TEMP/linux-console-smoke/stone_soup-console-0.34"
+          ./crawl -version
+          ldd ./crawl | tee "$RUNNER_TEMP/linux-console-ldd.txt"
+          ! grep -q 'not found' "$RUNNER_TEMP/linux-console-ldd.txt"
+      - name: Upload Linux console package
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-console
+          path: crawl-ref/source/stone_soup-*-console-linux-x86_64.zip
+          if-no-files-found: error
 
   build_macos_tiles:
     permissions:
@@ -439,6 +456,49 @@ jobs:
           path: |
             crawl-ref/source/stone_soup-*-tiles-win32.zip
             !crawl-ref/source/stone_soup-latest-tiles-win32.zip
+          if-no-files-found: error
+
+  build_windows_console:
+    permissions:
+      contents: read
+
+    name: Windows Console (MinGW64 cross-compile)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: true
+      - name: Set up Python from .python-version
+        uses: actions/setup-python@v4
+        with:
+          python-version-file: .python-version
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+          sudo .github/workflows/deps.py --crosscompile --build-opts ""
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: build-windows-console
+          restore-keys: build-windows-console
+      - name: "Setup ccache: prepend path"
+        run: "echo /usr/lib/ccache >> $GITHUB_PATH"
+      - name: "Setup ccache: update symlinks"
+        run: "/usr/sbin/update-ccache-symlinks"
+      - name: Ensure version info
+        run: bash .claude/scripts/ensure_version_info.sh
+      - name: Build Windows console package
+        run: make CROSSHOST=x86_64-w64-mingw32 package-windows-console -j4
+        working-directory: crawl-ref/source
+      - name: Upload Windows console package
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-console
+          path: |
+            crawl-ref/source/stone_soup-*-console-win32.zip
+            !crawl-ref/source/stone_soup-latest-console-win32.zip
           if-no-files-found: error
 
   build_android:
@@ -653,6 +713,8 @@ jobs:
       - linting
       - build_macos_tiles
       - build_windows_tiles
+      - build_windows_console
+      - build_linux_console
       - build_android
     permissions:
       contents: write
@@ -671,6 +733,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: windows-tiles
+          path: ${{ runner.temp }}/release-assets
+      - name: Download Windows console package
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-console
+          path: ${{ runner.temp }}/release-assets
+      - name: Download Linux console package
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-console
           path: ${{ runner.temp }}/release-assets
       - name: Download macOS package
         uses: actions/download-artifact@v4
@@ -709,34 +781,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          {
-            echo "# DCSS 中文版 $GITHUB_REF_NAME"
-            echo
-            echo "基于上游 DCSS 0.34.1 的中文版。发布身份绑定提交 \`$GITHUB_SHA\`。"
-            echo
-            echo "## 主要内容"
-            echo
-            echo "- 中文界面、游戏文本与 ZH TextDB。"
-            echo "- Tiles 模式的 CJK 字宽与中英文混排支持。"
-            echo "- 随包提供 Maple Mono NF CN 字体及其许可证。"
-            echo
-            echo "## 支持平台"
-            echo
-            echo "- Windows Tiles：便携 ZIP，解压后运行 \`crawl.exe\`。"
-            echo "- macOS Tiles：ad-hoc 签名 DMG，打开后运行 \`Dungeon Crawl Stone Soup - Tiles.app\`。首次启动仍可能需按 Gatekeeper 提示选择\"打开\"，或在\"系统设置 → 隐私与安全性\"中选择\"仍要打开\"。"
-            echo "  若系统仍拦截，可在已将应用拖出 DMG 后执行 \`xattr -dr com.apple.quarantine \\\"Dungeon Crawl Stone Soup - Tiles.app\\\"\`；ad-hoc 签名只封存应用内容，不代表 Apple Developer 签名或公证。"
-            echo "- Android：签名的四 ABI APK，下载后按系统提示安装。"
-            echo
-            echo "## 延期平台"
-            echo
-            echo "- Linux：仅保留 CI 编译验证。"
-            echo
-            echo "## 下载校验"
-            echo
-            echo "请使用 \`SHA256SUMS\` 校验 Windows ZIP、macOS DMG 与 Android APK；\`RELEASE-MANIFEST.txt\` 记录标签、准确提交和资产摘要。"
-            echo
-            echo "本 Release 由自动流程创建为草稿；完成 Windows、macOS 与 Android 真机的启动、中文显示、新游戏、帮助和存读档验收后方可公开。"
-          } > "$RUNNER_TEMP/release-notes.md"
+          cat "docs/releases/$GITHUB_REF_NAME.md" > "$RUNNER_TEMP/release-notes.md"
+          printf '\n构建提交：`%s`。\n' "$GITHUB_SHA" >> "$RUNNER_TEMP/release-notes.md"
       - name: Create draft release once
         shell: bash
         env:
@@ -749,8 +795,8 @@ jobs:
             assets[${#assets[@]}]="$asset"
           done < <(find "$RUNNER_TEMP/release-assets" \
             -maxdepth 1 -type f -print | LC_ALL=C sort)
-          if [[ ${#assets[@]} -ne 5 ]]; then
-            echo "Expected 5 release assets after evidence generation" >&2
+          if [[ ${#assets[@]} -ne 7 ]]; then
+            echo "Expected 7 release assets after evidence generation" >&2
             exit 1
           fi
           gh release create "$GITHUB_REF_NAME" "${assets[@]}" \

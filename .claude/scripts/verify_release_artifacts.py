@@ -99,6 +99,45 @@ def artifact_rules(tag: str) -> tuple[ArtifactRule, ...]:
             normalize_text_crlf=True,
         ),
         ArtifactRule(
+            filename=f"stone_soup-{tag}-console-win32.zip",
+            archive_type="zip",
+            root=f"stone_soup-console-{major}",
+            required_files=(
+                f"stone_soup-console-{major}/crawl.exe",
+                f"stone_soup-console-{major}/settings/init.txt",
+                f"stone_soup-console-{major}/LICENSE",
+            ),
+            executable_files=(),
+            content_sources=(
+                ContentSource(f"stone_soup-console-{major}/settings/init.txt",
+                              "crawl-ref/settings/init.txt", normalize_crlf=True),
+                ContentSource(f"stone_soup-console-{major}/LICENSE", "LICENSE"),
+            ),
+            data_root=f"stone_soup-console-{major}/dat",
+            normalize_text_crlf=True,
+        ),
+        ArtifactRule(
+            filename=f"stone_soup-{tag}-console-linux-x86_64.zip",
+            archive_type="zip",
+            root=f"stone_soup-console-{major}",
+            required_files=(
+                f"stone_soup-console-{major}/crawl",
+                f"stone_soup-console-{major}/settings/init.txt",
+                f"stone_soup-console-{major}/README-linux.txt",
+                f"stone_soup-console-{major}/LICENSE",
+            ),
+            executable_files=(f"stone_soup-console-{major}/crawl",),
+            content_sources=(
+                ContentSource(f"stone_soup-console-{major}/settings/init.txt",
+                              "crawl-ref/settings/init.txt"),
+                ContentSource(f"stone_soup-console-{major}/README-linux.txt",
+                              "crawl-ref/source/util/linux-console-README.txt"),
+                ContentSource(f"stone_soup-console-{major}/LICENSE", "LICENSE"),
+            ),
+            data_root=f"stone_soup-console-{major}/dat",
+            normalize_text_crlf=False,
+        ),
+        ArtifactRule(
             filename=f"stone_soup-{tag}-tiles-macosx.dmg",
             archive_type="dmg",
             root=macos_root,
@@ -766,8 +805,7 @@ def validate_release(
     manifest = (
         f"Release tag: {tag}\n"
         f"Commit: {commit}\n"
-        "Included: Windows Tiles; macOS Tiles; Android\n"
-        "Deferred: Linux (CI build only)\n"
+        "Included: Windows Tiles; Windows Console; Linux Console x86_64; macOS Tiles; Android\n"
         "Artifacts:\n"
         + "".join(f"- {name}: sha256:{digest}\n" for name, digest in digests)
     )
@@ -798,7 +836,7 @@ def main() -> int:
     except ReleaseArtifactError as error:
         parser.error(str(error))
     print(
-        f"OK: validated Windows, macOS, and Android release artifacts "
+        f"OK: validated Windows Tiles/Console, Linux Console, macOS, and Android release artifacts "
         f"for {args.tag}"
     )
     return 0

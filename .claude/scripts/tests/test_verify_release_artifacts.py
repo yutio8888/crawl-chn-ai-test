@@ -237,17 +237,19 @@ class ReleaseArtifactTest(unittest.TestCase):
         self.assertIn(TAG.encode(), first_manifest)
         self.assertIn(COMMIT.encode(), first_manifest)
         self.assertIn(
-            b"Included: Windows Tiles; macOS Tiles; Android", first_manifest
+            b"Included: Windows Tiles; Windows Console; Linux Console x86_64; macOS Tiles; Android", first_manifest
         )
-        self.assertIn(b"Linux (CI build only)", first_manifest)
+        self.assertNotIn(b"Deferred:", first_manifest)
         self.assertNotIn(b"Deferred: macOS", first_manifest)
         self.assertNotIn(b"Deferred: Linux (CI build only); Android", first_manifest)
 
-    def test_release_scope_is_exactly_windows_macos_and_android(self) -> None:
-        self.assertEqual(3, len(self.rules))
+    def test_release_scope_includes_both_console_packages(self) -> None:
+        self.assertEqual(5, len(self.rules))
         self.assertEqual(
             {
                 f"stone_soup-{TAG}-tiles-win32.zip",
+                f"stone_soup-{TAG}-console-win32.zip",
+                f"stone_soup-{TAG}-console-linux-x86_64.zip",
                 f"stone_soup-{TAG}-tiles-macosx.dmg",
                 f"stone_soup-{TAG}-android.apk",
             },
