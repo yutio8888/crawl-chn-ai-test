@@ -2216,6 +2216,19 @@ endif
 
 package-windows-zips: package-windows-tiles package-windows-console
 
+# Relocatable console package: runtime data and executable share one directory.
+# Keep distribution dependencies explicit rather than shipping host libraries.
+.PHONY: package-linux-console
+package-linux-console:
+	@test "$(shell uname -s)" = Linux && test "$(shell uname -m)" = x86_64
+	@test "$(GAME)" = crawl && test -z "$(TILES)$(CROSSHOST)"
+	@test ! -e build-linux-console
+	+$(MAKE) DATADIR= SAVEDIR= prefix= bin_prefix=. DESTDIR=build-linux-console/stone_soup-console-$(MAJOR_VERSION) install
+	cp -p $(ZIP_DOCS) build-linux-console/stone_soup-console-$(MAJOR_VERSION)/
+	cp -p util/linux-console-README.txt build-linux-console/stone_soup-console-$(MAJOR_VERSION)/README-linux.txt
+	cd build-linux-console && zip -9r ../stone_soup-$(SRC_VERSION)-console-linux-x86_64.zip stone_soup-console-$(MAJOR_VERSION)
+	$(RM) -r build-linux-console
+
 #############################################################################
 # Building Mac app bundles
 #

@@ -17,8 +17,8 @@
   使用的 `CCC`（先 `git fetch --tags origin`，再以 `git tag -l '0.34.1-zh*'` 为准），
   不得移动或复用任何已有标签；
   旧规则下的 `0.34.1-zh1` 至 `0.34.1-zh4` 同样作为历史标签保留。
-- 正式平台：Windows Tiles、macOS Tiles、Android。
-- Linux 仍保留日常 CI 编译验证，不进入正式版资产范围。
+- 正式平台：Windows Tiles、Windows Console（ASCII／字符版）、Linux Console x86_64、macOS Tiles、Android。
+- Linux Console 使用 Ubuntu 22.04 构建，发布含运行数据和依赖说明的 ZIP。
 
 `crawl-ref/source/util/gen_ver.pl` 将合法的 `-zhA-B-CCC` 版本识别为正式版，而不是
 上游 alpha/beta/rc 预发布版；为保证历史标签仍可复现构建，它也继续识别旧的
@@ -31,9 +31,9 @@
 `.github/workflows/ci.yml` 会先用严格正则拒绝不合法标签，再执行以下门禁：
 
 1. 运行工具测试、静态 ZH CI、Catch2、帮助系统运行时测试和完整 L1+L2+L3 运行时；
-2. 构建 Windows Tiles ZIP、macOS Tiles ad-hoc 签名 DMG，以及由项目密钥签名的四 ABI
-   Android APK；Linux Console 继续作为独立 CI 质量信号，不阻塞草稿 Release；
-3. 验证 Windows ZIP、macOS DMG 与 Android APK 形成精确的封闭集合；DMG 在 macOS
+2. 构建 Windows Tiles/Console ZIP、Linux Console x86_64 ZIP、macOS Tiles ad-hoc 签名 DMG，
+   以及由项目密钥签名的四 ABI Android APK；所有平台构建均阻塞草稿 Release；
+3. 验证三种 ZIP、macOS DMG 与 Android APK 形成精确的封闭集合；DMG 在 macOS
    runner 上挂载，APK 作为 ZIP 独立校验路径与成员，并用 `apksigner verify` 复核下载后
    的最终文件签名；
 4. 检查归档路径安全、成员唯一性、平台主程序、中文 TextDB、设置文件、许可证，以及
@@ -62,6 +62,7 @@
    为空时，标签 job 会在 release Gradle 构建前失败；密码、alias 或 keystore 内容错误会
    在签名阶段失败，未签名或签名无法验证的 APK 不会上传。
 2. 确认候选工作树已提交且干净，版本范围、延期平台和已知问题已经写入 release issue。
+   在 `docs/releases/<tag>.md` 编写面向玩家的更新说明；工作流读取该文件并追加准确提交。
 3. 按 `.agents/policies/review-contract.md` 使用 `--base <base> --head <candidate>`
    运行匹配 profile，或复用内容及依赖未变化的验证证据，并由
    `classify_reviewers.py` 路由领域审查；现有 GitHub Actions CI 必须通过。
@@ -92,8 +93,10 @@
   确认安装/升级、启动、中文默认语言、中文字体与主菜单，并完成新游戏、帮助、存档和
   读档 smoke；
 - 核对发布说明中的玩家可见变化、支持平台、已知问题、延期项目和准确提交 SHA；
-- 核对 Release 仍为 draft，且资产只有 Windows ZIP、macOS DMG、Android APK、
-  `SHA256SUMS` 和 `RELEASE-MANIFEST.txt`，共五项。
+- 在 Windows 启动字符版并完成新游戏、帮助、存读档；在 Linux x86_64 解压字符版，
+  按 README 安装依赖并完成相同验收，确认 UTF-8 中文显示。
+- 核对 Release 仍为 draft，且资产只有 Windows Tiles/Console ZIP、Linux Console ZIP、
+  macOS DMG、Android APK、`SHA256SUMS` 和 `RELEASE-MANIFEST.txt`，共七项。
 
 自动流程到草稿为止。只有上述人工验收全部有记录，且发布负责人明确批准后，才能在
 GitHub 界面公开 Release。若任一项失败，保留草稿和 CI 原始证据，修复后用新的

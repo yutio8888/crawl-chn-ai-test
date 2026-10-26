@@ -52,6 +52,19 @@ Control-click menu or “Open Anyway” in System Settings → Privacy & Securit
 The release notes must also provide the SHA-256 check and the quarantine-removal
 command for users who need the explicit command-line override.
 
+## 字符版发布包
+
+Windows ASCII／字符版沿用现有打包目标：
+
+```bash
+cd crawl-ref/source
+make CROSSHOST=x86_64-w64-mingw32 package-windows-console -j4
+```
+
+Linux x86_64 使用 `make package-linux-console -j4`，生成含运行数据、许可证和
+依赖说明的 ZIP。该目标要求 Linux x86_64 原生构建，禁止 Tiles 和交叉编译参数；
+CI 使用 Ubuntu 22.04，并从解压目录验证版本和动态库。两个字符版均纳入正式发布校验。
+
 ## Windows Tiles
 
 Create the dedicated detached worktree once from the main repository root:
