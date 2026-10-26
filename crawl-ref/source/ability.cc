@@ -3217,19 +3217,15 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         return word_of_chaos(40 + you.experience_level * 6, fail);
 
     case ABIL_EVOKE_TURN_INVISIBLE:     // cloaks, randarts
-    {
         if (!invis_allowed())
             return spret::abort;
-        const string target_prefix = T_("Confirm evoke");
-        if (Options.show_invis_targeter
-            && !invisibility_target_check(target_prefix.c_str()))
+        if (Options.show_invis_targeter && !invisibility_target_check("Confirm evoke"))
             return spret::abort;
         if (_invis_causes_drain())
             drain_player(40, false, true); // yes, before the fail check!
         fail_check();
         potionlike_effect(POT_INVISIBILITY, you.skill(SK_EVOCATIONS, 2) + 5);
         break;
-    }
 
     case ABIL_END_TRANSFORMATION:
         if (transforming_is_unsafe(you.default_form))

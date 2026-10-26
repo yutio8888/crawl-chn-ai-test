@@ -3317,10 +3317,16 @@ string feature_description_at(const coord_def& where, bool covering,
         const char *adj, *noun;
         get_door_description(all_door.size(), &adj, &noun);
 
+        // Default Chinese descriptions put the state before the door size.
+        // Custom marker fragments keep their established assembly order.
+        const bool state_before_size = Options.language == lang_t::ZH
+            && door_desc_prefix.empty() && door_desc_suffix.empty()
+            && door_desc_noun.empty() && door_desc_adj.empty()
+            && door_desc_veto.empty();
         string desc;
         if (!door_desc_adj.empty())
             desc += door_desc_adj;
-        else
+        else if (!state_before_size)
             desc += adj;
 
         if (door_desc_veto.empty() || door_desc_veto != "veto")
@@ -3347,6 +3353,8 @@ string feature_description_at(const coord_def& where, bool covering,
                 desc += T_("closed ");
         }
 
+        if (state_before_size)
+            desc += adj;
         desc += door_desc_prefix;
 
         if (!door_desc_noun.empty())

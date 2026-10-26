@@ -7094,3 +7094,40 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(messages.find(expected) != string::npos);
     }
 }
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "stable longplay: default door descriptions order state and size without changing markers",
+                 "[zh-translation][stable-longplay]")
+{
+    unwind_var<player> restore_player(you);
+    unwind_var<map_markers> restore_markers(env.markers);
+    env.markers.clear();
+    scoped_monspeak_world world;
+    const coord_def pos(20, 20), other(20, 21);
+    unwind_var<map_cell> restore_map(env.map_knowledge(pos));
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (const auto &row : {make_pair(DNGN_OPEN_DOOR, "open "),
+                           make_pair(DNGN_CLOSED_DOOR, "closed "),
+                           make_pair(DNGN_OPEN_CLEAR_DOOR, "open translucent "),
+                           make_pair(DNGN_RUNED_DOOR, "runed ")})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        env.grid(pos) = env.grid(other) = row.first;
+        env.map_knowledge(pos).set_feature(row.first);
+        const bool zh = language == lang_t::ZH;
+        const string expected = zh ? string(T_(row.second)) + T_("large ") + T_("door")
+                                   : string("large ") + row.second + "door";
+        const string actual = feature_description_at(pos, false, DESC_PLAIN);
+        CHECK(actual == expected);
+        if (row.first == DNGN_OPEN_DOOR && zh)
+            CHECK(actual == "开启的大门");
+        // A custom fragment remains before state, exactly as before this fix.
+        auto *marker = new map_wiz_props_marker(pos);
+        marker->set_property("door_description_adjective", "custom ");
+        env.markers.add(marker);
+        const string custom = feature_description_at(pos, false, DESC_PLAIN);
+        CHECK(custom == string("custom ") + T_(row.second) + T_("door"));
+        env.markers.remove(marker);
+    }
+}
