@@ -333,7 +333,7 @@ class AgentDocumentationTests(unittest.TestCase):
             workflow,
         )
         release_draft = workflow.split("  release_draft:\n", 1)[1]
-        self.assertIn("runs-on: macos-15", release_draft)
+        self.assertIn("runs-on: macos-15-intel", release_draft)
         self.assertNotIn("mapfile", release_draft)
         release_needs = release_draft.split("    permissions:\n", 1)[0]
         self.assertIn("- build_linux_console", release_needs)
@@ -643,7 +643,7 @@ class AgentDocumentationTests(unittest.TestCase):
         for job in (tooling, gate):
             self.assertIn("os: [ubuntu-latest, macos-latest]", job)
             self.assertIn(
-                "runs-on: ${{ matrix.os == 'macos-latest' && 'macos-15' || matrix.os }}",
+                "runs-on: ${{ matrix.os == 'macos-latest' && 'macos-15-intel' || matrix.os }}",
                 job,
             )
             self.assertIn('PYTHONSAFEPATH: "1"', job)

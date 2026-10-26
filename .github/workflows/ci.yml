@@ -29,8 +29,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-    # Preserve protected-check/artifact labels while pinning the ARM64 image.
-    runs-on: ${{ matrix.os == 'macos-latest' && 'macos-15' || matrix.os }}
+    # Preserve protected-check/artifact labels; reserve ARM64 capacity for the app.
+    runs-on: ${{ matrix.os == 'macos-latest' && 'macos-15-intel' || matrix.os }}
     env:
       PYTHONSAFEPATH: "1"
     steps:
@@ -88,8 +88,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-    # Preserve protected-check/artifact labels while pinning the ARM64 image.
-    runs-on: ${{ matrix.os == 'macos-latest' && 'macos-15' || matrix.os }}
+    # Preserve protected-check/artifact labels; reserve ARM64 capacity for the app.
+    runs-on: ${{ matrix.os == 'macos-latest' && 'macos-15-intel' || matrix.os }}
     env:
       PYTHONSAFEPATH: "1"
     steps:
@@ -722,7 +722,7 @@ jobs:
       contents: write
 
     name: Create verified draft release
-    runs-on: macos-15
+    runs-on: macos-15-intel
     steps:
       - uses: actions/checkout@v3
         with:
