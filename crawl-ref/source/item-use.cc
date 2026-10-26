@@ -3389,7 +3389,8 @@ bool invisibility_target_check(const char* prompt)
     args.mode = TARG_ANY;
     args.self = confirm_prompt_type::cancel;
     args.hitfunc = hitfunc.get();
-    args.target_prefix = prompt;
+    const string display_prompt = T_(prompt);
+    args.target_prefix = display_prompt.c_str();
     scroll_targeting_behaviour beh;
     args.behaviour = &beh;
 

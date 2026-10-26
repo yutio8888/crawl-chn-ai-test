@@ -1422,7 +1422,7 @@ void trog_do_trogs_hand(int pow)
 {
     you.increase_duration(DUR_TROGS_HAND,
                           5 + roll_dice(2, pow / 3 + 1), 100,
-                          "Your skin crawls.");
+                          T_("Your skin crawls."));
     mprf(MSGCH_DURATION, T_("You feel resolute."));
 }
 

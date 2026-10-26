@@ -1269,8 +1269,9 @@ static void _describe_regen(status_info& inf)
         inf.light_colour = _dur_colour(BLUE, dur_expiring(DUR_TROGS_HAND));
         inf.light_text = T_("Regen Will++");
         inf.db_key     = "Regen Will++";
-        inf.short_text = "regenerating";
-        inf.long_text  = "You are regenerating.";
+        inf.short_db_key = "regenerating";
+        inf.short_text = C_("status", "regenerating");
+        inf.long_text  = C_("status", "You are regenerating.");
         _mark_expiring(inf, dur_expiring(DUR_TROGS_HAND));
     }
     else if (regeneration_is_inhibited())
@@ -1364,7 +1365,8 @@ static void _describe_transform(status_info& inf)
 
     const Form * const form = get_form();
     inf.light_text = form->short_name;
-    inf.short_text = form->get_long_name();
+    inf.short_db_key = form->get_long_name();
+    inf.short_text = T_(inf.short_db_key.c_str());
     inf.long_text = form->get_description();
 
     const bool expire  = dur_expiring(DUR_TRANSFORMATION);

@@ -644,7 +644,7 @@ static vector<pair<string,string>> _get_form_fakemuts()
 
     vector<pair<string,string>> form_fakemuts = form->get_fakemuts();
     for (const auto &p : form_fakemuts)
-            result.push_back({p.first, _formmut(p.second)});
+        result.push_back({p.first, _formmut(T_(p.second.c_str()))});
 
     if (you.form == transformation::dragon)
     {
@@ -688,7 +688,7 @@ static vector<pair<string,string>> _get_form_fakemuts()
 
     vector<pair<string,string>> form_badmuts = form->get_bad_fakemuts();
     for (const auto &p : form_badmuts)
-            result.push_back({p.first, _badmut(p.second)});
+        result.push_back({p.first, _badmut(T_(p.second.c_str()))});
 
     // Note: serpent form suppresses any innate cold-bloodedness
     if (you.form == transformation::serpent)

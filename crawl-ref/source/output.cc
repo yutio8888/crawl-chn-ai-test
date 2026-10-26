@@ -2431,9 +2431,8 @@ string mpr_monster_list(bool past)
     string msg = "";
     if (mons.empty())
     {
-        msg  = T_("There ");
-        msg += (past ? T_("were") : T_("are"));
-        msg += T_(" no monsters in sight!");
+        msg = past ? T_("There were no monsters in sight!")
+                   : T_("There are no monsters in sight!");
 
         return msg;
     }

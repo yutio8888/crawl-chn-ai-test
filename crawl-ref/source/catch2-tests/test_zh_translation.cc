@@ -24,6 +24,7 @@
 #include "format.h"
 #include "files.h"
 #include "god-conduct.h"
+#include "god-abil.h"
 #include "hiscores.h"
 #include "item-status-flag-type.h"
 #include "item-name.h"
@@ -36,6 +37,7 @@
 #include "macro.h"
 #include "melee-attack.h"
 #include "mon-info.h"
+#include "mon-behv.h"
 #include "mapdef.h"
 #include "mapmark.h"
 #include "message.h"
@@ -51,6 +53,7 @@
 #include "newgame.h"
 #include "notes.h"
 #include "options.h"
+#include "output.h"
 #include "place.h"
 #include "player-equip.h"
 #include "player.h"
@@ -6835,5 +6838,299 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         item.quantity = 2;
         CHECK(origin_desc(item).empty());
         CHECK(origin_display_desc(item).empty());
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "stable longplay: tree displays preserve form and status lookup identities",
+                 "[zh-translation][stable-longplay]")
+{
+    init_properties();
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        you = player();
+        you.species = SP_HUMAN;
+        you.experience_level = 10;
+        you.hp = you.hp_max = 100;
+        you.form = transformation::tree;
+        const Form *form = get_form();
+        CHECK(form->get_transform_description() == "a tree.");
+        CHECK(form->get_long_name() == "tree-form");
+        CHECK(form->get_fakemuts()[0].first == "resilient");
+        CHECK(form->transform_message() == (zh ? "你变成了一棵树。" : "You turn into a tree."));
+        CHECK(form->get_description() == (zh ? "你是一棵树。" : "You are a tree."));
+        CHECK(form->get_description(true) == (zh ? "你曾是一棵树。" : "You were a tree."));
+        for (int duration : {1, 1000})
+        {
+            you.duration[DUR_TRANSFORMATION] = duration;
+            you.duration[DUR_TROGS_HAND] = duration;
+            status_info inf;
+            REQUIRE(fill_status_info(DUR_TRANSFORMATION, inf));
+            // l-you.cc's you.status(name) compares this canonical identity.
+            CHECK(inf.short_db_key == "tree-form");
+            CHECK(starts_with(inf.short_text, zh ? "树形" : "tree-form"));
+            REQUIRE(fill_status_info(STATUS_REGENERATION, inf));
+            CHECK(inf.short_db_key == "regenerating");
+            CHECK(starts_with(inf.short_text, zh ? "再生中" : "regenerating"));
+        }
+        const string terse = terse_mutation_list();
+        const string verbose = describe_mutations(true);
+        for (const auto &trait : form->get_fakemuts())
+        {
+            CHECK(terse.find(zh ? T_(trait.first.c_str()) : trait.first) != string::npos);
+            CHECK(verbose.find(zh ? T_(trait.second.c_str()) : trait.second) != string::npos);
+            if (zh)
+            {
+                CHECK(terse.find(trait.first) == string::npos);
+                CHECK(verbose.find(trait.second) == string::npos);
+            }
+        }
+        you.form = transformation::none;
+        you.species = SP_GARGOYLE;
+        give_basic_mutations(you.species);
+        const string racial_traits = terse_mutation_list();
+        CHECK(racial_traits.find(zh ? T_("sickness immunity") : "sickness immunity") != string::npos);
+        if (zh)
+            CHECK(racial_traits.find("sickness immunity") == string::npos);
+        i18n_cache_clear();
+        CHECK(form->get_transform_description() == "a tree.");
+        CHECK(form->get_fakemuts()[0].first == "resilient");
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "stable longplay: custom weapon display leaves DB names and saved properties canonical",
+                 "[zh-translation][stable-longplay]")
+{
+    init_properties();
+    item_def weapon;
+    weapon.base_type = OBJ_WEAPONS;
+    weapon.sub_type = WPN_HALBERD;
+    weapon.quantity = 1;
+    weapon.rnd = 1;
+    weapon.pos = coord_def(-1, -1);
+    weapon.flags = ISFLAG_IDENTIFIED;
+    weapon.props[ITEM_NAME_KEY] = "scythe";
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        CHECK(weapon.name(DESC_PLAIN) == (language == lang_t::ZH ? "+0 镰刀" : "+0 scythe"));
+        CHECK(weapon.name(DESC_DBNAME) == "scythe");
+        CHECK(item_base_name(weapon) == "scythe");
+        vector<unsigned char> buffer;
+        writer output(&buffer);
+        marshallItem(output, weapon, true);
+        reader input(buffer);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        item_def loaded;
+        unmarshallItem(input, loaded);
+        CHECK(loaded.props[ITEM_NAME_KEY].get_string() == "scythe");
+        CHECK(loaded.name(DESC_DBNAME) == "scythe");
+        CHECK(loaded.name(DESC_PLAIN) == weapon.name(DESC_PLAIN));
+        weapon.props[ITEM_NAME_KEY] = "Untranslated custom name";
+        CHECK(weapon.name(DESC_PLAIN) == "+0 Untranslated custom name");
+        weapon.props[ITEM_NAME_KEY] = "scythe";
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "stable longplay: fear and surface substitutions consume localized display arguments",
+                 "[zh-translation][stable-longplay]")
+{
+    init_monsters();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 100;
+        scoped_monspeak_world world;
+        CHECK(mpr_monster_list(false) == (zh ? "视野内没有任何怪物！" : "There are no monsters in sight!"));
+        CHECK(mpr_monster_list(true) == (zh ? "当时视野内没有任何怪物！" : "There were no monsters in sight!"));
+        monster *mon = world.place(MONS_ORC);
+        REQUIRE(mon != nullptr);
+        for (const auto &row : {make_pair(DNGN_FLOOR, "ground"),
+                               make_pair(DNGN_LAVA, "lava"),
+                               make_pair(DNGN_DEEP_WATER, "water"),
+                               make_pair(DNGN_ALTAR_TROG, "altar")})
+        {
+            env.grid(mon->pos()) = row.first;
+            CHECK(do_mon_str_replacements("@surface@", *mon)
+                  == (zh ? C_("surface", row.second) : row.second));
+        }
+        env.grid(mon->pos()) = DNGN_FLOOR;
+        for (bool player_source : {true, false})
+        {
+            mon->behaviour = BEH_FLEE;
+            mon->target = you.pos();
+            mon->enchantments[ENCH_FEAR] = mon_enchant(ENCH_FEAR);
+            mon->ench_cache.set(ENCH_FEAR);
+            msgwin_temporary_mode temporary;
+            temporary_message_rollback rollback;
+            string messages;
+            msg::tee capture(messages);
+            behaviour_event(mon, ME_WHACK, player_source ? &you : nullptr, you.pos(), false);
+            capture.force_update();
+            CHECK_FALSE(mon->has_ench(ENCH_FEAR));
+            CHECK(messages.find(zh ? "攻击将" : "attack snaps") != string::npos);
+            CHECK(messages.find("你的的") == string::npos);
+            CHECK(messages.find("the攻击") == string::npos);
+            if (player_source)
+                CHECK(messages.find(you.name(DESC_ITS) + (zh ? "攻击" : " attack")) != string::npos);
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "stable longplay: death summary localizes beam and faith without mutating xlog",
+                 "[zh-translation][stable-longplay]")
+{
+    init_monsters();
+    const string raw = "name=Longplay:sc=1:race=Human:cls=Berserker:char=HuBe:xl=9:hp=-2:mhp=72:"
+                       "start=20260926000000S:end=20260926010000S:"
+                       "god=Trog:piety=60:ktyp=beam:killer=electric eel:kaux=bolt of electricity:"
+                       "dam=11:br=D:lvl=7:absdepth=7\n";
+    scorefile_entry entry;
+    REQUIRE(entry.parse(raw));
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        const string death = entry.death_description(scorefile_entry::DDV_VERBOSE);
+        CHECK(death.find(zh ? T_("bolt of electricity") : "bolt of electricity") != string::npos);
+        if (zh)
+            CHECK(death.find("bolt of electricity") == string::npos);
+        const string summary = entry.hiscore_line(scorefile_entry::DDV_VERBOSE);
+        CHECK(summary.find(zh ? "特洛格的信徒" : "a Believer of Trog") != string::npos);
+        CHECK(entry.raw_string() == raw);
+        CHECK(entry.get_fields().str_field("god") == "Trog");
+        CHECK(entry.get_fields().str_field("kaux") == "bolt of electricity");
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "stable longplay: Trog and poison effects emit complete messages and preserve gameplay",
+                 "[zh-translation][stable-longplay]")
+{
+    init_monsters();
+    init_properties();
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> saving(crawl_state.need_save, false);
+    no_notes suppress_notes;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 1000;
+        you.experience_level = 10;
+        scoped_monspeak_world world;
+        msgwin_temporary_mode temporary;
+        temporary_message_rollback rollback;
+        string messages;
+        msg::tee capture(messages);
+        trog_do_trogs_hand(10);
+        capture.force_update();
+        CHECK(you.duration[DUR_TROGS_HAND] > 0);
+        CHECK(messages.find(zh ? "你的皮肤一阵发麻。" : "Your skin crawls.") != string::npos);
+        CHECK(poison_player(1, "an adder", "", true));
+        CHECK(poison_player(1, "an adder", "", true));
+        capture.force_update();
+        CHECK(you.duration[DUR_POISONING] == 2000);
+        CHECK(you.props[POISONER_KEY].get_string() == "an adder");
+        CHECK(messages.find(zh ? "你中毒了。" : "You are poisoned.") != string::npos);
+        CHECK(messages.find(zh ? "你的中毒加重了。" : "You are more poisoned.") != string::npos);
+        you.duration[DUR_POISONING] = 0;
+        you.duration[DUR_STICKY_FLAME] = 10;
+        CHECK_FALSE(i_feel_safe(true));
+        capture.force_update();
+        CHECK(messages.find(zh ? "你着火了!" : "you are on fire!") != string::npos);
+        CHECK(messages.find("！!") == string::npos);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "stable longplay: clockwork bee dormancy preserves summoner identity for both owners",
+                 "[zh-translation][stable-longplay]")
+{
+    init_monsters();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool player_owned : {true, false})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 100;
+        scoped_monspeak_world world;
+        monster *bee = world.place(MONS_CLOCKWORK_BEE);
+        REQUIRE(bee != nullptr);
+        const mid_t owner = player_owned ? MID_PLAYER : MID_NOBODY;
+        bee->summoner = owner;
+        bee->enchantments[ENCH_SUMMON_TIMER] = mon_enchant(ENCH_SUMMON_TIMER, nullptr, 1000, 1);
+        bee->ench_cache.set(ENCH_SUMMON_TIMER);
+        msgwin_temporary_mode temporary;
+        temporary_message_rollback rollback;
+        string messages;
+        msg::tee capture(messages);
+        clockwork_bee_go_dormant(*bee);
+        capture.force_update();
+        CHECK(bee->type == MONS_CLOCKWORK_BEE_INACTIVE);
+        CHECK(bee->summoner == owner);
+        const string expected = zh
+            ? (player_owned ? "你的发条蜜蜂发条走完了，掉到了地上。" : "发条蜜蜂发条走完了，掉到了地上。")
+            : (player_owned ? "Your clockwork bee winds down and falls to the ground."
+                            : "The clockwork bee winds down and falls to the ground.");
+        CHECK(messages.find(expected) != string::npos);
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "stable longplay: default door descriptions order state and size without changing markers",
+                 "[zh-translation][stable-longplay]")
+{
+    unwind_var<player> restore_player(you);
+    unwind_var<map_markers> restore_markers(env.markers);
+    env.markers.clear();
+    scoped_monspeak_world world;
+    const coord_def pos(20, 20), other(20, 21);
+    unwind_var<map_cell> restore_map(env.map_knowledge(pos));
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (const auto &row : {make_pair(DNGN_OPEN_DOOR, "open "),
+                           make_pair(DNGN_CLOSED_DOOR, "closed "),
+                           make_pair(DNGN_OPEN_CLEAR_DOOR, "open translucent "),
+                           make_pair(DNGN_RUNED_DOOR, "runed ")})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        env.grid(pos) = env.grid(other) = row.first;
+        env.map_knowledge(pos).set_feature(row.first);
+        const bool zh = language == lang_t::ZH;
+        const string expected = zh ? string(T_(row.second)) + T_("large ") + T_("door")
+                                   : string("large ") + row.second + "door";
+        const string actual = feature_description_at(pos, false, DESC_PLAIN);
+        CHECK(actual == expected);
+        if (row.first == DNGN_OPEN_DOOR && zh)
+            CHECK(actual == "开启的大门");
+        // A custom fragment remains before state, exactly as before this fix.
+        auto *marker = new map_wiz_props_marker(pos);
+        marker->set_property("door_description_adjective", "custom ");
+        env.markers.add(marker);
+        const string custom = feature_description_at(pos, false, DESC_PLAIN);
+        CHECK(custom == string("custom ") + T_(row.second) + T_("door"));
+        env.markers.remove(marker);
     }
 }

@@ -1068,7 +1068,7 @@ mimic reveal plural|%s are mimics!
 %1$s%2$.0s抽搐了一下。
 %%%%
 %1$s attack snaps %2$s out of %3$s fear.
-%1$s的攻击将%2$s从%3$s恐惧中惊醒。
+%1$s攻击将%2$s从%3$s恐惧中惊醒。
 %%%%
 %1$s can %2$s water.\n
 %1$s能在%2$s中行动。\n
@@ -8483,7 +8483,7 @@ You are not yet ready to recite again.
 你还没准备好再次吟诵。
 %%%%
 you are on fire
-你着火了！
+你着火了
 %%%%
 You are out of cards!
 你没有牌了！
@@ -14151,7 +14151,7 @@ door
 门
 %%%%
 large 
-大的
+大
 %%%%
 gate
 大门
@@ -35036,8 +35036,8 @@ Upgraded the game from %s to %s
 Warning, next level annotated: <yellow>%s</yellow>
 警告，下一层标注为：<yellow>%s</yellow>
 %%%%
-Was %s of %s%s
-曾是%s%s之%s
+Was %1$s of %2$s%3$s
+曾是%2$s的%1$s%3$s
 %%%%
 Was a Favourite Plaything of Xom.
 曾是佐姆宠爱的玩物。
@@ -43055,3 +43055,93 @@ Your life essence is reduced to manifest your ancestor. (-10% HP)
 %%%%
 You took it off %1$s %2$s
 %2$s你从%1$s身上拿走了它
+%%%%
+Your skin crawls.
+你的皮肤一阵发麻。
+%%%%
+You feel the power of %s in you as your rage grows.
+随着怒意高涨，你感到%s的力量在体内涌动。
+%%%%
+Your clockwork bee winds down and falls to the ground.
+你的发条蜜蜂发条走完了，掉到了地上。
+%%%%
+The clockwork bee winds down and falls to the ground.
+发条蜜蜂发条走完了，掉到了地上。
+%%%%
+sickness immunity
+疾病免疫
+%%%%
+surface|ground
+地面
+%%%%
+There are no monsters in sight!
+视野内没有任何怪物！
+%%%%
+There were no monsters in sight!
+当时视野内没有任何怪物！
+%%%%
+Here
+此处
+%%%%
+Confirm evoke
+确认激活
+%%%%
+You are more poisoned.
+你的中毒加重了。
+%%%%
+You are poisoned.
+你中毒了。
+%%%%
+potion appearance|clear
+透明
+%%%%
+surface|lava
+熔岩表面
+%%%%
+surface|water
+水面
+%%%%
+surface|altar
+祭坛
+%%%%
+a tree.
+一棵树。
+%%%%
+tree-form
+树形
+%%%%
+You are %s
+你是%s
+%%%%
+You were %s
+你曾是%s
+%%%%
+resilient
+坚韧
+%%%%
+branches
+枝条
+%%%%
+torment immunity
+折磨免疫
+%%%%
+Your bark is very hard, but your evasion is minimal.
+你的树皮非常坚硬，但你的闪避能力极低。
+%%%%
+Your unarmed attacks smack enemies forcefully with your branches.
+你的徒手攻击会用枝条有力地抽打敌人。
+%%%%
+You are immune to unholy torment.
+你免疫邪恶折磨。
+%%%%
+Your roots penetrate the ground, keeping you stationary.
+你的树根扎入地面，使你无法移动。
+%%%%
+You cannot be teleported.
+你无法被传送。
+%%%%
+You are %s!
+你%s！
+%%%%
+The attack snaps %1$s out of %2$s fear.
+这次攻击将%1$s从%2$s恐惧中惊醒。

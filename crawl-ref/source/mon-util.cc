@@ -4491,13 +4491,13 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
         if (feat_is_solid(feat) || feat >= NUM_FEATURES)
             msg = replace_all(msg, "@surface@", "buggy surface");
         else if (feat == DNGN_LAVA)
-            msg = replace_all(msg, "@surface@", "lava");
+            msg = replace_all(msg, "@surface@", C_("surface", "lava"));
         else if (feat_is_water(feat))
-            msg = replace_all(msg, "@surface@", "water");
+            msg = replace_all(msg, "@surface@", C_("surface", "water"));
         else if (feat_is_altar(feat))
-            msg = replace_all(msg, "@surface@", "altar");
+            msg = replace_all(msg, "@surface@", C_("surface", "altar"));
         else
-            msg = replace_all(msg, "@surface@", "ground");
+            msg = replace_all(msg, "@surface@", C_("surface", "ground"));
 
         msg = replace_all(msg, "@feature@", raw_feature_description(mons.pos()));
     }

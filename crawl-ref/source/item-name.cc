@@ -1751,7 +1751,9 @@ static string _name_weapon(const item_def &weap, description_level_type desc,
 
     const string cosmetic_text
         = show_cosmetic ? _cosmetic_text(weap) : "";
-    const string base_name = item_base_name(weap);
+    const string raw_base_name = item_base_name(weap);
+    // Custom base names are serialized in English; translate only display.
+    const string base_name = dbname ? raw_base_name : T_(raw_base_name.c_str());
     const string name_with_ego
         = identified && !dbname ? weapon_brand_desc(base_name.c_str(), weap, terse)
         : base_name;
@@ -1996,7 +1998,8 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
                                    "bogus" : potion_colours[pcolour];
 
             const char *t_qual = T_(qualifier);
-            const char *t_clr   = T_(clr);
+            const char *t_clr = strcmp(clr, "clear") == 0
+                ? C_("potion appearance", "clear") : T_(clr);
 
             // Structural: ZH "药水" suffix vs EN " potion"
             // EN keys have no trailing spaces; add them explicitly here.
