@@ -6912,6 +6912,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     weapon.base_type = OBJ_WEAPONS;
     weapon.sub_type = WPN_HALBERD;
     weapon.quantity = 1;
+    weapon.rnd = 1;
+    weapon.pos = coord_def(-1, -1);
     weapon.flags = ISFLAG_IDENTIFIED;
     weapon.props[ITEM_NAME_KEY] = "scythe";
     for (lang_t language : {lang_t::EN, lang_t::ZH})
@@ -6982,7 +6984,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             CHECK(messages.find("你的的") == string::npos);
             CHECK(messages.find("the攻击") == string::npos);
             if (player_source)
-                CHECK(messages.find(zh ? "你的攻击" : "Your attack") != string::npos);
+                CHECK(messages.find(you.name(DESC_ITS) + (zh ? "攻击" : " attack")) != string::npos);
         }
     }
 }
@@ -6993,6 +6995,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 {
     init_monsters();
     const string raw = "name=Longplay:sc=1:race=Human:cls=Berserker:char=HuBe:xl=9:hp=-2:mhp=72:"
+                       "start=20260926000000S:end=20260926010000S:"
                        "god=Trog:piety=60:ktyp=beam:killer=electric eel:kaux=bolt of electricity:"
                        "dam=11:br=D:lvl=7:absdepth=7\n";
     scorefile_entry entry;
@@ -7077,7 +7080,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         REQUIRE(bee != nullptr);
         const mid_t owner = player_owned ? MID_PLAYER : MID_NOBODY;
         bee->summoner = owner;
-        bee->enchantments[ENCH_SUMMON_TIMER] = mon_enchant(ENCH_SUMMON_TIMER, 1, nullptr, 1000);
+        bee->enchantments[ENCH_SUMMON_TIMER] = mon_enchant(ENCH_SUMMON_TIMER, nullptr, 1000, 1);
         bee->ench_cache.set(ENCH_SUMMON_TIMER);
         msgwin_temporary_mode temporary;
         temporary_message_rollback rollback;
