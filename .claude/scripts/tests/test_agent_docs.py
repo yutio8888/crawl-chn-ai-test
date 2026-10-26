@@ -311,20 +311,19 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn("verify_release_artifacts.py", workflow)
         self.assertIn("--draft --verify-tag", workflow)
         self.assertIn("Create draft release once", workflow)
-        self.assertIn("Expected 5 release assets", workflow)
-        self.assertNotIn("Download Linux package", workflow)
-        self.assertNotIn("name: linux-console", workflow)
+        self.assertIn("Expected 7 release assets", workflow)
+        self.assertIn("Download Linux console package", workflow)
+        self.assertIn("name: linux-console", workflow)
         self.assertIn("Download macOS package", workflow)
         self.assertIn("name: macos-tiles-app", workflow)
         self.assertIn("Download Android package", workflow)
         self.assertIn("name: android-release-apk", workflow)
-        self.assertIn("基于上游 DCSS 0.34.1 的中文版", workflow)
-        self.assertIn("macOS Tiles：ad-hoc 签名 DMG", workflow)
-        self.assertIn("Android：签名的四 ABI APK", workflow)
-        self.assertIn("xattr -dr com.apple.quarantine", workflow)
-        self.assertEqual(7, workflow.count("name: Ensure version info"))
+        self.assertIn('cat "docs/releases/$GITHUB_REF_NAME.md"', workflow)
+        self.assertIn("package-windows-console", workflow)
+        self.assertIn("package-linux-console", workflow)
+        self.assertEqual(8, workflow.count("name: Ensure version info"))
         self.assertEqual(
-            7,
+            8,
             workflow.count(
                 "run: bash .claude/scripts/ensure_version_info.sh"
             ),
@@ -337,7 +336,8 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn("runs-on: macos-latest", release_draft)
         self.assertNotIn("mapfile", release_draft)
         release_needs = release_draft.split("    permissions:\n", 1)[0]
-        self.assertNotIn("- build_linux_console", release_needs)
+        self.assertIn("- build_linux_console", release_needs)
+        self.assertIn("- build_windows_console", release_needs)
         self.assertIn("- build_macos_tiles", release_needs)
         self.assertIn("- build_android", release_needs)
         self.assertNotIn("gh release upload", workflow)
