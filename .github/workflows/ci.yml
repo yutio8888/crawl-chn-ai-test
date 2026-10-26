@@ -29,7 +29,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    # Preserve protected-check/artifact labels while pinning the ARM64 image.
+    runs-on: ${{ matrix.os == 'macos-latest' && 'macos-15' || matrix.os }}
     env:
       PYTHONSAFEPATH: "1"
     steps:
@@ -87,7 +88,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    # Preserve protected-check/artifact labels while pinning the ARM64 image.
+    runs-on: ${{ matrix.os == 'macos-latest' && 'macos-15' || matrix.os }}
     env:
       PYTHONSAFEPATH: "1"
     steps:
@@ -387,7 +389,7 @@ jobs:
       contents: read
 
     name: macOS Tiles App
-    runs-on: macos-latest
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v3
         with:
@@ -720,7 +722,7 @@ jobs:
       contents: write
 
     name: Create verified draft release
-    runs-on: macos-latest
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v3
         with:
