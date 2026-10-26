@@ -3717,8 +3717,9 @@ void clockwork_bee_go_dormant(monster& bee)
 {
     if (you.can_see(bee))
     {
-        mprf(T_("%s's clockwork bee winds down and falls to the ground."),
-             bee.summoner == MID_PLAYER ? "Your" : "The");
+        mpr(bee.summoner == MID_PLAYER
+                ? T_("Your clockwork bee winds down and falls to the ground.")
+                : T_("The clockwork bee winds down and falls to the ground."));
     }
 
     int old_hd = bee.get_experience_level();

@@ -4688,8 +4688,8 @@ bool poison_player(int amount, string source, string source_aux, bool force)
         }
         else
         {
-            mprf(MSGCH_WARN, T_("You are %spoisoned."),
-                old_value > 0 ? T_("more ") : "");
+            mprf(MSGCH_WARN, "%s", old_value > 0 ? T_("You are more poisoned.")
+                                         : T_("You are poisoned."));
         }
 
         learned_something_new(HINT_YOU_POISON);

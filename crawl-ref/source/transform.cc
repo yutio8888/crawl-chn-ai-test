@@ -228,9 +228,9 @@ int Form::get_level(int scale) const
  */
 string Form::get_description(bool past_tense) const
 {
-    return make_stringf_p(T_("You %1$s %2$s"),
-                        past_tense ? "were" : "are",
-                        get_transform_description().c_str());
+    const string raw_description = get_transform_description();
+    return make_stringf(past_tense ? T_("You were %s") : T_("You are %s"),
+                        T_(raw_description.c_str()));
 }
 
 /**
@@ -241,7 +241,8 @@ string Form::get_description(bool past_tense) const
  */
 string Form::transform_message() const
 {
-    return make_stringf(T_("You turn into %s"), get_transform_description().c_str());
+    const string raw_description = get_transform_description();
+    return make_stringf(T_("You turn into %s"), T_(raw_description.c_str()));
 }
 
 /**

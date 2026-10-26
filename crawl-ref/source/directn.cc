@@ -930,7 +930,8 @@ static dist _look_around_target(const coord_def &whence)
     args.restricts = DIR_TARGET;
     args.just_looking = true;
     args.needs_path = false;
-    args.target_prefix = "Here";
+    const string target_prefix = T_("Here");
+    args.target_prefix = target_prefix.c_str();
     args.default_place = whence - you.pos();
     direction(lmove, args);
     return lmove;
@@ -1748,8 +1749,8 @@ static string _cell_interesting_terrain_description(const coord_def& pos)
     // feat_has_solid_floor().
     switch (feature)
     {
-    case DNGN_DEEP_WATER: return "water";
-    case DNGN_LAVA:       return "lava";
+    case DNGN_DEEP_WATER: return T_("water");
+    case DNGN_LAVA:       return T_("lava");
     default:              return "";
     }
 }

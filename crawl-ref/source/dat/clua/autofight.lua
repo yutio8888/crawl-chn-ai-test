@@ -420,7 +420,7 @@ function autofight_check_preconditions(check_caught)
     crawl.mpr(crawl.t_("You are too confused!"))
     return false
   elseif caught and check_caught and not AUTOFIGHT_CAUGHT then
-    crawl.mpr("You are " .. caught .. "!")
+    crawl.mpr(string.format(crawl.t_("You are %s!"), caught))
     return false
   end
   return true

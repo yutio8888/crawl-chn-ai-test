@@ -2236,7 +2236,7 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
             {
                 // Not exactly the same as the religion screen, but
                 // good enough to fill this slot for now.
-                desc += make_stringf(T_("Was %s of %s%s"),
+                desc += make_stringf_p(T_("Was %1$s of %2$s%3$s"),
                              (piety >= piety_breakpoint(5)) ? T_("the Champion") :
                              (piety >= piety_breakpoint(4)) ? T_("a High Priest") :
                              (piety >= piety_breakpoint(3)) ? T_("an Elder") :
@@ -3391,7 +3391,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                 if (!semiverbose)
                 {
                     if (chinese)
-                        desc += make_stringf(T_("... caused by %s"), auxkilldata.c_str());
+                        desc += make_stringf(T_("... caused by %s"), T_(auxkilldata.c_str()));
                     else
                         desc += auxkilldata == "damnation" ? "... with " :
                          auxkilldata == "creeping frost" ? "... by " :
