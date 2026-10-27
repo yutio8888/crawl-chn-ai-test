@@ -57,6 +57,15 @@
 // Global
 StashTracker StashTrack;
 
+string stash_search_result::display_match() const
+{
+    static constexpr char carried_prefix[] = "[carried] ";
+    if (in_inventory && starts_with(match, carried_prefix))
+        return string(T_("[carried]")) + " "
+               + match.substr(sizeof(carried_prefix) - 1);
+    return match;
+}
+
 string userdef_annotate_item(const char *s, const item_def *item)
 {
     // The Lua annotation vocabulary (ego abbreviations like rF+/rC+, class
@@ -1120,10 +1129,10 @@ string StashTracker::stash_search_prompt()
             make_stringf(T_("Enter for \"%s\""), disp.c_str()));
     }
     if (lastsearch != ".")
-        opts.emplace_back("? for help");
+        opts.emplace_back(T_("? for help"));
 
     string prompt_qual =
-        comma_separated_line(opts.begin(), opts.end(), ", or ", ", or ");
+        comma_separated_line(opts.begin(), opts.end(), T_(", or "), T_(", or "));
 
     if (!prompt_qual.empty())
         prompt_qual = " [" + prompt_qual + "]";
@@ -1631,7 +1640,7 @@ formatted_string StashSearchMenu::calc_title()
             " <w>%s</w> useless & duplicates [<w>=</w>]"
             "</lightgrey>"),
             menu_action == ACT_EXECUTE ? T_("travel") : T_("view"),
-            sort_style, filtered));
+            C_("stash search", sort_style), C_("stash search", filtered)));
     }
     fs.cprintf(string(max(0, strwidth(prefixes[!f])-strwidth(prefixes[f])),
                       ' '));
@@ -1720,8 +1729,10 @@ bool StashTracker::display_search_results(
     else
         stable_sort(results->begin(), results->end(), _compare_by_name);
 
-    StashSearchMenu stashmenu(sort_by_dist ? "dist" : "name",
-                              filter_useless ? "hide" : "show");
+    StashSearchMenu stashmenu(sort_by_dist ? NC_("stash search", "dist")
+                                         : NC_("stash search", "name"),
+                              filter_useless ? NC_("stash search", "hide")
+                                             : NC_("stash search", "show"));
     stashmenu.set_tag("stash");
     stashmenu.action_cycle = Menu::CYCLE_TOGGLE;
     stashmenu.menu_action  = default_execute ? Menu::ACT_EXECUTE
@@ -1788,7 +1799,7 @@ bool StashTracker::display_search_results(
             }
         }
 
-        matchtitle << res.match;
+        matchtitle << res.display_match();
         if (res.duplicates > 0)
         {
             if (res.duplicates != res.duplicate_piles  // piles are only

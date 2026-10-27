@@ -37,6 +37,42 @@
 #include "stash.h"                    // stash_annotate_item
 #include "test_zh_fixture.h"
 
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh-search: carried label is translated only for display",
+                 "[zh-translation][zh-search]")
+{
+    stash_search_result result;
+    result.in_inventory = true;
+    result.match = "[carried] b - +0 short sword";
+    result.primary_sort = result.match;
+    const string canonical = result.match;
+
+    REQUIRE(result.display_match() == "[随身携带] b - +0 short sword");
+    REQUIRE(result.match == canonical);
+    REQUIRE(result.primary_sort == canonical);
+
+    result.in_inventory = false;
+    REQUIRE(result.display_match() == canonical);
+    result.in_inventory = true;
+    result.match = "a shop without the carried prefix";
+    REQUIRE(result.display_match() == result.match);
+
+    const string prompt = StashTrack.stash_search_prompt();
+    REQUIRE(prompt.find("? 查看帮助") != string::npos);
+    REQUIRE(prompt.find("for help") == string::npos);
+}
+
+TEST_CASE_METHOD(EnTranslationFixture,
+                 "zh-search: English search display retains canonical labels",
+                 "[zh-translation][zh-search]")
+{
+    stash_search_result result;
+    result.in_inventory = true;
+    result.match = "[carried] b - +0 short sword";
+    REQUIRE(result.display_match() == result.match);
+    REQUIRE(StashTrack.stash_search_prompt().find("? for help") != string::npos);
+}
+
 // =========================================================================
 // item_english_name — must return full English name when language is ZH
 // =========================================================================

@@ -944,7 +944,7 @@ enum shopping_order
 
 static const char * const shopping_order_names[NUM_ORDERS] =
 {
-    "type", "price", "name"
+    NC_("shop sort", "type"), NC_("shop sort", "price"), NC_("shop sort", "name")
 };
 
 static shopping_order operator++(shopping_order &x)
@@ -1202,9 +1202,10 @@ void ShopMenu::update_help()
         hyphenated_hotkey_letters(item_count(), 'a').c_str(),
         menu_action == ACT_EXECUTE ? T_("mark item for purchase   ")
                                    : T_("examine item             ")));
+    const string sort_label = C_("shop sort", shopping_order_names[order]);
     m += make_stringf(T_("\n[<w>/</w>] sort (%s)%s  %s"),
-        T_(shopping_order_names[order]),
-        string(7 - strwidth(T_(shopping_order_names[order])), ' ').c_str(),
+        sort_label.c_str(),
+        string(max(0, 7 - strwidth(sort_label)), ' ').c_str(),
         action_desc.c_str());
 
     m = pad_more_with(m, hyphenated_hotkey_letters(item_count(), 'A')

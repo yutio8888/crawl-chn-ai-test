@@ -5129,7 +5129,7 @@ mesmerised
 被迷住
 %%%%
 metal staircase leading down
-向下通往的金属楼梯
+通往楼下的金属楼梯
 %%%%
 Metalworking
 金属工艺
@@ -6246,10 +6246,10 @@ Slime begins to ooze from the nearby walls!
 粘液开始从附近的墙壁渗出！
 %%%%
 slimy stone staircase leading down
-向下通往的黏滑石梯
+通往楼下的黏滑石梯
 %%%%
 slimy stone staircase leading up
-向上通往的黏滑石梯
+通往楼上的黏滑石梯
 %%%%
 Sloth
 懒惰
@@ -6531,10 +6531,10 @@ stomp
 重踏
 %%%%
 stone staircase leading down
-向下通往的石梯
+通往楼下的石梯
 %%%%
 stone staircase leading up
-向上通往的石梯
+通往楼上的石梯
 %%%%
 Stop fighting!
 停止战斗！
@@ -14115,7 +14115,7 @@ astonishingly dangerous
 惊人地危险
 %%%%
 The spell is %s to miscast (%s risk of failure)%s
-施放此法术%s失败（%s失败风险）%s
+此法术若发生施法失误，后果%s（失误概率%s）%s
 %%%%
 Silent
 无声
@@ -27170,10 +27170,10 @@ on
 戒指
 %%%%
 MP: 
-魔: 
+法力: 
 %%%%
 MP:  
-魔力:  
+法力:  
 %%%%
 HP: 
 命: 
@@ -30388,10 +30388,10 @@ verb|fire
 %s进入了战斗狂热状态！
 %%%%
 %s has an unusual item: %s
-%s拥有一件不寻常的物品：%s
+%s拥有一件不寻常的物品：%s。
 %%%%
 %s have an unusual item: %s
-%s拥有一件不寻常的物品：%s
+%s拥有一件不寻常的物品：%s。
 %%%%
 %s is an unusual item.
 %s是一件不寻常的物品。
@@ -40915,7 +40915,7 @@ This %s%s is marked as excluded! Open it anyway?
 \n（如果你现在进入深渊，你可能会被拖到深渊：%d层。）
 %%%%
 <lightgrey>: <w>%s</w> [toggle: <w>!</w>], by <w>%s</w> [<w>/</w>], <w>%s</w> useless & duplicates [<w>=</w>]</lightgrey>
-<lightgrey>：<w>%s</w> [切换：<w>!</w>]，按<w>%s</w> [<w>/</w>]，<w>%s</w>无用与重复 [<w>=</w>]</lightgrey>
+<lightgrey>：<w>%s</w> [切换：<w>!</w>]，按<w>%s</w> [<w>/</w>]，<w>%s</w>无用及重复物品 [<w>=</w>]</lightgrey>
 %%%%
 Pikel's spell is broken, but his former %s can only feel hate for you!
 皮克尔的法术被打破了，但他曾经的%s只能对你满怀仇恨！
@@ -43145,3 +43145,309 @@ You are %s!
 %%%%
 The attack snaps %1$s out of %2$s fear.
 这次攻击将%1$s从%2$s恐惧中惊醒。
+%%%%
+stash search|dist
+距离
+%%%%
+stash search|name
+名称
+%%%%
+stash search|hide
+隐藏
+%%%%
+stash search|show
+显示
+%%%%
+? for help
+? 查看帮助
+%%%%
+[carried]
+[随身携带]
+%%%%
+armour enchantment|glow
+发出
+%%%%
+armour enchantment|glows
+发出
+%%%%
+: Key help
+: 按键帮助
+%%%%
+<h>Rest:\n
+<h>休息:\n
+%%%%
+wait a turn (also <w>s</w>, <w>Del</w>)
+等待一回合（也可用 <w>s</w>、<w>Del</w>）
+%%%%
+rest and long wait; stops when
+休息并长时间等待；停止条件：
+%%%%
+auto-explore
+自动探索
+%%%%
+interlevel travel
+跨层旅行
+%%%%
+Find items
+查找物品
+%%%%
+set Waypoint
+设置路标
+%%%%
+<h>Other Gameplay Actions:\n
+<h>其他游戏操作:\n
+%%%%
+use special Ability (<w>%!</w> for help)
+使用特殊能力（<w>%!</w> 查看帮助）
+%%%%
+cast spell, abort without targets
+施放法术，无目标时取消
+%%%%
+cast spell, no matter what
+强制施放法术
+%%%%
+list all memorised spells
+列出所有已记忆的法术
+%%%%
+Memorise a spell from your library
+从法术库记忆法术
+%%%%
+tell allies (<w>%t</w> to shout)
+指挥盟友（<w>%t</w> 喊叫）
+%%%%
+re-do previous command
+重做上个命令
+%%%%
+repeat next command # of times
+将下个命令重复 # 次
+%%%%
+<h>Non-Gameplay Commands / Info\n
+<h>非游戏操作命令／信息\n
+%%%%
+game menu
+游戏菜单
+%%%%
+show Previous messages
+查看历史消息
+%%%%
+Redraw screen
+重绘屏幕
+%%%%
+Clear main and level maps
+清理主地图与楼层地图
+%%%%
+quick add macro
+快速添加宏
+%%%%
+annotate the dungeon level
+添加楼层注释
+%%%%
+dump character to file
+将角色档案导出到文件
+%%%%
+add note (use <w>%:</w> to read notes)
+添加笔记（<w>%:</w> 查看笔记）
+%%%%
+reassign inventory/spell letters
+重新分配物品／法术字母
+%%%%
+<w>F12</w> : read messages (online play only)
+<w>F12</w>：阅读消息（仅限在线游戏）
+%%%%
+read messages (online play only)
+阅读消息（仅限在线游戏）
+%%%%
+<h>Game Saving and Quitting:\n
+<h>保存与退出:\n
+%%%%
+Save game and exit
+保存游戏并退出
+%%%%
+Save and exit without query
+直接保存退出，不再询问
+%%%%
+Abandon the current character
+放弃当前角色
+%%%%
+         and quit the game\n
+         并退出游戏\n
+%%%%
+<h>Player Character Information:\n
+<h>角色信息:\n
+%%%%
+display character status
+显示角色状态
+%%%%
+show skill screen
+显示技能界面
+%%%%
+character overview
+角色概览
+%%%%
+show religion screen
+显示宗教界面
+%%%%
+show Abilities/mutations
+显示能力／变异
+%%%%
+show item knowledge
+查看物品知识
+%%%%
+show your spell library
+查看法术库
+%%%%
+show runes collected
+查看已收集的符文
+%%%%
+display worn armour
+显示穿戴的护甲
+%%%%
+display worn jewellery
+显示佩戴的首饰
+%%%%
+display gold in possession
+显示持有的金币
+%%%%
+display experience info
+显示经验信息
+%%%%
+<h>Dungeon Interaction and Information:\n
+<h>地牢交互与信息:\n
+%%%%
+<w>%</w>/<w>%</w>    : Open/Close door
+<w>%</w>/<w>%</w>    ：开门／关门
+%%%%
+<w>%</w>/<w>%</w>    : use staircase
+<w>%</w>/<w>%</w>    ：使用楼梯
+%%%%
+examine occupied tile and
+查看脚下格子，并从一叠物品中
+%%%%
+         pickup part of a single stack\n
+         拾取其中一部分\n
+%%%%
+eXamine surroundings/targets
+查看周围环境／目标
+%%%%
+eXamine level map (<w>%?</w> for help)
+查看楼层地图（<w>%?</w> 查看帮助）
+%%%%
+list monsters, items, features
+列出怪物、物品与地形
+%%%%
+         in view\n
+         （视野范围内）\n
+%%%%
+toggle view layers
+切换视图图层
+%%%%
+show dungeon Overview
+查看地牢概览
+%%%%
+toggle auto-pickup
+开关自动拾取
+%%%%
+mute/unmute sound effects
+静音／恢复音效
+%%%%
+<w>%</w>/<w>%</w> : zoom out/in
+<w>%</w>/<w>%</w>：缩小／放大
+%%%%
+<h>Inventory management:\n
+<h>物品栏管理:\n
+%%%%
+show Inventory list
+显示物品栏
+%%%%
+pick up items (also <w>g</w>)
+拾取物品（也可用 <w>g</w>）
+%%%%
+    (press twice for pick up menu)\n
+    （按两次打开拾取菜单）\n
+%%%%
+Drop an item
+丢弃一件物品
+%%%%
+<w>%#</w>: Drop exact number of items
+<w>%#</w>：丢弃指定数量的物品
+%%%%
+Drop the last item(s) you picked up
+丢弃上次拾取的物品
+%%%%
+<h>Item Interaction:\n
+<h>物品操作:\n
+%%%%
+inscribe item
+添加物品铭文
+%%%%
+Fire the currently quivered action
+执行当前快捷栏动作
+%%%%
+select an item and Fire it
+选择物品并发射
+%%%%
+<h>Additional help:\n
+<h>更多帮助:\n
+%%%%
+item warning action|wield
+持握
+%%%%
+item warning action|quaff
+饮用
+%%%%
+item warning action|drop
+丢弃
+%%%%
+item warning action|take off
+脱下
+%%%%
+item warning action|wear
+穿戴
+%%%%
+item warning action|put on
+佩戴
+%%%%
+item warning action|remove
+卸下
+%%%%
+item warning action|read
+阅读
+%%%%
+item warning action|zap
+使用
+%%%%
+item warning action|fire
+发射
+%%%%
+item warning action|evoke
+激活
+%%%%
+item warning action|quiver
+设入快捷栏
+%%%%
+item warning action|equip
+装备
+%%%%
+item warning action|unequip
+卸下
+%%%%
+item warning action|choose
+选择
+%%%%
+Really %s %s?
+确定要%s%s吗？
+%%%%
+Really %s %s while about to teleport?
+即将传送，确定还要%s%s吗？
+%%%%
+shop sort|type
+类型
+%%%%
+shop sort|price
+价格
+%%%%
+shop sort|name
+名称
+%%%%
+Really memorise from %s?
+确定要从%s记忆法术吗？

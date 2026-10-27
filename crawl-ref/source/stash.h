@@ -153,6 +153,8 @@ struct stash_search_result
     int duplicates;
     int duplicate_piles;
 
+    string display_match() const;
+
     stash_search_result() : pos(), player_distance(0), match_type(), match(),
                             primary_sort(), item(), shop(nullptr), feat(),
                             trap(TRAP_UNASSIGNED), in_inventory(false),
