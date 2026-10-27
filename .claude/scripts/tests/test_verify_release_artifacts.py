@@ -424,6 +424,47 @@ class ReleaseArtifactTest(unittest.TestCase):
         self.assert_rejected("required file is empty")
         self._rewrite(rule, original)
 
+    def test_apk_allows_case_distinct_compiled_resource_paths(self) -> None:
+        rule = next(item for item in self.rules if item.archive_type == "apk")
+        self._rewrite(rule, self._payloads(rule), zip_extra=[
+            ("res/2F.xml", b"drawable resource", None),
+            ("res/2f.xml", b"layout resource", None),
+        ])
+        self._validate()
+
+    def test_apk_resource_exception_preserves_collision_and_path_guards(self) -> None:
+        rule = next(item for item in self.rules if item.archive_type == "apk")
+        cases = (
+            ("res/2F.xml", "res/2F.xml", "duplicate archive member"),
+            ("res/2F.xml", "RES/2f.xml", "case-insensitive member collision"),
+            ("RES/2F.xml", "res/2f.xml", "case-insensitive member collision"),
+            ("assets/Two.txt", "assets/two.txt", "case-insensitive member collision"),
+            ("lib/arm64-v8a/EXTRA.so", "lib/arm64-v8a/extra.so",
+             "case-insensitive member collision"),
+            ("res/../escape.xml", "res/../ESCAPE.xml", "unsafe archive member"),
+        )
+        for first, second, expected in cases:
+            with self.subTest(first=first, second=second):
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore", UserWarning)
+                    self._rewrite(rule, self._payloads(rule), zip_extra=[
+                        (first, b"first resource", None),
+                        (second, b"second resource", None),
+                    ])
+                self.assert_rejected(expected)
+
+    def test_desktop_zips_reject_case_distinct_resource_paths(self) -> None:
+        for rule in self.rules:
+            if rule.archive_type != "zip":
+                continue
+            with self.subTest(archive=rule.filename):
+                self._rewrite(rule, self._payloads(rule), zip_extra=[
+                    (f"{rule.root}/res/2F.xml", b"first resource", None),
+                    (f"{rule.root}/res/2f.xml", b"second resource", None),
+                ])
+                self.assert_rejected("case-insensitive member collision")
+                self._rewrite(rule, self._payloads(rule))
+
     def test_android_apk_signature_is_verified_and_fail_closed(self) -> None:
         calls = []
 
