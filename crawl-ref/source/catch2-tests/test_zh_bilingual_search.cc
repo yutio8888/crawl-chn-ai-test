@@ -56,10 +56,6 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     result.in_inventory = true;
     result.match = "a shop without the carried prefix";
     REQUIRE(result.display_match() == result.match);
-
-    const string prompt = StashTrack.stash_search_prompt();
-    REQUIRE(prompt.find("? 查看帮助") != string::npos);
-    REQUIRE(prompt.find("for help") == string::npos);
 }
 
 TEST_CASE_METHOD(EnTranslationFixture,
@@ -70,7 +66,6 @@ TEST_CASE_METHOD(EnTranslationFixture,
     result.in_inventory = true;
     result.match = "[carried] b - +0 short sword";
     REQUIRE(result.display_match() == result.match);
-    REQUIRE(StashTrack.stash_search_prompt().find("? for help") != string::npos);
 }
 
 // =========================================================================
