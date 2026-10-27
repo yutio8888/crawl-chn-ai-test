@@ -61,8 +61,10 @@ string stash_search_result::display_match() const
 {
     static constexpr char carried_prefix[] = "[carried] ";
     if (in_inventory && starts_with(match, carried_prefix))
+    {
         return string(T_("[carried]")) + " "
                + match.substr(sizeof(carried_prefix) - 1);
+    }
     return match;
 }
 
