@@ -418,7 +418,13 @@ def _generate_species_data(source_dir: str):
         command.extend(str(output / name) for name in
                        ('species-data.h', 'aptitudes.h', 'species-groups.h',
                         'species-type.h'))
-        result = subprocess.run(command, capture_output=True, text=True)
+        child_env = os.environ.copy()
+        import_paths = [str(root / 'util')] + [
+            path for path in child_env.get('PYTHONPATH', '').split(os.pathsep)
+            if path]
+        child_env['PYTHONPATH'] = os.pathsep.join(import_paths)
+        result = subprocess.run(command, capture_output=True, text=True,
+                                env=child_env)
         if result.returncode:
             raise ValueError('Species generation failed: '
                              + (result.stderr or result.stdout).strip())

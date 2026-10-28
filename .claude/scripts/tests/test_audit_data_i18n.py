@@ -3,6 +3,7 @@
 
 import contextlib
 import io
+import os
 from pathlib import Path
 import re
 import shutil
@@ -94,13 +95,19 @@ class DataDrivenCoverageTests(unittest.TestCase):
     def test_orc_clean_checkout_uses_production_generator(self):
         source = self.clean_species_source()
         self.assertFalse((source / 'species-data.h').exists())
-        names = audit.collect_orc_names(str(source))
-        self.assertEqual(len(names), 47)
-        self.assertTrue({'Orc', 'High Orc'} <= names)
-        self.assertFalse((source / 'species-data.h').exists())
-        # A stale build product must neither mask missing source nor set names.
-        (source / 'species-data.h').write_text('invalid stale header')
-        self.assertEqual(audit.collect_orc_names(str(source)), names)
+        # CI uses safe imports and supplies only the audit scripts directory;
+        # the child must find its own production helper without changing us.
+        with mock.patch.dict(os.environ, {'PYTHONSAFEPATH': '1',
+                                         'PYTHONPATH': str(SCRIPTS)}):
+            parent_env = os.environ.copy()
+            names = audit.collect_orc_names(str(source))
+            self.assertEqual(len(names), 47)
+            self.assertTrue({'Orc', 'High Orc'} <= names)
+            self.assertFalse((source / 'species-data.h').exists())
+            # A stale build product must not mask missing source or set names.
+            (source / 'species-data.h').write_text('invalid stale header')
+            self.assertEqual(audit.collect_orc_names(str(source)), names)
+            self.assertEqual(dict(os.environ), parent_env)
 
     def test_orc_generator_failure_rejected(self):
         source = self.clean_species_source()
