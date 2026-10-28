@@ -757,6 +757,7 @@ TEST_CASE("playtest: reflected blocks place shield method before the Chinese act
 {
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
     const int protection = GENERATE(0, 1, 2, 3);
+    CAPTURE(language, protection);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
     issue10_world world;
     monster *shooter = world.place(MONS_ORC, coord_def(21, 20));
@@ -779,6 +780,7 @@ TEST_CASE("playtest: reflected blocks place shield method before the Chinese act
         item.pos = ITEM_IN_INVENTORY;
         item.flags = ISFLAG_IDENTIFIED;
         you.equipment.add(item, protection == 1 ? SLOT_AMULET : SLOT_OFFHAND);
+        you.equipment.update();
     }
     if (protection == 2)
         you.duration[DUR_DIVINE_SHIELD] = 10;
