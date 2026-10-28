@@ -21,6 +21,7 @@ import json
 # Use shared parser for consistency with scan_i18n.py
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from i18n_shared import parse_source_txt
+from i18n_extract import _lua_tokens
 
 
 
@@ -220,6 +221,84 @@ def check_corrosion_sources(source_dir: str, source_txt: str):
 
 
 
+def _lua_multi_assignment_targets(text):
+    """Find target owners, excluding table fields but retaining callback writes."""
+    # The finite pool lives in a .des Lua block; map glyphs outside those
+    # blocks are not Lua quotes. Standalone Lua is also used by the fixtures.
+    lua_blocks = re.findall(
+        r'(?ms)^[ \t]*(?:[A-Za-z_]\w*)?\{\{[ \t]*\n(.*?)^[ \t]*\}\}[ \t]*$',
+        text)
+    if lua_blocks:
+        text = '\n'.join(lua_blocks)
+    text = re.sub(r'(?m)^[ \t]*\#[^\n]*', '', text)
+    tokens = list(_lua_tokens(text))
+    delimiters, tables, blocks = [], [], []
+    pairs, targets = {}, set()
+
+    def target_start(index):
+        # Walk just a Lua target's prefix chain backwards. Balanced index/call
+        # arguments are opaque: reads inside them are not assignment targets.
+        while index >= 0:
+            kind = tokens[index][0]
+            if kind in (']', ')', '}'):
+                opening = pairs.get(index)
+                if opening is None:
+                    return None
+                index = opening - 1
+                if (tokens[opening][0] == '('
+                        and (index < 0 or tokens[index][0] not in
+                             ('IDENT', 'STRING', ')', ']', '}'))):
+                    return opening  # parenthesized prefix, not a bare owner
+            elif kind == 'STRING':  # Lua also allows f"argument".field
+                index -= 1
+            elif kind == 'IDENT':
+                if index > 0 and tokens[index - 1][0] in ('.', ':'):
+                    index -= 2
+                else:
+                    return index
+            else:
+                return None
+        return None
+
+    for index, (kind, value, _offset) in enumerate(tokens):
+        if kind in ('(', '[', '{'):
+            delimiters.append(index)
+            if kind == '{':
+                tables.append(index)
+        elif kind in (')', ']', '}'):
+            if delimiters and tokens[delimiters[-1]][0] == {')': '(', ']': '[', '}': '{'}[kind]:
+                pairs[index] = delimiters.pop()
+            if kind == '}' and tables:
+                tables.pop()
+        elif kind == 'IDENT':
+            if value in ('function', 'if', 'do', 'repeat'):
+                blocks.append((value, index))
+            elif value in ('end', 'until') and blocks:
+                blocks.pop()
+        elif kind == '=':
+            if ((index > 0 and tokens[index - 1][0] in ('=', '<', '>', '~'))
+                    or (index + 1 < len(tokens) and tokens[index + 1][0] == '=')):
+                continue  # comparison, not an assignment
+            if tables and not any(block == 'function' and start > tables[-1]
+                                  for block, start in blocks):
+                continue  # constructor field; a callback body is a statement scope
+            owners, count, cursor = set(), 0, index - 1
+            while cursor >= 0:
+                start = target_start(cursor)
+                if start is None:
+                    break
+                count += 1
+                if tokens[start][0] == 'IDENT':
+                    owners.add(tokens[start][1])
+                cursor = start - 1
+                if cursor < 0 or tokens[cursor][0] != ',':
+                    break
+                cursor -= 1
+            if count > 1:
+                targets.update(owners)
+    return targets
+
+
 def collect_shop_fields(source_dir: str):
     """Return (context, key) identities from the current .des tag grammar.
 
@@ -237,9 +316,10 @@ def collect_shop_fields(source_dir: str):
     identities = set()
     tag = re.compile(r'(?<![\w_])(type|suffix):')
     for path in paths:
-        text = path.read_text(encoding='utf-8')
+        raw_text = path.read_text(encoding='utf-8')
         text = '\n'.join('' if line.lstrip().startswith(('#', '--')) else line
-                         for line in text.splitlines())
+                         for line in raw_text.splitlines())
+        multi_targets = None
         for match in tag.finditer(text):
             context = 'shop name ' + match.group(1)
             tail = text[match.end():]
@@ -277,7 +357,10 @@ def collect_shop_fields(source_dir: str):
                             after_selector):
                     raise ValueError(f'{path}: extended shop field selector')
                 pool = selector.group(1)
-                if (len(re.findall(r'\b' + re.escape(variable) + r'\s*=', text)) != 1
+                if multi_targets is None:
+                    multi_targets = _lua_multi_assignment_targets(raw_text)
+                if (variable in multi_targets or pool in multi_targets
+                        or len(re.findall(r'\b' + re.escape(variable) + r'\s*=', text)) != 1
                         or len(re.findall(r'\b' + re.escape(pool) + r'\s*=', text)) != 1
                         or re.search(r'\b' + re.escape(pool) + r'\s*\[[^\n]*\]\s*=', text)
                         or re.search(r'table\.(?:insert|remove)\s*\(\s*'

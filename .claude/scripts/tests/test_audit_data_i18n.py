@@ -143,10 +143,69 @@ class DataDrivenCoverageTests(unittest.TestCase):
 
     def test_mutated_finite_pool_rejected(self):
         for mutation in ['shops[3] = "Other"', 'table.insert(shops, "Other")',
-                         'shopsuffix = computed_suffix()']:
+                         'shopsuffix = computed_suffix()',
+                         'shopsuffix, ignored = "Uncovered_Suffix", nil',
+                         'ignored, shopsuffix = nil, "Uncovered_Suffix"',
+                         'first, shopsuffix, last = nil, "Uncovered_Suffix", nil',
+                         'shops, ignored = { "Other" }, nil',
+                         'ignored, shops = nil, { "Other" }',
+                         'first, shops, last = nil, { "Other" }, nil',
+                         'shopsuffix,\n ignored = "Other", nil',
+                         'ignored, -- continued target list\n shopsuffix = nil, "Other"',
+                         'first,\n shops,\n last = nil, { "Other" }, nil',
+                         'local shopsuffix, ignored = "Other", nil',
+                         'shopsuffix, target[1] = "Other", nil',
+                         'target[1], shopsuffix, target.last = nil, "Other", nil',
+                         'target.first, shops = nil, { "Other" }',
+                         'shops, target[other[index]] = { "Other" }, nil',
+                         'shopsuffix, get_target().value = "Uncovered_Suffix", nil',
+                         'shops, get_target()[1] = { "Other" }, nil',
+                         'shopsuffix, (get_target()).value = "Other", nil',
+                         'shopsuffix, get_target():choose()[1] = "Other", nil',
+                         'consume(function() shopsuffix, get_target().value = "Other", nil end)',
+                         'local note = { callback = function() shopsuffix, other = "Other", nil end }',
+                         'local note = { callback = function() if first then other, shops = nil, {} end end }',
+                         'shopsuffix, (function() return {} end)().value = "Other", nil']:
             with self.subTest(mutation=mutation):
-                self.pan.write_text(SHOP_FIXTURE + '\n' + mutation + '\n')
+                self.pan.write_text(SHOP_FIXTURE.replace(
+                    'if first then', mutation + '\nif first then'))
                 self.assertEqual(self.check_shop(), 1)
+
+    def test_unrelated_multiple_assignment_and_quoted_targets_supported(self):
+        self.pan.write_text(SHOP_FIXTURE + '''
+local first, last = shopsuffix, shops
+first, -- unrelated targets
+ last = last, first
+first, target[shopsuffix] = shopsuffix, shops
+first, target[other[index]] = shopsuffix, shops
+get_target(shopsuffix).value, last = shopsuffix, shops
+get_target(shops):choose()[1], last = shopsuffix, shops
+-- shopsuffix, ignored = "Not a write", nil
+--[[
+ shops, ignored = {}, nil
+]]
+--[=[ shopsuffix,
+ ignored = "not a write", nil ]=]
+local note = "shopsuffix, ignored = not an assignment"
+local other_note = 'shops, ignored = also not an assignment'
+local note = {shopsuffix, other = nil}
+local note = {shops, other = nil}
+local note = {nested = {shopsuffix, other = nil}, shops, other = nil}
+local note = { callback = function() end, shopsuffix, other = nil }
+local note = { callback = function() if first then return shops end end,
+               shops, other = nil }
+local note = { callback = function() return {shopsuffix, other = nil} end }
+''')
+        self.assertEqual(audit.collect_shop_fields(str(self.source)), EXPECTED_SHOPS)
+        self.assertEqual(self.check_shop(), 0)
+
+    def test_des_lua_block_targets_ignore_map_quote_glyphs(self):
+        for mutation, expected in [('', 0),
+                                   ('shopsuffix, get_target().value = "Other", nil', 1)]:
+            with self.subTest(mutation=mutation):
+                body = SHOP_FIXTURE.replace('if first then', mutation + '\nif first then')
+                self.pan.write_text("MAP\n.'...\nENDMAP\n{{\n" + body + "\n}}\n")
+                self.assertEqual(self.check_shop(), expected)
 
     def test_missing_dynamic_shop_source_rejected(self):
         self.pan.unlink()
