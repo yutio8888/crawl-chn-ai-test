@@ -225,6 +225,67 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh-help: normal command popup translates both columns",
+                 "[zh-help][keyhelp]")
+{
+    // Read the actual popup contents, including the rows reached by PageDown.
+    // English mode also proves that these markers belong to the normal-game
+    // page rather than silently exercising the separate hints/tutorial page.
+    const vector<string> english_fragments = {
+        "Rest:",
+        "cast spell, abort",
+        "Non-Gameplay Commands",
+        "Game Saving and Quitting:",
+        "Save game and exit",
+        "Player Character Information:",
+        "display character status",
+        "Dungeon Interaction",
+        "Open/Close door",
+        "Inventory management:",
+        "show Inventory list",
+        "Drop exact number",
+        "Item Interaction:",
+        "currently quivered",
+        "Additional help:",
+    };
+    const auto check_expanded_commands = [](const string& text) {
+        // These sequences are insert_commands placeholders followed by a
+        // literal suffix. They must have been expanded before display.
+        CHECK(text.find("%!") == string::npos);
+        CHECK(text.find("%t") == string::npos);
+        CHECK(text.find("%:") == string::npos);
+        CHECK(text.find("%?") == string::npos);
+        CHECK(text.find("%#") == string::npos);
+    };
+    {
+        EnTranslationFixture english_mode;
+        string header;
+        string text;
+        REQUIRE(help_popup_state_for_test('?', 0, header, text) == '?');
+        CHECK(header.find(": Key help") != string::npos);
+        for (const string& fragment : english_fragments)
+        {
+            INFO("English command help: " << fragment);
+            CHECK(text.find(fragment) != string::npos);
+        }
+        check_expanded_commands(text);
+    }
+
+    string header;
+    string text;
+    REQUIRE(help_popup_state_for_test('?', 0, header, text) == '?');
+    CHECK(header.find(": Key help") == string::npos);
+    CHECK(contains_cjk_text(header));
+    CHECK(contains_cjk_text(text));
+    for (const string& fragment : english_fragments)
+    {
+        INFO("Untranslated command help: " << fragment);
+        CHECK(text.find(fragment) == string::npos);
+    }
+    check_expanded_commands(text);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh-help: tiles guide uses shared loader without console hotkey",
                  "[zh-help][guides]")
 {

@@ -1717,24 +1717,24 @@ static string _operation_verb(operation_types oper)
 {
     switch (oper)
     {
-    case OPER_WIELD:          return "wield";
-    case OPER_QUAFF:          return "quaff";
-    case OPER_DROP:           return "drop";
-    case OPER_TAKEOFF:        return T_("take off");
-    case OPER_WEAR:           return "wear";
-    case OPER_PUTON:          return "put on";
-    case OPER_REMOVE:         return "remove";
-    case OPER_READ:           return "read";
+    case OPER_WIELD:          return C_("item warning action", "wield");
+    case OPER_QUAFF:          return C_("item warning action", "quaff");
+    case OPER_DROP:           return C_("item warning action", "drop");
+    case OPER_TAKEOFF:        return C_("item warning action", "take off");
+    case OPER_WEAR:           return C_("item warning action", "wear");
+    case OPER_PUTON:          return C_("item warning action", "put on");
+    case OPER_REMOVE:         return C_("item warning action", "remove");
+    case OPER_READ:           return C_("item warning action", "read");
     case OPER_MEMORISE:       return "memorise from";
-    case OPER_ZAP:            return "zap";
-    case OPER_FIRE:           return "fire";
-    case OPER_EVOKE:          return "evoke";
-    case OPER_QUIVER:         return "quiver";
-    case OPER_EQUIP:          return "equip";
-    case OPER_UNEQUIP:        return "unequip";
+    case OPER_ZAP:            return C_("item warning action", "zap");
+    case OPER_FIRE:           return C_("item warning action", "fire");
+    case OPER_EVOKE:          return C_("item warning action", "evoke");
+    case OPER_QUIVER:         return C_("item warning action", "quiver");
+    case OPER_EQUIP:          return C_("item warning action", "equip");
+    case OPER_UNEQUIP:        return C_("item warning action", "unequip");
     case OPER_ANY:
     default:
-        return "choose";
+        return C_("item warning action", "choose");
     }
 }
 
@@ -1827,12 +1827,21 @@ bool check_warning_inscriptions(const item_def& item,
         }
 
         // XXX: duplicates a check in delay.cc:_finish_delay()
-        string prompt = "Really " + _operation_verb(oper) + " ";
-        prompt += (in_inventory(item) ? item.name(DESC_INVENTORY)
-                                      : item.name(DESC_A));
-        if (needs_notele_warning(item, oper))
-            prompt += T_(" while about to teleport");
-        prompt += "?";
+        const string item_name = in_inventory(item) ? item.name(DESC_INVENTORY)
+                                                   : item.name(DESC_A);
+        string prompt;
+        if (oper == OPER_MEMORISE)
+        {
+            prompt = make_stringf(T_("Really memorise from %s?"),
+                                  item_name.c_str());
+        }
+        else
+        {
+            const string action = _operation_verb(oper);
+            prompt = make_stringf(T_(needs_notele_warning(item, oper)
+                ? "Really %s %s while about to teleport?" : "Really %s %s?"),
+                action.c_str(), item_name.c_str());
+        }
         if (god_despises_item(item, you.religion))
             prompt += T_(" You'd be excommunicated if you did!");
         else if (penance)

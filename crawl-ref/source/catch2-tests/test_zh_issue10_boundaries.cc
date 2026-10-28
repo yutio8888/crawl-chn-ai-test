@@ -261,7 +261,7 @@ TEST_CASE("issue 10 cloud and armour consumers use display verbs",
     armour.quantity = 1;
     armour.plus = 0;
     const string glow = observe_message([&] { REQUIRE(enchant_armour(armour, false)); });
-    CHECK(glow.find(language == lang_t::ZH ? "发亮" : "glows") != string::npos);
+    CHECK(glow.find(language == lang_t::ZH ? "发出绿色的光芒" : "glows") != string::npos);
     CHECK(armour.plus == 1);
 }
 
