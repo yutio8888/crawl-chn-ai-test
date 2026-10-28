@@ -199,8 +199,10 @@ TEST_CASE("acceptance: missile annotations localize effects without changing pro
             REQUIRE(description.size() == 1);
             CHECK(description[0].find("100%") != string::npos);
             if (language == lang_t::EN)
+            {
                 CHECK(description[0] == string("chance to ")
                     + (brand == SPMSL_FRENZY ? "frenzy" : "blind") + " on hit: 100%");
+            }
             else
             {
                 CHECK(has_cjk(description[0]));

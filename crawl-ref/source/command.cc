@@ -1119,9 +1119,7 @@ static void _add_formatted_keyhelp(column_composer &cols)
                            false);
     }
     else
-    {
         _add_command(cols, 0, CMD_READ_MESSAGES, T_("read messages (online play only)"), 2);
-    }
 #else
     _add_command(cols, 0, CMD_READ_MESSAGES, T_("read messages (online play only)"), 2);
 #endif

@@ -47629,7 +47629,7 @@ someone's
 %%%%
 
 drained resource|magic
-魔力
+法力
 %%%%
 
 drained resource|power
@@ -47689,7 +47689,7 @@ item operation|evoke
 %%%%
 
 item operation|quiver
-加入箭袋：
+设为快捷动作：
 %%%%
 
 item operation|equip
@@ -47861,7 +47861,7 @@ Find items
 %%%%
 
 Fire the currently quivered action
-触发当前箭袋动作
+触发当前快捷动作
 %%%%
 
 Key help

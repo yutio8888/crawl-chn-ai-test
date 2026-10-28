@@ -339,8 +339,10 @@ TEST_CASE("playtest: ordinary constriction escapes use complete display sentence
     const string escaped = observe_message([&] { victim->stop_being_constricted(); });
     CHECK(escaped == expected + "\n");
     if (language == lang_t::EN)
+    {
         CHECK(escaped == (player_victim ? "You break" : name + " breaks")
                          + " free of " + attacker + "!\n");
+    }
     else
         CHECK(escaped.find("break") == string::npos);
     CHECK_FALSE(victim->is_constricted());

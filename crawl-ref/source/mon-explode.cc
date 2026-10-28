@@ -349,9 +349,11 @@ bool explode_monster(monster* mons, killer_type killer, bool pet_kill)
 
     string poof_msg = "";
     if (mons->is_abjurable())
+    {
         poof_msg = make_stringf(T_("The %s residue %s."),
                                 mons->name(DESC_PLAIN).c_str(),
                                 summoned_poof_msg(*mons).c_str());
+    }
 
     auto it = explosions.find(type);
     if (it != explosions.end())

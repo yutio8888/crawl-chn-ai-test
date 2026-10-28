@@ -173,8 +173,10 @@ static void _mark_expiring(status_info& inf, bool expiring)
                              + T_(" (expiring)");
         }
         if (!inf.long_text.empty())
+        {
             inf.long_text = string(T_("Expiring: "))
                             + C_("status", inf.long_text.c_str());
+        }
     }
 }
 
