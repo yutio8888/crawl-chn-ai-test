@@ -674,7 +674,7 @@ class AgentDocumentationTests(unittest.TestCase):
         with self.assertRaises(AssertionError):
             assert_contract(unsigned)
 
-    def test_zh_static_tooling_runs_on_linux_and_macos(self) -> None:
+    def test_zh_static_tooling_matrix_is_release_scoped(self) -> None:
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
         tooling = workflow.split("  zh_tooling_tests:\n", 1)[1].split(
             "\n  zh_ci_gate:", 1
@@ -682,8 +682,48 @@ class AgentDocumentationTests(unittest.TestCase):
         gate = workflow.split("  zh_ci_gate:\n", 1)[1].split(
             "\n  zh_runtime_catch2:", 1
         )[0]
+        jobs = yaml.safe_load(workflow)["jobs"]
+        # Execute only the JavaScript-compatible expression subset used by these
+        # matrices. GitHub CI remains the authoritative expression evaluator.
+        cases = [
+            ("refs/pull/184/merge", ["ubuntu-latest"]),
+            ("refs/heads/chn-trunk", ["ubuntu-latest"]),
+            ("refs/heads/topic-trunk-test", ["ubuntu-latest"]),
+            ("refs/tags/ci-probe", ["ubuntu-latest"]),
+            ("refs/tags/0.34.1-zh5-1-013", ["ubuntu-latest", "macos-latest"]),
+            ("refs/tags/0.35.0-trunk-013", ["ubuntu-latest", "macos-latest"]),
+        ]
+        evaluate = r"""
+const vm = require('vm'), fs = require('fs');
+const input = JSON.parse(fs.readFileSync(0, 'utf8'));
+const results = input.cases.map(([ref]) => vm.runInNewContext(input.expression, {
+    github: {ref, ref_name: ref.replace(/^refs\/(tags|heads)\//, '')},
+    startsWith: (s, p) => s.toLowerCase().startsWith(p.toLowerCase()),
+    contains: (s, p) => s.toLowerCase().includes(p.toLowerCase()),
+    fromJSON: JSON.parse,
+}, {timeout: 1000}));
+process.stdout.write(JSON.stringify(results));
+"""
+
+        def assert_matrix(matrix):
+            match = re.fullmatch(r"\$\{\{\s*(.*?)\s*\}\}", matrix, re.S)
+            self.assertIsNotNone(match)
+            result = subprocess.run(
+                ["node", "-e", evaluate],
+                input=json.dumps({"expression": match.group(1), "cases": cases}),
+                text=True, capture_output=True, check=True,
+            )
+            self.assertEqual(json.loads(result.stdout), [os for _, os in cases])
+
+        for job_name in ("zh_tooling_tests", "zh_ci_gate"):
+            with self.subTest(job=job_name):
+                assert_matrix(jobs[job_name]["strategy"]["matrix"]["os"])
+        # Both former unconditional matrices must fail the routing contract.
+        for os in (["ubuntu-latest"], ["ubuntu-latest", "macos-latest"]):
+            with self.subTest(unconditional=os), self.assertRaises(AssertionError):
+                assert_matrix("${{ fromJSON('" + json.dumps(os) + "') }}")
+
         for job in (tooling, gate):
-            self.assertIn("os: [ubuntu-latest, macos-latest]", job)
             self.assertIn("runs-on: ${{ matrix.os }}", job)
             self.assertIn('PYTHONSAFEPATH: "1"', job)
             self.assertIn("uses: actions/setup-python@v4", job)
