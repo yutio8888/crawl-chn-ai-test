@@ -207,6 +207,20 @@ local note = { callback = function() return {shopsuffix, other = nil} end }
                 self.pan.write_text("MAP\n.'...\nENDMAP\n{{\n" + body + "\n}}\n")
                 self.assertEqual(self.check_shop(), expected)
 
+    def test_des_mixed_block_and_main_lines_keep_all_assignment_targets(self):
+        for lua_line, expected in [
+                ('local note = {shopsuffix, other = nil}', 0),
+                ('local first, last = shopsuffix, shops', 0),
+                ('shopsuffix, ignored = "Uncovered_Suffix", nil', 1),
+                ('shops, get_target()[1] = {"Other"}, nil', 1)]:
+            with self.subTest(lua_line=lua_line):
+                self.pan.write_text(
+                    'MAP\n: shopsuffix, ignored = "Map glyphs", nil\nENDMAP\n'
+                    '{{\n' + SHOP_FIXTURE + '\n}}\n: ' + lua_line + '\n'
+                    ': kfeat("shop suffix:" .. shopsuffix .. " ; any")\n'
+                    '{{\nlocal final_note = "second block"\n}}\n')
+                self.assertEqual(self.check_shop(), expected)
+
     def test_missing_dynamic_shop_source_rejected(self):
         self.pan.unlink()
         self.assertEqual(self.check_shop(), 1)

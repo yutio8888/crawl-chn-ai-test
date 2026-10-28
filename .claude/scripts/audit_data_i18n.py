@@ -223,13 +223,31 @@ def check_corrosion_sources(source_dir: str, source_txt: str):
 
 def _lua_multi_assignment_targets(text):
     """Find target owners, excluding table fields but retaining callback writes."""
-    # The finite pool lives in a .des Lua block; map glyphs outside those
-    # blocks are not Lua quotes. Standalone Lua is also used by the fixtures.
-    lua_blocks = re.findall(
-        r'(?ms)^[ \t]*(?:[A-Za-z_]\w*)?\{\{[ \t]*\n(.*?)^[ \t]*\}\}[ \t]*$',
-        text)
-    if lua_blocks:
-        text = '\n'.join(lua_blocks)
+    # Like the world audit's .des Lua view, retain blocks AND ':' main lines
+    # in source order. MAP quote/colon glyphs are never Lua source.
+    block_start = re.compile(r'^[ \t]*(?:[A-Za-z_]\w*)?\{\{[ \t]*$')
+    if (any(block_start.match(line) for line in text.splitlines())
+            or re.search(r'(?m)^[ \t]*:', text)):
+        view, in_block, in_map = [], False, False
+        for line in text.splitlines(keepends=True):
+            stripped = line.strip()
+            if not in_block and stripped == 'MAP':
+                in_map = True
+            elif not in_block and stripped == 'ENDMAP':
+                in_map = False
+            elif not in_map:
+                if block_start.match(line):
+                    in_block = True
+                elif stripped == '}}':
+                    in_block = False
+                elif in_block:
+                    view.append(line)
+                elif line.lstrip().startswith(':'):
+                    view.append(line.lstrip()[1:])
+            view.append('\n')
+        if in_block:
+            raise ValueError('Unterminated shop .des Lua block')
+        text = ''.join(view)
     text = re.sub(r'(?m)^[ \t]*\#[^\n]*', '', text)
     tokens = list(_lua_tokens(text))
     delimiters, tables, blocks = [], [], []

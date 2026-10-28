@@ -2084,7 +2084,7 @@ You feel the abyssal rune grow more distant.
 （按<w>%c</w>键打开<w>%s</w>菜单招募使徒）
 %%%%
  (quivered)
-（已装入箭袋）
+（已设为快捷动作）
 %%%%
  (bound)
  （已束缚）
@@ -23651,7 +23651,7 @@ you don't have enough health to cast this spell.
 你没有足够的生命值来施放此法术。
 %%%%
 you don't have enough magic to cast this spell.
-你没有足够的魔力来施放此法术。
+你没有足够的法力来施放此法术。
 %%%%
 your magic and health are inextricable.
 你的魔力和生命密不可分。
@@ -29210,10 +29210,10 @@ on
 戒指
 %%%%
 MP: 
-魔: 
+法: 
 %%%%
 MP:  
-魔力:  
+法力:  
 %%%%
 HP: 
 命: 
@@ -33060,7 +33060,7 @@ which it recharges.
 %s%s火焰吞没%s
 %%%%
 %s %s vitality from %s injuries!
-%s%s了%s伤势中的生命力！
+%s%s了%s伤口中的生命力！
 %%%%
 %s to where?
 %s到哪？
@@ -37460,7 +37460,7 @@ Non-targeted %s
 非瞄准%s
 %%%%
 Really quiver %s?
-确定将%s设为箭袋物品？
+确定将%s设为快捷动作？
 %%%%
 Round %d of %d
 第%d回合，共%d回合
@@ -48099,3 +48099,23 @@ use special Ability (<w>%!</w> for help)
 wait a turn (also <w>s</w>, <w>Del</w>)
 等待一回合（也可按 <w>s</w>、<w>Del</w>）
 %%%%
+
+%%%%
+wand action|Zap
+使用魔杖
+
+%%%%
+quiver focus state|on
+开启
+
+%%%%
+quiver focus state|off
+关闭
+
+%%%%
+verb|block
+格挡
+
+%%%%
+ranged block|%1$s %2$s the %3$s%4$s%5$s
+%1$s%4$s%2$s了%3$s%5$s

@@ -182,25 +182,27 @@ bool ranged_attack::handle_phase_attempted()
 void ranged_attack::handle_phase_blocked()
 {
     ASSERT(!ignores_shield());
-    string punctuation = ".";
+    string shield_method;
+    string ending = ".";
 
     if (defender->reflection())
     {
         reflected = true;
         if (defender->observable())
         {
+            ending.clear();
             if (defender_shield && shield_reflects(*defender_shield))
             {
-                punctuation = T_(" with ") + defender->pronoun(PRONOUN_POSSESSIVE)
+                shield_method = T_(" with ") + defender->pronoun(PRONOUN_POSSESSIVE)
                               + " " + defender_shield->name(DESC_PLAIN).c_str();
             }
             else if (defender->divinely_shielded())
-                punctuation = T_(" with a divine shield");
+                shield_method = T_(" with a divine shield");
             else
-                punctuation = T_(" with an invisible shield");
+                shield_method = T_(" with an invisible shield");
         }
 
-        punctuation += make_stringf_p(T_("... and %1$s it back!"),
+        ending += make_stringf_p(T_("... and %1$s it back!"),
                                     defender->conj_verb("reflect").c_str());
     }
     else
@@ -208,11 +210,12 @@ void ranged_attack::handle_phase_blocked()
 
     if (needs_message)
     {
-        mprf_p(T_("%1$s %2$s the %3$s%4$s"),
+        mprf_p(C_("ranged block", "%1$s %2$s the %3$s%4$s%5$s"),
              defender_name(false).c_str(),
-             defender->conj_verb("block").c_str(),
+             defender->verb_for_display(NC_("verb", "block"), "verb").c_str(),
              proj_name.c_str(),
-             punctuation.c_str());
+             shield_method.c_str(),
+             ending.c_str());
     }
 
     if (!weapon->is_type(OBJ_MISSILES, MI_DART)

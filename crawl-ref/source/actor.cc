@@ -793,7 +793,7 @@ void actor::constriction_damage_defender(actor &defender)
     if (damage <= 0 && is_player()
         && you.can_see(defender))
     {
-        exclamations = " but do no damage.";
+        exclamations = string(T_(" but do no damage")) + T_(".");
     }
     else
         exclamations = attack_strength_punctuation(damage);

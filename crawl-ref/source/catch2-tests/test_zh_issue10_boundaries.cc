@@ -27,6 +27,7 @@
 #include "player.h"
 #include "player-equip.h"
 #include "random.h"
+#include "ranged-attack.h"
 #include "spl-selfench.h"
 #include "spl-summoning.h"
 #include "spl-util.h"
@@ -707,5 +708,111 @@ TEST_CASE("family: real monster bee launch and interrupted winding use a subject
     {
         CHECK(interrupted.find("wizard stops winding") != string::npos);
         CHECK(interrupted.find("wizard's stops") == string::npos);
+    }
+}
+
+
+TEST_CASE("playtest: zero-damage roots keep the damage suffix localized",
+          "[zh-translation][playtest-followups][constriction]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *victim = world.place(MONS_ORC, coord_def(21, 20));
+    you.props[FASTROOT_POWER_KEY] = 10;
+    you.start_constricting(*victim, CONSTRICT_ROOTS);
+    REQUIRE(victim->is_constricted());
+    // Force only the final timescale to zero; execute the real damage and
+    // message producer rather than reconstructing its template in the test.
+    you.time_taken = 0;
+    const int hp = victim->hit_points;
+    const string message = observe_message([&] { you.constriction_damage_defender(*victim); });
+    CHECK(victim->hit_points == hp);
+    CHECK(message.find(string(T_(" but do no damage")) + T_(".")) != string::npos);
+    if (language == lang_t::ZH)
+    {
+        CHECK(message.find(" but do no damage") == string::npos);
+        CHECK(message.find("根须") != string::npos);
+    }
+    else
+        CHECK(message.find(" but do no damage.") != string::npos);
+    victim->stop_being_constricted(true);
+}
+
+namespace
+{
+struct blocked_ranged_probe : ranged_attack
+{
+    using ranged_attack::ranged_attack;
+    // Public base interface retains virtual dispatch to the production
+    // ranged override, without simulating accuracy or shield-block RNG.
+    using attack::handle_phase_blocked;
+};
+}
+
+TEST_CASE("playtest: reflected blocks place shield method before the Chinese action",
+          "[zh-translation][playtest-followups][reflection]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const int protection = GENERATE(0, 1, 2, 3);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *shooter = world.place(MONS_ORC, coord_def(21, 20));
+    item_def projectile;
+    projectile.base_type = OBJ_MISSILES;
+    projectile.sub_type = MI_STONE;
+    projectile.quantity = 1;
+    projectile.rnd = 1;
+    projectile.pos = coord_def(-1, -1);
+    if (protection == 1 || protection == 3)
+    {
+        item_def &item = you.inv[0];
+        item.base_type = protection == 1 ? OBJ_JEWELLERY : OBJ_ARMOUR;
+        item.sub_type = protection == 1 ? static_cast<int>(AMU_REFLECTION)
+                                        : static_cast<int>(ARM_BUCKLER);
+        item.brand = protection == 1 ? 0 : SPARM_REFLECTION;
+        item.quantity = 1;
+        item.rnd = 1;
+        item.link = 0;
+        item.pos = ITEM_IN_INVENTORY;
+        item.flags = ISFLAG_IDENTIFIED;
+        you.equipment.add(item, protection == 1 ? SLOT_AMULET : SLOT_OFFHAND);
+    }
+    if (protection == 2)
+        you.duration[DUR_DIVINE_SHIELD] = 10;
+    REQUIRE(you.reflection() == (protection != 0));
+    blocked_ranged_probe shot(shooter, &you, &projectile);
+    shot.needs_message = true;
+    const string subject = shot.defender_name(false);
+    const string proj = shot.projectile_name();
+    string method;
+    if (protection == 1)
+        method = T_(" with an invisible shield");
+    else if (protection == 2)
+        method = T_(" with a divine shield");
+    else if (protection == 3)
+        method = T_(" with ") + you.pronoun(PRONOUN_POSSESSIVE)
+                 + " " + you.shield()->name(DESC_PLAIN);
+    const int hp = you.hp;
+    const string message = observe_message([&] { shot.handle_phase_blocked(); });
+    INFO(message);
+    CHECK(you.hp == hp);
+    CHECK(shot.damage_done == 0);
+    CHECK(shot.reflected == (protection != 0));
+    CHECK(shot.range_used == (protection ? 0 : BEAM_STOP));
+    if (language == lang_t::EN)
+    {
+        const string ending = protection ? "... and reflect it back!" : ".";
+        CHECK(message == subject + " block the " + proj + method + ending + "\n");
+    }
+    else
+    {
+        const string verb = you.verb_for_display(NC_("verb", "block"), "verb");
+        CHECK(message.find(verb) != string::npos);
+        CHECK(message.find(proj) != string::npos);
+        if (protection)
+            CHECK(message.find(method) < message.find(verb));
+        CHECK(message.find(verb) < message.find(proj));
+        CHECK(message.find(" block ") == string::npos);
     }
 }
