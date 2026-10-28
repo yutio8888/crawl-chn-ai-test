@@ -5,9 +5,11 @@ import contextlib
 import io
 from pathlib import Path
 import re
+import shutil
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 SCRIPTS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPTS))
@@ -63,7 +65,7 @@ class DataDrivenCoverageTests(unittest.TestCase):
     def species_fixture(self):
         # Real generated initializers preserve nested lists and #if legacy data;
         # no independently reconstructed interpretation of field positions.
-        text = (SOURCE / 'species-data.h').read_text(encoding='utf-8')
+        text = audit._generate_species_data(str(SOURCE))
         self.human = re.search(r'^\{\s+SP_HUMAN,\n.*?^\},', text, re.M | re.S).group()
         self.elf = re.search(r'^\{\s+SP_HIGH_ELF,\n.*?^\},', text, re.M | re.S).group()
         (self.source / 'species-def.h').write_text(
@@ -71,7 +73,49 @@ class DataDrivenCoverageTests(unittest.TestCase):
         self.data = self.source / 'species-data.h'
         self.data.write_text(self.human + '\n#if TAG_MAJOR_VERSION == 34\n'
                              + self.elf + '\n#endif\n', encoding='utf-8')
+        # Only replace the generation boundary for malformed-output mutations;
+        # schema validation and initializer parsing still use production code.
+        generation = mock.patch.object(audit, '_generate_species_data',
+            side_effect=lambda _source: self.data.read_text(encoding='utf-8'))
+        generation.start()
+        self.addCleanup(generation.stop)
         self.write_translations(['Orc', 'High Orc'])
+
+    def clean_species_source(self):
+        source = self.source / 'clean-source'
+        (source / 'util').mkdir(parents=True)
+        for name in ('species-gen.py', 'genutil.py'):
+            shutil.copy2(SOURCE / 'util' / name, source / 'util' / name)
+        shutil.copytree(SOURCE / 'util/species-gen', source / 'util/species-gen')
+        shutil.copytree(SOURCE / 'dat/species', source / 'dat/species')
+        shutil.copy2(SOURCE / 'species-def.h', source / 'species-def.h')
+        return source
+
+    def test_orc_clean_checkout_uses_production_generator(self):
+        source = self.clean_species_source()
+        self.assertFalse((source / 'species-data.h').exists())
+        names = audit.collect_orc_names(str(source))
+        self.assertEqual(len(names), 47)
+        self.assertTrue({'Orc', 'High Orc'} <= names)
+        self.assertFalse((source / 'species-data.h').exists())
+        # A stale build product must neither mask missing source nor set names.
+        (source / 'species-data.h').write_text('invalid stale header')
+        self.assertEqual(audit.collect_orc_names(str(source)), names)
+
+    def test_orc_generator_failure_rejected(self):
+        source = self.clean_species_source()
+        (source / 'dat/species/broken.yaml').write_text('name: [unterminated')
+        (source / 'species-data.h').write_text('stale generated data')
+        with self.assertRaisesRegex(ValueError, 'Species generation failed'):
+            audit.collect_orc_names(str(source))
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(audit.check_orc_names(str(source), str(self.translations)), 1)
+
+    def test_orc_missing_generator_input_rejected(self):
+        source = self.clean_species_source()
+        shutil.rmtree(source / 'dat/species')
+        with self.assertRaisesRegex(ValueError, 'Species generation failed'):
+            audit.collect_orc_names(str(source))
 
     def test_shop_membership_includes_continuations_pools_and_all_branches(self):
         self.assertEqual(audit.collect_shop_fields(str(self.source)), EXPECTED_SHOPS)

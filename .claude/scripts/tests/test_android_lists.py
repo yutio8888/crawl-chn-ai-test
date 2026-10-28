@@ -155,6 +155,10 @@ int main() {
 #include <cstdio>
 #include <string>
 using namespace std;
+const char* C_(const char* context, const char* key) {
+    assert(string(context) == "quiver focus state");
+    return T_(key);
+}
 struct { bool small=true; bool is_using_small_layout() { return small; } } tiles;
 enum { CMD_MENU_CYCLE_MODE };
 string menu_keyhelp_cmd(int) { return "[!]"; }

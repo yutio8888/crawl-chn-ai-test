@@ -17,6 +17,8 @@ import os
 import sys
 from pathlib import Path
 import json
+import subprocess
+import tempfile
 
 # Use shared parser for consistency with scan_i18n.py
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -406,6 +408,23 @@ def collect_shop_fields(source_dir: str):
     return identities
 
 
+def _generate_species_data(source_dir: str):
+    """Use the production generator without requiring a build or writing source."""
+    root = Path(source_dir).resolve()
+    with tempfile.TemporaryDirectory() as directory:
+        output = Path(directory)
+        command = [sys.executable, str(root / 'util/species-gen.py'),
+                   str(root / 'dat/species'), str(root / 'util/species-gen')]
+        command.extend(str(output / name) for name in
+                       ('species-data.h', 'aptitudes.h', 'species-groups.h',
+                        'species-type.h'))
+        result = subprocess.run(command, capture_output=True, text=True)
+        if result.returncode:
+            raise ValueError('Species generation failed: '
+                             + (result.stderr or result.stdout).strip())
+        return (output / 'species-data.h').read_text(encoding='utf-8')
+
+
 def collect_orc_names(source_dir: str):
     """Parse all generated species entries, including inactive compatibility.
 
@@ -421,7 +440,7 @@ def collect_orc_names(source_dir: str):
             r'const char\* child_name;\s*const char\* orc_name;\s*'
             r'const char\* orcification_msg;\s*};', schema):
         raise ValueError('species_def final fields no longer match the orc-name schema')
-    data = (root / 'species-data.h').read_text(encoding='utf-8')
+    data = _generate_species_data(source_dir)
     data = re.sub(r'//[^\n]*', '', data)
     # Enumerate every enum-headed initializer independently of accepted row
     # formatting. An indented/new-layout row must not disappear from both the
