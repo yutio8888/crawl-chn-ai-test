@@ -1,8 +1,8 @@
 # Issue #24 怪物翻译全量复审结果
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
-- 术语表 SHA-256：`61a07d128c39a38b568eea73b3fef9b15cf76ac85900f458820bfcd22df09dc0`
-- 清单 SHA-256：`973bc420329a7c906b8b096c15f5770c0b75944a8dd96e04a18acd6510855629`
+- 术语表 SHA-256：`90a9e990243dbcc3657ff2b491abee689d0af2df04213540bde08fdda751baa2`
+- 清单 SHA-256：`2a097ad5714be7069852257b081d4ec919007ce7410fbc6f9a635edc70fed122`
 - 身份总数：813（现行 689；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -439,7 +439,7 @@
 | `monster:MONS_JESSICA` | current; exposure=unique; name=Jessica→杰西卡; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/jessica.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SIGMUND` | current; exposure=unique; name=Sigmund→西格蒙德; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/sigmund.yaml; desc=EN/ZH | keep |
 | `monster:MONS_TERENCE` | current; exposure=unique; name=Terence→特伦斯; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/terence.yaml; desc=EN/ZH | keep |
-| `monster:MONS_BLORKULA_THE_ORCULA` | current; exposure=unique; name=Blorkula the orcula→兽人布洛库拉; genus=MONS_ORC; species=MONS_ORC; data=crawl-ref/source/dat/mons/blorkula-the-orcula.yaml; desc=EN/ZH | keep |
+| `monster:MONS_BLORKULA_THE_ORCULA` | current; exposure=unique; name=Blorkula the orcula→兽人布洛库拉; genus=MONS_ORC; species=MONS_ORC; data=crawl-ref/source/dat/mons/blorkula-the-orcula.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_EDMUND` | current; exposure=unique; name=Edmund→埃德蒙; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/edmund.yaml; desc=EN/ZH | keep |
 | `monster:MONS_PSYCHE` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_EROLCHA` | current; exposure=unique; name=Erolcha→伊罗查; genus=MONS_OGRE; species=MONS_OGRE; data=crawl-ref/source/dat/mons/erolcha.yaml; desc=EN/ZH | keep |
@@ -731,7 +731,7 @@
 | `monster:MONS_BURIAL_ACOLYTE` | current; exposure=ordinary; name=burial acolyte→殡葬侍僧; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/burial-acolyte.yaml; desc=EN/ZH | keep |
 | `monster:MONS_BLAZEHEART_CORE` | current; exposure=ordinary; name=blazeheart core→焰心核心; genus=MONS_BLAZEHEART_CORE; species=MONS_BLAZEHEART_CORE; data=crawl-ref/source/dat/mons/blazeheart-core.yaml; desc=EN/ZH | keep |
 | `monster:MONS_MARTYRED_SHADE` | current; exposure=ordinary; name=martyred shade→殉道暗影; genus=MONS_PHANTOM; species=MONS_MARTYRED_SHADE; data=crawl-ref/source/dat/mons/martyred-shade.yaml; desc=EN/ZH | keep |
-| `monster:MONS_ORC_APOSTLE` | current; exposure=ordinary; name=orc apostle→兽人使徒; genus=MONS_ORC; species=MONS_ORC; data=crawl-ref/source/dat/mons/orc-apostle.yaml; desc=EN/ZH | keep |
+| `monster:MONS_ORC_APOSTLE` | current; exposure=ordinary; name=orc apostle→兽人使徒; genus=MONS_ORC; species=MONS_ORC; data=crawl-ref/source/dat/mons/orc-apostle.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_SACRED_LOTUS` | current; exposure=ordinary; name=sacred lotus→圣莲; genus=MONS_PLANT; species=MONS_SACRED_LOTUS; data=crawl-ref/source/dat/mons/sacred-lotus.yaml; desc=EN/ZH | keep |
 | `monster:MONS_THERMIC_DYNAMO` | current; exposure=ordinary; name=thermic dynamo→热力发电机; genus=MONS_FIRE_VORTEX; species=MONS_THERMIC_DYNAMO; data=crawl-ref/source/dat/mons/thermic-dynamo.yaml; desc=EN/ZH | keep |
 | `monster:MONS_OBSIDIAN_BAT` | current; exposure=ordinary; name=obsidian bat→黑曜石蝙蝠; genus=MONS_BAT; species=MONS_OBSIDIAN_BAT; data=crawl-ref/source/dat/mons/obsidian-bat.yaml; desc=EN/ZH | retranslate: description corrected |

@@ -28,6 +28,7 @@
 #include "player-equip.h"
 #include "random.h"
 #include "ranged-attack.h"
+#include "spl-monench.h"
 #include "spl-selfench.h"
 #include "spl-summoning.h"
 #include "spl-util.h"
@@ -722,11 +723,12 @@ TEST_CASE("playtest: zero-damage roots keep the damage suffix localized",
     you.props[FASTROOT_POWER_KEY] = 10;
     you.start_constricting(*victim, CONSTRICT_ROOTS);
     REQUIRE(victim->is_constricted());
+    REQUIRE_FALSE(victim->has_invalid_constrictor());
     // Force only the final timescale to zero; execute the real damage and
     // message producer rather than reconstructing its template in the test.
     you.time_taken = 0;
     const int hp = victim->hit_points;
-    const string message = observe_message([&] { you.constriction_damage_defender(*victim); });
+    const string message = observe_message([&] { you.handle_constriction(); });
     CHECK(victim->hit_points == hp);
     CHECK(message.find(string(T_(" but do no damage")) + T_(".")) != string::npos);
     if (language == lang_t::ZH)
