@@ -17,6 +17,15 @@ Formal version tags, closed-world artifact validation, checksums, draft
 Releases, and the manual publication gate are defined in
 [release-workflow.md](release-workflow.md).
 
+Routine pull requests, branch pushes, scheduled runs, and manual branch runs
+execute tooling and static CI gates on Ubuntu and compile Android, Linux, and
+Windows. Android debug APKs remain available for device testing; Windows builds
+compile Tiles without creating or uploading a release ZIP. Release tags matching
+the workflow's stable or trunk tag rules additionally run the macOS tooling and
+static gates, build the macOS DMG, and package and upload Windows Tiles. Tagged
+draft Releases retain full runtime checks, Android signing, and closed-world
+validation of the Windows ZIP, macOS DMG, and Android release APK.
+
 Use at most eight parallel build jobs. Agents compiling while other work is in
 progress should use four jobs and avoid concurrent compile storms.
 

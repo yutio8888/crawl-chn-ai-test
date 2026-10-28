@@ -31,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: ${{ fromJSON((startsWith(github.ref, 'refs/tags/0.34.1-zh') || (startsWith(github.ref, 'refs/tags/') && contains(github.ref_name, '-trunk-'))) && '["ubuntu-latest", "macos-latest"]' || '["ubuntu-latest"]') }}
     runs-on: ${{ matrix.os }}
     env:
       PYTHONSAFEPATH: "1"
@@ -89,7 +89,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: ${{ fromJSON((startsWith(github.ref, 'refs/tags/0.34.1-zh') || (startsWith(github.ref, 'refs/tags/') && contains(github.ref_name, '-trunk-'))) && '["ubuntu-latest", "macos-latest"]' || '["ubuntu-latest"]') }}
     runs-on: ${{ matrix.os }}
     env:
       PYTHONSAFEPATH: "1"
@@ -427,6 +427,7 @@ jobs:
         working-directory: crawl-ref/source
 
   build_macos_tiles:
+    if: ${{ (startsWith(github.ref, 'refs/tags/0.34.1-zh') || (startsWith(github.ref, 'refs/tags/') && contains(github.ref_name, '-trunk-'))) }}
     permissions:
       contents: read
 
@@ -498,16 +499,23 @@ jobs:
         run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh --fetch-upstream-tags
-      - name: Build Windows tiles package
+      - name: Build Windows tiles
+        env:
+          RELEASE_PACKAGE: ${{ (startsWith(github.ref, 'refs/tags/0.34.1-zh') || (startsWith(github.ref, 'refs/tags/') && contains(github.ref_name, '-trunk-'))) }}
         shell: bash
         run: |
           save_args=()
           if [[ "$GITHUB_REF" != refs/tags/0.34.1-zh* ]]; then
             save_args+=('SAVEDIR=~/crawl-trunk')
           fi
-          make CROSSHOST=x86_64-w64-mingw32 "${save_args[@]}" package-windows-tiles -j4
+          targets=()
+          if [[ "$RELEASE_PACKAGE" == "true" ]]; then
+            targets+=(package-windows-tiles)
+          fi
+          make TILES=y CROSSHOST=x86_64-w64-mingw32 "${save_args[@]}" "${targets[@]}" -j4
         working-directory: crawl-ref/source
       - name: Upload Windows tiles package
+        if: ${{ (startsWith(github.ref, 'refs/tags/0.34.1-zh') || (startsWith(github.ref, 'refs/tags/') && contains(github.ref_name, '-trunk-'))) }}
         uses: actions/upload-artifact@v4
         with:
           name: windows-tiles
