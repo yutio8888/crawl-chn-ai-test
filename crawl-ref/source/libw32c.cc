@@ -302,7 +302,7 @@ void w32_cancel_waiting_for_input()
 #if defined(WINVER) && WINVER >= 0x0600
     CancelIoEx(inbuf, nullptr);
 #else
-    typedef BOOL(WINAPI *cancel_func)(HANDLE, LPOVERLAPPED);
+    using cancel_func = BOOL (WINAPI *)(HANDLE, LPOVERLAPPED);
     cancel_func cancel_io = (cancel_func)(void *)GetProcAddress(
         GetModuleHandle(TEXT("kernel32.dll")), "CancelIoEx");
 
