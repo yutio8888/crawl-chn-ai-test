@@ -6869,6 +6869,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         REQUIRE(target);
         for (auto flavour : {BEAM_FIRE, BEAM_COLD})
         {
+            // Ufetubi are fire-vulnerable but cold-resistant. A low cold
+            // damage roll can legitimately become zero and produce no message.
+            target->type = flavour == BEAM_FIRE ? MONS_UFETUBUS : MONS_HUMAN;
+            REQUIRE(target->res_fire() == (flavour == BEAM_FIRE ? -1 : 0));
+            REQUIRE(target->res_cold() == (flavour == BEAM_FIRE ? 1 : 0));
             extended_playtest_melee hit(&you, target);
             hit.damage_done = 60;
             hit.needs_message = true;
@@ -6896,6 +6901,17 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                     CHECK(line.find("severely ") != string::npos);
             }
         }
+        // The same production path must remain silent when resistance reduces
+        // the minimum brand damage to zero; no random retry is necessary.
+        target->type = MONS_UFETUBUS;
+        extended_playtest_melee resisted(&you, target);
+        resisted.damage_done = 1;
+        resisted.needs_message = true;
+        resisted.attacker_visible = resisted.defender_visible = true;
+        resisted.calc_elemental_brand_damage(
+            BEAM_COLD, C_("elemental brand verb", "freeze"));
+        CHECK(resisted.special_damage == 0);
+        CHECK(resisted.special_damage_message.empty());
         for (int repeat = 0; repeat < 2; ++repeat)
         {
             msgwin_temporary_mode temporary;
