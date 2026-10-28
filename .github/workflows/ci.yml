@@ -28,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: ${{ fromJSON(startsWith(github.ref, 'refs/tags/0.34.1-zh') && '["ubuntu-latest","macos-latest"]' || '["ubuntu-latest"]') }}
     runs-on: ${{ matrix.os }}
     env:
       PYTHONSAFEPATH: "1"
@@ -86,7 +86,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: ${{ fromJSON(startsWith(github.ref, 'refs/tags/0.34.1-zh') && '["ubuntu-latest","macos-latest"]' || '["ubuntu-latest"]') }}
     runs-on: ${{ matrix.os }}
     env:
       PYTHONSAFEPATH: "1"
@@ -362,10 +362,19 @@ jobs:
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh
       - name: Build Linux console
-        run: make package-linux-console -j4
+        shell: bash
+        env:
+          RELEASE_PACKAGE: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
+        run: |
+          targets=()
+          if [[ "$RELEASE_PACKAGE" == 'true' ]]; then
+            targets+=(package-linux-console)
+          fi
+          make "${targets[@]}" -j4
         working-directory: crawl-ref/source
 
       - name: Smoke packaged Linux console
+        if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
         shell: bash
         run: |
           set -euo pipefail
@@ -376,6 +385,7 @@ jobs:
           ldd ./crawl | tee "$RUNNER_TEMP/linux-console-ldd.txt"
           ! grep -q 'not found' "$RUNNER_TEMP/linux-console-ldd.txt"
       - name: Upload Linux console package
+        if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
         uses: actions/upload-artifact@v4
         with:
           name: linux-console
@@ -383,6 +393,7 @@ jobs:
           if-no-files-found: error
 
   build_macos_tiles:
+    if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
     permissions:
       contents: read
 
@@ -446,10 +457,19 @@ jobs:
         run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh
-      - name: Build Windows tiles package
-        run: make CROSSHOST=x86_64-w64-mingw32 package-windows-tiles -j4
+      - name: Build Windows tiles
+        shell: bash
+        env:
+          RELEASE_PACKAGE: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
+        run: |
+          targets=()
+          if [[ "$RELEASE_PACKAGE" == 'true' ]]; then
+            targets+=(package-windows-tiles)
+          fi
+          make CROSSHOST=x86_64-w64-mingw32 TILES=y "${targets[@]}" -j4
         working-directory: crawl-ref/source
       - name: Upload Windows tiles package
+        if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
         uses: actions/upload-artifact@v4
         with:
           name: windows-tiles
@@ -489,10 +509,19 @@ jobs:
         run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh
-      - name: Build Windows console package
-        run: make CROSSHOST=x86_64-w64-mingw32 package-windows-console -j4
+      - name: Build Windows console
+        shell: bash
+        env:
+          RELEASE_PACKAGE: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
+        run: |
+          targets=()
+          if [[ "$RELEASE_PACKAGE" == 'true' ]]; then
+            targets+=(package-windows-console)
+          fi
+          make CROSSHOST=x86_64-w64-mingw32 "${targets[@]}" -j4
         working-directory: crawl-ref/source
       - name: Upload Windows console package
+        if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
         uses: actions/upload-artifact@v4
         with:
           name: windows-console
