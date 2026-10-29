@@ -48263,3 +48263,11 @@ Which mutation (name, 'good', 'bad', 'any', 'xom', 'slime', 'qazlal', 'temp')?
 %%%%
 Which temporary mutation (name, 'good', 'bad', 'any', 'xom', 'slime', 'qazlal')? 
 选择哪种临时变异（名称，或'good'、'bad'、'any'、'xom'、'slime'、'qazlal'）？ 
+
+%%%%
+view menu action|target/travel
+选定目标/自动行走
+
+%%%%
+view menu action|target
+选定目标
