@@ -884,7 +884,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             REQUIRE(file.good());
             const string dump((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
             INFO(dump);
-            CHECK(dump.find(listed) != string::npos);
+            const string glyph_list = mpr_monster_list(past, true);
+            CHECK(glyph_list != listed);
+            CHECK(glyph_list.find(" (") != string::npos);
+            CHECK(dump.find(glyph_list) != string::npos);
             CHECK(monsters[0]->base_attitude == ATT_FRIENDLY);
             CHECK(monsters[1]->base_attitude == ATT_NEUTRAL);
             CHECK(monsters[0]->mname == "Xochitl");
@@ -1519,5 +1522,29 @@ TEST_CASE("playtest: blocked autofire and failed targets translate production Lu
             ? "视线内没有可到达的目标！" : "No reachable target in view!";
         INFO(lua.error);
         REQUIRE(lua.callfn("verify_unreachable", "s", expected));
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Trunk starting skill notes localize display and preserve identity",
+                 "[zh-translation][trunk-sync][notes]")
+{
+    unwind_var<player> restore_player(you);
+    issue149_player();
+    const Note note(NOTE_START_SKILL, SK_FIGHTING, 3);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        CHECK(note.describe(false, false, true)
+              == (language == lang_t::ZH ? "初始格斗技能等级为3。"
+                                        : "Started with skill level 3 in Fighting"));
+        CHECK(note.type == NOTE_START_SKILL);
+        CHECK(note.first == SK_FIGHTING);
+        CHECK(note.second == 3);
+        for (bool enabled : {false, true})
+        {
+            unwind_var<bool> visible(Options.note_starting_skills, enabled);
+            CHECK(note.hidden() == !enabled);
+        }
     }
 }

@@ -190,7 +190,7 @@ flying (Fly) armour ego
 %%%%
 glass (Glass) armour ego
 
-当你伤害敌人时，它可能会使敌人玻璃化，使它们更容易受到后续伤害。
+当你对敌人造成非攻击伤害时，它可能会使敌人玻璃化，使它们更容易受到后续伤害。
 你的魔力释放技能会提高玻璃化的概率和持续时间。
 %%%%
 guile (Guile) armour ego

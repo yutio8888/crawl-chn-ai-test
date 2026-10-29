@@ -3247,7 +3247,7 @@ VISUAL:@The_monster@ 掐了掐 @reflexive@。
 %%%%
 ############ BLORKULA ### 兽人吸血鬼
 %%%%
-Blorkula the orcula
+Blorkula the Orcula
 @_Blorkula_common_@
 
 w:5
@@ -6617,6 +6617,8 @@ _yredelemnul_Donald_
 
 @The_monster@说："你要是想暗一点，说一声不就行了。"
 
+@The_monster@说："你干嘛非要投下这么大的影子？这是在比赛吗？"
+
 
 
 @The_monster@说："什么火炬一层楼只能点一次？"
@@ -7449,14 +7451,14 @@ Bennu permanently killed
 
 VISUAL:@The_monster@耗尽了灵能，从此界消散而去。
 %%%%
-Blorkula the orcula killed
+Blorkula the Orcula killed
 
 
 一道微弱的棱彩薄雾从布洛库拉的破碎身躯中升起，随后消散。
 
-## END Blorkula the orcula ##
+## END Blorkula the Orcula ##
 %%%%
-Blorkula the orcula triumphant
+Blorkula the Orcula triumphant
 
 
 # Rainbow Raider winning against Batman
@@ -9956,8 +9958,8 @@ related Wiglaf
 w:5
 @_Wiglaf_rare_@
 %%%%
-related beogh Blorkula the orcula
-@Blorkula the orcula@
+related beogh Blorkula the Orcula
+@Blorkula the Orcula@
 
 w:4
 @related beogh orc@

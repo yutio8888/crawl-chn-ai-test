@@ -301,8 +301,9 @@ string Note::describe(bool when, bool where, bool what) const
                    << T_(" to Zin");
             break;
         case NOTE_START_SKILL:
-            result << "Started with skill level " << second
-                   << " in " << skill_name(static_cast<skill_type>(first));
+            result << make_stringf_p(
+                C_("skill note", "Started with skill level %1$d in %2$s"),
+                second, skill_name(static_cast<skill_type>(first)));
             break;
         case NOTE_GAIN_SKILL:
             result << make_stringf_p(

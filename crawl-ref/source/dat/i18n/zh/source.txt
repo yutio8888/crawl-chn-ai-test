@@ -33713,7 +33713,7 @@ Azrael
 Bai Suzhen
 白素贞
 %%%%
-Blorkula the orcula
+Blorkula the Orcula
 兽人布洛库拉
 %%%%
 Boris
@@ -48251,3 +48251,15 @@ maximum resource note|Reached %d max magic points
 %%%%
 even more 
 更多
+
+%%%%
+skill note|Started with skill level %1$d in %2$s
+初始%2$s技能等级为%1$d。
+
+%%%%
+Which mutation (name, 'good', 'bad', 'any', 'xom', 'slime', 'qazlal', 'temp')? 
+选择哪种变异（名称，或'good'、'bad'、'any'、'xom'、'slime'、'qazlal'、'temp'）？ 
+
+%%%%
+Which temporary mutation (name, 'good', 'bad', 'any', 'xom', 'slime', 'qazlal')? 
+选择哪种临时变异（名称，或'good'、'bad'、'any'、'xom'、'slime'、'qazlal'）？ 

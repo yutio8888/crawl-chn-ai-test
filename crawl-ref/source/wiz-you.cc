@@ -553,16 +553,16 @@ bool wizard_add_mutation()
     if (you.has_mutation(MUT_MUTATION_RESISTANCE))
         mpr(T_("Ignoring mut resistance to apply mutation."));
 
-    msgwin_get_line("Which mutation (name, 'good', 'bad', 'any', "
-                    "'xom', 'slime', 'qazlal', 'temp')? ",
+    msgwin_get_line(T_("Which mutation (name, 'good', 'bad', 'any', "
+                       "'xom', 'slime', 'qazlal', 'temp')? "),
                     specs, sizeof(specs));
 
     bool temp = !strcasecmp(specs, "temp");
     auto mutclass = temp ? MUTCLASS_TEMPORARY : MUTCLASS_NORMAL;
     if (temp)
     {
-        msgwin_get_line("Which temporary mutation (name, 'good', 'bad', 'any', "
-                        "'xom', 'slime', 'qazlal')? ", specs, sizeof(specs));
+        msgwin_get_line(T_("Which temporary mutation (name, 'good', 'bad', 'any', "
+                           "'xom', 'slime', 'qazlal')? "), specs, sizeof(specs));
     }
 
     if (specs[0] == '\0')
