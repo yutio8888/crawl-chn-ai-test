@@ -924,7 +924,7 @@ Your aura of power can strike those that harm you.
 你的力量光环可以反击伤害你的人。
 %%%%
 heal your body and restore your magic
-治愈身体并恢复魔力
+治愈身体并恢复法力
 %%%%
 gather your power into a mighty leap
 将力量凝聚为强力跳跃
@@ -2612,7 +2612,7 @@ A dragon arrives to answer your call!
 一条龙回应你的召唤到来了！
 %%%%
 A dragon tries to answer your call, but you don't have enough magical power!
-一条龙试图回应你的召唤，但你没有足够的
+一条龙试图回应你的召唤，但你的法力不足！
 %%%%
 A fierce wind blows from the card.
 一阵猛烈的风从牌中吹出。
@@ -3193,7 +3193,7 @@ Beep! Your pager goes off! Use _ to check your messages.
 哔！你的寻呼机响了！使用 _ 查看你的消息。
 %%%%
  begins accelerating your health and magic regeneration.
-开始加速你的生命和魔力再生。
+开始加速你的生命和法力再生。
 %%%%
  begins to grow on the wall!
 开始在墙上生长！
@@ -3569,7 +3569,7 @@ Clearing monster memory.
 正在清除怪物记忆。
 %%%%
 Clearing quiver.
-清空箭袋。
+清除快捷动作。
 %%%%
 Clearing the skill training target for %s.
 正在清除%s的技能训练目标。
@@ -4105,7 +4105,7 @@ explore_greedy
 贪婪探索
 %%%%
 extract magic from the potions you drink
-从你饮用的药水中提取魔法
+从你饮用的药水中提取法力
 %%%%
 extraordinarily
 异常
@@ -5225,7 +5225,7 @@ magic regeneration
 法力再生
 %%%%
 Magic restored.
-魔力已恢复。
+法力已恢复。
 %%%%
 Magic Scroll
 魔法卷轴
@@ -5444,10 +5444,10 @@ No
 否
 %%%%
 No %squiver actions available for cycling.%s
-没有可循环的%s箭袋动作%s
+没有可循环切换的%s快捷动作。%s
 %%%%
 No action is quivered. Press <w>%</w> to choose one.
-尚未设置箭袋动作。按 <w>%</w> 选择一个。
+尚未设置快捷动作。按 <w>%</w> 选择一个。
 %%%%
 No God
 无神
@@ -5561,7 +5561,7 @@ Nothing appears to happen... Ominous!
 似乎什么都没有发生……不祥之兆！
 %%%%
 Nothing quivered!
-箭袋中没有任何东西！
+尚未设置快捷动作！
 %%%%
 Nothing wielded
 未装备武器
@@ -5570,7 +5570,7 @@ Now building '%s'
 正在建造'%s'
 %%%%
 Now linked to your health, your magic stops regenerating.
-与你的生命链接后，你的魔力停止了再生。
+与你的生命链接后，你的法力停止了再生。
 %%%%
 numb sensation.
 麻木感。
@@ -5700,7 +5700,7 @@ pinch
 掐
 %%%%
 Placed new exclusion.
-已放置新的排除区域。
+已设置新的旅行禁区。
 %%%%
 places
 地点
@@ -5982,7 +5982,7 @@ reduced
 降低
 %%%%
 Reduced exclusion size to a single square.
-已将排除区域缩小到一格。
+已将禁区缩小到一格。
 %%%%
 reflection
 反射
@@ -6027,7 +6027,7 @@ remove some of your equipment
 卸下部分装备
 %%%%
 Removed exclusion.
-已移除排除区域。
+已移除禁区。
 %%%%
 Removed Food
 已移除食品
@@ -6786,7 +6786,7 @@ Stop fighting!
 停止战斗！
 %%%%
 Stopped running for exclusion.
-因排除区域而停止奔跑。
+因禁区而停止奔跑。
 %%%%
  stops burning.
 不再燃烧。
@@ -7873,7 +7873,7 @@ Things that are here:
 此处有：
 %%%%
 This ability has a chance of reducing your maximum magic capacity when used.
-此能力在使用时有一定几率降低你的最大魔力容量。
+此能力在使用时有一定几率降低你的法力上限。
 %%%%
 This altar belongs to %s, but you can't tell which.\nPress the corresponding letter to learn more about a god, or press enter to convert or escape to cancel.
 这个祭坛属于%s，但你无法分辨是哪位神祇。\n按对应字母了解神祇详情，按回车皈依或按Esc取消。
@@ -7888,7 +7888,7 @@ This helmet is too small for your head.
 这个头盔对你的头来说太小了。
 %%%%
 This is %s sacrifice. Piety after sacrifice: %s
-这是%s献祭。献祭后的虔诚度：%s
+这是%s献祭。献祭后的虔诚值：%s
 %%%%
 This item has been removed.\n
 这个物品已被移除。\n
@@ -8520,7 +8520,7 @@ Without a target, your clockwork bee falls to the ground.
 没有目标，你的发条蜜蜂掉在了地上。
 %%%%
 Without enough magic to sustain it, your %s dissipates.
-没有足够的魔力维持，你的%s消散了。
+没有足够的法力维持，你的%s消散了。
 %%%%
 wizardry
 精准施法
@@ -8807,7 +8807,7 @@ You are out of cards!
 你没有牌了！
 %%%%
 You are out of magic!
-你魔力耗尽！
+你的法力耗尽了！
 %%%%
 You are peeking down the stairs.
 你正在朝楼梯下窥视。
@@ -9002,7 +9002,7 @@ You begin accumulating electric charge.
 你开始积累电荷。
 %%%%
 You begin rapidly regenerating health and magic.
-你开始快速恢复生命和魔法。
+你开始快速恢复生命和法力。
 %%%%
 You begin resting.
 你开始休息。
@@ -9512,7 +9512,7 @@ You cannot see a target there!
 你在那里看不到目标！
 %%%%
 You cannot set exclusions on this level.
-你无法在此层级设置排除区域。
+你无法在此层设置禁区。
 %%%%
 You cannot shatter the curse on %s while it is
 你无法在%s与你的身体融合时粉碎其诅咒！
@@ -9716,7 +9716,7 @@ You don't have any memories left to burn.
 你已经没有记忆可以燃烧了。
 %%%%
 You don't have any quiverable items.
-你没有任何可以装入箭袋的物品。
+你没有可设为快捷动作的物品。
 %%%%
 You don't have any shoulders.
 你没有肩膀。
@@ -9827,10 +9827,10 @@ You extend your mandibles.
 你伸出了下颚。
 %%%%
 You extract %smagical energy from the potion.
-你从药水中提取了%s魔力。
+你从药水中提取了%s法力。
 %%%%
 You extract magical energy from the potion.
-你从药水中提取了魔法能量。
+你从药水中提取了法力。
 %%%%
 You fade further into invisibility.
 你进一步隐入了无形。
@@ -9920,7 +9920,7 @@ You feel a strong urge to attack something.
 你感到一阵强烈的攻击欲望。
 %%%%
 You feel a surge of magic.
-你感到一股魔力涌动。
+你感到一股法力涌动。
 %%%%
 You feel a surge of power!
 你感到一股力量涌动！
@@ -10013,7 +10013,7 @@ You feel less perceptive.
 你感到感知力减弱了。
 %%%%
 You feel less pious.
-你感到虔诚度降低了。
+你感到自己的虔诚值降低了。
 %%%%
 You feel less protected from negative energy.
 你感到对负能量的抵抗力减弱了。
@@ -10058,16 +10058,16 @@ You feel like your blood is boiling!
 你感到血液在沸腾！
 %%%%
 You feel magic leave you.
-你感到魔力离你而去。
+你感到法力离你而去。
 %%%%
 You feel magic leave your %s.
-你感到魔力离开了你的%s。
+你感到法力离开了你的%s。
 %%%%
 You feel magic pooling in your %s.
-你感到魔力在你的%s中汇聚。
+你感到法力在你的%s中汇聚。
 %%%%
 You feel magic returning to you.
-你感到魔力回到你身上。
+你感到法力回到你身上。
 %%%%
 You feel mighty!
 你感到力量强大！
@@ -10301,10 +10301,10 @@ You feel your light-headedness will last longer.
 你感到你的头晕将持续更久。
 %%%%
 You feel your magic capacity decrease.
-你感到你的魔力容量减少了。
+你感到自己的法力上限降低了。
 %%%%
 You feel your magic capacity increase.
-你感到你的魔力容量增加了。
+你感到自己的法力上限提高了。
 %%%%
 You feel your power drawn to a protective spirit.
 你感到你的力量被引向一个保护之灵。
@@ -10478,7 +10478,7 @@ You have no feet!
 你没有脚！
 %%%%
 You have no magic to restore.
-你没有魔法值需要恢复。
+你没有可恢复的法力。
 %%%%
 You have no religion.
 你不信仰任何神祇。
@@ -10487,7 +10487,7 @@ You have nothing to donate!
 你没有什么可捐赠的！
 %%%%
 You have nothing to quiver.
-你没有东西可装入箭袋。
+你没有可设为快捷动作的内容。
 %%%%
 You have nothing you can fire or use right now.
 你现在没有可以发射或使用的东西。
@@ -10613,7 +10613,7 @@ You knock %s out of %s grip!
 你将%s从%s掌握中击落！
 %%%%
 You lack sufficient magical power to recharge your bee.
-你没有足够的魔力来给你的蜜蜂充能。
+你没有足够的法力来给你的蜜蜂充能。
 %%%%
 You learned that %s are actually %s.
 你了解到%s实际上是%s。
@@ -11083,7 +11083,7 @@ You sublimate a sliver of %s essence and reconstitute it in ice.
 你将%s的一丝精华升华，并使其在冰中重组。
 %%%%
 You suddenly feel drained of magical energy!
-你突然感到魔力被抽空！
+你突然感到法力被抽空！
 %%%%
 You swap places with %s.
 你与%s交换了位置。
@@ -11194,7 +11194,7 @@ You're confused, stopping %s.
 你感到困惑，停止了%s。
 %%%%
 You're in a travel-excluded area, stopping %s.
-你处于探索排除区域，停止%s。
+你处于旅行禁区内，停止%s。
 %%%%
 You're too berserk to give orders, and you can't shout!
 你太狂暴了，无法下达命令，也无法喊叫！
@@ -11563,13 +11563,13 @@ Your lungs strain for air.
 你的肺部迫切地需要空气。
 %%%%
 Your magic begins regenerating once more.
-你的魔力重新开始恢复。
+你的法力重新开始恢复。
 %%%%
 Your magic feels %stainted.
 你的魔力感到%s被玷污了。
 %%%%
 Your magic is already full.
-你的魔法值已经是满的。
+你的法力已经回满了。
 %%%%
 Your magical essence is drained by the effort!
 你的魔力精华在这场消耗中枯竭了！
@@ -14160,7 +14160,7 @@ You %s the barbed spikes from your body.
 你%s了身上的倒刺。
 %%%%
  health and magic
-生命和魔法
+生命和法力
 %%%%
 regenerate%s more quickly
 更快地再生%s
@@ -17937,7 +17937,7 @@ Ench
 附魔
 %%%%
 Slay
-杀敌
+杀戮
 %%%%
  x %d%% (Archery)
  x %d%%（箭术）
@@ -19679,10 +19679,10 @@ The winds are changing....
 风向正在转变……
 %%%%
 When hurt, damage is shared between your health and your magic reserves.
-受伤时，伤害在你的生命和魔力储备之间分摊。
+受伤时，伤害在你的生命和法力储备之间分摊。
 %%%%
 When low on magic, you restore magic in place of health.
-当魔力不足时，你以消耗生命为代价恢复魔力。
+当法力不足时，你会恢复法力而非生命。
 %%%%
 When seriously injured, your blood forms armour. (AC +
 当你严重受伤时，血液会形成护甲。（防御+
@@ -20237,10 +20237,10 @@ You have a beak for a mouth.
 你有一张喙状的嘴。
 %%%%
 You have a considerably increased reservoir of magic. (+20% MP)
-你的魔力储备大幅增加。（+20%魔力）
+你的法力储备大幅增加。（+20%法力）
 %%%%
 You have a greatly increased reservoir of magic. (+30% MP)
-你的魔力储备极大增加。（+30%魔力）
+你的法力储备极大增加。（+30%法力）
 %%%%
 You have a heavy armoured tail.
 你有一条沉重的装甲尾巴。
@@ -20303,7 +20303,7 @@ You have an extremely huge brain. (Int +4)
 你有一个极其巨大的大脑。（智力+4）
 %%%%
 You have an increased reservoir of magic. (+10% MP)
-你的魔力储备增加。（+10%魔力）
+你的法力储备增加。（+10%法力）
 %%%%
 You have an uncanny knack for detecting items.
 你有探测物品的奇特能力。
@@ -20465,7 +20465,7 @@ You regenerate health from kills.
 你通过击杀恢复生命。
 %%%%
 You regenerate magic rapidly.
-你快速恢复魔力。
+你快速恢复法力。
 %%%%
 You regenerate.
 你具有再生能力。
@@ -20618,13 +20618,13 @@ Your magical and physical power is slightly enhanced at high health.
 你在高生命时魔法和物理力量略微增强。
 %%%%
 Your magical capacity is extremely low. (-30% MP)
-你的魔力容量极低。（-30%魔力）
+你的法力上限极低。（-30%法力）
 %%%%
 Your magical capacity is low. (-10% MP)
-你的魔力容量较低。（-10%魔力）
+你的法力上限较低。（-10%法力）
 %%%%
 Your magical capacity is very low. (-20% MP)
-你的魔力容量很低。（-20%魔力）
+你的法力上限很低。（-20%法力）
 %%%%
 Your magical flight helps you evade attacks. (EV +4)
 你的魔法飞行帮助你闪避攻击。（闪避+4）
@@ -22064,7 +22064,7 @@ Disabling autothrow.
 禁用自动投掷。
 %%%%
 You don't have enough magic to cast 
-你没有足够的魔力来施放 
+你没有足够的法力来施放 
 %%%%
 You are too depleted to cast spells recklessly!
 你消耗太大，无法随意施放法术！
@@ -23411,7 +23411,7 @@ Empty
 空
 %%%%
 Nothing quivered
-未选择箭矢
+未设置快捷动作
 %%%%
 cross-training
 跨系训练
@@ -23657,7 +23657,7 @@ your magic and health are inextricable.
 你的魔力和生命密不可分。
 %%%%
 your reserves of magic are already full.
-你的魔力储备已经满了。
+你的法力储备已经满了。
 %%%%
 you cannot cast such powerful magic in your current form.
 当前形态下你无法施放如此强大的魔法。
@@ -24551,7 +24551,7 @@ It is a scroll of enchant weapon.
 这是一张附魔武器卷轴。
 %%%%
 It is a scroll of brand weapon.
-这是一张武器烙印卷轴。
+这是一张武器铭印卷轴。
 %%%%
 It is a scroll of identify.
 这是一张鉴定卷轴。
@@ -25986,13 +25986,13 @@ Table legend:\n A = Kills in this place as a percentage of kills in the entire g
 表格说明：\n A = 此地点的击杀数占整个游戏击杀数的百分比。\n B = 此地点的由你造成的击杀数占整个游戏中你造成的击杀数的\n     百分比。\n C = 此地点的由友方造成的击杀数占整个游戏中友方造成的击杀数\n     的百分比。\n D = 此地点的其他击杀数占整个游戏中其他击杀数的\n     百分比。\n E = 此地点的经验值占整个游戏经验值的\n     百分比。\n F = 此地点的经验值除以你所探索过的\n     此地点层数。\n\n
 %%%%
 Table legend:\n A = God\n B = Rank\n C = Start time\n D = Start piety\n E = Piety gained\n F = Piety on gifts\n G = Piety on penance\n H = Piety on stepdowns\n I = Piety decays\n J = Piety lost (inc. decay)\n
-表格说明：\n A = 神明\n B = 等级\n C = 开始时间\n D = 初始虔诚度\n E = 获得的虔诚度\n F = 赐礼上的虔诚度\n G = 赎罪上的虔诚度\n H = 衰减步进的虔诚度\n I = 虔诚度衰减\n J = 虔诚度损失（含衰减）\n
+表格说明：\n A = 神明\n B = 等级\n C = 开始时间\n D = 初始虔诚值\n E = 获得的虔诚值\n F = 赐礼上的虔诚值\n G = 赎罪上的虔诚值\n H = 衰减步进的虔诚值\n I = 虔诚值衰减\n J = 虔诚值损失（含衰减）\n
 %%%%
 Conducts for god: %s\n
 神明戒律：%s\n
 %%%%
 Piety from conduct\n
-戒律获得的虔诚度\n
+戒律获得的虔诚值\n
 %%%%
 Conduct
 戒律
@@ -26775,10 +26775,10 @@ You are radiating toxic energy.
 你正在散发毒性能量。
 %%%%
 You are rapidly regenerating health and magic.
-你的生命和魔力正在快速再生。
+你的生命和法力正在快速再生。
 %%%%
 You are rapidly regenerating magical energy.
-你的魔力正在快速再生。
+你的法力正在快速再生。
 %%%%
 You are reanimating the dead.
 你正在复活死者。
@@ -26895,7 +26895,7 @@ You begin to regenerate health when rolling toward enemies.
 你向敌人翻滚时开始恢复生命。
 %%%%
 You begin to regenerate magic when rolling toward enemies.
-你向敌人翻滚时开始恢复魔力。
+你向敌人翻滚时开始恢复法力。
 %%%%
 You begin to regenerate regardless of the presence of monsters.
 无论附近是否有怪物，你都开始再生了。
@@ -27849,7 +27849,7 @@ Your lower body turns into a snake tail.
 你的下半身变成了一条蛇尾。
 %%%%
 Your magic begins to regenerate rapidly.
-你的魔力开始快速再生。
+你的法力开始快速再生。
 %%%%
 Your magic grows more menacing.
 你的魔法变得更加凶险。
@@ -28227,7 +28227,7 @@ It affects your health (%d).
 影响你的生命值（%d）。
 %%%%
 It affects your magic capacity (%d).
-影响你的魔力容量（%d）。
+影响你的法力上限（%d）。
 %%%%
 It lets you see invisible.
 让你能看见隐形之物。
@@ -28335,7 +28335,7 @@ It increases your evasion after moving or waiting.
 移动或等待后提高你的闪避。
 %%%%
 It increases your rate of magic regeneration.
-提高你的魔力恢复速度。
+提高你的法力恢复速度。
 %%%%
 It increases the success rate of your magical spells.
 提高你魔法法术的成功率。
@@ -28368,7 +28368,7 @@ It is %s %s.
 它是%s的%s。
 %%%%
 It causes incoming damage to be divided between your reserves of health and magic.
-使受到的伤害在你的生命值和魔力储备之间分摊。
+使受到的伤害在你的生命值和法力储备之间分摊。
 %%%%
 It allows you to gain divine favour quickly.
 使你能够快速获得神眷。
@@ -28380,7 +28380,7 @@ It improves your skill with shapeshifting (+5).
 提高你的变形术技能（+5）。
 %%%%
 It restores some MP whenever you drink a potion and also enhances your alchemy spells.
-饮用任何药水时恢复部分魔力，同时增强你的炼金术法术。
+饮用任何药水时恢复部分法力，同时增强你的炼金术法术。
 %%%%
 It reduces the duration of hostile enchantments and decays magical contamination more quickly.
 缩短敌对附魔的持续时间，并加快魔法污染的消退速度。
@@ -28611,7 +28611,7 @@ Base shield rating:
 基础盾牌评级: 
 %%%%
      Encumbrance rating: 
-     负重评级: 
+     负重等级: 
 %%%%
      Max blocks/turn: 
      每回合最大格挡: 
@@ -29655,7 +29655,7 @@ Dex:
 敏: 
 %%%%
        Encumbrance rating: 
-       负重评级: 
+       负重等级: 
 %%%%
 puncture
 穿刺
@@ -29922,7 +29922,7 @@ Leaving this form will destroy all of your potions of mist! Transform anyway?
 离开此形态将摧毁你所有的雾药水！仍然变形吗？
 %%%%
 Put travel exclusion on door? (Y/n)
-在门上设置旅行排除区域？(Y/n)
+在门上设置旅行禁区？(Y/n)
 %%%%
 ; use anyway?
 ；仍然使用吗？
@@ -33633,7 +33633,7 @@ Jiyva prevents you from harming jellies.\n
 吉瓦阻止你伤害果冻。\n
 %%%%
 Your life and magic regeneration are%s increased.\n
-你的生命和魔力恢复速度%s加快。\n
+你的生命和法力恢复速度%s加快。\n
 %%%%
 %s%s slows your movement.\n
 %s%s减缓移动。\n
@@ -35803,19 +35803,19 @@ Healing.
 治疗。
 %%%%
 Piety needs to be between 0 and %d.
-虔诚度必须在 0 到 %d 之间。
+虔诚值必须在 0 到 %d 之间。
 %%%%
 Ru piety can't be greater than %d.
-鲁的虔诚度不能超过 %d。
+鲁的虔诚值不能超过 %d。
 %%%%
 Interest must be between 0 and 255.
 兴趣值必须在 0 到 255 之间。
 %%%%
 Set piety to %d, interest to %d.
-虔诚度设为 %d，兴趣值设为 %d。
+虔诚值设为 %d，兴趣值设为 %d。
 %%%%
 Setting piety to %d.
-虔诚度设为 %d。
+虔诚值设为 %d。
 %%%%
 Enter new gold value (current = %d, Enter for %d): 
 输入新金币值（当前 = %d，回车设为 %d）：
@@ -35839,7 +35839,7 @@ Current progress to next sacrifice: %d  Progress needed: %d
 当前献祭进度：%d  需要进度：%d
 %%%%
 Enter new piety value (current = %d, Enter for 0): 
-输入新虔诚度值（当前 = %d，回车视为 0）：
+输入新虔诚值（当前 = %d，回车视为 0）：
 %%%%
 That skill doesn't seem to exist.
 该技能似乎不存在。
@@ -35938,7 +35938,7 @@ Zot clock should be between 0 and %d
 佐特时钟必须在 0 到 %d 之间
 %%%%
  magic
-魔法
+法力
 %%%%
 %s shudders%s.
 %1$s%2$s颤抖了。
@@ -36917,7 +36917,7 @@ Lash (%u)
 鞭击（%u）
 %%%%
 MPRegen (%d)
-魔力再生（%d）
+法力再生（%d）
 %%%%
 Memories (%d)
 记忆（%d）
@@ -37217,7 +37217,7 @@ weapon of %s
 %8d %s，%s（等级%d
 %%%%
 %d %sexclusion%s
-%d个%s排除区%s
+%d个%s禁区%s
 %%%%
 %d (base %d)
 %d（基础%d）
@@ -37304,7 +37304,7 @@ morgue item inscription|unknown
 %s怪物状态
 %%%%
 %s other creatures
-%s个其他生物
+另外%s个生物
 %%%%
 %s pulls itself out of thin air.
 %s从空气中凝聚成形。
@@ -37685,7 +37685,7 @@ Xom revived you
 佐姆复活了你
 %%%%
 Magic: 
-魔力：
+法力：
 %%%%
 Reached 
 达到了
@@ -37694,7 +37694,7 @@ Reached
  最大生命值
 %%%%
  max magic points
- 最大魔力值
+ 法力上限
 %%%%
 Reached XP level 
 达到经验等级
@@ -38096,7 +38096,7 @@ HP     :
 生命值：
 %%%%
 Piety  : 
-虔诚度：
+虔诚值：
 %%%%
 Gold   : 
 金币：
@@ -38522,7 +38522,7 @@ You can get information about <w>
 你可以获取关于<w>的信息
 %%%%
 You even kept some of your piety! 
-你甚至保留了一些虔诚度！
+你甚至保留了一些虔诚值！
 %%%%
 You hit %s.
 你击中了%s。
@@ -39801,7 +39801,7 @@ One of the many lords of Pandemonium,
 ：
 %%%%
 'Of %s': 
-%s之
+%s：
 %%%%
 <lightgrey>Options read from "%s".</lightgrey>
 <lightgrey>选项读取自"%s"。</lightgrey>
@@ -40560,7 +40560,7 @@ status|Liquid
 液化
 %%%%
 status|MPRegen (%d)
-魔恢(%d)
+法恢(%d)
 %%%%
 status|Mark
 标记
@@ -43002,7 +43002,7 @@ You might %s onto that %s, are you sure?
 你可能会%s那个%s，确定吗？
 %%%%
 Really %s into that %s?
-确定要%s那个%s吗？
+确定要%s那边的%s吗？
 %%%%
 You might %s into a %s, are you sure?
 你可能会%s%s，确定吗？
@@ -43011,10 +43011,10 @@ You might %s into that %s, are you sure?
 你可能会%s那个%s，确定吗？
 %%%%
 Really %s into a travel-excluded area?
-确定要%s探索排除区域吗？
+确定要%s旅行禁区吗？
 %%%%
 You might %s into a travel-excluded area, are you sure?
-你可能会%s探索排除区域，确定要继续吗？
+你可能会%s旅行禁区，确定要继续吗？
 %%%%
 This might make you stumble backwards into that cloud of %s. Continue?
 这可能使你踉跄着退入那片%s。要继续吗？
@@ -43035,7 +43035,7 @@ This might make you stumble backwards into a toxic bog. Continue?
 这可能使你踉跄着退入毒沼。要继续吗？
 %%%%
 This might make you stumble backwards into a travel-excluded area. Continue?
-这可能使你踉跄着退入探索排除区域。要继续吗？
+这可能使你踉跄着退入旅行禁区。要继续吗？
 %%%%
 Are you sure you want to %s over %s while you are losing your buoyancy?
 你确定要%s%s上方吗？你的浮力正在消失。
@@ -43455,7 +43455,7 @@ Escape hatches can be used to quickly leave a level with <w><<</w> and <w>></w>,
 上下逃生口分别可以用<w><<</w>和<w>></w>来快速离开当前楼层。注意，你通常无法立即返回。
 %%%%
 \nTo avoid accidentally opening a door you'd rather remain closed during travel or autoexplore, you can mark it with an exclusion from the map view (<w>X</w>) with <w>ee</w> while your cursor is on the grid in question. Such an exclusion will prevent autotravel from ever entering that grid until you remove the exclusion with another press of <w>Xe</w>.
-\n为避免在旅行或自动探索时意外打开你希望保持关闭的门，你可以在光标位于该格时，从地图视图（<w>X</w>）中按<w>ee</w>将其标记为排除区域。此排除标记会阻止自动旅行进入该格，直到你再次按<w>Xe</w>将其移除。
+\n为避免在旅行或自动探索时意外打开你希望保持关闭的门，你可以在光标位于该格时，从地图视图（<w>X</w>）中按<w>ee</w>将其标记为旅行禁区。此禁区标记会阻止自动旅行进入该格，直到你再次按<w>Xe</w>将其移除。
 %%%%
 This is your chance to join a religion! In general, the gods will help their followers, bestowing powers of all sorts upon them, but many of them demand a life of dedication, constant tributes or entertainment in return.\n
 这是你加入宗教的机会！通常，神祇会帮助其信徒，赐予各种力量，但其中许多神祇会要求你以奉献一生、不断进贡或娱乐作为回报。\n
@@ -48119,3 +48119,135 @@ verb|block
 %%%%
 ranged block|%1$s %2$s the %3$s%4$s%5$s
 %1$s%4$s%2$s了%3$s%5$s
+
+%%%%
+You bought it in a shop %s
+%s你在商店中购买了它
+
+%%%%
+piety note|Reached %1$s piety under %2$s
+对%2$s的虔诚值达到了%1$s。
+
+%%%%
+item action|(q)uiver
+(q)设为快捷动作
+
+%%%%
+item action|qui(v)er
+(v)设为快捷动作
+
+%%%%
+quiver cycle|other 
+其他
+
+%%%%
+ Use [<white>Q</white>] to select from all actions.
+ 按[<white>Q</white>]从所有动作中选择。
+
+%%%%
+Aiming: <white>Upheaval</white>
+瞄准：<white>剧变</white>
+
+%%%%
+Aiming: <white>Power Leap</white>
+瞄准：<white>强力跳跃</white>
+
+%%%%
+Aiming: <white>Line Pass</white>
+瞄准：<white>穿行</white>
+
+%%%%
+Aiming: <white>Grand Finale</white>
+瞄准：<white>华丽终曲</white>
+
+%%%%
+Aiming: <white>Wall Jump</white>
+瞄准：<white>蹬墙跳</white>
+
+%%%%
+UC Base Dmg
+徒手基础伤害
+
+%%%%
+MP Regen
+法力再生
+
+%%%%
+Ensnare Chance
+蛛网束缚几率
+
+%%%%
+Bite Dmg
+咬击伤害
+
+%%%%
+Devour Regen
+吞噬再生
+
+%%%%
+Blade Dmg
+刀刃伤害
+
+%%%%
+Parry SH
+格挡值
+
+%%%%
+form table|# of Bees
+蜜蜂数
+
+%%%%
++Slay/Kill
+每击杀杀戮加成
+
+%%%%
+Takedown Dmg
+扑倒伤害
+
+%%%%
+Howl Power
+嚎叫威力
+
+%%%%
+Spell Skill Boost
+法术技能加成
+
+%%%%
+Rust Breath Size
+锈蚀吐息范围
+
+%%%%
+Tendril targets
+触须目标数
+
+%%%%
+Petrify chance
+石化几率
+
+%%%%
+Bat Swarm Recharge
+蝙蝠群充能速度
+
+%%%%
+Daze Power
+眩晕威力
+
+%%%%
+Body Armour AC
+身体护甲防御
+
+%%%%
+piledriver target count|two
+两
+
+%%%%
+maximum resource note|Reached %d max health
+生命上限达到了%d。
+
+%%%%
+maximum resource note|Reached %d max magic points
+法力上限达到了%d。
+
+%%%%
+even more 
+更多

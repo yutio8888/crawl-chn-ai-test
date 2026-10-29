@@ -225,10 +225,12 @@ string Note::describe(bool when, bool where, bool what) const
             result << T_("Magic: ") << first << "/" << second;
             break;
         case NOTE_MAXHP_CHANGE:
-            result << T_("Reached ") << first << T_(" max health");
+            result << make_stringf(
+                C_("maximum resource note", "Reached %d max health"), first);
             break;
         case NOTE_MAXMP_CHANGE:
-            result << T_("Reached ") << first << T_(" max magic points");
+            result << make_stringf(
+                C_("maximum resource note", "Reached %d max magic points"), first);
             break;
         case NOTE_XP_LEVEL_CHANGE:
             result << T_("Reached XP level ") << first << ". " << name;
@@ -328,11 +330,14 @@ string Note::describe(bool when, bool where, bool what) const
             result << name << T_(" changed into ") << desc;
             break;
         case NOTE_PIETY_RANK:
-            result << T_("Reached ")
-                   << string(second, '*')
-                   << T_(" piety under ")
-                   << god_name(static_cast<god_type>(first));
+        {
+            const string rank(second, '*');
+            const string god = god_name(static_cast<god_type>(first));
+            result << make_stringf_p(
+                C_("piety note", "Reached %1$s piety under %2$s"),
+                rank.c_str(), god.c_str());
             break;
+        }
         case NOTE_GET_MUTATION:
             result << T_("Gained mutation: ")
                    << mutation_desc(static_cast<mutation_type>(first),
@@ -540,8 +545,10 @@ void Note::load(reader& inf)
     if (inf.getMinorVersion() < TAG_MINOR_PLACE_UNPACK)
         place = level_id::from_packed_place(unmarshallShort(inf));
     else
-#endif
+        place.load(inf);
+#else
     place.load(inf);
+#endif
     first  = unmarshallInt(inf);
     second = unmarshallInt(inf);
     unmarshallString4(inf, name);

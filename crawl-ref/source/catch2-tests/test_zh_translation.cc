@@ -1128,7 +1128,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     const char* enter = translated_move_phrase(
         "walk", move_phrase_context::enter_area);
     REQUIRE(make_stringf(T_("Really %s into a travel-excluded area?"), enter)
-            == "确定要走进探索排除区域吗？");
+            == "确定要走进旅行禁区吗？");
 
     const char* through = translated_move_phrase(
         "stride", move_phrase_context::through_obstacle);
@@ -1151,6 +1151,12 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(make_stringf(T_("Really %s into that cloud of %s?"), enter,
                          "毒气")
             == "确定要走进那片毒气吗？");
+    // The generic "that" prompt accepts both a quantified cloud phrase and
+    // a trap basename; neither should acquire an extra Chinese classifier.
+    REQUIRE(make_stringf(T_("Really %s into that %s?"), enter, "一团钙化尘云")
+            == "确定要走进那边的一团钙化尘云吗？");
+    REQUIRE(make_stringf(T_("Really %s into that %s?"), enter, "警报陷阱")
+            == "确定要走进那边的警报陷阱吗？");
     const char* blink = translated_move_phrase(
         "blink", move_phrase_context::bare);
     REQUIRE(make_stringf(T_("You cannot %s away from %s!"), blink, "怪物")
@@ -1159,6 +1165,16 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         "hop", move_phrase_context::bare);
     REQUIRE(make_stringf(T_("Are you sure you want to cancel this %s?"), hop)
             == "你确定要取消此次跳跃吗？");
+    {
+        EnTranslationFixture english;
+        const char* enter_en = translated_move_phrase(
+            "walk", move_phrase_context::enter_area);
+        REQUIRE(make_stringf(T_("Really %s into that %s?"), enter_en,
+                             "cloud of calcifying dust")
+                == "Really walk into that cloud of calcifying dust?");
+        REQUIRE(make_stringf(T_("Really %s into that %s?"), enter_en, "alarm trap")
+                == "Really walk into that alarm trap?");
+    }
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
@@ -1538,7 +1554,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         Row{possible_forced_prompt_context::toxic_bog, "",
             "这可能使你踉跄着退入毒沼。要继续吗？"},
         Row{possible_forced_prompt_context::exclusion, "",
-            "这可能使你踉跄着退入探索排除区域。要继续吗？"},
+            "这可能使你踉跄着退入旅行禁区。要继续吗？"},
         Row{possible_forced_prompt_context::over_losing_buoyancy, "熔岩",
             "你的浮力正在消失；这可能使你踉跄着退到熔岩上方。要继续吗？"},
         Row{possible_forced_prompt_context::into_losing_buoyancy, "熔岩",

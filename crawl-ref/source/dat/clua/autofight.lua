@@ -481,7 +481,7 @@ function attack(allow_movement, check_caught)
     end
   elseif info.attack_type == AF_FIRE then
     if (not attack_fire(x,y, not allow_movement, pierce)) then
-      crawl.mpr("No reachable target in view!")
+      crawl.mpr(crawl.t_("No reachable target in view!"))
     end
   elseif info.attack_type == AF_MELEE then
     attack_melee(x,y)

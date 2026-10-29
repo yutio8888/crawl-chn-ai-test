@@ -1910,8 +1910,8 @@ static void _do_cycle_quiver(int dir)
         // force-quivering, e.g. zigfigs
         const bool others = !valid && quiver::anything_to_quiver();
         mprf(T_("No %squiver actions available for cycling.%s"),
-            valid ? "other " : "",
-            others ? " Use [<white>Q</white>] to select from all actions."
+            valid ? C_("quiver cycle", "other ") : "",
+            others ? T_(" Use [<white>Q</white>] to select from all actions.")
                    : "");
     }
 }

@@ -2694,7 +2694,7 @@ bool direction_chooser::noninteractive()
         if (moves.target.origin())
         {
             moves.isValid = false;
-            mpr("No reachable target in view!");
+            mpr(T_("No reachable target in view!"));
         }
     }
 

@@ -2287,10 +2287,13 @@ spret cast_piledriver(const coord_def& target, int pow, bool fail)
     }
 
     mons = _get_monster_line(target, true);
+    // This is a counted-noun phrase, unlike the shared bare number vocabulary.
+    const string count = mons.size() == 2
+        ? C_("piledriver target count", "two") : number_in_words(mons.size());
+    const string targets = mons.size() == 1 ? mons[0]->name(DESC_THE)
+        : make_stringf(T_("%s other creatures"), count.c_str());
     mprf(T_("Space contracts around you and %s and then re-expands violently!"),
-            mons.size() == 1 ? mons[0]->name(DESC_THE).c_str()
-                             : make_stringf(T_("%s other creatures"),
-                                    number_in_words(mons.size()).c_str()).c_str());
+         targets.c_str());
 
     // Animate the player and their victim flying forward together
     bolt anim;

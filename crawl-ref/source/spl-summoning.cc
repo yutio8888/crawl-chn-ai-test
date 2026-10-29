@@ -4282,7 +4282,7 @@ static void _do_player_potion()
         if (amu)
         {
             mprf(T_("You extract %smagical energy from the potion."),
-                 amu > 1 ? "even more " : "");
+                 amu > 1 ? T_("even more ") : "");
             inc_mp(random_range(5, 9) * amu);
         }
     }

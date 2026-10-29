@@ -2944,7 +2944,7 @@ namespace quiver
         // many places.
         if (is_empty())
         {
-            mpr("Nothing quivered!");
+            mpr(T_("Nothing quivered!"));
             return;
         }
         shared_ptr<action> initial = get();

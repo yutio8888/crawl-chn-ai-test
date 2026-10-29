@@ -1348,8 +1348,7 @@ string origin_desc(const item_def &item)
             switch (iorig)
             {
             case IT_SRC_SHOP:
-                desc += (T_("You bought ") + _article_it(item) + T_(" in a shop "));
-                break;
+                return make_stringf(T_("You bought it in a shop %s"), place.c_str());
             case IT_SRC_START:
                 desc += T_("Buggy Original Equipment: ");
                 break;

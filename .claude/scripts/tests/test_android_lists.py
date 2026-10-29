@@ -194,6 +194,77 @@ int main() {
 }
 ''')
 
+    def test_item_quiver_footer_preserves_setting_action_and_overloaded_keys(self):
+        source = (ROOT / "crawl-ref/source/describe.cc").read_text()
+        footer = regression.block_after(source, "static string _actions_desc")
+        # Include the opening brace in the anchor: describe.cc also has a
+        # forward declaration, which must not select a later unrelated body.
+        dispatch = regression.block_after(
+            source,
+            "static command_type _get_action(int key, vector<command_type> actions)\n{")
+        command_header = (ROOT / "crawl-ref/source/command-type.h").read_text()
+        commands = regression.block_after(command_header, "enum command_type")
+        # Execute the production footer and key parser. Translation and the
+        # generic comma join are doubles; TextDB wording and actual setting of
+        # the action remain covered by the game/runtime validation.
+        regression.TargetingSafetyTests.run_cpp(self, r'''
+#pragma GCC diagnostic ignored "-Wparentheses"
+#include <cassert>
+#include <cctype>
+#include <map>
+#include <string>
+#include <vector>
+using namespace std;
+bool chinese = false;
+#define T_(s) (s)
+const char* C_(const char* context, const char* key) {
+    assert(string(context) == "item action");
+    assert(string(key) == "(q)uiver" || string(key) == "qui(v)er");
+    if (!chinese) return key;
+    return string(key) == "(q)uiver" ? "<set:q>" : "<set:v>";
+}
+int tolower_safe(int key) { return tolower(static_cast<unsigned char>(key)); }
+template<class Iterator, class F>
+string comma_separated_fn(Iterator first, Iterator last, F fn,
+                         const string& final_separator) {
+    string result;
+    for (auto it = first; it != last; ++it) {
+        if (it != first) result += it + 1 == last ? final_separator : ", ";
+        result += fn(*it);
+    }
+    return result;
+}
+enum command_type ''' + commands + r''';
+static string _actions_desc(const vector<command_type>& actions)
+''' + footer + r'''
+static command_type _get_action(int key, vector<command_type> actions)
+''' + dispatch + r'''
+int main() {
+    for (bool language : {false, true}) {
+        chinese = language;
+        const vector<command_type> potion = {CMD_QUAFF, CMD_QUIVER_ITEM, CMD_DROP};
+        const vector<command_type> scroll = {CMD_READ, CMD_QUIVER_ITEM};
+        const vector<command_type> wand = {CMD_EVOKE, CMD_QUIVER_ITEM};
+        const string q = chinese ? "<set:q>" : "(q)uiver";
+        const string v = chinese ? "<set:v>" : "qui(v)er";
+        assert(_actions_desc(potion) == "(q)uaff, " + v + ", or (d)rop.");
+        assert(_actions_desc(scroll) == "(r)ead, or " + q + ".");
+        assert(_actions_desc(wand) == "e(v)oke, or " + q + ".");
+        assert(_actions_desc({CMD_QUIVER_ITEM}) == q + ".");
+        assert(_get_action('q', potion) == CMD_QUAFF);
+        assert(_get_action('v', potion) == CMD_QUIVER_ITEM);
+        assert(_get_action('Q', potion) == CMD_QUAFF);
+        assert(_get_action('V', potion) == CMD_QUIVER_ITEM);
+        assert(_get_action('r', scroll) == CMD_READ);
+        assert(_get_action('q', scroll) == CMD_QUIVER_ITEM);
+        assert(_get_action('v', scroll) == CMD_NO_CMD);
+        assert(_get_action('v', wand) == CMD_EVOKE);
+        assert(_get_action('q', wand) == CMD_QUIVER_ITEM);
+        assert(_get_action('x', potion) == CMD_NO_CMD);
+    }
+}
+''')
+
     def test_skill_categories_partition_refresh_and_reject_hidden_hotkeys(self):
         skills = (ROOT / "crawl-ref/source/skill-menu.cc").read_text()
         page = regression.block_after(skills, "class AndroidSkillMenu : public Menu")
