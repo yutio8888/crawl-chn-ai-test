@@ -150,8 +150,8 @@ Crawl 选项指南
 4-c     笔记。
                 user_note_prefix, note_items, note_monsters, note_hp_percent,
                 note_skill_levels, note_all_skill_levels, note_skill_max,
-                note_xom_effects, note_messages, note_chat_messages,
-                note_dgl_messages
+                note_starting_skills, note_xom_effects, note_messages,
+                note_chat_messages, note_dgl_messages
 5-  其他。
 5-a     所有操作系统。
                 mouse_input, wiz_mode, explore_mode, char_set, colour,
@@ -2399,6 +2399,9 @@ note_skill_max = true
         设置此选项后，每当技能等级达到新的最高值就会记下笔记。如果
         note_skill_max 为 true，且 note_skill_levels 非空，满足其中任一条件
         时都会记下笔记。
+
+note_starting_skills = false
+        设为 true 时，会在游戏开始时，记录所有等级为 1 或更高的技能。
 
 note_xom_effects = true
         每当佐姆有所行动时记下一条笔记。
