@@ -155,8 +155,11 @@ static bool _is_noteworthy(const Note& note)
     // Skills are always noteworthy in order to construct the skill_gains table
     // in the chardump. The options to control display are used in
     // Note::hidden().
-    if (note.type == NOTE_GAIN_SKILL || note.type == NOTE_LOSE_SKILL)
+    if (note.type == NOTE_GAIN_SKILL || note.type == NOTE_LOSE_SKILL
+        || note.type == NOTE_START_SKILL)
+    {
         return true;
+    }
 
     if (note.type == NOTE_DUNGEON_LEVEL_CHANGE)
         return _is_noteworthy_dlevel(note.place);
@@ -225,10 +228,12 @@ string Note::describe(bool when, bool where, bool what) const
             result << T_("Magic: ") << first << "/" << second;
             break;
         case NOTE_MAXHP_CHANGE:
-            result << T_("Reached ") << first << T_(" max health");
+            result << make_stringf(
+                C_("maximum resource note", "Reached %d max health"), first);
             break;
         case NOTE_MAXMP_CHANGE:
-            result << T_("Reached ") << first << T_(" max magic points");
+            result << make_stringf(
+                C_("maximum resource note", "Reached %d max magic points"), first);
             break;
         case NOTE_XP_LEVEL_CHANGE:
             result << T_("Reached XP level ") << first << ". " << name;
@@ -295,6 +300,11 @@ string Note::describe(bool when, bool where, bool what) const
                    << (first == 1 ? T_("gold piece") : T_("gold pieces"))
                    << T_(" to Zin");
             break;
+        case NOTE_START_SKILL:
+            result << make_stringf_p(
+                C_("skill note", "Started with skill level %1$d in %2$s"),
+                second, skill_name(static_cast<skill_type>(first)));
+            break;
         case NOTE_GAIN_SKILL:
             result << make_stringf_p(
                 C_("skill note", "Reached skill level %1$d in %2$s"),
@@ -328,11 +338,14 @@ string Note::describe(bool when, bool where, bool what) const
             result << name << T_(" changed into ") << desc;
             break;
         case NOTE_PIETY_RANK:
-            result << T_("Reached ")
-                   << string(second, '*')
-                   << T_(" piety under ")
-                   << god_name(static_cast<god_type>(first));
+        {
+            const string rank(second, '*');
+            const string god = god_name(static_cast<god_type>(first));
+            result << make_stringf_p(
+                C_("piety note", "Reached %1$s piety under %2$s"),
+                rank.c_str(), god.c_str());
             break;
+        }
         case NOTE_GET_MUTATION:
             result << T_("Gained mutation: ")
                    << mutation_desc(static_cast<mutation_type>(first),
@@ -469,6 +482,8 @@ string Note::describe(bool when, bool where, bool what) const
 
 bool Note::hidden() const
 {
+    if (type == NOTE_START_SKILL)
+        return !Options.note_starting_skills;
     // Hide skill gains that are not enabled by options.
     if (type == NOTE_GAIN_SKILL || type == NOTE_LOSE_SKILL)
     {
@@ -540,8 +555,10 @@ void Note::load(reader& inf)
     if (inf.getMinorVersion() < TAG_MINOR_PLACE_UNPACK)
         place = level_id::from_packed_place(unmarshallShort(inf));
     else
-#endif
+        place.load(inf);
+#else
     place.load(inf);
+#endif
     first  = unmarshallInt(inf);
     second = unmarshallInt(inf);
     unmarshallString4(inf, name);

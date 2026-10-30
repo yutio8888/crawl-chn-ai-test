@@ -292,7 +292,7 @@ void change_monster_type(monster* mons, monster_type targetc, bool do_seen)
     {
         name = mons->name(DESC_PLAIN, true);
 
-        // "Blorkula the orcula" and similar.
+        // "Blorkula the Orcula" (if he weren't undead) and similar.
         const size_t the_pos = name.find(" the ");
         if (the_pos != string::npos)
             name = name.substr(0, the_pos);
@@ -641,7 +641,8 @@ bool monster_polymorph(monster* mons, monster_type targetc,
     if (could_see)
     {
         string verb = "";
-        string obj = can_see ? mons_type_name(targetc, DESC_A)
+        string obj = can_see ? mons_type_name(targetc,
+                                Options.language == lang_t::ZH ? DESC_PLAIN : DESC_A)
                              : T_("something you cannot see");
 
         if (oldc == MONS_OGRE && targetc == MONS_TWO_HEADED_OGRE)

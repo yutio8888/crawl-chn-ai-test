@@ -490,13 +490,25 @@ void actor::end_constriction(mid_t whom, bool intentional, bool quiet,
         // blinking or similar
         if (!intentional)
         {
-            const bool contextual_move = escape_verb == "blink"
-                || escape_verb == "hop" || escape_verb == "leap";
-            mprf(T_("%s %s free of %s!"),
-                 constrictee->name(DESC_THE).c_str(),
-                 constrictee->verb_for_display(escape_verb.c_str(),
-                     contextual_move ? "move.bare" : nullptr).c_str(),
-                 attacker_desc.c_str());
+            if (escape_verb == "break")
+            {
+                if (constrictee->is_player())
+                    mprf(T_("You break free of %s!"), attacker_desc.c_str());
+                else
+                    mprf(T_("%s breaks free of %s!"),
+                         constrictee->name(DESC_THE).c_str(),
+                         attacker_desc.c_str());
+            }
+            else
+            {
+                const bool contextual_move = escape_verb == "blink"
+                    || escape_verb == "hop" || escape_verb == "leap";
+                mprf(T_("%s %s free of %s!"),
+                     constrictee->name(DESC_THE).c_str(),
+                     constrictee->verb_for_display(escape_verb.c_str(),
+                         contextual_move ? "move.bare" : nullptr).c_str(),
+                     attacker_desc.c_str());
+            }
         }
         else
         {
@@ -754,12 +766,6 @@ bool actor::can_constrict(const actor &defender, constrict_type typ) const
     return feat_has_solid_floor(env.grid(defender.pos()));
 }
 
-#ifdef DEBUG_DIAGNOSTICS
-# define DIAG_ONLY(x) x
-#else
-# define DIAG_ONLY(x) (void)0
-#endif
-
 /*
  * Damage the defender with constriction damage.
  * (The exact damage formula depends on the type of constriction applied,
@@ -771,17 +777,23 @@ void actor::constriction_damage_defender(actor &defender)
 {
     const auto typ = defender.constricted_type;
     int damage = constriction_damage(typ);
-    DIAG_ONLY(const int basedam = damage);
+#ifdef DEBUG_DIAGNOSTICS
+    const int basedam = damage;
+#endif
     damage = defender.apply_ac(damage, 0, ac_type::half);
-    DIAG_ONLY(const int acdam = damage);
+#ifdef DEBUG_DIAGNOSTICS
+    const int acdam = damage;
+#endif
     damage = timescale_damage(this, damage);
-    DIAG_ONLY(const int timescale_dam = damage);
+#ifdef DEBUG_DIAGNOSTICS
+    const int timescale_dam = damage;
+#endif
 
     string exclamations;
     if (damage <= 0 && is_player()
         && you.can_see(defender))
     {
-        exclamations = " but do no damage.";
+        exclamations = string(T_(" but do no damage")) + T_(".");
     }
     else
         exclamations = attack_strength_punctuation(damage);
@@ -841,7 +853,9 @@ void actor::constriction_damage_defender(actor &defender)
 
     damage = defender.hurt(this, damage, BEAM_MISSILE, KILLED_BY_CONSTRICTION, "",
                            "", false);
-    DIAG_ONLY(const int infdam = damage);
+#ifdef DEBUG_DIAGNOSTICS
+    const int infdam = damage;
+#endif
 
     dprf("constrict at: %s df: %s base %d ac %d tsc %d inf %d",
          name(DESC_PLAIN, true).c_str(),

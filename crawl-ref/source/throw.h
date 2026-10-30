@@ -70,3 +70,8 @@ bool do_west_wind_shot();
 vector<coord_def> get_salvo_targets(const coord_def& orig_target, int num_targets,
                                     int max_range = LOS_RADIUS,
                                     beam_type flavour = BEAM_MISSILE);
+
+// Supplemental missile annotations used by the targeting display.
+struct monster_info;
+vector<string> missile_target_descriptions(const monster_info& mi,
+                                           const item_def& item);

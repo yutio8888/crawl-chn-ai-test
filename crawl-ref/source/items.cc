@@ -1348,8 +1348,7 @@ string origin_desc(const item_def &item)
             switch (iorig)
             {
             case IT_SRC_SHOP:
-                desc += (T_("You bought ") + _article_it(item) + T_(" in a shop "));
-                break;
+                return make_stringf(T_("You bought it in a shop %s"), place.c_str());
             case IT_SRC_START:
                 desc += T_("Buggy Original Equipment: ");
                 break;
@@ -5010,7 +5009,7 @@ static void _identify_last_item(item_def &item)
     const string class_name = item.base_type == OBJ_JEWELLERY ?
                                     item_base_name(item) :
                                     item_class_name(item.base_type, true);
-    mprf(T_("You have identified the last %s."), class_name.c_str());
+    mprf(T_("You have identified the last %s."), T_(class_name.c_str()));
 
     if (in_inventory(item))
     {

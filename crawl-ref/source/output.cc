@@ -2478,8 +2478,18 @@ static string _get_monster_name(const monster_info& mi, int count, bool fullname
     return desc;
 }
 
+static string _monster_list_entry(const monster_info& mi, int count,
+                                  bool show_glyph)
+{
+    string entry = _get_monster_name(mi, count, true);
+    if (show_glyph)
+        entry += make_stringf(" (%s)", stringize_glyph(get_mons_glyph(mi).ch).c_str());
+    return entry;
+}
+
 static string _describe_from_list(string prefix,
-                                  const vector<monster_info>& mons)
+                                  const vector<monster_info>& mons,
+                                  bool show_glyphs)
 {
     if (mons.empty())
         return "";
@@ -2491,13 +2501,13 @@ static string _describe_from_list(string prefix,
     {
         if (i > 0 && monster_info::less_than(mons[i-1], mons[i]))
         {
-            describe.push_back(_get_monster_name(mons[i-1], count, true).c_str());
+            describe.push_back(_monster_list_entry(mons[i-1], count, show_glyphs));
             count = 0;
         }
         count++;
     }
 
-    describe.push_back(_get_monster_name(mons[mons.size()-1], count, true).c_str());
+    describe.push_back(_monster_list_entry(mons[mons.size()-1], count, show_glyphs));
 
     if (describe.size() == 1)
         msg += describe[0];
@@ -2509,7 +2519,8 @@ static string _describe_from_list(string prefix,
 
 // If past is true, the messages should be printed in the past tense
 // because they're needed for the morgue dump.
-string mpr_monster_list(bool past)
+// If show_glyphs is true, print the glyph for each monster in parenthesis.
+string mpr_monster_list(bool past, bool show_glyphs)
 {
     // Get monsters via the monster_pane_info, sorted by difficulty.
     // (But separate visible and invisible monsters, for better wording.)
@@ -2523,8 +2534,8 @@ string mpr_monster_list(bool past)
                     : T_("There are no monsters in sight!");
     }
 
-    const string visible = _describe_from_list("", mons);
-    const string invisible = _describe_from_list("", invis_mons);
+    const string visible = _describe_from_list("", mons, show_glyphs);
+    const string invisible = _describe_from_list("", invis_mons, show_glyphs);
     if (invisible.empty())
     {
         return make_stringf(past ? T_("You could see %s.")

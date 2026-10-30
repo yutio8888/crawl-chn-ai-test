@@ -191,7 +191,8 @@ class PtyBot:
         os.write(self.master, keys)
         return self.read_screen(timeout)
 
-    def wait_for_screen(self, required, timeout=INITIAL_SCREEN_TIMEOUT) -> str:
+    def wait_for_screen(self, required, timeout=INITIAL_SCREEN_TIMEOUT,
+                        predicate=None) -> str:
         """Accumulate startup output until the complete initial UI is ready."""
         deadline = time.monotonic() + timeout
         chunks = []
@@ -201,7 +202,8 @@ class PtyBot:
             if chunk:
                 chunks.append(chunk)
                 combined = ''.join(chunks)
-                if all(token in combined for token in required):
+                if (all(token in combined for token in required)
+                        and (predicate is None or predicate(combined))):
                     return combined
             if self.proc.poll() is not None:
                 break
@@ -242,6 +244,21 @@ def assert_screen(case_id: str, text: str, required=(), forbidden=()) -> None:
             f'rendered tail={excerpt!r}')
     if len(CJK_RE.findall(text)) < 2:
         raise BotFailure(f'{case_id}: rendered screen lacks Chinese content')
+
+
+def has_main_hud(text: str) -> bool:
+    # The drained HP label is deliberately shorter. Require numeric status
+    # fields, not mentions of HP/MP labels in help text; MP may have a space.
+    return (re.search(r'(?:生命|命):\s*\d+/\d+', text) is not None
+            and re.search(r'(?:法力|法):\s*\d+/\d+', text) is not None)
+
+
+def assert_main_hud(case_id: str, text: str, required=(), forbidden=()) -> None:
+    assert_screen(case_id, text, required, forbidden)
+    if not has_main_hud(text):
+        excerpt = re.sub(r'\s+', ' ', text).strip()[-400:]
+        raise BotFailure(f'{case_id}: missing numeric Chinese HP/MP HUD; '
+                         f'rendered tail={excerpt!r}')
 
 
 def emit(case_id: str, **fields) -> None:
@@ -308,9 +325,9 @@ def validate_panel_manifest(cases=PANEL_CASES,
 
 def run_panels(bot: PtyBot) -> None:
     validate_panel_manifest()
-    required = ('生命:', '魔力:', '魔法飞弹')
-    initial = bot.wait_for_screen(required)
-    assert_screen('panel:initial', initial, required)
+    required = ('魔法飞弹',)
+    initial = bot.wait_for_screen(required, predicate=has_main_hud)
+    assert_main_hud('panel:initial', initial, required)
     emit('panel:initial')
     for case_id, key, required, forbidden, needs_escape in PANEL_CASES:
         screen = bot.send(key)
@@ -318,22 +335,21 @@ def run_panels(bot: PtyBot) -> None:
         emit(case_id, required=list(required))
         if needs_escape:
             closed = bot.send(b'\x1b', 0.5)
-            assert_screen(case_id + ':close', closed, ('生命:', '魔力:'))
+            assert_main_hud(case_id + ':close', closed)
 
 
 def exit_nested_help(bot: PtyBot) -> None:
     for _ in range(4):
         screen = bot.send(b'\x1b', 0.5)
         assert_screen('help:unwind', screen)
-        if '生命:' in screen and '魔力:' in screen:
+        if has_main_hud(screen):
             return
     raise BotFailure('help:unwind: did not return to the main screen')
 
 
 def run_help(bot: PtyBot) -> None:
-    required = ('生命:', '魔力:')
-    initial = bot.wait_for_screen(required)
-    assert_screen('help:probe', initial, required)
+    initial = bot.wait_for_screen((), predicate=has_main_hud)
+    assert_main_hud('help:probe', initial)
     emit('help:probe')
     emitted = ['help:probe:ok']
     for case_id, hotkey, positive, negative in GUIDE_CASES:
@@ -418,8 +434,9 @@ def has_ascii_combat_punctuation(text: str) -> bool:
 
 def run_workflows(bot: PtyBot) -> None:
     evidence = WorkflowEvidence()
-    required = ('生命:', '魔力:', '魔法飞弹')
-    initial = bot.wait_for_screen(required)
+    required = ('魔法飞弹',)
+    initial = bot.wait_for_screen(required, predicate=has_main_hud)
+    assert_main_hud('workflow:initial', initial, required)
     evidence.record('workflow:initial', initial, required)
 
     # Wizard state construction, followed by the real player religion panel.
@@ -435,9 +452,8 @@ def run_workflows(bot: PtyBot) -> None:
         ('狂怒者特洛格', '神授能力', '特洛格不置可否'),
         ('Trog the Wrathful', 'Granted powers', 'Trog is noncommittal'))
     closed = bot.send(b'\x1b', 0.5)
-    assert_screen('workflow:god:panel:close', closed,
-                  ('木乃伊，信仰特洛格', '生命:', '魔力:'),
-                  WORKFLOW_FORBIDDEN)
+    assert_main_hud('workflow:god:panel:close', closed,
+                    ('木乃伊，信仰特洛格',), WORKFLOW_FORBIDDEN)
 
     frozen = bot.send(b'&E', 1.0)
     evidence.record('workflow:combat:freeze', frozen,

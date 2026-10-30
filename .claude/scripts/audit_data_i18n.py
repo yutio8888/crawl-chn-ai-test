@@ -8,16 +8,22 @@ the T_() call uses a variable (not a string literal):
 1. Monster names from dat/mons/*.yaml (translated via T_(en.c_str()) at runtime)
 2. Duration strings from duration-data.h (translated via T_(endmsg) at runtime)
 3. Feature names from feature-data.h (translated via T_(get_feature_def().name))
+4. Custom shop type/suffix fields (exact C_() contexts, including finite Lua pools)
+5. Species orc names (including compatibility entries and the Orc fallback)
 """
 
 import re
 import os
 import sys
-from collections import OrderedDict
+from pathlib import Path
+import json
+import subprocess
+import tempfile
 
 # Use shared parser for consistency with scan_i18n.py
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from i18n_shared import parse_source_txt
+from i18n_extract import _lua_tokens
 
 
 
@@ -216,6 +222,291 @@ def check_corrosion_sources(source_dir: str, source_txt: str):
     return 0 if not missing else 1
 
 
+
+def _lua_multi_assignment_targets(text):
+    """Find target owners, excluding table fields but retaining callback writes."""
+    # Like the world audit's .des Lua view, retain blocks AND ':' main lines
+    # in source order. MAP quote/colon glyphs are never Lua source.
+    block_start = re.compile(r'^[ \t]*(?:[A-Za-z_]\w*)?\{\{[ \t]*$')
+    if (any(block_start.match(line) for line in text.splitlines())
+            or re.search(r'(?m)^[ \t]*:', text)):
+        view, in_block, in_map = [], False, False
+        for line in text.splitlines(keepends=True):
+            stripped = line.strip()
+            if not in_block and stripped == 'MAP':
+                in_map = True
+            elif not in_block and stripped == 'ENDMAP':
+                in_map = False
+            elif not in_map:
+                if block_start.match(line):
+                    in_block = True
+                elif stripped == '}}':
+                    in_block = False
+                elif in_block:
+                    view.append(line)
+                elif line.lstrip().startswith(':'):
+                    view.append(line.lstrip()[1:])
+            view.append('\n')
+        if in_block:
+            raise ValueError('Unterminated shop .des Lua block')
+        text = ''.join(view)
+    text = re.sub(r'(?m)^[ \t]*\#[^\n]*', '', text)
+    tokens = list(_lua_tokens(text))
+    delimiters, tables, blocks = [], [], []
+    pairs, targets = {}, set()
+
+    def target_start(index):
+        # Walk just a Lua target's prefix chain backwards. Balanced index/call
+        # arguments are opaque: reads inside them are not assignment targets.
+        while index >= 0:
+            kind = tokens[index][0]
+            if kind in (']', ')', '}'):
+                opening = pairs.get(index)
+                if opening is None:
+                    return None
+                index = opening - 1
+                if (tokens[opening][0] == '('
+                        and (index < 0 or tokens[index][0] not in
+                             ('IDENT', 'STRING', ')', ']', '}'))):
+                    return opening  # parenthesized prefix, not a bare owner
+            elif kind == 'STRING':  # Lua also allows f"argument".field
+                index -= 1
+            elif kind == 'IDENT':
+                if index > 0 and tokens[index - 1][0] in ('.', ':'):
+                    index -= 2
+                else:
+                    return index
+            else:
+                return None
+        return None
+
+    for index, (kind, value, _offset) in enumerate(tokens):
+        if kind in ('(', '[', '{'):
+            delimiters.append(index)
+            if kind == '{':
+                tables.append(index)
+        elif kind in (')', ']', '}'):
+            if delimiters and tokens[delimiters[-1]][0] == {')': '(', ']': '[', '}': '{'}[kind]:
+                pairs[index] = delimiters.pop()
+            if kind == '}' and tables:
+                tables.pop()
+        elif kind == 'IDENT':
+            if value in ('function', 'if', 'do', 'repeat'):
+                blocks.append((value, index))
+            elif value in ('end', 'until') and blocks:
+                blocks.pop()
+        elif kind == '=':
+            if ((index > 0 and tokens[index - 1][0] in ('=', '<', '>', '~'))
+                    or (index + 1 < len(tokens) and tokens[index + 1][0] == '=')):
+                continue  # comparison, not an assignment
+            if tables and not any(block == 'function' and start > tables[-1]
+                                  for block, start in blocks):
+                continue  # constructor field; a callback body is a statement scope
+            owners, count, cursor = set(), 0, index - 1
+            while cursor >= 0:
+                start = target_start(cursor)
+                if start is None:
+                    break
+                count += 1
+                if tokens[start][0] == 'IDENT':
+                    owners.add(tokens[start][1])
+                cursor = start - 1
+                if cursor < 0 or tokens[cursor][0] != ',':
+                    break
+                cursor -= 1
+            if count > 1:
+                targets.update(owners)
+    return targets
+
+
+def collect_shop_fields(source_dir: str):
+    """Return (context, key) identities from the current .des tag grammar.
+
+    Literal fields can occur in Lua continuation/conditional strings, so scan
+    all non-comment lines, not just lines containing ``shop``. The only
+    supported computed fields are finite local string arrays selected by the
+    standard crawl.random2(#array) idiom. Other computations fail closed.
+    Empty fields explicitly mean no custom word and need no translation.
+    """
+    des_dir = Path(source_dir) / 'dat/des'
+    # pan.des contains the computed pool; its absence must not shrink coverage.
+    if not des_dir.is_dir() or not (des_dir / 'branches/pan.des').is_file():
+        raise ValueError('Required shop source dat/des/branches/pan.des is missing')
+    paths = sorted(des_dir.rglob('*.des'))
+    identities = set()
+    tag = re.compile(r'(?<![\w_])(type|suffix):')
+    for path in paths:
+        raw_text = path.read_text(encoding='utf-8')
+        text = '\n'.join('' if line.lstrip().startswith(('#', '--')) else line
+                         for line in raw_text.splitlines())
+        multi_targets = None
+        for match in tag.finditer(text):
+            context = 'shop name ' + match.group(1)
+            tail = text[match.end():]
+            literal = re.match(r'([^\s"\\]+)', tail)
+            if literal:
+                continuation = tail[literal.end():]
+                if re.match(r'"\s*\.\.\s*(?:"[^\s;"]|[^"\s])', continuation):
+                    raise ValueError(f'{path}: computed extension of literal shop field')
+                identities.add((context, literal.group(1).replace('_', ' ')))
+                continue
+            # A closing quote followed by concatenation is a computed value;
+            # do not confuse it with the deliberately empty ``suffix: ``.
+            computed = re.match(r'"\s*\.\.\s*([A-Za-z_]\w*)', tail)
+            if tail.startswith('"') and re.match(r'"\s*\.\.', tail):
+                if not computed:
+                    raise ValueError(f'{path}: unsupported computed shop field')
+                variable = computed.group(1)
+                if not re.match(r'\s*(?:\.\.\s*"[\s;]|[),])',
+                                tail[computed.end():]):
+                    raise ValueError(f'{path}: unsupported extension of computed shop field')
+                assignments = list(re.finditer(
+                    r'local\s+' + re.escape(variable) + r'\s*=\s*'
+                    r'(\w+)\s*\[\s*crawl\.random2\(\s*#\s*\1\s*\)'
+                    r'\s*\+\s*1\s*\]'
+                    r'(?=[ \t]*(?:;[ \t]*)?(?:--[^\n]*)?(?:\n|$))', text))
+                if len(assignments) != 1:
+                    raise ValueError(f'{path}: unsupported shop field variable {variable}')
+                selector = assignments[0]
+                # Lua permits concatenation on the following line too. A
+                # selector is only supported as a complete finite-pool lookup.
+                after_selector = text[selector.end():]
+                if re.match(r'[ \t]*(?:--[^\n]*)?\n'
+                            r'(?:\s*--[^\n]*\n)*\s*'
+                            r'(?:\.\.|[+*/%^<>=~-]|\b(?:and|or)\b)',
+                            after_selector):
+                    raise ValueError(f'{path}: extended shop field selector')
+                pool = selector.group(1)
+                if multi_targets is None:
+                    multi_targets = _lua_multi_assignment_targets(raw_text)
+                if (variable in multi_targets or pool in multi_targets
+                        or len(re.findall(r'\b' + re.escape(variable) + r'\s*=', text)) != 1
+                        or len(re.findall(r'\b' + re.escape(pool) + r'\s*=', text)) != 1
+                        or re.search(r'\b' + re.escape(pool) + r'\s*\[[^\n]*\]\s*=', text)
+                        or re.search(r'table\.(?:insert|remove)\s*\(\s*'
+                                     + re.escape(pool) + r'\b', text)):
+                    raise ValueError(f'{path}: mutated shop field pool or selector')
+                arrays = re.findall(r'local\s+' + re.escape(pool)
+                                    + r'\s*=\s*\{([^{}]*)\}', text, re.S)
+                if len(arrays) != 1:
+                    raise ValueError(f'{path}: missing/ambiguous shop field pool {pool}')
+                values = re.findall(r'"([^"\\]*)"', arrays[0])
+                residue = re.sub(r'"[^"\\]*"', '', arrays[0])
+                if not values or residue.strip(' \t\r\n,'):
+                    raise ValueError(f'{path}: nonliteral shop field pool {pool}')
+                identities.update((context, value.replace('_', ' '))
+                                  for value in values if value)
+            elif tail.startswith('"'):
+                # Empty field ending at a Lua string boundary is supported.
+                continue
+            elif not tail or tail[0].isspace():
+                continue
+            else:
+                raise ValueError(f'{path}: unsupported shop field')
+    if not identities:
+        raise ValueError('No custom shop fields found')
+    return identities
+
+
+def _generate_species_data(source_dir: str):
+    """Use the production generator without requiring a build or writing source."""
+    root = Path(source_dir).resolve()
+    with tempfile.TemporaryDirectory() as directory:
+        output = Path(directory)
+        command = [sys.executable, str(root / 'util/species-gen.py'),
+                   str(root / 'dat/species'), str(root / 'util/species-gen')]
+        command.extend(str(output / name) for name in
+                       ('species-data.h', 'aptitudes.h', 'species-groups.h',
+                        'species-type.h'))
+        child_env = os.environ.copy()
+        import_paths = [str(root / 'util')] + [
+            path for path in child_env.get('PYTHONPATH', '').split(os.pathsep)
+            if path]
+        child_env['PYTHONPATH'] = os.pathsep.join(import_paths)
+        result = subprocess.run(command, capture_output=True, text=True,
+                                env=child_env)
+        if result.returncode:
+            raise ValueError('Species generation failed: '
+                             + (result.stderr or result.stdout).strip())
+        return (output / 'species-data.h').read_text(encoding='utf-8')
+
+
+def collect_orc_names(source_dir: str):
+    """Parse all generated species entries, including inactive compatibility.
+
+    Validate the schema's five final pointer fields and each initializer tail
+    together. This deliberately rejects an unfamiliar layout instead of silently
+    reading the wrong field as an orc name.
+    """
+    root = Path(source_dir)
+    schema = (root / 'species-def.h').read_text(encoding='utf-8')
+    schema = re.sub(r'//[^\n]*|/\*.*?\*/', '', schema, flags=re.S)
+    if not re.search(
+            r'const char\* walking_verb;\s*const char\* altar_action;\s*'
+            r'const char\* child_name;\s*const char\* orc_name;\s*'
+            r'const char\* orcification_msg;\s*};', schema):
+        raise ValueError('species_def final fields no longer match the orc-name schema')
+    data = _generate_species_data(source_dir)
+    data = re.sub(r'//[^\n]*', '', data)
+    # Enumerate every enum-headed initializer independently of accepted row
+    # formatting. An indented/new-layout row must not disappear from both the
+    # parser and its coverage comparison. Bind identities AND opening offsets.
+    starts = [(match.group(1), match.start()) for match in
+              re.finditer(r'\{\s*(SP_\w+)\s*,', data)]
+    rows = list(re.finditer(r'^[ \t]*(\{)[ \t]*(SP_\w+),[^\n]*\n'
+                            r'(.*?)^[ \t]*\},?', data, re.M | re.S))
+    parsed_starts = [(row.group(2), row.start(1)) for row in rows]
+    if (not rows or parsed_starts != starts
+            or len({identity for identity, _ in starts}) != len(starts)):
+        raise ValueError('Malformed, duplicate, or unsupported species initializers')
+    names = {'Orc'}  # species::orc_name() uses this for nullptr.
+    scalar = r'(nullptr|"(?:\\.|[^"\\])*")'
+    tail = re.compile(r'\n    \{[^\n]*\},\n'
+                      + ''.join('    ' + scalar + r',\n' for _ in range(5)) + r'\Z')
+    for row in rows:
+        if row.group(2) == 'SP_UNKNOWN':
+            # The non-playable sentinel omits all remaining aggregate fields.
+            if not re.search(r'\n    \{\},[ \t]*\n    nullptr,[ \t]*\n'
+                             r'    nullptr,[ \t]*\n\Z', row.group(3)):
+                raise ValueError('Unsupported SP_UNKNOWN initializer tail')
+            continue
+        fields = tail.search(row.group(3))
+        if not fields:
+            raise ValueError(f'{row.group(2)}: unsupported species initializer tail')
+        if fields.group(4) != 'nullptr':
+            names.add(json.loads(fields.group(4)))
+    return names
+
+
+def _check_collected_fields(title, collect, source_dir, source_txt, contextual=False):
+    print(f"\n--- {title} translation coverage ---")
+    try:
+        identities = collect(source_dir)
+        entries = parse_source_txt(source_txt)
+    except (OSError, ValueError) as error:
+        print(f'ERROR: {error}')
+        return 1
+    keys = sorted(f'{context}|{key}' for context, key in identities) if contextual \
+        else sorted(identities)
+    missing = [key for key in keys if not entries.get(key.lower(), '').strip()]
+    print(f'Total identities: {len(keys)}')
+    print(f'  Covered: {len(keys) - len(missing)}')
+    print(f'  MISSING: {len(missing)}')
+    for key in missing:
+        print(f'    - {key}')
+    return int(bool(missing))
+
+
+def check_shop_fields(source_dir: str, source_txt: str):
+    return _check_collected_fields('Custom shop fields', collect_shop_fields,
+                                   source_dir, source_txt, contextual=True)
+
+
+def check_orc_names(source_dir: str, source_txt: str):
+    return _check_collected_fields('Species orc names', collect_orc_names,
+                                   source_dir, source_txt)
+
+
 def main():
     if len(sys.argv) < 3:
         print("Usage: audit_data_i18n.py <source_dir> --source-txt <source.txt>")
@@ -234,6 +525,8 @@ def main():
     rc |= check_feature_names(source_dir, source_txt)
     rc |= check_cloud_names(source_dir, source_txt)
     rc |= check_corrosion_sources(source_dir, source_txt)
+    rc |= check_shop_fields(source_dir, source_txt)
+    rc |= check_orc_names(source_dir, source_txt)
 
     print(f"\n=== audit_data_i18n.py complete (exit {rc}) ===")
     return rc

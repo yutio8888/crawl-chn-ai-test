@@ -3614,8 +3614,9 @@ void clockwork_bee_go_dormant(monster& bee)
 {
     if (you.can_see(bee))
     {
-        mprf(T_("%s's clockwork bee winds down and falls to the ground."),
-             bee.summoner == MID_PLAYER ? "Your" : "The");
+        mpr(bee.summoner == MID_PLAYER
+            ? T_("Your clockwork bee winds down and falls to the ground.")
+            : T_("The clockwork bee winds down and falls to the ground."));
     }
 
     int old_hd = bee.get_experience_level();
@@ -3705,8 +3706,8 @@ void clockwork_bee_pick_new_target(monster& bee)
        clockwork_bee_go_dormant(bee);
     else
     {
-        mprf(T_("%s's clockwork bee locks onto %s."),
-                agent ? agent->pronoun(PRONOUN_POSSESSIVE).c_str() : "Someone's",
+        mprf(T_("%s clockwork bee locks onto %s."),
+                agent ? agent->pronoun(PRONOUN_POSSESSIVE).c_str() : T_("Someone's"),
                 targ->name(DESC_THE).c_str());
         bee.add_ench(mon_enchant(ENCH_HAUNTING, targ, INFINITE_DURATION));
         bee.props[CLOCKWORK_BEE_TARGET].get_int() = targ->mid;
@@ -4281,7 +4282,7 @@ static void _do_player_potion()
         if (amu)
         {
             mprf(T_("You extract %smagical energy from the potion."),
-                 amu > 1 ? "even more " : "");
+                 amu > 1 ? T_("even more ") : "");
             inc_mp(random_range(5, 9) * amu);
         }
     }
@@ -4609,10 +4610,6 @@ spret cast_summon_seismosaurus_egg(const actor& agent, int pow, bool fail)
     {
         mpr(T_("A rock-encrusted egg appears nearby and begins to stir."));
         mons->add_ench(mon_enchant(ENCH_HATCHING, &agent, random_range(6, 9)));
-
-        // Mark all terrain in range.
-        for (distance_iterator di(mons->pos(), false, false, 4); di; ++di)
-            env.pgrid(*di) |= FPROP_SEISMOROCK;
     }
     else
         canned_msg(MSG_NOTHING_HAPPENS);
@@ -4642,7 +4639,7 @@ spret cast_phalanx_beetle(const actor& agent, int pow, bool fail)
         else if (you.can_see(agent))
         {
             mprf(T_("%s forges a quick-moving defender to stand alongside %s."),
-                 agent.name(DESC_THE).c_str(), agent.pronoun(PRONOUN_POSSESSIVE).c_str());
+                 agent.name(DESC_THE).c_str(), agent.pronoun(PRONOUN_OBJECTIVE).c_str());
         }
         mons_update_aura(*mons);
     }

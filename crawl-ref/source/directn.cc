@@ -878,7 +878,7 @@ void full_describe_view()
     }
 
     coord_def target = _full_describe_menu(list_mons, list_items,
-                                           list_features, "target/travel",
+                                           list_features, C_("view menu action", "target/travel"),
                                            false, true);
 
     // need to do this after the menu has been closed on console,
@@ -1807,7 +1807,7 @@ void direction_chooser::print_target_monster_description(bool &did_cloud) const
     if (text > "")
     {
         mprf(MSGCH_PROMPT, T_("%s: <lightgrey>%s</lightgrey>"),
-            target_prefix ? target_prefix : !behaviour->targeted() ? T_("Look") : T_("Aim"),
+            target_prefix ? T_(target_prefix) : !behaviour->targeted() ? T_("Look") : T_("Aim"),
             text.c_str());
         // If there's a cloud here, it's been described.
         did_cloud = true;
@@ -1895,7 +1895,7 @@ void direction_chooser::print_target_object_description() const
 
     // FIXME: remove the duplication with print_items_description().
     mprf(MSGCH_PROMPT, T_("%s: %s"),
-         target_prefix ? target_prefix : T_("Aim"),
+         target_prefix ? T_(target_prefix) : T_("Aim"),
          menu_colour_item_name(*item, DESC_A).c_str());
 }
 
@@ -2305,7 +2305,8 @@ void direction_chooser::full_describe()
 
     const coord_def choice =
         _full_describe_menu(list_mons, list_items, list_features,
-                            just_looking ? "target/travel" : "target");
+                            just_looking ? C_("view menu action", "target/travel")
+                                         : C_("view menu action", "target"));
 
     if (choice != coord_def(-1, -1))
         set_target(choice);
@@ -2694,7 +2695,7 @@ bool direction_chooser::noninteractive()
         if (moves.target.origin())
         {
             moves.isValid = false;
-            mpr("No reachable target in view!");
+            mpr(T_("No reachable target in view!"));
         }
     }
 

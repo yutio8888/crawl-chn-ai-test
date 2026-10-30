@@ -1174,10 +1174,17 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
                 if (attacker && attacker->mindex() == YOU_FAULTLESS)
                     attacker = nullptr;
 
-                mprf_p(T_("%1$s attack snaps %2$s out of %3$s fear."),
-                        attacker ? attacker->name(DESC_ITS).c_str() : "the",
-                        mon->name(DESC_THE).c_str(),
-                        mon->pronoun(PRONOUN_POSSESSIVE).c_str());
+                if (attacker)
+                {
+                    mprf_p(T_("%1$s attack snaps %2$s out of %3$s fear."),
+                           attacker->name(DESC_ITS).c_str(),
+                           mon->name(DESC_THE).c_str(),
+                           mon->pronoun(PRONOUN_POSSESSIVE).c_str());
+                }
+                else
+                    mprf_p(T_("The attack snaps %1$s out of %2$s fear."),
+                           mon->name(DESC_THE).c_str(),
+                           mon->pronoun(PRONOUN_POSSESSIVE).c_str());
             }
             mon->del_ench(ENCH_FEAR, true);
         }
@@ -1374,7 +1381,10 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
             {
                 msg = getSpeakString(mon->name(DESC_DBNAME) + " cornered");
                 if (msg.empty())
-                    msg = "PLAIN:Cornered, @the_monster@ turns to fight!";
+                {
+                    msg = string("PLAIN:")
+                          + T_("Cornered, @the_monster@ turns to fight!");
+                }
             }
             mon->del_ench(ENCH_FEAR, true);
             mon->behaviour = BEH_SEEK;

@@ -2576,8 +2576,8 @@ static string _orb_ego_details(special_armour_type ego)
 
         case SPARM_GLASS:
             return make_stringf(T_("\n\nVitrify chance: %d%% (max %d%%)"),
-                        (20 + you.skill(SK_EVOCATIONS, 5)) * 100 / 500,
-                        (20 + 135) * 100 / 500);
+                        (20 + you.skill(SK_EVOCATIONS, 13)) * 100 / 1000,
+                        (20 + 351) * 100 / 1000);
 
         case SPARM_PYROMANIA:
             return make_stringf(T_("\n\nExplosion chance: %d%% (max %d%%)\nExplosion damage: %dd%d (max %dd%d)\n"),
@@ -3433,7 +3433,7 @@ string get_item_description(const item_def &item,
     }
 
     if (verbose && origin_describable(item))
-        description << "\n" << origin_desc(item) << ".";
+        description << "\n" << origin_desc(item) << T_(".");
 
     // This information is obscure and differs per-item, so looking it up in
     // a docs file you don't know to exist is tedious.
@@ -4268,7 +4268,7 @@ static string _actions_desc(const vector<command_type>& actions)
     {
         { CMD_WIELD_WEAPON, T_("(w)ield") },
         { CMD_UNWIELD_WEAPON, T_("(u)nwield") },
-        { CMD_QUIVER_ITEM, T_("(q)uiver") }, // except for potions, see below
+        { CMD_QUIVER_ITEM, C_("item action", "(q)uiver") }, // except for potions, see below
         { CMD_WEAR_ARMOUR, T_("(w)ear") },
         { CMD_REMOVE_ARMOUR, T_("(t)ake off") },
         { CMD_EVOKE, T_("e(v)oke") },
@@ -4290,7 +4290,7 @@ static string _actions_desc(const vector<command_type>& actions)
                                     if (cmd == CMD_QUAFF) // assumes quaff appears first
                                         push_quiver = true;
                                     else if (push_quiver && cmd == CMD_QUIVER_ITEM)
-                                        return string(T_("qui(v)er"));
+                                        return string(C_("item action", "qui(v)er"));
                                     return act_str.at(cmd);
                                 },
                                 T_(", or ")) + ".";
@@ -4614,7 +4614,7 @@ command_type describe_item_popup(const item_def &item,
                 if (_get_action(key, actions) != cmd)
                     continue;
                 string label = cmd == CMD_QUIVER_ITEM && key == 'v'
-                    ? string(T_("qui(v)er")) : _actions_desc({cmd});
+                    ? string(C_("item action", "qui(v)er")) : _actions_desc({cmd});
                 if (!label.empty() && label.back() == '.')
                     label.pop_back();
                 keyboard_candidates.push_back({std::move(label), key});
@@ -5012,7 +5012,7 @@ string get_skill_description(skill_type skill, bool need_title,
 static int _mon_hex_pow(const spell_type spell, const monster_info* mi, bool is_wand)
 {
     int pow = is_wand ? mons_wand_power(mi->hd, spell)
-                      : mons_power_for_hd(spell, mi->spell_hd());
+                      : mons_spellpower(*mi, spell);
 
     // Adjust by any power multipliers which may exist in zap definition.
     const zap_type ztype = spell_to_zap(spell);
@@ -5408,8 +5408,8 @@ static void _get_spell_description(const spell_type spell,
 
         }
 
-        const int hd = mon_owner->spell_hd();
-        const int range = mons_spell_range_for_hd(spell, hd, mon_owner->is(MB_PLAYER_SERVITOR));
+        const int mon_pow = mons_spellpower(*mon_owner, spell);
+        const int range = calc_spell_range(spell, mon_pow, mon_owner->is(MB_PLAYER_SERVITOR));
         const int minrange = (spell == SPELL_CALL_DOWN_LIGHTNING
                                 || spell == SPELL_FLASHING_BALESTRA
                                 || spell == SPELL_BECKONING_GALE ? 3 : 0);
@@ -5417,7 +5417,6 @@ static void _get_spell_description(const spell_type spell,
         description += T_("\nRange : ");
         description += range_string(range, -1, minrange);
 
-        const int mon_pow = mons_power_for_hd(spell, hd);
         const string defence_string = spell_defence_string(spell, true, mon_pow);
         const string resist_string = spell_resist_string(spell, true, mon_pow);
         if (!defence_string.empty())
@@ -8661,7 +8660,7 @@ static void _maybe_note_armour_modifier(vector<vector<string>>& items,
         change[i] = base_ac * mult[i] / 100;
 
     vector<string> labels;
-    labels.push_back("Body Armour AC");
+    labels.push_back(T_("Body Armour AC"));
 
     for (int i = 0; i < 3; ++i)
     {
@@ -8752,7 +8751,7 @@ static void _maybe_populate_form_table(vector<vector<string>>& items,
         return;
 
     vector<string> labels;
-    labels.push_back(T_(label.c_str()));
+    labels.push_back(C_("form table", label.c_str()));
     labels.push_back(_format_data_label(data[0], show_sign, is_percent, decimal_places ? divisor : 0, decimal_places));
     labels.push_back(_format_data_label(data[1], show_sign, is_percent, decimal_places ? divisor : 0, decimal_places));
     labels.push_back(_format_data_label(data[2], show_sign, is_percent, decimal_places ? divisor : 0, decimal_places));
@@ -8777,7 +8776,7 @@ static void _desc_form_val(TablePrinter& pr, string label, int val)
     if (val == 0)
         return;
 
-    pr.AddCell(label, make_stringf("%+d", val).c_str(), val < 0 ? RED : LIGHTGREY);
+    pr.AddCell(T_(label.c_str()), make_stringf("%+d", val).c_str(), val < 0 ? RED : LIGHTGREY);
 }
 
 static string _describe_talisman_form(transformation form_type)
@@ -8799,15 +8798,15 @@ static string _describe_talisman_form(transformation form_type)
                              : skill_string));
     items.push_back({T_("Skill"), to_string(skill[0]), to_string(skill[1]), cur_skill});
 
-    _maybe_populate_form_table(items, bind(&Form::mult_hp, form, 100, true, placeholders::_1), "HP", skill, -100, true, true, 1);
-    _maybe_populate_form_table(items, bind(&Form::get_base_unarmed_damage, form, false, placeholders::_1), "UC Base Dmg", skill, -3);
-    _maybe_populate_form_table(items, bind(&Form::get_ac_bonus, form, placeholders::_1), "AC", skill, 0, false, true, 100, 1);
-    _maybe_populate_form_table(items, bind(&Form::ev_bonus, form, placeholders::_1), "EV", skill, 0, false, true, 100, 1);
-    _maybe_populate_form_table(items, bind(&Form::max_mp_bonus, form, placeholders::_1), "MP", skill);
-    _maybe_populate_form_table(items, bind(&Form::slay_bonus, form, false, placeholders::_1), "Slay", skill);
-    _maybe_populate_form_table(items, bind(&Form::regen_bonus, form, placeholders::_1), "Regen", skill, 0, false, true, 100, 2);
-    _maybe_populate_form_table(items, bind(&Form::mp_regen_bonus, form, placeholders::_1), "MP Regen", skill, 0, false, true, 100, 2);
-    _maybe_populate_form_table(items, bind(&Form::get_web_chance, form, placeholders::_1), "Ensnare Chance", skill, 0, true, false);
+    _maybe_populate_form_table(items, bind(&Form::mult_hp, form, 100, true, placeholders::_1), N_("HP"), skill, -100, true, true, 1);
+    _maybe_populate_form_table(items, bind(&Form::get_base_unarmed_damage, form, false, placeholders::_1), N_("UC Base Dmg"), skill, -3);
+    _maybe_populate_form_table(items, bind(&Form::get_ac_bonus, form, placeholders::_1), N_("AC"), skill, 0, false, true, 100, 1);
+    _maybe_populate_form_table(items, bind(&Form::ev_bonus, form, placeholders::_1), N_("EV"), skill, 0, false, true, 100, 1);
+    _maybe_populate_form_table(items, bind(&Form::max_mp_bonus, form, placeholders::_1), N_("MP"), skill);
+    _maybe_populate_form_table(items, bind(&Form::slay_bonus, form, false, placeholders::_1), N_("Slay"), skill);
+    _maybe_populate_form_table(items, bind(&Form::regen_bonus, form, placeholders::_1), N_("Regen"), skill, 0, false, true, 100, 2);
+    _maybe_populate_form_table(items, bind(&Form::mp_regen_bonus, form, placeholders::_1), N_("MP Regen"), skill, 0, false, true, 100, 2);
+    _maybe_populate_form_table(items, bind(&Form::get_web_chance, form, placeholders::_1), N_("Ensnare Chance"), skill, 0, true, false);
     _maybe_note_armour_modifier(items, *form, skill);
 
     _maybe_note_form_dice(items, bind(&Form::get_special_damage, form, false, placeholders::_1), form->special_dice_name, skill,
@@ -8815,37 +8814,37 @@ static string _describe_talisman_form(transformation form_type)
 
     if (form_type == transformation::maw)
     {
-        _maybe_populate_form_table(items, bind(&Form::get_aux_damage, form, false, placeholders::_1), "Bite Dmg", skill, 0, false, false);
-        _maybe_populate_form_table(items, bind(&Form::get_effect_size, form, placeholders::_1), "Devour Regen", skill, 0, false, true, 100, 2);
+        _maybe_populate_form_table(items, bind(&Form::get_aux_damage, form, false, placeholders::_1), N_("Bite Dmg"), skill, 0, false, false);
+        _maybe_populate_form_table(items, bind(&Form::get_effect_size, form, placeholders::_1), N_("Devour Regen"), skill, 0, false, true, 100, 2);
     }
     if (form_type == transformation::blade)
     {
-        _maybe_populate_form_table(items, bind(&Form::get_aux_damage, form, false, placeholders::_1), "Blade Dmg", skill, 0, false, false);
-        _maybe_populate_form_table(items, bind(&Form::get_effect_size, form, placeholders::_1), "Parry SH", skill, 0, false, false);
+        _maybe_populate_form_table(items, bind(&Form::get_aux_damage, form, false, placeholders::_1), N_("Blade Dmg"), skill, 0, false, false);
+        _maybe_populate_form_table(items, bind(&Form::get_effect_size, form, placeholders::_1), N_("Parry SH"), skill, 0, false, false);
     }
     if (form_type == transformation::hive)
-        _maybe_populate_form_table(items, bind(&Form::get_effect_size, form, placeholders::_1), "# of Bees", skill, 0, false, false, 10, 1);
+        _maybe_populate_form_table(items, bind(&Form::get_effect_size, form, placeholders::_1), NC_("form table", "# of Bees"), skill, 0, false, false, 10, 1);
     if (form_type == transformation::sphinx)
         _maybe_note_airstrike_damage(items, skill);
     if (form_type == transformation::werewolf)
     {
-        _maybe_populate_form_table(items, bind(&Form::get_werefury_kill_bonus, form, placeholders::_1), "+Slay/Kill", skill, 0, false, false, 10, 1);
-        _maybe_populate_form_table(items, bind(&Form::get_takedown_multiplier, form, placeholders::_1), "Takedown Dmg", skill, 0, true, true);
-        _maybe_populate_form_table(items, bind(&Form::get_howl_power, form, placeholders::_1), "Howl Power", skill, 0, false, false);
+        _maybe_populate_form_table(items, bind(&Form::get_werefury_kill_bonus, form, placeholders::_1), N_("+Slay/Kill"), skill, 0, false, false, 10, 1);
+        _maybe_populate_form_table(items, bind(&Form::get_takedown_multiplier, form, placeholders::_1), N_("Takedown Dmg"), skill, 0, true, true);
+        _maybe_populate_form_table(items, bind(&Form::get_howl_power, form, placeholders::_1), N_("Howl Power"), skill, 0, false, false);
     }
     if (form_type == transformation::walking_scroll)
-        _maybe_populate_form_table(items, bind(walking_scroll_skill_bonus, 10, placeholders::_1), "Spell Skill Boost", skill, 0, false, true, 10, 1);
+        _maybe_populate_form_table(items, bind(walking_scroll_skill_bonus, 10, placeholders::_1), N_("Spell Skill Boost"), skill, 0, false, true, 10, 1);
     if (form_type == transformation::fortress_crab)
-        _maybe_populate_form_table(items, bind(&Form::get_effect_size, form, placeholders::_1), "Rust Breath Size", skill, 0, false, false);
+        _maybe_populate_form_table(items, bind(&Form::get_effect_size, form, placeholders::_1), N_("Rust Breath Size"), skill, 0, false, false);
     if (form_type == transformation::medusa)
     {
-        _maybe_populate_form_table(items, bind(&Form::get_effect_size, form, placeholders::_1), "Tendril targets", skill, 0, false, false, 10, 1);
-        _maybe_populate_form_table(items, bind(&Form::get_effect_chance, form, placeholders::_1), "Petrify chance", skill, 0, true, false);
+        _maybe_populate_form_table(items, bind(&Form::get_effect_size, form, placeholders::_1), N_("Tendril targets"), skill, 0, false, false, 10, 1);
+        _maybe_populate_form_table(items, bind(&Form::get_effect_chance, form, placeholders::_1), N_("Petrify chance"), skill, 0, true, false);
     }
     if (form_type == transformation::vampire)
     {
-        _maybe_populate_form_table(items, bind(&Form::get_effect_size, form, placeholders::_1), "Bat Swarm Recharge", skill, 0, true, false);
-        _maybe_populate_form_table(items, bind(&Form::get_effect_chance, form, placeholders::_1), "Daze Power", skill, 0, false, false);
+        _maybe_populate_form_table(items, bind(&Form::get_effect_size, form, placeholders::_1), N_("Bat Swarm Recharge"), skill, 0, true, false);
+        _maybe_populate_form_table(items, bind(&Form::get_effect_chance, form, placeholders::_1), N_("Daze Power"), skill, 0, false, false);
     }
     if (form_type == transformation::jademantle)
     {
@@ -8913,9 +8912,9 @@ static string _describe_talisman_form(transformation form_type)
     if (form->size != SIZE_CHARACTER)
         pr.AddCell(T_("Size"), uppercase_first(get_size_adj(form->size)));
 
-    _desc_form_val(pr, "Str", form->str_mod);
-    _desc_form_val(pr, "Int", form->int_mod);
-    _desc_form_val(pr, "Dex", form->dex_mod);
+    _desc_form_val(pr, N_("Str"), form->str_mod);
+    _desc_form_val(pr, N_("Int"), form->int_mod);
+    _desc_form_val(pr, N_("Dex"), form->dex_mod);
 
     _desc_form_resist(pr, MR_RES_FIRE, form->res_fire());
     _desc_form_resist(pr, MR_RES_COLD, form->res_cold());

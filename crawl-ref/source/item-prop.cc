@@ -2416,10 +2416,11 @@ bool item_is_horn_of_geryon(const item_def &item)
 
 bool item_is_spellbook(const item_def &item)
 {
-    return item.base_type == OBJ_BOOKS
 #if TAG_MAJOR_VERSION == 34
-           && item.sub_type != BOOK_BUGGY_DESTRUCTION
+    if (item.sub_type == BOOK_BUGGY_DESTRUCTION)
+        return false;
 #endif
+    return item.base_type == OBJ_BOOKS
            && item.sub_type != NUM_BOOKS
            && item.sub_type != BOOK_MANUAL;
 }
@@ -3576,7 +3577,7 @@ static string _xp_evoker_recharge_msg(const item_def &evoker, int gained, bool s
     ASSERT(edata);
     const string msg = silenced ? edata->recharge_msg.silent : edata->recharge_msg.noisy;
     if (!msg.empty())
-        return msg;
+        return T_(msg.c_str());
     if (edata->max_charges == 1)
         return T_("%s has recharged.");
     return make_stringf(gained == 1

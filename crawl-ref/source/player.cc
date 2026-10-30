@@ -4806,8 +4806,8 @@ bool confuse_player(int amount, bool quiet, bool force)
 
         if (!quiet)
         {
-            mprf(MSGCH_WARN, T_("You are %sconfused."),
-                 old_value > 0 ? T_("more ") : "");
+            mprf(MSGCH_WARN, "%s", old_value > 0 ? T_("You are more confused.")
+                                                : T_("You are confused."));
         }
 
         learned_something_new(HINT_YOU_ENCHANTED);
@@ -4861,8 +4861,8 @@ bool poison_player(int amount, string source, string source_aux, bool force)
         }
         else
         {
-            mprf(MSGCH_WARN, T_("You are %spoisoned."),
-                old_value > 0 ? T_("more ") : "");
+            mprf(MSGCH_WARN, "%s", old_value > 0 ? T_("You are more poisoned.")
+                                                : T_("You are poisoned."));
         }
 
         learned_something_new(HINT_YOU_POISON);
@@ -5164,7 +5164,7 @@ bool sticky_flame_player(int intensity, int duration, string source, string sour
         you.props[STICKY_FLAME_POWER_KEY] = intensity;
     }
 
-    const string intensity_str = max(intensity, old_pow) > 5 ? "intense " : "";
+    const string intensity_str = max(intensity, old_pow) > 5 ? T_("intense ") : "";
 
     if (you.duration[DUR_STICKY_FLAME] > 0)
     {
@@ -8822,7 +8822,7 @@ bool player::attempt_escape()
     }
     else
     {
-        mprf(T_("%s's hold on you weakens, but your attempt to escape fails."),
+        mprf(T_("%s hold on you weakens, but your attempt to escape fails."),
              object.c_str());
         turn_is_over = true;
         return false;
@@ -9955,7 +9955,7 @@ void player::be_agile(int pow)
 {
     const bool were_agile = you.duration[DUR_AGILITY] > 0;
     mprf(MSGCH_DURATION, T_("You suddenly feel %sagile."),
-         were_agile ? T_("more ") : "");
+         were_agile ? C_("state intensity", "more ") : "");
 
     you.increase_duration(DUR_AGILITY, 35 + random2(pow), 80);
     if (!were_agile)

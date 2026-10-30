@@ -924,7 +924,7 @@ Your aura of power can strike those that harm you.
 你的力量光环可以反击伤害你的人。
 %%%%
 heal your body and restore your magic
-治愈身体并恢复魔力
+治愈身体并恢复法力
 %%%%
 gather your power into a mighty leap
 将力量凝聚为强力跳跃
@@ -1071,7 +1071,7 @@ mimic reveal plural|%s are mimics!
 %1$s%2$.0s抽搐了一下。
 %%%%
 %1$s attack snaps %2$s out of %3$s fear.
-%1$s的攻击将%2$s从%3$s恐惧中惊醒。
+%1$s攻击将%2$s从%3$s恐惧中惊醒。
 %%%%
 %1$s can %2$s water.\n
 %1$s能在%2$s中行动。\n
@@ -1083,7 +1083,7 @@ mimic reveal plural|%s are mimics!
 %1$s继续给%2$s发条蜜蜂上弦……
 %%%%
 %1$s fails to defend %2$s.
-%1$s未能防守%2$s。
+%1$s未能保护%2$s。
 %%%%
 %1$s loses %2$s in your eye%3$s.
 %1$s在你的眼中%2$s失去了自我。
@@ -1116,7 +1116,7 @@ mimic reveal plural|%s are mimics!
 %s%s了%s，但没有造成伤害。
 %%%%
 %s %s %s vigour!
-%1$s汲取了%3$s的精力！
+%1$s汲取了%3$s精力！
 %%%%
 %s %s %s%s%s
 %s%s了%s%s%s
@@ -1173,7 +1173,7 @@ The alarm trap emits a blaring wail!
 %s了竖井！
 %%%%
 %s abandons %s pursuit.
-%s放弃了%s的追击。
+%s放弃了%s追击。
 %%%%
 %s absorbs %d nearby slime creatures and %s.
 %s吸收了附近的%d只粘液生物和%s。
@@ -1194,7 +1194,7 @@ The alarm trap emits a blaring wail!
 %s和%s
 %%%%
 %s answers %s call!
-%s响应了%s的召唤！
+%s响应了%s召唤！
 %%%%
 %s answers the call of its master!
 %s响应了主人的命令！
@@ -1311,7 +1311,7 @@ The alarm trap emits a blaring wail!
 %s无法被转移到那里。
 %%%%
 %s chant is interrupted.
-%s的吟唱被打断了。
+%s吟唱被打断了。
 %%%%
 %s comes into view.
 %s进入了视野。
@@ -1323,7 +1323,7 @@ The alarm trap emits a blaring wail!
 %s腐蚀了%s！
 %%%%
 %s corrosive artefact
-%s的腐蚀性神器
+%s腐蚀性神器
 %%%%
 %s corrupts the dungeon around %s!
 %s腐化了%s周围的地城！
@@ -1350,7 +1350,7 @@ You grip the centipede bauble in your %s and it winds around your %s and fuses w
 你用%s握住蜈蚣球，它缠上你的%s并与之融合。
 %%%%
 %s crushes %s against %s and falls apart!
-%s把%s压在%s上撞碎了！
+%s将%s压在%s上，自身随即碎裂！
 %%%%
 %s dances into the air!
 %s舞到了空中！
@@ -1422,10 +1422,10 @@ You grip the centipede bauble in your %s and it winds around your %s and fuses w
 %s只对你感到仇恨！
 %%%%
 %s fire resistance burns away.
-%s的火焰抗性被烧尽了。
+%s火焰抗性被烧尽了。
 %%%%
 %s floods into %s %s!
-%s涌入了%s的%s！
+%s涌入了%s%s！
 %%%%
 %s forbids the use of this item.
 %s禁止使用此物品。
@@ -1434,10 +1434,10 @@ You grip the centipede bauble in your %s and it winds around your %s and fuses w
 %s禁止使用这样的武器！
 %%%%
 %s forges a quick-moving defender to stand alongside %s.
-%s锻造了一个快速移动的防御者站在%s身边。
+%s锻造了一个快速移动的防御者站在%s的身边。
 %%%%
 %s gaze reveals you to all!
-%s的凝视将你暴露给所有人！
+%s凝视将你暴露给所有人！
 %%%%
 %s gleams with a vicious edge.
 %s闪烁着凶残的锋芒。
@@ -1613,7 +1613,7 @@ The potion decomposes into %s within you.
 %s被重力钉住了。
 %%%%
 %s is pinned to %s own shadow.
-%s被钉在了%s自己的影子上。
+%s被钉在了%s影子上。
 %%%%
 %s is recalled away.
 %s被召回。
@@ -1646,7 +1646,7 @@ The potion decomposes into %s within you.
 %s 离开了你的视野。
 %%%%
 %s life force is offered up.
-%s的生命力被献祭了。
+%s生命力被献祭了。
 %%%%
 %s liquefies the ground around %s!
 %s将%s周围的地面液化！
@@ -1658,7 +1658,7 @@ The potion decomposes into %s within you.
 %s看起来生病了。
 %%%%
 %s magic leaks into the air.
-%s的魔力泄漏到了空气中。
+%s魔力泄漏到了空气中。
 %%%%
 %s merges with something you can't see.
 %s与你无法看见的某种存在融合了。
@@ -1703,10 +1703,10 @@ barrage of energy
 %s向%s开火了！
 %%%%
 %s orb emits a pulse of dizzying energy.
-%s的球体释放出一阵令人眩晕的能量脉冲。
+%s球体释放出一阵令人眩晕的能量脉冲。
 %%%%
 %s orb unleashes a flurry of shooting stars!
-%s的宝珠释放出一阵流星雨！
+%s宝珠释放出一阵流星雨！
 %%%%
 %s orders the %s explosives to detonate!
 %s命令%s炸药引爆！
@@ -1772,10 +1772,10 @@ barrage of energy
 %s用冰雕刻了两门大炮！
 %%%%
 %s searing ray is interrupted.
-%s的灼热射线被打断了。
+%s灼热射线被打断了。
 %%%%
 %s seems less certain of %s magic.
-%s似乎对%s的魔力不那么自信了。
+%s似乎对%s魔力不那么自信了。
 %%%%
 %s seems to be corroded for longer.
 %s似乎被腐蚀得更久了。
@@ -1799,7 +1799,7 @@ barrage of energy
 %s从%s分离了出来。
 %%%%
 %s shadow slips away and your performance ends.
-%s的影子溜走了，你的表演结束了。
+%s影子溜走了，你的表演结束了。
 %%%%
 %s shapes itself into a furious %s!
 %s将自己塑造成了一只狂怒的%s！
@@ -1838,16 +1838,16 @@ barrage of energy
 %s散发出柔和的神圣光辉！
 %%%%
 %s song is interrupted.
-%s的歌声被打断了。
+%s歌声被打断了。
 %%%%
 %s soul is no longer bound.
-%s的灵魂不再被束缚。
+%s灵魂不再被束缚。
 %%%%
 %s spells grow weaker yet longer.
-%s的法术变得更弱了。
+%s法术变弱了，但持续时间更长了。
 %%%%
 %s spells grow weaker.
-%s的法术变弱了。
+%s法术变弱了。
 %%%%
 %s spits out %s more jellies.
 %s又吐出了%s只果冻。
@@ -1934,7 +1934,7 @@ barrage of energy
 %s折磨着你。
 %%%%
 %s toxic aura wanes.
-%s的毒性光环减弱了。
+%s毒性光环减弱了。
 %%%%
 %s tunnels through space-time and arrives with you!
 %s穿越时空而来，与你一同抵达！
@@ -1943,16 +1943,16 @@ You feel the abyssal rune grow more distant.
 你感到深渊符文变得更远了。
 %%%%
 %s turn aside %s attack!
-%s挡开了%s的攻击！
+%s挡开了%s攻击！
 %%%%
 %s turn%s aside %s attack!
 %s%s挡开了%s的攻击！
 %%%%
 %s turns %s attention toward your shadow.
-%s将%s的注意力转向了你的影子。
+%s将%s注意力转向了你的影子。
 %%%%
 %s turns aside %s attack!
-%s挡开了%s的攻击！
+%s挡开了%s攻击！
 %%%%
 %s turns into %s.
 %s变成了%s。
@@ -1979,7 +1979,7 @@ You feel the abyssal rune grow more distant.
 %s清楚地记得你的罪过。
 %%%%
 %s willpower is stripped away!
-%s的意志力被剥夺了！
+%s意志力被剥夺了！
 %%%%
 %s%s.
 %s%s。
@@ -2084,7 +2084,7 @@ You feel the abyssal rune grow more distant.
 （按<w>%c</w>键打开<w>%s</w>菜单招募使徒）
 %%%%
  (quivered)
-（已装入箭袋）
+（已设为快捷动作）
 %%%%
  (bound)
  （已束缚）
@@ -2387,7 +2387,7 @@ comfort your suffering allies
 <w>%</w>/<w>%</w> : 佩戴或摘下首饰
 %%%%
 <w>%</w>/<w>%</w> : Wear or Take off armour
-<w>%</w>/<w>%</w> : 穿戴或脱下防具
+<w>%</w>/<w>%</w> : 穿戴或脱下护甲
 %%%%
 <w>Cast</w>|Describe|Hide|Show
 <w>施放</w>|描述|隐藏|显示
@@ -2612,7 +2612,7 @@ A dragon arrives to answer your call!
 一条龙回应你的召唤到来了！
 %%%%
 A dragon tries to answer your call, but you don't have enough magical power!
-一条龙试图回应你的召唤，但你没有足够的
+一条龙试图回应你的召唤，但你的法力不足！
 %%%%
 A fierce wind blows from the card.
 一阵猛烈的风从牌中吹出。
@@ -2648,7 +2648,7 @@ A fragment of %s is already outside their body!
 %s的灵魂碎片已经在其体外了！
 %%%%
 A fragment of %s soul is dislodged from %s body.
-%s的一片灵魂从%s体内被剥离。
+%s一片灵魂从%s体内被剥离。
 %%%%
 A freezing vortex appears %s%s%s!
 一股冰封漩涡出现%s%s%s！
@@ -2708,7 +2708,7 @@ A mysterious force pulls you upwards.
 一股神秘的力量将你向上拉。
 %%%%
 A pair of sphinxes answers %s call!
-一对斯芬克斯回应了%s的召唤！
+一对斯芬克斯回应了%s召唤！
 %%%%
 A part of your body evaporates into steam!
 你身体的一部分蒸发成了蒸汽！
@@ -2950,7 +2950,7 @@ Ancestor Upgrades:\n\n<white>XL              Upgrade\n</white>
 并碎裂造成额外伤害
 %%%%
 Angry insects surge out from beneath %s foliage!
-愤怒的昆虫从%s的枝叶下涌出！
+愤怒的昆虫从%s枝叶下涌出！
 %%%%
 Angry insects swarm out of your body to defend their hive!
 愤怒的昆虫从你体内蜂拥而出保卫蜂巢！
@@ -3193,7 +3193,7 @@ Beep! Your pager goes off! Use _ to check your messages.
 哔！你的寻呼机响了！使用 _ 查看你的消息。
 %%%%
  begins accelerating your health and magic regeneration.
-开始加速你的生命和魔力再生。
+开始加速你的生命和法力再生。
 %%%%
  begins to grow on the wall!
 开始在墙上生长！
@@ -3214,7 +3214,7 @@ Beogh
 比欧弗
 %%%%
 Beogh appreciates your bravery.
-比奥格赞赏你的勇敢。
+比欧弗赞赏你的勇敢。
 %%%%
 Beogh is disappointed with your cowardice.
 比欧弗对你的懦弱感到失望。
@@ -3569,7 +3569,7 @@ Clearing monster memory.
 正在清除怪物记忆。
 %%%%
 Clearing quiver.
-清空箭袋。
+清除快捷动作。
 %%%%
 Clearing the skill training target for %s.
 正在清除%s的技能训练目标。
@@ -4105,7 +4105,7 @@ explore_greedy
 贪婪探索
 %%%%
 extract magic from the potions you drink
-从你饮用的药水中提取魔法
+从你饮用的药水中提取法力
 %%%%
 extraordinarily
 异常
@@ -4613,10 +4613,10 @@ indifferent
 中立
 %%%%
 Indom (%d)
-不屈（%d）
+刚毅（%d）
 %%%%
 indomitable (%d)
-不屈（%d）
+刚毅（%d）
 %%%%
 infuse magic (%d %s)
 魔法注入（%d %s）
@@ -5039,7 +5039,7 @@ Its scales and tail are adapted to the water.
 它的鳞片和尾巴适应了水域生活。
 %%%%
 Jet-black ravens fly out from beneath %s foliage!
-乌黑的乌鸦从%s的枝叶下飞出！
+乌黑的乌鸦从%s枝叶下飞出！
 %%%%
 jewellery
 珠宝
@@ -5225,7 +5225,7 @@ magic regeneration
 法力再生
 %%%%
 Magic restored.
-魔力已恢复。
+法力已恢复。
 %%%%
 Magic Scroll
 魔法卷轴
@@ -5444,10 +5444,10 @@ No
 否
 %%%%
 No %squiver actions available for cycling.%s
-没有可循环的%s箭袋动作%s
+没有可循环切换的%s快捷动作。%s
 %%%%
 No action is quivered. Press <w>%</w> to choose one.
-尚未设置箭袋动作。按 <w>%</w> 选择一个。
+尚未设置快捷动作。按 <w>%</w> 选择一个。
 %%%%
 No God
 无神
@@ -5561,7 +5561,7 @@ Nothing appears to happen... Ominous!
 似乎什么都没有发生……不祥之兆！
 %%%%
 Nothing quivered!
-箭袋中没有任何东西！
+尚未设置快捷动作！
 %%%%
 Nothing wielded
 未装备武器
@@ -5570,7 +5570,7 @@ Now building '%s'
 正在建造'%s'
 %%%%
 Now linked to your health, your magic stops regenerating.
-与你的生命链接后，你的魔力停止了再生。
+与你的生命链接后，你的法力停止了再生。
 %%%%
 numb sensation.
 麻木感。
@@ -5700,7 +5700,7 @@ pinch
 掐
 %%%%
 Placed new exclusion.
-已放置新的排除区域。
+已设置新的旅行禁区。
 %%%%
 places
 地点
@@ -5982,7 +5982,7 @@ reduced
 降低
 %%%%
 Reduced exclusion size to a single square.
-已将排除区域缩小到一格。
+已将禁区缩小到一格。
 %%%%
 reflection
 反射
@@ -6027,7 +6027,7 @@ remove some of your equipment
 卸下部分装备
 %%%%
 Removed exclusion.
-已移除排除区域。
+已移除禁区。
 %%%%
 Removed Food
 已移除食品
@@ -6141,7 +6141,7 @@ roots
 根须
 %%%%
 Rot billows forth from %s wounds!
-腐烂从%s的伤口中涌出！
+腐烂从%s伤口中涌出！
 %%%%
 rPois
 毒抗
@@ -6384,13 +6384,13 @@ Setting a skill training target for %s at %d.%d.
 正在为%s设定%d.%d的技能训练目标。
 %%%%
 Shadowy forms rise from the deep at %s song!
-暗影形体在%s的歌声中从深渊中升起！
+暗影形体在%s歌声中从深渊中升起！
 %%%%
  shakes eagerly.
  急切地摇晃着。
 %%%%
  shakes off %s lethargy.
-摆脱了%s的昏沉。
+摆脱了%s昏沉。
 %%%%
 Shards of ice erupt from %s body!
 冰碎片从%s身上迸发出来！
@@ -6577,7 +6577,7 @@ Something shoots a net at you.
 有什么东西向你发射了一张网。
 %%%%
 Something tries to affect you, but you %s.
-有什么东西试图影响你，但你%s了。
+有什么东西试图影响你，但你%s。
 %%%%
 Something unexpectedly blocks you, preventing you from leaping!
 有什么东西意外地挡住了你，阻止了你的跳跃！
@@ -6661,7 +6661,7 @@ Space contracts around you and %s and then re-expands violently!
 你与%s周围的空间收缩，然后猛烈地重新扩张！
 %%%%
 Space folds impossibly around %s blade!
-空间在%s的刀锋周围以不可能的方式折叠！
+空间在%s刀锋周围以不可能的方式折叠！
 %%%%
 Space momentarily warps into an impossible shape!
 空间短暂地扭曲成了不可能的形态！
@@ -6786,7 +6786,7 @@ Stop fighting!
 停止战斗！
 %%%%
 Stopped running for exclusion.
-因排除区域而停止奔跑。
+因禁区而停止奔跑。
 %%%%
  stops burning.
 不再燃烧。
@@ -6940,7 +6940,7 @@ Tentacles reach out from the kraken!
 触手从海妖身上伸出！
 %%%%
 Terrible wounds open up all over %s body!
-可怕的伤口遍布了%s的全身！
+可怕的伤口遍布了%s全身！
 %%%%
 Terrible wounds spread across more of %s body!
 可怕的伤口在%s身上蔓延了更多！
@@ -7510,7 +7510,7 @@ The priest grants you succour and welcomes you into the fold.
 祭司给予你援助，欢迎你加入教团。
 %%%%
 The pull of %s song draws you forwards.
-%s的歌声将你向前吸引。
+%s歌声将你向前吸引。
 %%%%
 The rain has left you waist-deep in water!
 雨水让你陷入了齐腰深的水中！
@@ -7873,7 +7873,7 @@ Things that are here:
 此处有：
 %%%%
 This ability has a chance of reducing your maximum magic capacity when used.
-此能力在使用时有一定几率降低你的最大魔力容量。
+此能力在使用时有一定几率降低你的法力上限。
 %%%%
 This altar belongs to %s, but you can't tell which.\nPress the corresponding letter to learn more about a god, or press enter to convert or escape to cancel.
 这个祭坛属于%s，但你无法分辨是哪位神祇。\n按对应字母了解神祇详情，按回车皈依或按Esc取消。
@@ -7888,7 +7888,7 @@ This helmet is too small for your head.
 这个头盔对你的头来说太小了。
 %%%%
 This is %s sacrifice. Piety after sacrifice: %s
-这是%s献祭。献祭后的虔诚度：%s
+这是%s献祭。献祭后的虔诚值：%s
 %%%%
 This item has been removed.\n
 这个物品已被移除。\n
@@ -8484,7 +8484,7 @@ With a burst of heat and light, you rocket upwards!
 随着一阵热与光的爆发，你像火箭一样向上冲！
 %%%%
 With a deafening crack, the ground splits apart in the path of %s chthonic artillery!
-伴随着一声震耳欲聋的巨响，大地沿着%s的地狱火炮路径裂开！
+伴随着一声震耳欲聋的巨响，大地沿着%s地狱火炮路径裂开！
 %%%%
 With a frightful flash, the power of Zot shatters the %s gem into ten thousand fragments!
 伴随着可怕的闪光，佐特的力量将%s宝石粉碎成了无数碎片！
@@ -8493,7 +8493,7 @@ With a frightful flash, the power of Zot shatters your %s gem into ten thousand 
 伴随着可怕的闪光，佐特的力量将你的%s宝石粉碎成了无数碎片！
 %%%%
 With a metallic buzz, %s clockwork bee launches itself at %s.
-伴随着金属的嗡鸣声，%s的发条蜜蜂向%s发射出去。
+伴随着金属的嗡鸣声，%s发条蜜蜂向%s飞扑而去。
 %%%%
 With a soft hiss, the gate opens fully!
 随着一声轻柔的嘶嘶声，大门完全打开了！
@@ -8505,7 +8505,7 @@ With a terrible screech, the alarm sounds!
 以惊人的势头
 %%%%
 With Pikel's spell broken, his former %s freedom.
-皮克尔的法术被打破了，他曾经的%s自由了。
+皮克尔的法术被打破了，他曾经的%s自由。
 %%%%
  withdraws the vision and curse.
  收回了幻象和诅咒。
@@ -8520,7 +8520,7 @@ Without a target, your clockwork bee falls to the ground.
 没有目标，你的发条蜜蜂掉在了地上。
 %%%%
 Without enough magic to sustain it, your %s dissipates.
-没有足够的魔力维持，你的%s消散了。
+没有足够的法力维持，你的%s消散了。
 %%%%
 wizardry
 精准施法
@@ -8639,7 +8639,7 @@ You acquired
 你获得了
 %%%%
 You add the spell%1$s %2$s to your library.
-你将法术<yellow>%2$s</yellow>添加到你的法术书中。
+你将法术<yellow>%2$s</yellow>添加到你的法术库中。
 %%%%
 You already have all the faith you need.
 你已拥有所需的全部信仰。
@@ -8807,7 +8807,7 @@ You are out of cards!
 你没有牌了！
 %%%%
 You are out of magic!
-你魔力耗尽！
+你的法力耗尽了！
 %%%%
 You are peeking down the stairs.
 你正在朝楼梯下窥视。
@@ -8984,7 +8984,7 @@ You attempt to attack %s, but flinch away in fear!
 你尝试攻击%s，却因恐惧而退缩了！
 %%%%
 You attempt to bind %s soul, but %s is merely a clone!
-你试图束缚%s的灵魂，但%s只是个克隆体！
+你试图束缚%s灵魂，但%s只是个克隆体！
 %%%%
 You avoid being caught in the net.
 你避免了被网困住。
@@ -9002,7 +9002,7 @@ You begin accumulating electric charge.
 你开始积累电荷。
 %%%%
 You begin rapidly regenerating health and magic.
-你开始快速恢复生命和魔法。
+你开始快速恢复生命和法力。
 %%%%
 You begin resting.
 你开始休息。
@@ -9512,7 +9512,7 @@ You cannot see a target there!
 你在那里看不到目标！
 %%%%
 You cannot set exclusions on this level.
-你无法在此层级设置排除区域。
+你无法在此层设置禁区。
 %%%%
 You cannot shatter the curse on %s while it is
 你无法在%s与你的身体融合时粉碎其诅咒！
@@ -9716,7 +9716,7 @@ You don't have any memories left to burn.
 你已经没有记忆可以燃烧了。
 %%%%
 You don't have any quiverable items.
-你没有任何可以装入箭袋的物品。
+你没有可设为快捷动作的物品。
 %%%%
 You don't have any shoulders.
 你没有肩膀。
@@ -9758,7 +9758,7 @@ you donate money
 你捐赠金钱
 %%%%
 You drain %s %s.
-你从%s吸取了%s。
+你吸取了%s%s。
 %%%%
 You draw in some of the released energy.
 你吸收了部分释放的能量。
@@ -9827,10 +9827,10 @@ You extend your mandibles.
 你伸出了下颚。
 %%%%
 You extract %smagical energy from the potion.
-你从药水中提取了%s魔力。
+你从药水中提取了%s法力。
 %%%%
 You extract magical energy from the potion.
-你从药水中提取了魔法能量。
+你从药水中提取了法力。
 %%%%
 You fade further into invisibility.
 你进一步隐入了无形。
@@ -9866,7 +9866,7 @@ You feel %sfirmly anchored in space.
 你感到%s牢牢固定在空间中。
 %%%%
 You feel %sprotected from %s.
-你感到%s抵御了%s。
+你感到%s能抵御%s。
 %%%%
 You feel %sweakened.
 你感觉%s被削弱了。
@@ -9920,7 +9920,7 @@ You feel a strong urge to attack something.
 你感到一阵强烈的攻击欲望。
 %%%%
 You feel a surge of magic.
-你感到一股魔力涌动。
+你感到一股法力涌动。
 %%%%
 You feel a surge of power!
 你感到一股力量涌动！
@@ -10013,7 +10013,7 @@ You feel less perceptive.
 你感到感知力减弱了。
 %%%%
 You feel less pious.
-你感到虔诚度降低了。
+你感到自己的虔诚值降低了。
 %%%%
 You feel less protected from negative energy.
 你感到对负能量的抵抗力减弱了。
@@ -10058,16 +10058,16 @@ You feel like your blood is boiling!
 你感到血液在沸腾！
 %%%%
 You feel magic leave you.
-你感到魔力离你而去。
+你感到法力离你而去。
 %%%%
 You feel magic leave your %s.
-你感到魔力离开了你的%s。
+你感到法力离开了你的%s。
 %%%%
 You feel magic pooling in your %s.
-你感到魔力在你的%s中汇聚。
+你感到法力在你的%s中汇聚。
 %%%%
 You feel magic returning to you.
-你感到魔力回到你身上。
+你感到法力回到你身上。
 %%%%
 You feel mighty!
 你感到力量强大！
@@ -10301,10 +10301,10 @@ You feel your light-headedness will last longer.
 你感到你的头晕将持续更久。
 %%%%
 You feel your magic capacity decrease.
-你感到你的魔力容量减少了。
+你感到自己的法力上限降低了。
 %%%%
 You feel your magic capacity increase.
-你感到你的魔力容量增加了。
+你感到自己的法力上限提高了。
 %%%%
 You feel your power drawn to a protective spirit.
 你感到你的力量被引向一个保护之灵。
@@ -10406,7 +10406,7 @@ You freeze %s%s%s
 你冻结了%s%s%s
 %%%%
 You grasp %s shadow with your own and put on a performance!
-你用自己的影子抓住%s的影子，开始表演！
+你用自己的影子抓住%s影子，开始表演！
 %%%%
 You have %1$d gold piece%2$s.
 你持有%1$d枚金币。
@@ -10478,7 +10478,7 @@ You have no feet!
 你没有脚！
 %%%%
 You have no magic to restore.
-你没有魔法值需要恢复。
+你没有可恢复的法力。
 %%%%
 You have no religion.
 你不信仰任何神祇。
@@ -10487,7 +10487,7 @@ You have nothing to donate!
 你没有什么可捐赠的！
 %%%%
 You have nothing to quiver.
-你没有东西可装入箭袋。
+你没有可设为快捷动作的内容。
 %%%%
 You have nothing you can fire or use right now.
 你现在没有可以发射或使用的东西。
@@ -10610,10 +10610,10 @@ you kill living or demonic beings while their torch is lit
 你在火炬点燃时杀死活物或恶魔生物
 %%%%
 You knock %s out of %s grip!
-你将%s从%s的掌握中击落！
+你将%s从%s掌握中击落！
 %%%%
 You lack sufficient magical power to recharge your bee.
-你没有足够的魔力来给你的蜜蜂充能。
+你没有足够的法力来给你的蜜蜂充能。
 %%%%
 You learned that %s are actually %s.
 你了解到%s实际上是%s。
@@ -10904,7 +10904,7 @@ You rip the net and break free!
 你把网撕裂，挣脱出来！
 %%%%
 You sap %s willpower!
-你削弱了%s的意志力！
+你削弱了%s意志力！
 %%%%
 You savour every drop.
 你细细品味每一滴。
@@ -10955,7 +10955,7 @@ You set the figurine down, and a mystic portal to a ziggurat forms.
 你放下了雕像，一道通往金字塔的神秘传送门形成了。
 %%%%
 You shatter%s
-你%s碎裂了
+你碎裂了%s
 %%%%
 You should not fight recklessly!
 你不应该鲁莽战斗！
@@ -10976,7 +10976,7 @@ You sink your fangs into %s and drain %s dry!
 你把獠牙插入%s，吸干了%s！
 %%%%
 You sink your fangs into %s and drink %s %s.
-你把獠牙插入%s，畅饮了%s的%s。
+你把獠牙插入%s，畅饮了%s%s。
 %%%%
 You slam the %s%s shut%s!
 你%s把%s关上了%s！
@@ -11083,7 +11083,7 @@ You sublimate a sliver of %s essence and reconstitute it in ice.
 你将%s的一丝精华升华，并使其在冰中重组。
 %%%%
 You suddenly feel drained of magical energy!
-你突然感到魔力被抽空！
+你突然感到法力被抽空！
 %%%%
 You swap places with %s.
 你与%s交换了位置。
@@ -11092,7 +11092,7 @@ You swap places with your shadow and weave the vestiges of your form into it.
 你与影子交换了位置，并把你形态的残余编织进去。
 %%%%
 You swear to avenge %s death!
-你发誓要为%s的死复仇！
+你发誓要为%s死复仇！
 %%%%
 You swing at nothing.
 你挥向了空处。
@@ -11164,7 +11164,7 @@ You will suffer for embracing such %s
 你将因拥抱这样的%s而受苦
 %%%%
 You wrap your dark will around %s soul!
-你用黑暗意志包裹了%s的灵魂！
+你用黑暗意志包裹了%s灵魂！
 %%%%
 You writhe in agony!
 你在痛苦中扭动！
@@ -11194,7 +11194,7 @@ You're confused, stopping %s.
 你感到困惑，停止了%s。
 %%%%
 You're in a travel-excluded area, stopping %s.
-你处于探索排除区域，停止%s。
+你处于旅行禁区内，停止%s。
 %%%%
 You're too berserk to give orders, and you can't shout!
 你太狂暴了，无法下达命令，也无法喊叫！
@@ -11227,7 +11227,7 @@ your
 你的
 %%%%
 Your %1$s attune%2$s to your body, and you begin to %3$s.
-%1$s适应了你的身体，你开始%3$s。
+你的%1$s适应了你的身体，你开始%3$s。
 %%%%
 Your %1$s meld%2$s into your body.
 你的%1$s融入了你的身体。
@@ -11563,13 +11563,13 @@ Your lungs strain for air.
 你的肺部迫切地需要空气。
 %%%%
 Your magic begins regenerating once more.
-你的魔力重新开始恢复。
+你的法力重新开始恢复。
 %%%%
 Your magic feels %stainted.
 你的魔力感到%s被玷污了。
 %%%%
 Your magic is already full.
-你的魔法值已经是满的。
+你的法力已经回满了。
 %%%%
 Your magical essence is drained by the effort!
 你的魔力精华在这场消耗中枯竭了！
@@ -11638,7 +11638,7 @@ Your paragon attacks with you!
 你的典范与你一同攻击！
 %%%%
 Your paragon deflects %s attack away from you.
-你的典范将%s的攻击偏转开了。
+你的典范将%s攻击偏转开了。
 %%%%
 Your paragon expends all of its energy in an overwhelming flurry of blows!
 你的典范耗尽所有能量，发动了一轮压倒性的猛攻！
@@ -13235,7 +13235,7 @@ That species isn't available.
 %%%%
 With your torch unlit, %s soul goes wasted...
 
-火炬未燃，%s的灵魂白白消散了……
+火炬未燃，%s灵魂白白消散了……
 %%%%
 With your torch unlit, a soul goes wasted...
 
@@ -14160,7 +14160,7 @@ You %s the barbed spikes from your body.
 你%s了身上的倒刺。
 %%%%
  health and magic
-生命和魔法
+生命和法力
 %%%%
 regenerate%s more quickly
 更快地再生%s
@@ -17937,7 +17937,7 @@ Ench
 附魔
 %%%%
 Slay
-杀敌
+杀戮
 %%%%
  x %d%% (Archery)
  x %d%%（箭术）
@@ -18509,7 +18509,7 @@ A shaft opens beneath you!
 你身下出现了一个竖井！
 %%%%
 You break free of %s.
-你挣脱了%s的掌控。
+你挣脱了%s掌控。
 %%%%
 The mark on you glows brighter.
 你身上的印记变得更亮了。
@@ -19679,10 +19679,10 @@ The winds are changing....
 风向正在转变……
 %%%%
 When hurt, damage is shared between your health and your magic reserves.
-受伤时，伤害在你的生命和魔力储备之间分摊。
+受伤时，伤害在你的生命和法力储备之间分摊。
 %%%%
 When low on magic, you restore magic in place of health.
-当魔力不足时，你以消耗生命为代价恢复魔力。
+当法力不足时，你会恢复法力而非生命。
 %%%%
 When seriously injured, your blood forms armour. (AC +
 当你严重受伤时，血液会形成护甲。（防御+
@@ -20237,10 +20237,10 @@ You have a beak for a mouth.
 你有一张喙状的嘴。
 %%%%
 You have a considerably increased reservoir of magic. (+20% MP)
-你的魔力储备大幅增加。（+20%魔力）
+你的法力储备大幅增加。（+20%法力）
 %%%%
 You have a greatly increased reservoir of magic. (+30% MP)
-你的魔力储备极大增加。（+30%魔力）
+你的法力储备极大增加。（+30%法力）
 %%%%
 You have a heavy armoured tail.
 你有一条沉重的装甲尾巴。
@@ -20303,7 +20303,7 @@ You have an extremely huge brain. (Int +4)
 你有一个极其巨大的大脑。（智力+4）
 %%%%
 You have an increased reservoir of magic. (+10% MP)
-你的魔力储备增加。（+10%魔力）
+你的法力储备增加。（+10%法力）
 %%%%
 You have an uncanny knack for detecting items.
 你有探测物品的奇特能力。
@@ -20465,7 +20465,7 @@ You regenerate health from kills.
 你通过击杀恢复生命。
 %%%%
 You regenerate magic rapidly.
-你快速恢复魔力。
+你快速恢复法力。
 %%%%
 You regenerate.
 你具有再生能力。
@@ -20618,13 +20618,13 @@ Your magical and physical power is slightly enhanced at high health.
 你在高生命时魔法和物理力量略微增强。
 %%%%
 Your magical capacity is extremely low. (-30% MP)
-你的魔力容量极低。（-30%魔力）
+你的法力上限极低。（-30%法力）
 %%%%
 Your magical capacity is low. (-10% MP)
-你的魔力容量较低。（-10%魔力）
+你的法力上限较低。（-10%法力）
 %%%%
 Your magical capacity is very low. (-20% MP)
-你的魔力容量很低。（-20%魔力）
+你的法力上限很低。（-20%法力）
 %%%%
 Your magical flight helps you evade attacks. (EV +4)
 你的魔法飞行帮助你闪避攻击。（闪避+4）
@@ -22064,7 +22064,7 @@ Disabling autothrow.
 禁用自动投掷。
 %%%%
 You don't have enough magic to cast 
-你没有足够的魔力来施放 
+你没有足够的法力来施放 
 %%%%
 You are too depleted to cast spells recklessly!
 你消耗太大，无法随意施放法术！
@@ -23411,7 +23411,7 @@ Empty
 空
 %%%%
 Nothing quivered
-未选择箭矢
+未设置快捷动作
 %%%%
 cross-training
 跨系训练
@@ -23651,13 +23651,13 @@ you don't have enough health to cast this spell.
 你没有足够的生命值来施放此法术。
 %%%%
 you don't have enough magic to cast this spell.
-你没有足够的魔力来施放此法术。
+你没有足够的法力来施放此法术。
 %%%%
 your magic and health are inextricable.
 你的魔力和生命密不可分。
 %%%%
 your reserves of magic are already full.
-你的魔力储备已经满了。
+你的法力储备已经满了。
 %%%%
 you cannot cast such powerful magic in your current form.
 当前形态下你无法施放如此强大的魔法。
@@ -24077,7 +24077,7 @@ You slip past the binding sigil.
 你滑过了束缚符文。
 %%%%
 %s cannot be bound by the sigil due to %s high momentum!
-%s由于%s的高速移动而无法被符文束缚！
+%s由于%s高速移动而无法被符文束缚！
 %%%%
 You move over the binding sigil and are bound in place!
 你踩过束缚符文，被固定在原地！
@@ -24158,7 +24158,7 @@ Walls emerge from the floor!
 墙壁从地面升起！
 %%%%
 Beogh will not strike down an ally of the cause.
-贝奥不会击倒同道中人。
+比欧弗不会击倒同道中人。
 %%%%
  booms: This is a trial of mortal prowess. Fight with your own strength!
 低沉地说：这是对凡人之力的考验。用你自己的力量战斗吧！
@@ -24551,7 +24551,7 @@ It is a scroll of enchant weapon.
 这是一张附魔武器卷轴。
 %%%%
 It is a scroll of brand weapon.
-这是一张武器烙印卷轴。
+这是一张武器铭印卷轴。
 %%%%
 It is a scroll of identify.
 这是一张鉴定卷轴。
@@ -25986,13 +25986,13 @@ Table legend:\n A = Kills in this place as a percentage of kills in the entire g
 表格说明：\n A = 此地点的击杀数占整个游戏击杀数的百分比。\n B = 此地点的由你造成的击杀数占整个游戏中你造成的击杀数的\n     百分比。\n C = 此地点的由友方造成的击杀数占整个游戏中友方造成的击杀数\n     的百分比。\n D = 此地点的其他击杀数占整个游戏中其他击杀数的\n     百分比。\n E = 此地点的经验值占整个游戏经验值的\n     百分比。\n F = 此地点的经验值除以你所探索过的\n     此地点层数。\n\n
 %%%%
 Table legend:\n A = God\n B = Rank\n C = Start time\n D = Start piety\n E = Piety gained\n F = Piety on gifts\n G = Piety on penance\n H = Piety on stepdowns\n I = Piety decays\n J = Piety lost (inc. decay)\n
-表格说明：\n A = 神明\n B = 等级\n C = 开始时间\n D = 初始虔诚度\n E = 获得的虔诚度\n F = 赐礼上的虔诚度\n G = 赎罪上的虔诚度\n H = 衰减步进的虔诚度\n I = 虔诚度衰减\n J = 虔诚度损失（含衰减）\n
+表格说明：\n A = 神明\n B = 等级\n C = 开始时间\n D = 初始虔诚值\n E = 获得的虔诚值\n F = 赐礼上的虔诚值\n G = 赎罪上的虔诚值\n H = 衰减步进的虔诚值\n I = 虔诚值衰减\n J = 虔诚值损失（含衰减）\n
 %%%%
 Conducts for god: %s\n
 神明戒律：%s\n
 %%%%
 Piety from conduct\n
-戒律获得的虔诚度\n
+戒律获得的虔诚值\n
 %%%%
 Conduct
 戒律
@@ -26298,7 +26298,7 @@ You are suddenly pulled into a different region of the Abyss!
 你突然被拉入了深渊的另一个区域！
 %%%%
 You can no longer hear %1$s singing!
-你再也听不到%1$s的歌声了！
+你再也听不到%1$s歌声了！
 %%%%
 You can't see anything there. Try transferring anyway?
 你在那里什么也看不到。仍然尝试传送吗？
@@ -26364,7 +26364,7 @@ dismisses
 消散
 %%%%
 from %s prison
-从%s的囚牢中
+从%s囚牢中
 %%%%
 glares at
 怒视
@@ -26775,10 +26775,10 @@ You are radiating toxic energy.
 你正在散发毒性能量。
 %%%%
 You are rapidly regenerating health and magic.
-你的生命和魔力正在快速再生。
+你的生命和法力正在快速再生。
 %%%%
 You are rapidly regenerating magical energy.
-你的魔力正在快速再生。
+你的法力正在快速再生。
 %%%%
 You are reanimating the dead.
 你正在复活死者。
@@ -26895,7 +26895,7 @@ You begin to regenerate health when rolling toward enemies.
 你向敌人翻滚时开始恢复生命。
 %%%%
 You begin to regenerate magic when rolling toward enemies.
-你向敌人翻滚时开始恢复魔力。
+你向敌人翻滚时开始恢复法力。
 %%%%
 You begin to regenerate regardless of the presence of monsters.
 无论附近是否有怪物，你都开始再生了。
@@ -27849,7 +27849,7 @@ Your lower body turns into a snake tail.
 你的下半身变成了一条蛇尾。
 %%%%
 Your magic begins to regenerate rapidly.
-你的魔力开始快速再生。
+你的法力开始快速再生。
 %%%%
 Your magic grows more menacing.
 你的魔法变得更加凶险。
@@ -28227,7 +28227,7 @@ It affects your health (%d).
 影响你的生命值（%d）。
 %%%%
 It affects your magic capacity (%d).
-影响你的魔力容量（%d）。
+影响你的法力上限（%d）。
 %%%%
 It lets you see invisible.
 让你能看见隐形之物。
@@ -28335,7 +28335,7 @@ It increases your evasion after moving or waiting.
 移动或等待后提高你的闪避。
 %%%%
 It increases your rate of magic regeneration.
-提高你的魔力恢复速度。
+提高你的法力恢复速度。
 %%%%
 It increases the success rate of your magical spells.
 提高你魔法法术的成功率。
@@ -28368,7 +28368,7 @@ It is %s %s.
 它是%s的%s。
 %%%%
 It causes incoming damage to be divided between your reserves of health and magic.
-使受到的伤害在你的生命值和魔力储备之间分摊。
+使受到的伤害在你的生命值和法力储备之间分摊。
 %%%%
 It allows you to gain divine favour quickly.
 使你能够快速获得神眷。
@@ -28380,7 +28380,7 @@ It improves your skill with shapeshifting (+5).
 提高你的变形术技能（+5）。
 %%%%
 It restores some MP whenever you drink a potion and also enhances your alchemy spells.
-饮用任何药水时恢复部分魔力，同时增强你的炼金术法术。
+饮用任何药水时恢复部分法力，同时增强你的炼金术法术。
 %%%%
 It reduces the duration of hostile enchantments and decays magical contamination more quickly.
 缩短敌对附魔的持续时间，并加快魔法污染的消退速度。
@@ -28611,7 +28611,7 @@ Base shield rating:
 基础盾牌评级: 
 %%%%
      Encumbrance rating: 
-     负重评级: 
+     负重等级: 
 %%%%
      Max blocks/turn: 
      每回合最大格挡: 
@@ -29210,10 +29210,10 @@ on
 戒指
 %%%%
 MP: 
-魔: 
+法: 
 %%%%
 MP:  
-魔力:  
+法力:  
 %%%%
 HP: 
 命: 
@@ -29518,8 +29518,7 @@ half of
 半个
 %%%%
 helpless 
-
-无助
+无助的
 %%%%
 invisible 
 隐形的 
@@ -29656,7 +29655,7 @@ Dex:
 敏: 
 %%%%
        Encumbrance rating: 
-       负重评级: 
+       负重等级: 
 %%%%
 puncture
 穿刺
@@ -29923,13 +29922,13 @@ Leaving this form will destroy all of your potions of mist! Transform anyway?
 离开此形态将摧毁你所有的雾药水！仍然变形吗？
 %%%%
 Put travel exclusion on door? (Y/n)
-在门上设置旅行排除区域？(Y/n)
+在门上设置旅行禁区？(Y/n)
 %%%%
 ; use anyway?
 ；仍然使用吗？
 %%%%
 Spend multiple turns changing equipment while %s?
-在%s的情况下花费多回合更换装备吗？
+仍要花费多回合更换装备吗？（%s）
 %%%%
 Really %s? This action would place you under penance%s!
 确定要%s吗？此行为会让你遭受苦修%s！
@@ -31324,7 +31323,7 @@ release
 %s%s紧紧缠绕%s%s
 %%%%
 %s %s flashes viciously!
-%s的%s猛烈闪光！
+%s%s猛烈闪光！
 %%%%
 %s %s free of %s!
 %s%s挣脱了%s！
@@ -31360,7 +31359,7 @@ The residue of %s spell condenses into glimmer.
 %s的精神%s被冲击%s
 %%%%
 %s remembers %s %s %s.
-%s记起了%s%s的%s。
+%s记起了%s%s%s。
 %%%%
 %s remembers more of %s old skill.
 %s回忆起更多%s昔日技能。
@@ -31375,7 +31374,7 @@ The residue of %s spell condenses into glimmer.
 %s闪烁了一下，似乎变成了%s！
 %%%%
 %s spells are empowered by the prayer of brilliance!
-%s的法术被光辉祈祷强化了！
+%s法术被光辉祈祷强化了！
 %%%%
 a nearby %s withers and dies.
 附近的%s枯萎而死。
@@ -33061,7 +33060,7 @@ which it recharges.
 %s%s火焰吞没%s
 %%%%
 %s %s vitality from %s injuries!
-%s%s了%s伤势中的生命力！
+%s%s了%s伤口中的生命力！
 %%%%
 %s to where?
 %s到哪？
@@ -33187,7 +33186,7 @@ spines
 %s%s倒刺刺穿。
 %%%%
 %s %s struck by %s %s.
-%s%s%s的%s击中。
+%s%s%s%s击中。
 %%%%
 %s %s %s%s
 %s%s了%s%s
@@ -33463,7 +33462,7 @@ Channel Magic
 魔力引导
 %%%%
 Convert to Beogh
-皈依贝奥格
+皈依比欧弗
 %%%%
 Donate Gold
 捐赠金币
@@ -33613,7 +33612,7 @@ Recruit Apostle
 %s%s守护你的生命。\n
 %%%%
 Orcs frequently recognise you as Beogh's chosen one.\n
-兽人经常认出你是贝奥格的选民。\n
+兽人经常认出你是比欧弗的选民。\n
 %%%%
 Orcs sometimes recognise you as one of them.\n
 兽人有时认出你是他们的一员。\n
@@ -33634,7 +33633,7 @@ Jiyva prevents you from harming jellies.\n
 吉瓦阻止你伤害果冻。\n
 %%%%
 Your life and magic regeneration are%s increased.\n
-你的生命和魔力恢复速度%s加快。\n
+你的生命和法力恢复速度%s加快。\n
 %%%%
 %s%s slows your movement.\n
 %s%s减缓移动。\n
@@ -33714,7 +33713,7 @@ Azrael
 Bai Suzhen
 白素贞
 %%%%
-Blorkula the orcula
+Blorkula the Orcula
 兽人布洛库拉
 %%%%
 Boris
@@ -35804,19 +35803,19 @@ Healing.
 治疗。
 %%%%
 Piety needs to be between 0 and %d.
-虔诚度必须在 0 到 %d 之间。
+虔诚值必须在 0 到 %d 之间。
 %%%%
 Ru piety can't be greater than %d.
-鲁的虔诚度不能超过 %d。
+鲁的虔诚值不能超过 %d。
 %%%%
 Interest must be between 0 and 255.
 兴趣值必须在 0 到 255 之间。
 %%%%
 Set piety to %d, interest to %d.
-虔诚度设为 %d，兴趣值设为 %d。
+虔诚值设为 %d，兴趣值设为 %d。
 %%%%
 Setting piety to %d.
-虔诚度设为 %d。
+虔诚值设为 %d。
 %%%%
 Enter new gold value (current = %d, Enter for %d): 
 输入新金币值（当前 = %d，回车设为 %d）：
@@ -35840,7 +35839,7 @@ Current progress to next sacrifice: %d  Progress needed: %d
 当前献祭进度：%d  需要进度：%d
 %%%%
 Enter new piety value (current = %d, Enter for 0): 
-输入新虔诚度值（当前 = %d，回车视为 0）：
+输入新虔诚值（当前 = %d，回车视为 0）：
 %%%%
 That skill doesn't seem to exist.
 该技能似乎不存在。
@@ -35939,7 +35938,7 @@ Zot clock should be between 0 and %d
 佐特时钟必须在 0 到 %d 之间
 %%%%
  magic
-魔法
+法力
 %%%%
 %s shudders%s.
 %1$s%2$s颤抖了。
@@ -35954,7 +35953,7 @@ Zot clock should be between 0 and %d
 猛烈地
 %%%%
 %s trance deepens.
-%s的恍惚状态加深了。
+%s恍惚状态加深了。
 %%%%
 %s is mesmerised by %s!
 %1$s被%2$s迷住了！
@@ -36255,7 +36254,7 @@ As you close the %s%s%s, it creaks loudly!
 当你关上%s%s%s时，它发出了响亮的吱嘎声！
 %%%%
 %s drains %s %s.
-%s吸取了%s的%s。
+%s吸取了%s%s。
 %%%%
 You %s!
 你%s！
@@ -36918,7 +36917,7 @@ Lash (%u)
 鞭击（%u）
 %%%%
 MPRegen (%d)
-魔力再生（%d）
+法力再生（%d）
 %%%%
 Memories (%d)
 记忆（%d）
@@ -37062,7 +37061,7 @@ hp as a bound soul: ~%d
 缚魂生命值：~%d
 %%%%
 insults %s ancestors.
-辱骂了%s的祖先。
+辱骂了%s祖先。
 %%%%
 lash out against %s attempt to control you!
 反抗%s控制你的企图！
@@ -37116,7 +37115,7 @@ summons friendly %s
 召唤了友善的%s
 %%%%
 ties %s tail in a knot.
-把%s的尾巴打了个结。
+把%s尾巴打了个结。
 %%%%
 trickster (+%d AC)
 欺诈者（AC +%d）
@@ -37191,7 +37190,7 @@ weapon of %s
 组装了%s！
 %%%%
  discards %s horn.
-丢弃了%s的角。
+丢弃了%s角。
 %%%%
  donates %s equipment to the cause.
 将%s装备捐献给了事业。
@@ -37218,7 +37217,7 @@ weapon of %s
 %8d %s，%s（等级%d
 %%%%
 %d %sexclusion%s
-%d个%s排除区%s
+%d个%s禁区%s
 %%%%
 %d (base %d)
 %d（基础%d）
@@ -37305,7 +37304,7 @@ morgue item inscription|unknown
 %s怪物状态
 %%%%
 %s other creatures
-%s个其他生物
+另外%s个生物
 %%%%
 %s pulls itself out of thin air.
 %s从空气中凝聚成形。
@@ -37461,7 +37460,7 @@ Non-targeted %s
 非瞄准%s
 %%%%
 Really quiver %s?
-确定将%s设为箭袋物品？
+确定将%s设为快捷动作？
 %%%%
 Round %d of %d
 第%d回合，共%d回合
@@ -37686,7 +37685,7 @@ Xom revived you
 佐姆复活了你
 %%%%
 Magic: 
-魔力：
+法力：
 %%%%
 Reached 
 达到了
@@ -37695,7 +37694,7 @@ Reached
  最大生命值
 %%%%
  max magic points
- 最大魔力值
+ 法力上限
 %%%%
 Reached XP level 
 达到经验等级
@@ -38097,7 +38096,7 @@ HP     :
 生命值：
 %%%%
 Piety  : 
-虔诚度：
+虔诚值：
 %%%%
 Gold   : 
 金币：
@@ -38364,16 +38363,16 @@ You cannot shatter the chains on %s while it is melded with your body!
 <h>物品类型（及常用命令）\n
 %%%%
 <lightgreen>}</lightgreen> : miscellaneous items (e<w>%</w>oke)
-<lightgreen>}</lightgreen>：杂项物品（<w>%</w>唤醒）
+<lightgreen>}</lightgreen>：杂项物品（<w>%</w>激活）
 %%%%
 <lightgrey>(nothing)</lightgrey>
 <lightgrey>（无）</lightgrey>
 %%%%
 <lightgrey>/</lightgrey> : wands (e<w>%</w>oke)
-<lightgrey>/</lightgrey>：魔杖（<w>%</w>唤醒）
+<lightgrey>/</lightgrey>：魔杖（<w>%</w>激活）
 %%%%
 <lightred>percent</lightred> : talismans (e<w>%</w>oke)
-<lightred>percent</lightred>：护符（<w>%</w>唤醒）
+<lightred>percent</lightred>：护符（<w>%</w>激活）
 %%%%
 <magenta>!</magenta> : potions (<w>%</w>uaff)
 <magenta>!</magenta>：药水（<w>%</w>喝下）
@@ -38523,7 +38522,7 @@ You can get information about <w>
 你可以获取关于<w>的信息
 %%%%
 You even kept some of your piety! 
-你甚至保留了一些虔诚度！
+你甚至保留了一些虔诚值！
 %%%%
 You hit %s.
 你击中了%s。
@@ -39667,7 +39666,7 @@ Your stasis prevents you from being paralysed, but everything else in sight stop
 质疑
 %%%%
  magic when faced with ultimate truth!
-的魔法在终极真相面前毫无意义！
+魔法在终极真相面前毫无意义！
 %%%%
 You cannot wall jump against 
 你无法蹬墙跳越
@@ -39748,7 +39747,7 @@ Error! The help for "%s" is missing!
 <lightgray>（选择以%1$s、%2$s以检视）</lightgray>
 %%%%
  while about to teleport
-，即将传送
+（即将传送）
 %%%%
  You'd be excommunicated if you did!
 如果你这样做将被逐出教会！
@@ -39802,7 +39801,7 @@ One of the many lords of Pandemonium,
 ：
 %%%%
 'Of %s': 
-%s之
+%s：
 %%%%
 <lightgrey>Options read from "%s".</lightgrey>
 <lightgrey>选项读取自"%s"。</lightgrey>
@@ -40324,7 +40323,7 @@ status|Bearserk
 熊狂
 %%%%
 status|Beogh
-贝奥
+比欧弗
 %%%%
 status|Berserk
 狂暴
@@ -40561,7 +40560,7 @@ status|Liquid
 液化
 %%%%
 status|MPRegen (%d)
-魔恢(%d)
+法恢(%d)
 %%%%
 status|Mark
 标记
@@ -43003,7 +43002,7 @@ You might %s onto that %s, are you sure?
 你可能会%s那个%s，确定吗？
 %%%%
 Really %s into that %s?
-确定要%s那个%s吗？
+确定要%s那边的%s吗？
 %%%%
 You might %s into a %s, are you sure?
 你可能会%s%s，确定吗？
@@ -43012,10 +43011,10 @@ You might %s into that %s, are you sure?
 你可能会%s那个%s，确定吗？
 %%%%
 Really %s into a travel-excluded area?
-确定要%s探索排除区域吗？
+确定要%s旅行禁区吗？
 %%%%
 You might %s into a travel-excluded area, are you sure?
-你可能会%s探索排除区域，确定要继续吗？
+你可能会%s旅行禁区，确定要继续吗？
 %%%%
 This might make you stumble backwards into that cloud of %s. Continue?
 这可能使你踉跄着退入那片%s。要继续吗？
@@ -43036,7 +43035,7 @@ This might make you stumble backwards into a toxic bog. Continue?
 这可能使你踉跄着退入毒沼。要继续吗？
 %%%%
 This might make you stumble backwards into a travel-excluded area. Continue?
-这可能使你踉跄着退入探索排除区域。要继续吗？
+这可能使你踉跄着退入旅行禁区。要继续吗？
 %%%%
 Are you sure you want to %s over %s while you are losing your buoyancy?
 你确定要%s%s上方吗？你的浮力正在消失。
@@ -43195,13 +43194,13 @@ Menu
 <w>/ 方向</w>、<w>Shift-方向</w>：长距离移动\n<w>* 方向</w>、<w>Ctrl-方向</w>：原地攻击\n
 %%%%
 <h>Autofight:\n<w>Tab</w>          : attack nearest monster,\n               moving if necessary\n<w>Shift-Tab</w>, <w>p</w> : trigger quivered action;\n               if targeted, aims at\n               nearest monster\n
-<h>自动战斗：\n<w>Tab</w>          ：攻击最近的怪物，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发已装填的动作；\n               若已瞄准，则瞄准\n               最近的怪物\n
+<h>自动战斗：\n<w>Tab</w>          ：攻击最近的怪物，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发已装填的动作；\n               若需要目标，则瞄准\n               最近的怪物\n
 %%%%
 <brown>(</brown> : missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
-<brown>(</brown> ：弹药（<w>%</w>装填、<w>%</w>瞄准、<w>%</w>/<w>%</w>切换）
+<brown>(</brown> ：弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
 %%%%
 </lightcyan> : books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pick up to add to library)
-</lightcyan> ：书籍（<w>%</w>记忆、<w>%</w>翻阅、<w>%</w>翻阅、\n    捡起以添加至法术库）
+</lightcyan> ：书籍（<w>%</w>记忆、<w>%</w>施法、<w>%</w>强制施法、\n    捡起以添加至法术库）
 %%%%
 <lightmagenta>0</lightmagenta> : the Orb of Zot\n    Carry it to the surface and win!\n
 <lightmagenta>0</lightmagenta> ：佐特宝珠\n    带上它回到地面即可获胜！\n
@@ -43219,7 +43218,7 @@ Memorise spells and view spell\n    library (get books to add to it)
 <console><cyan>)</cyan> ：</console>手持武器（<w>%</w>持）
 %%%%
 <console><brown>(</brown> : </console>missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
-<console><brown>(</brown> ：</console>弹药（<w>%</w>装填、<w>%</w>瞄准、<w>%</w>/<w>%</w>切换）
+<console><brown>(</brown> ：</console>弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
 %%%%
 <console><cyan>[</cyan> : </console>armour (<w>%</w>ear and <w>%</w>ake off)
 <console><cyan>[</cyan> ：</console>护甲（<w>%</w>穿上和<w>%</w>脱下）
@@ -43243,7 +43242,7 @@ Memorise spells and view spell\n    library (get books to add to it)
 <console><lightgrey>/</lightgrey> ：</console>魔杖（<w>%</w>激发）
 %%%%
 </lightcyan> : </console>books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pick up to add to spell library)
-</lightcyan> ：</console>书籍（<w>%</w>记忆、<w>%</w>翻阅、<w>%</w>翻阅、\n    捡起以添加至法术库）
+</lightcyan> ：</console>书籍（<w>%</w>记忆、<w>%</w>施法、<w>%</w>强制施法、\n    捡起以添加至法术库）
 %%%%
 </brown> : </console>staves (<w>%</w>ield)
 </brown> ：</console>法杖（<w>%</w>持）
@@ -43456,7 +43455,7 @@ Escape hatches can be used to quickly leave a level with <w><<</w> and <w>></w>,
 上下逃生口分别可以用<w><<</w>和<w>></w>来快速离开当前楼层。注意，你通常无法立即返回。
 %%%%
 \nTo avoid accidentally opening a door you'd rather remain closed during travel or autoexplore, you can mark it with an exclusion from the map view (<w>X</w>) with <w>ee</w> while your cursor is on the grid in question. Such an exclusion will prevent autotravel from ever entering that grid until you remove the exclusion with another press of <w>Xe</w>.
-\n为避免在旅行或自动探索时意外打开你希望保持关闭的门，你可以在光标位于该格时，从地图视图（<w>X</w>）中按<w>ee</w>将其标记为排除区域。此排除标记会阻止自动旅行进入该格，直到你再次按<w>Xe</w>将其移除。
+\n为避免在旅行或自动探索时意外打开你希望保持关闭的门，你可以在光标位于该格时，从地图视图（<w>X</w>）中按<w>ee</w>将其标记为旅行禁区。此禁区标记会阻止自动旅行进入该格，直到你再次按<w>Xe</w>将其移除。
 %%%%
 This is your chance to join a religion! In general, the gods will help their followers, bestowing powers of all sorts upon them, but many of them demand a life of dedication, constant tributes or entertainment in return.\n
 这是你加入宗教的机会！通常，神祇会帮助其信徒，赐予各种力量，但其中许多神祇会要求你以奉献一生、不断进贡或娱乐作为回报。\n
@@ -45298,7 +45297,7 @@ monster description|It will release varied jellies when damaged or killed, with 
 受伤或死亡时会释放多种史莱姆，数量与受到的伤害成正比。\n
 %%%%
 monster description|Despite %s appearance, it can open doors.\n
-尽管外表%s，但它能开门。\n
+尽管%s外表如此，它仍能开门。\n
 %%%%
 ghost description|%1$s the %2$s, %3$s %4$s %5$s of %6$s
 %1$s（%2$s，%3$s%4$s%5$s，信仰%6$s）
@@ -46208,3 +46207,2067 @@ jademantle-form
 %%%%
 skill training| trivially.
 ，幅度极小。
+%%%%
+surge of fire
+火焰涌流
+%%%%
+surge of cold
+寒气涌流
+%%%%
+surge of electricity
+电流涌流
+%%%%
+surge of tremors
+震波涌流
+%%%%
+The barbs in your skin will harm you if you move.
+如果移动，扎在你皮肤里的倒刺会对你造成伤害。
+%%%%
+You are %s!
+你%s！
+%%%%
+Your skin crawls.
+你的皮肤一阵发麻。
+%%%%
+You feel the power of %s in you as your rage grows.
+你感到%s的力量在体内涌动，狂暴也随之延长。
+%%%%
+You break free of %s!
+你挣脱了%s的束缚！
+%%%%
+%s breaks free of %s!
+%s挣脱了%s的束缚！
+%%%%
+This staircase leads to a travel-excluded area!
+这座楼梯通往旅行禁区！
+%%%%
+This staircase is marked as excluded!
+这座楼梯已被标记为旅行禁区！
+%%%%
+monster speech surface|ground
+地面
+%%%%
+monster speech surface|lava
+熔岩
+%%%%
+monster speech surface|water
+水面
+%%%%
+monster speech surface|altar
+祭坛
+%%%%
+weapon name|scythe
+镰刀
+%%%%
+weapon name|hammer
+锤
+%%%%
+shouts
+喊道
+%%%%
+engulf
+裹住
+%%%%
+intense 
+炽烈的
+%%%%
+spore attack|%1$s releases spores at %2$s but does no damage.
+%1$s向%2$s释放孢子，但没有造成伤害。
+%%%%
+elemental brand hit|%1$s %2$s %3$s%4$s%5$s
+%1$s%4$s%2$s了%3$s%5$s
+%%%%
+elemental brand verb|freeze
+冻伤
+%%%%
+melee hit|You spit %1$s like the proverbial pig%2$s%3$s%4$s%5$s
+你%2$s像串起俗话中的猪一样将%1$s串了起来%3$s%4$s%5$s
+%%%%
+melee hit|You attack %1$s's weak point%2$s%3$s%4$s%5$s
+你%2$s攻击了%1$s的弱点%3$s%4$s%5$s
+%%%%
+melee hit|You dice %1$s like an onion%2$s%3$s%4$s%5$s
+你%2$s像切洋葱一样将%1$s切成了丁%3$s%4$s%5$s
+%%%%
+melee hit|You fracture %1$s into splinters%2$s%3$s%4$s%5$s
+你%2$s将%1$s打成了碎片%3$s%4$s%5$s
+%%%%
+melee hit|You carve %1$s like the proverbial ham%2$s%3$s%4$s%5$s
+你%2$s像切俗话中的火腿一样切开了%1$s%3$s%4$s%5$s
+%%%%
+melee hit|You carve %1$s like a turkey%2$s%3$s%4$s%5$s
+你%2$s像切火鸡一样切开了%1$s%3$s%4$s%5$s
+%%%%
+melee hit|You shatter %1$s into splinters%2$s%3$s%4$s%5$s
+你%2$s将%1$s击成了碎片%3$s%4$s%5$s
+%%%%
+melee hit|You splatter %1$s into a gooey mess%2$s%3$s%4$s%5$s
+你%2$s将%1$s砸成了一团黏糊%3$s%4$s%5$s
+%%%%
+melee hit|You thrash %1$s mercilessly%2$s%3$s%4$s%5$s
+你%2$s毫不留情地鞭抽了%1$s%3$s%4$s%5$s
+%%%%
+melee hit|You squash %1$s like the proverbial ant%2$s%3$s%4$s%5$s
+你%2$s像碾碎俗话中的蚂蚁一样碾碎了%1$s%3$s%4$s%5$s
+%%%%
+melee hit|You beat %1$s into a bloody pulp%2$s%3$s%4$s%5$s
+你%2$s将%1$s捶成了血泥%3$s%4$s%5$s
+%%%%
+melee hit|You spit %1$s like a pig%2$s%3$s%4$s%5$s
+你%2$s像串起猪一样将%1$s串了起来%3$s%4$s%5$s
+%%%%
+melee hit|You skewer %1$s like a kebab%2$s%3$s%4$s%5$s
+你%2$s像串烤肉串一样将%1$s串了起来%3$s%4$s%5$s
+%%%%
+melee hit|You stick %1$s like a pincushion%2$s%3$s%4$s%5$s
+你%2$s像扎针垫一样将%1$s扎满了孔%3$s%4$s%5$s
+%%%%
+melee hit|You perforate %1$s like a sieve%2$s%3$s%4$s%5$s
+你%2$s将%1$s戳得像筛子一样满是窟窿%3$s%4$s%5$s
+%%%%
+melee hit|You open %1$s like a pillowcase%2$s%3$s%4$s%5$s
+你%2$s像拆开枕套一样剖开了%1$s%3$s%4$s%5$s
+%%%%
+melee hit|You slice %1$s like a ripe choko%2$s%3$s%4$s%5$s
+你%2$s像切熟透的佛手瓜一样切开了%1$s%3$s%4$s%5$s
+%%%%
+melee hit|You cut %1$s into ribbons%2$s%3$s%4$s%5$s
+你%2$s将%1$s切成了碎条%3$s%4$s%5$s
+%%%%
+melee hit|You carve %1$s like a ham%2$s%3$s%4$s%5$s
+你%2$s像切火腿一样切开了%1$s%3$s%4$s%5$s
+%%%%
+melee hit|You chop %1$s into pieces%2$s%3$s%4$s%5$s
+你%2$s将%1$s剁成了碎片%3$s%4$s%5$s
+%%%%
+melee hit|You crush %1$s like a grape%2$s%3$s%4$s%5$s
+你%2$s像压葡萄一样压碎了%1$s%3$s%4$s%5$s
+%%%%
+melee hit|You beat %1$s like a drum%2$s%3$s%4$s%5$s
+你%2$s像敲鼓一样捶打了%1$s%3$s%4$s%5$s
+%%%%
+melee hit|You hammer %1$s like a gong%2$s%3$s%4$s%5$s
+你%2$s像敲锣一样锤打了%1$s%3$s%4$s%5$s
+%%%%
+melee hit|You pound %1$s like an anvil%2$s%3$s%4$s%5$s
+你%2$s像敲铁砧一样猛砸了%1$s%3$s%4$s%5$s
+%%%%
+melee hit|You flatten %1$s like a pancake%2$s%3$s%4$s%5$s
+你%2$s将%1$s压得像煎饼一样扁%3$s%4$s%5$s
+%%%%
+melee hit|You pound %1$s into fine dust%2$s%3$s%4$s%5$s
+你%2$s将%1$s砸成了细粉%3$s%4$s%5$s
+%%%%
+melee hit|You pummel %1$s like a punching bag%2$s%3$s%4$s%5$s
+你%2$s像打沙袋一样殴击了%1$s%3$s%4$s%5$s
+%%%%
+melee hit|You squash %1$s like an ant%2$s%3$s%4$s%5$s
+你%2$s像碾碎蚂蚁一样碾碎了%1$s%3$s%4$s%5$s
+%%%%
+barks
+吠叫道
+%%%%
+bellows
+吼叫道
+%%%%
+bleats
+咩咩叫道
+%%%%
+breathes
+用气声说道
+%%%%
+buggily says
+以异常方式说道
+%%%%
+buzzes
+嗡嗡叫道
+%%%%
+caws
+嘎嘎叫道
+%%%%
+croaks
+呱呱叫道
+%%%%
+growls
+咆哮道
+%%%%
+gurgles
+咕噜叫道
+%%%%
+hisses
+嘶嘶叫道
+%%%%
+howls
+嚎叫道
+%%%%
+laughs
+笑道
+%%%%
+moans
+呻吟道
+%%%%
+roars
+吼道
+%%%%
+rustles
+沙沙作响
+%%%%
+says
+说道
+%%%%
+screams
+尖叫道
+%%%%
+screeches
+尖声嘶叫道
+%%%%
+skitters
+发出窸窣声
+%%%%
+skitters faintly
+发出微弱的窸窣声
+%%%%
+sneers
+冷笑道
+%%%%
+squeaks
+吱吱叫道
+%%%%
+squeals
+尖声叫道
+%%%%
+trumpets
+长鸣道
+%%%%
+whispers
+低语
+%%%%
+%s mind is blasted%s
+%s精神受到冲击%s
+%%%%
+%s minds are blasted%s
+%s精神受到冲击%s
+%%%%
+You are sucked into a shaft and fall %d level!
+你被吸入竖井，掉了%d层！
+%%%%
+You are sucked into a shaft and fall %d levels!
+你被吸入竖井，掉了%d层！
+%%%%
+You fall into a shaft and fall %d level!
+你掉入竖井，掉了%d层！
+%%%%
+You fall into a shaft and fall %d levels!
+你掉入竖井，掉了%d层！
+%%%%
+Cornered, @the_monster@ turns to fight!
+走投无路的@the_monster@转身反击！
+%%%%
+The %s shatters into small pieces.
+%s碎成了小片。
+%%%%
+Some %s shatters into small pieces.
+一些%s碎成了小片。
+%%%%
+amphibious
+两栖
+%%%%
+plant physiology
+植物生理
+%%%%
+fleshless physiology
+无肉生理
+%%%%
+Here
+这里
+%%%%
+The %s residue %s.
+%s的残留物%s。
+%%%%
+potion appearance colour|clear
+透明
+%%%%
+
+The attack snaps %1$s out of %2$s fear.
+这次攻击将%1$s从%2$s恐惧中惊醒。
+%%%%
+
+state intensity|more 
+更加
+%%%%
+
+You are more confused.
+你的混乱加重了。
+%%%%
+
+You are poisoned.
+你中毒了。
+%%%%
+
+You are more poisoned.
+你的中毒加重了。
+%%%%
+
+The bat shimmers and %s reappears in a puff of iridescent mist.
+蝙蝠微微闪烁，%s在一团虹彩迷雾中重新出现。
+%%%%
+
+The bats swarm back together and %s reappears in a puff of iridescent mist.
+蝙蝠重新聚集，%s在一团虹彩迷雾中重新出现。
+%%%%
+
+Gang up on whom?
+集火攻击谁？
+%%%%
+
+<darkgrey>()</darkgrey>: Suppressed.\n
+<darkgrey>()</darkgrey>：被抑制。\n
+%%%%
+
+, since you lack skill for your form
+，因为你驾驭该形态的技能不足
+%%%%
+
+shop name type|Information
+信息
+%%%%
+
+shop name suffix|Kiosk
+亭
+%%%%
+
+You become %1$stransparent, but the glow from %2$s %3$s prevents you from becoming completely invisible.
+你变得%1$s透明了，但%2$s%3$s的光芒使你无法完全隐形。
+%%%%
+
+You are invisible (but backlit and visible).
+你处于隐形状态，但发光使你依然可见。
+%%%%
+
+invisibility blocker|halo
+光环
+%%%%
+
+invisibility blocker|magical contamination
+魔法污染
+%%%%
+
+invisibility blocker|corona
+光晕
+%%%%
+
+invisibility blocker|liquid flames
+液体火焰
+%%%%
+
+invisibility blocker|!!!QUAD DAMAGE!!!
+！！！四倍伤害！！！
+%%%%
+
+invisibility blocker|form
+形态
+%%%%
+
+shop name suffix|Accessories
+配饰
+%%%%
+
+shop name suffix|Aerie
+鹰巢
+%%%%
+
+shop name suffix|Armaments
+武装
+%%%%
+
+shop name suffix|Armour
+护甲
+%%%%
+
+shop name suffix|Armours
+护甲
+%%%%
+
+shop name suffix|Armoury
+军械库
+%%%%
+
+shop name suffix|Artefacts
+神器
+%%%%
+
+shop name suffix|Bar
+酒吧
+%%%%
+
+shop name suffix|Bin
+货箱
+%%%%
+
+shop name suffix|Books
+书籍
+%%%%
+
+shop name suffix|Boutique
+精品店
+%%%%
+
+shop name suffix|Cache
+储藏处
+%%%%
+
+shop name suffix|Catalogue
+目录
+%%%%
+
+shop name suffix|Centre
+中心
+%%%%
+
+shop name suffix|Chaos Theory
+混沌理论
+%%%%
+
+shop name suffix|Clinic
+诊所
+%%%%
+
+shop name suffix|Collection
+系列
+%%%%
+
+shop name suffix|Corner
+街角
+%%%%
+
+shop name suffix|Deal
+交易
+%%%%
+
+shop name suffix|Deals
+特惠
+%%%%
+
+shop name suffix|Depository
+仓库
+%%%%
+
+shop name suffix|Depot
+仓库
+%%%%
+
+shop name suffix|Elixirs
+灵药
+%%%%
+
+shop name suffix|Emporium
+商场
+%%%%
+
+shop name suffix|Escapes
+逃生用品
+%%%%
+
+shop name suffix|Fire
+火焰
+%%%%
+
+shop name suffix|Forbidden Knowledge
+禁忌知识
+%%%%
+
+shop name suffix|Fripperies
+华饰
+%%%%
+
+shop name suffix|Galleria
+商廊
+%%%%
+
+shop name suffix|Gallery
+展馆
+%%%%
+
+shop name suffix|Garage
+车库
+%%%%
+
+shop name suffix|Goods
+货品
+%%%%
+
+shop name suffix|Haberdashery
+服饰店
+%%%%
+
+shop name suffix|Hardware
+五金
+%%%%
+
+shop name suffix|Hoard
+宝藏库
+%%%%
+
+shop name suffix|Hole
+小铺
+%%%%
+
+shop name suffix|Hut
+小屋
+%%%%
+
+shop name suffix|Inventory
+存货
+%%%%
+
+shop name suffix|Junkyard
+废品场
+%%%%
+
+shop name suffix|Loot
+战利品
+%%%%
+
+shop name suffix|Magic
+魔法
+%%%%
+
+shop name suffix|Manuscripts
+手稿
+%%%%
+
+shop name suffix|Market
+市场
+%%%%
+
+shop name suffix|Merchandise
+商品
+%%%%
+
+shop name suffix|Millinery
+帽店
+%%%%
+
+shop name suffix|Mysteries
+奥秘
+%%%%
+
+shop name suffix|Niceties
+精巧之物
+%%%%
+
+shop name suffix|Offerings
+货品
+%%%%
+
+shop name suffix|Outfitters
+装备店
+%%%%
+
+shop name suffix|Outlet
+特卖店
+%%%%
+
+shop name suffix|Paraphernalia
+用具
+%%%%
+
+shop name suffix|Potions
+药水
+%%%%
+
+shop name suffix|Products
+产品
+%%%%
+
+shop name suffix|Quintessences
+精髓
+%%%%
+
+shop name suffix|Rack
+架
+%%%%
+
+shop name suffix|Range
+靶场
+%%%%
+
+shop name suffix|Readings
+解读
+%%%%
+
+shop name suffix|Reliquary
+圣物库
+%%%%
+
+shop name suffix|Resellers
+转售商
+%%%%
+
+shop name suffix|Reserve
+储备库
+%%%%
+
+shop name suffix|Resort
+休憩所
+%%%%
+
+shop name suffix|Rings
+戒指
+%%%%
+
+shop name suffix|Rocks
+石头
+%%%%
+
+shop name suffix|Room
+间
+%%%%
+
+shop name suffix|Runway
+秀场
+%%%%
+
+shop name suffix|Sales
+销售处
+%%%%
+
+shop name suffix|Scales
+鳞甲
+%%%%
+
+shop name suffix|Scrolls
+卷轴
+%%%%
+
+shop name suffix|Secrets
+秘密
+%%%%
+
+shop name suffix|Smithy
+锻造坊
+%%%%
+
+shop name suffix|Spoils
+战利品
+%%%%
+
+shop name suffix|Stash
+藏货处
+%%%%
+
+shop name suffix|Station
+站
+%%%%
+
+shop name suffix|Stock
+库存
+%%%%
+
+shop name suffix|Store
+商店
+%%%%
+
+shop name suffix|Sundries
+杂货
+%%%%
+
+shop name suffix|Supermarket
+超市
+%%%%
+
+shop name suffix|Supplies
+用品
+%%%%
+
+shop name suffix|Supply
+补给处
+%%%%
+
+shop name suffix|Talismans
+护符
+%%%%
+
+shop name suffix|Tomes
+典籍
+%%%%
+
+shop name suffix|Training
+培训
+%%%%
+
+shop name suffix|Trifles
+小玩意
+%%%%
+
+shop name suffix|Trove
+宝藏库
+%%%%
+
+shop name suffix|Utilities
+实用品
+%%%%
+
+shop name suffix|Venue
+场所
+%%%%
+
+shop name suffix|Wands
+魔杖
+%%%%
+
+shop name suffix|Warehouse
+仓库
+%%%%
+
+shop name suffix|Wares
+货物
+%%%%
+
+shop name suffix|Weapons
+武器
+%%%%
+
+shop name suffix|Wisdom
+智慧
+%%%%
+
+shop name suffix|Xenodochy
+客栈
+%%%%
+
+shop name suffix|Yield
+收获
+%%%%
+
+shop name suffix|Zone
+区
+%%%%
+
+shop name type|Acquisitions
+收购
+%%%%
+
+shop name type|Advanced
+高级
+%%%%
+
+shop name type|All or Nothing
+孤注一掷
+%%%%
+
+shop name type|Alliterative
+头韵
+%%%%
+
+shop name type|Antique
+古董
+%%%%
+
+shop name type|Assorted
+各式
+%%%%
+
+shop name type|Avant-Garde
+先锋
+%%%%
+
+shop name type|Basic
+基础
+%%%%
+
+shop name type|Bespoke
+定制
+%%%%
+
+shop name type|Blasphemy
+亵神
+%%%%
+
+shop name type|Blood
+鲜血
+%%%%
+
+shop name type|Bottled
+瓶装
+%%%%
+
+shop name type|Bounteous
+丰盛
+%%%%
+
+shop name type|CLEARANCE SALE!
+清仓大甩卖！
+%%%%
+
+shop name type|Changing
+变装
+%%%%
+
+shop name type|Comfort
+舒适
+%%%%
+
+shop name type|Commerce
+贸易
+%%%%
+
+shop name type|Delphic
+神谕
+%%%%
+
+shop name type|Demolitions
+爆破
+%%%%
+
+shop name type|Demonic Rune
+恶魔符文
+%%%%
+
+shop name type|Desiderata
+心仪之物
+%%%%
+
+shop name type|Do-It-Yourself
+自助
+%%%%
+
+shop name type|Dragon-Slaying
+屠龙
+%%%%
+
+shop name type|Easily-Learnt
+易学
+%%%%
+
+shop name type|Eclectic
+兼收并蓄
+%%%%
+
+shop name type|Elemental
+元素
+%%%%
+
+shop name type|Elven
+精灵
+%%%%
+
+shop name type|Ever-Affordable
+始终实惠的
+%%%%
+
+shop name type|Evil
+邪恶
+%%%%
+
+shop name type|Exquisite
+精美
+%%%%
+
+shop name type|Fabulous
+非凡
+%%%%
+
+shop name type|Fathomable
+可解的
+%%%%
+
+shop name type|Fine
+优质
+%%%%
+
+shop name type|Fine Metal
+精良金属
+%%%%
+
+shop name type|Fire
+火焰
+%%%%
+
+shop name type|Firing
+射击
+%%%%
+
+shop name type|Gadget
+小装置
+%%%%
+
+shop name type|General
+综合
+%%%%
+
+shop name type|Gilded
+镀金
+%%%%
+
+shop name type|Globular
+球形
+%%%%
+
+shop name type|Goods
+货品
+%%%%
+
+shop name type|Hallowed
+神圣
+%%%%
+
+shop name type|Hat
+帽子
+%%%%
+
+shop name type|Haute Couture
+高级时装
+%%%%
+
+shop name type|Humble
+朴实
+%%%%
+
+shop name type|Humungous
+海量
+%%%%
+
+shop name type|Hydra
+多头蛇
+%%%%
+
+shop name type|Incredible
+惊人
+%%%%
+
+shop name type|Infernal
+地狱
+%%%%
+
+shop name type|Island
+海岛
+%%%%
+
+shop name type|Jewellery
+珠宝
+%%%%
+
+shop name type|Jolly
+欢乐
+%%%%
+
+shop name type|Killer
+致命
+%%%%
+
+shop name type|Last-Chance
+最后机会
+%%%%
+
+shop name type|Legendary
+传奇
+%%%%
+
+shop name type|Lightly-Used
+近新
+%%%%
+
+shop name type|Luxury
+奢华
+%%%%
+
+shop name type|Magical
+魔法
+%%%%
+
+shop name type|Magnificent
+华丽
+%%%%
+
+shop name type|Mail-Order
+邮购
+%%%%
+
+shop name type|Mass
+大众
+%%%%
+
+shop name type|Mayhem
+浩劫
+%%%%
+
+shop name type|Merfolk
+人鱼
+%%%%
+
+shop name type|Merry
+欢快
+%%%%
+
+shop name type|Miraculous
+奇迹
+%%%%
+
+shop name type|Miscellaneous
+各类
+%%%%
+
+shop name type|Must-Have
+必备
+%%%%
+
+shop name type|Neck
+颈饰
+%%%%
+
+shop name type|Needful
+必需
+%%%%
+
+shop name type|Offbeat
+另类
+%%%%
+
+shop name type|One-of-a-Kind
+独一无二
+%%%%
+
+shop name type|Orb
+法球
+%%%%
+
+shop name type|Overcharged
+超载
+%%%%
+
+shop name type|Party
+派对
+%%%%
+
+shop name type|Pet
+宠物
+%%%%
+
+shop name type|Platinum
+白金
+%%%%
+
+shop name type|Practical
+实用
+%%%%
+
+shop name type|Premium
+上等
+%%%%
+
+shop name type|Profane
+亵渎
+%%%%
+
+shop name type|Purification
+净化
+%%%%
+
+shop name type|Quality
+优质
+%%%%
+
+shop name type|Quotidian
+日常
+%%%%
+
+shop name type|Rarities
+珍品
+%%%%
+
+shop name type|Ready-to-Wear
+成衣
+%%%%
+
+shop name type|Retail
+零售
+%%%%
+
+shop name type|Round
+圆形
+%%%%
+
+shop name type|Sacrilege
+渎圣
+%%%%
+
+shop name type|Self-Improvement
+自我提升
+%%%%
+
+shop name type|Self-Published
+自出版
+%%%%
+
+shop name type|Serpentskin
+蛇皮
+%%%%
+
+shop name type|Specialty
+特制
+%%%%
+
+shop name type|Specific
+专项
+%%%%
+
+shop name type|Sphere
+球体
+%%%%
+
+shop name type|Spherical
+球形
+%%%%
+
+shop name type|Staff
+长杖
+%%%%
+
+shop name type|Store
+商店
+%%%%
+
+shop name type|Superb
+卓越
+%%%%
+
+shop name type|Superior
+优等
+%%%%
+
+shop name type|Superlative
+顶级
+%%%%
+
+shop name type|Tempting
+诱人
+%%%%
+
+shop name type|Timeless
+永恒
+%%%%
+
+shop name type|Tiny
+微型
+%%%%
+
+shop name type|Tremendous
+巨型
+%%%%
+
+shop name type|Trivially-Accessible
+轻松可得的
+%%%%
+
+shop name type|Unparalleled
+无双
+%%%%
+
+shop name type|Vending
+售货
+%%%%
+
+shop name type|Visitors'
+访客
+%%%%
+
+shop name type|Vocational
+职业
+%%%%
+
+shop name type|Wardrobe
+衣橱
+%%%%
+
+shop name type|Weapon
+武器
+%%%%
+
+shop name type|Whimsical
+奇趣
+%%%%
+
+shop name type|Wicked
+邪恶
+%%%%
+
+shop name type|Wondrous
+奇妙
+%%%%
+
+shop name type|Xenial
+好客
+%%%%
+
+shop name type|Yearning
+渴望
+%%%%
+
+shop name type|Zaibatsu
+财阀
+%%%%
+
+High Orc
+高等兽人
+%%%%
+
+Deep Orc
+深地兽人
+%%%%
+
+Sludge Orc
+污泥兽人
+%%%%
+
+Halflorc
+半身兽人
+%%%%
+
+Antique Orc
+古早兽人
+%%%%
+
+Orcobold
+狗头兽人
+%%%%
+
+Orcish Mummy
+兽人木乃伊
+%%%%
+
+Nagorc
+娜迦兽人
+%%%%
+
+Big Orc
+大兽人
+%%%%
+
+Trorc
+巨魔兽人
+%%%%
+
+Red Orconian
+红色龙人兽人
+%%%%
+
+White Orconian
+白色龙人兽人
+%%%%
+
+Green Orconian
+绿色龙人兽人
+%%%%
+
+Yellow Orconian
+黄色龙人兽人
+%%%%
+
+Grey Orconian
+灰色龙人兽人
+%%%%
+
+Black Orconian
+黑色龙人兽人
+%%%%
+
+Purple Orconian
+紫色龙人兽人
+%%%%
+
+Mottled Orconian
+斑驳龙人兽人
+%%%%
+
+Pale Orconian
+苍白龙人兽人
+%%%%
+
+Orconian
+龙人兽人
+%%%%
+
+Centorc
+半人马兽人
+%%%%
+
+Buggy Orc
+故障兽人
+%%%%
+
+Spriggorc
+小精灵兽人
+%%%%
+
+Minotorc
+牛头兽人
+%%%%
+
+Demon Orc
+恶魔兽人
+%%%%
+
+Rotting Orc
+腐烂兽人
+%%%%
+
+Tengorc
+天狗兽人
+%%%%
+
+Merforc
+人鱼兽人
+%%%%
+
+Orcula
+吸血兽人
+%%%%
+
+Deep Dworc
+深地矮人兽人
+%%%%
+
+Orcat
+猫兽人
+%%%%
+
+Orctopode
+章鱼兽人
+%%%%
+
+Orcfreeti
+灯神兽人
+%%%%
+
+Lava Orc Orc
+熔岩兽人兽人
+%%%%
+
+Gargorcle
+石像鬼兽人
+%%%%
+
+Orcmicid
+蚁兽人
+%%%%
+
+Orchid Stalker
+兰花兽人行者
+%%%%
+
+Orcphibian
+两栖兽人
+%%%%
+
+Hyenorc
+豺狼兽人
+%%%%
+
+Mayflyorc
+蜉蝣兽人
+%%%%
+
+Meteorc
+流星兽人
+%%%%
+
+Mountain Orc
+山地兽人
+%%%%
+
+Exo-Orc
+外骨骼兽人
+%%%%
+
+Phantasmorc
+幻影兽人
+%%%%
+
+Skeletorc
+骷髅兽人
+%%%%
+
+%s fire resistance is burned away.
+%s火焰抗性被烧掉了。
+%%%%
+
+%s fire resistance is stripped away!
+%s火焰抗性被剥离了！
+%%%%
+
+%s allies are healed!
+%s盟友被治愈了！
+%%%%
+
+ prevents the banishment of %s from the Arena!
+阻止了%s被放逐出竞技场！
+%%%%
+
+%s hold on you weakens, but your attempt to escape fails.
+%s束缚减弱了，但你逃脱的尝试失败了。
+%%%%
+
+%s clockwork bee locks onto %s.
+%s发条蜜蜂锁定了%s。
+%%%%
+
+Your clockwork bee winds down and falls to the ground.
+你的发条蜜蜂发条走完了，掉到了地上。
+%%%%
+
+The clockwork bee winds down and falls to the ground.
+发条蜜蜂发条走完了，掉到了地上。
+%%%%
+
+someone's
+某人的
+%%%%
+
+%s soul %s.
+%s灵魂%s。
+%%%%
+
+drained resource|magic
+法力
+%%%%
+
+drained resource|power
+力量
+%%%%
+
+Really %s %s%s?
+确定要%s%s%s吗？
+%%%%
+
+item operation|wield
+持握
+%%%%
+
+item operation|quaff
+饮用
+%%%%
+
+item operation|drop
+丢弃
+%%%%
+
+item operation|take off
+脱下
+%%%%
+
+item operation|wear
+穿戴
+%%%%
+
+item operation|put on
+戴上
+%%%%
+
+item operation|remove
+卸下
+%%%%
+
+item operation|read
+阅读
+%%%%
+
+item operation|memorise from
+从书中记忆法术：
+%%%%
+
+item operation|zap
+释放魔杖：
+%%%%
+
+item operation|fire
+发射
+%%%%
+
+item operation|evoke
+激活
+%%%%
+
+item operation|quiver
+设为快捷动作：
+%%%%
+
+item operation|equip
+装备
+%%%%
+
+item operation|unequip
+卸下
+%%%%
+
+item operation|choose
+选择
+%%%%
+
+missile effect|frenzy
+使目标狂乱
+%%%%
+
+missile effect|blind
+使目标失明
+%%%%
+
+immune
+免疫
+%%%%
+
+immune to nets
+免疫投网
+%%%%
+
+can blink free
+能闪烁脱困
+%%%%
+
+You hear a faint sloshing from %s as it returns to readiness.
+你听见%s中传来轻微的水声，它又能使用了。
+%%%%
+
+Water glimmers in %s, now refilled and ready to use.
+水在%s中泛着微光，它已重新注满，可以使用了。
+%%%%
+
+You hear chittering from %s. It's ready.
+你听见%s中传来吱吱声。它又能使用了。
+%%%%
+
+%s twitches, refilled and ready to use.
+%s抽动着，已重新充满，可以使用了。
+%%%%
+
+%s jingles faintly as it regains its power.
+%s发出轻微的叮当声，恢复了力量。
+%%%%
+
+%s shakes itself petulantly as it silently regains its power.
+%s赌气般地自行晃动，悄然恢复了力量。
+%%%%
+
+         and quit the game\n
+         并退出游戏\n
+%%%%
+
+         in view\n
+         （限视野内）\n
+%%%%
+
+         pickup part of a single stack\n
+         拾取单堆物品中的一部分\n
+%%%%
+
+    (press twice for pick up menu)\n
+    （按两次打开拾取菜单）\n
+%%%%
+
+<h>Additional help:\n
+<h>更多帮助：\n
+%%%%
+
+<h>Additional important commands\n
+<h>其他重要命令\n
+%%%%
+
+<h>Dungeon Interaction and Information:\n
+<h>地牢交互与信息：\n
+%%%%
+
+<h>Game Saving and Quitting:\n
+<h>保存与退出：\n
+%%%%
+
+<h>Inventory management:\n
+<h>物品管理：\n
+%%%%
+
+<h>Item Interaction:\n
+<h>物品交互：\n
+%%%%
+
+<h>Item types and inventory management\n
+<h>物品种类与物品管理\n
+%%%%
+
+<h>Non-Gameplay Commands / Info\n
+<h>非游戏行动命令／信息\n
+%%%%
+
+<h>Other Gameplay Actions:\n
+<h>其他游戏行动：\n
+%%%%
+
+<h>Player Character Information:\n
+<h>角色信息：\n
+%%%%
+
+<h>Rest:\n
+<h>休息：\n
+%%%%
+
+<w>%#</w>: Drop exact number of items
+<w>%#</w>：丢弃指定数量的物品
+%%%%
+
+<w>%</w> or <w>%</w> : ascend/descend the stairs
+<w>%</w> 或 <w>%</w>：上楼／下楼
+%%%%
+
+<w>%</w> to throw/fire missiles
+<w>%</w>：投掷／发射投射物
+%%%%
+
+<w>%</w>/<w>%</w>    : Open/Close door
+<w>%</w>/<w>%</w>    ：开门／关门
+%%%%
+
+<w>%</w>/<w>%</w>    : use staircase
+<w>%</w>/<w>%</w>    ：使用楼梯
+%%%%
+
+<w>%</w>/<w>%</w> : zoom out/in
+<w>%</w>/<w>%</w>：缩小／放大
+%%%%
+
+<w>F12</w> : read messages (online play only)
+<w>F12</w>：阅读消息（仅限在线游戏）
+%%%%
+
+<w>Shift-Dir.</w> runs into one direction
+<w>Shift-Dir.</w>：沿一个方向奔跑
+%%%%
+
+Abandon the current character
+放弃当前角色
+%%%%
+
+Clear main and level maps
+清除主地图和楼层地图
+%%%%
+
+Drop an item
+丢弃物品
+%%%%
+
+Drop the last item(s) you picked up
+丢弃最后拾取的物品
+%%%%
+
+Find items
+查找物品
+%%%%
+
+Fire the currently quivered action
+触发当前快捷动作
+%%%%
+
+Key help
+按键帮助
+%%%%
+
+Memorise a spell from your library
+从法术库中记忆法术
+%%%%
+
+Redraw screen
+重绘屏幕
+%%%%
+
+Save and exit without query
+不经确认保存并退出
+%%%%
+
+Save game and exit
+保存游戏并退出
+%%%%
+
+Save the game and exit
+保存游戏并退出
+%%%%
+
+add note (use <w>%:</w> to read notes)
+添加笔记（用 <w>%:</w> 阅读笔记）
+%%%%
+
+annotate the dungeon level
+为地牢楼层添加注释
+%%%%
+
+auto-explore
+自动探索
+%%%%
+
+autoexplore
+自动探索
+%%%%
+
+cast spell, abort without targets
+施放法术，无目标则取消
+%%%%
+
+cast spell, no matter what
+无论有无目标都施放法术
+%%%%
+
+character overview
+角色概览
+%%%%
+
+display character status
+显示角色状态
+%%%%
+
+display experience info
+显示经验值信息
+%%%%
+
+display gold in possession
+显示持有的金币
+%%%%
+
+display worn armour
+显示穿戴的护甲
+%%%%
+
+display worn jewellery
+显示佩戴的首饰
+%%%%
+
+drop item
+丢弃物品
+%%%%
+
+dump character to file
+将角色信息导出至文件
+%%%%
+
+eXamine level map (<w>%?</w> for help)
+查看楼层地图（<w>%?</w> 查看帮助）
+%%%%
+
+eXamine surroundings/targets
+查看周围环境／目标
+%%%%
+
+examine occupied tile and
+查看脚下地块，并
+%%%%
+
+game menu
+游戏菜单
+%%%%
+
+inscribe item
+为物品添加铭文
+%%%%
+
+interlevel travel
+跨层旅行
+%%%%
+
+inventory (select item to view)
+物品栏（选择物品以查看）
+%%%%
+
+list all memorised spells
+列出所有已记忆的法术
+%%%%
+
+list monsters, items, features
+列出怪物、物品、地形
+%%%%
+
+mute/unmute sound effects
+静音／启用音效
+%%%%
+
+pick up item from ground (also <w>g</w>)
+从地上拾取物品（也可按 <w>g</w>）
+%%%%
+
+pick up items (also <w>g</w>)
+拾取物品（也可按 <w>g</w>）
+%%%%
+
+quick add macro
+快速添加宏
+%%%%
+
+re-do previous command
+重做上一个命令
+%%%%
+
+read messages (online play only)
+阅读消息（仅限在线游戏）
+%%%%
+
+reassign inventory/spell letters
+重新分配物品／法术的字母
+%%%%
+
+repeat next command # of times
+将下一个命令重复指定次数
+%%%%
+
+rest and long wait; stops when
+休息或长时间等待；在以下情况停止：
+%%%%
+
+select an item and Fire it
+选择物品并投掷／发射
+%%%%
+
+set Waypoint
+设置路标
+%%%%
+
+show Abilities/mutations
+显示能力／变异
+%%%%
+
+show Inventory list
+显示物品栏列表
+%%%%
+
+show Previous messages
+显示先前的消息
+%%%%
+
+show character overview
+显示角色概览
+%%%%
+
+show dungeon Overview
+显示地牢概览
+%%%%
+
+show item knowledge
+显示已知物品信息
+%%%%
+
+show map of the whole level
+显示整层地图
+%%%%
+
+show religion overview
+显示宗教概览
+%%%%
+
+show religion screen
+显示宗教界面
+%%%%
+
+show runes collected
+显示收集的符文
+%%%%
+
+show skill screen
+显示技能界面
+%%%%
+
+show your spell library
+显示法术库
+%%%%
+
+suppress invisible monster warnings
+关闭隐形怪物警告
+%%%%
+
+tell allies (<w>%t</w> to shout)
+命令盟友（<w>%t</w> 喊叫）
+%%%%
+
+toggle auto-pickup
+切换自动拾取
+%%%%
+
+toggle view layers
+切换视图图层
+%%%%
+
+use an ability
+使用能力
+%%%%
+
+use special Ability (<w>%!</w> for help)
+使用特殊能力（<w>%!</w> 查看帮助）
+%%%%
+
+wait a turn (also <w>s</w>, <w>Del</w>)
+等待一回合（也可按 <w>s</w>、<w>Del</w>）
+%%%%
+
+%%%%
+wand action|Zap
+使用魔杖
+
+%%%%
+quiver focus state|on
+开启
+
+%%%%
+quiver focus state|off
+关闭
+
+%%%%
+verb|block
+格挡
+
+%%%%
+ranged block|%1$s %2$s the %3$s%4$s%5$s
+%1$s%4$s%2$s了%3$s%5$s
+
+%%%%
+You bought it in a shop %s
+%s你在商店中购买了它
+
+%%%%
+piety note|Reached %1$s piety under %2$s
+对%2$s的虔诚值达到了%1$s。
+
+%%%%
+item action|(q)uiver
+(q)设为快捷动作
+
+%%%%
+item action|qui(v)er
+(v)设为快捷动作
+
+%%%%
+quiver cycle|other 
+其他
+
+%%%%
+ Use [<white>Q</white>] to select from all actions.
+ 按[<white>Q</white>]从所有动作中选择。
+
+%%%%
+Aiming: <white>Upheaval</white>
+瞄准：<white>剧变</white>
+
+%%%%
+Aiming: <white>Power Leap</white>
+瞄准：<white>强力跳跃</white>
+
+%%%%
+Aiming: <white>Line Pass</white>
+瞄准：<white>穿行</white>
+
+%%%%
+Aiming: <white>Grand Finale</white>
+瞄准：<white>华丽终曲</white>
+
+%%%%
+Aiming: <white>Wall Jump</white>
+瞄准：<white>蹬墙跳</white>
+
+%%%%
+UC Base Dmg
+徒手基础伤害
+
+%%%%
+MP Regen
+法力再生
+
+%%%%
+Ensnare Chance
+蛛网束缚几率
+
+%%%%
+Bite Dmg
+咬击伤害
+
+%%%%
+Devour Regen
+吞噬再生
+
+%%%%
+Blade Dmg
+刀刃伤害
+
+%%%%
+Parry SH
+格挡值
+
+%%%%
+form table|# of Bees
+蜜蜂数
+
+%%%%
++Slay/Kill
+每击杀杀戮加成
+
+%%%%
+Takedown Dmg
+扑倒伤害
+
+%%%%
+Howl Power
+嚎叫威力
+
+%%%%
+Spell Skill Boost
+法术技能加成
+
+%%%%
+Rust Breath Size
+锈蚀吐息范围
+
+%%%%
+Tendril targets
+触须目标数
+
+%%%%
+Petrify chance
+石化几率
+
+%%%%
+Bat Swarm Recharge
+蝙蝠群充能速度
+
+%%%%
+Daze Power
+眩晕威力
+
+%%%%
+Body Armour AC
+身体护甲防御
+
+%%%%
+piledriver target count|two
+两
+
+%%%%
+maximum resource note|Reached %d max health
+生命上限达到了%d。
+
+%%%%
+maximum resource note|Reached %d max magic points
+法力上限达到了%d。
+
+%%%%
+even more 
+更多
+
+%%%%
+skill note|Started with skill level %1$d in %2$s
+初始%2$s技能等级为%1$d。
+
+%%%%
+Which mutation (name, 'good', 'bad', 'any', 'xom', 'slime', 'qazlal', 'temp')? 
+选择哪种变异（名称，或'good'、'bad'、'any'、'xom'、'slime'、'qazlal'、'temp'）？ 
+
+%%%%
+Which temporary mutation (name, 'good', 'bad', 'any', 'xom', 'slime', 'qazlal')? 
+选择哪种临时变异（名称，或'good'、'bad'、'any'、'xom'、'slime'、'qazlal'）？ 
+
+%%%%
+view menu action|target/travel
+选定目标/自动行走
+
+%%%%
+view menu action|target
+选定目标

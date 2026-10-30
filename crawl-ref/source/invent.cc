@@ -1739,24 +1739,24 @@ static string _operation_verb(operation_types oper)
 {
     switch (oper)
     {
-    case OPER_WIELD:          return "wield";
-    case OPER_QUAFF:          return "quaff";
-    case OPER_DROP:           return "drop";
-    case OPER_TAKEOFF:        return T_("take off");
-    case OPER_WEAR:           return "wear";
-    case OPER_PUTON:          return "put on";
-    case OPER_REMOVE:         return "remove";
-    case OPER_READ:           return "read";
-    case OPER_MEMORISE:       return "memorise from";
-    case OPER_ZAP:            return "zap";
-    case OPER_FIRE:           return "fire";
-    case OPER_EVOKE:          return "evoke";
-    case OPER_QUIVER:         return "quiver";
-    case OPER_EQUIP:          return "equip";
-    case OPER_UNEQUIP:        return "unequip";
+    case OPER_WIELD:          return C_("item operation", "wield");
+    case OPER_QUAFF:          return C_("item operation", "quaff");
+    case OPER_DROP:           return C_("item operation", "drop");
+    case OPER_TAKEOFF:        return C_("item operation", "take off");
+    case OPER_WEAR:           return C_("item operation", "wear");
+    case OPER_PUTON:          return C_("item operation", "put on");
+    case OPER_REMOVE:         return C_("item operation", "remove");
+    case OPER_READ:           return C_("item operation", "read");
+    case OPER_MEMORISE:       return C_("item operation", "memorise from");
+    case OPER_ZAP:            return C_("item operation", "zap");
+    case OPER_FIRE:           return C_("item operation", "fire");
+    case OPER_EVOKE:          return C_("item operation", "evoke");
+    case OPER_QUIVER:         return C_("item operation", "quiver");
+    case OPER_EQUIP:          return C_("item operation", "equip");
+    case OPER_UNEQUIP:        return C_("item operation", "unequip");
     case OPER_ANY:
     default:
-        return "choose";
+        return C_("item operation", "choose");
     }
 }
 
@@ -1828,6 +1828,19 @@ bool needs_handle_warning(const item_def &item, operation_types oper,
     return false;
 }
 
+// Build the display question separately from the warning eligibility check.
+string item_warning_prompt(const item_def& item, operation_types oper)
+{
+    const string verb = _operation_verb(oper);
+    const string name = in_inventory(item) ? item.name(DESC_INVENTORY)
+                                          : item.name(DESC_A);
+    const string circumstance = needs_notele_warning(item, oper)
+        ? T_(" while about to teleport") : "";
+    const string prompt = make_stringf_p(T_("Really %s %s%s?"),
+        verb.c_str(), name.c_str(), circumstance.c_str());
+    return prompt;
+}
+
 // If there are warning inscriptions associated with performing this operation
 // on this item, prompt the user for confirmation. Return true if all prompts
 // are OK'd.
@@ -1845,12 +1858,7 @@ bool check_warning_inscriptions(const item_def& item,
         }
 
         // XXX: duplicates a check in delay.cc:_finish_delay()
-        string prompt = "Really " + _operation_verb(oper) + " ";
-        prompt += (in_inventory(item) ? item.name(DESC_INVENTORY)
-                                      : item.name(DESC_A));
-        if (needs_notele_warning(item, oper))
-            prompt += T_(" while about to teleport");
-        prompt += "?";
+        const string prompt = item_warning_prompt(item, oper);
         return yesno(prompt.c_str(), false, 'n');
     }
 

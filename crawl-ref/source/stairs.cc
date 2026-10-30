@@ -78,7 +78,7 @@ static string _annotation_exclusion_warning(level_id next_level_id)
              && feat_is_travelable_stair(env.grid(you.pos()))
              && !strstr(get_exclusion_desc(you.pos()).c_str(), "cloud"))
     {
-        return "This staircase is marked as excluded!";
+        return T_("This staircase is marked as excluded!");
     }
 
     return "";
@@ -98,7 +98,7 @@ static string _target_exclusion_warning()
         return "";
 
     if (stairs_destination_is_excluded(*si))
-        return "This staircase leads to a travel-excluded area!";
+        return T_("This staircase leads to a travel-excluded area!");
 
     return "";
 }
@@ -668,10 +668,14 @@ static level_id _travel_destination(const dungeon_feature_type how,
                                     + shaft_dest.describe() + ".");
         }
 
-        mprf_p(T_("You %1$s into a shaft and fall %2$d level%3$s!"),
-               you.airborne() ? T_("are sucked") : T_("fall"),
-               shaft_depth,
-               shaft_depth > 1 ? T_("s") : "");
+        mprf(you.airborne()
+                 ? (shaft_depth > 1
+                    ? T_("You are sucked into a shaft and fall %d levels!")
+                    : T_("You are sucked into a shaft and fall %d level!"))
+                 : (shaft_depth > 1
+                    ? T_("You fall into a shaft and fall %d levels!")
+                    : T_("You fall into a shaft and fall %d level!")),
+             shaft_depth);
 
         // Shafts are one-time-use.
         mpr(T_("The shaft crumbles and collapses."));
@@ -1402,8 +1406,8 @@ static void _update_level_state()
             env.level_state |= LSTATE_SLIMY_WALL;
 
         if (is_icecovered(*ri))
-#if TAG_MAJOR_VERSION == 34
         {
+#if TAG_MAJOR_VERSION == 34
             // Buggy versions of Frozen Ramparts didn't properly clear
             // FPROP_ICY from walls in some cases, so we detect invalid walls
             // and remove the flag.
@@ -1411,14 +1415,14 @@ static void _update_level_state()
                 && ramparts_pos.distance_from(*ri) <= 3
                 && cell_see_cell(*ri, ramparts_pos, LOS_NO_TRANS))
             {
-#endif
-            env.level_state |= LSTATE_ICY_WALL;
-#if TAG_MAJOR_VERSION == 34
+                env.level_state |= LSTATE_ICY_WALL;
             }
             else
                 env.pgrid(*ri) &= ~FPROP_ICY;
-        }
+#else
+            env.level_state |= LSTATE_ICY_WALL;
 #endif
+        }
     }
 }
 

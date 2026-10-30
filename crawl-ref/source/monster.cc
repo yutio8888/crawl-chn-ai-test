@@ -2159,15 +2159,15 @@ string monster::name(description_level_type desc, bool force_vis,
         mi.mb.set(MB_NAME_UNQUALIFIED, false);
     if (force_vis)
         mi.mb.set(MB_KNOWN_INVIS, false);
-    return mi.proper_name(desc)
+    s = mi.proper_name(desc);
 #ifdef DEBUG_MONINDEX
     // This is incredibly spammy, too bad for regular debug builds, but
     // I keep re-adding this over and over during debugging.
-           + (Options.quiet_debug_messages[DIAG_MONINDEX]
-              ? string()
-              : make_stringf("«%d:%d»", mindex(), mid))
+    s += (Options.quiet_debug_messages[DIAG_MONINDEX]
+          ? string()
+          : make_stringf("«%d:%d»", mindex(), mid));
 #endif
-    ;
+    return s;
 }
 
 string monster::base_name(description_level_type desc, bool force_vis) const
@@ -2749,8 +2749,8 @@ void monster::banish(const actor *agent, const string &, bool force)
 
     if (!force && player_in_branch(BRANCH_ARENA))
     {
-        string msg = make_stringf(T_(" prevents %s banishment from the Arena!"),
-                                  name(DESC_ITS).c_str());
+        string msg = make_stringf(T_(" prevents the banishment of %s from the Arena!"),
+                                  name(DESC_THE).c_str());
         simple_god_message(msg.c_str(), false, GOD_OKAWARU);
         return;
     }
@@ -4461,11 +4461,12 @@ int monster::hurt(const actor *agent, int amount, beam_type flavour,
             }
         }
 
-        if (agent && alive() && agent->wearing_ego(OBJ_ARMOUR, SPARM_GLASS))
+        if (!is_attack_damage && agent && alive()
+            && agent->wearing_ego(OBJ_ARMOUR, SPARM_GLASS))
         {
             if (agent->is_player())
             {
-                if (x_chance_in_y(20 + you.skill(SK_EVOCATIONS, 5), 500))
+                if (x_chance_in_y(20 + you.skill(SK_EVOCATIONS, 13), 1000))
                     this->vitrify(agent, 4 + random2(5 + you.skill(SK_EVOCATIONS)));
             }
             else if (const monster* mon = agent->as_monster())

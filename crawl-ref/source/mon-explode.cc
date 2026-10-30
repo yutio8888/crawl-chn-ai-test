@@ -137,10 +137,10 @@ static void _setup_lightning_explosion(bolt & beam, const monster& origin)
         beam.origin_spell = SPELL_CONJURE_BALL_LIGHTNING;
 }
 
-dice_def prism_damage(int hd, bool fully_powered)
+dice_def prism_damage(int hd, bool fully_powered, bool random)
 {
     const int dice = fully_powered ? 3 : 2;
-    return dice_def(dice, 5 + div_rand_round(hd * 7, 4));
+    return dice_def(dice, 5 + (random ? div_rand_round(hd * 7, 4) : hd * 7 / 4));
 }
 
 static void _setup_prism_explosion(bolt& beam, const monster& origin)
@@ -275,11 +275,11 @@ static const map<monster_type, monster_explosion> explosions {
     } },
     { MONS_FULMINANT_PRISM, {
         _setup_prism_explosion,
-        [](int hd){ return prism_damage(hd, true); }
+        [](int hd){ return prism_damage(hd, true, false); }
     } },
     { MONS_SHADOW_PRISM, {
         _setup_shadow_prism_explosion,
-        [](int hd){ return prism_damage(hd, true); }
+        [](int hd){ return prism_damage(hd, true, false); }
     } },
     { MONS_BENNU, {
         _setup_bennu_explosion,
@@ -349,7 +349,11 @@ bool explode_monster(monster* mons, killer_type killer, bool pet_kill)
 
     string poof_msg = "";
     if (mons->is_abjurable())
-        poof_msg = "The " + mons->name(DESC_PLAIN) + " residue " + summoned_poof_msg(*mons) + ".";
+    {
+        poof_msg = make_stringf(T_("The %s residue %s."),
+                                mons->name(DESC_PLAIN).c_str(),
+                                summoned_poof_msg(*mons).c_str());
+    }
 
     auto it = explosions.find(type);
     if (it != explosions.end())

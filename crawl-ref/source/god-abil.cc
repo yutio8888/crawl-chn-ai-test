@@ -1471,7 +1471,7 @@ void trog_do_trogs_hand(int pow)
 {
     you.increase_duration(DUR_TROGS_HAND,
                           5 + roll_dice(2, pow / 3 + 1), 100,
-                          "Your skin crawls.");
+                          T_("Your skin crawls."));
     mprf(MSGCH_DURATION, T_("You feel resolute."));
 }
 
@@ -1892,7 +1892,7 @@ void yred_make_bound_soul(monster* mon, bool force_hostile)
     // schedule our actual revival for the end of this combat round
     schedule_avoided_death_fineff(mon);
 
-    mprf(T_("The soul of %s %s."), whose.c_str(),
+    mprf(T_("%s soul %s."), whose.c_str(),
              !force_hostile ? T_("is now yours") : T_("fights you"));
 }
 
@@ -4157,7 +4157,7 @@ spret qazlal_upheaval(coord_def target, bool quiet, bool fail, dist *player_targ
         args.restricts = DIR_TARGET;
         args.mode = TARG_HOSTILE;
         args.needs_path = false;
-        args.top_prompt = "Aiming: <white>Upheaval</white>";
+        args.top_prompt = T_("Aiming: <white>Upheaval</white>");
         args.self = confirm_prompt_type::none;
         args.hitfunc = &tgt;
         if (!spell_direction(*player_target, beam, &args))
@@ -5644,7 +5644,7 @@ bool ru_power_leap()
         args.mode = TARG_HOSTILE;
         args.range = 3;
         args.needs_path = false;
-        args.top_prompt = "Aiming: <white>Power Leap</white>";
+        args.top_prompt = T_("Aiming: <white>Power Leap</white>");
         args.self = confirm_prompt_type::cancel;
         const int explosion_size = 1;
         targeter_smite tgt(&you, args.range, explosion_size, explosion_size);
@@ -5950,7 +5950,7 @@ bool uskayaw_line_pass()
         args.restricts = DIR_ENFORCE_RANGE;
         args.mode = TARG_ANY;
         args.needs_path = false;
-        args.top_prompt = "Aiming: <white>Line Pass</white>";
+        args.top_prompt = T_("Aiming: <white>Line Pass</white>");
         args.range = 8;
 
         if (!spell_direction(beam, line_pass, &args))
@@ -6064,7 +6064,7 @@ spret uskayaw_grand_finale(bool fail)
         direction_chooser_args args;
         args.mode = TARG_HOSTILE;
         args.needs_path = false;
-        args.top_prompt = "Aiming: <white>Grand Finale</white>";
+        args.top_prompt = T_("Aiming: <white>Grand Finale</white>");
         args.self = confirm_prompt_type::cancel;
         targeter_smite tgt(&you);
         args.hitfunc = &tgt;
@@ -6563,7 +6563,7 @@ spret wu_jian_wall_jump_ability()
         args.mode = TARG_NON_ACTOR;
         args.range = 1;
         args.needs_path = false; // TODO: overridden by hitfunc?
-        args.top_prompt = "Aiming: <white>Wall Jump</white>";
+        args.top_prompt = T_("Aiming: <white>Wall Jump</white>");
         args.self = confirm_prompt_type::cancel;
         targeter_walljump tgt;
         tgt.obeys_mesmerise = true;

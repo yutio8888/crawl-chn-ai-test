@@ -40,29 +40,62 @@ class SplitStartupBot:
 # Startup rendering may pause for longer than read_screen's quiet interval.
 # The readiness wait must retain earlier deltas and continue until the complete
 # status area has arrived.
-split = SplitStartupBot(('正在启动中文界面', '', '生命: 10/10', '', '魔力: 5/5'))
-initial = bot.PtyBot.wait_for_screen(split, ('生命:', '魔力:'), timeout=0.5)
-bot.assert_screen('split-startup', initial, ('生命:', '魔力:'))
+split = SplitStartupBot(('正在启动中文界面：生命: 与法力:', '',
+                         '生命: 10/10', '', '法力: 5/5'))
+initial = bot.PtyBot.wait_for_screen(split, (), timeout=0.5,
+                                    predicate=bot.has_main_hud)
+bot.assert_main_hud('split-startup', initial)
+if split.parts:
+    raise SystemExit('startup accepted help labels before numeric HUD arrived')
+
+for text in ('生命: 10/10 法力:5/5', '生命: 10/10 法力: 5/5',
+             '命: 9/10 法力: 5/5', '命: 9/10 法: 5/5'):
+    bot.assert_main_hud('numeric-hud', text)
+for text in ('帮助：生命: 与法力:', '生命: 10/10 法力:',
+             '生命: 10/10 魔力: 5/5', '中文界面 HP: 10/10 MP: 5/5'):
+    try:
+        bot.assert_main_hud('missing-hud', text)
+    except bot.BotFailure:
+        pass
+    else:
+        raise SystemExit(f'non-Chinese or incomplete numeric HUD accepted: {text}')
 
 # A child that exits before producing the required status tokens must still be
 # rejected, and the diagnostic must preserve the rendered tail.
 incomplete = SplitStartupBot(('正在启动中文界面',))
-initial = bot.PtyBot.wait_for_screen(incomplete, ('生命:', '魔力:'), timeout=0.5)
+initial = bot.PtyBot.wait_for_screen(incomplete, (), timeout=0.5,
+                                    predicate=bot.has_main_hud)
 try:
-    bot.assert_screen('incomplete-startup', initial, ('生命:', '魔力:'))
+    bot.assert_main_hud('incomplete-startup', initial)
 except bot.BotFailure as exc:
     if '正在启动中文界面' not in str(exc):
         raise SystemExit('startup failure omitted rendered diagnostic')
 else:
     raise SystemExit('incomplete startup screen was accepted')
 
+# A live child that never emits numeric values must time out, not be accepted
+# merely because Chinese status-label words appeared.
+class WaitingProc:
+    def poll(self):
+        return None
+
+stalled = SplitStartupBot(('中文帮助：生命: 与法力:',))
+stalled.proc = WaitingProc()
+initial = bot.PtyBot.wait_for_screen(stalled, (), timeout=0.02,
+                                    predicate=bot.has_main_hud)
+try:
+    bot.assert_main_hud('timeout-startup', initial)
+except bot.BotFailure:
+    pass
+else:
+    raise SystemExit('startup timeout without numeric HUD was accepted')
+
 # Exercise the production PTY/subprocess path with a child that emits no bytes
 # until after the former three-second startup deadline.
 delayed = bot.PtyBot(sys.argv[2], os.path.join(sys.argv[3], 'delayed.typescript'))
 try:
-    initial = delayed.wait_for_screen(('生命:', '魔力:', '魔法飞弹'))
-    bot.assert_screen('delayed-startup', initial,
-                      ('生命:', '魔力:', '魔法飞弹'))
+    initial = delayed.wait_for_screen(('魔法飞弹',), predicate=bot.has_main_hud)
+    bot.assert_main_hud('delayed-startup', initial, ('魔法飞弹',))
 finally:
     delayed.close()
 

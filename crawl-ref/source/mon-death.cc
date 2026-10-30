@@ -436,7 +436,8 @@ static void _create_monster_wand(monster_type mtyp, coord_def pos, bool silent)
     if (you.see_cell(pos) && !silent && !feat_eliminates_items(env.grid(pos)))
     {
         mprf(T_("%s's bones magically twist into %s."),
-             mons_type_name(mtyp, DESC_A).c_str(),
+             mons_type_name(mtyp, Options.language == lang_t::ZH
+                                  ? DESC_PLAIN : DESC_A).c_str(),
              item.name(DESC_A).c_str());
     }
 
@@ -836,8 +837,6 @@ static bool _vampire_make_thrall(monster* mons, killer_type killer)
     return true;
 }
 
-static void _blorkula_bat_merge_message(monster* blork, int bat_count);
-
 /**
  * Attempt to get a deathbed conversion for the given orc.
  *
@@ -878,7 +877,7 @@ static bool _beogh_forcibly_convert_orc(monster &mons, killer_type killer)
         if (mons.type == MONS_BLORKULA_THE_ORCULA
             && mons.props.exists(BLORKULA_DIE_FOR_REAL_KEY))
         {
-            _blorkula_bat_merge_message(&mons, 1);
+            blorkula_bat_merge_message(&mons, 1);
         }
 
         beogh_convert_orc(&mons, ctype);
@@ -1107,21 +1106,19 @@ void blorkula_bat_merge(monster& bat)
     }
     blork->move_to(pos, MV_INTERNAL);
 
-    _blorkula_bat_merge_message(blork, bat_count);
+    blorkula_bat_merge_message(blork, bat_count);
     behaviour_event(blork, ME_ALERT);
 }
 
-static void _blorkula_bat_merge_message(monster* blork, int bat_count)
+void blorkula_bat_merge_message(monster* blork, int bat_count)
 {
     if (you.can_see(*blork))
     {
-        string msg = bat_count == 1 ? "The bat shimmers"
-                                    : "The bats swarm back together";
-
-        msg += T_(" and ") + blork->name(DESC_THE)
-            +  T_(" reappears in a puff of iridescent mist.");
-
-        mprf(MSGCH_MONSTER_SPELL, "%s", msg.c_str());
+        mprf(MSGCH_MONSTER_SPELL,
+             bat_count == 1
+                 ? T_("The bat shimmers and %s reappears in a puff of iridescent mist.")
+                 : T_("The bats swarm back together and %s reappears in a puff of iridescent mist."),
+             blork->name(DESC_THE).c_str());
     }
 }
 
@@ -2395,7 +2392,7 @@ static void _player_on_kill_effects(monster& mons, killer_type killer,
             you.increase_duration(DUR_BERSERK, bonus);
 
             mprf(MSGCH_GOD, you.religion,
-                 "You feel the power of %s in you as your rage grows.",
+                 T_("You feel the power of %s in you as your rage grows."),
                  uppercase_first(god_name(you.religion)).c_str());
         }
         else if (you.unrand_equipped(UNRAND_BLOODLUST) && coinflip())
@@ -2504,7 +2501,7 @@ static void _player_on_kill_effects(monster& mons, killer_type killer,
         }
 
         if (visible_effect)
-            mprf(T_("%s's allies are healed!"), mons.name(DESC_ITS).c_str());
+            mprf(T_("%s allies are healed!"), mons.name(DESC_ITS).c_str());
     }
 
     if (gives_player_xp && you.attribute[ATTR_TEMP_MUTATIONS]
@@ -3805,10 +3802,7 @@ void monster_cleanup(monster* mons, bool reset)
 
     if (mons->type == MONS_PLATINUM_PARAGON && mons->was_created_by(you, SPELL_PLATINUM_PARAGON))
         you.duration[DUR_PARAGON_ACTIVE] = 0;
-    if (mons->type == MONS_SEISMOSAURUS_EGG)
-        for (distance_iterator di(mons->pos(), false, false, 4); di; ++di)
-            env.pgrid(*di) &= ~FPROP_SEISMOROCK;
-    else if (mons->type == MONS_HELLFIRE_MORTAR && mons->summoner == MID_PLAYER)
+    if (mons->type == MONS_HELLFIRE_MORTAR && mons->summoner == MID_PLAYER)
     {
         const int dur = hellfire_mortar_cooldown_length(mons->props[HELLFIRE_PATH_KEY].get_vector().size());
         you.duration[DUR_HELLFIRE_MORTAR_COOLDOWN] = dur;

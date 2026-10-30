@@ -3639,7 +3639,7 @@ static void _xom_player_confusion_effect(int sever)
     if (you.can_drink())
     {
         god_speaks(GOD_XOM, _get_xom_speech("confusion").c_str());
-        mprf(MSGCH_WARN, T_("You are %sconfused."), conf ? T_("more ") : "");
+        mprf(MSGCH_WARN, "%s", conf ? T_("You are more confused.") : T_("You are confused."));
     }
     else
     {

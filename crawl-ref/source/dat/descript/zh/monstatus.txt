@@ -174,7 +174,7 @@ doubled in vigour monstatus
 %%%%
 empowered by the touch of Beogh monstatus
 
-这个生物被贝奥格赋予了强大的力量来挑战你。它们的近战和远程攻击伤害
+这个生物被比欧弗赋予了强大的力量来挑战你。它们的近战和远程攻击伤害
 提升33%，生命值增加，施法更频繁。它们还能追踪你，无论你逃到当前楼层
 的任何地方。
 
@@ -572,7 +572,7 @@ surrounded by thunder monstatus
 target of orcish vengeance monstatus
 
 这个生物参与了杀害你的一位使徒。击败所有兽人复仇目标将显著加快
-贝奥格复活你使徒的时间。
+比欧弗复活你使徒的时间。
 %%%%
 targeted by your dimensional bullseye monstatus
 

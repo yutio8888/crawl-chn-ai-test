@@ -134,7 +134,7 @@ static bool _cancel_barbed_move()
     if (you.duration[DUR_BARBS] && !you.props.exists(BARBS_MOVE_KEY)
         && !crawl_state.disables[DIS_CONFIRMATIONS])
     {
-        std::string prompt = "The barbs in your skin will harm you if you move.";
+        std::string prompt = T_("The barbs in your skin will harm you if you move.");
         prompt += T_(" Continue?");
         if (!yesno(prompt.c_str(), false, 'n'))
         {

@@ -13,6 +13,7 @@
 #include "artefact.h"
 #include "beam.h"
 #include "clua.h"
+#include "dlua.h"
 #include "database.h"
 #include "decks.h"
 #include "describe.h"
@@ -24,6 +25,7 @@
 #include "env.h"
 #include "english.h"
 #include "feature.h"
+#include "fineff.h"
 #include "files.h"
 #include "god-conduct.h"
 #include "god-abil.h"
@@ -43,6 +45,13 @@
 #include "message.h"
 #include "mgen-data.h"
 #include "mon-place.h"
+#include "mon-death.h"
+#include "mon-behv.h"
+#include "mon-explode.h"
+#include "mon-poly.h"
+#include "mon-info.h"
+#include "target.h"
+#include "melee-attack.h"
 #include "mon-speak.h"
 #include "mon-util.h"
 #include "movement-i18n.h"
@@ -53,8 +62,11 @@
 #include "options.h"
 #include "output.h"
 #include "player.h"
+#include "potion.h"
+#include "shopping.h"
 #include "player-equip.h"
 #include "spl-summoning.h"
+#include "spl-damage.h"
 #include "player-reacts.h"
 #include "player-save-info.h"
 #include "positional_format.h"
@@ -1116,7 +1128,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     const char* enter = translated_move_phrase(
         "walk", move_phrase_context::enter_area);
     REQUIRE(make_stringf(T_("Really %s into a travel-excluded area?"), enter)
-            == "确定要走进探索排除区域吗？");
+            == "确定要走进旅行禁区吗？");
 
     const char* through = translated_move_phrase(
         "stride", move_phrase_context::through_obstacle);
@@ -1139,6 +1151,12 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(make_stringf(T_("Really %s into that cloud of %s?"), enter,
                          "毒气")
             == "确定要走进那片毒气吗？");
+    // The generic "that" prompt accepts both a quantified cloud phrase and
+    // a trap basename; neither should acquire an extra Chinese classifier.
+    REQUIRE(make_stringf(T_("Really %s into that %s?"), enter, "一团钙化尘云")
+            == "确定要走进那边的一团钙化尘云吗？");
+    REQUIRE(make_stringf(T_("Really %s into that %s?"), enter, "警报陷阱")
+            == "确定要走进那边的警报陷阱吗？");
     const char* blink = translated_move_phrase(
         "blink", move_phrase_context::bare);
     REQUIRE(make_stringf(T_("You cannot %s away from %s!"), blink, "怪物")
@@ -1147,6 +1165,16 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         "hop", move_phrase_context::bare);
     REQUIRE(make_stringf(T_("Are you sure you want to cancel this %s?"), hop)
             == "你确定要取消此次跳跃吗？");
+    {
+        EnTranslationFixture english;
+        const char* enter_en = translated_move_phrase(
+            "walk", move_phrase_context::enter_area);
+        REQUIRE(make_stringf(T_("Really %s into that %s?"), enter_en,
+                             "cloud of calcifying dust")
+                == "Really walk into that cloud of calcifying dust?");
+        REQUIRE(make_stringf(T_("Really %s into that %s?"), enter_en, "alarm trap")
+                == "Really walk into that alarm trap?");
+    }
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
@@ -1526,7 +1554,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         Row{possible_forced_prompt_context::toxic_bog, "",
             "这可能使你踉跄着退入毒沼。要继续吗？"},
         Row{possible_forced_prompt_context::exclusion, "",
-            "这可能使你踉跄着退入探索排除区域。要继续吗？"},
+            "这可能使你踉跄着退入旅行禁区。要继续吗？"},
         Row{possible_forced_prompt_context::over_losing_buoyancy, "熔岩",
             "你的浮力正在消失；这可能使你踉跄着退到熔岩上方。要继续吗？"},
         Row{possible_forced_prompt_context::into_losing_buoyancy, "熔岩",
@@ -6457,7 +6485,7 @@ TEST_CASE("issue171: A-menu legend follows temporary mutation state",
         const string expected_transient = T_(transient_key);
         string expected;
         if (suppressed)
-            expected += "<darkgrey>()</darkgrey>: Suppressed.\n";
+            expected += T_("<darkgrey>()</darkgrey>: Suppressed.\n");
         if (transient)
             expected += expected_transient;
         if (future)
@@ -6467,6 +6495,11 @@ TEST_CASE("issue171: A-menu legend follows temporary mutation state",
         }
         const string legend = mutation_menu_legend(future);
         CHECK(legend == expected);
+        if (suppressed && language == lang_t::ZH)
+        {
+            CHECK(legend.find("Suppressed") == string::npos);
+            CHECK(legend.find("被抑制") != string::npos);
+        }
         if (transient && language == lang_t::ZH)
         {
             CHECK(expected_transient != transient_key);
@@ -6630,5 +6663,1152 @@ TEST_CASE("issue172: real weapon removal and equipment preview use unwield",
             CHECK(weapon.name(DESC_A) == canonical);
         }
         CHECK(Options.language == language);
+    }
+}
+
+
+namespace
+{
+// Expose inherited protected virtual interfaces, without duplicating rendering
+// or introducing a test-only production hook. Dispatch remains melee_attack's.
+struct extended_playtest_melee : melee_attack
+{
+    using melee_attack::melee_attack;
+    using attack::set_attack_verb;
+    using attack::announce_hit;
+    using attack::calc_elemental_brand_damage;
+    using attack::handle_phase_hit;
+};
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "extended playtest: speech and custom weapon display boundaries",
+                 "[zh-translation][extended-playtest]")
+{
+    init_monsters();
+    init_properties();
+    init_zap_index();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    you = player();
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        scoped_monspeak_world world;
+        monster *speaker = world.place(MONS_HOUND);
+        REQUIRE(speaker);
+        for (const auto feature : {DNGN_FLOOR, DNGN_SHALLOW_WATER,
+                                   DNGN_DEEP_WATER, DNGN_LAVA,
+                                   DNGN_ALTAR_ZIN})
+        {
+            env.grid(speaker->pos()) = feature;
+            const string surface = do_mon_str_replacements("@surface@", *speaker);
+            REQUIRE(surface.find('@') == string::npos);
+            if (language == lang_t::ZH)
+                CHECK(contains_non_ascii(surface));
+            else
+                CHECK(surface == (feature == DNGN_FLOOR ? "ground"
+                                  : feature == DNGN_LAVA ? "lava"
+                                  : feature == DNGN_ALTAR_ZIN ? "altar" : "water"));
+        }
+        env.grid(speaker->pos()) = DNGN_FLOOR;
+        const string speech = do_mon_str_replacements("@says@", *speaker, S_SHOUT);
+        if (language == lang_t::ZH)
+            CHECK(contains_non_ascii(speech));
+        else
+            CHECK(speech == "shouts");
+        for (const char *name : {"scythe", "hammer", "untranslated custom weapon"})
+        {
+            item_def weapon;
+            weapon.base_type = OBJ_WEAPONS;
+            weapon.sub_type = WPN_HALBERD;
+            weapon.quantity = 1;
+            weapon.props[ITEM_NAME_KEY] = name;
+            const string display = weapon.name(DESC_PLAIN);
+            CHECK(weapon.props[ITEM_NAME_KEY].get_string() == name);
+            CHECK(item_base_name(weapon) == name);
+            CHECK(weapon.name(DESC_DBNAME) == name);
+            CHECK(item_english_name(weapon) == name);
+            if (language == lang_t::ZH && string(name) != "untranslated custom weapon")
+                CHECK(contains_non_ascii(display));
+            else
+                CHECK(display == name);
+            // The real DB lookup uses the canonical custom name, including
+            // the normal missing-entry fallback for an unknown custom name.
+            const string database_description = getLongDescription(weapon.name(DESC_DBNAME));
+            CHECK(database_description == getLongDescription(name));
+            const string inspection = get_item_description(weapon);
+            CHECK_FALSE(inspection.empty());
+            if (string(name) != "untranslated custom weapon")
+            {
+                REQUIRE_FALSE(database_description.empty());
+                REQUIRE(database_description.back() == '\n');
+                // get_item_description replaces the DB's final newline with
+                // a blank before appending weapon properties.
+                CHECK(inspection.find(database_description.substr(
+                          0, database_description.size() - 1)) != string::npos);
+            }
+            else
+                CHECK(database_description.empty());
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "extended playtest: high damage production announcements",
+                 "[zh-translation][extended-playtest]")
+{
+    init_monsters();
+    init_properties();
+    init_zap_index();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 100;
+    you.mutation[MUT_WIELD_OFFHAND] = 1;
+    you.equipment.update();
+    for (int slot = 0; slot < 2; ++slot)
+    {
+        item_def &equipped = you.inv[slot];
+        equipped.base_type = OBJ_WEAPONS;
+        equipped.sub_type = WPN_DAGGER;
+        equipped.quantity = 1;
+        equipped.link = slot;
+        equipped.pos = ITEM_IN_INVENTORY;
+        you.equipment.add(equipped, SLOT_WEAPON);
+    }
+    REQUIRE(you.offhand_weapon());
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        scoped_monspeak_world world;
+        monster *target = world.place(MONS_CYCLOPS);
+        REQUIRE(target);
+        target->hit_points = target->max_hit_points = 1000;
+        item_def weapon;
+        weapon.base_type = OBJ_WEAPONS;
+        weapon.quantity = 1;
+        // These real weapon damage types traverse the original random tables.
+        for (auto subtype : {WPN_SPEAR, WPN_BROAD_AXE, WPN_MACE, WPN_WHIP})
+        {
+            weapon.sub_type = subtype;
+            extended_playtest_melee hit(&you, target);
+            hit.set_weapon(&weapon);
+            hit.needs_message = true;
+            hit.attacker_visible = hit.defender_visible = true;
+            hit.damage_done = 60;
+            hit.charge_pow = 10;
+            set<string> selected;
+            for (int i = 0; i < 200; ++i)
+            {
+                hit.set_attack_verb(60);
+                selected.insert(hit.attack_verb + "/" + hit.verb_degree);
+                msgwin_temporary_mode temporary;
+                unwinder clear([]() { msgwin_clear_temporary(); });
+                msg::tee observed;
+                hit.announce_hit();
+                const string line = strip_tee_colour_tag(observed.get_store());
+                INFO(line);
+                CHECK(line.find(target->name(DESC_THE)) != string::npos);
+                CHECK(line.find(attack_strength_punctuation(60)) != string::npos);
+                CHECK(line.find('%') == string::npos);
+                CHECK(line.find(weapon.name(DESC_YOUR, false, false, false)) != string::npos);
+                if (language == lang_t::ZH)
+                {
+                    CHECK_FALSE(rule_mixed_cn_en(line));
+                    // Result clauses must contain target before the result;
+                    // analogy clauses supply their own action, without the old
+                    // bare modifier immediately before the inflected verb.
+                    CHECK(line.find("成碎片剁") == string::npos);
+                    CHECK(line.find("成碎条切") == string::npos);
+                }
+                else
+                {
+                    string degree = hit.verb_degree;
+                    if (!degree.empty() && degree[0] != '\'')
+                        degree = " " + degree;
+                    const string expected = "You " + hit.attack_verb + " "
+                        + target->name(DESC_THE) + degree
+                        + T_(" with ") + weapon.name(DESC_YOUR, false, false, false)
+                        + make_stringf(T_(" and electrocute %s"),
+                            target->pronoun(PRONOUN_OBJECTIVE).c_str()) + "!!!";
+                    CHECK(line == expected + "\n");
+                }
+            }
+            CHECK(selected.size() == (subtype == WPN_WHIP ? 1 : subtype == WPN_SPEAR ? 4 : 5));
+        }
+        // Species-specific clauses bypass the random tables (turkey/ham/onion).
+        weapon.sub_type = WPN_BROAD_AXE;
+        for (auto type : {MONS_HOG, MONS_RAVEN, MONS_OGRE, MONS_DRAUGR})
+        {
+            target->type = type;
+            extended_playtest_melee hit(&you, target);
+            hit.set_weapon(&weapon);
+            hit.needs_message = true;
+            hit.attacker_visible = hit.defender_visible = true;
+            hit.damage_done = 60;
+            for (int i = 0; i < 30; ++i)
+            {
+                hit.set_attack_verb(60);
+                msgwin_temporary_mode temporary;
+                unwinder clear([]() { msgwin_clear_temporary(); });
+                msg::tee observed;
+                hit.announce_hit();
+                const string line = observed.get_store();
+                CHECK(line.find(target->name(DESC_THE)) != string::npos);
+                CHECK(line.find(attack_strength_punctuation(60)) != string::npos);
+                if (language == lang_t::ZH)
+                    CHECK_FALSE(rule_mixed_cn_en(line));
+            }
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "extended playtest: elemental severity and liquid fire production",
+                 "[zh-translation][extended-playtest]")
+{
+    init_monsters();
+    init_properties();
+    init_zap_index();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 100;
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        scoped_monspeak_world world;
+        monster *target = world.place(MONS_UFETUBUS);
+        REQUIRE(target);
+        for (auto flavour : {BEAM_FIRE, BEAM_COLD})
+        {
+            // Ufetubi are fire-vulnerable but cold-resistant. A low cold
+            // damage roll can legitimately become zero and produce no message.
+            target->type = flavour == BEAM_FIRE ? MONS_UFETUBUS : MONS_HUMAN;
+            REQUIRE(target->res_fire() == (flavour == BEAM_FIRE ? -1 : 0));
+            REQUIRE(target->res_cold() == (flavour == BEAM_FIRE ? 1 : 0));
+            extended_playtest_melee hit(&you, target);
+            hit.damage_done = 60;
+            hit.needs_message = true;
+            hit.attacker_visible = hit.defender_visible = true;
+            const string verb = flavour == BEAM_FIRE ? T_("burn")
+                : C_("elemental brand verb", "freeze");
+            hit.calc_elemental_brand_damage(flavour, verb.c_str());
+            const string line = hit.special_damage_message;
+            REQUIRE_FALSE(line.empty());
+            if (language == lang_t::ZH)
+            {
+                CHECK_FALSE(rule_mixed_cn_en(line));
+                if (flavour == BEAM_FIRE)
+                {
+                    const auto severity = line.find(T_("severely "));
+                    CHECK(severity != string::npos);
+                    CHECK(severity < line.find(verb));
+                    CHECK(line.find(verb) < line.find(target->name(DESC_THE)));
+                }
+            }
+            else
+            {
+                CHECK(line.find("you " + verb + " " + target->name(DESC_THE)) == 0);
+                if (flavour == BEAM_FIRE)
+                    CHECK(line.find("severely ") != string::npos);
+            }
+        }
+        // The same production path must remain silent when resistance reduces
+        // the minimum brand damage to zero; no random retry is necessary.
+        target->type = MONS_UFETUBUS;
+        extended_playtest_melee resisted(&you, target);
+        resisted.damage_done = 1;
+        resisted.needs_message = true;
+        resisted.attacker_visible = resisted.defender_visible = true;
+        resisted.calc_elemental_brand_damage(
+            BEAM_COLD, C_("elemental brand verb", "freeze"));
+        CHECK(resisted.special_damage == 0);
+        CHECK(resisted.special_damage_message.empty());
+        for (int repeat = 0; repeat < 2; ++repeat)
+        {
+            msgwin_temporary_mode temporary;
+            unwinder clear([]() { msgwin_clear_temporary(); });
+            msg::tee observed;
+            REQUIRE(sticky_flame_player(10, 2, "test"));
+            const string line = observed.get_store();
+            if (language == lang_t::ZH)
+                CHECK_FALSE(rule_mixed_cn_en(line));
+            else
+                CHECK(line.find("intense liquid fire") != string::npos);
+        }
+        you.duration[DUR_STICKY_FLAME] = 0;
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "extended playtest: complete high damage clause catalog",
+                 "[zh-translation][extended-playtest]")
+{
+    const char *keys[] = {
+        "You spit %1$s like the proverbial pig%2$s%3$s%4$s%5$s",
+        "You attack %1$s's weak point%2$s%3$s%4$s%5$s",
+        "You dice %1$s like an onion%2$s%3$s%4$s%5$s",
+        "You fracture %1$s into splinters%2$s%3$s%4$s%5$s",
+        "You carve %1$s like the proverbial ham%2$s%3$s%4$s%5$s",
+        "You carve %1$s like a turkey%2$s%3$s%4$s%5$s",
+        "You shatter %1$s into splinters%2$s%3$s%4$s%5$s",
+        "You splatter %1$s into a gooey mess%2$s%3$s%4$s%5$s",
+        "You thrash %1$s mercilessly%2$s%3$s%4$s%5$s",
+        "You squash %1$s like the proverbial ant%2$s%3$s%4$s%5$s",
+        "You beat %1$s into a bloody pulp%2$s%3$s%4$s%5$s",
+        "You spit %1$s like a pig%2$s%3$s%4$s%5$s",
+        "You skewer %1$s like a kebab%2$s%3$s%4$s%5$s",
+        "You stick %1$s like a pincushion%2$s%3$s%4$s%5$s",
+        "You perforate %1$s like a sieve%2$s%3$s%4$s%5$s",
+        "You open %1$s like a pillowcase%2$s%3$s%4$s%5$s",
+        "You slice %1$s like a ripe choko%2$s%3$s%4$s%5$s",
+        "You cut %1$s into ribbons%2$s%3$s%4$s%5$s",
+        "You carve %1$s like a ham%2$s%3$s%4$s%5$s",
+        "You chop %1$s into pieces%2$s%3$s%4$s%5$s",
+        "You crush %1$s like a grape%2$s%3$s%4$s%5$s",
+        "You beat %1$s like a drum%2$s%3$s%4$s%5$s",
+        "You hammer %1$s like a gong%2$s%3$s%4$s%5$s",
+        "You pound %1$s like an anvil%2$s%3$s%4$s%5$s",
+        "You flatten %1$s like a pancake%2$s%3$s%4$s%5$s",
+        "You pound %1$s into fine dust%2$s%3$s%4$s%5$s",
+        "You pummel %1$s like a punching bag%2$s%3$s%4$s%5$s",
+        "You squash %1$s like an ant%2$s%3$s%4$s%5$s",
+    };
+    for (const char *key : keys)
+    {
+        INFO(key);
+        const string translated = C_("melee hit", key);
+        REQUIRE(translated != key);
+        // Distinct sentinels verify that all five arguments survive, occur
+        // exactly once, and no placeholder is left unresolved after format.
+        const string rendered = make_stringf_p(translated.c_str(),
+            "TARGET", "WEAPON", "CHARGE", "DAMAGE", "PUNCT");
+        for (const char *sentinel : {"TARGET", "WEAPON", "CHARGE", "DAMAGE", "PUNCT"})
+        {
+            auto first = rendered.find(sentinel);
+            REQUIRE(first != string::npos);
+            CHECK(rendered.find(sentinel, first + 1) == string::npos);
+        }
+        CHECK(rendered.find('%') == string::npos);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "extended playtest: polymorph messages and target list production",
+                 "[zh-translation][extended-playtest]")
+{
+    init_monsters();
+    init_properties();
+    init_zap_index();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 100;
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (bool shapeshifter : {false, true})
+        {
+            scoped_monspeak_world world;
+            monster *target = world.place(MONS_HOUND);
+            REQUIRE(target);
+            define_monster(*target);
+            if (shapeshifter)
+                target->add_ench(ENCH_SHAPESHIFTER);
+            const string old_name = target->name(DESC_THE);
+            msgwin_temporary_mode temporary;
+            unwinder clear([]() { msgwin_clear_temporary(); });
+            msg::tee observed;
+            REQUIRE(monster_polymorph(target, MONS_YAK));
+            const string line = observed.get_store();
+            INFO(line);
+            CHECK(line.find(old_name) != string::npos);
+            CHECK(line.find(mons_type_name(MONS_YAK, DESC_PLAIN)) != string::npos);
+            CHECK(mons_type_name_en(MONS_YAK, DESC_A) == "a yak");
+            if (language == lang_t::ZH)
+            {
+                CHECK(line.find("a ") == string::npos);
+                CHECK_FALSE(rule_mixed_cn_en(line));
+            }
+            else
+                CHECK(line.find(shapeshifter ? "changes into a yak!"
+                                            : "evaporates and reforms as a yak!") != string::npos);
+        }
+        scoped_monspeak_world world;
+        monster *target = world.place(MONS_HOUND);
+        REQUIRE(target);
+        define_monster(*target);
+        auto &poly_set = target->props[POLY_SET_KEY].new_vector(SV_INT);
+        poly_set.push_back(MONS_HORNET);
+        poly_set.push_back(MONS_SWAMP_DRAKE);
+        poly_set.push_back(MONS_ACID_DRAGON);
+        monster_info info(target);
+        targeter_beam beam(&you, 7, ZAP_POLYMORPH, SPELL_POLYMORPH, 50, 0, 0);
+        const auto descriptions = desc_wl_success_chance(info, 50, &beam);
+        REQUIRE(descriptions.size() == 2);
+        INFO(descriptions[0]);
+        if (language == lang_t::ZH)
+        {
+            CHECK(descriptions[0].find(" or ") == string::npos);
+            CHECK_FALSE(rule_mixed_cn_en(descriptions[0]));
+        }
+        else
+            CHECK(descriptions[0].find(", or ") != string::npos);
+        for (auto type : {MONS_HORNET, MONS_SWAMP_DRAKE, MONS_ACID_DRAGON})
+            CHECK(descriptions[0].find(mons_type_name(type, DESC_PLAIN)) != string::npos);
+    }
+}
+
+
+namespace
+{
+struct extended_zero_damage_melee : extended_playtest_melee
+{
+    using extended_playtest_melee::extended_playtest_melee;
+    // Control only combat randomness/AC. The actual hit/no-damage message,
+    // monster attack lookup and its final rendering remain production code.
+    int calc_damage() override { return 0; }
+};
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "extended playtest: monster spore and engulf production grammar",
+                 "[zh-translation][extended-playtest]")
+{
+    init_monsters();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 100;
+    no_notes suppress_notes;
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        scoped_monspeak_world world;
+        monster *source = world.place(MONS_SLEEPCAP);
+        REQUIRE(source);
+        define_monster(*source);
+        extended_zero_damage_melee spores(source, &you);
+        spores.needs_message = true;
+        spores.attacker_visible = spores.defender_visible = true;
+        spores.attk_type = AT_SPORE;
+        spores.attk_flavour = AF_PLAIN;
+        {
+            msgwin_temporary_mode temporary;
+            unwinder clear([]() { msgwin_clear_temporary(); });
+            msg::tee observed;
+            REQUIRE(spores.handle_phase_hit());
+            const string line = observed.get_store();
+            INFO(line);
+            if (language == lang_t::ZH)
+            {
+                CHECK(line.find("向你释放孢子，但没有造成伤害。") != string::npos);
+                CHECK_FALSE(rule_mixed_cn_en(line));
+            }
+            else
+                CHECK(line.find("releases spores at you but does no damage.") != string::npos);
+        }
+        source->type = MONS_UGLY_THING;
+        define_monster(*source);
+        extended_playtest_melee engulf(source, &you);
+        engulf.needs_message = true;
+        engulf.attacker_visible = engulf.defender_visible = true;
+        engulf.attk_type = AT_ENGULF;
+        engulf.attk_flavour = AF_PLAIN;
+        engulf.damage_done = 10;
+        {
+            msgwin_temporary_mode temporary;
+            unwinder clear([]() { msgwin_clear_temporary(); });
+            msg::tee observed;
+            engulf.announce_hit();
+            const string line = observed.get_store();
+            if (language == lang_t::ZH)
+            {
+                CHECK(line.find("engulf") == string::npos);
+                CHECK_FALSE(rule_mixed_cn_en(line));
+            }
+            else
+                CHECK(line.find("engulfs you") != string::npos);
+        }
+        monster_info info(source);
+        describe_info description;
+        bool stats = false;
+        get_monster_db_desc(info, description, stats);
+        const string text = description.body.str();
+        if (language == lang_t::ZH)
+        {
+            const string expected = make_stringf(C_("monster description",
+                "Despite %s appearance, it can open doors.\n"),
+                info.pronoun(PRONOUN_POSSESSIVE));
+            CHECK(text.find(expected) != string::npos);
+            CHECK(text.find("外表它的") == string::npos);
+        }
+        else
+            CHECK(text.find("Despite its appearance, it can open doors.") != string::npos);
+    }
+}
+
+
+TEST_CASE("round2: production mindburst messages preserve locale and identity",
+          "[zh-translation][round2][messages]")
+{
+    init_monsters();
+    init_zap_index();
+    init_spell_descs();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (int heads : {1, 3})
+    {
+        CAPTURE(language, heads);
+        TranslationFixture translation(language, language == lang_t::EN ? "en" : "zh");
+        unwind_var<player> restore_player(you);
+        you = player();
+        you.species = SP_HUMAN;
+        scoped_monspeak_world world;
+        monster* victim = world.place(MONS_HYDRA);
+        REQUIRE(victim);
+        victim->num_heads = heads;
+        victim->hit_points = victim->max_hit_points = 1000;
+        const string identity = victim->name(DESC_DBNAME);
+        bolt beam;
+        beam.flavour = BEAM_MINDBURST;
+        beam.thrower = KILL_YOU;
+        beam.source_id = MID_PLAYER;
+        beam.damage = dice_def(1, 1);
+        msg::tee messages;
+        CHECK(beam.apply_enchantment_to_monster(victim) == MON_AFFECTED);
+        const string output = messages.get_store();
+        if (language == lang_t::ZH)
+        {
+            CHECK(output.find("精神受到冲击") != string::npos);
+            CHECK(output.find("的的") == string::npos);
+            CHECK(output.find(" is") == string::npos);
+            CHECK(output.find(" are") == string::npos);
+        }
+        else
+            CHECK(output.find(heads > 1 ? "minds are blasted" : "mind is blasted")
+                  != string::npos);
+        CHECK(victim->name(DESC_DBNAME) == identity);
+        CHECK(victim->num_heads == heads);
+    }
+}
+
+TEST_CASE("round2: discovery uses the real statue feature and keeps note snapshot",
+          "[zh-translation][round2][notes]")
+{
+    init_monsters();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::EN ? "en" : "zh");
+        unwind_var<player> restore_player(you);
+        you = player();
+        scoped_monspeak_world world;
+        const coord_def pos(21, 20);
+        unwind_var<map_cell> restore_cell(env.map_knowledge(pos));
+        unwind_var<vector<Note>> restore_notes(note_list);
+        const bool old_notes_active = notes_are_active();
+        unwinder restore_notes_active([&]() { activate_notes(old_notes_active); });
+        activate_notes(true);
+        note_list.clear();
+        you.zot_orb_monster_known = true;
+        you.zot_orb_monster = MONS_ORB_OF_WINTER;
+        env.grid(pos) = DNGN_ZOT_STATUE;
+        env.map_knowledge(pos) = map_cell();
+        env.map_knowledge(pos).set_feature(DNGN_ZOT_STATUE);
+        const string description = feature_description_at(pos, false, DESC_A);
+        CHECK(description == (language == lang_t::ZH ? "寒冬之球雕像"
+                             : "a statue of an orb of winter"));
+        set_terrain_seen(pos);
+        REQUIRE(note_list.size() == 1);
+        CHECK(note_list[0].type == NOTE_SEEN_FEAT);
+        CHECK(note_list[0].name == description + ".");
+        CHECK(note_list[0].describe(false, false).find(description) != string::npos);
+    }
+}
+
+
+TEST_CASE("round2: cornered fallback preserves speech protocol and monster identity",
+          "[zh-translation][round2][messages]")
+{
+    init_monsters();
+    init_spell_descs();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::EN ? "en" : "zh");
+        unwind_var<player> restore_player(you);
+        you = player();
+        scoped_monspeak_world world;
+        monster* mon = world.place(MONS_ORC);
+        REQUIRE(mon);
+        mon->behaviour = BEH_CORNERED;
+        const string identity = mon->name(DESC_DBNAME);
+        REQUIRE(getSpeakString(identity + " cornered").empty());
+        msg::tee messages;
+        behaviour_event(mon, ME_CORNERED, &you);
+        const string output = messages.get_store();
+        if (language == lang_t::ZH)
+        {
+            CHECK(output.find("转身反击") != string::npos);
+            CHECK(output.find("Cornered") == string::npos);
+        }
+        else
+            CHECK(output.find("Cornered, the orc turns to fight!") != string::npos);
+        CHECK(output.find("PLAIN:") == string::npos);
+        CHECK(output.find("@the_monster@") == string::npos);
+        CHECK(mon->name(DESC_DBNAME) == identity);
+        CHECK(mon->behaviour == BEH_SEEK);
+    }
+}
+
+TEST_CASE("round2: real digging wall messages preserve agent grammar",
+          "[zh-translation][round2][messages]")
+{
+    init_monsters();
+    init_zap_index();
+    init_spell_descs();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool player_agent : {true, false})
+    {
+        CAPTURE(language, player_agent);
+        TranslationFixture translation(language, language == lang_t::EN ? "en" : "zh");
+        unwind_var<player> restore_player(you);
+        you = player();
+        scoped_monspeak_world world;
+        monster* mon = world.place(MONS_ORC);
+        REQUIRE(mon);
+        const coord_def wall(21, 20);
+        unwind_var<map_cell> restore_wall(env.map_knowledge(wall));
+        env.grid(wall) = DNGN_ROCK_WALL;
+        bolt beam;
+        zappy(ZAP_DIG, 50, !player_agent, beam);
+        beam.source_id = player_agent ? MID_PLAYER : mon->mid;
+        beam.thrower = player_agent ? KILL_YOU : KILL_MON;
+        beam.target = wall;
+        beam.use_target_as_pos = true;
+        msg::tee messages;
+        beam.affect_cell();
+        CHECK(env.grid(wall) == DNGN_FLOOR);
+        const string output = messages.get_store();
+        if (language == lang_t::ZH)
+        {
+            CHECK(output.find("岩石碎成了小片") != string::npos);
+            CHECK(output.find("The") == string::npos);
+            CHECK(output.find("Some") == string::npos);
+        }
+        else
+            CHECK(output.find(player_agent ? "The rock shatters into small pieces."
+                                           : "Some rock shatters into small pieces.")
+                  != string::npos);
+    }
+}
+
+TEST_CASE("round2: summoned explosion residue uses a complete display sentence",
+          "[zh-translation][round2][messages]")
+{
+    init_monsters();
+    init_spell_descs();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::EN ? "en" : "zh");
+        unwind_var<player> restore_player(you);
+        unwind_var<bool> restore_need_save(crawl_state.need_save, false);
+        unwind_var<use_animations_type> restore_animations(
+            Options.use_animations, use_animations_type());
+        you = player();
+        you.hp = you.hp_max = 10000;
+        scoped_monspeak_world world;
+        monster* mon = world.place(MONS_ORC, coord_def(25, 25));
+        REQUIRE(mon);
+        mon->mark_summoned(SPELL_SUMMON_SMALL_MAMMAL, 20, false, true);
+        mon->add_ench(mon_enchant(ENCH_INNER_FLAME, &you, 10, 1));
+        const string name = mon->name(DESC_PLAIN);
+        msg::tee messages;
+        REQUIRE(explode_monster(mon, KILL_YOU, false));
+        fire_final_effects();
+        const string output = messages.get_store();
+        if (language == lang_t::ZH)
+        {
+            CHECK(output.find(name + "的残留物") != string::npos);
+            CHECK(output.find("residue") == string::npos);
+            CHECK(output.find("The ") == string::npos);
+        }
+        else
+            CHECK(output.find("The orc residue disappears in a puff of smoke.")
+                  != string::npos);
+    }
+}
+
+TEST_CASE("grouped: state intensification uses complete sentences",
+          "[zh-translation][grouped-fixes]")
+{
+    init_properties();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool repeat : {false, true})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 1000;
+        scoped_monspeak_world world;
+        you.duration[DUR_CONF] = repeat ? 10 : 0;
+        {
+            msg::tee messages;
+            REQUIRE(confuse_player(5, false, true));
+            const string text = messages.get_store();
+            CHECK(text.find(language == lang_t::ZH
+                ? (repeat ? "你的混乱加重了。" : "你处于混乱状态。")
+                : (repeat ? "You are more confused." : "You are confused.")) != string::npos);
+        }
+        you.duration[DUR_POISONING] = repeat ? 1000 : 0;
+        {
+            msg::tee messages;
+            REQUIRE(poison_player(1, "test", "", true));
+            CHECK(messages.get_store().find(language == lang_t::ZH
+                ? (repeat ? "你的中毒加重了。" : "你中毒了。")
+                : (repeat ? "You are more poisoned." : "You are poisoned.")) != string::npos);
+        }
+        you.duration[DUR_AGILITY] = repeat ? 10 : 0;
+        {
+            msg::tee messages;
+            you.be_agile(5);
+            const string text = messages.get_store();
+            if (language == lang_t::ZH)
+            {
+                CHECK(text.find("更强的") == string::npos);
+                CHECK(text.find("more ") == string::npos);
+                CHECK((text.find("更加") != string::npos) == repeat);
+            }
+            else
+                CHECK((text.find("more agile") != string::npos) == repeat);
+        }
+    }
+}
+
+TEST_CASE("grouped: potion adjective consumers localize repeated intensity",
+          "[zh-translation][grouped-fixes]")
+{
+    init_properties();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (auto potion : {POT_BRILLIANCE, POT_ATTRACTION})
+    for (bool repeat : {false, true})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.duration[potion == POT_BRILLIANCE ? DUR_BRILLIANCE : DUR_ATTRACTIVE] = repeat ? 10 : 0;
+        msg::tee messages;
+        REQUIRE(get_potion_effect(potion)->effect());
+        const string text = messages.get_store();
+        if (language == lang_t::ZH)
+        {
+            CHECK(text.find("更强的") == string::npos);
+            CHECK(text.find("more ") == string::npos);
+            CHECK((text.find("更加") != string::npos) == repeat);
+        }
+        else
+            CHECK((text.find("more ") != string::npos) == repeat);
+    }
+}
+
+TEST_CASE("grouped: custom shop fragments translate without changing stored names",
+          "[zh-translation][grouped-fixes]")
+{
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        shop_struct shop;
+        shop.type = SHOP_GENERAL;
+        shop.pos = coord_def(20, 20);
+        shop.shop_name = "Corghil";
+        shop.shop_type_name = "Information";
+        shop.shop_suffix_name = "Kiosk";
+        const string display = shop_name(shop);
+        CHECK(display.find("Corghil") != string::npos);
+        CHECK(display.find(language == lang_t::ZH ? "信息亭" : "Information Kiosk") != string::npos);
+        CHECK(shop.shop_type_name == "Information");
+        CHECK(shop.shop_suffix_name == "Kiosk");
+        shop.shop_type_name = "Unregistered fixture specialty";
+        CHECK(shop_name(shop).find(shop.shop_type_name) != string::npos);
+    }
+}
+
+TEST_CASE("grouped: last unidentified item message localizes category only",
+          "[zh-translation][grouped-fixes]")
+{
+    init_properties();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (auto base : {OBJ_WANDS, OBJ_POTIONS, OBJ_SCROLLS, OBJ_JEWELLERY})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        you.species = SP_HUMAN;
+        item_def item;
+        item.base_type = base;
+        item.sub_type = base == OBJ_WANDS ? WAND_FLAME : base == OBJ_POTIONS ? POT_HASTE
+                      : base == OBJ_SCROLLS ? int(SCR_FEAR) : int(RING_PROTECTION);
+        item.quantity = 1;
+        for (int i = 0; i < get_max_subtype(base); ++i)
+            you.type_ids[base][i] = true;
+        you.type_ids[base][item.sub_type] = false;
+        msg::tee messages;
+        REQUIRE(maybe_identify_base_type(item));
+        CHECK(type_is_identified(item));
+        CHECK(item.base_type == base);
+        const string text = messages.get_store();
+        if (language == lang_t::ZH)
+        {
+            CHECK(text.find("你已经鉴定了最后一件") != string::npos);
+            for (const char* raw : {"wand", "potion", "scroll", "ring"})
+                CHECK(text.find(raw) == string::npos);
+        }
+        else
+            CHECK(text.find("You have identified the last ") != string::npos);
+    }
+}
+
+TEST_CASE("grouped: expiring forms and durations keep canonical keys and translated display",
+          "[zh-translation][grouped-fixes]")
+{
+    init_duration_index();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool expiring : {false, true})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.form = transformation::tree;
+        you.duration[DUR_TRANSFORMATION] = expiring ? 1 : 1000;
+        status_info info;
+        REQUIRE(fill_status_info(DUR_TRANSFORMATION, info));
+        CHECK(info.is_expiring == expiring);
+        CHECK(info.short_db_key == (expiring ? "tree-form (expiring)" : "tree-form"));
+        CHECK(info.short_text == (language == lang_t::ZH
+            ? (expiring ? "树形态（即将消失）" : "树形态")
+            : (expiring ? "tree-form (expiring)" : "tree-form")));
+        CHECK(string(get_form()->wiz_name) == "tree");
+        i18n_cache_clear();
+        status_info rebuilt;
+        REQUIRE(fill_status_info(DUR_TRANSFORMATION, rebuilt));
+        CHECK(rebuilt.short_text == info.short_text);
+        CHECK(rebuilt.short_db_key == info.short_db_key);
+        you.duration[DUR_HASTE] = expiring ? 1 : 1000;
+        status_info haste;
+        REQUIRE(fill_status_info(STATUS_SPEED, haste));
+        CHECK(haste.is_expiring == expiring);
+        if (language == lang_t::ZH)
+        {
+            CHECK(haste.short_text.find("hasted") == string::npos);
+            CHECK(haste.long_text.find("Your actions") == string::npos);
+        }
+    }
+}
+
+TEST_CASE("grouped: tree mutation menu and dump localize degree and suppressed legend",
+          "[zh-translation][grouped-fixes]")
+{
+    init_mut_index();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.form = transformation::tree;
+        you.mutation[MUT_CLAWS] = 1;
+        const string text = describe_muts_for_chardump(false);
+        const string legend = mutation_menu_legend(false);
+        if (language == lang_t::ZH)
+        {
+            CHECK(text.find("greatly") == string::npos);
+            CHECK(text.find("极大地") != string::npos);
+            CHECK(legend.find("Suppressed") == string::npos);
+            CHECK(legend.find("被抑制") != string::npos);
+        }
+        else
+        {
+            CHECK(text.find("greatly increased") != string::npos);
+            CHECK(legend.find("Suppressed.") != string::npos);
+        }
+    }
+}
+
+TEST_CASE("grouped: single and multiple bat revival announcements use complete templates",
+          "[zh-translation][grouped-fixes]")
+{
+    init_monsters();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (int count : {1, 4})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        you.species = SP_HUMAN;
+        scoped_monspeak_world world;
+        monster* blork = world.place(MONS_BLORKULA_THE_ORCULA);
+        REQUIRE(blork);
+        const string identity = blork->name(DESC_DBNAME);
+        msg::tee messages;
+        blorkula_bat_merge_message(blork, count);
+        const string text = messages.get_store();
+        if (language == lang_t::ZH)
+        {
+            CHECK(text.find("重新出现") != string::npos);
+            CHECK(text.find("The bat") == string::npos);
+            CHECK(text.find(count == 1 ? "微微闪烁" : "重新聚集") != string::npos);
+        }
+        else
+            CHECK(text.find(count == 1 ? "The bat shimmers and " : "The bats swarm back together and ") != string::npos);
+        CHECK(blork->name(DESC_DBNAME) == identity);
+    }
+}
+
+TEST_CASE("grouped: timed marker translates entity only at final display",
+          "[zh-translation][grouped-fixes]")
+{
+    init_dungeon_lua();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        // Capture the Lua display boundary: crawl.mpr is deliberately disabled
+        // before terminal initialization in this lightweight Catch environment.
+        const int result = dlua.execstring(
+            "crawl_require('dlua/lm_tmsg.lua'); "
+            "local original = crawl.mpr; local output = {}; "
+            "crawl.mpr = function(text) output[#output+1] = text end; "
+            "local ok, err = pcall(function() "
+            "local m = timed_msg{messages={}, entity='portcullis'}; "
+            "m:emit_message(nil, '$F{The} has been lowered almost to the ground.'); "
+            "assert(m.entity == 'portcullis', 'persistent entity changed'); "
+            "m:emit_message(nil, {'$F', '$F{The}'}); "
+            "local raw = timed_msg{messages={}, entity='fixture entity'}; "
+            "raw:emit_message(nil, '$F'); "
+            "assert(raw.entity == 'fixture entity'); "
+            "assert(output[4] == 'a fixture entity' or output[4] == 'fixture entity', table.concat(output, ' | ')); "
+            "if crawl.t_('portcullis') == 'portcullis' then "
+            "assert(output[1] == 'the portcullis has been lowered almost to the ground.', table.concat(output, ' | ')); "
+            "assert(output[2] == 'a portcullis', table.concat(output, ' | ')); assert(output[3] == 'the portcullis', table.concat(output, ' | ')); "
+            "else assert(output[1] == '吊闸几乎已降至地面。', table.concat(output, ' | ')); "
+            "assert(output[2] == '吊闸', table.concat(output, ' | ')); assert(output[3] == '吊闸', table.concat(output, ' | ')); end "
+            "end); crawl.mpr = original; assert(ok, err)");
+        INFO(dlua.error);
+        REQUIRE(result == 0);
+    }
+}
+
+TEST_CASE("grouped: regeneration attunement localizes ordinary equipment but preserves identity",
+          "[zh-translation][grouped-fixes]")
+{
+    init_properties();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (auto amulet : {AMU_REGENERATION, AMU_MANA_REGENERATION})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 100;
+        you.magic_points = you.max_magic_points = 20;
+        item_def& item = you.inv[0];
+        item.base_type = OBJ_JEWELLERY;
+        item.sub_type = amulet;
+        item.quantity = 1;
+        item.link = 0;
+        item.pos = ITEM_IN_INVENTORY;
+        you.equipment.add(item, SLOT_AMULET);
+        you.check_hp_regen_attunement = true;
+        you.check_mp_regen_attunement = true;
+        msg::tee messages;
+        maybe_attune_regen_items();
+        const string text = messages.get_store();
+        CHECK(item.sub_type == amulet);
+        CHECK_FALSE(you.check_hp_regen_attunement);
+        CHECK_FALSE(you.check_mp_regen_attunement);
+        if (language == lang_t::ZH)
+        {
+            CHECK(text.find("项链") != string::npos);
+            CHECK(text.find("amulet") == string::npos);
+            CHECK(text.find("attune") == string::npos);
+        }
+        else
+            CHECK(text.find("Your amulet attunes itself to your body") != string::npos);
+    }
+}
+
+TEST_CASE("grouped: fear wake message consumes player and monster possessives once",
+          "[zh-translation][grouped-fixes]")
+{
+    init_monsters();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (int source_kind : {0, 1})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        you.species = SP_HUMAN;
+        scoped_monspeak_world world;
+        monster* victim = world.place(MONS_ORC);
+        REQUIRE(victim);
+        victim->add_ench(mon_enchant(ENCH_FEAR, &you, 100));
+        const string identity = victim->name(DESC_DBNAME);
+        msg::tee messages;
+        behaviour_event(victim, ME_WHACK, source_kind == 0 ? &you : nullptr);
+        const string text = messages.get_store();
+        INFO(text);
+        CHECK_FALSE(victim->has_ench(ENCH_FEAR));
+        if (language == lang_t::ZH)
+        {
+            CHECK(text.find(source_kind == 0 ? "你的攻击" : "这次攻击") != string::npos);
+            CHECK(text.find("的的") == string::npos);
+            CHECK(text.find("the") == string::npos);
+        }
+        else
+            CHECK(text.find(source_kind == 0 ? "your attack" : "The attack") != string::npos);
+        CHECK(victim->name(DESC_DBNAME) == identity);
+    }
+}
+
+TEST_CASE("grouped: invisibility blockers and expiring status compose display separately from identity",
+          "[zh-translation][grouped-fixes]")
+{
+    init_properties();
+    init_duration_index();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool repeat : {false, true})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.duration[DUR_CORONA] = 100;
+        you.duration[DUR_INVIS] = repeat ? 10 : 0;
+        {
+            msg::tee messages;
+            REQUIRE(get_potion_effect(POT_INVISIBILITY)->effect());
+            const string text = messages.get_store();
+            INFO(text);
+            if (language == lang_t::ZH)
+            {
+                CHECK(text.find("光晕的光芒") != string::npos);
+                CHECK(text.find("你的的") == string::npos);
+                CHECK(text.find("corona") == string::npos);
+                CHECK(text.find("更强的") == string::npos);
+                CHECK((text.find("更加") != string::npos) == repeat);
+            }
+            else
+                CHECK(text.find("the glow from your corona prevents") != string::npos);
+        }
+        you.duration[DUR_INVIS] = 1;
+        status_info info;
+        REQUIRE(fill_status_info(STATUS_INVISIBLE, info));
+        CHECK(info.short_db_key == "invisible (but backlit and visible)");
+        if (language == lang_t::ZH)
+        {
+            CHECK(info.short_text.find("invisible") == string::npos);
+            CHECK(info.long_text.find("invisible") == string::npos);
+            CHECK(info.short_text.find("即将消失") != string::npos);
+        }
+        else
+            CHECK(info.short_text == "invisible (but backlit and visible) (expiring)");
+    }
+}
+
+TEST_CASE("grouped: real fragmentation puts damage punctuation after the player sentence",
+          "[zh-translation][grouped-fixes]")
+{
+    init_monsters();
+    init_zap_index();
+    init_spell_descs();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        you.species = SP_GARGOYLE;
+        you.mutation[MUT_STONE_BODY] = 1;
+        you.hp = you.hp_max = 1000;
+        scoped_monspeak_world world;
+        monster* caster = world.place(MONS_KOBOLD_GEOMANCER);
+        REQUIRE(caster);
+        msg::tee messages;
+        REQUIRE(cast_fragmentation(30, caster, you.pos(), false) == spret::success);
+        const string text = messages.get_store();
+        INFO(text);
+        if (language == lang_t::ZH)
+        {
+            CHECK(text.find("你碎裂了") != string::npos);
+            CHECK(text.find("你！") == string::npos);
+            CHECK(text.find("你。") == string::npos);
+        }
+        else
+            CHECK(text.find("You shatter") != string::npos);
+    }
+}
+
+TEST_CASE("family: all valid Beogh species displays translate without altering species keys",
+          "[zh-translation][family-fixes][names]")
+{
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        you.religion = GOD_BEOGH;
+        for (int sp = 0; sp < NUM_SPECIES; ++sp)
+        {
+            const species_type species_id = static_cast<species_type>(sp);
+            if (!species::is_valid(species_id))
+                continue;
+            you.species = species_id;
+            const string key = species::orc_name(species_id);
+            const string display = player_species_name();
+            INFO(key << " => " << display);
+            if (language == lang_t::ZH)
+                CHECK(display != key);
+            else
+                CHECK(display == key);
+            CHECK(species::orc_name(species_id) == key);
+            if (species_id == SP_GARGOYLE && language == lang_t::ZH)
+                CHECK(display == "石像鬼兽人");
+        }
+    }
+}
+
+TEST_CASE("family: custom shop fragments use shop context rather than unrelated global senses",
+          "[zh-translation][family-fixes][shops]")
+{
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (const char* fragment : {"Tomes", "Deal", "Range", "Timeless"})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        shop_struct shop;
+        shop.type = SHOP_GENERAL;
+        shop.pos = coord_def(20, 20);
+        shop.shop_name = "Fixture";
+        shop.shop_type_name = string(fragment) == "Timeless" ? fragment : "Information";
+        shop.shop_suffix_name = string(fragment) == "Timeless" ? "Tomes" : fragment;
+        const string text = shop_name(shop);
+        INFO(text);
+        if (language == lang_t::ZH)
+        {
+            CHECK(text.find(fragment) == string::npos);
+            CHECK(text.find("Tomes") == string::npos);
+            CHECK(text.find("发牌") == string::npos);
+            CHECK(text.find("射程") == string::npos);
+            CHECK(text.find("永恒者") == string::npos);
+        }
+        else
+            CHECK(text.find(fragment) != string::npos);
+        CHECK(shop.shop_type_name == (string(fragment) == "Timeless" ? fragment : "Information"));
+        CHECK(shop.shop_suffix_name == (string(fragment) == "Timeless" ? "Tomes" : fragment));
     }
 }

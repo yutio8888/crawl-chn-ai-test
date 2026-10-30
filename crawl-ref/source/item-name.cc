@@ -1769,7 +1769,11 @@ static string _name_weapon(const item_def &weap, description_level_type desc,
 
     const string cosmetic_text
         = show_cosmetic ? _cosmetic_text(weap) : "";
-    const string base_name = item_base_name(weap);
+    // Custom base names also serve lookup/serialization paths. Translate
+    // only this display use, and distinguish weapon nouns from attack verbs.
+    const string base_name_en = item_base_name(weap);
+    const string base_name = !dbname && weap.props.exists(ITEM_NAME_KEY)
+        ? C_("weapon name", base_name_en.c_str()) : base_name_en;
     const string name_with_ego
         = identified && !dbname ? weapon_brand_desc(base_name.c_str(), weap, terse)
         : base_name;
@@ -1816,8 +1820,11 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 
         if (!terse && !dbname && !basename)
         {
-            if (_missile_brand_is_prefix(msl_brand)) // see below for postfix brands
+            if (_missile_brand_is_prefix(msl_brand))
                 buff << missile_brand_name(*this, MBN_NAME) << ' ';
+            else if (Options.language == lang_t::ZH && _missile_brand_is_postfix(msl_brand))
+                buff << make_stringf(C_("item ego prefix", "of %s"),
+                                     missile_brand_name(*this, MBN_NAME));
         }
 
         buff << missile_name(static_cast<missile_type>(item_typ));
@@ -1827,17 +1834,8 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         {
             if (terse)
                 buff << " (" <<  missile_brand_name(*this, MBN_TERSE) << ")";
-            else if (_missile_brand_is_postfix(msl_brand)) // see above for prefix brands
-            {
-                // Structural: ZH prefix "之" vs EN " of "
-                if (Options.language == lang_t::ZH)
-                {
-                    buff << make_stringf(C_("item ego prefix", "of %s"),
-                                         missile_brand_name(*this, MBN_NAME));
-                }
-                else
-                    buff << " of " << missile_brand_name(*this, MBN_NAME);
-            }
+            else if (Options.language != lang_t::ZH && _missile_brand_is_postfix(msl_brand))
+                buff << " of " << missile_brand_name(*this, MBN_NAME);
         }
 
         break;
@@ -2014,7 +2012,8 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
                                    "bogus" : potion_colours[pcolour];
 
             const char *t_qual = T_(qualifier);
-            const char *t_clr   = T_(clr);
+            const char *t_clr = strcmp(clr, "clear") == 0
+                ? C_("potion appearance colour", "clear") : T_(clr);
 
             // Structural: ZH "药水" suffix vs EN " potion"
             // EN keys have no trailing spaces; add them explicitly here.

@@ -2023,7 +2023,7 @@ spret cast_scorch(const actor& agent, int pow, bool fail)
             monster* mon = targ->as_monster();
             if (you.can_see(*mon) && !mon->has_ench(ENCH_FIRE_VULN))
             {
-                mprf(T_("%s's fire resistance is burned away."),
+                mprf(T_("%s fire resistance is burned away."),
                     mon->name(DESC_ITS).c_str());
             }
             mon->add_ench(mon_enchant(ENCH_FIRE_VULN, &agent, dur * BASELINE_DELAY));
@@ -2534,7 +2534,7 @@ spret cast_ignite_poison(actor* agent, int pow, bool fail, bool tracer)
     mprf_p(T_("%1$s %2$s the poison around %3$s!"),
            agent->name(DESC_THE).c_str(),
            agent->conj_verb("ignite").c_str(),
-           agent->pronoun(PRONOUN_POSSESSIVE).c_str());
+           agent->pronoun(PRONOUN_OBJECTIVE).c_str());
 
     // this could conceivably cause crashes if the player dies midway through
     // maybe split it up...?
@@ -4011,10 +4011,10 @@ bool handle_searing_ray(actor& agent, int turn)
     return true;
 }
 
-dice_def glaciate_damage(int pow, int eff_range)
+dice_def glaciate_damage(int pow, int eff_range, bool random)
 {
     // At or within range 3, this is equivalent to the old Ice Storm damage.
-    return calc_dice(10, (54 + 3 * pow / 2) / eff_range);
+    return calc_dice(10, (54 + 3 * pow / 2) / eff_range, random);
 }
 
 spret cast_glaciate(actor *caster, int pow, coord_def aim)

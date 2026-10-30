@@ -677,7 +677,7 @@ static vector<pair<string,string>> _get_form_fakemuts()
     {
         result.push_back({"boosted hp",
                             _formmut(make_stringf(T_("Your maximum health is %sincreased."),
-                                                    hp_mod < 13 ? "" : "greatly "))});
+                                                    hp_mod < 13 ? "" : T_("greatly ")))});
     } // see badmuts section below for max health reduction
 
     // Bad effects
@@ -687,7 +687,7 @@ static vector<pair<string,string>> _get_form_fakemuts()
     {
         result.push_back({"reduced hp",
                             _badmut(make_stringf(T_("Your maximum health is decreased%s."),
-                                form->underskilled() ? ", since you lack skill for your form"
+                                form->underskilled() ? T_(", since you lack skill for your form")
                                 : ""))});
     }
 
@@ -706,7 +706,7 @@ static vector<pair<string,string>> _get_form_fakemuts()
         if (you.res_cold())
         {
             result.push_back({"(cold-blooded)",
-                "<darkgray>((You are cold-blooded and may be slowed by cold attacks.))</darkgray>"});
+                "<darkgray>((" + string(T_("You are cold-blooded and may be slowed by cold attacks.")) + "))</darkgray>"});
         }
         else
         {
@@ -915,35 +915,22 @@ static vector<pair<string, string>> _get_fakemuts()
 
 static vector<mutation_type> _get_ordered_mutations()
 {
-    vector<mutation_type> muts;
+    vector<mutation_type> muts, mut_mutable, mut_temporary;
 
-    // First add (non-removable) inborn abilities and demon powers.
     for (int i = 0; i < NUM_MUTATIONS; i++)
     {
         mutation_type mut = static_cast<mutation_type>(i);
         if (you.has_innate_mutation(mut))
             muts.push_back(mut);
+        else if (you.has_temporary_mutation(mut))
+            mut_temporary.push_back(mut);
+        else if (you.get_base_mutation_level(mut, false, false, true) > 0)
+            mut_mutable.push_back(mut);
     }
-
-    // Now add removable mutations.
-    for (int i = 0; i < NUM_MUTATIONS; i++)
-    {
-        mutation_type mut = static_cast<mutation_type>(i);
-        if (you.get_base_mutation_level(mut, false, false, true) > 0
-            && !you.has_innate_mutation(mut)
-            && !you.has_temporary_mutation(mut))
-        {
-            muts.push_back(mut);
-        }
-    }
-
-    //Finally, temporary mutations.
-    for (int i = 0; i < NUM_MUTATIONS; i++)
-    {
-        mutation_type mut = static_cast<mutation_type>(i);
-        if (you.has_temporary_mutation(mut))
-            muts.push_back(mut);
-    }
+    // Add (non-removable) inborn abilities and demon powers first, then
+    // removable mutations and finally temporary mutations.
+    muts.insert(muts.end(), mut_mutable.begin(), mut_mutable.end());
+    muts.insert(muts.end(), mut_temporary.begin(), mut_temporary.end());
 
     return muts;
 }
@@ -1062,7 +1049,7 @@ string mutation_menu_legend(bool has_future_muts)
     string extra = "";
     // TODO: also handle suppressed fakemuts
     if (_has_suppressed_muts())
-        extra += "<darkgrey>()</darkgrey>: Suppressed.\n";
+        extra += T_("<darkgrey>()</darkgrey>: Suppressed.\n");
     if (_has_transient_muts())
         extra += T_("<magenta>[]</magenta>: Transient mutations.\n");
     if (has_future_muts)
@@ -1526,7 +1513,7 @@ static int _handle_conflicting_mutations(mutation_type mutation,
                 return -1;
             else
             {
-                while (_delete_single_mutation_level(confl_mut, reason, true));
+                while (delete_single_mutation_level(confl_mut, reason, true));
                 return 0;
             }
         }
@@ -1541,7 +1528,7 @@ static int _handle_conflicting_mutations(mutation_type mutation,
             return 0;       // Allow conflicting transient mutations.
         else
         {
-            _delete_single_mutation_level(confl_mut, reason, true);
+            delete_single_mutation_level(confl_mut, reason, true);
             return 1;       // Nothing more to do.
         }
     }
@@ -2218,7 +2205,7 @@ mutation_type concretize_mut(mutation_type mut,
  *
  * @return whether a mutation was deleted.
  */
-bool _delete_single_mutation_level(mutation_type mutat,
+bool delete_single_mutation_level(mutation_type mutat,
                                    const string &reason,
                                    bool transient)
 {
@@ -2483,7 +2470,7 @@ bool delete_mutation(mutation_type which_mutation, const string &reason,
     const mutation_type mutat = _concretize_mut_deletion(which_mutation);
     if (mutat == NUM_MUTATIONS)
         return false;
-    return _delete_single_mutation_level(mutat, reason, false); // won't delete temp mutations
+    return delete_single_mutation_level(mutat, reason, false); // won't delete temp mutations
 }
 
 /*
@@ -2500,7 +2487,7 @@ bool delete_all_mutations(const string &reason)
     bool found = false;
     for (int i = 0; i < NUM_MUTATIONS; ++i)
     {
-        while (_delete_single_mutation_level(static_cast<mutation_type>(i), reason, true))
+        while (delete_single_mutation_level(static_cast<mutation_type>(i), reason, true))
             found = true;
     }
     ASSERT(you.attribute[ATTR_TEMP_MUTATIONS] == 0);
@@ -2521,10 +2508,10 @@ bool delete_all_temp_mutations(const string &reason)
     for (int i = 0; i < NUM_MUTATIONS; ++i)
     {
         while (you.has_temporary_mutation(static_cast<mutation_type>(i)))
-            if (_delete_single_mutation_level(static_cast<mutation_type>(i), reason, true))
+            if (delete_single_mutation_level(static_cast<mutation_type>(i), reason, true))
                 found = true;
     }
-    // the rest of the bookkeeping is handled in _delete_single_mutation_level
+    // the rest of the bookkeeping is handled in delete_single_mutation_level
     you.attribute[ATTR_TEMP_MUT_KILLS] = 0;
     return found;
 }
@@ -2561,7 +2548,7 @@ bool delete_temp_mutation()
                                         you.attribute[ATTR_TEMP_MUTATIONS]);
 #endif
 
-        if (_delete_single_mutation_level(mutat, "temp mutation expiry", true))
+        if (delete_single_mutation_level(mutat, "temp mutation expiry", true))
             return true;
     }
 

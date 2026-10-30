@@ -66,9 +66,9 @@ class GuideInventoryTest(unittest.TestCase):
             "utf-8", errors="replace"))
         self.assertEqual(
             hashlib.sha256(english.stdout).hexdigest(),
-            # Upstream changes to species/backgrounds and talisman names in
-            # crawl_manual.rst; unrest.pl itself preserves the output format.
-            "a88515f64608ea89beb0ea971a4d52309c56f7eb1a48d0bb446df2c1b15524d2")
+            # Upstream 0f1e910ab6 includes the Red/White Draconian typo
+            # corrections; unrest.pl itself and its output format are unchanged.
+            "f2d880b247a61f7939420109a17e79a238fca22683df2d4975e4ac9bf50039e2")
 
     def test_unrest_rejects_invalid_utf8(self):
         invalid = self._run_unrest(b"Valid heading\n\xff\n")

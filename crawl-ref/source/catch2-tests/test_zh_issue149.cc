@@ -24,6 +24,7 @@
 #include "format.h"
 #include "hiscores.h"
 #include "god-conduct.h"
+#include "god-abil.h"
 #include "item-prop.h"
 #include "item-name.h"
 #include "items.h"
@@ -46,10 +47,13 @@
 #include "spl-cast.h"
 #include "spl-util.h"
 #include "state.h"
+#include "status.h"
 #include "syscalls.h"
 #include "stringutil.h"
 #include "test_zh_fixture.h"
 #include "travel.h"
+#include "transform.h"
+#include "traps.h"
 #include "unicode.h"
 #include "unwind.h"
 
@@ -244,8 +248,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             CHECK(origin_desc(item) == expected);
             // The actual description consumer adds one sentence terminator.
             const string description = get_item_description(item);
-            CHECK(description.find(expected + ".") != string::npos);
-            CHECK(description.find(expected + "..") == string::npos);
+            const string terminator = language == lang_t::ZH ? "。" : ".";
+            CHECK(description.find(expected + terminator) != string::npos);
+            CHECK(description.find(expected + terminator + terminator) == string::npos);
             if (language == lang_t::ZH)
             {
                 CHECK(description.find(" off ") == string::npos);
@@ -265,6 +270,18 @@ TEST_CASE_METHOD(ZhTranslationFixture,
               ? "在地牢第3层你找到了它"
               : "You found it on level 3 of the Dungeon"));
         CHECK(item.orig_monnum == 0);
+        CHECK(item.orig_place == level_id(BRANCH_DUNGEON, 3));
+        item.orig_monnum = -IT_SRC_SHOP;
+        const string purchased = language == lang_t::ZH
+            ? "在地牢第3层你在商店中购买了它"
+            : "You bought it in a shop on level 3 of the Dungeon";
+        CHECK(origin_desc(item) == purchased);
+        const string terminator = language == lang_t::ZH ? "。" : ".";
+        const string purchased_description = get_item_description(item);
+        CHECK(purchased_description.find(purchased + terminator) != string::npos);
+        CHECK(purchased_description.find(purchased + terminator + terminator)
+              == string::npos);
+        CHECK(item.orig_monnum == -IT_SRC_SHOP);
         CHECK(item.orig_place == level_id(BRANCH_DUNGEON, 3));
         item.quantity = 2;
         CHECK_FALSE(origin_describable(item));
@@ -867,7 +884,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             REQUIRE(file.good());
             const string dump((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
             INFO(dump);
-            CHECK(dump.find(listed) != string::npos);
+            const string glyph_list = mpr_monster_list(past, true);
+            CHECK(glyph_list != listed);
+            CHECK(glyph_list.find(" (") != string::npos);
+            CHECK(dump.find(glyph_list) != string::npos);
             CHECK(monsters[0]->base_attitude == ATT_FRIENDLY);
             CHECK(monsters[1]->base_attitude == ATT_NEUTRAL);
             CHECK(monsters[0]->mname == "Xochitl");
@@ -1192,6 +1212,7 @@ TEST_CASE("trunk sync: new Lua bindings retain English identities",
           "[zh-translation][trunk-sync][lua-protocol]")
 {
     init_properties();
+    init_spell_descs();
     for (lang_t language : {lang_t::EN, lang_t::ZH})
     {
         TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
@@ -1218,5 +1239,312 @@ TEST_CASE("trunk sync: new Lua bindings retain English identities",
         REQUIRE(result == 0);
         CHECK(Options.language == language);
         CHECK(you.attribute[ATTR_CHANNELLED_SPELL] == SPELL_SEARING_RAY);
+    }
+}
+
+TEST_CASE("playtest: timed indomitable display preserves duration identity",
+          "[zh-translation][playtest-fixes][status]")
+{
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        issue149_player();
+        for (int duration : {100, 3350})
+        {
+            you.duration[DUR_INDOMITABLE] = duration;
+            status_info displayed;
+            REQUIRE(fill_status_info(DUR_INDOMITABLE, displayed));
+            CHECK(displayed.light_text
+                  == make_stringf(T_("Indom (%d)"), duration / 100));
+            CHECK(displayed.short_text
+                  == make_stringf(T_("indomitable (%d)"), duration / 100));
+            CHECK(displayed.db_key == "Indom");
+            CHECK(displayed.short_db_key
+                  == make_stringf("indomitable (%d)", duration / 100));
+            CHECK(duration_by_name("Indom") == DUR_INDOMITABLE);
+            CHECK(you.duration[DUR_INDOMITABLE] == duration);
+            const string light = displayed.light_text;
+            const string short_text = displayed.short_text;
+            if (language == lang_t::ZH)
+            {
+                CHECK(light != make_stringf("Indom (%d)", duration / 100));
+                CHECK(short_text != make_stringf("indomitable (%d)", duration / 100));
+                ScopedLangEn protocol_language;
+                status_info english;
+                REQUIRE(fill_status_info(DUR_INDOMITABLE, english));
+                CHECK(english.light_text == make_stringf("Indom (%d)", duration / 100));
+                CHECK(english.short_text == displayed.short_db_key);
+            }
+            i18n_cache_clear();
+            CHECK(displayed.light_text == light);
+            CHECK(displayed.short_text == short_text);
+            CHECK(Options.language == language);
+        }
+        you.duration[DUR_INDOMITABLE] = 0;
+        status_info inactive;
+        CHECK_FALSE(fill_status_info(DUR_INDOMITABLE, inactive));
+    }
+}
+
+TEST_CASE("playtest: autofight formats localized caught states in production Lua",
+          "[zh-translation][playtest-fixes][autofight]")
+{
+    unwind_var<player> restore_player(you);
+    CLua lua;
+    lua.init_libraries();
+    REQUIRE(lua.execstring("chk_lua_option = {}") == 0);
+    REQUIRE(lua.execfile("clua/autofight.lua", true) == 0);
+    REQUIRE(lua.execstring(
+        "caught_messages = {}; "
+        "crawl.mpr = function(message) table.insert(caught_messages, message) end; "
+        "function verify_caught(expected, held) "
+        "  assert(you.caught() == held); caught_messages = {}; "
+        "  assert(autofight_check_preconditions(true) == false); "
+        "  assert(#caught_messages == 1 and caught_messages[1] == expected); "
+        "  assert(autofight_check_preconditions(false) == true); "
+        "  AUTOFIGHT_CAUGHT = true; "
+        "  assert(autofight_check_preconditions(true) == true); "
+        "  AUTOFIGHT_CAUGHT = false; assert(#caught_messages == 1); "
+        "end") == 0);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        issue149_player();
+        for (bool net : {false, true})
+        {
+            you.attribute[ATTR_HELD] = 1;
+            if (net)
+                you.props[NET_IS_REAL_KEY] = true;
+            else
+                you.props.erase(NET_IS_REAL_KEY);
+            const string held = held_status(&you);
+            const string expected = make_stringf(T_("You are %s!"), held.c_str());
+            if (language == lang_t::ZH)
+                CHECK(expected != "You are " + held + "!");
+            INFO(lua.error);
+            REQUIRE(lua.callfn("verify_caught", "ss", expected.c_str(), held.c_str()));
+            CHECK(you.caught());
+            CHECK(you.caught_by() == (net ? CAUGHT_NET : CAUGHT_WEB));
+            CHECK(Options.language == language);
+        }
+        you.attribute[ATTR_HELD] = 0;
+        REQUIRE(lua.execstring(
+            "caught_messages = {}; assert(you.caught() == nil); "
+            "assert(autofight_check_preconditions(true) == true); "
+            "assert(#caught_messages == 0)") == 0);
+    }
+}
+
+TEST_CASE("playtest: Trogs Hand activation localizes its full message",
+          "[zh-translation][playtest-fixes][trog]")
+{
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> started(crawl_state.game_started, false);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        issue149_player();
+        const string expected = string(T_("Your skin crawls.")) + "\n"
+                                + T_("You feel resolute.") + "\n";
+        msgwin_temporary_mode temporary;
+        unwinder clear_messages([]() { msgwin_clear_temporary(); });
+        msg::tee capture;
+        trog_do_trogs_hand(30);
+        const string emitted = formatted_string::parse_string(capture.get_store()).tostring();
+        CHECK(emitted == expected);
+        if (language == lang_t::ZH)
+            CHECK(emitted.find("Your skin crawls.") == string::npos);
+        CHECK(you.duration[DUR_TROGS_HAND] > 0);
+        CHECK(you.duration[DUR_TROGS_HAND] <= 100 * BASELINE_DELAY);
+        CHECK(Options.language == language);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "playtest: piety rank notes reorder complete display text",
+                 "[zh-translation][playtest-fixes][piety-note]")
+{
+    unwind_var<player> restore_player(you);
+    issue149_player();
+    for (god_type god : {GOD_TROG, GOD_USKAYAW})
+        for (int rank : {1, 3, 6})
+        {
+            const Note note(NOTE_PIETY_RANK, god, rank);
+            const string stars(rank, '*');
+            const string chinese = "对" + god_name(god) + "的虔诚值达到了"
+                                   + stars + "。";
+            CHECK(note.describe(false, false) == chinese);
+            {
+                EnTranslationFixture english;
+                CHECK(note.describe(false, false)
+                      == "Reached " + stars + " piety under " + god_name(god));
+            }
+            CHECK(note.describe(false, false) == chinese);
+            // The saved note retains enum/rank identities and no localized name.
+            CHECK(note.type == NOTE_PIETY_RANK);
+            CHECK(note.first == god);
+            CHECK(note.second == rank);
+            CHECK(note.name.empty());
+            CHECK(note.desc.empty());
+        }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "playtest: maximum resource notes localize whole sentences",
+                 "[zh-translation][playtest-fixes][resource-note]")
+{
+    unwind_var<player> restore_player(you);
+    issue149_player();
+    for (NOTE_TYPES type : {NOTE_MAXHP_CHANGE, NOTE_MAXMP_CHANGE})
+        for (int maximum : {1, 25, 123})
+        {
+            const Note note(type, maximum);
+            const string chinese = (type == NOTE_MAXHP_CHANGE
+                ? "生命上限达到了" : "法力上限达到了") + to_string(maximum) + "。";
+            CHECK(note.describe(false, false) == chinese);
+            {
+                EnTranslationFixture english;
+                CHECK(note.describe(false, false) == "Reached " + to_string(maximum)
+                      + (type == NOTE_MAXHP_CHANGE ? " max health" : " max magic points"));
+            }
+            CHECK(note.describe(false, false) == chinese);
+            CHECK(note.type == type);
+            CHECK(note.first == maximum);
+            CHECK(note.second == 0);
+            CHECK(note.name.empty());
+            CHECK(note.desc.empty());
+        }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "playtest: hive talisman scaling table translates dynamic labels",
+                 "[zh-translation][playtest-fixes][form-table]")
+{
+    // Production startup establishes a UTF-8 CTYPE; Catch's minimal main does
+    // not. The real column composer needs Unicode display-cell widths.
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() {
+        setlocale(LC_CTYPE, saved_locale.c_str());
+    });
+    REQUIRE(ensure_utf8_ctype());
+    init_properties();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> game_started(crawl_state.game_started, false);
+    issue149_player();
+    item_def item;
+    item.base_type = OBJ_TALISMANS;
+    item.sub_type = TALISMAN_HIVE;
+    item.quantity = 1;
+    item.flags = ISFLAG_IDENTIFIED;
+    const string chinese = get_item_description(item);
+    CAPTURE(chinese);
+    CHECK(chinese.find("法力再生") != string::npos);
+    CHECK(chinese.find("蜜蜂数") != string::npos);
+    CHECK(chinese.find("MP Regen") == string::npos);
+    CHECK(chinese.find("# of Bees") == string::npos);
+    {
+        EnTranslationFixture english;
+        const string original = get_item_description(item);
+        CHECK(original.find("MP Regen") != string::npos);
+        CHECK(original.find("# of Bees") != string::npos);
+    }
+    CHECK(get_item_description(item) == chinese);
+    CHECK(item.sub_type == TALISMAN_HIVE);
+    CHECK(you.form == transformation::none);
+}
+
+TEST_CASE("playtest: blocked autofire and failed targets translate production Lua messages",
+          "[zh-translation][playtest-fixes][autofight]")
+{
+    CLua lua;
+    lua.init_libraries();
+    REQUIRE(lua.execstring("chk_lua_option = {}") == 0);
+    REQUIRE(lua.execfile("clua/autofight.lua", true) == 0);
+    // Use the real attack/get_target/attack_fire control flow. Perception and
+    // aiming are deterministic doubles: one visible target and a blocked shot.
+    // This does not simulate monster placement, beam tracing or a game turn.
+    REQUIRE(lua.execstring(R"lua(
+        local ranged = true
+        local aims = 0
+        local messages = {}
+        you = {
+            hp = function() return 100, 100 end,
+            confused = function() return false end,
+            caught = function() return nil end,
+            los = function() return 2 end,
+            reach_range = function() return 1 end,
+            see_cell_no_trans = function() return true end,
+            see_cell_solid_see = function() return false end,
+            has_good_stab = function() return false end,
+        }
+        items = {equipped_at = function()
+            return {is_ranged = ranged, is_melded = false}
+        end}
+        local target = {
+            name = function() return "yak" end,
+            is_damage_immune = function() return false end,
+            is_safe = function() return false end,
+            is_constricting_you = function() return false end,
+            stabbability = function() return 0 end,
+            damage_level = function() return 0 end,
+            threat = function() return 1 end,
+            is = function() return false end,
+        }
+        monster = {get_monster_at = function() return target end}
+        autofight = {
+            is_piercing = function() return false end,
+            is_candidate_for_attack = function(x, y) return x == 2 and y == 0 end,
+            best_aim = function() aims = aims + 1; return 0, 0 end,
+        }
+        crawl.mpr = function(message) table.insert(messages, message) end
+        crawl.do_commands = function() error("unexpected action") end
+        crawl.do_targeted_command = function() error("unexpected shot") end
+        function verify_unreachable(expected)
+            for _, use_ranged in ipairs({true, false}) do
+                ranged = use_ranged
+                AUTOFIGHT_FORCE_FIRE = not ranged
+                for i = 1, 3 do
+                    aims = 0
+                    messages = {}
+                    attack(true, true)
+                    assert(#messages == 1 and messages[1] == expected)
+                    assert(aims == (ranged and 1 or 0))
+                end
+            end
+        end
+    )lua") == 0);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        const char* expected = language == lang_t::ZH
+            ? "视线内没有可到达的目标！" : "No reachable target in view!";
+        INFO(lua.error);
+        REQUIRE(lua.callfn("verify_unreachable", "s", expected));
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Trunk starting skill notes localize display and preserve identity",
+                 "[zh-translation][trunk-sync][notes]")
+{
+    unwind_var<player> restore_player(you);
+    issue149_player();
+    const Note note(NOTE_START_SKILL, SK_FIGHTING, 3);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        CHECK(note.describe(false, false, true)
+              == (language == lang_t::ZH ? "初始格斗技能等级为3。"
+                                        : "Started with skill level 3 in Fighting"));
+        CHECK(note.type == NOTE_START_SKILL);
+        CHECK(note.first == SK_FIGHTING);
+        CHECK(note.second == 3);
+        for (bool enabled : {false, true})
+        {
+            unwind_var<bool> visible(Options.note_starting_skills, enabled);
+            CHECK(note.hidden() == !enabled);
+        }
     }
 }

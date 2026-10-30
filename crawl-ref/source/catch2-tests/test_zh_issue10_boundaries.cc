@@ -2,6 +2,7 @@
 
 #include "AppHdr.h"
 
+#include "act-iter.h"
 #include "areas.h"
 #include "cloud.h"
 #include "database.h"
@@ -12,10 +13,12 @@
 #include "format.h"
 #include "i18n.h"
 #include "item-prop.h"
+#include "item-status-flag-type.h"
 #include "item-use.h"
 #include "items.h"
 #include "losglobal.h"
 #include "message.h"
+#include "mon-death.h"
 #include "mon-info.h"
 #include "mon-place.h"
 #include "mon-util.h"
@@ -23,6 +26,9 @@
 #include "options.h"
 #include "player.h"
 #include "player-equip.h"
+#include "random.h"
+#include "ranged-attack.h"
+#include "spl-monench.h"
 #include "spl-selfench.h"
 #include "spl-summoning.h"
 #include "spl-util.h"
@@ -309,6 +315,68 @@ TEST_CASE("issue 10 blink escapes use contextual movement at the real sink",
         CHECK(announcement.find(movement + "s") == string::npos);
 }
 
+TEST_CASE("playtest: ordinary constriction escapes use complete display sentences",
+          "[zh-translation][playtest-fixes][constriction]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const bool player_victim = GENERATE(false, true);
+    const constrict_type type = GENERATE(CONSTRICT_MELEE, CONSTRICT_BVC,
+                                         CONSTRICT_ROOTS, CONSTRICT_ENTANGLE);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *constrictor = world.place(MONS_BALL_PYTHON, coord_def(21, 21));
+    actor *victim = player_victim ? static_cast<actor *>(&you)
+        : world.place(MONS_ORC, coord_def(20, 21));
+    constrictor->start_constricting(*victim, type);
+    REQUIRE(victim->is_constricted());
+    const string attacker = type == CONSTRICT_BVC ? T_("the zombie hands")
+        : type == CONSTRICT_ROOTS ? T_("the grasping roots")
+        : type == CONSTRICT_ENTANGLE ? T_("the vines")
+        : constrictor->name(DESC_THE);
+    const string name = victim->name(DESC_THE);
+    const mid_t id = victim->mid;
+    const string expected = player_victim
+        ? make_stringf(T_("You break free of %s!"), attacker.c_str())
+        : make_stringf(T_("%s breaks free of %s!"), name.c_str(), attacker.c_str());
+    const string escaped = observe_message([&] { victim->stop_being_constricted(); });
+    CHECK(escaped == expected + "\n");
+    if (language == lang_t::EN)
+    {
+        CHECK(escaped == (player_victim ? "You break" : name + " breaks")
+                         + " free of " + attacker + "!\n");
+    }
+    else
+        CHECK(escaped.find("break") == string::npos);
+    CHECK_FALSE(victim->is_constricted());
+    CHECK_FALSE(constrictor->is_constricting());
+    CHECK(victim->mid == id);
+    CHECK(victim->name(DESC_THE) == name);
+}
+
+TEST_CASE("playtest: player escape movement retains its grammar context",
+          "[zh-translation][playtest-fixes][constriction]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const char *verb = GENERATE("blink", "hop", "leap");
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *constrictor = world.place(MONS_BALL_PYTHON, coord_def(21, 21));
+    constrictor->start_constricting(you, CONSTRICT_MELEE);
+    REQUIRE(you.is_constricted());
+    const string movement = language == lang_t::ZH
+        ? translated_move_phrase(verb, move_phrase_context::bare) : verb;
+    const string player_name = you.name(DESC_THE);
+    const string attacker = constrictor->name(DESC_THE);
+    const string expected = make_stringf(T_("%s %s free of %s!"),
+        player_name.c_str(), movement.c_str(), attacker.c_str());
+    const string escaped = observe_message([&] {
+        you.stop_being_constricted(false, verb);
+    });
+    CHECK(escaped == expected + "\n");
+    CHECK_FALSE(you.is_constricted());
+    CHECK_FALSE(constrictor->is_constricting());
+}
+
 TEST_CASE("issue 10 monster target descriptions preserve direction and list shape",
           "[zh-translation][issue10]")
 {
@@ -450,4 +518,305 @@ TEST_CASE("issue 10 Xom cleaving describes both weapon variants completely",
         CHECK(message.find(item.name(DESC_YOUR) + suffix) != string::npos);
     }
     CHECK(you.duration[DUR_CLEAVE] > 0);
+}
+
+TEST_CASE("monster wand drops localize articles only at the death message sink",
+          "[zh-translation][playtest-fixes][wand-drop]")
+{
+    const monster_type type = GENERATE(MONS_ELEIONOMA, MONS_FENSTRIDER_WITCH);
+    issue10_world world;
+    const coord_def pos(20, 21);
+    unwind_var<int> saved_grid(env.igrid(pos), NON_ITEM);
+    const string identity = mons_type_name_en(type, DESC_PLAIN);
+    item_def english_drop;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        rng::subgenerator scoped_rng(0x221023ddULL, 0x221023eeULL);
+        REQUIRE(you.see_cell(pos));
+        string message = observe_message([&] {
+            maybe_drop_monster_organ(type, type, pos, false);
+        });
+        trim_string_right(message);
+        const int index = env.igrid(pos);
+        REQUIRE(index != NON_ITEM);
+        unwinder cleanup([index] { destroy_item(index); });
+        const item_def &drop = env.item[index];
+        CHECK(drop.base_type == OBJ_WANDS);
+        CHECK(drop.quantity == 1);
+        CHECK(drop.plus > 0);
+        CHECK((drop.flags & ISFLAG_IDENTIFIED) == ISFLAG_IDENTIFIED);
+        CHECK(drop.link == NON_ITEM);
+        CHECK(mons_type_name_en(type, DESC_PLAIN) == identity);
+
+        // The production message precedes identification of this item. Recover
+        // that display state from the actual drop, rather than guessing its
+        // randomly chosen type or appearance.
+        item_def unidentified = drop;
+        unidentified.flags &= ~ISFLAG_IDENTIFIED;
+        const string subject = mons_type_name(type, language == lang_t::ZH
+                                                    ? DESC_PLAIN : DESC_A);
+        const string expected = make_stringf(T_("%s's bones magically twist into %s."),
+                                            subject.c_str(),
+                                            unidentified.name(DESC_A).c_str());
+        INFO("actual death message: " << message);
+        CHECK(message == expected);
+        if (language == lang_t::EN)
+        {
+            english_drop = drop;
+            CHECK((message.find("an " + identity + "'s bones") == 0
+                   || message.find("a " + identity + "'s bones") == 0));
+        }
+        else
+        {
+            // Reject the original mixed-language a/an prefix independently
+            // of the complete-template comparison above.
+            CHECK(message.find(subject) == 0);
+            CHECK(message.find("a ") != 0);
+            CHECK(message.find("an ") != 0);
+            CHECK(drop.sub_type == english_drop.sub_type);
+            CHECK(drop.plus == english_drop.plus);
+            CHECK(drop.quantity == english_drop.quantity);
+            CHECK(drop.flags == english_drop.flags);
+            CHECK(drop.rnd == english_drop.rnd);
+        }
+    }
+}
+
+TEST_CASE("family: real player escape attempts consume every constrictor possessive once",
+          "[zh-translation][family-fixes][constriction]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const constrict_type type = GENERATE(CONSTRICT_MELEE, CONSTRICT_BVC,
+                                         CONSTRICT_ROOTS, CONSTRICT_ENTANGLE);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *constrictor = world.place(MONS_BALL_PYTHON, coord_def(21, 21));
+    rng::subgenerator scoped_rng(20261025, 7);
+    bool succeeded = false;
+    bool failed = false;
+    for (int trial = 0; trial < 40 && !(succeeded && failed); ++trial)
+    {
+        you.duration[DUR_CONSTRICTION_IMMUNITY] = 0;
+        constrictor->start_constricting(you, type);
+        REQUIRE(you.is_constricted());
+        you.escape_attempts = 0;
+        bool escaped = false;
+        const string text = observe_message([&] { escaped = you.attempt_escape(); });
+        INFO(text);
+        succeeded |= escaped;
+        failed |= !escaped;
+        CHECK(you.is_constricted() == !escaped);
+        if (language == lang_t::ZH)
+        {
+            CHECK(text.find("的的") == string::npos);
+            CHECK(text.find("的对") == string::npos);
+            CHECK(text.find(escaped ? "掌控" : "束缚减弱") != string::npos);
+        }
+        else
+        {
+            CHECK(text.find("'s's") == string::npos);
+            CHECK(text.find(escaped ? "You break free of" : "hold on you weakens") != string::npos);
+        }
+        if (!escaped)
+            you.stop_being_constricted(true);
+    }
+    CHECK(succeeded);
+    CHECK(failed);
+}
+
+TEST_CASE("family: real clockwork bee target and dormancy messages keep owner grammar",
+          "[zh-translation][family-fixes][bee]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const bool player_owner = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *target = world.place(MONS_ORC, coord_def(21, 21));
+    monster *bee = world.place(MONS_CLOCKWORK_BEE, coord_def(20, 21));
+    bee->base_attitude = ATT_FRIENDLY;
+    bee->summoner = player_owner ? MID_PLAYER : MID_NOBODY;
+    bee->props[CLOCKWORK_BEE_TARGET].get_int() = target->mid;
+    const string targeted = observe_message([&] { clockwork_bee_pick_new_target(*bee); });
+    INFO(targeted);
+    CHECK(bee->props[CLOCKWORK_BEE_TARGET].get_int() == target->mid);
+    CHECK(bee->has_ench(ENCH_HAUNTING));
+    if (language == lang_t::ZH)
+    {
+        CHECK(targeted.find("的的") == string::npos);
+        CHECK(targeted.find(player_owner ? "你的发条蜜蜂" : "某人的发条蜜蜂") != string::npos);
+    }
+    else
+    {
+        CHECK(targeted.find("your's") == string::npos);
+        CHECK(targeted.find("someone's's") == string::npos);
+    }
+    bee->add_ench(mon_enchant(ENCH_SUMMON_TIMER, &you, 300));
+    const string dormant = observe_message([&] { clockwork_bee_go_dormant(*bee); });
+    INFO(dormant);
+    CHECK(bee->type == MONS_CLOCKWORK_BEE_INACTIVE);
+    CHECK(bee->get_ench(ENCH_SUMMON_TIMER).duration <= 120);
+    if (language == lang_t::ZH)
+    {
+        CHECK(dormant.find("Your") == string::npos);
+        CHECK(dormant.find("The") == string::npos);
+        CHECK(dormant.find("的的") == string::npos);
+        CHECK(dormant.find("发条蜜蜂") != string::npos);
+    }
+    else
+        CHECK(dormant.find(player_owner ? "Your clockwork bee" : "The clockwork bee") != string::npos);
+}
+
+TEST_CASE("family: real monster bee launch and interrupted winding use a subject and one owner",
+          "[zh-translation][family-fixes][bee]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *caster = world.place(MONS_ORC_WIZARD, coord_def(21, 21));
+    caster->props[CLOCKWORK_BEE_TARGET].get_int() = MID_PLAYER;
+    const string launched = observe_message([&] { launch_clockwork_bee(*caster); });
+    INFO(launched);
+    monster *bee = nullptr;
+    for (monster_iterator mi; mi; ++mi)
+        if (mi->type == MONS_CLOCKWORK_BEE && mi->summoner == caster->mid)
+        {
+            bee = *mi;
+            world.monsters.push_back(bee);
+        }
+    REQUIRE(bee);
+    CHECK(bee->props[CLOCKWORK_BEE_TARGET].get_int() == MID_PLAYER);
+    if (language == lang_t::ZH)
+    {
+        CHECK(launched.find("的的") == string::npos);
+        CHECK(launched.find("发条蜜蜂") != string::npos);
+    }
+    else
+        CHECK(launched.find("clockwork bee launches itself at you") != string::npos);
+
+    caster->add_ench(mon_enchant(ENCH_CLOCKWORK_BEE_CAST, caster, 100));
+    caster->behaviour = BEH_SLEEP;
+    const string interrupted = observe_message([&] { caster->apply_enchantments(); });
+    INFO(interrupted);
+    CHECK_FALSE(caster->has_ench(ENCH_CLOCKWORK_BEE_CAST));
+    if (language == lang_t::ZH)
+    {
+        CHECK(interrupted.find("的停止") == string::npos);
+        CHECK(interrupted.find("的的") == string::npos);
+        CHECK(interrupted.find("停止") != string::npos);
+    }
+    else
+    {
+        CHECK(interrupted.find("wizard stops winding") != string::npos);
+        CHECK(interrupted.find("wizard's stops") == string::npos);
+    }
+}
+
+
+TEST_CASE("playtest: zero-damage roots keep the damage suffix localized",
+          "[zh-translation][playtest-followups][constriction]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *victim = world.place(MONS_ORC, coord_def(21, 20));
+    you.props[FASTROOT_POWER_KEY] = 10;
+    you.start_constricting(*victim, CONSTRICT_ROOTS);
+    REQUIRE(victim->is_constricted());
+    REQUIRE_FALSE(victim->has_invalid_constrictor());
+    // Force only the final timescale to zero; execute the real damage and
+    // message producer rather than reconstructing its template in the test.
+    you.time_taken = 0;
+    const int hp = victim->hit_points;
+    const string message = observe_message([&] { you.handle_constriction(); });
+    CHECK(victim->hit_points == hp);
+    CHECK(message.find(string(T_(" but do no damage")) + T_(".")) != string::npos);
+    if (language == lang_t::ZH)
+    {
+        CHECK(message.find(" but do no damage") == string::npos);
+        CHECK(message.find("根须") != string::npos);
+    }
+    else
+        CHECK(message.find(" but do no damage.") != string::npos);
+    victim->stop_being_constricted(true);
+}
+
+namespace
+{
+struct blocked_ranged_probe : ranged_attack
+{
+    using ranged_attack::ranged_attack;
+    // Public base interface retains virtual dispatch to the production
+    // ranged override, without simulating accuracy or shield-block RNG.
+    using attack::handle_phase_blocked;
+};
+}
+
+TEST_CASE("playtest: reflected blocks place shield method before the Chinese action",
+          "[zh-translation][playtest-followups][reflection]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const int protection = GENERATE(0, 1, 2, 3);
+    CAPTURE(language, protection);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *shooter = world.place(MONS_ORC, coord_def(21, 20));
+    item_def projectile;
+    projectile.base_type = OBJ_MISSILES;
+    projectile.sub_type = MI_STONE;
+    projectile.quantity = 1;
+    projectile.rnd = 1;
+    projectile.pos = coord_def(-1, -1);
+    if (protection == 1 || protection == 3)
+    {
+        item_def &item = you.inv[0];
+        item.base_type = protection == 1 ? OBJ_JEWELLERY : OBJ_ARMOUR;
+        item.sub_type = protection == 1 ? static_cast<int>(AMU_REFLECTION)
+                                        : static_cast<int>(ARM_BUCKLER);
+        item.brand = protection == 1 ? 0 : SPARM_REFLECTION;
+        item.quantity = 1;
+        item.rnd = 1;
+        item.link = 0;
+        item.pos = ITEM_IN_INVENTORY;
+        item.flags = ISFLAG_IDENTIFIED;
+        you.equipment.add(item, protection == 1 ? SLOT_AMULET : SLOT_OFFHAND);
+        you.equipment.update();
+    }
+    if (protection == 2)
+        you.duration[DUR_DIVINE_SHIELD] = 10;
+    REQUIRE(you.reflection() == (protection != 0));
+    blocked_ranged_probe shot(shooter, &you, &projectile);
+    shot.needs_message = true;
+    const string subject = shot.defender_name(false);
+    const string proj = shot.projectile_name();
+    string method;
+    if (protection == 1)
+        method = T_(" with an invisible shield");
+    else if (protection == 2)
+        method = T_(" with a divine shield");
+    else if (protection == 3)
+        method = T_(" with ") + you.pronoun(PRONOUN_POSSESSIVE)
+                 + " " + you.shield()->name(DESC_PLAIN);
+    const int hp = you.hp;
+    const string message = observe_message([&] { shot.handle_phase_blocked(); });
+    INFO(message);
+    CHECK(you.hp == hp);
+    CHECK(shot.damage_done == 0);
+    CHECK(shot.reflected == (protection != 0));
+    CHECK(shot.range_used == (protection ? 0 : BEAM_STOP));
+    if (language == lang_t::EN)
+    {
+        const string ending = protection ? "... and reflect it back!" : ".";
+        CHECK(message == subject + " block the " + proj + method + ending + "\n");
+    }
+    else
+    {
+        const string verb = you.verb_for_display(NC_("verb", "block"), "verb");
+        CHECK(message.find(verb) != string::npos);
+        CHECK(message.find(proj) != string::npos);
+        if (protection)
+            CHECK(message.find(method) < message.find(verb));
+        CHECK(message.find(verb) < message.find(proj));
+        CHECK(message.find(" block ") == string::npos);
+    }
 }

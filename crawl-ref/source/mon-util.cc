@@ -3188,7 +3188,10 @@ static string _mons_type_name(monster_type mc, description_level_type desc,
 {
     string result;
 
-    if (!mons_is_unique(mc))
+    // Canonical accessors retain English articles; display names follow the UI.
+    const bool english_grammar = canonical_english
+                                 || Options.language != lang_t::ZH;
+    if (english_grammar && !mons_is_unique(mc))
     {
         switch (desc)
         {
@@ -4600,13 +4603,13 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
         if (feat_is_solid(feat) || feat >= NUM_FEATURES)
             msg = replace_all(msg, "@surface@", "buggy surface");
         else if (feat == DNGN_LAVA)
-            msg = replace_all(msg, "@surface@", "lava");
+            msg = replace_all(msg, "@surface@", C_("monster speech surface", "lava"));
         else if (feat_is_water(feat))
-            msg = replace_all(msg, "@surface@", "water");
+            msg = replace_all(msg, "@surface@", C_("monster speech surface", "water"));
         else if (feat_is_altar(feat))
-            msg = replace_all(msg, "@surface@", "altar");
+            msg = replace_all(msg, "@surface@", C_("monster speech surface", "altar"));
         else
-            msg = replace_all(msg, "@surface@", "ground");
+            msg = replace_all(msg, "@surface@", C_("monster speech surface", "ground"));
 
         msg = replace_all(msg, "@feature@", raw_feature_description(mons.pos()));
     }
@@ -4813,39 +4816,39 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
 
     static const char * sound_list[] =
     {
-        "says",         // actually S_SILENT
-        "shouts",
-        "barks",
-        "howls",
-        "shouts",
-        "roars",
-        "screams",
-        "bellows",
-        "bleats",
-        "trumpets",
-        "screeches",
-        "buzzes",
-        "moans",
-        "gurgles",
-        "croaks",
-        "growls",
-        "hisses",
-        "skitters",
-        "skitters faintly",
-        "sneers",       // S_DEMON_TAUNT
-        "says",         // S_CHERUB -- they just speak normally.
-        "squeals",
-        "roars",
-        "rustles",      // dubious
-        "squeaks",
-        "buggily says", // NUM_SHOUTS
-        "breathes",     // S_VERY_SOFT
-        "whispers",     // S_SOFT
-        "says",         // S_NORMAL_VOLUME
-        "shouts",       // S_LOUD
-        "screams",      // S_VERY_LOUD
-        "caws",
-        "laughs",
+        N_("says"),         // actually S_SILENT
+        N_("shouts"),
+        N_("barks"),
+        N_("howls"),
+        N_("shouts"),
+        N_("roars"),
+        N_("screams"),
+        N_("bellows"),
+        N_("bleats"),
+        N_("trumpets"),
+        N_("screeches"),
+        N_("buzzes"),
+        N_("moans"),
+        N_("gurgles"),
+        N_("croaks"),
+        N_("growls"),
+        N_("hisses"),
+        N_("skitters"),
+        N_("skitters faintly"),
+        N_("sneers"),       // S_DEMON_TAUNT
+        N_("says"),         // S_CHERUB -- they just speak normally.
+        N_("squeals"),
+        N_("roars"),
+        N_("rustles"),      // dubious
+        N_("squeaks"),
+        N_("buggily says"), // NUM_SHOUTS
+        N_("breathes"),     // S_VERY_SOFT
+        N_("whispers"),     // S_SOFT
+        N_("says"),         // S_NORMAL_VOLUME
+        N_("shouts"),       // S_LOUD
+        N_("screams"),      // S_VERY_LOUD
+        N_("caws"),
+        N_("laughs"),
     };
     COMPILE_CHECK(ARRAYSZ(sound_list) == NUM_LOUDNESS);
 
@@ -4855,7 +4858,7 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
         msg = replace_all(msg, "@says@", "buggily says");
     }
     else
-        msg = replace_all(msg, "@says@", sound_list[s_type]);
+        msg = replace_all(msg, "@says@", T_(sound_list[s_type]));
 
     msg = maybe_capitalise_substring(msg);
 

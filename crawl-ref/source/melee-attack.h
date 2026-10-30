@@ -87,6 +87,9 @@ public:
     bool did_attack_hostiles() const;
 
 private:
+    // Owned complete high-damage clause; fragments cannot express result grammar.
+    string hit_format;
+
     /* Attack phases */
     bool handle_phase_attempted() override;
     void handle_phase_blocked() override;

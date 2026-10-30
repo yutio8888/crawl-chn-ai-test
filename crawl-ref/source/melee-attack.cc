@@ -965,7 +965,16 @@ bool melee_attack::handle_phase_hit()
                     : Options.language == lang_t::ZH
                       ? monster_verb
                       : attacker->conj_verb(monster_verb);
-                mprf(T_(is_player
+                if (!is_player && Options.language == lang_t::ZH
+                    && attk_type == AT_SPORE)
+                {
+                    mprf_p(C_("spore attack",
+                              "%1$s releases spores at %2$s but does no damage."),
+                           attacker->name(DESC_THE).c_str(),
+                           defender_name(true).c_str());
+                }
+                else
+                    mprf(T_(is_player
                         ? "%s %s %s but do no damage."
                         : "%s %s %s but does no damage."),
                      attacker->name(DESC_THE).c_str(),
@@ -2796,7 +2805,8 @@ bool melee_attack::player_aux_apply(unarmed_attack_type atk)
 
                 mprf(T_("You drain %s %s."),
                      defender->as_monster()->pronoun(PRONOUN_POSSESSIVE).c_str(),
-                     spell_user ? "magic" : "power");
+                     spell_user ? C_("drained resource", "magic")
+                                : C_("drained resource", "power"));
 
                 if (you.magic_points != you.max_magic_points
                     && !defender->is_summoned()
@@ -2956,6 +2966,7 @@ void melee_attack::set_attack_verb(int damage)
     if (!attacker->is_player())
         return;
 
+    hit_format.clear();
     int weap_type = WPN_UNKNOWN;
 
     if (Options.has_fake_lang(flang_t::grunt))
@@ -2984,6 +2995,7 @@ void melee_attack::set_attack_verb(int damage)
             && target_debuff_count() > 0)
         {
             verb_degree = T_("balefully");
+            hit_format.clear();
         }
         return;
     }
@@ -3007,33 +3019,41 @@ void melee_attack::set_attack_verb(int damage)
             {
                 attack_verb = T_("spit");
                 verb_degree = T_("like the proverbial pig");
+                hit_format = C_("melee hit", "You spit %1$s like the proverbial pig%2$s%3$s%4$s%5$s");
             }
             else if (defender_genus == MONS_CRAB
                      && Options.has_fake_lang(flang_t::grunt))
             {
                 attack_verb = T_("attack");
                 verb_degree = T_("'s weak point");
+                hit_format = C_("melee hit", "You attack %1$s's weak point%2$s%3$s%4$s%5$s");
             }
             else
             {
-                static const char * const pierce_desc[][2] =
+                static const char * const pierce_desc[][3] =
                 {
-                    {NC_("attack verb", "spit"), N_("like a pig")},
-                    {N_("skewer"), N_("like a kebab")},
-                    {N_("stick"), N_("like a pincushion")},
-                    {N_("perforate"), N_("like a sieve")}
+                    {NC_("attack verb", "spit"), N_("like a pig"),
+                     NC_("melee hit", "You spit %1$s like a pig%2$s%3$s%4$s%5$s")},
+                    {N_("skewer"), N_("like a kebab"),
+                     NC_("melee hit", "You skewer %1$s like a kebab%2$s%3$s%4$s%5$s")},
+                    {N_("stick"), N_("like a pincushion"),
+                     NC_("melee hit", "You stick %1$s like a pincushion%2$s%3$s%4$s%5$s")},
+                    {N_("perforate"), N_("like a sieve"),
+                     NC_("melee hit", "You perforate %1$s like a sieve%2$s%3$s%4$s%5$s")}
                 };
                 const int choice = random2(ARRAYSZ(pierce_desc));
                 attack_verb = choice == 0
                               ? C_("attack verb", pierce_desc[choice][0])
                               : T_(pierce_desc[choice][0]);
                 verb_degree = T_(pierce_desc[choice][1]);
+                hit_format = C_("melee hit", pierce_desc[choice][2]);
             }
         }
         if (you.weapon() && you.weapon()->sub_type == WPN_ATHAME
             && target_debuff_count() > 0)
         {
             verb_degree = T_("balefully");
+            hit_format.clear();
         }
         break;
 
@@ -3046,16 +3066,19 @@ void melee_attack::set_attack_verb(int damage)
         {
             attack_verb = T_("dice");
             verb_degree = T_("like an onion");
+            hit_format = C_("melee hit", "You dice %1$s like an onion%2$s%3$s%4$s%5$s");
         }
         else if (defender_genus == MONS_DRAUGR)
         {
             attack_verb = T_("fracture");
             verb_degree = T_("into splinters");
+            hit_format = C_("melee hit", "You fracture %1$s into splinters%2$s%3$s%4$s%5$s");
         }
         else if (defender_genus == MONS_HOG)
         {
             attack_verb = T_("carve");
             verb_degree = T_("like the proverbial ham");
+            hit_format = C_("melee hit", "You carve %1$s like the proverbial ham%2$s%3$s%4$s%5$s");
         }
         else if ((defender_genus == MONS_TENGU
                   || get_mon_shape(defender_genus) == MON_SHAPE_BIRD)
@@ -3063,6 +3086,7 @@ void melee_attack::set_attack_verb(int damage)
         {
             attack_verb = T_("carve");
             verb_degree = T_("like a turkey");
+            hit_format = C_("melee hit", "You carve %1$s like a turkey%2$s%3$s%4$s%5$s");
         }
         else if ((defender_genus == MONS_YAK || defender_genus == MONS_YAKTAUR)
                  && Options.has_fake_lang(flang_t::grunt))
@@ -3071,19 +3095,25 @@ void melee_attack::set_attack_verb(int damage)
         }
         else
         {
-            static const char * const slice_desc[][2] =
+            static const char * const slice_desc[][3] =
             {
-                {NC_("attack verb", "open"), N_("like a pillowcase")},
-                {N_("slice"), N_("like a ripe choko")},
-                {N_("cut"), N_("into ribbons")},
-                {N_("carve"), N_("like a ham")},
-                {N_("chop"), N_("into pieces")}
+                {NC_("attack verb", "open"), N_("like a pillowcase"),
+                 NC_("melee hit", "You open %1$s like a pillowcase%2$s%3$s%4$s%5$s")},
+                {N_("slice"), N_("like a ripe choko"),
+                 NC_("melee hit", "You slice %1$s like a ripe choko%2$s%3$s%4$s%5$s")},
+                {N_("cut"), N_("into ribbons"),
+                 NC_("melee hit", "You cut %1$s into ribbons%2$s%3$s%4$s%5$s")},
+                {N_("carve"), N_("like a ham"),
+                 NC_("melee hit", "You carve %1$s like a ham%2$s%3$s%4$s%5$s")},
+                {N_("chop"), N_("into pieces"),
+                 NC_("melee hit", "You chop %1$s into pieces%2$s%3$s%4$s%5$s")}
             };
             const int choice = random2(ARRAYSZ(slice_desc));
             attack_verb = choice == 0
                           ? C_("attack verb", slice_desc[choice][0])
                           : T_(slice_desc[choice][0]);
             verb_degree = T_(slice_desc[choice][1]);
+            hit_format = C_("melee hit", slice_desc[choice][2]);
         }
         break;
 
@@ -3096,25 +3126,33 @@ void melee_attack::set_attack_verb(int damage)
         {
             attack_verb = T_("shatter");
             verb_degree = T_("into splinters");
+            hit_format = C_("melee hit", "You shatter %1$s into splinters%2$s%3$s%4$s%5$s");
         }
         else if (defender->type == MONS_GREAT_ORB_OF_EYES)
         {
             attack_verb = T_("splatter");
             verb_degree = T_("into a gooey mess");
+            hit_format = C_("melee hit", "You splatter %1$s into a gooey mess%2$s%3$s%4$s%5$s");
         }
         else
         {
-            static const char * const bludgeon_desc[][2] =
+            static const char * const bludgeon_desc[][3] =
             {
-                {N_("crush"), N_("like a grape")},
-                {N_("beat"), N_("like a drum")},
-                {N_("hammer"), N_("like a gong")},
-                {N_("pound"), N_("like an anvil")},
-                {N_("flatten"), N_("like a pancake")}
+                {N_("crush"), N_("like a grape"),
+                 NC_("melee hit", "You crush %1$s like a grape%2$s%3$s%4$s%5$s")},
+                {N_("beat"), N_("like a drum"),
+                 NC_("melee hit", "You beat %1$s like a drum%2$s%3$s%4$s%5$s")},
+                {N_("hammer"), N_("like a gong"),
+                 NC_("melee hit", "You hammer %1$s like a gong%2$s%3$s%4$s%5$s")},
+                {N_("pound"), N_("like an anvil"),
+                 NC_("melee hit", "You pound %1$s like an anvil%2$s%3$s%4$s%5$s")},
+                {N_("flatten"), N_("like a pancake"),
+                 NC_("melee hit", "You flatten %1$s like a pancake%2$s%3$s%4$s%5$s")}
             };
             const int choice = random2(ARRAYSZ(bludgeon_desc));
             attack_verb = T_(bludgeon_desc[choice][0]);
             verb_degree = T_(bludgeon_desc[choice][1]);
+            hit_format = C_("melee hit", bludgeon_desc[choice][2]);
         }
         break;
 
@@ -3127,6 +3165,7 @@ void melee_attack::set_attack_verb(int damage)
         {
             attack_verb = T_("thrash");
             verb_degree = T_("mercilessly");
+            hit_format = C_("melee hit", "You thrash %1$s mercilessly%2$s%3$s%4$s%5$s");
         }
         break;
 
@@ -3181,15 +3220,19 @@ void melee_attack::set_attack_verb(int damage)
             {
                 attack_verb = T_("squash");
                 verb_degree = T_("like the proverbial ant");
+                hit_format = C_("melee hit", "You squash %1$s like the proverbial ant%2$s%3$s%4$s%5$s");
             }
             else
             {
-                static const char * const punch_desc[][2] =
+                static const char * const punch_desc[][3] =
                 {
-                    {N_("pound"), N_("into fine dust")},
-                    {N_("pummel"), N_("like a punching bag")},
-                    {N_("pulverise"), ""},
-                    {N_("squash"), N_("like an ant")}
+                    {N_("pound"), N_("into fine dust"),
+                     NC_("melee hit", "You pound %1$s into fine dust%2$s%3$s%4$s%5$s")},
+                    {N_("pummel"), N_("like a punching bag"),
+                     NC_("melee hit", "You pummel %1$s like a punching bag%2$s%3$s%4$s%5$s")},
+                    {N_("pulverise"), "", ""},
+                    {N_("squash"), N_("like an ant"),
+                     NC_("melee hit", "You squash %1$s like an ant%2$s%3$s%4$s%5$s")}
                 };
                 const int choice = random2(ARRAYSZ(punch_desc));
                 // XXX: could this distinction work better?
@@ -3199,11 +3242,13 @@ void melee_attack::set_attack_verb(int damage)
                 {
                     attack_verb = T_("beat");
                     verb_degree = T_("into a bloody pulp");
+                    hit_format = C_("melee hit", "You beat %1$s into a bloody pulp%2$s%3$s%4$s%5$s");
                 }
                 else
                 {
                     attack_verb = T_(punch_desc[choice][0]);
                     verb_degree = T_(punch_desc[choice][1]);
+                    hit_format = C_("melee hit", punch_desc[choice][2]);
                 }
             }
         }
@@ -3243,7 +3288,7 @@ void melee_attack::sear_defender()
 
     if (needs_message && visible_effect)
     {
-        mprf(T_("%s's fire resistance is stripped away!"),
+        mprf(T_("%s fire resistance is stripped away!"),
              def_name(DESC_ITS).c_str());
     }
 }
@@ -3830,7 +3875,17 @@ void melee_attack::announce_hit()
                 degree = " " + degree;
             }
 
-            mprf_p(T_("You %1$s %2$s%3$s%4$s%5$s%6$s%7$s"),
+            if (Options.language == lang_t::ZH && !hit_format.empty())
+            {
+                mprf_p(hit_format.c_str(),
+                       defender->name(DESC_THE).c_str(),
+                       weapon_desc().c_str(),
+                       charge_desc().c_str(),
+                       debug_damage_number().c_str(),
+                       attack_strength_punctuation(damage_done).c_str());
+            }
+            else
+                mprf_p(T_("You %1$s %2$s%3$s%4$s%5$s%6$s%7$s"),
                    attack_verb.c_str(),
                    defender->name(DESC_THE).c_str(),
                    degree.c_str(),
@@ -4337,7 +4392,8 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
                 mprf(T_("%s drains %s %s."),
                      attacker->name(DESC_THE).c_str(),
                      defender->pronoun(PRONOUN_POSSESSIVE).c_str(),
-                     spell_user ? T_("magic") : T_("power"));
+                     spell_user ? C_("drained resource", "magic")
+                                : C_("drained resource", "power"));
             }
 
             monster* vine = attacker->as_monster();

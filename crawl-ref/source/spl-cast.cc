@@ -2068,7 +2068,7 @@ vector<string> desc_wl_success_chance(const monster_info& mi, int pow,
             return vector<string>{T_("not susceptible")};
         descs.push_back(make_stringf(T_("will become %s"),
                         comma_separated_fn(set.begin(), set.end(),
-                                           _mon_threat_string, ", or ").c_str()));
+                                           _mon_threat_string, T_(", or ")).c_str()));
     }
 
     const int success = hex_success_chance(wl, pow, 100);
@@ -3181,9 +3181,8 @@ string spell_noise_string(spell_type spell, int chop_wiz_display_width)
         else
             return make_stringf("%s (%d)", desc, noise);
     }
-    else
 #endif
-        return desc;
+    return desc;
 }
 
 int power_to_barcount(int power)
@@ -3232,7 +3231,7 @@ static dice_def _spell_damage(spell_type spell, int power)
         case SPELL_FROZEN_RAMPARTS:
             return ramparts_damage(power, false);
         case SPELL_FULMINANT_PRISM:
-            return prism_damage(prism_hd(power, false), true);
+            return prism_damage(prism_hd(power, false), true, false);
         case SPELL_HELLFIRE_MORTAR:
             return hellfire_mortar_damage(power);
         case SPELL_IOOD:

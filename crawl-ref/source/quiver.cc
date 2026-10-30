@@ -1735,7 +1735,7 @@ namespace quiver
 
         virtual string quiver_verb() const override
         {
-            return T_("Zap");
+            return C_("wand action", "Zap");
         }
 
         virtual vector<shared_ptr<action>> get_fire_order(
@@ -2498,7 +2498,9 @@ namespace quiver
                 // the state and any substantive message beside the list.
                 string status = more_message.empty() ? "" : more_message + "\n";
                 status += string(T_("Focus mode")) + ": "
-                          + (focus_mode == Focus::NONE ? T_("off") : T_("on"));
+                          + (focus_mode == Focus::NONE
+                              ? C_("quiver focus state", "off")
+                              : C_("quiver focus state", "on"));
                 return status;
             }
 #endif
@@ -2512,8 +2514,8 @@ namespace quiver
                 s += T_("[<w>^</w>] All abilities  ");
 
 
-            string off_str = T_("off");
-            string on_str = T_("on");
+            string off_str = C_("quiver focus state", "off");
+            string on_str = C_("quiver focus state", "on");
             string mode = make_stringf(T_("%s %s: %s"),
                 menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE).c_str(),
                 T_("Focus mode"),
@@ -2535,7 +2537,7 @@ namespace quiver
                 return;
             string action_desc = a->quiver_description();
             if (you.quiver_action.item_is_quivered(a->get_item()))
-                action_desc += " (quivered)";
+                action_desc += T_(" (quivered)");
             MenuEntry *me = new MenuEntry(action_desc,
                                                 MEL_ITEM, 1,
                                                 (int) hotkey);
@@ -2942,7 +2944,7 @@ namespace quiver
         // many places.
         if (is_empty())
         {
-            mpr("Nothing quivered!");
+            mpr(T_("Nothing quivered!"));
             return;
         }
         shared_ptr<action> initial = get();

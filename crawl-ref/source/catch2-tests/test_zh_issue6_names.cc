@@ -3,6 +3,13 @@
 #include "AppHdr.h"
 
 #include "database.h"
+#include "directn.h"
+#include "describe.h"
+#include "mon-util.h"
+#include "mutation.h"
+#include "notes.h"
+#include "ng-init.h"
+#include "transform.h"
 #include "english.h"
 #include "item-name.h"
 #include "item-prop.h"
@@ -281,10 +288,241 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     item.brand = SPMSL_CHAOS;
     const string missile = missile_name(MI_JAVELIN);
     const string missile_brand = missile_brand_name(item, MBN_NAME);
-    CHECK(item.name(DESC_PLAIN) == missile + missile_brand + "之");
+    CHECK(item.name(DESC_PLAIN) == missile_brand + "之" + missile);
     item.base_type = OBJ_ARMOUR;
     item.sub_type = ARM_ROBE;
     item.brand = SPARM_FIRE_RESISTANCE;
     const string ego = armour_ego_name(item, false);
     CHECK(item.name(DESC_PLAIN) == "+0 " + ego + "之" + item_base_name(item));
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: round2 type display articles preserve English identity",
+                 "[zh-translation][round2][names]")
+{
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    you = player();
+    const monster_type types[] = { MONS_ORB_OF_WINTER, MONS_ORC,
+                                   MONS_ROYAL_JELLY, MONS_ENCHANTRESS };
+    const description_level_type descriptions[] = { DESC_PLAIN, DESC_A, DESC_THE,
+                                                   DESC_DBNAME };
+    for (monster_type type : types)
+    {
+        for (description_level_type desc : descriptions)
+        {
+            const string display = mons_type_name(type, desc);
+            CHECK(display == mons_type_name(type, DESC_PLAIN));
+            const string identity = mons_type_name_en(type, desc);
+            ScopedLangEn english;
+            CHECK(mons_type_name(type, desc) == identity);
+            CHECK(mons_type_name_en(type, desc) == identity);
+        }
+    }
+    you.zot_orb_monster_known = true;
+    you.zot_orb_monster = MONS_ORB_OF_WINTER;
+    const string statue = feature_description(DNGN_ZOT_STATUE, "", DESC_A);
+    CHECK(statue == "寒冬之球雕像");
+    const Note note(NOTE_SEEN_FEAT, 0, 0, statue + ".");
+    CHECK(note.describe(false, false).find("a ") == string::npos);
+    CHECK(note.name == statue + ".");
+    // Existing persisted snapshots are neither mutated nor retrotranslated.
+    const Note historic(NOTE_SEEN_FEAT, 0, 0, "a historic statue.");
+    CHECK(historic.name == "a historic statue.");
+    {
+        ScopedLangEn english;
+        CHECK(feature_description(DNGN_ZOT_STATUE, "", DESC_A)
+              == "a statue of an orb of winter");
+        CHECK(note.name == statue + ".");
+        CHECK(historic.name == "a historic statue.");
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: round2 clear potion appearance keeps action and identity",
+                 "[zh-translation][round2][names]")
+{
+#if TAG_MAJOR_VERSION == 34
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    item_def potion;
+    potion.base_type = OBJ_POTIONS;
+    potion.sub_type = POT_MUTATION;
+    potion.quantity = 1;
+    potion.rnd = 1;
+    potion.subtype_rnd = PDESCQ(PDQ_NONE, PDC_CLEAR);
+    CHECK(potion.name(DESC_PLAIN) == "透明药水");
+    CHECK(string(T_("clear")) == "清除");
+    CHECK(potion.sub_type == POT_MUTATION);
+    CHECK(potion.subtype_rnd == PDESCQ(PDQ_NONE, PDC_CLEAR));
+    {
+        ScopedLangEn english;
+        CHECK(potion.name(DESC_PLAIN) == "clear potion");
+        CHECK(potion.name(DESC_DBNAME, false, true) == "potion of mutation");
+    }
+    CHECK(potion.name(DESC_PLAIN) == "透明药水");
+#endif
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: round2 morgue physiology summaries translate display only",
+                 "[zh-translation][round2][names]")
+{
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.form = transformation::tree;
+    const string tree_summary = terse_mutation_list();
+    CHECK(tree_summary.find("植物生理") != string::npos);
+    CHECK(tree_summary.find("两栖") != string::npos);
+    CHECK(tree_summary.find("plant physiology") == string::npos);
+    CHECK(you.form == transformation::tree);
+    {
+        ScopedLangEn english;
+        CHECK(terse_mutation_list().find("plant physiology") != string::npos);
+        CHECK(terse_mutation_list().find("amphibious") != string::npos);
+    }
+    you.form = transformation::none;
+    you.species = SP_GARGOYLE;
+    CHECK(terse_mutation_list().find("无肉生理") != string::npos);
+    CHECK(you.species == SP_GARGOYLE);
+    {
+        ScopedLangEn english;
+        CHECK(terse_mutation_list().find("fleshless physiology") != string::npos);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "family: every missile brand keeps its modifier before the Chinese noun",
+                 "[zh-translation][family-fixes][names]")
+{
+    init_properties();
+    for (int brand = SPMSL_NORMAL; brand < NUM_SPECIAL_MISSILES; ++brand)
+    for (int quantity : {1, 3})
+    {
+        item_def item;
+        item.base_type = OBJ_MISSILES;
+        item.sub_type = MI_DART;
+        item.brand = brand;
+        item.quantity = quantity;
+        item.flags = ISFLAG_IDENTIFIED;
+        const string noun = missile_name(MI_DART);
+        const string full = item.name(DESC_PLAIN);
+        const string terse = item.name(DESC_PLAIN, true);
+        INFO("brand=" << brand << " full=" << full);
+        REQUIRE(full.find(noun) != string::npos);
+        if (brand != SPMSL_NORMAL)
+        {
+            const string modifier = missile_brand_name(item, MBN_NAME);
+            REQUIRE(full.find(modifier) != string::npos);
+            CHECK(full.find(modifier) < full.find(noun));
+            CHECK(full.substr(full.size() - noun.size()) == noun);
+            CHECK(terse.find(" (") != string::npos);
+        }
+        CHECK(item.name(DESC_BASENAME) == noun);
+        CHECK(item.name(DESC_DBNAME) == noun);
+        {
+            ScopedLangEn english;
+            const string en = item.name(DESC_PLAIN);
+            CHECK(en.find(quantity == 1 ? "dart" : "darts") != string::npos);
+            if (brand == SPMSL_DISJUNCTION)
+                CHECK(en.find(" of disjunction") != string::npos);
+            CHECK(item.name(DESC_DBNAME) == "dart");
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "acceptance: colliding scroll labels stay distinguishable across all saved types",
+                 "[zh-translation][acceptance-fixes][scroll]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    // All these valid label seeds shared one physical appearance before the
+    // fix. Keep a full type registry, including compatibility types.
+    vector<uint32_t> seeds;
+    for (int type = 0; type < NUM_SCROLLS; ++type)
+    {
+        const uint32_t seed = (OBJ_SCROLLS << 16) | (((type / 16) * 3) << 8) | (type % 16);
+        you.item_description[IDESC_SCROLLS][type] = seed;
+        seeds.push_back(seed);
+    }
+    rng::subgenerator scoped_rng(20261025);
+    const auto state = rng::current_generator().get_state();
+    const auto count = rng::current_generator().get_count();
+    map<uint32_t, string> names;
+    set<string> unique_names;
+    for (uint32_t seed : seeds)
+    {
+        item_def scroll;
+        scroll.base_type = OBJ_SCROLLS;
+        scroll.sub_type = SCR_BLINKING;
+        scroll.quantity = 1;
+        scroll.rnd = 1;
+        scroll.subtype_rnd = seed;
+        const string display = scroll.name(DESC_PLAIN);
+        REQUIRE_FALSE(display.empty());
+        CHECK(unique_names.insert(display).second);
+        names[seed] = display;
+        vector<unsigned char> bytes;
+        writer output(&bytes);
+        marshallItem(output, scroll, true);
+        reader input(bytes);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        item_def loaded;
+        unmarshallItem(input, loaded);
+        CHECK(loaded.subtype_rnd == seed);
+        CHECK(loaded.name(DESC_PLAIN) == display);
+        {
+            ScopedLangEn english;
+            CHECK(scroll.name(DESC_PLAIN) == "scroll labelled " + make_name(seed, MNAME_SCROLL));
+        }
+        CHECK(scroll.name(DESC_PLAIN) == display);
+    }
+    // Reordering the subtype entries cannot turn this into a subtype identity
+    // leak. Unidentified and identified inventory order is never consulted.
+    for (int type = 0; type < NUM_SCROLLS; ++type)
+        you.item_description[IDESC_SCROLLS][type] = seeds[NUM_SCROLLS - type - 1];
+    i18n_cache_clear();
+    for (const auto &entry : names)
+        CHECK(translated_scroll_appearance(entry.first) == entry.second);
+    for (int type = 0; type < NUM_SCROLLS; ++type)
+        CHECK(you.item_description[IDESC_SCROLLS][type] == seeds[NUM_SCROLLS - type - 1]);
+    CHECK(rng::current_generator().get_state() == state);
+    CHECK(rng::current_generator().get_count() == count);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "acceptance: generated scroll registries have unique stable physical appearances",
+                 "[zh-translation][acceptance-fixes][scroll]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    for (uint64_t seed : {625102501ULL, 425202670ULL, 425202671ULL, 1ULL, 2ULL, 3ULL})
+    {
+        rng::subgenerator scoped_rng(seed);
+        initialise_item_descriptions();
+        vector<uint32_t> saved;
+        for (int type = 0; type < NUM_SCROLLS; ++type)
+            saved.push_back(you.item_description[IDESC_SCROLLS][type]);
+        const auto state = rng::current_generator().get_state();
+        const auto count = rng::current_generator().get_count();
+        set<string> appearances;
+        for (uint32_t label : saved)
+        {
+            const string display = translated_scroll_appearance(label);
+            REQUIRE_FALSE(display.empty());
+            CHECK(appearances.insert(display).second);
+            CHECK(translated_scroll_appearance(label) == display);
+        }
+        for (int type = 0; type < NUM_SCROLLS; ++type)
+            CHECK(you.item_description[IDESC_SCROLLS][type] == saved[type]);
+        CHECK(rng::current_generator().get_state() == state);
+        CHECK(rng::current_generator().get_count() == count);
+    }
 }

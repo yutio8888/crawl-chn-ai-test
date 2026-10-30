@@ -526,7 +526,7 @@ unsigned int item_value(item_def item, bool ident)
                 valued += 10;
                 break;
 
-            CASE_REMOVED_POTIONS(item.sub_type)
+            CASE_REMOVED_POTIONS(item.sub_type);
             }
         }
         break;
@@ -787,12 +787,12 @@ unsigned int item_value(item_def item, bool ident)
             // more expensive per spell than books
             valued = level * level * 6 + 34;
         }
-#if TAG_MAJOR_VERSION == 34
-        else if (book == BOOK_BUGGY_DESTRUCTION)
-            break;
-#endif
         else
         {
+#if TAG_MAJOR_VERSION == 34
+            if (book == BOOK_BUGGY_DESTRUCTION)
+                break;
+#endif
             const vector<spell_type> spells = spells_in_book(item);
             for (spell_type spell : spells)
             {
@@ -847,7 +847,7 @@ bool is_worthless_consumable(const item_def &item)
             return true;
         default:
             return false;
-        CASE_REMOVED_POTIONS(item.sub_type)
+        CASE_REMOVED_POTIONS(item.sub_type);
         }
     case OBJ_SCROLLS:
         return item.sub_type == SCR_NOISE;
@@ -1554,7 +1554,7 @@ bool ShopMenu::process_key(int keyin)
         const auto index = letter_to_index(keyin) % 26;
         auto entry = dynamic_cast<ShopEntry*>(items[index]);
         entry->selected_qty = 0;
-        const item_def& item(*entry->item);
+        const item_def& item = *entry->item;
         if (shopping_list.is_on_list(item, &pos))
             shopping_list.del_thing(item, &pos);
         else
@@ -1721,7 +1721,7 @@ string shop_name(const shop_struct& shop)
 #if TAG_MAJOR_VERSION == 34
     // xref ShopInfo::load
     if (shop.shop_name == " ")
-        return shop.shop_type_name;
+        return C_("shop name type", shop.shop_type_name.c_str());
 #endif
     if (!shop.shop_name.empty())
         sh_name += apostrophise(shop.shop_name) + separator;
@@ -1735,12 +1735,12 @@ string shop_name(const shop_struct& shop)
     }
 
     if (!shop.shop_type_name.empty())
-        sh_name += shop.shop_type_name;
+        sh_name += C_("shop name type", shop.shop_type_name.c_str());
     else
         sh_name += shop_type_name(type);
 
     if (!shop.shop_suffix_name.empty())
-        sh_name += separator + shop.shop_suffix_name;
+        sh_name += separator + C_("shop name suffix", shop.shop_suffix_name.c_str());
     else
     {
         string sh_suffix = _shop_type_suffix(type, shop.pos);

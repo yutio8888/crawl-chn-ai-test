@@ -176,6 +176,30 @@ private:
 } // anonymous namespace
 
 TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh-help: manual A shortcut uses the localized page across locales",
+                 "[zh-help][guides][manual-overview]")
+{
+    for (lang_t language : {lang_t::ZH, lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        string header, body;
+        CHECK(help_popup_state_for_test(CK_HOME, 'A', header, body) == '*');
+        if (language == lang_t::ZH)
+        {
+            CHECK(body.find("Crawl 是一款有趣的游戏") != string::npos);
+            CHECK(body.find("OVERVIEW") == string::npos);
+            CHECK(header.find("Dungeon Crawl Stone Soup 手册") != string::npos);
+        }
+        else
+        {
+            CHECK(body.find("Crawl is a fun game") != string::npos);
+            CHECK(body.find("OVERVIEW") != string::npos);
+            CHECK(header.find(": Manual") != string::npos);
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh-help: standalone guide popups render localized pages",
                  "[zh-help][guides]")
 {
