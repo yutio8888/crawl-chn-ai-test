@@ -513,7 +513,11 @@ class AgentDocumentationTests(unittest.TestCase):
             self.assertEqual("error", test_upload_with["if-no-files-found"])
             pr_upload_with = pr_upload["with"]
             self.assertEqual("android-pr-debug-apk", pr_upload_with["name"])
-            self.assertEqual(test_upload_with["path"], pr_upload_with["path"])
+            self.assertEqual(
+                "crawl-ref/source/android-project/app/build/outputs/apk/"
+                "buildTest/app-buildTest.apk",
+                pr_upload_with["path"],
+            )
             self.assertEqual("error", pr_upload_with["if-no-files-found"])
 
             release_steps = {

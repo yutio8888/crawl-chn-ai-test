@@ -131,7 +131,8 @@ ephemeral debug signature with a dedicated stable test certificate, verifies
 the pinned public certificate digest, and only then uploads the APK. This lets
 testers install later branch artifacts as updates without exposing or reusing
 the production release key. Pull requests cannot access the test signing
-secrets; their ephemeral artifact is named `android-pr-debug-apk` so it cannot
+secrets; their arm64 `buildTest` APK uses Gradle's ephemeral debug signature and is
+named `android-pr-debug-apk` so it cannot
 be mistaken for the update channel.
 
 On a valid three-part release tag the workflow also builds `assembleRelease`,
