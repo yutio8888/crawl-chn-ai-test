@@ -40,6 +40,12 @@ SRC = ROOT / "crawl-ref/source"
 ZH_SOURCE = SRC / "dat/i18n/zh/source.txt"
 ZH_SOURCE_DIR = ZH_SOURCE.parent
 ISSUE29_REVIEW_BASE = "01dc9911ec9948aff661f6ec0b9b0a798fcf909d"
+UNRAND_REVIEWED_CHANGED_NAMES = {
+    "glaive of prune", 'morningstar "eos"',
+    "sword of cerebov", "amulet of the air",
+    # PR #194 translation review (Ready): lance/Wyrmbane terminology.
+    'lance "wyrmbane"',
+}
 QUALITY_M1_RUN_ID = "m1-item-description-v1"
 QUALITY_M1_SEED = "dcss-zh-quality-m0-item-description-v1"
 QUALITY_M1_REVIEW_BASE_ADJUST_COUNT = 6
@@ -1308,13 +1314,7 @@ def unrand_rows(db, source_db, base_db, base_source_db, review_base):
         key = definition["name"].lower()
         if base_source_db.get(key) != source_db.get(key):
             changed_names.add(key)
-    expected_changed_names = {
-        "glaive of prune", 'morningstar "eos"',
-        "sword of cerebov", "amulet of the air",
-        # PR #194 translation review (Ready): lance/Wyrmbane terminology.
-        'lance "wyrmbane"',
-    }
-    if changed_names != expected_changed_names:
+    if changed_names != UNRAND_REVIEWED_CHANGED_NAMES:
         raise RuntimeError(
             f"unrand SourceDB conclusion boundary drift: "
             f"{sorted(changed_names)}"

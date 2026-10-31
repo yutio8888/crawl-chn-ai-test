@@ -128,8 +128,17 @@ def quality_m1_fixture():
             QUALITY_M1_IMMUTABLE_BASELINE,
             require_head=False,
         )
+        # This immutable pre-#194 snapshot has the original four reviewed
+        # name changes. Keep its exact boundary and M0 truth/selection frozen;
+        # the current candidate is separately required to match all five.
+        historical_name_changes = {
+            "glaive of prune", 'morningstar "eos"',
+            "sword of cerebov", "amulet of the air",
+        }
         with mock.patch.object(
             MODULE, "audit_snapshot", return_value=snapshot
+        ), mock.patch.object(
+            MODULE, "UNRAND_REVIEWED_CHANGED_NAMES", historical_name_changes
         ):
             payload, _internal_rows = MODULE.build_extended_inventory_v3()
         payload["review_input"] = {"input_sha256": "a" * 64}
