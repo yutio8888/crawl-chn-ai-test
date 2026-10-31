@@ -2085,7 +2085,7 @@ static vector<string> _desc_teleport_other_chance(const monster_info& mi,
                                                   int pow, targeter* hitfunc)
 {
     if (mi.is(MB_NO_TELE))
-        return vector<string>{"immune to teleportation"};
+        return vector<string>{T_("immune to teleportation")};
 
     return desc_wl_success_chance(mi, pow, hitfunc);
 }

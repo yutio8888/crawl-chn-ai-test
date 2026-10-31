@@ -286,7 +286,7 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
         },
         [](monster &caster, mon_spell_slot, bolt&)
         {
-            simple_monster_message(caster, " vitality is bolstered.", true);
+            simple_monster_message(caster, T_(" vitality is bolstered."), true);
             flash_tile(caster.pos(), LIGHTBLUE);
             const int dur = random_range(220, 300);
             caster.add_ench(mon_enchant(ENCH_MIGHT, &caster, dur));
@@ -6127,7 +6127,7 @@ static void _mons_start_stampede(monster& mon)
     mon.props[STAMPEDE_DIRECTION_KEY].get_coord() = step;
 
     if (you.can_see(mon))
-        mprf("%s starts stampeding towards %s.", mon.name(DESC_THE).c_str(), foe->name(DESC_THE).c_str());
+        mprf(T_("%s starts stampeding towards %s."), mon.name(DESC_THE).c_str(), foe->name(DESC_THE).c_str());
 
     mon_do_stampede(mon);
 }

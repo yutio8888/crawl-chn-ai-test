@@ -3821,7 +3821,7 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
         if (mark)
         {
             dice_def dmg = zap_damage(ZAP_SPIKE_LAUNCHER, mark->power, mark->owner != MID_PLAYER, false);
-            long_desc += make_stringf("\nIt does %dd%d damage.", dmg.num, dmg.size);
+            long_desc += make_stringf(T_("\nIt does %dd%d damage."), dmg.num, dmg.size);
         }
     }
     else if (feat_is_dragon_vein(feat))

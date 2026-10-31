@@ -3006,8 +3006,12 @@ static void _xom_blinding_blinkitis(int /* sever */)
         if (!mi->wont_attack() && !mi->is_peripheral() && !mi->stasis())
             target.push_back(*mi);
 
-    mprf(MSGCH_MONSTER_ENCHANT, "%s %s blinded and untethered in space!",
-         multimonster_name_string(target).c_str(), target.size() > 1 ? "are" : "is");
+    if (Options.language == lang_t::ZH)
+        mprf(MSGCH_MONSTER_ENCHANT, T_("%s blinded and untethered in space!"),
+             multimonster_name_string(target).c_str());
+    else
+        mprf(MSGCH_MONSTER_ENCHANT, "%s %s blinded and untethered in space!",
+             multimonster_name_string(target).c_str(), target.size() > 1 ? "are" : "is");
 
     for (monster *mon : target)
     {
@@ -3073,9 +3077,13 @@ static void _xom_chaos_vex(int /* sever */)
         target.push_back(*mi);
     }
 
-    mprf(MSGCH_MONSTER_ENCHANT, "%s %s interlaced with infuriating chaos!",
-         multimonster_name_string(target).c_str(),
-         target.size() > 1 ? "are" : "is");
+    if (Options.language == lang_t::ZH)
+        mprf(MSGCH_MONSTER_ENCHANT, T_("%s interlaced with infuriating chaos!"),
+             multimonster_name_string(target).c_str());
+    else
+        mprf(MSGCH_MONSTER_ENCHANT, "%s %s interlaced with infuriating chaos!",
+             multimonster_name_string(target).c_str(),
+             target.size() > 1 ? "are" : "is");
 
     const string note = make_stringf("chaos laced + vexed %d monster%s",
                                      (int) target.size(),

@@ -1270,12 +1270,12 @@ void monster::remove_enchantment_effect(const mon_enchant &me, bool quiet)
 
     case ENCH_EXPOSED:
         if (!quiet)
-            simple_monster_message(*this, " is no longer exposed.");
+            simple_monster_message(*this, T_(" is no longer exposed."));
         break;
 
     case ENCH_STAMPEDE:
         if (!quiet)
-            simple_monster_message(*this, " stops stampeding.");
+            simple_monster_message(*this, T_(" stops stampeding."));
         break;
 
     case ENCH_PREPARING_TO_LURK:

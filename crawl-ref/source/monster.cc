@@ -5344,9 +5344,9 @@ bool monster::doom(int amount)
         enchant_type ench = random_choose(ENCH_SLOW, ENCH_VITRIFIED, ENCH_WEAK, ENCH_BLIND, ENCH_DRAINED);
         if (you.can_see(*this))
         {
-            mprf("Doom befalls %s, leaving %s %s.", name(DESC_THE).c_str(),
+            mprf_p(T_("Doom befalls %s, leaving %s %s."), name(DESC_THE).c_str(),
                  pronoun(PRONOUN_OBJECTIVE).c_str(),
-                 ench == ENCH_DRAINED ? "deeply drained" :
+                 ench == ENCH_DRAINED ? T_("deeply drained") :
                  description_for_ench(ench).c_str());
         }
 

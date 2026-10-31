@@ -433,7 +433,7 @@ static void _knight_pinning_attack(monster* mon)
                 {
                     if (you.can_see(*mon))
                     {
-                        mprf("%s pins %s in place with %s attack.",
+                        mprf_p(T_("%s pins %s in place with %s attack."),
                             mon->name(DESC_THE).c_str(),
                             targ->name(DESC_THE).c_str(),
                             mon->pronoun(PRONOUN_POSSESSIVE).c_str());
