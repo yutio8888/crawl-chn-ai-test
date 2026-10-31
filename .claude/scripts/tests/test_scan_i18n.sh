@@ -879,7 +879,8 @@ with open(sys.argv[4], "r", encoding="utf-8") as stream:
 production_blocks = list(module._iter_decision_blocks(production_content))
 # Issue #147 adds D-C-095 through 098; PR #178 adds D-C-099
 # (Tranquillity spelling alignment). No old decision blocks retire.
-assert len(production_blocks) == 177, len(production_blocks)
+# PR #198 adds D-B-023 and D-C-100 (lance/Wyrmbane and singular neutral pronouns).
+assert len(production_blocks) == 179, len(production_blocks)
 for decision_id, block in production_blocks:
     fields = module._decision_metadata_fields(block)
     assert fields.get("Status") == ["active"], (decision_id, fields)
@@ -1372,7 +1373,8 @@ try:
         expected_identities,
     )
     # D-C-099 adds one active Status declaration to the prior fixture.
-    assert len(production_declarations) == 429, len(
+    # PR #198 adds D-B-023 and D-C-100, each with one active Status declaration.
+    assert len(production_declarations) == 431, len(
         production_declarations
     )
     assert all(

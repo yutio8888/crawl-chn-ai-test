@@ -288,7 +288,7 @@ class DecorlinesInventoryTests(unittest.TestCase):
         # production ledger-bound hash is re-checked by the CLI candidate
         # audit against docs/decorlines-review-results.md.
         self.assertEqual(
-            "4481edcb36755b99a03fcd4026da28d00afb63670d63063bdc614f94a8ae876c",
+            "d4f96f775107a9e592636311616f03a89e3f4e9341de62c2245fc188398ae28e",
             self.inventory["inventory_sha256"],
         )
 

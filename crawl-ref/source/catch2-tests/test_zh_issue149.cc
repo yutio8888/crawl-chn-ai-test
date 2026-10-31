@@ -19,6 +19,7 @@
 #include "clua.h"
 #include "branch.h"
 #include "dgn-overview.h"
+#include "database.h"
 #include "dungeon.h"
 #include "env.h"
 #include "describe.h"
@@ -596,7 +597,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             CHECK(name.find("Xochitl") != string::npos);
             CHECK(name.find(ancestor.common_name()) != string::npos);
             CHECK((name.find(" the ") != string::npos) == (language == lang_t::EN));
-            CHECK(string(ancestor.pronoun(PRONOUN_SUBJECTIVE)) == (language == lang_t::ZH ? "它" : "they"));
+            CHECK(string(ancestor.pronoun(PRONOUN_SUBJECTIVE)) == (language == lang_t::ZH ? "他" : "they"));
             CHECK(ancestor.pronoun_plurality() == (language == lang_t::EN));
             CHECK(ancestor.props[MON_GENDER_KEY].get_int() == GENDER_NEUTRAL);
             CHECK(ancestor.mname == "Xochitl");
@@ -1638,6 +1639,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     count_action(CACT_FIRE, WPN_SHORTBOW);
     count_action(CACT_INVOKE, ABIL_USKAYAW_STOMP);
     count_action(CACT_INVOKE, ABIL_USKAYAW_LINE_PASS);
+    count_action(CACT_MELEE, WPN_SPEAR);
     count_action(CACT_MELEE, UNRAND_WYRMBANE);
     count_action(CACT_MELEE, UNRAND_DARK_MAUL);
     count_action(CACT_EVOKE, UNRAND_WUCAD_MU);
@@ -1690,7 +1692,13 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             CHECK(strwidth(line.substr(0, separator)) == 26);
             ++action_rows;
         }
-        CHECK(action_rows == 6);
+        CHECK(action_rows == 7);
+        const size_t spear = dump.find(language == lang_t::ZH ? "长矛" : "Spear");
+        const size_t lance = dump.find(language == lang_t::ZH ? "骑枪" : "Lance");
+        REQUIRE(spear != string::npos);
+        REQUIRE(lance != string::npos);
+        CHECK((spear < lance ? dump.find('\n', spear) < lance
+                             : dump.find('\n', lance) < spear));
         REQUIRE(you.action_count.size() == original_counts.size());
         for (const auto &entry : original_counts)
         {
@@ -1830,3 +1838,36 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(WEXITSTATUS(status) == 0);
 }
 #endif
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Wyrmbane name messages and lore share its identity",
+                 "[zh-translation][wyrmbane]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    item_def item;
+    item.quantity = 1;
+    const auto prior_status = get_unique_item_status(UNRAND_WYRMBANE);
+    REQUIRE(make_item_unrandart(item, UNRAND_WYRMBANE));
+    unwinder restore_status([&item, prior_status]() {
+        set_unique_item_status(item, prior_status);
+    });
+    item.flags |= ISFLAG_IDENTIFIED;
+    const string key = get_unrand_name_en(item);
+    REQUIRE(key == "lance \"Wyrmbane\"");
+    const char *message = "<green>Wyrmbane glows as a worthy foe approaches.</green>";
+    const char *skewer = "<green>The lance glows as it skewers %s.</green>";
+    CHECK(get_artefact_name(item) == "骑枪\"屠龙者\"");
+    CHECK(string(T_(message)) == "<green>屠龙者在强大的敌人接近时发出光芒。</green>");
+    CHECK(string(T_(skewer)) == "<green>骑枪刺穿%s时发出光芒。</green>");
+    CHECK(getLongDescription(key).find("屠龙者") != string::npos);
+    CHECK(getLongDescription(key).find("魔法骑枪") != string::npos);
+    CHECK(getLongDescription(key).find("每当它对一条强大的龙造成致命一击，威力就会增强。")
+          != string::npos);
+    TranslationFixture canonical(lang_t::EN, nullptr);
+    CHECK(get_artefact_name(item) == key);
+    CHECK(string(T_(message)) == message);
+    CHECK(string(T_(skewer)) == skewer);
+    CHECK(getLongDescription(key).find("An enchanted lance") != string::npos);
+}

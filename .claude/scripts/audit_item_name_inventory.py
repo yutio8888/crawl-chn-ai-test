@@ -1318,6 +1318,7 @@ def unrand_rows(db, source_db, base_db, base_source_db, review_base):
         "fire dragon occultist's scales", "forgewarden's cuirass",
         "ghost crab claws", 'giant spiked club "carina at dusk"',
         "hana's scimitar", "ice dragon arcanist's scales",
+        'lance "wyrmbane"',  # D-B-023: approved lance terminology.
         'morningstar "eos"', "partisan of prune", "staff of five virtues",
         "stagehand's sword", "swamp witch's dragon scales", "sword of cerebov",
     }
@@ -1326,7 +1327,9 @@ def unrand_rows(db, source_db, base_db, base_source_db, review_base):
             f"unrand SourceDB conclusion boundary drift: "
             f"{sorted(changed_names)}"
         )
-    adjust_names = {"partisan of prune", 'morningstar "eos"'}
+    adjust_names = {
+        "partisan of prune", 'morningstar "eos"', 'lance "wyrmbane"',
+    }
 
     rows = []
     for enum_id, definition in zip(enums, definitions):

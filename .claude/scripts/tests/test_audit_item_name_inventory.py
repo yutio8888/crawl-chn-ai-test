@@ -806,7 +806,11 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         rows = MODULE.unrand_rows(descriptions, source, {}, baseline,
                                   MODULE.ISSUE29_REVIEW_BASE)
         self.assertEqual(155, len(rows))
-        # A nineteenth changed name must require a new explicit audit.
+        wyrmbane = next(row for row in rows
+                        if row["identity"] == "unrand:UNRAND_WYRMBANE")
+        self.assertEqual("adjust", wyrmbane["_conclusion"])
+        self.assertEqual('骑枪"屠龙者"', wyrmbane["current_chinese"])
+        # Any further changed name still requires a new explicit audit.
         source["robe of vines"] = "unreviewed change"
         with self.assertRaisesRegex(RuntimeError,
                                     "unrand SourceDB conclusion boundary drift"):

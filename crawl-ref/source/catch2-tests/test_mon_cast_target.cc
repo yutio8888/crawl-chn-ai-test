@@ -2017,7 +2017,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         CHECK(counters.overlay_hit == 1);
     }
 
-    SECTION("non-unique neutral caster keeps the normal plural pronoun")
+    SECTION("non-unique neutral caster uses the normal singular pronoun")
     {
         source.type = MONS_VAMPIRE_BLOODPRINCE;
         uint64_t pleading_seed = 0;
@@ -2047,7 +2047,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                 source, beam, false, { "smiting jeremiah cast" },
                 false, false);
         REQUIRE(result.structured);
-        CHECK(result.text.find("它们的双臂") != string::npos);
+        CHECK(result.text.find("他的双臂") != string::npos);
         CHECK(result.text.find("其双臂") == string::npos);
     }
 
