@@ -8946,11 +8946,11 @@ static string _localized_plural_arms(const string &canonical,
 
 static string _localized_zh_actor_possessive_pronoun(const monster &mon)
 {
-    // GENDER_NEUTRAL selects English singular-they forms, but the global
-    // Chinese pronoun table deliberately uses plural-looking forms. Narrow
-    // that mismatch only for a visible unique actor, whose identity proves a
-    // single referent. A non-unique neutral actor may still be semantically
-    // plural and must retain the normal pronoun-table result.
+    // Preserve the structured-message possessive style for a unique actor.
+    // pronoun_plurality() identifies English singular they here, not multiple
+    // referents; other actors use the ordinary localized pronoun table.
+    // The dedicated binding keeps its existing contextual possessive wording.
+    // Gender identity and English verb agreement remain unchanged.
     static const char * const neutral_singular =
         NC_("structured actor possessive", "neutral singular");
     if (mons_is_or_was_unique(mon) && mon.pronoun_plurality())

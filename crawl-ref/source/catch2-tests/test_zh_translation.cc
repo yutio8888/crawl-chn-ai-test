@@ -5715,6 +5715,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     you = player();
     you.experience_level = you.max_level = 1;
     count_action(CACT_FIRE, WPN_SHORTBOW, -1);
+    count_action(CACT_MELEE, WPN_SPEAR, -1);
+    count_action(CACT_MELEE, UNRAND_WYRMBANE, -1);
     const auto identity = make_pair(CACT_FIRE, caction_compound(WPN_SHORTBOW, -1));
     REQUIRE(you.action_count.count(identity) == 1);
     for (lang_t language : {lang_t::ZH, lang_t::EN})
@@ -5728,7 +5730,13 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(dump.find(language == lang_t::ZH ? "发射:" : "Fire:") != string::npos);
         if (language == lang_t::ZH)
             CHECK(dump.find(string(T_("Fire")) + ":") == string::npos);
-        CHECK(you.action_count.size() == 1);
+        const size_t spear = dump.find(language == lang_t::ZH ? "长矛" : "Spear");
+        const size_t lance = dump.find(language == lang_t::ZH ? "骑枪" : "Lance");
+        REQUIRE(spear != string::npos);
+        REQUIRE(lance != string::npos);
+        CHECK((spear < lance ? dump.find('\n', spear) < lance
+                             : dump.find('\n', lance) < spear));
+        CHECK(you.action_count.size() == 3);
         CHECK(you.action_count.at(identity)[0] == 1);
         CHECK(caction_extract_types(identity.second) == make_pair(int(WPN_SHORTBOW), -1));
     }
@@ -7133,4 +7141,35 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(custom == string("custom ") + T_(row.second) + T_("door"));
         env.markers.remove(marker);
     }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Wyrmbane name messages and lore share its identity",
+                 "[zh-translation][wyrmbane]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    item_def item;
+    item.quantity = 1;
+    const auto prior_status = get_unique_item_status(UNRAND_WYRMBANE);
+    REQUIRE(make_item_unrandart(item, UNRAND_WYRMBANE));
+    unwinder restore_status([&item, prior_status]() {
+        set_unique_item_status(item, prior_status);
+    });
+    item.flags |= ISFLAG_IDENTIFIED;
+    const string key = get_unrand_name_en(item);
+    REQUIRE(key == "lance \"Wyrmbane\"");
+    const char *message = "<green>Wyrmbane glows as a worthy foe approaches.</green>";
+    const char *skewer = "<green>The lance glows as it skewers %s.</green>";
+    CHECK(get_artefact_name(item) == "骑枪\"屠龙者\"");
+    CHECK(string(T_(message)) == "<green>屠龙者在强大的敌人接近时发出光芒。</green>");
+    CHECK(string(T_(skewer)) == "<green>骑枪刺穿%s时发出光芒。</green>");
+    CHECK(getLongDescription(key).find("屠龙者") != string::npos);
+    CHECK(getLongDescription(key).find("魔法骑枪") != string::npos);
+    TranslationFixture canonical(lang_t::EN, nullptr);
+    CHECK(get_artefact_name(item) == key);
+    CHECK(string(T_(message)) == message);
+    CHECK(string(T_(skewer)) == skewer);
+    CHECK(getLongDescription(key).find("An enchanted lance") != string::npos);
 }
