@@ -931,7 +931,7 @@ namespace quiver
             {
                 if (god_forbids_item(you.inv[item_slot]))
                 {
-                    mprf(MSGCH_GOD, "%s forbids the use of this item.",
+                    mprf(MSGCH_GOD, T_("%s forbids the use of this item."),
                          uppercase_first(god_name(you.religion)).c_str());
                 }
                 else

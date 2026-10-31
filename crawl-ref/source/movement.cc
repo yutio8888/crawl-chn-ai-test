@@ -750,7 +750,7 @@ void east_wind_expose_monster(monster* mon)
     if (!mon->is_firewood() && !mon->wont_attack())
     {
         if (!mon->has_ench(ENCH_EXPOSED) && you.can_see(*mon))
-            mprf("A bitter wind exposes %s.", mon->name(DESC_THE).c_str());
+            mprf(T_("A bitter wind exposes %s."), mon->name(DESC_THE).c_str());
         mon->add_ench(mon_enchant(ENCH_EXPOSED, &you, random_range(30, 50)));
     }
 }

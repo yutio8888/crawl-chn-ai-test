@@ -1747,6 +1747,6 @@ void thorn_hunter_raise_barrier(monster& mon, bool skip_proximity_check)
     if (made_briar)
     {
         mon.add_ench(mon_enchant(ENCH_ABILITY_COOLDOWN, &mon, random_range(150, 250)));
-        simple_monster_message(mon, " raises briars to defend itself!", false, MSGCH_MONSTER_SPELL);
+        simple_monster_message(mon, T_(" raises briars to defend itself!"), false, MSGCH_MONSTER_SPELL);
     }
 }

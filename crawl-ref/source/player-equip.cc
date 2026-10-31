@@ -2095,14 +2095,17 @@ static void _equip_weapon_effect(item_def& item, bool showMsgs, bool unmeld)
     {
         if (you.hp <= 2)
         {
-            mprf("Your athame gleams mockingly in your nearly-%s state.",
-                 (you.is_nonliving() || you.is_lifeless_undead()) ? "destroyed" :
-                                                                    "dead");
+            if (you.is_nonliving() || you.is_lifeless_undead())
+                mpr(T_("Your athame gleams mockingly in your nearly-destroyed state."));
+            else
+                mpr(T_("Your athame gleams mockingly in your nearly-dead state."));
         }
         else
         {
-            mprf("Your athame demands its blood price!%s",
-                 you.has_blood() ? "" : " (Figuratively speaking.)");
+            if (you.has_blood())
+                mpr(T_("Your athame demands its blood price!"));
+            else
+                mpr(T_("Your athame demands its blood price! (Figuratively speaking.)"));
             ouch(max(you.hp / 10, 1), KILLED_BY_SELF_AIMED, MID_PLAYER,
                  nullptr, nullptr, true);
         }

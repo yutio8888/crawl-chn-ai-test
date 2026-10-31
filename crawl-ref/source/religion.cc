@@ -1885,21 +1885,21 @@ void upgrade_hepliaklqana_ancestor(bool quiet_force)
 
         if (ancestor->type == MONS_ANCESTOR_ELEMENTALIST && old_hd < 13 && hd >= 13)
         {
-            mprf("%s remembers how to cast %s spells more powerfully.",
+            mprf(T_("%s remembers how to cast %s spells more powerfully."),
                     ancestor->name(DESC_YOUR, true).c_str(),
                     ancestor->pronoun(PRONOUN_POSSESSIVE, true).c_str());
         }
 
         if (ancestor->type == MONS_ANCESTOR_KNIGHT && old_hd < 10 && hd >= 10)
         {
-            mprf("%s remembers how to pin enemies in place with %s attacks.",
+            mprf(T_("%s remembers how to pin enemies in place with %s attacks."),
                     ancestor->name(DESC_YOUR, true).c_str(),
                     ancestor->pronoun(PRONOUN_POSSESSIVE, true).c_str());
         }
 
         if (ancestor->type == MONS_ANCESTOR_KNIGHT && old_hd < 16 && hd >= 16)
         {
-            mprf("%s remembers the full extent of %s fortitude.",
+            mprf(T_("%s remembers the full extent of %s fortitude."),
                 ancestor->name(DESC_YOUR, true).c_str(),
                 ancestor->pronoun(PRONOUN_POSSESSIVE, true).c_str());
         }

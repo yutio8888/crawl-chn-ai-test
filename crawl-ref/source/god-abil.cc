@@ -5751,7 +5751,7 @@ bool ru_power_leap()
     wave.loudness = 2;
     wave.explode();
 
-    mpr("You perform a powerful leap!");
+    mpr(T_("You perform a powerful leap!"));
 
     // we need to exempt the player from damage.
     for (adjacent_iterator ai(you.pos(), false); ai; ++ai)

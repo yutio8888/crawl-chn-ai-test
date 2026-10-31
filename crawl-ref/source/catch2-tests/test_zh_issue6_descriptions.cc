@@ -263,7 +263,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                     if (flag == MB_KNOWN_INVIS)
                     {
                         CHECK(text.find("推断出了") != string::npos);
-                        CHECK(text.find("当前的生命值和状态") != string::npos);
+                        CHECK(text.find("当前生命值和状态") != string::npos);
                         CHECK(text.find("命中率") != string::npos);
                         CHECK(text.find("防御能力都会降低") != string::npos);
                         CHECK(text.find("最后一次看到") == string::npos);

@@ -713,7 +713,7 @@ bool summon_berserker(actor *caster, monster_type type)
     // Make the berserking last slightly less time than the berserker themselves,
     // so we can see them looking exhausted at the end. It's flavourful!
     mons->add_ench(mon_enchant(ENCH_BERSERK, mons, dur - random_range(30, 60)));
-    simple_monster_message(*mons, " goes berserk!");
+    simple_monster_message(*mons, T_(" goes berserk!"));
     return true;
 }
 

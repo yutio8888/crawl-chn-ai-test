@@ -5,6 +5,7 @@
 #include "act-iter.h"
 #include "areas.h"
 #include "cloud.h"
+#include "clua.h"
 #include "database.h"
 #include "describe.h"
 #include "dungeon.h"
@@ -23,18 +24,23 @@
 #include "mon-place.h"
 #include "mon-util.h"
 #include "movement-i18n.h"
+#include "movement.h"
+#include "mutation.h"
 #include "options.h"
 #include "player.h"
+#include "positional_format.h"
 #include "player-equip.h"
 #include "random.h"
 #include "ranged-attack.h"
 #include "spl-monench.h"
+#include "spl-cast.h"
 #include "spl-selfench.h"
 #include "spl-summoning.h"
 #include "spl-util.h"
 #include "state.h"
 #include "stringutil.h"
 #include "test_zh_fixture.h"
+#include "transform.h"
 #include "unwind.h"
 #include "xom.h"
 
@@ -818,5 +824,193 @@ TEST_CASE("playtest: reflected blocks place shield method before the Chinese act
             CHECK(message.find(method) < message.find(verb));
         CHECK(message.find(verb) < message.find(proj));
         CHECK(message.find(" block ") == string::npos);
+    }
+}
+
+// These checks exercise the actual producers. Until the translator lands the
+// keys they verify EN output and ZH fallback; the same assertions automatically
+// exercise the translated templates once source.txt contains them.
+TEST_CASE("trunk sync mutation catalyst refusals use complete display keys",
+          "[trunk-sync][messages]")
+{
+    for (bool zh : {false, true})
+    {
+        TranslationFixture language(zh ? lang_t::ZH : lang_t::EN,
+                                    zh ? "zh" : nullptr);
+        issue10_world world;
+        const char *keys[] = {
+            "Zin forbids you from drinking this foul brew!",
+            "You must return to life before you may mutate.",
+            "Sadly, you cannot mutate.",
+        };
+        for (int i = 0; i < 3; ++i)
+        {
+            you.religion = i == 0 ? GOD_ZIN : GOD_NO_GOD;
+            you.form = i == 1 ? transformation::death : transformation::none;
+            you.mutation[MUT_MUTATION_RESISTANCE] = i == 2 ? 3 : 0;
+            const string expected = T_(keys[i]);
+            const string actual = observe_message([] { use_mutation_catalyst(); });
+            INFO(actual);
+            CHECK(actual.find(expected) != string::npos);
+            if (!zh)
+                CHECK(expected == keys[i]);
+        }
+    }
+}
+
+TEST_CASE("trunk sync wind and enchantment expiry use display keys",
+          "[trunk-sync][messages]")
+{
+    for (bool zh : {false, true})
+    {
+        TranslationFixture language(zh ? lang_t::ZH : lang_t::EN,
+                                    zh ? "zh" : nullptr);
+        issue10_world world;
+        monster *mon = world.place(MONS_ORC, coord_def(21, 20));
+        const string name = mon->name(DESC_THE);
+        const string exposed = make_stringf(T_("A bitter wind exposes %s."), name.c_str());
+        CHECK(observe_message([&] { east_wind_expose_monster(mon); }).find(exposed)
+              != string::npos);
+        CHECK(observe_message([&] { mon->del_ench(ENCH_EXPOSED); }).find(
+                  name + T_(" is no longer exposed.")) != string::npos);
+        mon->add_ench(mon_enchant(ENCH_STAMPEDE, mon, INFINITE_DURATION));
+        CHECK(observe_message([&] { mon->del_ench(ENCH_STAMPEDE); }).find(
+                  name + T_(" stops stampeding.")) != string::npos);
+        if (!zh)
+            CHECK(exposed == "A bitter wind exposes the orc.");
+    }
+}
+
+TEST_CASE("trunk sync teleport targeting preserves immunity and display lookup",
+          "[trunk-sync][targeting]")
+{
+    for (bool zh : {false, true})
+    {
+        TranslationFixture language(zh ? lang_t::ZH : lang_t::EN,
+                                    zh ? "zh" : nullptr);
+        issue10_world world;
+        monster_info mi(MONS_ORC);
+        mi.mb.set(MB_NO_TELE);
+        const pair<spell_type, const char *> cases[] = {
+            {SPELL_WARP_SPACE, "immune to blinking"},
+            {SPELL_DISPERSAL, "immune to dispersal"},
+            {SPELL_TELEPORT_OTHER, "immune to teleportation"},
+        };
+        for (const auto &c : cases)
+        {
+            const auto describe = targeter_addl_desc(c.first, 50,
+                                                     get_spell_flags(c.first), nullptr);
+            REQUIRE(describe);
+            const vector<string> actual = describe(mi);
+            CHECK(actual == vector<string>{T_(c.second)});
+            if (!zh)
+                CHECK(actual == vector<string>{c.second});
+        }
+    }
+}
+
+// Explicitly selected after the translator lands the assets; no Chinese test
+// literals or temporary edits to the translator-owned source.txt are needed.
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "trunk sync translation handoff keys are populated",
+                 "[.][trunk-sync-translation-pending]")
+{
+    const char *keys[] = {
+        "\nIt does %dd%d damage.",
+        "%s pins %s in place with %s attack.",
+        "You perform a powerful leap!",
+        "None of your crystals are currently charged.",
+        "earthen",
+        "fiery",
+        "airy",
+        "icy",
+        "Your %s crystal is infused with energy.",
+        "Your %s crystals are infused with energy.",
+        " raises briars to defend itself!",
+        " vitality is bolstered.",
+        "%s starts stampeding towards %s.",
+        " is no longer exposed.",
+        " stops stampeding.",
+        "living %s spell",
+        "Doom befalls %s, leaving %s %s.",
+        "deeply drained",
+        "A bitter wind exposes %s.",
+        "Zin forbids you from drinking this foul brew!",
+        "You must return to life before you may mutate.",
+        "Sadly, you cannot mutate.",
+        "You break open the mutation catalyst, and crackling magic pours forth!",
+        "You bathe in the mists of the mutagenic serum and feel extremely strange.",
+        "Your athame gleams mockingly in your nearly-destroyed state.",
+        "Your athame gleams mockingly in your nearly-dead state.",
+        "Your athame demands its blood price!",
+        "Your athame demands its blood price! (Figuratively speaking.)",
+        "%s forbids the use of this item.",
+        "%s remembers how to cast %s spells more powerfully.",
+        "%s remembers how to pin enemies in place with %s attacks.",
+        "%s remembers the full extent of %s fortitude.",
+        "immune to blinking",
+        "immune to dispersal",
+        "immune to teleportation",
+        "You cannot harm %s.",
+        "A giggling sprite leaps out and plays with %s.",
+        " goes berserk!",
+        "Mutagenic energy floods into you!",
+        "Your body decomposes!",
+        "Salvo (%d)",
+        "salvo (%d)",
+        "You are no longer poisoned.",
+        "%s blinded and untethered in space!",
+        "%s interlaced with infuriating chaos!",
+    };
+    for (const char *key : keys)
+    {
+        INFO(key);
+        CHECK(string(T_(key)) != key);
+    }
+}
+
+TEST_CASE_METHOD(EnTranslationFixture,
+                 "trunk sync positional message sinks preserve English grammar",
+                 "[trunk-sync][messages]")
+{
+    issue10_world world;
+    CHECK(observe_message([] {
+        mprf_p(T_("%s pins %s in place with %s attack."),
+               "Your ancestor", "the orc", "its");
+    }).find("Your ancestor pins the orc in place with its attack.") != string::npos);
+    CHECK(observe_message([] {
+        mprf_p(T_("Doom befalls %s, leaving %s %s."),
+               "the orc", "it", "deeply drained");
+    }).find("Doom befalls the orc, leaving it deeply drained.") != string::npos);
+}
+
+TEST_CASE("trunk sync jademantle crystal lists use language-specific separators",
+          "[trunk-sync][trunk-sync-jademantle-list][zh-translation]")
+{
+    unwind_var<player> restore_player(you);
+    const int two = (int)spschool::earth | (int)spschool::fire;
+    const int three = two | (int)spschool::air;
+    for (bool zh : {false, true})
+    {
+        TranslationFixture language(zh ? lang_t::ZH : lang_t::EN,
+                                    zh ? "zh" : nullptr);
+        for (int elements : {two, three})
+        {
+            you.props[JADEMANTLE_CRYSTAL_KEY] = elements;
+            lua_State *ls = clua.state();
+            lua_stack_cleaner restore_stack(ls);
+            REQUIRE(clua.execstring("return you.jademantle_crystals_desc()",
+                                   "trunk-sync-jademantle-list", 1) == 0);
+            REQUIRE(lua_isstring(ls, -1));
+            const string actual = lua_tostring(ls, -1);
+            const string expected = zh
+                ? (elements == two ? "你的土和火玉晶充满了能量。"
+                                   : "你的土、火和气玉晶充满了能量。")
+                : (elements == two
+                   ? "Your earthen and fiery crystals are infused with energy."
+                   : "Your earthen, fiery and airy crystals are infused with energy.");
+            INFO(actual);
+            CHECK(actual == expected);
+        }
     }
 }
