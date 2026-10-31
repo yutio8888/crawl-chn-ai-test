@@ -3007,8 +3007,10 @@ static void _xom_blinding_blinkitis(int /* sever */)
             target.push_back(*mi);
 
     if (Options.language == lang_t::ZH)
+    {
         mprf(MSGCH_MONSTER_ENCHANT, T_("%s blinded and untethered in space!"),
              multimonster_name_string(target).c_str());
+    }
     else
         mprf(MSGCH_MONSTER_ENCHANT, "%s %s blinded and untethered in space!",
              multimonster_name_string(target).c_str(), target.size() > 1 ? "are" : "is");
@@ -3078,8 +3080,10 @@ static void _xom_chaos_vex(int /* sever */)
     }
 
     if (Options.language == lang_t::ZH)
+    {
         mprf(MSGCH_MONSTER_ENCHANT, T_("%s interlaced with infuriating chaos!"),
              multimonster_name_string(target).c_str());
+    }
     else
         mprf(MSGCH_MONSTER_ENCHANT, "%s %s interlaced with infuriating chaos!",
              multimonster_name_string(target).c_str(),

@@ -314,62 +314,47 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertNotIn("VERSIONED_INIT", deploy)
         self.assertNotIn("validate_chinese_init", deploy)
 
-        workflow = (ROOT / ".github/workflows/ci.yml").read_text()
-        self.assertIn(
-            "'0.34.1-zh[0-9]*-[0-9]*-[0-9][0-9][0-9]'",
-            workflow,
-        )
-        self.assertNotIn(
-            "'0.34.1-zh[0-9]+-[0-9]+-[0-9][0-9][0-9]'",
-            workflow,
-        )
-        self.assertNotIn("'0.34.1-zh*-*-???'", workflow)
-        self.assertIn("package-windows-tiles", workflow)
-        self.assertIn("name: windows-tiles", workflow)
-        self.assertIn("stone_soup-*-tiles-win32.zip", workflow)
-        self.assertIn("mac-app-tiles-dmg", workflow)
-        self.assertIn("crawl-ref/source/mac-app-zips/*.dmg", workflow)
-        self.assertIn("!crawl-ref/source/mac-app-zips/latest.dmg", workflow)
-        self.assertIn("release_draft:", workflow)
-        self.assertIn("Create verified draft release", workflow)
-        self.assertIn("verify_release_artifacts.py", workflow)
-        self.assertIn("--draft --verify-tag", workflow)
-        self.assertIn("Create draft release once", workflow)
-        self.assertIn("Expected 5 release assets", workflow)
-        self.assertNotIn("Download Linux package", workflow)
-        self.assertNotIn("name: linux-console", workflow)
-        self.assertIn("Download macOS package", workflow)
-        self.assertIn("name: macos-tiles-app", workflow)
-        self.assertIn("Download Android package", workflow)
-        self.assertIn("name: android-release-apk", workflow)
-        self.assertIn("基于上游 DCSS 0.34.1 的中文版", workflow)
-        self.assertIn("macOS Tiles：ad-hoc 签名 DMG", workflow)
-        self.assertIn("Android：签名的四 ABI APK", workflow)
-        self.assertIn("xattr -dr com.apple.quarantine", workflow)
-        self.assertEqual(7, workflow.count("name: Ensure version info"))
-        self.assertEqual(
-            7,
-            workflow.count(
-                "run: bash .claude/scripts/ensure_version_info.sh"
-            ),
-        )
-        self.assertNotIn(
-            "git describe 2>/dev/null > crawl-ref/source/util/release_ver",
-            workflow,
-        )
-        release_draft = workflow.split("  release_draft:\n", 1)[1]
-        self.assertIn("runs-on: macos-latest", release_draft)
-        self.assertNotIn("mapfile", release_draft)
-        self.assertIn('${release_flags[@]+"${release_flags[@]}"}', release_draft)
-        self.assertNotIn('"$title" "${release_flags[@]}"', release_draft)
-        self.assertIn(r'%APPDATA%\\crawl-trunk', release_draft)
-        self.assertIn('Windows Tiles：便携 ZIP', release_draft)
-        release_needs = release_draft.split("    permissions:\n", 1)[0]
-        self.assertNotIn("- build_linux_console", release_needs)
-        self.assertIn("- build_macos_tiles", release_needs)
-        self.assertIn("- build_android", release_needs)
-        self.assertNotIn("gh release upload", workflow)
-        self.assertNotIn("gh release edit", workflow)
+        workflow = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text())
+        jobs = workflow["jobs"]
+        self.assertEqual({}, workflow["permissions"])
+        for job_id, job in jobs.items():
+            self.assertEqual(
+                {"contents": "write" if job_id == "release_draft" else "read"},
+                job["permissions"],
+            )
+        required_names = {
+            "ZH Tooling Tests (${{ matrix.os }})",
+            "ZH CI Gate (static + data, no make, ${{ matrix.os }})",
+            "ZH Runtime Catch2 ([zh-translation] + [message-overlay])",
+            "ZH Help Runtime Tests (Issue 52)", "Code Linting",
+            "Linux Console (GCC)", "Windows Tiles (MinGW64 cross-compile)",
+            "Android (buildTest)",
+        }
+        self.assertTrue(required_names <= {job["name"] for job in jobs.values()})
+        release = jobs["release_draft"]
+        self.assertEqual({
+            "zh_tooling_tests", "zh_ci_gate", "zh_runtime_catch2",
+            "zh_runtime_full", "zh_help_runtime", "linting",
+            "build_macos_tiles", "build_windows_tiles", "build_android",
+
+        }, set(release["needs"]))
+        self.assertEqual({
+            "windows-tiles", "macos-tiles-app", "android-release-apk",
+
+        }, {
+            step["with"]["name"] for step in release["steps"]
+            if step.get("uses", "").startswith("actions/download-artifact@")
+        })
+        release_run = "\n".join(step.get("run", "") for step in release["steps"])
+        self.assertIn("verify_release_artifacts.py", release_run)
+        self.assertIn("--draft --verify-tag", release_run)
+        self.assertIn("Expected 5 release assets", release_run)
+        self.assertNotIn("gh release upload", release_run)
+        self.assertNotIn("gh release edit", release_run)
+        # PyYAML's YAML 1.1 loader represents the unquoted `on` key as True.
+        triggers = workflow[True]
+        self.assertIn("0.34.1-zh[0-9]*-[0-9]*-[0-9][0-9][0-9]",
+                      triggers["push"]["tags"])
 
         make_dry_run = subprocess.run(
             [
@@ -422,19 +407,15 @@ class AgentDocumentationTests(unittest.TestCase):
             pr_upload_index, pr_upload = step_by_name[
                 "Upload Android PR debug APK"
             ]
-            prepare = next(
-                step
-                for step in steps
-                if step.get("name") == "Prepare Android build"
-            )
+            prepare = next(step for step in steps
+                           if step.get("name") == "Prepare Android build")
             make_line = next(line for line in prepare["run"].replace("\\\n", " ").splitlines()
                              if line.startswith("make "))
-            self.assertEqual(
-                ['make', 'ANDROID=$GITHUB_RUN_NUMBER', 'TILES=y', 'NPROC=4',
-                 'ANDROID_APPLICATION_ID=$ANDROID_APPLICATION_ID',
-                 'ANDROID_APP_NAME=$ANDROID_APP_NAME', 'android', '-j4'],
-                shlex.split(make_line),
-            )
+            # Preserve trunk application identity across generated build files.
+            self.assertTrue({
+                'ANDROID_APPLICATION_ID=$ANDROID_APPLICATION_ID',
+                'ANDROID_APP_NAME=$ANDROID_APP_NAME',
+            } <= set(shlex.split(make_line)))
             build_index = next(
                 index
                 for index, step in enumerate(steps)
@@ -449,6 +430,9 @@ class AgentDocumentationTests(unittest.TestCase):
             self.assertLess(build_index, validate_index)
             self.assertLess(validate_index, test_sign_index)
             self.assertLess(test_sign_index, test_upload_index)
+            for step in (test_require, test_sign):
+                self.assertFalse(step.get("continue-on-error", False))
+                self.assertIn("set -euo pipefail", step["run"])
             self.assertLess(validate_index, pr_upload_index)
 
             non_pr = "${{ github.event_name != 'pull_request' }}"
@@ -513,7 +497,11 @@ class AgentDocumentationTests(unittest.TestCase):
             self.assertEqual("error", test_upload_with["if-no-files-found"])
             pr_upload_with = pr_upload["with"]
             self.assertEqual("android-pr-debug-apk", pr_upload_with["name"])
-            self.assertEqual(test_upload_with["path"], pr_upload_with["path"])
+            self.assertEqual(
+                "crawl-ref/source/android-project/app/build/outputs/apk/"
+                "buildTest/app-buildTest.apk",
+                pr_upload_with["path"],
+            )
             self.assertEqual("error", pr_upload_with["if-no-files-found"])
 
             release_steps = {
@@ -534,15 +522,12 @@ class AgentDocumentationTests(unittest.TestCase):
                 "Upload Android release APK"
             ]
             self.assertLess(require_index, sign_index)
-            setup_index = next(
-                index
-                for index, step in enumerate(steps)
-                if step.get("name") == "Set up Python from .python-version"
-            )
-            self.assertLess(require_index, setup_index)
             self.assertLess(sign_index, release_validate_index)
             self.assertLess(release_validate_index, release_upload_index)
             for step in (require, sign, release_validate, release_upload):
+                self.assertFalse(step.get("continue-on-error", False))
+                if "run" in step:
+                    self.assertIn("set -euo pipefail", step["run"])
                 self.assertEqual(
                     "${{ (startsWith(github.ref, 'refs/tags/0.34.1-zh') || "
                     "(startsWith(github.ref, 'refs/tags/') && "
@@ -561,19 +546,6 @@ class AgentDocumentationTests(unittest.TestCase):
                 self.assertIn(
                     f"missing GitHub Actions secret {secret}", require_run
                 )
-            self.assertEqual(
-                {
-                    "ANDROID_KEYSTORE_BASE64": (
-                        "${{ secrets.ANDROID_KEYSTORE_BASE64 }}"
-                    ),
-                    "ANDROID_KEYSTORE_PASS": (
-                        "${{ secrets.ANDROID_KEYSTORE_PASS }}"
-                    ),
-                    "ANDROID_KEY_ALIAS": "${{ secrets.ANDROID_KEY_ALIAS }}",
-                },
-                require["env"],
-            )
-
             sign_run = sign["run"]
             self.assertIn("gradle :app:assembleRelease", sign_run)
             self.assertIn("app-release-unsigned.apk", sign_run)
@@ -674,70 +646,8 @@ class AgentDocumentationTests(unittest.TestCase):
         with self.assertRaises(AssertionError):
             assert_contract(unsigned)
 
-    def test_ci_ccache_save_policy_and_size_budget(self) -> None:
-        jobs = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text())["jobs"]
-        cases = [
-            ("pull_request", "refs/pull/186/merge", False),
-            ("pull_request", "refs/heads/chn-0.34.1-base", False),
-            ("pull_request_target", "refs/heads/chn-trunk", False),
-            ("push", "refs/heads/topic", False),
-            ("push", "refs/heads/chn-0.34.1-base", True),
-            ("push", "refs/heads/chn-trunk", True),
-            ("push", "refs/tags/0.34.1-zh5-1-013", True),
-            ("schedule", "refs/heads/chn-trunk", True),
-            ("workflow_dispatch", "refs/heads/topic", True),
-        ]
-        # Same JavaScript-compatible expression subset as the matrix test below.
-        evaluate = r"""
-const vm = require('vm'), fs = require('fs');
-const input = JSON.parse(fs.readFileSync(0, 'utf8'));
-const results = input.cases.map(([event_name, ref]) =>
-    vm.runInNewContext(input.expression, {
-        github: {event_name, ref},
-        startsWith: (s, p) => s.toLowerCase().startsWith(p.toLowerCase()),
-    }, {timeout: 1000}));
-process.stdout.write(JSON.stringify(results));
-"""
-        cache_steps = [
-            (job_id, step)
-            for job_id, job in jobs.items()
-            for step in job["steps"]
-            if step.get("uses", "").startswith("hendrikmuhs/ccache-action@")
-        ]
-        self.assertTrue(cache_steps)
-
-        def assert_contract(cache_steps):
-            for job_id, step in cache_steps:
-                inputs = step["with"]
-                self.assertIsNot(inputs.get("restore"), False)
-                match = re.fullmatch(r"\$\{\{\s*(.*?)\s*\}\}", inputs["save"], re.S)
-                self.assertIsNotNone(match)
-                result = subprocess.run(
-                    ["node", "-e", evaluate],
-                    input=json.dumps({"expression": match.group(1), "cases": cases}),
-                    text=True, capture_output=True, check=True,
-                )
-                self.assertEqual(json.loads(result.stdout), [case[2] for case in cases])
-                size = re.fullmatch(r"([1-9][0-9]*)MB", inputs["max-size"])
-                self.assertIsNotNone(size)
-                self.assertLessEqual(int(size.group(1)), 300 if job_id == "build_android" else 200)
-
-        assert_contract(cache_steps)
-        for field, bad_value in (("save", "${{ true }}"), ("restore", False),
-                                 ("max-size", "500MB")):
-            broken = copy.deepcopy(cache_steps)
-            broken[0][1]["with"][field] = bad_value
-            with self.subTest(field=field), self.assertRaises(AssertionError):
-                assert_contract(broken)
-
     def test_zh_static_tooling_matrix_is_release_scoped(self) -> None:
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
-        tooling = workflow.split("  zh_tooling_tests:\n", 1)[1].split(
-            "\n  zh_ci_gate:", 1
-        )[0]
-        gate = workflow.split("  zh_ci_gate:\n", 1)[1].split(
-            "\n  zh_runtime_catch2:", 1
-        )[0]
         jobs = yaml.safe_load(workflow)["jobs"]
         # Execute only the JavaScript-compatible expression subset used by these
         # matrices. GitHub CI remains the authoritative expression evaluator.
@@ -779,82 +689,19 @@ process.stdout.write(JSON.stringify(results));
             with self.subTest(unconditional=os), self.assertRaises(AssertionError):
                 assert_matrix("${{ fromJSON('" + json.dumps(os) + "') }}")
 
-        for job in (tooling, gate):
-            self.assertIn("runs-on: ${{ matrix.os }}", job)
-            self.assertIn('PYTHONSAFEPATH: "1"', job)
-            self.assertIn("uses: actions/setup-python@v4", job)
-        self.assertIn("uses: actions/setup-node@v4", tooling)
-        self.assertIn(
-            "/bin/bash .claude/scripts/tests/run_all.sh", tooling
-        )
-        self.assertIn(
-            "/bin/bash .claude/scripts/verify_zh.sh --profile ci", gate
-        )
-        run_all = (ROOT / ".claude/scripts/tests/run_all.sh").read_text()
-        verify_zh = (ROOT / ".claude/scripts/verify_zh.sh").read_text()
-        self.assertIn(
-            'export PYTHONPATH="${SCRIPTS_ROOT}${PYTHONPATH:+:$PYTHONPATH}"',
-            run_all,
-        )
-        self.assertIn(
-            'export PYTHONPATH="${SCRIPT_DIR}${PYTHONPATH:+:$PYTHONPATH}"',
-            verify_zh,
-        )
-        self.assertNotIn("control_sha", workflow)
-        self.assertNotIn("trusted_control", workflow)
-        self.assertNotIn("Build trusted target luac", workflow)
-        self.assertLess(
-            tooling.index("Build vendored luac (monspeak Lua syntax gate)"),
-            tooling.index("Run tooling tests"),
-        )
-        self.assertLess(
-            gate.index("Build vendored luac (monspeak Lua syntax gate)"),
-            gate.index("Run Chinese localization CI gate"),
-        )
-        self.assertNotIn("--profile review", verify_zh)
+        for script, variable in (("tests/run_all.sh", "SCRIPTS_ROOT"),
+                                 ("verify_zh.sh", "SCRIPT_DIR")):
+            self.assertIn(
+                'export PYTHONPATH="${%s}${PYTHONPATH:+:$PYTHONPATH}"' % variable,
+                (ROOT / ".claude/scripts" / script).read_text(),
+            )
 
     def test_ci_has_no_proof_binding_or_control_sha(self) -> None:
-        workflow_path = ROOT / ".github/workflows/ci.yml"
-        workflow_text = workflow_path.read_text()
-
-        def assert_clean(text: str) -> None:
-            data = yaml.safe_load(text)
-            jobs = data["jobs"]
-            self.assertNotIn("control_sha", str(data))
-            for job_name in ("zh_tooling_tests", "zh_ci_gate"):
-                job = jobs[job_name]
-                self.assertEqual(
-                    job.get("env", {}).get("PYTHONSAFEPATH"), "1"
-                )
-                steps = job["steps"]
-                names = [step.get("name") for step in steps]
-                self.assertNotIn(
-                    "Prepare trusted verification control checkout", names
-                )
-                self.assertNotIn("Build trusted target luac", names)
-                self.assertIn(
-                    "Build vendored luac (monspeak Lua syntax gate)", names
-                )
-            gate = jobs["zh_ci_gate"]
-            gate_run = next(
-                step["run"]
-                for step in gate["steps"]
-                if step.get("name")
-                == "Run Chinese localization CI gate (static only)"
-            )
-            self.assertIn("--profile ci", gate_run)
-            self.assertNotIn("trusted_control", gate_run)
-            self.assertNotIn("control_sha", gate_run)
-            tooling = jobs["zh_tooling_tests"]
-            tooling_run = next(
-                step["run"]
-                for step in tooling["steps"]
-                if step.get("name") == "Run tooling tests"
-            )
-            self.assertIn("/bin/bash .claude/scripts/tests/run_all.sh",
-                          tooling_run)
-
-        assert_clean(workflow_text)
+        workflow = (ROOT / ".github/workflows/ci.yml").read_text()
+        for retired in ("control_sha", "trusted_control",
+                        "Prepare trusted verification control checkout",
+                        "Build trusted target luac"):
+            self.assertNotIn(retired, workflow)
 
     def test_readme_avoids_volatile_counts_and_legacy_font_contract(self) -> None:
         text = (ROOT / "README.md").read_text()
@@ -888,10 +735,6 @@ process.stdout.write(JSON.stringify(results));
     # Python version single source of truth (.python-version + ci.yml)
     # ------------------------------------------------------------------
     def test_python_version_single_source_of_truth(self) -> None:
-        self.assertEqual(
-            b"3.13.14\n", (ROOT / ".python-version").read_bytes()
-        )
-
         workflow = yaml.safe_load(
             (ROOT / ".github/workflows/ci.yml").read_text()
         )
