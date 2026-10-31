@@ -2275,15 +2275,72 @@ def _matches_preprocessor_node(node, source, patterns, switch_lines, events):
     return False
 
 
+def _cpp_macro_argument_count(arguments: bytes) -> int:
+    """Count preprocessing arguments; only parentheses protect commas.
+
+    Reuse phase-2 splicing and literal/comment handling. Braces, brackets and
+    template angle brackets do not nest macro arguments (PR #191).
+    """
+    logical, _ = _phase2_splice(arguments[1:-1])
+    pos, depth, count = 0, 0, 1
+    while pos < len(logical):
+        if logical[pos:pos + 2] == b"/*":
+            pos = _skip_block_comment(logical, pos, len(logical))
+        elif logical[pos:pos + 2] == b"//":
+            pos = _skip_line_comment(logical, pos, len(logical))
+        elif logical[pos] == 34 and _raw_prefix_here(logical, pos, len(logical)):
+            pos = _skip_raw_string(logical, pos, len(logical))
+        elif logical[pos:pos + 1].isdigit() or (
+                logical[pos:pos + 1] == b"." and logical[pos + 1:pos + 2].isdigit()):
+            # Apostrophes in preprocessing numbers are digit separators, not
+            # character-literal delimiters that could hide a following comma.
+            number = re.match(rb"[0-9.][A-Za-z_0-9.']*", logical[pos:])
+            pos += number.end()
+        elif logical[pos] in (34, 39):
+            pos = _skip_quoted(logical, pos, len(logical))
+        else:
+            if logical[pos] == 40:
+                depth += 1
+            elif logical[pos] == 41:
+                depth -= 1
+            elif logical[pos] == 44 and depth == 0:
+                count += 1
+            pos += 1
+    return count
+
+
+def _annotation_statement_scope(statement, function_macro: bool) -> bool:
+    """Accept complete statements only in the production macro's scope."""
+    parent = statement.parent
+    if function_macro:
+        # Conditional wrappers do not introduce a C++ scope.
+        while parent is not None and parent.type in (
+                "preproc_if", "preproc_ifdef", "preproc_else", "preproc_elif"):
+            parent = parent.parent
+        return parent is not None and (
+            parent.type == "translation_unit" or (
+                parent.type == "declaration_list" and parent.parent is not None
+                and parent.parent.type == "namespace_definition"))
+    # A case label does not introduce a scope; player-equip.cc L201 has
+    # a complete NO_SLOT statement directly under a switch case label.
+    if parent is not None and parent.type == "case_statement":
+        parent = parent.parent
+    return parent is not None and (
+        parent.type in ("compound_statement", "else_clause") or (
+            parent.type == "if_statement"
+            and parent.child_by_field_name("consequence") == statement))
+
+
 def parse_cpp_annotations(parser, source: bytes):
     """Parse known annotations and local macros without losing offsets.
 
     The first tree identifies actual function declarations/definitions, so
     text in comments, literals and macro bodies is never rewritten. Only the
-    complete declaration prefixes observed in Crawl are supported. Unknown
+    complete declaration prefixes and statement macros observed in Crawl are
+    supported, plus the empty conversion call documented below. Unknown
     annotations and all body syntax remain for normal fail-closed validation.
-    The returned tree indexes the original bytes: annotations become spaces,
-    never deleted text, and callers still inspect/report the original source.
+    The returned tree indexes the original bytes: all replacements preserve
+    length and newlines, and callers still inspect/report the original source.
     """
     tree = parser.parse(source)
     normalized = bytearray(source)
@@ -2291,6 +2348,7 @@ def parse_cpp_annotations(parser, source: bytes):
     stack = [tree.root_node]
     identifiers = []
     literals = []
+    macro_statements = []
     prefixes = (
         rb"(?P<annotation>NORETURN)\s+(?:static\s+)?void\s+",
         rb"static\s+void\s+(?P<annotation>CALLBACK)\s+",
@@ -2305,11 +2363,64 @@ def parse_cpp_annotations(parser, source: bytes):
             literals.append((node.start_byte, node.end_byte))
             continue
         if (node.type == "identifier"
-                and source[node.start_byte:node.end_byte] in (b"CRAWL", b"LETTERS")):
+                and source[node.start_byte:node.end_byte] in (b"CRAWL", b"LETTERS", b"PRIu64")):
             identifiers.append(node)
+        # target.cc L117/L122: the grammar reads an unqualified conversion
+        # call as an ERROR("operator") followed by bool(). This is neither a
+        # conditional split nor a macro. Lower only that exact empty call,
+        # leaving surrounding expressions and every other ERROR untouched.
+        if (node.type == "ERROR" and node.text == b"operator"
+                and node.next_named_sibling is not None):
+            following = node.next_named_sibling
+            if following.type == "binary_expression":
+                following = following.child_by_field_name("left")
+            if (following is not None and following.type == "call_expression"
+                    and re.fullmatch(rb"[ \t]*bool[ \t]*\([ \t]*\)",
+                                     source[node.end_byte:following.end_byte])):
+                normalized[node.start_byte:node.end_byte] = b" " * len(node.text)
+                changed = True
         if node.type == "call_expression":
             function = node.child_by_field_name("function")
             args = node.child_by_field_name("arguments")
+            if (function is not None and function.type == "identifier"
+                    and args is not None and not args.has_error):
+                macro = function.text
+                values = args.named_children
+                expected = {b"LUARET1": 3, b"LUARET2": 4, b"LUAWRAP": 2,
+                            b"NO_SLOT": 1, b"NO_EQUIP": 1}.get(macro)
+                if expected and _cpp_macro_argument_count(args.text) != expected:
+                    raise ValueError(f"invalid preprocessing argument count for {macro.decode()}")
+                # cluautil.h LUARET1/2 and LUAWRAP define whole functions
+                # without a trailing semicolon (l-you.cc L77 onwards).
+                # Represent their evaluated operands as return expressions:
+                # no invented persistent storage, no declaration ambiguity,
+                # and all original operand bytes remain scanner-visible.
+                count = {b"LUARET1": 3, b"LUARET2": 4, b"LUAWRAP": 2}.get(macro)
+                metadata = 1 if macro == b"LUAWRAP" else 2
+                if (count and len(values) == count
+                        and values[0].type == "identifier"
+                        and (metadata == 1 or (
+                            values[1].type == "identifier" and values[1].text in
+                            (b"boolean", b"integer", b"number", b"string")))):
+                    begin, end = node.start_byte, values[metadata].start_byte
+                    normalized[begin:end] = bytes(
+                        ch if ch in (10, 13) else 32 for ch in source[begin:end])
+                    macro_statements.append((begin, args.end_byte, True, macro))
+                    normalized[begin:begin + 6] = b"return"
+                    normalized[args.end_byte - 1] = ord(";")
+                    changed = True
+                # player-equip.cc L78/L473 define NO_SLOT/NO_EQUIP as blocks.
+                # Keep its entire evaluated argument, replacing only the
+                # macro wrapper with an expression statement; else then binds
+                # exactly as it does to the original compound statement.
+                if macro in (b"NO_SLOT", b"NO_EQUIP") and len(values) == 1:
+                    macro_statements.append((values[0].start_byte, args.end_byte,
+                                             False, macro))
+                    begin, end = node.start_byte, args.start_byte + 1
+                    normalized[begin:end] = bytes(
+                        ch if ch in (10, 13) else 32 for ch in source[begin:end])
+                    normalized[args.end_byte - 1] = ord(";")
+                    changed = True
             if (function is not None and function.type == "identifier"
                     and source[function.start_byte:function.end_byte] == b"va_arg"
                     and args is not None):
@@ -2352,18 +2463,39 @@ def parse_cpp_annotations(parser, source: bytes):
     # Scheme 3 precursor: only an AST identifier adjacent to an actual
     # string literal, with whitespace between them, denotes this object
     # macro. Comments, raw-string contents and longer identifiers cannot
-    # trigger it. CRAWL (version.h) and LETTERS (lang-fake.cc) are the
-    # supported object macros; all bytes and newlines retain their offsets.
+    # trigger it. CRAWL (version.h), LETTERS (lang-fake.cc), and PRIu64
+    # (inttypes.h; random.cc L202) are the supported object macros.
+    # All bytes and newlines retain their offsets.
     for node in identifiers:
         if any((end <= node.start_byte
                 and not source[end:node.start_byte].strip())
                or (node.end_byte <= begin
                    and not source[node.end_byte:begin].strip())
                for begin, end in literals):
+            # Preserve the numeric conversion and subsequent printf argument
+            # positions. PRIu64's platform-specific width is irrelevant here;
+            # an unsigned long long conversion consumes the same one argument.
+            replacement = b'"llu"' if node.text == b"PRIu64" else b'""'
             normalized[node.start_byte:node.end_byte] = (
-                b'""' + b' ' * (node.end_byte - node.start_byte - 2))
+                replacement + b' ' * (node.end_byte - node.start_byte - len(replacement)))
             changed = True
-    return parser.parse(bytes(normalized)) if changed else tree
+    result = parser.parse(bytes(normalized)) if changed else tree
+    # Recovery can initially misread a complete macro statement as an
+    # initializer or swallow its following else. Check the repaired tree's
+    # exact statement extent and scope, never an approximate ancestor window.
+    statements = {}
+    pending = [result.root_node]
+    while pending and macro_statements:
+        statement = pending.pop()
+        if statement.type in ("return_statement", "expression_statement"):
+            statements[(statement.start_byte, statement.end_byte, statement.type)] = statement
+        pending.extend(statement.children)
+    for begin, end, function_macro, macro in macro_statements:
+        kind = "return_statement" if function_macro else "expression_statement"
+        statement = statements.get((begin, end, kind))
+        if statement is None or not _annotation_statement_scope(statement, function_macro):
+            raise ValueError(f"unsupported statement position for {macro.decode()}")
+    return result
 
 
 def preprocessor_patterns_for_path(filepath):
