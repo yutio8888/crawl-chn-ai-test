@@ -38,7 +38,8 @@ using namespace std;
 using WORD = uint16_t;
 struct COORD { short X, Y; };
 struct SMALL_RECT { short Left, Top, Right, Bottom; };
-struct CHAR_INFO { struct { char16_t UnicodeChar; } Char; WORD Attributes; };
+// Model WCHAR as an unsigned 16-bit value, not a distinct Unicode character type.
+struct CHAR_INFO { struct { WORD UnicodeChar; } Char; WORD Attributes; };
 using PCHAR_INFO = CHAR_INFO*;
 constexpr WORD COMMON_LVB_LEADING_BYTE = 0x100;
 constexpr WORD COMMON_LVB_TRAILING_BYTE = 0x200;
@@ -61,7 +62,7 @@ void gotoxy_sys(int x, int y) {
 }
 ''' + widths + writer + flush + r'''
 void reset() {
-    fill(begin(storage), end(storage), CHAR_INFO{{u' '}, 7});
+    fill(begin(storage), end(storage), CHAR_INFO{{' '}, 7});
     cx = cy = flushes = 0;
     current_colour = 7;
     _clear_dirty_area();
