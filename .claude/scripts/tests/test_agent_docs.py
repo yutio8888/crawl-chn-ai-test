@@ -674,62 +674,6 @@ class AgentDocumentationTests(unittest.TestCase):
         with self.assertRaises(AssertionError):
             assert_contract(unsigned)
 
-    def test_ci_ccache_save_policy_and_size_budget(self) -> None:
-        jobs = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text())["jobs"]
-        cases = [
-            ("pull_request", "refs/pull/186/merge", False),
-            ("pull_request", "refs/heads/chn-0.34.1-base", False),
-            ("pull_request_target", "refs/heads/chn-trunk", False),
-            ("push", "refs/heads/topic", False),
-            ("push", "refs/heads/chn-0.34.1-base", True),
-            ("push", "refs/heads/chn-trunk", True),
-            ("push", "refs/tags/0.34.1-zh5-1-013", True),
-            ("schedule", "refs/heads/chn-trunk", True),
-            ("workflow_dispatch", "refs/heads/topic", True),
-        ]
-        # Same JavaScript-compatible expression subset as the matrix test below.
-        evaluate = r"""
-const vm = require('vm'), fs = require('fs');
-const input = JSON.parse(fs.readFileSync(0, 'utf8'));
-const results = input.cases.map(([event_name, ref]) =>
-    vm.runInNewContext(input.expression, {
-        github: {event_name, ref},
-        startsWith: (s, p) => s.toLowerCase().startsWith(p.toLowerCase()),
-    }, {timeout: 1000}));
-process.stdout.write(JSON.stringify(results));
-"""
-        cache_steps = [
-            (job_id, step)
-            for job_id, job in jobs.items()
-            for step in job["steps"]
-            if step.get("uses", "").startswith("hendrikmuhs/ccache-action@")
-        ]
-        self.assertTrue(cache_steps)
-
-        def assert_contract(cache_steps):
-            for job_id, step in cache_steps:
-                inputs = step["with"]
-                self.assertIsNot(inputs.get("restore"), False)
-                match = re.fullmatch(r"\$\{\{\s*(.*?)\s*\}\}", inputs["save"], re.S)
-                self.assertIsNotNone(match)
-                result = subprocess.run(
-                    ["node", "-e", evaluate],
-                    input=json.dumps({"expression": match.group(1), "cases": cases}),
-                    text=True, capture_output=True, check=True,
-                )
-                self.assertEqual(json.loads(result.stdout), [case[2] for case in cases])
-                size = re.fullmatch(r"([1-9][0-9]*)MB", inputs["max-size"])
-                self.assertIsNotNone(size)
-                self.assertLessEqual(int(size.group(1)), 300 if job_id == "build_android" else 200)
-
-        assert_contract(cache_steps)
-        for field, bad_value in (("save", "${{ true }}"), ("restore", False),
-                                 ("max-size", "500MB")):
-            broken = copy.deepcopy(cache_steps)
-            broken[0][1]["with"][field] = bad_value
-            with self.subTest(field=field), self.assertRaises(AssertionError):
-                assert_contract(broken)
-
     def test_zh_static_tooling_matrix_is_release_scoped(self) -> None:
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
         tooling = workflow.split("  zh_tooling_tests:\n", 1)[1].split(
