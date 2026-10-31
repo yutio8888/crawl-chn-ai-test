@@ -147,21 +147,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyyaml
           sudo .github/workflows/deps.py --compiler gcc --build-opts "" --debug-opts "FULLDEBUG=1"
-      - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          # PRs restore base-branch caches without creating merge-ref snapshots.
-          save: >-
-            ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
-                (github.event_name == 'push' && (github.ref == 'refs/heads/chn-0.34.1-base' ||
-                 github.ref == 'refs/heads/chn-trunk' || startsWith(github.ref, 'refs/tags/'))) }}
-          max-size: 200MB
-          key: zh-runtime-catch2
-          restore-keys: zh-runtime-catch2
-      - name: "Setup ccache: prepend path"
-        run: "echo /usr/lib/ccache >> $GITHUB_PATH"
-      - name: "Setup ccache: update symlinks"
-        run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh
       - name: Build catch2-tests and run [zh-translation] + [message-overlay]
@@ -196,21 +181,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyyaml
           sudo .github/workflows/deps.py --compiler gcc --build-opts "" --debug-opts "FULLDEBUG=1"
-      - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          # PRs restore base-branch caches without creating merge-ref snapshots.
-          save: >-
-            ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
-                (github.event_name == 'push' && (github.ref == 'refs/heads/chn-0.34.1-base' ||
-                 github.ref == 'refs/heads/chn-trunk' || startsWith(github.ref, 'refs/tags/'))) }}
-          max-size: 200MB
-          key: zh-runtime-full
-          restore-keys: zh-runtime-full
-      - name: "Setup ccache: prepend path"
-        run: "echo /usr/lib/ccache >> $GITHUB_PATH"
-      - name: "Setup ccache: update symlinks"
-        run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh
       - name: Build and run full ZH runtime (L1+L2+L3)
@@ -238,21 +208,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install tree-sitter==0.26.0 tree-sitter-cpp==0.23.4 pyyaml
           sudo .github/workflows/deps.py --compiler gcc --build-opts "" --debug-opts "FULLDEBUG=1"
-      - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          # PRs restore base-branch caches without creating merge-ref snapshots.
-          save: >-
-            ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
-                (github.event_name == 'push' && (github.ref == 'refs/heads/chn-0.34.1-base' ||
-                 github.ref == 'refs/heads/chn-trunk' || startsWith(github.ref, 'refs/tags/'))) }}
-          max-size: 200MB
-          key: zh-help-runtime
-          restore-keys: zh-help-runtime
-      - name: "Setup ccache: prepend path"
-        run: "echo /usr/lib/ccache >> $GITHUB_PATH"
-      - name: "Setup ccache: update symlinks"
-        run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh
       - name: Build and run help-system runtime tests
@@ -368,21 +323,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyyaml
           sudo .github/workflows/deps.py --compiler gcc --build-opts ""
-      - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          # PRs restore base-branch caches without creating merge-ref snapshots.
-          save: >-
-            ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
-                (github.event_name == 'push' && (github.ref == 'refs/heads/chn-0.34.1-base' ||
-                 github.ref == 'refs/heads/chn-trunk' || startsWith(github.ref, 'refs/tags/'))) }}
-          max-size: 200MB
-          key: build-linux-console
-          restore-keys: build-linux-console
-      - name: "Setup ccache: prepend path"
-        run: "echo /usr/lib/ccache >> $GITHUB_PATH"
-      - name: "Setup ccache: update symlinks"
-        run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh
       - name: Build Linux console
@@ -470,21 +410,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyyaml
           sudo .github/workflows/deps.py --crosscompile --build-opts TILES=1
-      - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          # PRs restore base-branch caches without creating merge-ref snapshots.
-          save: >-
-            ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
-                (github.event_name == 'push' && (github.ref == 'refs/heads/chn-0.34.1-base' ||
-                 github.ref == 'refs/heads/chn-trunk' || startsWith(github.ref, 'refs/tags/'))) }}
-          max-size: 200MB
-          key: build-windows-tiles
-          restore-keys: build-windows-tiles
-      - name: "Setup ccache: prepend path"
-        run: "echo /usr/lib/ccache >> $GITHUB_PATH"
-      - name: "Setup ccache: update symlinks"
-        run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh
       - name: Build Windows tiles
@@ -528,21 +453,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyyaml
           sudo .github/workflows/deps.py --crosscompile --build-opts ""
-      - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          # PRs restore base-branch caches without creating merge-ref snapshots.
-          save: >-
-            ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
-                (github.event_name == 'push' && (github.ref == 'refs/heads/chn-0.34.1-base' ||
-                 github.ref == 'refs/heads/chn-trunk' || startsWith(github.ref, 'refs/tags/'))) }}
-          max-size: 200MB
-          key: build-windows-console
-          restore-keys: build-windows-console
-      - name: "Setup ccache: prepend path"
-        run: "echo /usr/lib/ccache >> $GITHUB_PATH"
-      - name: "Setup ccache: update symlinks"
-        run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh
       - name: Build Windows console
@@ -573,7 +483,6 @@ jobs:
     name: Android (buildTest)
     runs-on: ubuntu-latest
     env:
-      NDK_CCACHE: ccache
       ANDROID_TEST_CERT_SHA256: ab57cadd85e4cc2cc94cc6107e7f929080acf3a58e3c1134b37f6066c337c287
     steps:
       - uses: actions/checkout@v3
@@ -627,23 +536,6 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.13
-      - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          # PRs restore base-branch caches without creating merge-ref snapshots.
-          save: >-
-            ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
-                (github.event_name == 'push' && (github.ref == 'refs/heads/chn-0.34.1-base' ||
-                 github.ref == 'refs/heads/chn-trunk' || startsWith(github.ref, 'refs/tags/'))) }}
-          max-size: 300MB
-          key: build-android
-          restore-keys: build-android
-      - name: "Setup ccache: extra configuration"
-        run: "ccache --set-config compiler_check=content"
-      - name: "Setup ccache: prepend path"
-        run: "echo /usr/lib/ccache >> $GITHUB_PATH"
-      - name: "Setup ccache: update symlinks"
-        run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
         run: bash .claude/scripts/ensure_version_info.sh
       - name: Prepare Android build
