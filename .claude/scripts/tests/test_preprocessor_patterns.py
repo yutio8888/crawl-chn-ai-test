@@ -161,6 +161,204 @@ class PreprocessorPatternTests(unittest.TestCase):
                                 and f['arg'] == 'std::string("issue6 hazard")'
                                 for f in data['findings']))
 
+    def test_trunk_baselines_and_line_shifts_through_all_scanners(self):
+        for name in ('l-you.cc', 'player-equip.cc', 'random.cc', 'target.cc'):
+            original = (ROOT / 'crawl-ref/source' / name).read_bytes()
+            with tempfile.TemporaryDirectory() as td:
+                path = Path(td) / name
+                for label, source, success in (
+                    ('baseline', original, True),
+                    ('shifted', b'// unrelated line\n' * 7 + original, True),
+                    ('broken', original + b'\nvoid probe(){int value = 1;\n', False),
+                ):
+                    path.write_bytes(source)
+                    for scanner in ('scan_varargs_string.py', 'scan_string_concat.py',
+                                    'scan_i18n_lifetime.py'):
+                        with self.subTest(file=name, variant=label, scanner=scanner):
+                            result = subprocess.run(
+                                [sys.executable, str(SCRIPTS / scanner), '--files',
+                                 str(path), '--format', 'json', '--require-parser'],
+                                capture_output=True, text=True)
+                            self.assertIn(result.returncode, (0, 1) if success else (2,),
+                                          result.stdout + result.stderr)
+
+    def test_complete_statement_macros_keep_offsets_and_operand_findings(self):
+        parser = Parser(Language(tree_sitter_cpp.language()))
+        operand = (b'[](){ mprf("%s", std::string("bad")); string text; '
+                   b'text.append("bare display"); '
+                   b'static const char *p = T_("cached"); return 0; }()')
+        cases = (
+            b'LUARET1(f, integer, ' + operand + b')\n',
+            b'LUARET2(f, integer, 1, ' + operand + b')\n',
+            b'LUAWRAP(f, ' + operand + b')\n',
+            b'void f(){if(x) NO_SLOT(' + operand + b') else return;}\n',
+            b'void f(){if(x) NO_EQUIP(' + operand + b') else return;}\n',
+        )
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / 'macros.cc'
+            for source in cases:
+                with self.subTest(source=source[:40]):
+                    tree = parse_cpp_annotations(parser, source)
+                    self.assertFalse(tree.root_node.has_error, tree.root_node)
+                    self.assertEqual(len(source), tree.root_node.end_byte)
+                    normalized = tree.root_node.text
+                    self.assertEqual([i for i, ch in enumerate(source) if ch == 10],
+                                     [i for i, ch in enumerate(normalized) if ch == 10])
+                    start = source.index(operand)
+                    self.assertEqual(normalized[start:start + len(operand)], operand)
+                    path.write_bytes(source)
+                    # These two AST scanners consume the changed adapter;
+                    # lifetime retains its existing lexical engine. The static
+                    # borrowed pointer in this operand is missed on both the
+                    # baseline and this candidate; this test makes no claim
+                    # of lifetime coverage inside macro arguments.
+                    for scanner, rule in (
+                            ('scan_varargs_string.py', 'STRING_CTOR'),
+                            ('scan_string_concat.py', 'APPEND_CALL')):
+                        result = subprocess.run(
+                            [sys.executable, str(SCRIPTS / scanner), '--files',
+                             str(path), '--format', 'json', '--require-parser'],
+                            capture_output=True, text=True)
+                        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                        findings = json.loads(result.stdout)['findings']
+                        self.assertTrue(any(f['rule'] == rule for f in findings), findings)
+                        self.assertTrue(all(f['line'] == 1 for f in findings), findings)
+                    # A real error inside an evaluated operand still blocks.
+                    path.write_bytes(source.replace(b'return 0;', b'return 0'))
+                    self.check_cli(path, False)
+
+    def test_priu64_keeps_printf_argument_mapping(self):
+        parser = Parser(Language(tree_sitter_cpp.language()))
+        cases = (
+            (b'"%" PRIu64"%s"', 1),
+            (b'"%" PRIu64 " %s"', 1),
+            (b'"%" PRIu64 "tail:%s / %s"', 2),
+        )
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / 'format.cc'
+            for fmt, strings in cases:
+                source = (b'void f(){mprf(' + fmt + b', seed, '
+                          + b', '.join(b'std::string("bad%d")' % i for i in range(strings))
+                          + b');}\n')
+                with self.subTest(format=fmt):
+                    tree = parse_cpp_annotations(parser, source)
+                    self.assertFalse(tree.root_node.has_error)
+                    self.assertEqual(tree.root_node.end_byte, len(source))
+                    self.assertIn(b'"llu" ', tree.root_node.text)
+                    path.write_bytes(source)
+                    result = subprocess.run(
+                        [sys.executable, str(SCRIPTS / 'scan_varargs_string.py'),
+                         '--files', str(path), '--format', 'json', '--require-parser'],
+                        capture_output=True, text=True)
+                    self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                    findings = json.loads(result.stdout)['findings']
+                    self.assertEqual({f['arg'] for f in findings if f['rule'] == 'STRING_CTOR'},
+                                     {'std::string("bad%d")' % i for i in range(strings)})
+
+    def test_statement_macro_positions_fail_closed(self):
+        bad = (
+            b'int f(){return NO_EQUIP("bad")}',
+            b'int f(){return NO_SLOT("bad");}',
+            b'void f(){auto x = NO_EQUIP("bad");}',
+            b'void f(){int x = NO_SLOT("bad");}',
+            b'void f(){NO_SLOT(NO_EQUIP("bad"))}',
+            b'void f(){NO_EQUIP(NO_SLOT("bad"));}',
+            b'int f(){LUARET1(g, integer, 42)}',
+            b'int f(){LUARET2(g, integer, 1, 2);}',
+            b'void f(){LUAWRAP(g, work());}',
+            b'class C { LUARET1(g, integer, 42) };',
+            b'NO_SLOT("bad");',
+        )
+        good = (
+            b'LUARET1(g, integer, 42)\n',
+            b'namespace n { LUARET2(g, integer, 1, 2) }\n',
+            b'namespace n {\n#ifdef FLAG\nLUAWRAP(g, work())\n#endif\n}\n',
+            b'void f(){NO_EQUIP("bad")}',
+            b'void f(){if(x) NO_SLOT("bad") else return;}',
+            b'void f(){if(x) return; else NO_EQUIP("bad")}',
+            b'void f(){switch(x){case 1: NO_SLOT("bad")}}',
+        )
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / 'position.cc'
+            for success, cases in ((True, good), (False, bad)):
+                for source in cases:
+                    with self.subTest(source=source, success=success):
+                        path.write_bytes(source)
+                        self.check_cli(path, success)
+
+    def test_macro_arity_follows_preprocessor_not_cpp_ast(self):
+        bad = (
+            b"LUARET1(f, string, std::string{'a','b'}.c_str())",
+            b'LUARET1(f, integer, std::pair<int,int>{}.first)',
+            b"LUARET1(f, integer, std::vector<int>{1'000,2}.size())",
+            b'LUAWRAP(f, std::pair<int,int>{})',
+            b'LUARET2(f, integer, 1, std::pair<int,int>{}.first)',
+            b"void f(){NO_SLOT(std::string{'a','b'})}",
+            b'void f(){NO_EQUIP(std::pair<int,int>{})}',
+        )
+        good = (
+            b"LUARET1(f, string, (std::string{'a','b'}.c_str()))",
+            b'LUARET1(f, integer, (std::pair<int,int>{}.first))',
+            b"LUARET1(f, integer, (std::vector<int>{1'000,2}.size()))",
+            b'LUAWRAP(f, (std::pair<int,int>{}))',
+            b'LUARET2(f, integer, 1, (std::pair<int,int>{}.first))',
+            b"void f(){NO_SLOT((std::string{'a','b'}))}",
+            b'void f(){NO_EQUIP((std::pair<int,int>{}))}',
+            b'LUAWRAP(f, consume(R"x(a,b)x", \',\', "a,b" /* , */))',
+        )
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / 'arity.cc'
+            for success, cases in ((True, good), (False, bad)):
+                for source in cases:
+                    with self.subTest(source=source, success=success):
+                        path.write_bytes(source)
+                        self.check_cli(path, success)
+
+    def test_trunk_adapters_reject_unknown_or_malformed_shapes(self):
+        parser = Parser(Language(tree_sitter_cpp.language()))
+        for source in (
+                b'LUARET1X(f, integer, 1)',
+                b'LUARET1(f, unsupported, 1)',
+                b'LUARET1(f, integer, 1, 2)',
+                b'LUARET1(f, integer, x +)',
+                b'LUARET2(f, integer, 1)',
+                b'LUAWRAP(f)', b'LUAWRAP(f, x +)',
+                b'void f(){ NO_SLOT(x +) }',
+                b'void f(){ NO_EQUIP(x, y) }',
+                b'void f(){ NO_SLOTX(x) }',
+                b'void f(){ auto x = "%" PRIu64X; }',
+                b'void f(){ return operator bool(1); }',
+                b'void f(){ return operator bool() +; }',
+                b'void f(){ return operator bool() }'):
+            with self.subTest(source=source):
+                try:
+                    tree = parse_cpp_annotations(parser, source)
+                except ValueError:
+                    pass  # Explicit fail-closed macro arity/scope rejection.
+                else:
+                    self.assertTrue(tree.root_node.has_error)
+        # Comments, strings, raw strings and macro bodies are never adapted.
+        source = (b'// LUARET1(f, integer, x) operator bool() "%" PRIu64\n'
+                  b'#define M LUAWRAP(f, x)\n'
+                  b'auto raw = R"x(NO_SLOT(x) operator bool() "%" PRIu64)x";\n'
+                  b'const char *s = "NO_EQUIP(x)";\n')
+        self.assertEqual(source, parse_cpp_annotations(parser, source).root_node.text)
+
+    def test_conversion_calls_and_format_macro_keep_surrounding_syntax(self):
+        parser = Parser(Language(tree_sitter_cpp.language()))
+        cases = (
+            b'void f(){do {} while (operator bool() && check());}\n',
+            b'void f(){return in_bounds(**this) && operator bool() ? x() : y;}\n',
+            b'void f(){dprf("seed %" PRIu64, seed);}\n',
+        )
+        for source in cases:
+            with self.subTest(source=source):
+                tree = parse_cpp_annotations(parser, source)
+                self.assertFalse(tree.root_node.has_error, tree.root_node)
+                self.assertEqual(len(source), tree.root_node.end_byte)
+                self.assertTrue(parse_cpp_annotations(
+                    parser, source.replace(b';', b'', 1)).root_node.has_error)
+
     def test_directive_after_context_is_outside_context(self):
         source = b'void f() {\n    else\n#ifdef FLAG\n#endif\n}\n'
         parser = Parser(Language(tree_sitter_cpp.language()))
