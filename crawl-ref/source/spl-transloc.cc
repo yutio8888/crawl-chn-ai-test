@@ -2023,8 +2023,7 @@ vector<monster *> find_chaos_targets(bool just_check)
     vector<monster *> targets;
     for (monster_near_iterator mi(you.pos(), LOS_NO_TRANS); mi; ++mi)
     {
-        if (!mons_is_tentacle_or_tentacle_segment(mi->type)
-            && !mons_class_is_stationary(mi->type)
+        if (!mi->no_tele()
             && !mi->is_peripheral()
             && !mi->wont_attack())
         {
@@ -2056,9 +2055,6 @@ spret word_of_chaos(int pow, bool fail)
     mpr(T_("You speak a word of chaos!"));
     for (auto mons : targets)
     {
-        if (mons->no_tele())
-            continue;
-
         blink_away(mons, &you, false);
         if (x_chance_in_y(pow, 500))
             mons->trap_in_web();
@@ -2435,7 +2431,7 @@ spret cast_gavotte(int pow, const coord_def dir, bool fail)
 
     for (monster_near_iterator mi(you.pos()); mi; ++mi)
     {
-        if (!mi->is_stationary() && you.see_cell_no_trans(mi->pos()))
+        if (!mi->is_stationary() && !mi->stasis() && you.see_cell_no_trans(mi->pos()))
             targs.push_back(*mi);
     }
 
@@ -2473,7 +2469,7 @@ vector<monster*> gavotte_affected_monsters(const coord_def dir)
         if (you.aware_of(**mi))
         {
             occupied[mi->pos()] = *mi;
-            if (!mi->is_stationary() && you.see_cell_no_trans(mi->pos()))
+            if (!mi->is_stationary() && !mi->stasis() && you.see_cell_no_trans(mi->pos()))
                 movers.push_back(*mi);
         }
 
