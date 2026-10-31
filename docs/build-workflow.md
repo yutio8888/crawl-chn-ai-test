@@ -17,6 +17,12 @@ Formal version tags, closed-world artifact validation, checksums, draft
 Releases, and the manual publication gate are defined in
 [release-workflow.md](release-workflow.md).
 
+Ordinary branch, PR, scheduled, and manual branch runs compile Android, Linux,
+and Windows, with tooling and static checks on Ubuntu. Release tags also run
+the macOS checks and Tiles build, package the desktop archives, and validate
+the complete signed release asset set. Ordinary runs keep Android debug APKs
+for device testing; desktop ZIP/DMG uploads are reserved for release tags.
+
 Use at most eight parallel build jobs. Agents compiling while other work is in
 progress should use four jobs and avoid concurrent compile storms.
 
@@ -90,7 +96,7 @@ bash util/build-tiles.sh
 The helper refuses a dirty `.worktrees/mingw-tiles`, synchronizes the detached
 worktree to the main checkout's exact HEAD, and runs the MinGW tiles build.
 
-GitHub Actions builds the distributable archive with
+On release tags, GitHub Actions builds the distributable archive with
 `make CROSSHOST=x86_64-w64-mingw32 package-windows-tiles -j4` and uploads the
 versioned ZIP as the `windows-tiles` artifact. The package contains the binary,
 runtime data, settings directory, documentation, and versioned Maple font.
