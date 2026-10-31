@@ -131,10 +131,11 @@ public abstract class DCSSTextBase extends AppCompatActivity {
                     try {
                         Uri uri = resultData.getData();
                         Log.i(DCSSLauncher.TAG, "Destination: " + uri.toString());
-                        OutputStream outputStream = getContentResolver().openOutputStream(uri);
-                        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
-                        writer.append(textToDownload.getText());
-                        writer.close();
+                        try (OutputStream outputStream = getContentResolver().openOutputStream(uri);
+                                OutputStreamWriter writer = new OutputStreamWriter(outputStream,
+                                        StandardCharsets.UTF_8)) {
+                            writer.append(textToDownload.getText());
+                        }
                         onDownloadOk();
                     } catch (IOException e) {
                         Log.e(DCSSLauncher.TAG, "Can't download file: " + e.getMessage());

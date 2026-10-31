@@ -2,8 +2,10 @@
 
 #include "AppHdr.h"
 #include "melee-attack.h"
+#include "message.h"
 #include "mutation.h"
 #include "player.h"
+#include "quiver.h"
 
 #include "test_player_fixture.h"
 #include "test_zh_fixture.h"
@@ -17,6 +19,37 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
           "Test MockPlayerYouTestsFixture", "[single-file]" ) {
 
     REQUIRE(you.is_player());
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "Firing without any quick action reports why and costs no turn",
+                 "[quiver]")
+{
+    quiver::action_cycler quiver;
+    SECTION("The quiver was explicitly cleared")
+    {
+        quiver.clear();
+        REQUIRE(quiver.is_empty());
+        REQUIRE(quiver.get()->is_valid());
+    }
+    SECTION("The previous ammunition is unavailable")
+    {
+        REQUIRE_FALSE(quiver.get()->is_valid());
+    }
+
+    REQUIRE_FALSE(quiver::anything_to_quiver());
+    const auto initial = quiver.get();
+    you.turn_is_over = false;
+    const int turns = you.num_turns;
+    msg::tee messages;
+
+    quiver.target();
+
+    CHECK(messages.get_store().find(T_("You have nothing to quiver."))
+          != string::npos);
+    CHECK(quiver.get() == initial);
+    CHECK_FALSE(you.turn_is_over);
+    CHECK(you.num_turns == turns);
 }
 
 TEST_CASE_METHOD(MockPlayerYouTestsFixture, "Can mutate player",
