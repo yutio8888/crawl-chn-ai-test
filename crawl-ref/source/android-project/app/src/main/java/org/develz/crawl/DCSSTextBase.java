@@ -132,7 +132,8 @@ public abstract class DCSSTextBase extends AppCompatActivity {
                         Uri uri = resultData.getData();
                         Log.i(DCSSLauncher.TAG, "Destination: " + uri.toString());
                         OutputStream outputStream = getContentResolver().openOutputStream(uri);
-                        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+                        OutputStreamWriter writer = new OutputStreamWriter(outputStream,
+                                StandardCharsets.UTF_8);
                         writer.append(textToDownload.getText());
                         writer.close();
                         onDownloadOk();
