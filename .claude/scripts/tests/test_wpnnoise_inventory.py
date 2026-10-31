@@ -287,7 +287,7 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         # inventory core (evidence-invalidating schema fact, reported with
         # the exact new digest).
         self.assertEqual(
-            "7fcbb5d9dccb04a121e8f494658a4b6aae972117cc96ae010526e5baf7c33981",
+            "f5431a66557c7e39f2d020fa0569a87f52be9f9b759146ae9fff13be5d28cb81",
             first["inventory_sha256"],
         )
         self.assertEqual(MODULE.EXPECTED_IDENTITY_COUNT, len(first["entries"]))
