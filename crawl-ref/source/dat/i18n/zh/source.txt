@@ -4778,7 +4778,7 @@ is lit by a halo
 不再被冰封。
 %%%%
  is no longer exposed.
-不再暴露弱点。
+不再处于暴露状态。
 %%%%
  is no longer haunted by guilt.
 不再被内疚所困扰。
@@ -6804,7 +6804,7 @@ Stopped running for exclusion.
 停止滚动并展开了。
 %%%%
  stops stampeding.
-停止了狂奔。
+停止了奔踏。
 %%%%
 Storm clouds gather above %s.
 风暴之云在%s上方聚集。
@@ -48276,7 +48276,115 @@ action count|Fire
 射击
 %%%%
 monster description|You cannot currently see %1$s and have merely inferred %2$s position. %3$s current health and status are unknown to you, and your accuracy and defense against %2$s attacks are reduced.
-你目前看不到%1$s，只是推断出了%2$s位置。你无法得知%3$s当前的生命值和状态，而且你的命中率以及对%2$s攻击的防御能力都会降低。
+你目前看不到%1$s，只是推断出了%2$s位置。你无法得知%3$s当前生命值和状态，而且你的命中率以及对%2$s攻击的防御能力都会降低。
 %%%%
 monster description|You cannot currently see %1$s and %2$s true position is unknown, but %3$s was last observed here.
 你目前看不到%1$s，无法确定%2$s真实位置，但最后一次看到%3$s是在这里。
+%%%%
+\nIt does %dd%d damage.
+\n造成%dd%d点伤害。
+%%%%
+%s pins %s in place with %s attack.
+%1$s用%3$s攻击将%2$s束缚在原地。
+%%%%
+You perform a powerful leap!
+你使出了一次强力飞跃！
+%%%%
+None of your crystals are currently charged.
+你目前没有任何已充能的玉晶。
+%%%%
+earthen
+土
+%%%%
+fiery
+火
+%%%%
+airy
+气
+%%%%
+icy
+冰
+%%%%
+Your %s crystal is infused with energy.
+你的%s玉晶充满了能量。
+%%%%
+Your %s crystals are infused with energy.
+你的%s玉晶充满了能量。
+%%%%
+ raises briars to defend itself!
+唤起荆棘保护自己！
+%%%%
+ vitality is bolstered.
+生命力得到了增强。
+%%%%
+%s starts stampeding towards %s.
+%s开始向%s奔踏。
+%%%%
+living %s spell
+活体%s法术
+%%%%
+A bitter wind exposes %s.
+一阵刺骨的寒风使%s陷入暴露状态。
+%%%%
+Zin forbids you from drinking this foul brew!
+辛禁止你饮用这污秽的混合液！
+%%%%
+You must return to life before you may mutate.
+你必须重返生者之列才能发生变异。
+%%%%
+Sadly, you cannot mutate.
+遗憾的是，你无法发生变异。
+%%%%
+You break open the mutation catalyst, and crackling magic pours forth!
+你打破了诱变催化器，噼啪作响的魔力从中涌出！
+%%%%
+You bathe in the mists of the mutagenic serum and feel extremely strange.
+你沐浴在诱变血清的雾气中，感觉极其古怪。
+%%%%
+Your athame gleams mockingly in your nearly-destroyed state.
+你的仪式匕首在你近乎毁灭的状态下嘲弄地闪烁着。
+%%%%
+Your athame gleams mockingly in your nearly-dead state.
+你的仪式匕首在你近乎死亡的状态下嘲弄地闪烁着。
+%%%%
+Your athame demands its blood price!
+你的仪式匕首索要它的鲜血代价！
+%%%%
+Your athame demands its blood price! (Figuratively speaking.)
+你的仪式匕首索要它的鲜血代价！（打个比方而已。）
+%%%%
+%s remembers how to cast %s spells more powerfully.
+%s想起了如何让%s法术更具威力。
+%%%%
+%s remembers how to pin enemies in place with %s attacks.
+%s想起了如何用%s攻击将敌人束缚在原地。
+%%%%
+%s remembers the full extent of %s fortitude.
+%s想起了%s全部的坚韧之力。
+%%%%
+immune to blinking
+免疫闪烁
+%%%%
+immune to dispersal
+免疫驱散
+%%%%
+immune to teleportation
+免疫传送
+%%%%
+You cannot harm %s.
+你无法伤害%s。
+%%%%
+A giggling sprite leaps out and plays with %s.
+一个咯咯笑的小精灵跳了出来，和%s玩耍。
+%%%%
+Mutagenic energy floods into you!
+诱变能量涌入你的体内！
+%%%%
+Your body decomposes!
+你的身体腐解了！
+%%%%
+%s blinded and untethered in space!
+%s失明了，在空间中再无定所！
+%%%%
+%s interlaced with infuriating chaos!
+%s被令人恼怒的混沌之力缠绕！
