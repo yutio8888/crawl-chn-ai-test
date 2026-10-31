@@ -2276,10 +2276,10 @@ barrage of energy
 <green>**可招募**</green>
 %%%%
 <green>The lance glows as it skewers %s.</green>
-<green>长矛刺穿%s时发出光芒。</green>
+<green>骑枪刺穿%s时发出光芒。</green>
 %%%%
 <green>Wyrmbane glows as a worthy foe approaches.</green>
-<green>斩龙剑在强大的敌人接近时发出光芒。</green>
+<green>屠龙者在强大的敌人接近时发出光芒。</green>
 %%%%
 <lightgreen>%d spell level left </lightgreen>
 <lightgreen>%d法术等级剩余</lightgreen>
@@ -2330,7 +2330,7 @@ barrage of energy
 <white>[ctrl-p]</white> 查看rc文件信息和日志
 %%%%
 <white>The lance glows brightly as it skewers %s. You feel
-<white>长矛刺穿%s时发出明亮的光芒。你感到
+<white>骑枪刺穿%s时发出明亮的光芒。你感到
 %%%%
 <yellow>You have %d gold%s</yellow>
 <lightgrey>
@@ -28738,10 +28738,10 @@ lajatang of Order
 秩序双头杖
 %%%%
 lance
-长矛
+骑枪
 %%%%
 lance "Wyrmbane"
-长矛"屠龙者"
+骑枪"屠龙者"
 %%%%
 lightning scales
 闪电鳞甲
@@ -40996,7 +40996,7 @@ If this monster is a "program bug", then it's recommended that you save your gam
 \n冒险者制造的这类云团一旦离开其视野%s就会消散。\n
 %%%%
 <white>The lance glows brightly as it skewers %s. You feel that it has reached its full power.</white>
-<white>长枪刺穿%s时发出耀眼的光芒。你感到它已达到了力量的巅峰。</white>
+<white>骑枪刺穿%s时发出耀眼的光芒。你感到它已达到了力量的巅峰。</white>
 %%%%
 Dead mon also at (%d, %d): %s,midx = %d
 死亡怪物也位于（%d，%d）：%s，midx = %d
@@ -42703,16 +42703,16 @@ pronoun object|you
 你
 %%%%
 pronoun subject|they
-它们
+他
 %%%%
 pronoun possessive|their
-它们的
+他的
 %%%%
 pronoun reflexive|themself
-它们自己
+他自己
 %%%%
 pronoun object|them
-它们
+他
 %%%%
 number word|zero
 零
