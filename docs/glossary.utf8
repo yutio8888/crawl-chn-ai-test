@@ -586,6 +586,7 @@ Kiss of Death	死亡之吻	domain=spells; source=EN/ZH; 备注=✅；衰竭目�
 kobold	狗头人	domain=species; source=EN/ZH; 复合格式=狗头人 + 职业
 lajatang	双头杖	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-A-050
 lance	骑枪	domain=items; source=EN/ZH; Scope / comment=神器武器类型及其战斗消息、描述、动作统计；与基础武器 spear → 长矛区分；不适用于 Force Lance 法术、lance of force 投射物或 living force lance；decision=D-B-023
+lance "Wyrmbane"	骑枪"屠龙者"	domain=items; source=EN/ZH; Scope / comment=固定神器名称键；Wyrmbane 专名为“屠龙者”，消息与描述沿用；弃用“斩龙剑”；Margery 的称号“the Dragonslayer”也译为“屠龙者”（dat/database/zh/montitle.txt:204），与神器指称不同，属于有意保留的同名；decision=D-B-023
 Landbreaker	裂地	domain=spells; source=EN/ZH; 备注=✅
 large bone plates	大型骨板	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 laughs	笑道	domain=dialogue; source=EN/ZH; 适用角色=Xom、小恶魔
@@ -1113,7 +1114,6 @@ Woodweal	林木疗愈	domain=spells; source=EN/ZH; 备注=🆕；借相邻树木
 Word of Chaos	混沌之语	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
 Word of Recall	召回之言	domain=spells; source=EN/ZH; 备注=✅；短暂延迟后召回同层有智慧盟友
 Wu Jian	无间	domain=gods; source=EN/ZH; 类型=运行时短名
-Wyrmbane	屠龙者	domain=items; source=EN/ZH; Scope / comment=固定神器专名；名称 lance "Wyrmbane" → 骑枪"屠龙者"，消息与描述沿用；弃用“斩龙剑”；Margery 的称号“the Dragonslayer”也译为“屠龙者”（dat/database/zh/montitle.txt:204），与神器指称不同，属于有意保留的同名；decision=D-B-023
 Xak'krixis title	王家远征炼金师扎克里西斯	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Xom	佐姆	domain=gods; source=EN/ZH; 类型=音译
 XP	经验值	domain=core; source=EN/ZH
