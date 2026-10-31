@@ -29,6 +29,7 @@ android {
         debug {
         }
         buildTest {
+            signingConfig signingConfigs.debug
             ndk {
                 //noinspection ChromeOsAbiSupport
                 abiFilters "arm64-v8a"

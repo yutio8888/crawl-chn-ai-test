@@ -3905,6 +3905,27 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-B-023 — lance 神器类型与 Wyrmbane 专名（2026-10-31）
+
+- **Status**: active
+- **Source**: 用户于 2026-10-31 确认。
+- **裁决**：神器武器类型 `lance` 译为“骑枪”，基础武器 `spear` 保留“长矛”；应用到名称、战斗消息、描述和动作统计。
+- **边界**：不改 Force Lance 法术（力量之矛）、`lance of force` 投射物、living force lance 等魔法语境。
+- **专名**：原 glossary 未登记 Wyrmbane，沿用神器名称键既有的“屠龙者”；统一名称、消息和描述，弃用“斩龙剑”。Margery 的称号“the Dragonslayer”也译为“屠龙者”，与神器指称不同，属于有意保留的同名（`dat/database/zh/montitle.txt:204`）。
+- **同步**：`docs/glossary.md`、导出的 `docs/glossary.utf8`、ZH source 与 unrand；英文键不变。
+
+### D-C-100 — GENDER_NEUTRAL 单数人物代词（2026-10-31）
+
+- **Status**: active
+- **Source**: 用户于 2026-10-31 确认。
+- **裁决**：`pronoun subject|they`、`pronoun possessive|their`、`pronoun reflexive|themself`、`pronoun object|them` 分别译为“他／他的／他自己／他”。
+- **依据**：稳定版有 15 种带 `M_GENDER_NEUTRAL` 标记的有名单体；随机性别来源包括先祖本身的初始性别（`religion.cc:1759`）、Hellbinder／Cloud Mage／Headmaster（`mon-place.cc:1177`）、兽人使徒（`mon-util.cc:2887`）和 Gozag 的店主（`god-abil.cc:3626`）。先祖还允许玩家选择“neither”。这些来源均指单个人物，没有真正的复数来源。
+- **边界**：只改四个 ZH 上下文键；EN singular they、性别枚举、存档身份保持不变。结构化怪物消息既有的独立所有格“其”不在此次四键变更范围内。
+- **先祖**：稳定版 `monster::pronoun` 与 `monster_info::pronoun` 直接使用存储的性别，没有 trunk 的 ZH 中性先祖转 GENDER_NEUTER 映射，无需移除。
+- **历史注释**：`mon-cast.cc::_localized_zh_actor_possessive_pronoun` 保留的旧注释所述“中文代词表使用复数、非 unique 中性人物可能为复数”已不适用；当前中性来源均为单体，`pronoun_plurality()` 的 true 表示英文 singular-they 的一致关系，不代表多个对象。
+
+---
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -4052,3 +4073,5 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-094 | montitle review (#24 extension, Issue #71) | 86 identities；80 keep + 6 adjust | active |
 | D-C-096 | Issue #147 stable shared terminology subset | 72 shared identities；context boundaries + mutagenic roots | active |
 | D-C-098 | Issue #147 stable shared status-label exceptions | Barbs → 尖刺；ambrosia-drunk → 仙酒醉 | active |
+| D-B-023 | lance / Wyrmbane | 骑枪 / 屠龙者；spear 保留长矛 | active |
+| D-C-100 | GENDER_NEUTRAL singular pronouns | 他 / 他的 / 他自己 / 他；EN 与存档不变 | active |

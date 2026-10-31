@@ -1506,7 +1506,7 @@ static string _describe_action_subtype(caction_type type, int compound_subtype)
             // Paranoia: an artefact may lose its specialness.
             const char *tn = get_unrand_entry(subtype)->type_name;
             if (tn)
-                return uppercase_first(tn);
+                return uppercase_first(T_(tn));
             subtype = get_unrand_entry(subtype)->sub_type;
         }
         return uppercase_first(item_base_name(OBJ_WEAPONS, subtype));
