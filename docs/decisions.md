@@ -3905,6 +3905,26 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-B-023 — lance 神器类型与 Wyrmbane 专名（2026-10-31）
+
+- **Status**: active
+- **Source**: 用户于 2026-10-31 确认。
+- **裁决**：神器武器类型 `lance` 译为“骑枪”，基础武器 `spear` 保留“长矛”；应用到名称、战斗消息、描述和动作统计。
+- **边界**：不改 Force Lance 法术（力量之矛）、`lance of force` 投射物、living force lance 等魔法语境。
+- **专名**：原 glossary 未登记 Wyrmbane，沿用神器名称键既有的“屠龙者”；统一名称、消息和描述，弃用“斩龙剑”。
+- **同步**：`docs/glossary.md`、导出的 `docs/glossary.utf8`、ZH source 与 unrand；英文键不变。
+
+### D-C-100 — GENDER_NEUTRAL 单数人物代词（2026-10-31）
+
+- **Status**: active
+- **Source**: 用户于 2026-10-31 确认。
+- **裁决**：`pronoun subject|they`、`pronoun possessive|their`、`pronoun reflexive|themself`、`pronoun object|them` 分别译为“他／他的／他自己／他”。
+- **依据**：稳定版使用者包括有名单体怪物、中性先祖、随机性别的兽人使徒／巫师／店主，均为单个人物，没有真正的复数来源。
+- **边界**：只改四个 ZH 上下文键；EN singular they、性别枚举、存档身份保持不变。结构化怪物消息既有的独立所有格“其”不在此次四键变更范围内。
+- **先祖**：稳定版 `monster::pronoun` 与 `monster_info::pronoun` 直接使用存储的性别，没有 trunk 的 ZH 中性先祖转 GENDER_NEUTER 映射，无需移除。
+
+---
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -4052,3 +4072,5 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-094 | montitle review (#24 extension, Issue #71) | 86 identities；80 keep + 6 adjust | active |
 | D-C-096 | Issue #147 stable shared terminology subset | 72 shared identities；context boundaries + mutagenic roots | active |
 | D-C-098 | Issue #147 stable shared status-label exceptions | Barbs → 尖刺；ambrosia-drunk → 仙酒醉 | active |
+| D-B-023 | lance / Wyrmbane | 骑枪 / 屠龙者；spear 保留长矛 | active |
+| D-C-100 | GENDER_NEUTRAL singular pronouns | 他 / 他的 / 他自己 / 他；EN 与存档不变 | active |

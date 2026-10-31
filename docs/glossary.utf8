@@ -455,6 +455,7 @@ Gaze	凝视	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行）
 gehenna serpent of hell breath	欣嫩谷地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 Gell's Gavotte	盖尔之加沃特	domain=spells; source=EN/ZH; 备注=✅；重定向局部重力，使视野内生物随方向翻滚
 Gell's Gravitas	盖尔之重力	domain=spells; source=EN/ZH; 备注=✅；重力铃鼓专用效果，将怪物拉拢并固定
+GENDER_NEUTRAL	他 / 他的 / 他自己 / 他	domain=core; source=EN/ZH; 注意事项=单数中性人物的主格／所有格／反身／宾格；仅 pronoun subject|they、pronoun possessive|their、pronoun reflexive|themself、pronoun object|them 四个上下文键；不是复数；EN singular they 与存档身份不变；decision=D-C-100
 Geryon	格律翁	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Geryon title	格律翁，地狱的守门人	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Ghostly Fireball	幽灵火球	domain=spells; source=EN/ZH; 备注=✅；负能量爆炸使范围内活物衰竭
@@ -584,6 +585,7 @@ Kirke title	喀耳刻，神话编织者	domain=monster-titles; source=EN/ZH; Sco
 Kiss of Death	死亡之吻	domain=spells; source=EN/ZH; 备注=✅；衰竭目标并暂时降低施法者生命值
 kobold	狗头人	domain=species; source=EN/ZH; 复合格式=狗头人 + 职业
 lajatang	双头杖	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-A-050
+lance	骑枪	domain=items; source=EN/ZH; Scope / comment=神器武器类型及其战斗消息、描述、动作统计；与基础武器 spear → 长矛区分；不适用于 Force Lance 法术、lance of force 投射物或 living force lance；decision=D-B-023
 Landbreaker	裂地	domain=spells; source=EN/ZH; 备注=✅
 large bone plates	大型骨板	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 laughs	笑道	domain=dialogue; source=EN/ZH; 适用角色=Xom、小恶魔
@@ -922,6 +924,7 @@ Soul Splinter	灵魂分裂	domain=spells; source=EN/ZH; 备注=✅
 Spatial Maelstrom	空间乱流	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from spatial vortex → 空间漩涡
 spatial vortex	空间漩涡	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Spawn Tentacles	生成触须	domain=spells; source=EN/ZH; 备注=✅
+spear	长矛	domain=items; source=EN/ZH; Scope / comment=基础武器；与神器类型 lance → 骑枪区分；decision=D-B-023
 spect	幽魂	domain=items; source=EN/ZH; Scope / comment=weapon brand terse; decision=D-B-016/D-B-020
 spectral	幽魂	domain=items; source=EN/ZH; Scope / comment=weapon brand adjective; decision=D-B-016/D-B-020
 Spectral Cloud	幽灵云	domain=spells; source=EN/ZH; 备注=✅ 现行
@@ -1110,6 +1113,7 @@ Woodweal	林木疗愈	domain=spells; source=EN/ZH; 备注=🆕；借相邻树木
 Word of Chaos	混沌之语	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
 Word of Recall	召回之言	domain=spells; source=EN/ZH; 备注=✅；短暂延迟后召回同层有智慧盟友
 Wu Jian	无间	domain=gods; source=EN/ZH; 类型=运行时短名
+Wyrmbane	屠龙者	domain=items; source=EN/ZH; Scope / comment=固定神器专名；名称 lance "Wyrmbane" → 骑枪"屠龙者"，消息与描述沿用；弃用“斩龙剑”；decision=D-B-023
 Xak'krixis title	王家远征炼金师扎克里西斯	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Xom	佐姆	domain=gods; source=EN/ZH; 类型=音译
 XP	经验值	domain=core; source=EN/ZH
