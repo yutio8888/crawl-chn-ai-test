@@ -57,6 +57,17 @@
 // Global
 StashTracker StashTrack;
 
+string stash_search_result::display_match() const
+{
+    static constexpr char carried_prefix[] = "[carried] ";
+    if (in_inventory && starts_with(match, carried_prefix))
+    {
+        return string(T_("[carried]")) + " "
+               + match.substr(sizeof(carried_prefix) - 1);
+    }
+    return match;
+}
+
 string userdef_annotate_item(const char *s, const item_def *item)
 {
     // The Lua annotation vocabulary (ego abbreviations like rF+/rC+, class
@@ -444,7 +455,7 @@ string Stash::stash_item_name(const item_def &item)
     {
         name = item.name(DESC_INVENTORY_EQUIP); // add `(worn)`, etc
         // use [] to match with the location info
-        name.insert(0, string(T_("[carried]")) + " ");
+        name.insert(0, "[carried] ");
         return name;
     }
     else
@@ -1404,7 +1415,7 @@ static bool _compare_by_type(const stash_search_result& lhs,
         return _compare_by_name(lhs, rhs);
 }
 
-static vector<stash_search_result> _inventory_search(const base_pattern &search)
+vector<stash_search_result> inventory_search(const base_pattern &search)
 {
     vector<stash_search_result> results;
     for (const item_def &item : you.inv)
@@ -1414,16 +1425,21 @@ static vector<stash_search_result> _inventory_search(const base_pattern &search)
 
         const string s   = Stash::stash_item_name(item);
         const string ann = stash_annotate_item(STASH_LUA_SEARCH_ANNOTATE, &item);
-        string haystack = ann + " " + s + " " + item_english_name(item);
+        stash_search_result res;
+        res.match = s;
+        res.in_inventory = true;
+        // Keep the canonical prefix for English queries and sorting. The
+        // complete display form also permits localized compound queries.
+        string haystack = ann + " " + s + " " + item_english_name(item)
+                          + " " + T_("[carried]");
+        if (Options.language == lang_t::ZH)
+            haystack += " " + res.display_match();
         if (is_dumpable_artefact(item))
             haystack += " " + chardump_desc(item);
         if (search.matches(haystack))
         {
-            stash_search_result res;
-            res.match = s;
             res.primary_sort = s; // don't use DESC_QUALNAME for inventory items
             res.item = item;
-            res.in_inventory = true;
             res.pos = level_pos::current();
             results.push_back(res);
         }
@@ -1574,7 +1590,7 @@ void StashTracker::search_stashes(string search_term)
 
     vector<stash_search_result> results;
     if (!curr_lev)
-        results = _inventory_search(*search);
+        results = inventory_search(*search);
     // allowing offlevel stash searching is not useful in descent mode
     get_matching_stashes(*search, results, curr_lev
                                            || crawl_state.game_is_descent());
@@ -1927,7 +1943,7 @@ bool StashTracker::display_search_results(
             }
         }
 
-        matchtitle << res.match;
+        matchtitle << res.display_match();
         if (res.duplicates > 0)
         {
             if (res.duplicates != res.duplicate_piles  // piles are only

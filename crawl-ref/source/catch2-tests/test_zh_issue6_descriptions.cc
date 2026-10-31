@@ -2,8 +2,10 @@
 
 #include "AppHdr.h"
 
+#include "beam.h"
 #include "database.h"
 #include "describe.h"
+#include "describe-spells.h"
 #include "i18n.h"
 #include "jobs.h"
 #include "mon-info.h"
@@ -16,8 +18,10 @@
 #include "spl-util.h"
 #include "state.h"
 #include "stringutil.h"
+#include "syscalls.h"
 #include "test_zh_fixture.h"
 #include "unwind.h"
+#include "unicode.h"
 
 namespace
 {
@@ -110,8 +114,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(make_stringf_p(C_("monster description",
                            "%1$s is susceptible to %2$s.\n"), "P", "R")
           == "P易受R影响。\n");
-    CHECK(make_stringf(C_("monster description",
-                         "Despite %s appearance, it can open doors.\n"), "它的")
+    CHECK(make_stringf_p(C_("monster description",
+                         "Despite %1$s appearance, %2$s can open doors.\n"), "它的", "它")
           == "尽管它的外表如此，它仍能开门。\n");
     CHECK(make_stringf(C_("attack prompt", "fire in %s direction"), "M")
           == "向M的方向");
@@ -193,4 +197,149 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             : T_("Poison%s and momentary paralysis"), maximum.c_str());
         CHECK(description.find(expected) != string::npos);
     }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "playtest round4: real door descriptions preserve monster pronouns",
+                 "[zh-translation][playtest-round4][descriptions]")
+{
+    init_monsters();
+    init_spell_descs();
+    unwind_var<bool> game_started(crawl_state.game_started, false);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (monster_type type : {MONS_ERICA, MONS_AIZUL, MONS_UGLY_THING})
+        {
+            monster_info mi(type);
+            describe_info description;
+            bool stats = false;
+            get_monster_db_desc(mi, description, stats);
+            const string text = description.body.str();
+            INFO(text);
+            const string subject = mi.pronoun(PRONOUN_SUBJECTIVE);
+            const string possessive = mi.pronoun(PRONOUN_POSSESSIVE);
+            const string expected = language == lang_t::ZH
+                ? "尽管" + possessive + "外表如此，" + subject + "仍能开门。"
+                : "Despite " + possessive + " appearance, " + subject + " can open doors.";
+            CHECK(text.find(expected) != string::npos);
+            if (language == lang_t::ZH && type == MONS_ERICA)
+            {
+                CHECK(subject == "她");
+                CHECK(text.find("它仍能开门") == string::npos);
+            }
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "playtest round4 related: invisible monster descriptions preserve facts and pronouns",
+                 "[zh-translation][playtest-round4-related][descriptions]")
+{
+    init_monsters();
+    init_spell_descs();
+    unwind_var<bool> game_started(crawl_state.game_started, false);
+    for (lang_t language : {lang_t::ZH, lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (monster_type type : {MONS_ERICA, MONS_AIZUL, MONS_UGLY_THING})
+        {
+            for (auto flag : {MB_KNOWN_INVIS, MB_REMEMBERED_INVIS})
+            {
+                monster_info mi(type);
+                const string identity = mi.db_name();
+                mi.mb.set(flag);
+                describe_info description;
+                bool stats = false;
+                get_monster_db_desc(mi, description, stats);
+                const string text = description.body.str();
+                INFO(text);
+                if (language == lang_t::ZH)
+                {
+                    CHECK(text.find("你目前看不到" + string(mi.pronoun(PRONOUN_OBJECTIVE)))
+                          != string::npos);
+                    CHECK(text.find("currently invisible") == string::npos);
+                    if (flag == MB_KNOWN_INVIS)
+                    {
+                        CHECK(text.find("推断出了") != string::npos);
+                        CHECK(text.find("当前的生命值和状态") != string::npos);
+                        CHECK(text.find("命中率") != string::npos);
+                        CHECK(text.find("防御能力都会降低") != string::npos);
+                        CHECK(text.find("最后一次看到") == string::npos);
+                    }
+                    else
+                    {
+                        CHECK(text.find("真实位置") != string::npos);
+                        CHECK(text.find("最后一次看到" + string(mi.pronoun(PRONOUN_SUBJECTIVE)))
+                              != string::npos);
+                        CHECK(text.find("命中率") == string::npos);
+                    }
+                }
+                else if (flag == MB_KNOWN_INVIS)
+                {
+                    CHECK(text.find("you have merely inferred ") != string::npos);
+                    CHECK(text.find("current health and status is unknown to you") != string::npos);
+                    CHECK(text.find(" attacks is reduced. </magenta>") != string::npos);
+                }
+                else
+                {
+                    CHECK(text.find(" true position is unknown, but ") != string::npos);
+                    CHECK(text.find(" was last observed here.</magenta>") != string::npos);
+                }
+                CHECK(mi.db_name() == identity);
+                CHECK(mi.is(flag));
+            }
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "playtest round4 related: crystal spear name budgets use columns and localized fallback",
+                 "[zh-translation][playtest-round4-related][spellset]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    init_monsters();
+    init_spell_descs();
+    init_zap_index();
+    unwind_var<bool> game_started(crawl_state.game_started, false);
+    monster_info mi(MONS_DEEP_ELF_ANNIHILATOR);
+    spellbook_contents book;
+    book.spells = {SPELL_LEHUDIBS_CRYSTAL_SPEAR};
+    for (lang_t language : {lang_t::ZH, lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        formatted_string description;
+        describe_spellset({book}, nullptr, description, &mi);
+        const string text = description.tostring();
+        INFO(text);
+        if (language == lang_t::ZH)
+        {
+            CHECK(text.find("勒胡迪布之水晶矛") != string::npos);
+            CHECK(text.find("Crystal Spear") == string::npos);
+            CHECK(string(T_("Crystal Spear")) == "水晶矛");
+        }
+        else
+            CHECK(text.find("Crystal Spear") != string::npos);
+        CHECK(book.spells == vector<spell_type>{SPELL_LEHUDIBS_CRYSTAL_SPEAR});
+    }
+
+    TranslationFixture mode(lang_t::ZH, "zh");
+    // A deliberately large spell-HD fixture makes the damage field consume
+    // enough columns to exercise the short-name branch in the real renderer.
+    mi.hd = 1000000;
+    const int name_budget = 30
+                           - strwidth(spell_effect_string(book.spells[0], &mi))
+                           - 3 - 1; // range and separator
+    REQUIRE(name_budget < strwidth(spell_title(book.spells[0])));
+    REQUIRE(name_budget >= strwidth(T_("Crystal Spear")));
+    formatted_string compact_description;
+    describe_spellset({book}, nullptr, compact_description, &mi);
+    const string compact_text = compact_description.tostring();
+    INFO(compact_text);
+    CHECK(compact_text.find("水晶矛") != string::npos);
+    CHECK(compact_text.find("勒胡迪布之水晶矛") == string::npos);
+    CHECK(compact_text.find("Crystal Spear") == string::npos);
 }

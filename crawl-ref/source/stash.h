@@ -24,6 +24,9 @@ enum stash_sort_mode
 };
 
 struct stash_search_result;
+// Inventory matching used by stash search, separate from the interactive UI.
+vector<stash_search_result> inventory_search(const base_pattern &search);
+
 class Stash
 {
 public:
@@ -143,6 +146,8 @@ struct stash_search_result
 
     // A string to use for a primary sort, if different from just `match`.
     string primary_sort;
+
+    string display_match() const;
 
     // Item that was matched.
     item_def item;

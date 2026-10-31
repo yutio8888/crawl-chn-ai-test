@@ -45296,8 +45296,8 @@ monster description| cover ground more quickly when invisible.\n
 monster description|It will release varied jellies when damaged or killed, with the number of jellies proportional to the amount of damage.\n
 受伤或死亡时会释放多种史莱姆，数量与受到的伤害成正比。\n
 %%%%
-monster description|Despite %s appearance, it can open doors.\n
-尽管%s外表如此，它仍能开门。\n
+monster description|Despite %1$s appearance, %2$s can open doors.\n
+尽管%1$s外表如此，%2$s仍能开门。\n
 %%%%
 ghost description|%1$s the %2$s, %3$s %4$s %5$s of %6$s
 %1$s（%2$s，%3$s%4$s%5$s，信仰%6$s）
@@ -48271,3 +48271,12 @@ view menu action|target/travel
 %%%%
 view menu action|target
 选定目标
+%%%%
+action count|Fire
+射击
+%%%%
+monster description|You cannot currently see %1$s and have merely inferred %2$s position. %3$s current health and status are unknown to you, and your accuracy and defense against %2$s attacks are reduced.
+你目前看不到%1$s，只是推断出了%2$s位置。你无法得知%3$s当前的生命值和状态，而且你的命中率以及对%2$s攻击的防御能力都会降低。
+%%%%
+monster description|You cannot currently see %1$s and %2$s true position is unknown, but %3$s was last observed here.
+你目前看不到%1$s，无法确定%2$s真实位置，但最后一次看到%3$s是在这里。

@@ -277,7 +277,7 @@ string overview_description_string(bool display)
 static string _pad_cs(string colour_string, size_t width)
 {
     const size_t buf_size
-            = formatted_string::parse_string(colour_string).tostring().size();
+            = formatted_string::parse_string(colour_string).width();
     const int spaces = buf_size > width ? 0 : width - buf_size;
 
     return colour_string + string(spaces, ' ');
@@ -361,8 +361,8 @@ static string _get_seen_branches(bool display, bool &any_shafted)
                 const bool shafted = shafted_in(branch);
                 any_shafted |= shafted;
                 const string main_desc = make_stringf(
-                    "<yellow>%*s</yellow> <darkgrey>(%d/%d)%s</darkgrey>%s",
-                    7,
+                    "<yellow>%*s%s</yellow> <darkgrey>(%d/%d)%s</darkgrey>%s",
+                    max(0, 7 - strwidth(display_brname)), "",
                     display_brname.c_str(), lid.depth, brdepth[branch],
                     shafted ? "*" : "",
                     entry_desc.c_str());

@@ -7144,9 +7144,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         const string text = description.body.str();
         if (language == lang_t::ZH)
         {
-            const string expected = make_stringf(C_("monster description",
-                "Despite %s appearance, it can open doors.\n"),
-                info.pronoun(PRONOUN_POSSESSIVE));
+            const string expected = make_stringf_p(C_("monster description",
+                "Despite %1$s appearance, %2$s can open doors.\n"),
+                info.pronoun(PRONOUN_POSSESSIVE),
+                info.pronoun(PRONOUN_SUBJECTIVE));
             CHECK(text.find(expected) != string::npos);
             CHECK(text.find("外表它的") == string::npos);
         }

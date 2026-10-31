@@ -289,8 +289,9 @@ static void wrapcprint_skipping(int skiplines, int wrapcol, const string &buf)
                 if (skiplines == 0)
                     cprintf("%s", line.c_str());
 
-                linebreak = skiplines == 0
-                            && line.length() >= static_cast<unsigned int>(avail);
+                // avail is measured in terminal columns, not UTF-8 bytes.
+                // linestart above must still advance by the byte length.
+                linebreak = skiplines == 0 && strwidth(line) >= avail;
             }
         }
         else

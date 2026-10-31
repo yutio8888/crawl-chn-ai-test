@@ -456,6 +456,11 @@ static string _denanify(const string &s)
     return out;
 }
 
+static string _right_align(const string &text, int width)
+{
+    return string(max(0, width - strwidth(text)), ' ') + text;
+}
+
 static string _sdump_level_xp_info(LevelXPInfo xp_info, string name = "")
 {
     string out;
@@ -471,8 +476,8 @@ static string _sdump_level_xp_info(LevelXPInfo xp_info, string name = "")
     f = TO_PERCENT(xp_info.vault_count, total_count);
 
     out =
-        make_stringf("%11s | %7d | %7d | %5.1f | %7d | %7d | %5.1f\n",
-                     name.c_str(), xp_info.non_vault_xp, xp_info.vault_xp,
+        make_stringf("%s | %7d | %7d | %5.1f | %7d | %7d | %5.1f\n",
+                     _right_align(name, 11).c_str(), xp_info.non_vault_xp, xp_info.vault_xp,
                      c, xp_info.non_vault_count, xp_info.vault_count, f);
 
     return _denanify(out);
@@ -492,8 +497,8 @@ static string _sdump_turns_place_info(const PlaceInfo place_info, string name = 
                             / static_cast<float>(place_info.levels_seen);
 
     out =
-        make_stringf("%14s | %6d | %6d | %6d | %6d | %6d | %3d | %6.1f |\n",
-                     name.c_str(),
+        make_stringf("%s | %6d | %6d | %6d | %6d | %6d | %3d | %6.1f |\n",
+                     _right_align(name, 14).c_str(),
                      place_info.elapsed_total / 10,
                      non_interlevel,
                      place_info.elapsed_interlevel / 10,
@@ -621,7 +626,7 @@ static string _sdump_god_conduct_info(god_type god, const map<int, ConductPietyI
         max_lt++;
     out += T_("Piety from conduct\n");
 
-    string header = make_stringf("%21s", T_("Conduct"));
+    string header = _right_align(T_("Conduct"), 21);
     for (int lt = 0; lt < max_lt; lt++)
         header += make_stringf(" | %2d-%2d", lt * 3 + 1, lt * 3 + 3);
     header += T_(" || total\n");
@@ -646,7 +651,7 @@ static string _sdump_god_conduct_info(god_type god, const map<int, ConductPietyI
     {
         conduct_type conduct = pair.first;
         const string description = conduct_description(conduct);
-        out += make_stringf("%20s ", C_("piety conduct", description.c_str()));
+        out += _right_align(C_("piety conduct", description.c_str()), 20) + " ";
         for (int lt = 0; lt <= max_lt; lt++)
         {
             float piety = 0.0f;
@@ -669,7 +674,7 @@ static string _sdump_god_conduct_info(god_type god, const map<int, ConductPietyI
     {
         conduct_type conduct = pair.first;
         const string description = conduct_description(conduct);
-        out += make_stringf("%20s ", C_("piety conduct", description.c_str()));
+        out += _right_align(C_("piety conduct", description.c_str()), 20) + " ";
         for (int lt = 0; lt <= max_lt; lt++)
         {
             int count = 0;
@@ -1248,9 +1253,9 @@ static string _sdump_kills_place_info(const PlaceInfo place_info, string name = 
     f = float(place_info.mon_kill_exp) / place_info.levels_seen;
 
     out =
-        make_stringf("%14s | %5.1f | %5.1f | %5.1f | %5.1f | %5.1f |"
+        make_stringf("%s | %5.1f | %5.1f | %5.1f | %5.1f | %5.1f |"
                      " %13.1f\n",
-                     name.c_str(), a, b, c , d, e, f);
+                     _right_align(name, 14).c_str(), a, b, c , d, e, f);
 
     return _denanify(out);
 }
@@ -1403,7 +1408,7 @@ static string _describe_action(caction_type type)
     case CACT_MELEE:
         return T_("Melee");
     case CACT_FIRE:
-        return T_("Fire");
+        return C_("action count", "Fire");
     case CACT_THROW:
         return T_("Throw");
     case CACT_ARMOUR:
@@ -1526,7 +1531,7 @@ static string _describe_action_subtype(caction_type type, int compound_subtype)
             // Paranoia: an artefact may lose its specialness.
             const char *tn = get_unrand_entry(subtype)->type_name;
             if (tn)
-                return uppercase_first(tn);
+                return uppercase_first(T_(tn));
             subtype = get_unrand_entry(subtype)->sub_type;
         }
         return uppercase_first(item_base_name(OBJ_WEAPONS, subtype));
@@ -1563,10 +1568,10 @@ static string _describe_action_subtype(caction_type type, int compound_subtype)
         return spell_title((spell_type)subtype);
     case CACT_INVOKE:
     case CACT_ABIL:
-        return ability_name((ability_type)subtype, true);
+        return T_(ability_name((ability_type)subtype, true).c_str());
     case CACT_EVOKE:
         if (subtype >= UNRAND_START && subtype <= UNRAND_LAST)
-            return uppercase_first(get_unrand_entry(subtype)->name);
+            return uppercase_first(T_(get_unrand_entry(subtype)->name));
 
         if (auxtype > -1)
         {
@@ -1685,7 +1690,7 @@ static void _sdump_action_counts(dump_params &par)
             if (ac == action_vec.begin())
             {
                 const string act = _describe_action(caction_type(cact));
-                par.text += make_stringf("%7.7s: ", act.c_str());
+                par.text += _right_align(chop_string(act, 7, false), 7) + ": ";
             }
             else
                 par.text.append(9, ' ');
@@ -2058,7 +2063,7 @@ void display_notes()
     scr.set_more();
     const string tag = "notes";
     scr.set_tag(tag);
-    _add_text(scr, tag, "Turn   | Place    | Note\n");
+    _add_text(scr, tag, T_("Turn   | Place    | Note\n"));
     for (const Note &note : note_list)
     {
         if (note.hidden())

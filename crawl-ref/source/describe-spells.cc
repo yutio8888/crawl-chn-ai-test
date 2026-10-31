@@ -710,10 +710,10 @@ static void _describe_book(const spellbook_contents &book,
 
         string spell_name = spell_title(spell);
         if (spell == SPELL_LEHUDIBS_CRYSTAL_SPEAR
-            && chop_len < (int)spell_name.length())
+            && chop_len < strwidth(spell_name))
         {
             // looks nicer than Lehudib's Crystal S
-            spell_name = "Crystal Spear";
+            spell_name = T_("Crystal Spear");
         }
         // The book table's following columns rely on this fixed-width name
         // field. Monster spellbooks use a two-column layout instead, where
@@ -751,12 +751,12 @@ static void _describe_book(const spellbook_contents &book,
             continue;
         }
 
-        string schools =
 #if TAG_MAJOR_VERSION == 34
-            source_item->base_type == OBJ_RODS ? T_("Evocations")
-                                               :
+        string schools = source_item->base_type == OBJ_RODS
+                         ? T_("Evocations") : _spell_schools(spell);
+#else
+        string schools = _spell_schools(spell);
 #endif
-                         _spell_schools(spell);
 
         const string level = chop_string(make_stringf(
                                              "%d", spell_difficulty(spell)),
