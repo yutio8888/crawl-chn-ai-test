@@ -1415,7 +1415,7 @@ static bool _compare_by_type(const stash_search_result& lhs,
         return _compare_by_name(lhs, rhs);
 }
 
-static vector<stash_search_result> _inventory_search(const base_pattern &search)
+vector<stash_search_result> inventory_search(const base_pattern &search)
 {
     vector<stash_search_result> results;
     for (const item_def &item : you.inv)
@@ -1425,19 +1425,21 @@ static vector<stash_search_result> _inventory_search(const base_pattern &search)
 
         const string s   = Stash::stash_item_name(item);
         const string ann = stash_annotate_item(STASH_LUA_SEARCH_ANNOTATE, &item);
+        stash_search_result res;
+        res.match = s;
+        res.in_inventory = true;
         // Keep the canonical prefix for English queries and sorting. The
-        // localized alias is additional search text, never an identity.
+        // complete display form also permits localized compound queries.
         string haystack = ann + " " + s + " " + item_english_name(item)
                           + " " + T_("[carried]");
+        if (Options.language == lang_t::ZH)
+            haystack += " " + res.display_match();
         if (is_dumpable_artefact(item))
             haystack += " " + chardump_desc(item);
         if (search.matches(haystack))
         {
-            stash_search_result res;
-            res.match = s;
             res.primary_sort = s; // don't use DESC_QUALNAME for inventory items
             res.item = item;
-            res.in_inventory = true;
             res.pos = level_pos::current();
             results.push_back(res);
         }
@@ -1588,7 +1590,7 @@ void StashTracker::search_stashes(string search_term)
 
     vector<stash_search_result> results;
     if (!curr_lev)
-        results = _inventory_search(*search);
+        results = inventory_search(*search);
     // allowing offlevel stash searching is not useful in descent mode
     get_matching_stashes(*search, results, curr_lev
                                            || crawl_state.game_is_descent());

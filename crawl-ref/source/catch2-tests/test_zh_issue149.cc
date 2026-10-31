@@ -43,12 +43,14 @@
 #include "notes.h"
 #include "options.h"
 #include "output.h"
+#include "pattern.h"
 #include "player.h"
 #include "player-equip.h"
 #include "religion.h"
 #include "spl-cast.h"
 #include "spl-util.h"
 #include "state.h"
+#include "stash.h"
 #include "status.h"
 #include "syscalls.h"
 #include "stringutil.h"
@@ -810,6 +812,51 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     }
 }
 
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "playtest round4: inventory search preserves compound carried queries",
+                 "[zh-translation][playtest-round4-search][stash]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    issue149_player();
+    you.where_are_you = BRANCH_DUNGEON;
+    you.depth = 1;
+    item_def& dagger = you.inv[0];
+    dagger.base_type = OBJ_WEAPONS;
+    dagger.sub_type = WPN_DAGGER;
+    dagger.quantity = 1;
+    dagger.flags = ISFLAG_IDENTIFIED;
+    dagger.pos = ITEM_IN_INVENTORY;
+    dagger.link = 0;
+    dagger.plus = 0;
+    dagger.slot = 'a';
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string canonical = Stash::stash_item_name(dagger);
+        const auto check_query = [&](const base_pattern& query)
+        {
+            const auto results = inventory_search(query);
+            REQUIRE(results.size() == 1);
+            CHECK(results[0].match == canonical);
+            CHECK(results[0].primary_sort == canonical);
+            CHECK(results[0].in_inventory);
+            CHECK(results[0].item.link == 0);
+            CHECK(results[0].display_match()
+                  == string(T_("[carried]")) + " "
+                     + dagger.name(DESC_INVENTORY_EQUIP));
+        };
+        INFO((language == lang_t::ZH ? "ZH" : "EN"));
+        check_query(plaintext_pattern("carried", true));
+        if (language == lang_t::ZH)
+        {
+            check_query(plaintext_pattern("携带", true));
+            check_query(plaintext_pattern("[携带] a - +0 匕首", true));
+            check_query(text_pattern("携带.*匕首", true));
+        }
+    }
+}
 
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "Issue 149 ancestor and neutral monsters localize actual lists and dumps",

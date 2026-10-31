@@ -2,6 +2,7 @@
 
 #include "AppHdr.h"
 
+#include "beam.h"
 #include "database.h"
 #include "describe.h"
 #include "describe-spells.h"
@@ -302,6 +303,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(ensure_utf8_ctype());
     init_monsters();
     init_spell_descs();
+    init_zap_index();
     unwind_var<bool> game_started(crawl_state.game_started, false);
     monster_info mi(MONS_DEEP_ELF_ANNIHILATOR);
     spellbook_contents book;
@@ -323,4 +325,21 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             CHECK(text.find("Crystal Spear") != string::npos);
         CHECK(book.spells == vector<spell_type>{SPELL_LEHUDIBS_CRYSTAL_SPEAR});
     }
+
+    TranslationFixture mode(lang_t::ZH, "zh");
+    // A deliberately large spell-HD fixture makes the damage field consume
+    // enough columns to exercise the short-name branch in the real renderer.
+    mi.hd = 1000000;
+    const int name_budget = 30
+                           - strwidth(spell_effect_string(book.spells[0], &mi))
+                           - 3 - 1; // range and separator
+    REQUIRE(name_budget < strwidth(spell_title(book.spells[0])));
+    REQUIRE(name_budget >= strwidth(T_("Crystal Spear")));
+    formatted_string compact_description;
+    describe_spellset({book}, nullptr, compact_description, &mi);
+    const string compact_text = compact_description.tostring();
+    INFO(compact_text);
+    CHECK(compact_text.find("水晶矛") != string::npos);
+    CHECK(compact_text.find("勒胡迪布之水晶矛") == string::npos);
+    CHECK(compact_text.find("Crystal Spear") == string::npos);
 }
