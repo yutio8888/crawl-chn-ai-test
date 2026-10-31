@@ -117,17 +117,10 @@ The current CI definition is `.github/workflows/ci.yml`; it is authoritative
 for job names and commands. Agent documentation should link to it instead of
 copying job inventories that drift.
 
-The tooling suite and combined static gate run on both Ubuntu and macOS. The
-macOS lane deliberately uses the system `/bin/bash` contract, so generic
-verification scripts must remain compatible with Bash 3.2 and BSD userland.
-The tooling suite reads the candidate `.claude/scripts/tests/run_all.sh` entry
-from the exact candidate commit's Git blob, while preserving its
-candidate-worktree path as `$0` so it discovers the candidate tests, and fixes
-`PYTHONSAFEPATH=1` and `ZH_TOOLING_TEST_JOBS=2`.
-Python 3, Node.js, `tree-sitter`, `tree-sitter-cpp`, and PyYAML are installed
-explicitly in CI; GNU `timeout`, `flock`, `grep -P`, and GNU `script` are not
-generic-tooling prerequisites. Target-only Windows, Android, and Tiles helpers
-may retain dependencies documented by their target build workflow.
+CI event routing, runner matrices, and commands are defined in
+[ci.yml](../.github/workflows/ci.yml). Generic verification scripts support
+macOS system `/bin/bash` (Bash 3.2) and BSD userland; target-specific helpers
+use the dependencies documented by their build workflow.
 
 The exact Python version is defined once by the root `.python-version` file.
 Local tooling commands should run through a version manager that honors it (or
