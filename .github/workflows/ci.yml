@@ -150,6 +150,12 @@ jobs:
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
+          # PRs restore base-branch caches without creating merge-ref snapshots.
+          save: >-
+            ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
+                (github.event_name == 'push' && (github.ref == 'refs/heads/chn-0.34.1-base' ||
+                 github.ref == 'refs/heads/chn-trunk' || startsWith(github.ref, 'refs/tags/'))) }}
+          max-size: 200MB
           key: zh-runtime-catch2
           restore-keys: zh-runtime-catch2
       - name: "Setup ccache: prepend path"
@@ -193,6 +199,12 @@ jobs:
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
+          # PRs restore base-branch caches without creating merge-ref snapshots.
+          save: >-
+            ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
+                (github.event_name == 'push' && (github.ref == 'refs/heads/chn-0.34.1-base' ||
+                 github.ref == 'refs/heads/chn-trunk' || startsWith(github.ref, 'refs/tags/'))) }}
+          max-size: 200MB
           key: zh-runtime-full
           restore-keys: zh-runtime-full
       - name: "Setup ccache: prepend path"
@@ -229,6 +241,12 @@ jobs:
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
+          # PRs restore base-branch caches without creating merge-ref snapshots.
+          save: >-
+            ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
+                (github.event_name == 'push' && (github.ref == 'refs/heads/chn-0.34.1-base' ||
+                 github.ref == 'refs/heads/chn-trunk' || startsWith(github.ref, 'refs/tags/'))) }}
+          max-size: 200MB
           key: zh-help-runtime
           restore-keys: zh-help-runtime
       - name: "Setup ccache: prepend path"
@@ -353,6 +371,12 @@ jobs:
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
+          # PRs restore base-branch caches without creating merge-ref snapshots.
+          save: >-
+            ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
+                (github.event_name == 'push' && (github.ref == 'refs/heads/chn-0.34.1-base' ||
+                 github.ref == 'refs/heads/chn-trunk' || startsWith(github.ref, 'refs/tags/'))) }}
+          max-size: 200MB
           key: build-linux-console
           restore-keys: build-linux-console
       - name: "Setup ccache: prepend path"
@@ -449,6 +473,12 @@ jobs:
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
+          # PRs restore base-branch caches without creating merge-ref snapshots.
+          save: >-
+            ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
+                (github.event_name == 'push' && (github.ref == 'refs/heads/chn-0.34.1-base' ||
+                 github.ref == 'refs/heads/chn-trunk' || startsWith(github.ref, 'refs/tags/'))) }}
+          max-size: 200MB
           key: build-windows-tiles
           restore-keys: build-windows-tiles
       - name: "Setup ccache: prepend path"
@@ -501,6 +531,12 @@ jobs:
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
+          # PRs restore base-branch caches without creating merge-ref snapshots.
+          save: >-
+            ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
+                (github.event_name == 'push' && (github.ref == 'refs/heads/chn-0.34.1-base' ||
+                 github.ref == 'refs/heads/chn-trunk' || startsWith(github.ref, 'refs/tags/'))) }}
+          max-size: 200MB
           key: build-windows-console
           restore-keys: build-windows-console
       - name: "Setup ccache: prepend path"
@@ -594,6 +630,12 @@ jobs:
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
+          # PRs restore base-branch caches without creating merge-ref snapshots.
+          save: >-
+            ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
+                (github.event_name == 'push' && (github.ref == 'refs/heads/chn-0.34.1-base' ||
+                 github.ref == 'refs/heads/chn-trunk' || startsWith(github.ref, 'refs/tags/'))) }}
+          max-size: 300MB
           key: build-android
           restore-keys: build-android
       - name: "Setup ccache: extra configuration"
