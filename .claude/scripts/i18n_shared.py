@@ -2280,7 +2280,8 @@ def parse_cpp_annotations(parser, source: bytes):
 
     The first tree identifies actual function declarations/definitions, so
     text in comments, literals and macro bodies is never rewritten. Only the
-    complete declaration prefixes observed in Crawl are supported. Unknown
+    complete declaration prefixes and statement macros observed in Crawl are
+    supported, plus the empty conversion call documented below. Unknown
     annotations and all body syntax remain for normal fail-closed validation.
     The returned tree indexes the original bytes: annotations become spaces,
     never deleted text, and callers still inspect/report the original source.
@@ -2305,11 +2306,57 @@ def parse_cpp_annotations(parser, source: bytes):
             literals.append((node.start_byte, node.end_byte))
             continue
         if (node.type == "identifier"
-                and source[node.start_byte:node.end_byte] in (b"CRAWL", b"LETTERS")):
+                and source[node.start_byte:node.end_byte] in (b"CRAWL", b"LETTERS", b"PRIu64")):
             identifiers.append(node)
+        # target.cc L117/L122: the grammar reads an unqualified conversion
+        # call as an ERROR("operator") followed by bool(). This is neither a
+        # conditional split nor a macro. Lower only that exact empty call,
+        # leaving surrounding expressions and every other ERROR untouched.
+        if (node.type == "ERROR" and node.text == b"operator"
+                and node.next_named_sibling is not None):
+            following = node.next_named_sibling
+            if following.type == "binary_expression":
+                following = following.child_by_field_name("left")
+            if (following is not None and following.type == "call_expression"
+                    and re.fullmatch(rb"[ \t]*bool[ \t]*\([ \t]*\)",
+                                     source[node.end_byte:following.end_byte])):
+                normalized[node.start_byte:node.end_byte] = b" " * len(node.text)
+                changed = True
         if node.type == "call_expression":
             function = node.child_by_field_name("function")
             args = node.child_by_field_name("arguments")
+            if (function is not None and function.type == "identifier"
+                    and args is not None and not args.has_error):
+                macro = function.text
+                values = args.named_children
+                # cluautil.h LUARET1/2 and LUAWRAP define whole functions
+                # without a trailing semicolon (l-you.cc L79 onwards).
+                # Represent their evaluated operands as return expressions:
+                # no invented persistent storage, no declaration ambiguity,
+                # and all original operand bytes remain scanner-visible.
+                count = {b"LUARET1": 3, b"LUARET2": 4, b"LUAWRAP": 2}.get(macro)
+                metadata = 1 if macro == b"LUAWRAP" else 2
+                if (count and len(values) == count
+                        and values[0].type == "identifier"
+                        and (metadata == 1 or (
+                            values[1].type == "identifier" and values[1].text in
+                            (b"boolean", b"integer", b"number", b"string")))):
+                    begin, end = node.start_byte, values[metadata].start_byte
+                    normalized[begin:end] = bytes(
+                        ch if ch in (10, 13) else 32 for ch in source[begin:end])
+                    normalized[begin:begin + 6] = b"return"
+                    normalized[args.end_byte - 1] = ord(";")
+                    changed = True
+                # player-equip.cc L78/L473 define NO_SLOT/NO_EQUIP as blocks.
+                # Keep its entire evaluated argument, replacing only the
+                # macro wrapper with an expression statement; else then binds
+                # exactly as it does to the original compound statement.
+                if macro in (b"NO_SLOT", b"NO_EQUIP") and len(values) == 1:
+                    begin, end = node.start_byte, args.start_byte + 1
+                    normalized[begin:end] = bytes(
+                        ch if ch in (10, 13) else 32 for ch in source[begin:end])
+                    normalized[args.end_byte - 1] = ord(";")
+                    changed = True
             if (function is not None and function.type == "identifier"
                     and source[function.start_byte:function.end_byte] == b"va_arg"
                     and args is not None):
@@ -2352,8 +2399,9 @@ def parse_cpp_annotations(parser, source: bytes):
     # Scheme 3 precursor: only an AST identifier adjacent to an actual
     # string literal, with whitespace between them, denotes this object
     # macro. Comments, raw-string contents and longer identifiers cannot
-    # trigger it. CRAWL (version.h) and LETTERS (lang-fake.cc) are the
-    # supported object macros; all bytes and newlines retain their offsets.
+    # trigger it. CRAWL (version.h), LETTERS (lang-fake.cc), and PRIu64
+    # (inttypes.h; random.cc L202) are the supported object macros.
+    # All bytes and newlines retain their offsets.
     for node in identifiers:
         if any((end <= node.start_byte
                 and not source[end:node.start_byte].strip())
