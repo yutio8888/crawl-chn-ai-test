@@ -11,8 +11,10 @@
 
 #include "ability.h"
 #include "areas.h"
+#include "artefact.h"
 #include "beam.h"
 #include "chardump.h"
+#include "cio.h"
 #include "colour.h"
 #include "clua.h"
 #include "branch.h"
@@ -56,6 +58,12 @@
 #include "traps.h"
 #include "unicode.h"
 #include "unwind.h"
+#include "viewgeom.h"
+
+#if defined(UNIX) && !defined(USE_TILE)
+#include <sys/wait.h>
+#include <unistd.h>
+#endif
 
 // The overview has no public snapshot API; preserve its existing discovery
 // table while preparing a fixture with an undiscovered Temple.
@@ -768,9 +776,16 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     for (lang_t language : {lang_t::ZH, lang_t::EN})
     {
         TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
-        const string displayed = Stash::stash_item_name(dagger);
-        CHECK(displayed.find(dagger.name(DESC_INVENTORY_EQUIP)) != string::npos);
-        CHECK((displayed.find("[carried] ") != string::npos) == (language == lang_t::EN));
+        const string canonical = Stash::stash_item_name(dagger);
+        CHECK(canonical.find(dagger.name(DESC_INVENTORY_EQUIP)) != string::npos);
+        CHECK(canonical.find("[carried] ") == 0);
+        stash_search_result result;
+        result.in_inventory = true;
+        result.match = result.primary_sort = canonical;
+        const string displayed = result.display_match();
+        CHECK(displayed.find(language == lang_t::ZH ? "[携带] " : "[carried] ") == 0);
+        CHECK(result.match == canonical);
+        CHECK(result.primary_sort == canonical);
         CHECK(dagger.link == 0);
         CHECK(dagger.pos == ITEM_IN_INVENTORY);
         for (bool onscreen : {false, true})
@@ -781,6 +796,14 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             CHECK(overview.find(language == lang_t::ZH ? "神殿" : "Temple") != string::npos);
             CHECK((overview.find("Temple:") != string::npos) == (language == lang_t::EN));
             CHECK(overview.find(":4-7") != string::npos);
+            for (const string &line : split_string("\n", overview, false))
+            {
+                if (line.find("(5/15)") == string::npos)
+                    continue;
+                const string plain = formatted_string::parse_string(line).tostring();
+                CHECK(strwidth(plain.substr(0, plain.find("(5/15)"))) == 8);
+                CHECK(strwidth(plain) % 26 == 0);
+            }
             CHECK(string(branches[BRANCH_TEMPLE].abbrevname) == "Temple");
             CHECK(string(branches[BRANCH_DUNGEON].abbrevname) == "D");
         }
@@ -1548,3 +1571,215 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         }
     }
 }
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "playtest round4: action dump localizes labels without changing counts",
+                 "[zh-translation][playtest-round4][morgue]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    init_properties();
+    init_monsters();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    unwind_var<vector<string>> order(Options.dump_order, {"action_counts"});
+    unwind_var<string> directory(Options.morgue_dir, ".");
+    issue149_player();
+    you.experience_level = you.max_level = 3;
+    count_action(CACT_FIRE, WPN_SHORTBOW);
+    count_action(CACT_INVOKE, ABIL_USKAYAW_STOMP);
+    count_action(CACT_INVOKE, ABIL_USKAYAW_LINE_PASS);
+    count_action(CACT_MELEE, UNRAND_WYRMBANE);
+    count_action(CACT_MELEE, UNRAND_DARK_MAUL);
+    count_action(CACT_EVOKE, UNRAND_WUCAD_MU);
+    const auto original_counts = you.action_count;
+    const string filename = "catch2-playtest-round4-actions-" + to_string(getpid());
+    unwinder cleanup([filename]() {
+        unlink_u((filename + ".txt").c_str());
+        unlink_u((filename + ".lst").c_str());
+    });
+    for (lang_t language : {lang_t::ZH, lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        REQUIRE(dump_char(filename, true));
+        ifstream file(filename + ".txt");
+        REQUIRE(file.good());
+        const string dump((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+        INFO(dump);
+        if (language == lang_t::ZH)
+        {
+            CHECK(dump.find("射击:") != string::npos);
+            CHECK(dump.find("火焰:") == string::npos);
+            CHECK(dump.find("重踏") != string::npos);
+            CHECK(dump.find("穿行") != string::npos);
+            CHECK(dump.find("Stomp") == string::npos);
+            CHECK(dump.find("Line Pass") == string::npos);
+            CHECK(string(T_("Fire")) == "火焰");
+            CHECK(dump.find("长矛") != string::npos);
+            CHECK(dump.find("战锤") != string::npos);
+            CHECK(dump.find("吴卡德") != string::npos);
+            CHECK(dump.find("Lance") == string::npos);
+            CHECK(dump.find("Maul") == string::npos);
+        }
+        else
+        {
+            CHECK(dump.find("Fire:") != string::npos);
+            CHECK(dump.find("Stomp") != string::npos);
+            CHECK(dump.find("Line Pass") != string::npos);
+            CHECK(dump.find("Lance") != string::npos);
+            CHECK(dump.find("Maul") != string::npos);
+            CHECK(dump.find("Crystal ball of W") != string::npos);
+        }
+        int action_rows = 0;
+        for (const string &line : split_string("\n", dump, false))
+        {
+            const size_t separator = line.find(" ||");
+            if (separator == string::npos || line.find("----") != string::npos)
+                continue;
+            if (line.find(':') == string::npos && line.find("         ") != 0)
+                continue;
+            CHECK(strwidth(line.substr(0, separator)) == 26);
+            ++action_rows;
+        }
+        CHECK(action_rows == 6);
+        REQUIRE(you.action_count.size() == original_counts.size());
+        for (const auto &entry : original_counts)
+        {
+            const auto it = you.action_count.find(entry.first);
+            REQUIRE(it != you.action_count.end());
+            for (int xl = 0; xl < 27; ++xl)
+                CHECK(it->second[xl] == entry.second[xl]);
+        }
+        CHECK(ability_name(ABIL_USKAYAW_STOMP, true) == "Stomp");
+        CHECK(ability_name(ABIL_USKAYAW_LINE_PASS, true) == "Line Pass");
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "playtest round4 related: dump tables align localized labels by columns",
+                 "[zh-translation][playtest-round4-related][morgue]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    init_properties();
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    unwind_var<vector<string>> order(Options.dump_order,
+        {"turns_by_place", "xp_by_level", "piety_info"});
+    unwind_var<string> directory(Options.morgue_dir, ".");
+    issue149_player();
+    you.max_level = 3;
+    auto &conduct = you.piety_info.conduct_info_by_god[GOD_TROG][1];
+    conduct.conducts_count[DID_KILL_LIVING] = 2;
+    conduct.piety_from_conducts[DID_KILL_LIVING] = 3;
+    const string filename = "catch2-playtest-round4-tables-" + to_string(getpid());
+    unwinder cleanup([filename]() {
+        unlink_u((filename + ".txt").c_str());
+        unlink_u((filename + ".lst").c_str());
+    });
+    for (lang_t language : {lang_t::ZH, lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        REQUIRE(dump_char(filename, true, true));
+        ifstream file(filename + ".txt");
+        REQUIRE(file.good());
+        const string dump((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
+        int total_rows = 0;
+        int conduct_rows = 0;
+        const string label = C_("piety conduct", conduct_description(DID_KILL_LIVING).c_str());
+        for (const string &line : split_string("\n", dump, false))
+        {
+            INFO(line);
+            const size_t separator = line.find('|');
+            if (separator == string::npos)
+                continue;
+            if (trimmed_string(line.substr(0, separator)) == T_("Total"))
+            {
+                const int width = strwidth(line.substr(0, separator));
+                CHECK((width == 15 || width == 12));
+                ++total_rows;
+            }
+            if (line.find(label) != string::npos)
+            {
+                CHECK(strwidth(line.substr(0, separator)) == 22);
+                ++conduct_rows;
+            }
+        }
+        CHECK(total_rows == 2);
+        CHECK(conduct_rows == 2);
+        CHECK(you.piety_info.conduct_info_by_god[GOD_TROG][1]
+                  .conducts_count[DID_KILL_LIVING] == 2);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "playtest round4: joined combat messages do not duplicate punctuation",
+                 "[zh-translation][playtest-round4][messages]")
+{
+    unwind_var<player> restore_player(you);
+    issue149_player();
+    unwind_var<bool> condense(Options.msg_condense_repeats, true);
+    msgwin_temporary_mode temporary;
+    unwinder clear([]() { msgwin_clear_temporary(); });
+    msg::tee observed;
+    mpr("你勉强未命中地狱犬。");
+    mpr("<darkgrey>地狱犬咬了你，但没有造成伤害。</darkgrey>");
+    mprf(T_("%s%s misses %s."), "地狱犬", T_(" barely"), you.name(DESC_THE).c_str());
+    const string emitted = observed.get_store();
+    const string history = get_last_messages(10, true);
+    INFO(emitted);
+    INFO(history);
+    CHECK(emitted.find("地狱犬勉强未命中你。") != string::npos);
+    CHECK(emitted.find("。。") == string::npos);
+    CHECK(history.find("。。") == string::npos);
+}
+
+
+#if defined(UNIX) && !defined(USE_TILE)
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "playtest round4: production wrapping counts display columns",
+                 "[zh-translation][playtest-round4][console-wrap]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    const auto row = GENERATE(table<int, int, const char *, int, int, bool>({
+        {52, 2, "abcdefghijklmnopqrst", 72, 2, false},
+        {52, 2, "地狱犬勉强未命中你。", 72, 2, false},
+        {61, 2, "地狱犬勉强未命中你。", 1, 3, false},
+        {61, 2, "abcdefghijklmnopqrst", 1, 3, false},
+        {80, 2, "界", 3, 3, false},
+        {52, 6, "地狱犬勉强未命中你。", 72, 6, false},
+        {2, 2, "你勉强未命中地狱犬。<darkgrey>地狱犬咬了你，但没有造成伤害。</darkgrey>地狱犬勉强未命中你。", 72, 2, true},
+    }));
+    // The existing console headless backend is process-global and has no
+    // leave operation. Isolate it with the same fork/wait convention used
+    // by TextDB tests, without changing the parent suite's IO state.
+    const pid_t child = fork();
+    REQUIRE(child >= 0);
+    if (child == 0)
+    {
+        enter_headless_mode();
+        crawl_view.termp = coord_def(1, 1);
+        crawl_view.termsz = coord_def(80, 24);
+        crawl_view.msgp = coord_def(1, 18);
+        crawl_view.msgsz = coord_def(80, 6);
+        cgotoxy(get<0>(row), get<1>(row), GOTO_MSG);
+        if (get<5>(row))
+            formatted_string::parse_string(get<2>(row)).display();
+        else
+            wrapcprintf("%s", get<2>(row));
+        const coord_def actual = cgetpos(GOTO_MSG);
+        _exit(actual == coord_def(get<3>(row), get<4>(row)) ? 0 : 1);
+    }
+    int status = 0;
+    REQUIRE(waitpid(child, &status, 0) == child);
+    REQUIRE(WIFEXITED(status));
+    CAPTURE(get<0>(row), get<1>(row), get<2>(row));
+    CHECK(WEXITSTATUS(status) == 0);
+}
+#endif

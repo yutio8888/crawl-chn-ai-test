@@ -57,6 +57,17 @@
 // Global
 StashTracker StashTrack;
 
+string stash_search_result::display_match() const
+{
+    static constexpr char carried_prefix[] = "[carried] ";
+    if (in_inventory && starts_with(match, carried_prefix))
+    {
+        return string(T_("[carried]")) + " "
+               + match.substr(sizeof(carried_prefix) - 1);
+    }
+    return match;
+}
+
 string userdef_annotate_item(const char *s, const item_def *item)
 {
     // The Lua annotation vocabulary (ego abbreviations like rF+/rC+, class
@@ -444,7 +455,7 @@ string Stash::stash_item_name(const item_def &item)
     {
         name = item.name(DESC_INVENTORY_EQUIP); // add `(worn)`, etc
         // use [] to match with the location info
-        name.insert(0, string(T_("[carried]")) + " ");
+        name.insert(0, "[carried] ");
         return name;
     }
     else
@@ -1414,7 +1425,10 @@ static vector<stash_search_result> _inventory_search(const base_pattern &search)
 
         const string s   = Stash::stash_item_name(item);
         const string ann = stash_annotate_item(STASH_LUA_SEARCH_ANNOTATE, &item);
-        string haystack = ann + " " + s + " " + item_english_name(item);
+        // Keep the canonical prefix for English queries and sorting. The
+        // localized alias is additional search text, never an identity.
+        string haystack = ann + " " + s + " " + item_english_name(item)
+                          + " " + T_("[carried]");
         if (is_dumpable_artefact(item))
             haystack += " " + chardump_desc(item);
         if (search.matches(haystack))
@@ -1927,7 +1941,7 @@ bool StashTracker::display_search_results(
             }
         }
 
-        matchtitle << res.match;
+        matchtitle << res.display_match();
         if (res.duplicates > 0)
         {
             if (res.duplicates != res.duplicate_piles  // piles are only

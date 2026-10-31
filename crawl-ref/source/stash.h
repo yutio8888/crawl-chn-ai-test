@@ -144,6 +144,8 @@ struct stash_search_result
     // A string to use for a primary sort, if different from just `match`.
     string primary_sort;
 
+    string display_match() const;
+
     // Item that was matched.
     item_def item;
 

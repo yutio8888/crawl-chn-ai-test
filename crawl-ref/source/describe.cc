@@ -7747,10 +7747,10 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         {
             if (zh)
             {
-                result << make_stringf(
+                result << make_stringf_p(
                     C_("monster description",
-                       "Despite %s appearance, it can open doors.\n"),
-                    mi.pronoun(PRONOUN_POSSESSIVE));
+                       "Despite %1$s appearance, %2$s can open doors.\n"),
+                    mi.pronoun(PRONOUN_POSSESSIVE), pronoun.c_str());
             }
             else
                 result << T_("Despite ") << mi.pronoun(PRONOUN_POSSESSIVE)
@@ -8006,21 +8006,47 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
 
     if (mi.is(MB_KNOWN_INVIS))
     {
-        inf.body << "\n<magenta>"
-                 << It << " " << is << " currently invisible to you and "
-                 << "you have merely inferred " << mi.pronoun(PRONOUN_POSSESSIVE)
-                 << " position. " << uppercase_first(mi.pronoun(PRONOUN_POSSESSIVE))
-                 << " current health and status is unknown to you and your"
-                    " accuracy and defense against " << mi.pronoun(PRONOUN_POSSESSIVE)
-                 << " attacks is reduced. </magenta>";
+        if (Options.language == lang_t::ZH)
+        {
+            inf.body << "\n<magenta>" << make_stringf_p(
+                C_("monster description",
+                   "You cannot currently see %1$s and have merely inferred %2$s position. "
+                   "%3$s current health and status are unknown to you, and your "
+                   "accuracy and defense against %2$s attacks are reduced."),
+                it_o.c_str(), mi.pronoun(PRONOUN_POSSESSIVE),
+                uppercase_first(mi.pronoun(PRONOUN_POSSESSIVE)).c_str())
+                     << "</magenta>";
+        }
+        else
+        {
+            inf.body << "\n<magenta>"
+                     << It << " " << is << " currently invisible to you and "
+                     << "you have merely inferred " << mi.pronoun(PRONOUN_POSSESSIVE)
+                     << " position. " << uppercase_first(mi.pronoun(PRONOUN_POSSESSIVE))
+                     << " current health and status is unknown to you and your"
+                        " accuracy and defense against " << mi.pronoun(PRONOUN_POSSESSIVE)
+                     << " attacks is reduced. </magenta>";
+        }
     }
     else if (mi.is(MB_REMEMBERED_INVIS))
     {
-        inf.body << "\n<magenta>"
-                 << It << " " << is << " currently invisible to you and "
-                 << mi.pronoun(PRONOUN_POSSESSIVE) << " true position is unknown, "
-                 << "but " << it << " was last observed here."
-                 << "</magenta>";
+        if (Options.language == lang_t::ZH)
+        {
+            inf.body << "\n<magenta>" << make_stringf_p(
+                C_("monster description",
+                   "You cannot currently see %1$s and %2$s true position is unknown, "
+                   "but %3$s was last observed here."),
+                it_o.c_str(), mi.pronoun(PRONOUN_POSSESSIVE), it.c_str())
+                     << "</magenta>";
+        }
+        else
+        {
+            inf.body << "\n<magenta>"
+                     << It << " " << is << " currently invisible to you and "
+                     << mi.pronoun(PRONOUN_POSSESSIVE) << " true position is unknown, "
+                     << "but " << it << " was last observed here."
+                     << "</magenta>";
+        }
     }
 
     if (mi.is(MB_SUMMONED))

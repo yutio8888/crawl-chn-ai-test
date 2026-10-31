@@ -843,7 +843,7 @@ int UIMenuPopup::_calc_columns(int mw) const
     for (size_t i = 0; i < m_menu->items.size(); ++i)
     {
         max_entry_text = max(max_entry_text,
-                static_cast<int>(m_menu->items[i]->get_text().size())
+                strwidth(m_menu->items[i]->get_text())
                 + m_menu->m_ui.menu->pad_right);
     }
 #endif
