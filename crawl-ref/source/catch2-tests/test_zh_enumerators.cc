@@ -38,6 +38,7 @@
 #include "player.h"          // you
 #include "duration-data.h"   // duration_data[], duration_def, NUM_DURATIONS
 #include "unwind.h"          // unwind_var
+#include "random.h"          // rng::subgenerator
 
 // batch4 (deferred #3/#4 enumerators): items + weapon/armour brands/egos.
 #include "item-def.h"         // item_def
@@ -688,6 +689,23 @@ std::string canonical_godspeak_key(std::string key)
     return key;
 }
 
+// These are the graffiti-bearing keys consumed by _xom_pseudo_miscast's
+// feature loop, which calls do_mon_name_replacements before displaying them.
+// Other consumers (notably Xom scenery) do not perform that postprocessing.
+std::string godspeak_display_for_scan(const std::string& key, std::string value)
+{
+    if (key == "Xom feature translucent wall"
+        || key == "Xom feature stone arch")
+    {
+        // RANDGEN produces an arbitrary Latin proper name, not translated
+        // prose. Mask just that dynamic field at these proven display sinks;
+        // leave unknown tokens and RANDGEN at every other key detectable.
+        value = mask_textdb_template_tokens(value, { "@RANDGEN@" });
+        value = do_mon_name_replacements(value);
+    }
+    return value;
+}
+
 std::set<std::string> reachable_godspeak_tokens(
     const std::string& root,
     const std::map<std::string, std::string>& canonical_blocks)
@@ -729,8 +747,10 @@ std::set<std::string> reachable_godspeak_tokens(
 // =============================================================================
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: godspeak (Trog general effect, etc.)",
-                 "[zh-translation]")
+                 "[zh-translation][godspeak]")
 {
+    // Make --rng-seed control Crawl's selections as well as Catch2's RNG.
+    rng::subgenerator scoped_rng(Catch::getSeed(), 0x676f64737065616bULL);
     std::vector<ZhIssue> issues;
     std::vector<std::pair<std::string, std::string>> blocks;
     REQUIRE(parse_db_file("dat/database/godspeak.txt", blocks));
@@ -750,12 +770,70 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         const std::set<std::string> allowed =
             reachable_godspeak_tokens(key, canonical_blocks);
         const std::string scan_val =
-            mask_textdb_template_tokens(val, allowed);
+            mask_textdb_template_tokens(
+                godspeak_display_for_scan(key, val), allowed);
         scan_one(scan_val.c_str(), key, "godspeak.txt", issues);
     }
     emit_issue_protocol("zh_translation", "godspeak", issues);
     WARN("zh enumerator summary: godspeak -> " << issues.size() << " issues");
     REQUIRE(true);
+}
+
+// Exercise enough real nested selections to cover the formerly sporadic
+// RANDGEN branch, with a Crawl RNG seed independent of Catch2 test ordering.
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: godspeak nested graffiti name replacements",
+                 "[zh-translation][godspeak]")
+{
+    rng::subgenerator fixed_rng(0x18941165447594ULL, 0x52414e4447454eULL);
+    const std::set<std::string> name_tokens = {
+        "@RANDGEN@", "@random_god@", "@random_god_chaotic@",
+        "@random_god_evil@", "@random_god_good@", "@random_skill@",
+        "@random_skill_magic@", "@random_skill_mundane@"
+    };
+    for (const std::string key : { "Xom feature translucent wall",
+                                   "Xom feature stone arch" })
+    {
+        int raw_mixed = 0;
+        int display_mixed = 0;
+        int randgen_hits = 0;
+        // Feature identity is substituted separately by the caller.
+        const std::set<std::string> feature_tokens = {
+            "@the_feature@", "@The_feature@"
+        };
+        for (int i = 0; i < 4096; ++i)
+        {
+            const std::string raw = getSpeakString(key);
+            REQUIRE_FALSE(raw.empty());
+            raw_mixed += rule_mixed_cn_en(
+                mask_textdb_template_tokens(raw, feature_tokens));
+            randgen_hits += raw.find("@RANDGEN@") != std::string::npos;
+
+            // Check the actual production helper removes every name control,
+            // including RANDGEN, before normalizing dynamic names for scanning.
+            const auto rendered_tokens =
+                textdb_template_tokens(do_mon_name_replacements(raw));
+            for (const auto& token : name_tokens)
+                REQUIRE(rendered_tokens.count(token) == 0);
+            display_mixed += rule_mixed_cn_en(mask_textdb_template_tokens(
+                godspeak_display_for_scan(key, raw), feature_tokens));
+        }
+        WARN(key << ": samples=4096 raw_mixed=" << raw_mixed
+             << " randgen_hits=" << randgen_hits
+             << " display_mixed=" << display_mixed);
+        CHECK(randgen_hits > 0);
+        CHECK(raw_mixed > 0);
+        CHECK(display_mixed == 0);
+    }
+    // A missing postprocessor at a different consumer must still be visible.
+    const std::string unexpected = "测试 @RANDGEN@ @random_skill@";
+    CHECK(godspeak_display_for_scan("Xom scenery generic", unexpected)
+          == unexpected);
+    CHECK(rule_mixed_cn_en(unexpected));
+    CHECK(rule_mixed_cn_en(godspeak_display_for_scan(
+        "Xom feature stone arch", "测试 @unknown_control@")));
+    CHECK(rule_mixed_cn_en(godspeak_display_for_scan(
+        "Xom feature stone arch", "测试 untranslated prose")));
 }
 
 // =============================================================================
