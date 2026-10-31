@@ -16,6 +16,8 @@ import android.content.Intent;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -26,6 +28,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
@@ -99,9 +103,16 @@ public class DCSSTextEditorActivityTest {
     }
 
     @Test
-    public void backAndCancelProtectEditsUntilExplicitDiscard() throws IOException {
+    public void backAndCancelProtectEditsUntilExplicitDiscard()
+            throws IOException, InterruptedException {
         try (ActivityScenario<DCSSTextEditor> scenario = launch()) {
+            CountDownLatch destroyed = new CountDownLatch(1);
             scenario.onActivity(activity -> {
+                activity.getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
+                    if (event == Lifecycle.Event.ON_DESTROY) {
+                        destroyed.countDown();
+                    }
+                });
                 ((EditText) activity.findViewById(R.id.textEditor)).setText(EDITED);
                 activity.getOnBackPressedDispatcher().onBackPressed();
                 assertFalse(activity.isFinishing());
@@ -119,6 +130,9 @@ public class DCSSTextEditorActivityTest {
                 assertFalse(activity.isFinishing());
             });
             onView(withText(R.string.discard_changes)).inRoot(isDialog()).perform(click());
+            // Observe the exit before scenario.close() could force it itself.
+            assertTrue("Discard did not finish the editor",
+                    destroyed.await(5, TimeUnit.SECONDS));
             assertEquals(ORIGINAL, readFile());
         }
     }
