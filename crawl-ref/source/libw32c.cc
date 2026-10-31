@@ -161,13 +161,36 @@ static void _clear_dirty_area()
 static void _sync_cursor()
 {
     // if cursor is not NOCURSOR, update on screen
-    if (cursor_is_enabled)
+    if (cursor_is_enabled && screensize.X > 0 && screensize.Y > 0)
     {
         COORD xy;
-        xy.X = cx;
-        xy.Y = cy;
+        xy.X = cx < screensize.X ? cx : screensize.X - 1;
+        xy.Y = cy < screensize.Y ? cy : screensize.Y - 1;
         SetConsoleCursorPosition(outbuf, xy);
     }
+}
+
+static void _write_screen_cell(int x, int y, wchar_t c, WORD attributes)
+{
+    CHAR_INFO &cell = screen[SCREENINDEX(x, y)];
+    if (cell.Char.UnicodeChar == c && cell.Attributes == attributes)
+        return;
+    cell.Char.UnicodeChar = c;
+    cell.Attributes = attributes;
+    _update_dirty_area(x, y);
+}
+
+static void _clear_wide_character(int x, int y)
+{
+    const WORD flags = screen[SCREENINDEX(x, y)].Attributes;
+    const WORD wide = COMMON_LVB_LEADING_BYTE | COMMON_LVB_TRAILING_BYTE;
+    if (!(flags & wide))
+        return;
+    const int first = flags & COMMON_LVB_TRAILING_BYTE && x > 0 ? x - 1 : x;
+    const int last = flags & COMMON_LVB_LEADING_BYTE && x + 1 < screensize.X
+                     ? x + 1 : x;
+    for (int i = first; i <= last; ++i)
+        _write_screen_cell(i, y, L' ', screen[SCREENINDEX(i, y)].Attributes & ~wide);
 }
 
 void writeChar(char32_t c)
@@ -178,9 +201,6 @@ void writeChar(char32_t c)
             writeChar(' ');
         return;
     }
-
-    bool noop = true;
-    PCHAR_INFO pci;
 
     // check for CR: noop
     if (c == 0x0D)
@@ -199,28 +219,34 @@ void writeChar(char32_t c)
     if (c > 0xFFFF)
         c = U'\xbf'; //¿
 
-    int tc = WIN32COLOR(current_colour);
-    pci = &screen[SCREENINDEX(cx,cy)];
-
-    // is this a no-op?
-    if (pci->Char.UnicodeChar != c)
-        noop = false;
-    else if (pci->Attributes != tc)
-        noop = false;
-
-    if (!noop)
+    int width = wcwidth(c);
+    if (width <= 0 || !screen || cx >= screensize.X || cy >= screensize.Y)
+        return;
+    // This backend clips at the right edge instead of wrapping. Never emit
+    // half a wide character, or overwrite its trailing cell on the next call.
+    if (width == 2 && cx + 1 >= screensize.X)
     {
-        // write the info and update the dirty area
-        pci->Char.UnicodeChar = c;
-        pci->Attributes = tc;
-
-        _update_dirty_area(cx, cy);
+        c = ' ';
+        width = 1;
     }
 
-    // update x position
-    cx += 1;
-    if (cx >= screensize.X)
-        cx = screensize.X - 1;
+    const WORD colour = WIN32COLOR(current_colour);
+    const WORD leading = colour | (width == 2 ? COMMON_LVB_LEADING_BYTE : 0);
+    const WORD trailing = colour | COMMON_LVB_TRAILING_BYTE;
+    const CHAR_INFO *cell = &screen[SCREENINDEX(cx, cy)];
+    if (cell->Char.UnicodeChar != c || cell->Attributes != leading
+        || width == 2 && (cell[1].Char.UnicodeChar != c
+                         || cell[1].Attributes != trailing))
+    {
+        // Overwriting either half must also erase the other half, even if it
+        // lies outside the new glyph. Include every changed cell in the flush.
+        for (int i = 0; i < width; ++i)
+            _clear_wide_character(cx + i, cy);
+        _write_screen_cell(cx, cy, c, leading);
+        if (width == 2)
+            _write_screen_cell(cx + 1, cy, c, trailing);
+    }
+    cx += width;
 }
 
 void set_mouse_enabled(bool enabled)
@@ -276,7 +302,7 @@ void w32_cancel_waiting_for_input()
 #if defined(WINVER) && WINVER >= 0x0600
     CancelIoEx(inbuf, nullptr);
 #else
-    typedef BOOL(WINAPI *cancel_func)(HANDLE, LPOVERLAPPED);
+    using cancel_func = BOOL (WINAPI *)(HANDLE, LPOVERLAPPED);
     cancel_func cancel_io = (cancel_func)(void *)GetProcAddress(
         GetModuleHandle(TEXT("kernel32.dll")), "CancelIoEx");
 
