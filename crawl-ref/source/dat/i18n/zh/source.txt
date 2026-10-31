@@ -31362,7 +31362,7 @@ The residue of %s spell condenses into glimmer.
 %s记起了%s%s%s。
 %%%%
 %s remembers more of %s old skill.
-%s回忆起更多%s昔日技能。
+%s想起了更多%s昔日技能。
 %%%%
 %s riposte.
 %s发动了反击。
@@ -37004,7 +37004,7 @@ chance to affect: %d%%
 影响几率：%d%%
 %%%%
 chance to blink: %d%%
-瞬移几率：%d%%
+闪烁几率：%d%%
 %%%%
 chance to confuse: %d%%
 困惑几率：%d%%
@@ -48288,7 +48288,7 @@ monster description|You cannot currently see %1$s and %2$s true position is unkn
 %1$s用%3$s攻击将%2$s束缚在原地。
 %%%%
 You perform a powerful leap!
-你使出了一次强力飞跃！
+你使出了一次强力跳跃！
 %%%%
 None of your crystals are currently charged.
 你目前没有任何已充能的玉晶。
@@ -48348,10 +48348,10 @@ Your athame gleams mockingly in your nearly-dead state.
 你的仪式匕首在你近乎死亡的状态下嘲弄地闪烁着。
 %%%%
 Your athame demands its blood price!
-你的仪式匕首索要它的鲜血代价！
+你的仪式匕首索要鲜血代价！
 %%%%
 Your athame demands its blood price! (Figuratively speaking.)
-你的仪式匕首索要它的鲜血代价！（打个比方而已。）
+你的仪式匕首索要鲜血代价！（打个比方而已。）
 %%%%
 %s remembers how to cast %s spells more powerfully.
 %s想起了如何让%s法术更具威力。
@@ -48360,13 +48360,13 @@ Your athame demands its blood price! (Figuratively speaking.)
 %s想起了如何用%s攻击将敌人束缚在原地。
 %%%%
 %s remembers the full extent of %s fortitude.
-%s想起了%s全部的坚韧之力。
+%s想起了%s全部坚韧之力。
 %%%%
 immune to blinking
 免疫闪烁
 %%%%
 immune to dispersal
-免疫驱散
+免疫空间驱离
 %%%%
 immune to teleportation
 免疫传送
