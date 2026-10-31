@@ -17,7 +17,7 @@ Formal version tags, closed-world artifact validation, checksums, draft
 Releases, and the manual publication gate are defined in
 [release-workflow.md](release-workflow.md).
 
-Ordinary branch, PR, scheduled, and manual branch runs compile Android, Linux,
+PR, scheduled, and manual branch runs compile Android, Linux,
 and Windows, with tooling and static checks on Ubuntu. Release tags also run
 the macOS checks and Tiles build, package the desktop archives, and validate
 the complete signed release asset set. Ordinary runs keep Android debug APKs
@@ -135,13 +135,14 @@ Release builds require the signing environment validated by the helper. The
 helper refuses success if the resulting APK remains unsigned. Do not document
 or deploy an `*-unsigned.apk` as a successful artifact.
 
-GitHub Actions keeps the four-ABI debug APK from ordinary branch, scheduled,
+GitHub Actions keeps the four-ABI debug APK from scheduled
 and manual runs as the `android-debug-apk` test artifact. It replaces Gradle's
 ephemeral debug signature with a dedicated stable test certificate, verifies
 the pinned public certificate digest, and only then uploads the APK. This lets
 testers install later branch artifacts as updates without exposing or reusing
 the production release key. Pull requests cannot access the test signing
-secrets; their ephemeral artifact is named `android-pr-debug-apk` so it cannot
+secrets; their arm64 `buildTest` APK uses Gradle's ephemeral debug signature and is
+named `android-pr-debug-apk` so it cannot
 be mistaken for the update channel.
 
 On a valid three-part release tag the workflow also builds `assembleRelease`,
@@ -264,20 +265,3 @@ make ANDROID=1 ccache-config
 
 Contrib libraries remain isolated by toolchain under
 `contrib/install/$(ARCH)/`.
-
-### GitHub Actions ccache
-
-The ccache steps in `.github/workflows/ci.yml` restore caches on PRs, including
-caches accessible from the base branch, but never save PR merge-ref snapshots.
-Saving is enabled only for pushes to the two mainline branches or tags,
-scheduled runs, and manual dispatches. `ccache-action@v1.2` supports `save: false`
-without disabling restore; its default timestamp suffix remains enabled so
-successful mainline builds can refresh immutable GitHub caches.
-
-Each step has an explicit `max-size`: Android uses 300 MB, and other ccache
-jobs use 200 MB each (explicit decimal `MB` units). For capacity planning, sum
-these limits over the ccache steps in the workflow, then multiply by the
-number of branch/tag snapshots retained. This is a per-snapshot budget, not
-a repository-wide limit: old timestamped snapshots and tag caches accumulate
-until GitHub expires or evicts them. Monitor Actions cache usage after rollout;
-existing oversized caches are not deleted by this workflow change.

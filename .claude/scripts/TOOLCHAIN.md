@@ -830,33 +830,10 @@ test/baselines/zh-help/zh-help-baseline.json  # [zh-help] 帮助系统基线
 
 ### CI 分层
 
-GitHub Actions 的 zh-specific job 以工作流文件为准：
-
-| Job | 触发 | 需编译 | 说明 |
-|-----|------|--------|------|
-| `zh_tooling_tests` | push/PR | 否 | Ubuntu + macOS：`run_all.sh`（自动发现所有 test_*） |
-| `zh_ci_gate` | push/PR | 否 | Ubuntu + macOS：`verify_zh.sh --profile ci`（纯静态） |
-| `zh_runtime_catch2` | push/PR | 是 | 统一 Catch2 驱动：[zh-translation] + [message-overlay] |
-| `zh_runtime_full` | schedule/workflow_dispatch | 是 | L1+L2+L3 全量运行时 |
-| `zh_help_runtime` | push/PR | 是 | [zh-help] catch2 + zh_help.rc bot |
-
-`zh_ci_gate` 不执行任何编译或运行时操作。`zh_runtime_full` 仅在定时触发
-（UTC 17:18）或手动 `workflow_dispatch` 且 `run_full_runtime=true` 时运行。
-
-所有 zh-specific job 均可通过 `schedule` 和 `workflow_dispatch` 控制：
-```yaml
-schedule:
-  - cron: '17 18 * * *'
-workflow_dispatch:
-  inputs:
-    run_full_runtime:
-      description: 'Run full runtime tests (L1+L2+L3, slow)'
-      type: boolean
-      default: false
-```
-
-`--profile ci` 为纯静态 gate，合并 source-db-static 和 translation-static
-检查，不包含 make、smoke_test.sh 或 post_zh_runtime.sh 等编译/运行时步骤。
+GitHub Actions 的事件路由、runner、job 和命令以
+[ci.yml](../../.github/workflows/ci.yml) 为准。
+`--profile ci` 是纯静态门禁；编译和运行时检查由工作流中的独立 job 执行。
+本地按 `docs/zh-testing.md` 选择匹配的开发验证入口。
 
 ### split_source.py — source.txt 条目拆分
 
