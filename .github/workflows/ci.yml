@@ -10,7 +10,7 @@ on:
       - chn-0.34.1-base
       - chn-trunk
   schedule:
-    - cron: '17 18 * * *'
+    - cron: '17 18 * * 0'
   workflow_dispatch:
     inputs:
       run_full_runtime:
