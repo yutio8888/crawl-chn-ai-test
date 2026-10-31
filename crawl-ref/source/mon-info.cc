@@ -2389,14 +2389,9 @@ const char *monster_info::pronoun(pronoun_type variant) const
 {
     if (props.exists(MON_GENDER_KEY))
     {
-        gender_type gender = (gender_type)props[MON_GENDER_KEY].get_int();
-        // English singular they stays neutral; the Chinese ancestor is one person.
-        if (Options.language == lang_t::ZH && gender == GENDER_NEUTRAL
-            && mons_is_hepliaklqana_ancestor(type))
-        {
-            gender = GENDER_NEUTER;
-        }
-        return decline_pronoun(gender, variant);
+        // Localized singular forms must not change the stored gender.
+        return decline_pronoun((gender_type)props[MON_GENDER_KEY].get_int(),
+                               variant);
     }
     return mons_pronoun(type, variant, true);
 }

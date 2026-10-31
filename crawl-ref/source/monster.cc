@@ -2198,13 +2198,9 @@ string monster::pronoun(pronoun_type pro, bool force_visible) const
     const bool seen = force_visible || you.aware_of(*this);
     if (seen && props.exists(MON_GENDER_KEY))
     {
-        gender_type gender = (gender_type)props[MON_GENDER_KEY].get_int();
-        if (Options.language == lang_t::ZH && gender == GENDER_NEUTRAL
-            && mons_is_hepliaklqana_ancestor(type))
-        {
-            gender = GENDER_NEUTER;
-        }
-        return decline_pronoun(gender, pro);
+        // Localized singular forms must not change the stored gender.
+        return decline_pronoun((gender_type)props[MON_GENDER_KEY].get_int(),
+                               pro);
     }
     return mons_pronoun(type, pro, seen);
 }

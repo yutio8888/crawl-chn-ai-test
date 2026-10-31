@@ -15,6 +15,9 @@
 #include "item-prop.h"
 #include "item-status-flag-type.h"
 #include "lang-en-guard.h"
+#include "mon-info.h"
+#include "monster.h"
+#include "religion.h"
 #include "options.h"
 #include "player.h"
 #include "random.h"
@@ -48,7 +51,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         { "他", "他的", "他自己", "他" },
         { "她", "她的", "她自己", "她" },
         { "你", "你的", "你自己", "你" },
-        { "它们", "它们的", "它们自己", "它们" },
+        { "他", "他的", "他自己", "他" },
     };
     for (int g = 0; g < NUM_GENDERS; ++g)
         for (int p = 0; p < NUM_PRONOUN_CASES; ++p)
@@ -524,5 +527,41 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             CHECK(you.item_description[IDESC_SCROLLS][type] == saved[type]);
         CHECK(rng::current_generator().get_state() == state);
         CHECK(rng::current_generator().get_count() == count);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Neutral singular actors retain gender across display languages",
+                 "[zh-translation][neutral-singular]")
+{
+    init_monsters();
+    const char * const chinese[] = { "他", "他的", "他自己", "他" };
+    const char * const english[] = { "they", "their", "themself", "them" };
+    for (monster_type type : {MONS_ROBIN, MONS_ANCESTOR})
+    {
+        monster mon;
+        mon.type = type;
+        monster_info info(type);
+        if (type == MONS_ANCESTOR)
+        {
+            mon.props[MON_GENDER_KEY] = GENDER_NEUTRAL;
+            info.props[MON_GENDER_KEY] = GENDER_NEUTRAL;
+        }
+        else
+            REQUIRE(mons_class_gender(type) == GENDER_NEUTRAL);
+        for (int p = 0; p < NUM_PRONOUN_CASES; ++p)
+        {
+            const auto pro = static_cast<pronoun_type>(p);
+            CHECK(mon.pronoun(pro, true) == chinese[p]);
+            CHECK(string(info.pronoun(pro)) == chinese[p]);
+            ScopedLangEn canonical;
+            CHECK(mon.pronoun(pro, true) == english[p]);
+            CHECK(string(info.pronoun(pro)) == english[p]);
+        }
+        if (type == MONS_ANCESTOR)
+        {
+            CHECK(mon.props[MON_GENDER_KEY].get_int() == GENDER_NEUTRAL);
+            CHECK(info.props[MON_GENDER_KEY].get_int() == GENDER_NEUTRAL);
+        }
     }
 }
