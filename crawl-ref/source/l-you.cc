@@ -1523,19 +1523,23 @@ LUAFN(you_jademantle_crystals_desc)
         if (elem & (int)spschool::ice)
             lit_crystals.push_back(T_("icy"));
 
-        const string crystals = comma_separated_line(lit_crystals.begin(), lit_crystals.end());
         string msg;
         if (Options.language == lang_t::ZH)
         {
+            const string crystals = comma_separated_line(
+                lit_crystals.begin(), lit_crystals.end(), T_(", and"), T_(", "));
             if (lit_crystals.size() == 1)
                 msg = make_stringf(T_("Your %s crystal is infused with energy."), crystals.c_str());
             else
                 msg = make_stringf(T_("Your %s crystals are infused with energy."), crystals.c_str());
         }
         else
+        {
+            const string crystals = comma_separated_line(lit_crystals.begin(), lit_crystals.end());
             msg = make_stringf("Your %s crystal%s are infused with energy.",
                                   crystals.c_str(),
                                   lit_crystals.size() > 1 ? "s" : "");
+        }
         lua_pushstring(ls, msg.c_str());
     }
 

@@ -5,6 +5,7 @@
 #include "act-iter.h"
 #include "areas.h"
 #include "cloud.h"
+#include "clua.h"
 #include "database.h"
 #include "describe.h"
 #include "dungeon.h"
@@ -39,6 +40,7 @@
 #include "state.h"
 #include "stringutil.h"
 #include "test_zh_fixture.h"
+#include "transform.h"
 #include "unwind.h"
 #include "xom.h"
 
@@ -980,4 +982,35 @@ TEST_CASE_METHOD(EnTranslationFixture,
         mprf_p(T_("Doom befalls %s, leaving %s %s."),
                "the orc", "it", "deeply drained");
     }).find("Doom befalls the orc, leaving it deeply drained.") != string::npos);
+}
+
+TEST_CASE("trunk sync jademantle crystal lists use language-specific separators",
+          "[trunk-sync][trunk-sync-jademantle-list][zh-translation]")
+{
+    unwind_var<player> restore_player(you);
+    const int two = (int)spschool::earth | (int)spschool::fire;
+    const int three = two | (int)spschool::air;
+    for (bool zh : {false, true})
+    {
+        TranslationFixture language(zh ? lang_t::ZH : lang_t::EN,
+                                    zh ? "zh" : nullptr);
+        for (int elements : {two, three})
+        {
+            you.props[JADEMANTLE_CRYSTAL_KEY] = elements;
+            lua_State *ls = clua.state();
+            lua_stack_cleaner restore_stack(ls);
+            REQUIRE(clua.execstring("return you.jademantle_crystals_desc()",
+                                   "trunk-sync-jademantle-list", 1) == 0);
+            REQUIRE(lua_isstring(ls, -1));
+            const string actual = lua_tostring(ls, -1);
+            const string expected = zh
+                ? (elements == two ? "你的土和火玉晶充满了能量。"
+                                   : "你的土、火和气玉晶充满了能量。")
+                : (elements == two
+                   ? "Your earthen and fiery crystals are infused with energy."
+                   : "Your earthen, fiery and airy crystals are infused with energy.");
+            INFO(actual);
+            CHECK(actual == expected);
+        }
+    }
 }
