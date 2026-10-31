@@ -1311,6 +1311,8 @@ def unrand_rows(db, source_db, base_db, base_source_db, review_base):
     expected_changed_names = {
         "glaive of prune", 'morningstar "eos"',
         "sword of cerebov", "amulet of the air",
+        # PR #194 translation review (Ready): lance/Wyrmbane terminology.
+        'lance "wyrmbane"',
     }
     if changed_names != expected_changed_names:
         raise RuntimeError(
@@ -1827,6 +1829,13 @@ def conclusion_reason(row):
             f"adjust: {boundary} changes {changed}; the candidate adopts that "
             "targeted wording or structural correction while preserving the "
             "same gameplay identity."
+        )
+    if conclusion == "retranslate" and row["identity"] == "unrand:UNRAND_WYRMBANE":
+        return (
+            f"retranslate: {boundary} changes {changed}; PR #194 translation "
+            'review (Ready) adopts 骑枪"屠龙者" and the matching Wyrmbane '
+            "long description under the approved lance/Wyrmbane terminology. "
+            "Canonical English identity and lookup keys remain unchanged."
         )
     if conclusion == "retranslate":
         return (

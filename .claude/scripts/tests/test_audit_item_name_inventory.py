@@ -1001,6 +1001,35 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                             broken, {}, MODULE.ISSUE29_REVIEW_BASE,
                         )
 
+    def test_unrand_reviewed_name_boundary_remains_exact(self):
+        art = (MODULE.SRC / "art-data.txt").read_text(encoding="utf-8")
+        names = {
+            "glaive of prune": "修订甲",
+            'morningstar "eos"': "修订乙",
+            "sword of cerebov": "修订丙",
+            "amulet of the air": "修订丁",
+            'lance "wyrmbane"': '骑枪"屠龙者"',
+        }
+        with mock.patch.object(MODULE, "active_source", return_value=art), \
+                mock.patch.object(MODULE, "changed_textdb_keys", return_value=set()):
+            rows = MODULE.unrand_rows({}, names, {}, {}, MODULE.ISSUE29_REVIEW_BASE)
+            conclusions = {row["english_source"].lower(): row["_conclusion"]
+                           for row in rows}
+            for name in names:
+                self.assertEqual(
+                    "adjust" if name in {"glaive of prune", 'morningstar "eos"'}
+                    else "retranslate", conclusions[name],
+                )
+            # A sixth change or losing the newly reviewed Wyrmbane binding
+            # must still fail closed, rather than accept arbitrary drift.
+            missing = dict(names)
+            del missing['lance "wyrmbane"']
+            extra = {**names, "robe of vines": "未审校变更"}
+            for changed in (missing, extra):
+                with self.subTest(changed=sorted(changed)):
+                    with self.assertRaisesRegex(RuntimeError, "conclusion boundary drift"):
+                        MODULE.unrand_rows({}, changed, {}, {}, MODULE.ISSUE29_REVIEW_BASE)
+
     def test_issue29_source_inventory_freezes_every_production_boundary(self):
         payload, internal_rows = MODULE.build_extended_inventory()
         self.assertEqual(390, payload["ordinary_v1"]["count"])
