@@ -17,7 +17,7 @@ Formal version tags, closed-world artifact validation, checksums, draft
 Releases, and the manual publication gate are defined in
 [release-workflow.md](release-workflow.md).
 
-Routine pull requests, branch pushes, scheduled runs, and manual branch runs
+Routine pull requests, scheduled runs, and manual branch runs
 execute tooling and static CI gates on Ubuntu and compile Android, Linux, and
 Windows. Android debug APKs remain available for device testing; Windows builds
 compile Tiles without creating or uploading a release ZIP. Release tags matching
@@ -125,7 +125,7 @@ Release builds require the signing environment validated by the helper. The
 helper refuses success if the resulting APK remains unsigned. Do not document
 or deploy an `*-unsigned.apk` as a successful artifact.
 
-GitHub Actions keeps the four-ABI debug APK from ordinary branch, scheduled,
+GitHub Actions keeps the four-ABI debug APK from scheduled
 and manual runs as the `android-debug-apk` test artifact. It replaces Gradle's
 ephemeral debug signature with a dedicated stable test certificate, verifies
 the pinned public certificate digest, and only then uploads the APK. This lets

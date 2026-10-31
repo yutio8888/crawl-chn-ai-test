@@ -2,9 +2,6 @@ name: Build
 
 on:
   push:
-    branches:
-      - chn-0.34.1-base
-      - chn-trunk
     tags:
       - '0.34.1-zh[0-9]*-[0-9]*-[0-9][0-9][0-9]'
       - '[0-9]*.[0-9]*-trunk-[0-9][0-9][0-9]'
