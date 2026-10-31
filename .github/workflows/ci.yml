@@ -355,11 +355,6 @@ jobs:
           fi
           util/unbrace -n "${files[@]}"
         working-directory: crawl-ref/source
-      - name: Check commit message line lengths
-        if: ${{ always() && github.event_name == 'pull_request' }}
-        run: util/checkconventionalcommit.py
-        working-directory: crawl-ref/source
-        continue-on-error: true
 
   build_linux_console:
     permissions:
