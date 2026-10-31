@@ -19,6 +19,7 @@
 #include "clua.h"
 #include "branch.h"
 #include "dgn-overview.h"
+#include "database.h"
 #include "dungeon.h"
 #include "env.h"
 #include "describe.h"
