@@ -226,6 +226,7 @@
 | Zonguldrok | 宗古德洛克 | 巫师实验室与相关物品传说专名；裁决 [D-A-049] |
 | Orb of Zot | 佐特宝珠 / 力量宝珠 | 两种译法均可 |
 | player ghost | 玩家鬼魂 | — |
+| GENDER_NEUTRAL | 他 / 他的 / 他自己 / 他 | 单数中性人物的主格／所有格／反身／宾格；仅 pronoun subject\|they、pronoun possessive\|their、pronoun reflexive\|themself、pronoun object\|them 四个上下文键；不是复数；EN singular they 与存档身份不变；decision=D-C-100 |
 | skill | 技能 | — |
 | experience / XP | 经验值 | — |
 | level | 等级 / 层 | 角色用"等级"，楼层用"层" |
@@ -437,6 +438,9 @@
 | morningstar | 晨星锤 | weapon; paired with eveningstar; decision=D-B-017 |
 | eveningstar | 暮星锤 | weapon; paired with morningstar; decision=D-B-017 |
 | lajatang | 双头杖 | weapon; decision=D-A-050 |
+| lance | 骑枪 | 神器武器类型及其战斗消息、描述、动作统计；与基础武器 spear → 长矛区分；不适用于 Force Lance 法术、lance of force 投射物或 living force lance；decision=D-B-023 |
+| spear | 长矛 | 基础武器；与神器类型 lance → 骑枪区分；decision=D-B-023 |
+| lance "Wyrmbane" | 骑枪"屠龙者" | 固定神器名称键；Wyrmbane 专名为“屠龙者”，消息与描述沿用；弃用“斩龙剑”；Margery 的称号“the Dragonslayer”也译为“屠龙者”（dat/database/zh/montitle.txt:204），与神器指称不同，属于有意保留的同名；decision=D-B-023 |
 | old falchion | 旧弯刃剑 | legacy weapon key; decision=D-B-018 |
 | partisan | 阔头枪 | weapon; decision=D-B-018 |
 | `potion full name\|invisibility` | 隐形 | potion context key; decision=D-B-020 |
