@@ -2326,29 +2326,29 @@ void use_mutation_catalyst()
 {
     if (you.religion == GOD_ZIN)
     {
-        mprf(MSGCH_GOD, "Zin forbids you from drinking this foul brew!");
+        mprf(MSGCH_GOD, T_("Zin forbids you from drinking this foul brew!"));
         return;
     }
     else if (you.form == transformation::death)
     {
-        mprf("You must return to life before you may mutate.");
+        mprf(T_("You must return to life before you may mutate."));
         return;
     }
     else if (you.is_lifeless_undead()
             || you.get_mutation_level(MUT_MUTATION_RESISTANCE) == 3)
     {
-        mprf("Sadly, you cannot mutate.");
+        mprf(T_("Sadly, you cannot mutate."));
         return;
     }
     else
     {
         // XXX: Maybe some goofy flavour message for potion hoarders?
-        mprf("You break open the mutation catalyst, and crackling magic pours forth!");
+        mprf(T_("You break open the mutation catalyst, and crackling magic pours forth!"));
         noisy(10, you.pos());
         big_cloud(CLOUD_FLAME, &you, you.pos(), random_range(2, 6), random_range(28, 32));
         big_cloud(CLOUD_ELECTRICITY, &you, you.pos(), random_range(2, 6), random_range(16, 18));
         big_cloud(CLOUD_MAGIC_TRAIL, &you, you.pos(), random_range(2, 6), random_range(8, 11));
-        mprf("You bathe in the mists of the mutagenic serum and feel extremely strange.");
+        mprf(T_("You bathe in the mists of the mutagenic serum and feel extremely strange."));
         mutate(RANDOM_CATALYST_MUTATION, "breaking open a mutation catalyst",
                true, true, false, true);
         // XXX: This hardcoded flavour rearrangements, as Imprison also uses,

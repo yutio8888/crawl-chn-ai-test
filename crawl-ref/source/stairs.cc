@@ -1038,7 +1038,7 @@ void floor_transition(dungeon_feature_type how,
 
         if (branch == BRANCH_GULCH && !from_portal)
         {
-            mpr("Mutagenic energy floods into you!");
+            mpr(T_("Mutagenic energy floods into you!"));
             if (you.can_safely_mutate())
             {
                 temp_mutate(RANDOM_CORRUPT_MUTATION, "entering Gulch");
@@ -1047,7 +1047,7 @@ void floor_transition(dungeon_feature_type how,
             }
             else
             {
-                mprf(MSGCH_MUTATION, "Your body decomposes!");
+                mprf(MSGCH_MUTATION, T_("Your body decomposes!"));
                 drain_player(150, false, true, true);
             }
         }

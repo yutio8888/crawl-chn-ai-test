@@ -2284,7 +2284,7 @@ static void _enter_form(int dur, transformation which_trans, bool using_talisman
         && you.duration[DUR_POISONING])
     {
         you.duration[DUR_POISONING] = 0;
-        mprf(MSGCH_RECOVERY, "You are no longer poisoned.");
+        mprf(MSGCH_RECOVERY, T_("You are no longer poisoned."));
         you.redraw_hit_points = true;
     }
 

@@ -1107,8 +1107,9 @@ bool fill_status_info(int status, status_info& inf)
         break;
 
     case DUR_SALVO:
-        inf.light_text = make_stringf("Salvo (%d)", you.props[SALVO_KEY].get_int());
-        inf.short_text = make_stringf("salvo (%d)", you.props[SALVO_KEY].get_int());
+        inf.short_db_key = make_stringf("salvo (%d)", you.props[SALVO_KEY].get_int());
+        inf.light_text = make_stringf(T_("Salvo (%d)"), you.props[SALVO_KEY].get_int());
+        inf.short_text = make_stringf(T_("salvo (%d)"), you.props[SALVO_KEY].get_int());
         break;
 
     case STATUS_JADEMANTLE_CRYSTALS:

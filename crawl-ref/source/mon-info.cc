@@ -1224,7 +1224,7 @@ string monster_info::_core_name() const
                     s = T_("living iceblast spell");
                     break;
                 default:
-                    s = make_stringf("living %s spell", lowercase_string(spell_title(spells[0].spell)).c_str());
+                    s = make_stringf(T_("living %s spell"), lowercase_string(spell_title(spells[0].spell)).c_str());
                     break;
                 }
             }

@@ -3748,7 +3748,7 @@ string mons_inner_flame_immune_reason(const monster *mons)
     }
 
     if (!could_harm(&you, mons))
-        return make_stringf("You cannot harm %s.", mons->name(DESC_THE).c_str());
+        return make_stringf(T_("You cannot harm %s."), mons->name(DESC_THE).c_str());
 
     return "";
 }
@@ -4216,7 +4216,7 @@ void attempt_jinxbite_hit(actor& victim)
                 _get_jinxsprite_message(*mons).c_str());
     }
     else
-        mprf("A giggling sprite leaps out and plays with %s.", victim.name(DESC_THE).c_str());
+        mprf(T_("A giggling sprite leaps out and plays with %s."), victim.name(DESC_THE).c_str());
 
     _player_hurt_monster(*mons, dmg, BEAM_MAGIC);
 

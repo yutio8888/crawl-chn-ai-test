@@ -1442,7 +1442,7 @@ static string _desc_attack_delay(const item_def &item)
             artefact_set_property(dummy, ARTP_BRAND, SPWPN_NORMAL);
     }
 
-    const float cur_delay = you.attack_delay_with(&dummy).expected();
+    const float cur_delay = round(you.attack_delay_with(&dummy).expected());
 
     return make_stringf(T_("\n    Current attack delay: %.1f."), cur_delay / 10);
 }
@@ -3821,7 +3821,7 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
         if (mark)
         {
             dice_def dmg = zap_damage(ZAP_SPIKE_LAUNCHER, mark->power, mark->owner != MID_PLAYER, false);
-            long_desc += make_stringf("\nIt does %dd%d damage.", dmg.num, dmg.size);
+            long_desc += make_stringf(T_("\nIt does %dd%d damage."), dmg.num, dmg.size);
         }
     }
     else if (feat_is_dragon_vein(feat))

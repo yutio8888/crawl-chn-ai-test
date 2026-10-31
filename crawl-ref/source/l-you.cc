@@ -1508,24 +1508,38 @@ LUAFN(you_zot_orb_monster)
 LUAFN(you_jademantle_crystals_desc)
 {
     if (!you.props.exists(JADEMANTLE_CRYSTAL_KEY))
-        lua_pushstring(ls, "None of your crystals are currently charged.");
+        lua_pushstring(ls, T_("None of your crystals are currently charged."));
     else
     {
         const int elem = you.props[JADEMANTLE_CRYSTAL_KEY].get_int();
         vector<string> lit_crystals;
 
         if (elem & (int)spschool::earth)
-            lit_crystals.push_back("earthen");
+            lit_crystals.push_back(T_("earthen"));
         if (elem & (int)spschool::fire)
-            lit_crystals.push_back("fiery");
+            lit_crystals.push_back(T_("fiery"));
         if (elem & (int)spschool::air)
-            lit_crystals.push_back("airy");
+            lit_crystals.push_back(T_("airy"));
         if (elem & (int)spschool::ice)
-            lit_crystals.push_back("icy");
+            lit_crystals.push_back(T_("icy"));
 
-        string msg = make_stringf("Your %s crystal%s are infused with energy.",
-                                  comma_separated_line(lit_crystals.begin(), lit_crystals.end()).c_str(),
+        string msg;
+        if (Options.language == lang_t::ZH)
+        {
+            const string crystals = comma_separated_line(
+                lit_crystals.begin(), lit_crystals.end(), T_(", and"), T_(", "));
+            if (lit_crystals.size() == 1)
+                msg = make_stringf(T_("Your %s crystal is infused with energy."), crystals.c_str());
+            else
+                msg = make_stringf(T_("Your %s crystals are infused with energy."), crystals.c_str());
+        }
+        else
+        {
+            const string crystals = comma_separated_line(lit_crystals.begin(), lit_crystals.end());
+            msg = make_stringf("Your %s crystal%s are infused with energy.",
+                                  crystals.c_str(),
                                   lit_crystals.size() > 1 ? "s" : "");
+        }
         lua_pushstring(ls, msg.c_str());
     }
 
