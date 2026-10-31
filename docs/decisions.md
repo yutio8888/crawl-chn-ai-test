@@ -3922,6 +3922,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 - **依据**：稳定版有 15 种带 `M_GENDER_NEUTRAL` 标记的有名单体；随机性别来源包括先祖本身的初始性别（`religion.cc:1759`）、Hellbinder／Cloud Mage／Headmaster（`mon-place.cc:1177`）、兽人使徒（`mon-util.cc:2887`）和 Gozag 的店主（`god-abil.cc:3626`）。先祖还允许玩家选择“neither”。这些来源均指单个人物，没有真正的复数来源。
 - **边界**：只改四个 ZH 上下文键；EN singular they、性别枚举、存档身份保持不变。结构化怪物消息既有的独立所有格“其”不在此次四键变更范围内。
 - **先祖**：稳定版 `monster::pronoun` 与 `monster_info::pronoun` 直接使用存储的性别，没有 trunk 的 ZH 中性先祖转 GENDER_NEUTER 映射，无需移除。
+- **历史注释**：`mon-cast.cc::_localized_zh_actor_possessive_pronoun` 保留的旧注释所述“中文代词表使用复数、非 unique 中性人物可能为复数”已不适用；当前中性来源均为单体，`pronoun_plurality()` 的 true 表示英文 singular-they 的一致关系，不代表多个对象。
 
 ---
 
