@@ -321,7 +321,7 @@ A fountain of blood
 %%%%
 A fountain of sparkling water
 
-一个装饰性喷泉，流淌着闪烁、起泡的水。
+一座装饰性喷泉，流淌着波光闪耀、带有微弱魔力的水。
 %%%%
 A runelight
 
@@ -384,7 +384,7 @@ A gateway leading deeper into the Abyss
 %%%%
 A gateway to a ziggurat
 
-一个通往金字塔的门户。
+一个通往通天塔的门户。
 %%%%
 A gateway to the ashen valley of Gehenna
 
@@ -491,7 +491,7 @@ A staircase to the Shoals
 %%%%
 A staircase to the Slime Pits
 
-一个通往黏液坑洞的楼梯。
+一个通往史莱姆之坑的楼梯。
 %%%%
 A staircase to the Snake Pit
 

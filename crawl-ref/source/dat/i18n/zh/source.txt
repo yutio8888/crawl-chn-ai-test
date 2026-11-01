@@ -4175,7 +4175,7 @@ figurine of a ziggurat
  认为你的慷慨不足。
 %%%%
 Finish your current ziggurat first!
-先完成你当前的金字塔！
+先完成你当前的通天塔！
 %%%%
  finishes channelling their searing ray.
 结束了灼热射线的持续施放。
@@ -9248,7 +9248,7 @@ You can't pick that up.
 你无法捡起那个。
 %%%%
 You can't place a gateway to a ziggurat here.
-你不能在这里放置通往金字塔的传送门。
+你不能在这里放置通往通天塔的传送门。
 %%%%
 You can't place the prism on a creature.
 你不能把棱镜放在生物身上。
@@ -10508,7 +10508,7 @@ You have tentacles for arms and can constrict up to %s enemies at once.
 你的手臂是触手，最多可以同时缠绕%s个敌人。
 %%%%
 You have traversed the Zig. Zot will no longer hunt you.
-你已穿越金字塔。佐特将不再追猎你。
+你已穿越通天塔。佐特将不再追猎你。
 %%%%
 You haven't found that spell!
 你还没有找到那个法术！
@@ -10952,7 +10952,7 @@ You set off the alarm!
 你触发了警报！
 %%%%
 You set the figurine down, and a mystic portal to a ziggurat forms.
-你放下了雕像，一道通往金字塔的神秘传送门形成了。
+你放下了雕像，一道通往通天塔的神秘传送门形成了。
 %%%%
 You shatter%s
 你碎裂了%s
@@ -25941,7 +25941,7 @@ You %1$svisited the chambers of the Necropolis %2$d time
 你访问了亡灵城%2$d次
 %%%%
 You %1$s%2$s %3$d ziggurat
-你%2$s了%3$d座金字塔
+你%2$s了%3$d座通天塔
 %%%%
 completed
 完成
@@ -29868,13 +29868,13 @@ Enter transporter anyway?
 仍然进入传送器吗？
 %%%%
 Are you sure you want to leave this ziggurat?
-确定要离开这个金字塔吗？
+确定要离开这个通天塔吗？
 %%%%
 Are you sure you want to leave this trove?
 确定要离开这个宝库吗？
 %%%%
 Really leave the ziggurat figurine behind?
-确定要把金字塔雕像留在这里吗？
+确定要把通天塔雕像留在这里吗？
 %%%%
 Really leave the Orb behind?
 确定要把宝珠留在这里吗？
@@ -31800,7 +31800,7 @@ It becomes more effective when it hits something. This effect fades over time.
 击中目标后变得更有效，此效果会随时间消退。
 %%%%
 It can reach especially far, and its reaching attacks ignore other creatures in the way.
-可以触及极远的距离，且其远程攻击无视路径上的其他生物。
+可以触及极远的距离，且其延伸攻击无视路径上的其他生物。
 %%%%
 It summons a battlesphere in combat, with strength depending on Conjurations skill.
 战斗中召唤战斗法球，其强度取决于咒语魔法技能。
@@ -37607,7 +37607,7 @@ illegal inventory cmd '%d'
 非法的物品栏命令'%d'
 %%%%
 left a ziggurat at level %d.
-在第%d层离开了通灵塔。
+在第%d层离开了通天塔。
 %%%%
 looks %s, 
 看起来%s，
