@@ -821,7 +821,7 @@ void actor::constriction_damage_defender(actor &defender)
         default:
             force_plural = false;
             if (is_player())
-                attacker_desc = "You";
+                attacker_desc = T_("You");
             else
                 attacker_desc = name(DESC_THE);
             break;

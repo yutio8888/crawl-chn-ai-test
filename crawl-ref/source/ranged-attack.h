@@ -67,6 +67,7 @@ private:
 
 private:
     string proj_name;
+    string proj_name_en;
     bool teleport;
     bool _did_net;
 };

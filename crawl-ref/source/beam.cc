@@ -3914,8 +3914,9 @@ void bolt::affect_player_enchantment(bool resistible)
         break;
 
     case BEAM_DIMENSION_ANCHOR:
-        mprf(T_("You feel %sfirmly anchored in space."),
-             you.duration[DUR_DIMENSION_ANCHOR] ? "more " : "");
+        mpr(you.duration[DUR_DIMENSION_ANCHOR]
+            ? T_("You feel more firmly anchored in space.")
+            : T_("You feel firmly anchored in space."));
         you.increase_duration(DUR_DIMENSION_ANCHOR, 12 + random2(15), 50);
         if (you.duration[DUR_TELEPORT])
         {
@@ -4011,8 +4012,9 @@ void bolt::affect_player_enchantment(bool resistible)
         break;
 
     case BEAM_SAP_MAGIC:
-        mprf(MSGCH_WARN, T_("Your magic feels %stainted."),
-             you.duration[DUR_SAP_MAGIC] ? "more " : "");
+        mprf(MSGCH_WARN, "%s", you.duration[DUR_SAP_MAGIC]
+             ? T_("Your magic feels more tainted.")
+             : T_("Your magic feels tainted."));
         flash_tile(you.pos(), GREEN, 120, TILE_BOLT_SAP_MAGIC);
         you.increase_duration(DUR_SAP_MAGIC, random_range(20, 30), 50);
         break;
@@ -5493,7 +5495,7 @@ bool bolt::attempt_block(monster* mon)
         {
             if (shield && shield_reflects(*shield))
             {
-                mprf_p(T_("%s blocks the %s with %s %s... and reflects it back!"),
+                mprf_p(T_("%1$s blocks the %2$s with %3$s %4$s... and reflects it back!"),
                      mon->name(DESC_THE).c_str(),
                      beam_name.c_str(),
                      mon->pronoun(PRONOUN_POSSESSIVE).c_str(),
@@ -8013,13 +8015,18 @@ bool cancel_beam_prompt(const bolt& beam, const player_beam_tracer& tracer)
             }
             else
             {
+                const string direction = Options.language == lang_t::ZH
+                    ? mon_name : apostrophise(mon_name);
                 verb = make_stringf(T_("fire in %s direction"),
-                                    mon_name.c_str());
+                                    direction.c_str());
                 mon_name = "";
             }
         }
         else
-            verb = "fire towards ";
+        {
+            verb = make_stringf(T_("fire towards %s"), mon_name.c_str());
+            mon_name.clear();
+        }
         const bool penance = victims.penance();
 
         const string prompt = make_stringf(T_("Really %s%s%s?%s"),

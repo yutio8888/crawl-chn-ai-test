@@ -2313,6 +2313,9 @@ string scorefile_entry::death_place(death_desc_verbosity verbosity) const
 // indirect-effect producers. Unrecognized saved values remain verbatim.
 static string _death_beam_display_name(const string &cause)
 {
+    const string projectile = projectile_display_name(cause);
+    if (projectile != cause)
+        return projectile;
     if (is_known_beam_name(cause))
         return T_(cause.c_str());
 
@@ -2555,7 +2558,8 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                     beam = terse_beam_cause();
                 trim_string(beam);
                 if (!beam.empty())
-                    desc += make_stringf(T_(" (%s)"), beam.c_str());
+                    desc += make_stringf(T_(" (%s)"),
+                        (chinese ? _death_beam_display_name(beam) : beam).c_str());
             }
         }
         else if (isupper(auxkilldata[0]))  // already made (ie shot arrows)
@@ -2564,7 +2568,19 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             // Darn it to heck.
             if (chinese)
             {
-                if (death_source_name == "you")
+                const string missile = terse_missile_name();
+                const string missile_display = projectile_display_name(missile);
+                if (!terse && !missile.empty() && missile_display != missile
+                    && !death_source_display_desc().empty()
+                    && (starts_with(auxkilldata, "Hit by ")
+                        || starts_with(auxkilldata, "Shot with ")))
+                {
+                    desc += make_stringf_p(starts_with(auxkilldata, "Hit by ")
+                        ? T_("Hit by a%s %s thrown by %s")
+                        : T_("Shot with a%s %s by %s"),
+                        "", missile_display.c_str(), death_source_display_desc().c_str());
+                }
+                else if (death_source_name == "you")
                 {
                     desc += terse ? C_("damage source", "their own ranged attack")
                                   : T_("Killed by their own ranged attack");

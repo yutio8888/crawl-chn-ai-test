@@ -118,7 +118,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                          "Despite %1$s appearance, %2$s can open doors.\n"), "它的", "它")
           == "尽管它的外表如此，它仍能开门。\n");
     CHECK(make_stringf(C_("attack prompt", "fire in %s direction"), "M")
-          == "向M的方向");
+          == "朝M的方向射击");
     CHECK(string(C_("attack prompt", "your ally ")) == "你的盟友");
     CHECK(string(C_("attack prompt", "your "))
           + C_("attack prompt", "ally ") == "你的盟友");

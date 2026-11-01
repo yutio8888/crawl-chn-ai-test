@@ -33,6 +33,7 @@
 #include "hints.h"
 #include "invent.h"
 #include "item-prop.h"
+#include "lang-en-guard.h"
 #include "los.h"
 #include "losparam.h"
 #include "mapdef.h"
@@ -634,7 +635,7 @@ void melee_attack::do_vampire_lifesteal()
             mprf(T_("You sink your fangs into %s and drink %s %s."),
                     mon->name(DESC_THE, true).c_str(),
                     mon->pronoun(PRONOUN_POSSESSIVE).c_str(),
-                    mon->blood_name().c_str());
+                    T_(mon->blood_name().c_str()));
         }
         else if (can_enthrall)
         {
@@ -960,11 +961,13 @@ bool melee_attack::handle_phase_hit()
             {
                 const bool is_player = attacker->is_player();
                 const string monster_verb = is_player ? "" : mons_attack_verb();
-                const string verb = is_player
-                    ? attack_verb
+                const string verb = is_player ? attack_verb
                     : Options.language == lang_t::ZH
-                      ? monster_verb
+                      ? (monster_verb == "gore" ? C_("attack verb", "gore")
+                                                : T_(monster_verb.c_str()))
                       : attacker->conj_verb(monster_verb);
+                const string body_action = is_player ? ""
+                    : mons_body_attack_phrase(monster_verb);
                 if (!is_player && Options.language == lang_t::ZH
                     && attk_type == AT_SPORE)
                 {
@@ -973,6 +976,9 @@ bool melee_attack::handle_phase_hit()
                            attacker->name(DESC_THE).c_str(),
                            defender_name(true).c_str());
                 }
+                else if (!body_action.empty())
+                    mprf_p(C_("monster body attack", "%1$s %2$s but does no damage."),
+                           attacker->name(DESC_THE).c_str(), body_action.c_str());
                 else
                     mprf(T_(is_player
                         ? "%s %s %s but do no damage."
@@ -2861,7 +2867,7 @@ void melee_attack::player_warn_miss()
 {
     did_hit = false;
 
-    mprf(T_("You%s miss %s%s."),
+    mprf_p(T_("You%1$s miss %2$s%3$s."),
          evasion_margin_adverb().c_str(),
          defender->name(DESC_THE).c_str(),
          weapon_desc().c_str());
@@ -3447,26 +3453,32 @@ void melee_attack::decapitate()
 
     if (damage_type == DVORP_CLAWING)
     {
-        static const char *claw_verbs[] = { "rip", "tear", "claw" };
+        static const char *claw_verbs[] = {
+            NC_("decapitation verb", "rip"), NC_("decapitation verb", "tear"),
+            NC_("decapitation verb", "claw")
+        };
         verb = RANDOM_ELEMENT(claw_verbs);
     }
     else
     {
         static const char *slice_verbs[] =
         {
-            "slice", "lop", "chop", "hack"
+            NC_("decapitation verb", "slice"), NC_("decapitation verb", "lop"),
+            NC_("decapitation verb", "chop"), NC_("decapitation verb", "hack")
         };
         verb = RANDOM_ELEMENT(slice_verbs);
     }
 
+    const string display_verb = Options.language == lang_t::ZH
+        ? C_("decapitation verb", verb) : attacker->conj_verb(verb);
     int heads = defender->heads();
     if (heads == 1) // will be zero afterwards
     {
         if (defender_visible)
         {
-            mprf_p(T_("%s %s %s last head off!"),
+            mprf_p(C_("decapitation", "%1$s %2$s %3$s last head off!"),
                    atk_name(DESC_THE).c_str(),
-                   attacker->conj_verb(verb).c_str(),
+                   display_verb.c_str(),
                    apostrophise(defender_name(true)).c_str());
         }
 
@@ -3484,9 +3496,9 @@ void melee_attack::decapitate()
 
     if (defender_visible)
     {
-        mprf_p(T_("%s %s one of %s heads off!"),
+        mprf_p(C_("decapitation", "%1$s %2$s one of %3$s heads off!"),
                atk_name(DESC_THE).c_str(),
-               attacker->conj_verb(verb).c_str(),
+               display_verb.c_str(),
                apostrophise(defender_name(true)).c_str());
     }
 
@@ -3699,6 +3711,8 @@ bool melee_attack::player_good_stab()
  */
 string melee_attack::mons_attack_verb()
 {
+    // Keep the selected action canonical until its complete display consumer.
+    ScopedLangEn english;
     static const char *klown_attack[] =
     {
         N_("hit"),
@@ -3773,6 +3787,39 @@ string melee_attack::mons_attack_verb()
     return mon_attack_name(attk_type);
 }
 
+// These six actions cannot share the generic Chinese verb+object grammar.
+// The selected canonical action and random draw are shared by both hit paths.
+string melee_attack::mons_body_attack_phrase(const string& verb)
+{
+    if (Options.language != lang_t::ZH)
+        return "";
+    const char* format = nullptr;
+    bool possessive = true;
+    if (verb == "eye-gouge")
+        format = NC_("monster body action", "gouges %s eyes");
+    else if (verb == "head-knock")
+        format = NC_("monster body action", "knocks %s head");
+    else if (verb == "headlock")
+        format = NC_("monster body action", "locks %s head");
+    else if (verb == "kneecap")
+        format = NC_("monster body action", "strikes %s knees");
+    else if (verb == "tickle")
+    {
+        format = NC_("monster body action", "tickles %s");
+        possessive = false;
+    }
+    else if (verb == "wrestle")
+    {
+        format = NC_("monster body action", "wrestles with %s");
+        possessive = false;
+    }
+    else
+        return "";
+    const string target = possessive ? apostrophise(defender_name(true))
+                                     : defender_name(true);
+    return make_stringf(C_("monster body action", format), target.c_str());
+}
+
 string melee_attack::mons_attack_desc()
 {
     if (!you.can_see(*attacker))
@@ -3832,8 +3879,10 @@ void melee_attack::announce_hit()
 
             const string monster_verb = mons_attack_verb();
             const string verb = Options.language == lang_t::ZH
-                                ? monster_verb
-                                : attacker->conj_verb(monster_verb);
+                ? (monster_verb == "gore" ? C_("attack verb", "gore")
+                                          : T_(monster_verb.c_str()))
+                : attacker->conj_verb(monster_verb);
+            const string body_action = mons_body_attack_phrase(monster_verb);
 
             if (Options.language == lang_t::ZH && attk_type == AT_SPORE)
             {
@@ -3845,6 +3894,14 @@ void melee_attack::announce_hit()
                        defender_name(true).c_str(),
                        charge_desc().c_str(),
                        debug_damage_number().c_str(),
+                       mons_attack_desc().c_str(),
+                       attack_strength_punctuation(damage_done).c_str());
+            }
+            else if (!body_action.empty())
+            {
+                mprf_p(C_("monster body attack", "%1$s %2$s%3$s%4$s%5$s%6$s%7$s"),
+                       atk_name(DESC_THE).c_str(), stealth.c_str(), body_action.c_str(),
+                       charge_desc().c_str(), debug_damage_number().c_str(),
                        mons_attack_desc().c_str(),
                        attack_strength_punctuation(damage_done).c_str());
             }
