@@ -49277,6 +49277,12 @@ Flames erupt from the wizard's empty cell! Trog roars with frustration!
 \nIt deals %s damage when destroyed.\n
 \n它被摧毁时会造成%s点伤害。\n
 %%%%
+randbook subject|%1$s%2$s of %3$s
+%1$s%3$s之%2$s
+%%%%
+artefact divine esteem|of %1$s %2$s
+%1$s%2$s
+%%%%
 skill title|Flawless
 完美无瑕
 %%%%

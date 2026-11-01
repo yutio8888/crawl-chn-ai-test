@@ -193,9 +193,11 @@ string replace_name_parts(const string &name_in, const item_def& item)
         else
         {
             // Simply overwrite the name with one of type "God's Favour".
-            name = "of ";
-            name += apostrophise(god_name(god_gift, false));
-            name += getRandNameString("divine_esteem");
+            const string god = apostrophise(god_name(god_gift, false));
+            const string esteem = getRandNameString("divine_esteem");
+            name = make_stringf_p(
+                C_("artefact divine esteem", "of %1$s %2$s"),
+                god.c_str(), esteem.c_str());
         }
     }
     name = replace_all(name, "@player_name@", you.your_name);
@@ -207,7 +209,7 @@ string replace_name_parts(const string &name_in, const item_def& item)
 
     if (name.find("@branch_name@", 0) != string::npos)
     {
-        string place = branches[random2(NUM_BRANCHES)].longname;
+        const string place = T_(branches[random2(NUM_BRANCHES)].longname);
         if (!place.empty())
             name = replace_all(name, "@branch_name@", place);
     }

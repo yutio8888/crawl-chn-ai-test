@@ -1618,6 +1618,43 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, "ambiguous review-base pairing"):
                     MODULE.paired_component_rows(en, zh, "fixture", "base")
 
+    def test_component_history_split_is_independent_of_current_wording(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            en, zh = root / "en.txt", root / "zh.txt"
+            old_en, old_zh = root / "old-en.txt", root / "old-zh.txt"
+            english = "%%%%\nkey\n\nw:5\nof @a@\nof @b@\n\nw:3\n@c@\n"
+            historical = "%%%%\nkey\n\nw:5\n旧@a@\n\n旧@b@\n\nw:3\n旧@c@\n"
+            en.write_text(english)
+            old_en.write_text(english)
+            old_zh.write_text(historical)
+            zh.write_text("%%%%\nkey\n\nw:5\n新@a@\n新@b@\n\nw:3\n新@c@\n")
+            with mock.patch.object(
+                MODULE, "revision_textdb_rows",
+                side_effect=lambda path, revision: MODULE.textdb_rows(
+                    old_en if path == en else old_zh
+                ),
+            ):
+                rows = MODULE.paired_component_rows(en, zh, "fixture", "base")
+                self.assertEqual(["旧@a@\n旧@b@", "旧@c@"],
+                                 [r["_pre_review_chinese"] for r in rows])
+                self.assertEqual(["adjust", "adjust"],
+                                 [r["_conclusion"] for r in rows])
+                for invalid in (
+                    historical.replace("旧@b@", "旧@a@"),
+                    historical.replace("旧@b@", "w:7\n旧@b@"),
+                    historical.replace("旧@b@", "未标记"),
+                    historical + "\n多余\n",
+                ):
+                    with self.subTest(invalid=invalid):
+                        old_zh.write_text(invalid)
+                        with self.assertRaises(RuntimeError):
+                            MODULE.paired_component_rows(en, zh, "fixture", "base")
+                old_zh.write_text(historical)
+                en.write_text(english.replace("of @a@", "changed @a@"))
+                with self.assertRaisesRegex(RuntimeError, "ambiguous review-base pairing"):
+                    MODULE.paired_component_rows(en, zh, "fixture", "base")
+
     def test_weighted_metrics_distinguish_variants_from_raw_lines(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "input.txt"
