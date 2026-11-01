@@ -190,6 +190,7 @@ def clean_environment(head):
     # hooks, or secrets into scripts whose CI configuration we are reproducing.
     allowed = {"PATH", "HOME", "USER", "LOGNAME", "TMPDIR", "LANG", "TERM",
                "JAVA_HOME", "ANDROID_HOME", "ANDROID_SDK_ROOT", "GRADLE_USER_HOME",
+               "XDG_RUNTIME_DIR", "DBUS_SESSION_BUS_ADDRESS",
                "http_proxy", "https_proxy", "HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY",
                "ZH_ISOLATE_MEMORY_HIGH", "ZH_ISOLATE_MEMORY_MAX",
                "ZH_ISOLATE_CPU_WEIGHT", "ZH_ISOLATE_CPU_QUOTA"}

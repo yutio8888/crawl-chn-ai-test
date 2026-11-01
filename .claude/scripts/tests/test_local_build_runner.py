@@ -325,11 +325,13 @@ class LocalBuildTests(unittest.TestCase):
                 lb.run(self.repo, ["windows"])
 
     def test_build_switches_and_secrets_do_not_enter_build_environment(self):
-        with mock.patch.dict(os.environ, {"CXXFLAGS": "-DUNTESTED", "MAKEFLAGS": "-j128", "GH_TOKEN": "secret", "BASH_ENV": "/untrusted", "JAVA_HOME": "/jdk", "ZH_ISOLATE_MEMORY_MAX": "6G"}):
+        with mock.patch.dict(os.environ, {"CXXFLAGS": "-DUNTESTED", "MAKEFLAGS": "-j128", "GH_TOKEN": "secret", "BASH_ENV": "/untrusted", "JAVA_HOME": "/jdk", "ZH_ISOLATE_MEMORY_MAX": "6G", "XDG_RUNTIME_DIR": "/run/user/test", "DBUS_SESSION_BUS_ADDRESS": "unix:path=/run/user/test/bus"}):
             env = lb.clean_environment("a" * 40)
         self.assertEqual(env["GITHUB_EVENT_NAME"], "pull_request")
         self.assertEqual(env["ANDROID_VARIANT"], "buildTest")
         self.assertEqual(env["ZH_ISOLATE_MEMORY_MAX"], "6G")
+        self.assertEqual(env["XDG_RUNTIME_DIR"], "/run/user/test")
+        self.assertIn("DBUS_SESSION_BUS_ADDRESS", env)
         self.assertTrue(env["PATH"].startswith("/jdk/bin"))
         for key in ("CXXFLAGS", "MAKEFLAGS", "GH_TOKEN", "BASH_ENV"):
             self.assertNotIn(key, env)
