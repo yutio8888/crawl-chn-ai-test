@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import copy
 import hashlib
 import importlib.util
 import json
@@ -120,6 +121,47 @@ class WorldInventoryUnitTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.payload = MODULE.build_inventory()
+
+    def test_world_description_inventory_includes_unlinked_bodies_and_aliases(self):
+        expected = set()
+        for family, en_path, zh_path in (
+                ("branches", MODULE.EN_BRANCHES, MODULE.ZH_BRANCHES),
+                ("features", MODULE.EN_FEATURES, MODULE.ZH_FEATURES)):
+            for path in (en_path, zh_path):
+                expected.update(
+                    f"world_description:{family}:{key.lower()}"
+                    for key in MODULE.physical_db(path)["raw"]
+                )
+        rows = [row for row in self.payload["rows"]
+                if row["category"] == "world_description"]
+        self.assertEqual(expected, {row["identity"] for row in rows})
+        self.assertEqual(len(expected), len(rows))
+        aliases = [row for row in rows
+                   if (row["english_description"] or "").startswith("<")]
+        self.assertTrue(aliases)
+        self.assertTrue(all(row["lookup_identity"]["canonical_key"]
+                            for row in aliases))
+
+    def test_missing_translation_of_unlinked_body_is_reported(self):
+        english = {"raw": {"An isolated variant": "A retained body."}}
+        chinese = {"raw": {"Old variant": "保留的旧文。"}}
+        rows = MODULE.description_rows("features", english, chinese)
+        self.assertEqual(2, len(rows))
+        missing = next(row for row in rows if row["static_english"])
+        self.assertIsNone(missing["current_chinese"])
+        proof = {"enum_order": [], "data_order": []}
+        empty = {"raw": {}, "duplicates": []}
+        violations = MODULE.inventory_violations(
+            rows, proof, proof, (empty, empty), (empty, empty))
+        self.assertEqual([missing["identity"]], violations["missing_descriptions"])
+        fixed = MODULE.description_rows("features", english, {
+            "raw": {"An isolated variant": "一段保留的正文。"}})
+        fixed_violations = MODULE.inventory_violations(
+            fixed, proof, proof, (empty, empty), (empty, empty))
+        self.assertEqual([], fixed_violations["missing_descriptions"])
+        before, _ = MODULE.review_expected_fact_cells(self.payload, missing)
+        after, _ = MODULE.review_expected_fact_cells(self.payload, fixed[0])
+        self.assertNotEqual(before, after)
 
     def test_trusted_control_input_labels_never_embed_clone_path(self):
         with mock.patch.object(
@@ -637,6 +679,70 @@ end
         self.assertEqual([1, 2], [
             int(row["identity"].rsplit(":", 1)[1]) for row in first
         ])
+
+    def test_feature_helpers_bind_display_argument_and_finite_local_values(self):
+        text = '''NAME: helper_fixture
+: decorative_floor(_G, "x", "djembe set")
+: local dec = "mop and bucket"
+: if crawl.x_chance_in_y(1, 3) then
+:   dec = "fur brush"
+: end
+: decorative_floor(_G, "y", dec)
+: local kinds = {"arcane", "fiery"}
+: local selected = crawl.random2(#kinds) + 1
+: vault_metal_statue_setup(_G, "z", kinds[selected] .. " conduit")
+'''
+        source = {key: "译文" for key in (
+            "djembe set", "mop and bucket", "fur brush", "arcane conduit")}
+        rows = MODULE.scan_des_file(self.write_des(text), source)
+        self.assertEqual(3, len(rows))
+        self.assertEqual("djembe set", rows[0]["static_english"])
+        self.assertEqual("decorative_floor", rows[0]["base_feature"])
+        self.assertEqual(["fur brush", "mop and bucket"], [
+            leaf["static_english"] for leaf in rows[1]["finite_display_values"]])
+        self.assertEqual(["arcane conduit", "fiery conduit"], [
+            leaf["static_english"] for leaf in rows[2]["finite_display_values"]])
+        empty_db = {"raw": {}, "duplicates": []}
+        violations = MODULE.inventory_violations(
+            rows, {"enum_order": [], "data_order": []},
+            {"enum_order": [], "data_order": []},
+            (empty_db, empty_db), (empty_db, empty_db))
+        self.assertEqual([rows[2]["identity"]],
+                         violations["missing_exact_source_keys"])
+        for before, after in (
+            ('dec = "fur brush"', 'dec = runtime_name()'),
+            ('crawl.random2(#kinds) + 1', 'crawl.random2(100) + 1'),
+            ('local selected =', 'kinds[1] = runtime_name()\n: local selected ='),
+        ):
+            with self.subTest(after=after):
+                changed = MODULE.scan_des_file(
+                    self.write_des(text.replace(before, after)), source)
+                self.assertTrue(any(row.get("unsupported") for row in changed))
+
+    def test_feature_helper_forwarding_contract_fails_closed(self):
+        text = "\n".join(
+            f'function {name}(e, glyph, type)\n'
+            f'  e.set_feature_name("{base}", type)\nend\n'
+            for name, base in MODULE.FEATURE_RENAME_HELPERS.items())
+        text += '\nvault_metal_statue_setup(e, "g", "fiery conduit")\n'
+        rows = MODULE.scan_des_file(self.write_des(text), {},
+                                    feature_helpers_only=True)
+        self.assertEqual(1, len(rows))
+        self.assertEqual("fiery conduit", rows[0]["static_english"])
+        changed_sources = [
+            text.replace(', type)', ', "changed")', 1),
+            text.replace('e.set_feature_name', 'e.not_a_rename', 1),
+        ]
+        for assignment in ("type = runtime_name()", "local type = runtime_name()",
+                           "glyph, type = glyph, runtime_name()",
+                           "for type in names() do end"):
+            changed_sources.append(text.replace(
+                '  e.set_feature_name("metal_statue", type)',
+                assignment + '\n  e.set_feature_name("metal_statue", type)'))
+        for changed in changed_sources:
+            with self.assertRaises(ValueError):
+                MODULE.scan_des_file(self.write_des(changed), {},
+                                     feature_helpers_only=True)
 
     def test_dynamic_unknown_and_protocol_boundaries_fail_visible(self):
         path = self.write_des(
@@ -1187,6 +1293,22 @@ epilogue {{
         self.assertIn("old-only 0、new-only 1", rendered)
         for identity in deferred_ids:
             self.assertIn(f"- `{identity}`", rendered)
+
+        resolved = copy.deepcopy(decisions)
+        resolved[deferred_ids[0]]["conclusion"] = "keep: dependency resolved"
+        resolved_text = MODULE.render_review_results(fixture, resolved)
+        self.assertNotIn(f"- `{deferred_ids[0]}`\n", resolved_text)
+        self.assertIn(f"- `{deferred_ids[1]}`\n", resolved_text)
+        extra = {**rows[0], "identity": "portal_family:later-discovered"}
+        expanded = {**fixture, "rows": [*rows, extra]}
+        expanded_decisions = {
+            **resolved,
+            extra["identity"]: dict(decisions[deferred_ids[0]]),
+        }
+        expanded_text = MODULE.render_review_results(
+            expanded, expanded_decisions
+        )
+        self.assertIn(f"- `{extra['identity']}`\n", expanded_text)
 
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "review.md"

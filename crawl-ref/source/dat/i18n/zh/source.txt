@@ -192,7 +192,7 @@ strange rock wall
 奇怪的岩壁
 %%%%
 statue of a hideous four-limbed creature
-四足可憎生物的雕像
+长着四肢的可憎生物雕像
 %%%%
 spawn point
 出生点
@@ -14784,10 +14784,10 @@ programming rift
 程序裂缝
 %%%%
 escape hatch in the floor
-逃生舱口
+地板上的逃生口
 %%%%
 escape hatch in the ceiling
-逃生舱口
+天花板上的逃生口
 %%%%
 staircase leading out of the dungeon
 通往地牢外的阶梯
@@ -22919,7 +22919,7 @@ endless expanse of salt
 无尽盐原
 %%%%
 exit through the horrors of the Abyss
-深渊恐怖出口
+经由恐怖的深渊离开的出口
 %%%%
 explore horizon
 探索边界
@@ -23012,7 +23012,7 @@ glowing golden altar of the Shining One
 光辉者的金色辉光祭坛
 %%%%
 glowing silver altar of Zin
-辛的银色祭坛
+辛的辉光银祭坛
 %%%%
 granite statue
 花岗岩雕像
@@ -23138,10 +23138,10 @@ sealed door
 封印门
 %%%%
 sealed passage leading down
-向下通往的封印通道
+被封印的下行通道
 %%%%
 sealed passage leading up
-向上通往的封印通道
+被封印的上行通道
 %%%%
 sealed translucent door
 封印的半透明门
@@ -23246,7 +23246,7 @@ purified mutation catalyst
 净化诱变催化器
 %%%%
 staircase to the Lair
-通往巢穴的楼梯
+通往兽巢的楼梯
 %%%%
 staircase to the Orcish Mines
 通往兽人矿坑的楼梯
@@ -38640,7 +38640,7 @@ magical condensation
 魔法凝结
 %%%%
 mutagenic fog
-致变雾气
+诱变雾气
 %%%%
 purple smoke
 紫烟
@@ -44439,7 +44439,7 @@ You hear the {distance} {noisemaker} {prefix}.
 你听到{distance}{noisemaker}中传来{prefix}。
 %%%%
 <red>Going directly to Necropolis without placing an entry vault is buggy. Placing a Depths / Crypt Necropolis.</red>
-<red>未放置入口地图就直接前往死灵城会导致错误。现正放置一个位于深层区 / 墓穴的死灵城。</red>
+<red>未放置入口地图就直接前往死灵城会导致错误。现正放置一个位于深处 / 墓穴的死灵城。</red>
 %%%%
 Hurry and find it before the portal is buried!
 赶快在传送门被掩埋前找到它！
@@ -44565,7 +44565,7 @@ The shadows inhabiting this place fade forever.
 盘踞此地的暗影永远消散了。
 %%%%
 A lost soul coalesces out of thin air!
-一个迷失的灵魂凭空凝聚成形！
+一个迷失之魂凭空凝聚成形！
 %%%%
 Zonguldrok's gravestone
 宗古德洛克的墓碑
@@ -49198,3 +49198,78 @@ god title|Lightning Rod
 %%%%
 buggy miscellaneous item
 有问题的杂项物品
+%%%%
+The air here is shimmering with an eerie glow.
+此处的空气闪烁着诡异的光芒。
+%%%%
+You sense a powerful magical presence. It is not pleased.
+你察觉到一个强大的魔法存在。它很不高兴。
+%%%%
+Searing heat pours from the floors and walls of this place.
+灼人的热浪从此处的地板和墙壁中涌出。
+%%%%
+Shadowy figures dance across your vision.
+朦胧的身影在你的视野中起舞。
+%%%%
+With a honk a tiny klown kar falls from above, and Killer Klowns tumble out!
+伴着一声喇叭鸣响，一辆小小的小丑车从天而降，杀手小丑纷纷从中翻滚而出！
+%%%%
+A basket of snakes falls from above!
+一只装着蛇的篮子从上方掉了下来！
+%%%%
+Care to risk it all for some fabulous prizes, mortal?
+凡人，想为丰厚的奖赏赌上一切吗？
+%%%%
+Through this portal lies a prize... or peril!
+穿过这道传送门，等着你的或许是奖赏……或许是危险！
+%%%%
+The prize could be yours... at the risk of your life!
+奖赏可能归你所有……代价是拿性命冒险！
+%%%%
+Care for a little wager, mortal?
+凡人，想小赌一把吗？
+%%%%
+hobgoblin draugr
+大地精尸鬼
+%%%%
+titan simulacrum
+泰坦拟像
+%%%%
+sphinx marauder zombie
+斯芬克斯掠袭者丧尸
+%%%%
+human zombie
+人类丧尸
+%%%%
+ugly thing draugr
+丑陋之物尸鬼
+%%%%
+spectral ugly thing
+幻影丑陋之物
+%%%%
+north
+北方
+%%%%
+east
+东方
+%%%%
+south
+南方
+%%%%
+west
+西方
+%%%%
+You have a sudden vision!
+你突然看到了异象！
+%%%%
+You have a sudden vision of the %s!
+你突然看到了%s的异象！
+%%%%
+You have a sudden vision of the %s and the %s!
+你突然看到了%s与%s的异象！
+%%%%
+Flames erupt from the wizard's cell! Trog roars with frustration!
+巫师的牢房中突然腾起烈焰！特洛格懊恼地咆哮起来！
+%%%%
+Flames erupt from the wizard's empty cell! Trog roars with frustration!
+巫师空空的牢房中突然腾起烈焰！特洛格懊恼地咆哮起来！
