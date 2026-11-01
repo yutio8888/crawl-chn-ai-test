@@ -85,6 +85,15 @@ Submodule initialization is environment preparation, not candidate content.
 
 ## Domain Review and Merge
 
+Before pushing source changes, run the local checks from the `Code Linting`
+job in [ci.yml](../.github/workflows/ci.yml) against the complete changed-file
+range intended for the PR. This includes `util/checkwhite -n` and, for changed
+C++ files, `util/unbrace -n`, run from `crawl-ref/source`. Fix any findings and
+rerun the affected checks before pushing, so formatting errors do not consume
+another full GitHub Actions run. Keep the workflow authoritative for file
+selection and commands; local lint does not replace the matching verification
+profile or required CI.
+
 Ordinary review accepts existing files or uncommitted changes and reports
 findings plus Validation Gaps. It does not require a build, commit, or remote
 comment. For an authorized merge:
