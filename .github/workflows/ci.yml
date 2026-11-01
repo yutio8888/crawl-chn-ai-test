@@ -20,6 +20,29 @@ on:
 
 permissions: {}
 jobs:
+  local_builds:
+    name: Check local PR builds
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      statuses: read
+      pull-requests: read
+    outputs:
+      linux: ${{ steps.local.outputs.linux }}
+      windows: ${{ steps.local.outputs.windows }}
+      android: ${{ steps.local.outputs.android }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python from .python-version
+        uses: actions/setup-python@v4
+        with:
+          python-version-file: .python-version
+      - name: Check exact-head local build statuses
+        id: local
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .claude/scripts/check_local_builds.py
+
   zh_tooling_tests:
     permissions:
       contents: read
@@ -357,6 +380,8 @@ jobs:
         working-directory: crawl-ref/source
 
   build_linux_console:
+    needs: local_builds
+    if: ${{ !cancelled() && needs.local_builds.outputs.linux != 'true' }}
     permissions:
       contents: read
 
@@ -425,6 +450,9 @@ jobs:
           if-no-files-found: error
 
   build_windows_tiles:
+    needs: local_builds
+    # Missing evidence or a failed lookup keeps the original build enabled.
+    if: ${{ !cancelled() && needs.local_builds.outputs.windows != 'true' }}
     permissions:
       contents: read
 
@@ -472,6 +500,8 @@ jobs:
           if-no-files-found: error
 
   build_android:
+    needs: local_builds
+    if: ${{ !cancelled() && needs.local_builds.outputs.android != 'true' }}
     permissions:
       contents: read
 

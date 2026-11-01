@@ -318,8 +318,13 @@ class AgentDocumentationTests(unittest.TestCase):
         jobs = workflow["jobs"]
         self.assertEqual({}, workflow["permissions"])
         for job_id, job in jobs.items():
+            expected_permissions = {
+                "contents": "write" if job_id == "release_draft" else "read",
+            }
+            if job_id == "local_builds":
+                expected_permissions.update({"statuses": "read", "pull-requests": "read"})
             self.assertEqual(
-                {"contents": "write" if job_id == "release_draft" else "read"},
+                expected_permissions,
                 job["permissions"],
             )
         required_names = {
@@ -382,6 +387,20 @@ class AgentDocumentationTests(unittest.TestCase):
         )
         self.assertIn("Dungeon Crawl Stone Soup - Tiles.app", codesign_commands)
         self.assertNotIn(r"Dungeon\ Crawl\ Stone\ Soup", codesign_commands)
+
+    def test_local_build_lookup_preserves_release_dependency_chain(self) -> None:
+        workflow = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text())
+        jobs = workflow["jobs"]
+        # A skipped ancestor would propagate to the default success() guard
+        # on release_draft even when intermediate builds explicitly continue.
+        self.assertNotIn("if", jobs["local_builds"])
+        for platform, job_id in (("linux", "build_linux_console"),
+                                 ("windows", "build_windows_tiles"),
+                                 ("android", "build_android")):
+            self.assertEqual("local_builds", jobs[job_id]["needs"])
+            self.assertEqual(
+                "${{ !cancelled() && needs.local_builds.outputs."
+                + platform + " != 'true' }}", jobs[job_id]["if"])
 
     def test_android_debug_and_release_apks_are_fail_closed(self) -> None:
         def assert_contract(config: dict) -> None:

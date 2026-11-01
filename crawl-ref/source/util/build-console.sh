@@ -30,7 +30,7 @@ if command -v ccache >/dev/null 2>&1; then
 else
     echo "ccache mode: disabled"
 fi
-make "$@" -j8
+make "$@" -j4 NPROC=4
 echo "=== Done ==="
 if command -v ccache >/dev/null 2>&1; then
     ccache -s
