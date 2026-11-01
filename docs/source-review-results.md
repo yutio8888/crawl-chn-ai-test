@@ -573,7 +573,7 @@
 | source:%s have about %d%% to hit you.\n<br>EN: %s have about %d%% to hit you.\n | %s有约%d%% 几率命中你。\n | %s有约%d%% 几率命中你。\n | keep | 复数主体命中概率，中文和单数同形自然。 | source/describe.cc; crawl-ref/source/describe.cc:6898 |
 | source:%s have an unusual item: %s<br>EN: %s have an unusual item: %s | %s拥有一件不寻常的物品：%s | %s拥有一件不寻常的物品：%s | keep | 复数主体拥有异常物品的列表，与单数同文可接受，主体代词外部给。 | source/describe.cc; crawl-ref/source/describe.cc:7483 |
 | source:%s is an unusual item.<br>EN: %s is an unusual item. | %s是一件不寻常的物品。 | %s是一件不寻常的物品。 | keep | 单数拟态武器本体是一件异常物品，句号与下句边界完整。 | source/describe.cc; crawl-ref/source/describe.cc:7502 |
-| source:%s, your spell failure would %s:\n<br>EN: %s, your spell failure would %s:\n | %s，你的法术失败率会%s：\n | %s，你的法术失败率会%s：\n | keep | 装备条件与施法失败率改善/变差完整，caller选择两个不带空格的键，未误套提高/降低片段。 | source/describe.cc; crawl-ref/source/describe.cc:2261 |
+| source:%s, your spell failure would %s:&#92;n<br>EN: %s, your spell failure would %s:&#92;n | %s，你的法术失败率会%s：&#92;n | %s，你的法术失败率会%s：&#92;n | keep | 装备条件与施法失败率改善/变差完整，caller选择两个不带空格的键，未误套提高/降低片段。 | source/describe.cc; crawl-ref/source/describe.cc:2261 |
 | source:%sit %s%s your willpower.<br>EN: %sIt %s%s your willpower. | %s%s%s你的意志力。 | %s%s%s你的意志力。 | keep | 意志力的名标/可选极大地/提高或降低三槽：副词在动词前自然，数值标记保留。 | source/describe.cc; crawl-ref/source/describe.cc:797 |
 | source:%sit makes you less stealthy.<br>EN: %sIt makes you less stealthy. | %s降低你的潜行能力。 | %s降低你的潜行能力。 | keep | 轻降潜行与单层负值条件对应，属性名标签保留。 | source/describe.cc; crawl-ref/source/describe.cc:807 |
 | source:%sit makes you more stealthy.<br>EN: %sIt makes you more stealthy. | %s提高你的潜行能力。 | %s提高你的潜行能力。 | keep | 轻升潜行与单层正值对应。 | source/describe.cc; crawl-ref/source/describe.cc:809 |
