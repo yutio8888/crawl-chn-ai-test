@@ -318,6 +318,7 @@
 | Fimbulwinter | 芬布尔之冬 | unrand lore proper name；与武器专名统一；decision=D-C-095 |
 | Carina | 船底座 | unrand 星空语境与 ShootingStar 效果确认星座指称；不作人名音译；decision=D-C-095 |
 | coolibah | 库利巴木 | unrand material name；不以未确认分类学知识增补树种；decision=D-C-095 |
+| Talos | 塔洛斯 | TAG34 神器专名；armour of Talos → 塔洛斯之甲；区别地狱领域 Tartarus；decision=D-C-105 |
 
 ### 新增随机命名组件（trunk B0）
 

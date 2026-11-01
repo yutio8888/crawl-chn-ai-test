@@ -3746,7 +3746,7 @@ Curse which item? (Esc to abort)
 诅咒哪件物品？（Esc取消）
 %%%%
 damnation
-永罚
+天谴
 %%%%
 dancing weapon
 舞动武器
@@ -15294,7 +15294,7 @@ Unspoiled
 @Adj@小灾
 %%%%
 Lightning Rod
-避雷针
+雷击杖
 %%%%
 @Adj@ Disaster
 @Adj@灾难
@@ -17928,7 +17928,7 @@ your enemies will bleed and die for Makhleb.
 [%d + %d (重型)]
 %%%%
 Ench + Slay
-附魔 + 杀敌
+附魔 + 杀戮
 %%%%
 Ench
 附魔
@@ -28188,7 +28188,7 @@ It affects your accuracy & damage with ranged weapons and melee (%d).
 影响你远程和近战武器的命中率与伤害（%d）。
 %%%%
 It insulates you from electricity.
-使你免受电击伤害。
+使你能抵抗电击。
 %%%%
 It protects you from poison.
 保护你免受毒素伤害。
@@ -28224,13 +28224,13 @@ It prevents most forms of teleportation.
 阻止大多数形式的传送。
 %%%%
 It berserks you when you make melee attacks (%d% chance).
-近战攻击时有概率使你狂暴（%d%%概率）。
+近战攻击时有概率使你狂暴（%d%概率）。
 %%%%
 It protects you from confusion, rage, mesmerisation and fear.
-保护你免受困惑、狂怒、迷魂和恐惧。
+保护你免受混乱、狂暴、迷魂和恐惧。
 %%%%
 It causes magical contamination when unequipped.
-卸下时造成魔法污染。
+卸下时造成诱变辐射。
 %%%%
 It protects you from missiles.
 保护你免受投射物伤害。
@@ -28356,7 +28356,7 @@ It restores some MP whenever you drink a potion and also enhances your alchemy s
 饮用任何药水时恢复部分法力，同时增强你的炼金系法术。
 %%%%
 It reduces the duration of hostile enchantments and decays magical contamination more quickly.
-缩短敌对附魔的持续时间，并加快魔法污染的消退速度。
+缩短敌对附魔的持续时间，并加快诱变辐射的消退速度。
 %%%%
 %sIt %s%s your willpower.
 %s%s%s你的意志力。
@@ -30699,7 +30699,7 @@ arcane splint mail
 奥术条板甲
 %%%%
 armour of Talos
-塔耳塔洛斯之甲
+塔洛斯之甲
 %%%%
 athame "Fimbulwinter"
 仪式匕首"芬布尔之冬"
@@ -31107,7 +31107,7 @@ mutate
 突变
 %%%%
 rev
-反转
+增效
 %%%%
 Acc
 命中
@@ -31533,7 +31533,7 @@ Amulet+
 项链+
 %%%%
 Hat+
-头盔+
+头部装备+
 %%%%
 Shroompunch
 蘑菇拳
@@ -31575,7 +31575,7 @@ It grants immunity to poison.
 它赋予毒素免疫。
 %%%%
 If the wielder is skilled in Evocations, they can envenom those struck by it, dealing poison damage which bypasses armour.
-若使用者精通魔力释放技能，可以在攻击时为武器淬毒，造成无视护甲的毒素伤害。
+若使用者精通魔力释放技能，就能使被这根法杖击中的目标中毒，造成无视护甲的毒素伤害。
 %%%%
 Whenever a successful spell causes magic to be channelled from it, it may also drain additional magic from other enemies in sight, with a chance increasing with spell level.
 每当成功施法从中引导魔力时，也可能从视野内的其他敌人身上汲取额外魔力，几率随法术等级提高。
@@ -31746,7 +31746,7 @@ It heals its wielder for a portion of the damage dealt when they wound a living 
 当使用者以此武器或法术伤害活着的敌人时，将造成伤害的一部分转化为生命值，但使用者的法术同时消耗生命和法力。
 %%%%
 It can block and reflect piercing ranged attacks and magical attacks against the wielder's willpower.
-它可以阻挡并反射穿刺类远程攻击和魔法攻击，反射对抗使用者的意志力。
+它能格挡并反射穿透型远程攻击，以及针对持用者意志力的魔法攻击。
 %%%%
 It freezes victims, dealing an additional one-quarter of any damage that pierces defenders' armour. It may also slow down cold-blooded creatures.
 冰冻目标，对穿透防御者护甲的任何伤害再附加四分之一。也可能减速冷血生物。
@@ -31758,7 +31758,7 @@ It can reach especially far, and its reaching attacks ignore other creatures in 
 可以触及极远的距离，且其延伸攻击无视路径上的其他生物。
 %%%%
 It summons a battlesphere in combat, with strength depending on Conjurations skill.
-战斗中召唤战斗法球，其强度取决于咒语魔法技能。
+战斗中召唤战斗法球，其强度取决于咒法系技能。
 %%%%
 It enhances your destructive magic, and weakens non-destructive magic.
 增强你的毁灭魔法，削弱非毁灭魔法。
@@ -31818,7 +31818,7 @@ It sometimes drives back enemies it hits.
 有时将击中的敌人击退。
 %%%%
 It becomes more powerful as more dangerous foes come into view.
-视野中出现更危险的敌人时会变得更加有力。
+视野中敌人构成的威胁越大，它就越强。
 %%%%
 When the wearer kills a threatening monster, it has a chance to gain +1 AC, +1 Slay, and +1 Int, capping at +7. When the wearer uses a scroll or a potion with a hostile monster in sight, its bonuses reset to +0. Unequipping it also resets its bonuses to +0.
 穿戴者杀死威胁性怪物时，有几率获得+1护甲、+1杀戮和+1智力，上限+7。当穿戴者在有敌对怪物可见时使用卷轴或药水，其加成重置为+0。卸下它也会将加成重置为+0。
@@ -31857,7 +31857,7 @@ You can equip an additional hat (on the skull).
 你可以装备一顶额外的头盔（戴在头骨上）。
 %%%%
 The cloak sometimes lashes out at its wearer's enemies, inflicting confusion with its spores.
-这件斗篷有时会抽打穿戴者的敌人，用孢子造成困惑。
+这件斗篷有时会抽打穿戴者的敌人，用孢子造成混乱。
 %%%%
 Your cloak can equip an additional pair of gloves.
 你的斗篷可以装备一副额外的手套。
@@ -33003,7 +33003,7 @@ which it recharges.
 其充能的速率。
 %%%%
 \n\nWith your current SH, it has a %d%% chance to reflect attacks against your willpower and other normally unblockable effects.
-\n\n根据你当前的SH，它有%d%%的几率反射针对你意志力和其他通常无法格挡效果的攻击。
+\n\n根据你当前的SH，它有%d%%的几率反射针对你意志力的攻击，以及其他通常无法格挡的效果。
 %%%%
 \nIt deals %s damage.\n
 \n它造成%s点伤害。\n
@@ -43518,7 +43518,7 @@ Your AC increases as you Rev (up to +5) and while fully Revved, your attacks may
 你的护甲等级会随着热机而增加（最多 +5），完全热机时你的攻击可能缴械敌人。
 %%%%
 It sometimes fires a blinding ray at enemies whose attacks you dodge.
-它有时会向闪避了它攻击的敌人发射致盲光线。
+它有时会向那些攻击被你闪避的敌人发射致盲光线。
 %%%%
 \nWhile standing here, you can exit the dungeon with the <w>%s</w> key.
 \n站在这里时，你可以按<w>%s</w>键离开地牢。
@@ -46158,7 +46158,7 @@ Your vision is no longer so expansive.
 你的视野不再那么辽阔了。
 %%%%
 It provides +5 SH for each of five conditions: You have at least 20 intelligence; at least 25 base EV; at least 15 base Invocations skill; at least +++++ stealth; your Staves skill is your highest skill, or is at the maximum skill level.
-以下五项条件每满足一项，就提供+5护盾值：智力至少20；基础闪避至少25；基础祈祷技能至少15；潜行至少+++++；棍杖技能是你最高的技能，或已达到最高等级。
+以下五项条件每满足一项，就提供+5护盾值：智力至少20；基础闪避至少25；基础祈神技能至少15；潜行至少+++++；棍杖技能是你最高的技能，或已达到最高等级。
 %%%%
 jademantle-form
 玉衣形态
@@ -49114,3 +49114,84 @@ You learn %s quicker.
 %%%%
 You learn %s much quicker.
 你学习%s的速度大幅变快了。
+%%%%
+\nYour spell failure would worsen trivially.
+\n你的法术失败率会略微升高。
+%%%%
+\nYour spell failure would improve trivially.
+\n你的法术失败率会略微降低。
+%%%%
+\nYour spell failure would worsen by up to %d%% (press '!' for details).
+\n你的法术失败率最多会升高%d%%（按'!'查看详情）。
+%%%%
+\nYour spell failure would improve by up to %d%% (press '!' for details).
+\n你的法术失败率最多会降低%d%%（按'!'查看详情）。
+%%%%
+If you drink this now, you will no longer be %s.
+如果现在喝下它，你将不再处于以下状态：%s。
+%%%%
+Drinking this will reduce your magical contamination.
+喝下它会减轻你的诱变辐射。
+%%%%
+missile brand|poisoned
+涂毒
+%%%%
+empty flask
+空瓶
+%%%%
+removed ebony casket
+已移除的乌木匣
+%%%%
+removed lantern of shadows
+已移除的暗影提灯
+%%%%
+removed crystal ball
+已移除的水晶球
+%%%%
+removed deck
+已移除的牌组
+%%%%
+removed fan of gales
+已移除的狂风扇
+%%%%
+removed lamp of fire
+已移除的火焰灯
+%%%%
+obsolete rune of zot
+已废弃的佐特符文
+%%%%
+removed stone of tremors
+已移除的震颤之石
+%%%%
+removed chess piece
+已移除的棋子
+%%%%
+It sustains your strength, intelligence and dexterity.
+它维持你的力量、智力和敏捷。
+%%%%
+It may teleport you next to monsters.
+它可能将你传送到怪物身旁。
+%%%%
+It can be evoked for teleport control.
+它能被激活以控制传送。
+%%%%
+It allows you to eat raw meat even when not hungry.
+它使你即便不饿也能吃生肉。
+%%%%
+It protects your inventory from destruction.
+它保护你背包中的物品免遭毁坏。
+%%%%
+It allows you to control your flight when levitating.
+它让你在悬浮时能控制自己的飞行。
+%%%%
+It reduces the accuracy of all your attacks.
+它降低你所有攻击的命中率。
+%%%%
+You can equip additional headgear (on the skull).
+你可以额外装备一件头部装备（戴在头骨上）。
+%%%%
+It surrounds you with an aura of shadow, increasing your stealth and making creatures within it harder to hit for attackers without night vision.
+它以暗影光环环绕你，提升你的潜行能力，并使缺乏夜视能力的攻击者更难击中光环内的生物。
+%%%%
+god title|Lightning Rod
+避雷针

@@ -14,9 +14,9 @@ Each hit from it has a different, random effect.
 %%%%
 concussion (concuss) weapon ego
 
-It pushes those it hits backwards, briefly stunning them in the process. If it
-pushes them into a solid feature, they will instead take an additional one-third
-of any damage that pierces their armour.
+It pushes those it hits backwards, briefly stunning them in the process. If a
+solid feature prevents this, they instead take additional damage averaging
+approximately three-eighths of any damage that pierces their armour.
 %%%%
 distortion (distort) weapon ego
 
@@ -31,9 +31,10 @@ and temporarily increases the wielder's EV and slaying each time they do so.
 %%%%
 draining (drain) weapon ego
 
-It sometimes drains living victims (1/2 chance). This deals an additional
-one-quarter of any damage that pierces defenders' armour as well as a flat 2-4
-damage, and also weakens them slightly.
+It drains living victims (1/2 chance against monsters). This deals additional
+negative energy damage averaging approximately one-quarter of any damage that
+pierces defenders' armour, and also weakens them slightly. Resistance to
+negative energy reduces these effects.
 %%%%
 electrocution (elec) weapon ego
 
@@ -130,7 +131,7 @@ greatly increased damage and also cleave into targets an extra space away.
 valour (valour) weapon ego
 
 It fires a beam of energy whenever it strikes an enemy while its wielder has
-no less than 80% of their maximum hit points remaining. Unwielding it will
+more than 80% of their maximum hit points remaining. Unwielding it will
 briefly Weaken its wielder.
 %%%%
 vampirism (vamp) weapon ego

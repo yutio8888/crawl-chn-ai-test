@@ -814,9 +814,10 @@ Agent memory is not authoritative. Resolve current context from this file and
 - **Status**: active
 - **Date**: 2026-07-08
 - **Source**: Translation quality review — "避雷针" analysis
-- **Choice**: 雷击杖
-- **Rejected**: 避雷针 (contradicts item's offensive function — 避 = avoid/protect, but the item shoots lightning at enemies), 引雷针 (better semantics but 针 still misrepresents rod)
+- **Choice**: 进攻物品 `lightning rod → 雷击杖`。
+- **Rejected (item scope)**: 避雷针 (contradicts item's offensive function — 避 = avoid/protect, but the item shoots lightning at enemies), 引雷针 (better semantics but 针 still misrepresents rod)
 - **Rationale**: 雷击 (lightning strike) accurately describes the item's offensive function. 杖 (rod/staff) matches the physical form better than 针 (needle). Consistent with how other rod-like items are named in Chinese.
+- **Scope / god-title exception (2026-11-01)**: 本裁定的雷击与杖形论据仅适用于主动向敌人施放雷击的物品。Qazlal 的同形信徒称号 `Lightning Rod` 属风暴灾害主题中的人物隐喻，沿用“避雷针”，并不承诺避雷免伤，也不是一根主动发射雷击的器物。现有 `C_("god title", ...)` 消费使用独立 `god title|Lightning Rod → 避雷针`，plain 物品键仍为雷击杖；英文称号、物品查找身份和源码接口不变。
 - **Affected files**:
   - `dat/i18n/zh/source.txt` ✅
 - **Tracking issue**: (none — direct fix)
@@ -4442,7 +4443,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-003 | Item base names | ~200 items | active — all ✅ |
 | D-C-004 | Portal .des | ~40 messages | active — all ✅ |
 | D-C-005 | Monster YAML names | 489 entries → 100% coverage | active ✅ |
-| D-C-006 | Lightning Rod | 雷击杖 | active ✅ |
+| D-C-006 | Lightning Rod (item / god title) | 物品雷击杖；称号避雷针 | active ✅ |
 | D-A-039 | Felid (player species) | 猫 | active ✅ |
 | D-A-040 | Octopode (player species) | 章鱼 | active ✅ |
 | D-A-041 | non-unique monster display names and quote exceptions | 术士 / 巨鳄龟 / 乱流 / 丧尸 | active ✅ |
@@ -4552,6 +4553,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-102 | Ability and mutation semantic names | 资质欠佳／持久衰竭；献祭爱；先祖生涯 | active |
 | D-C-103 | Four Hell world-name dependencies | 欣嫩谷／悲叹河／塔尔塔罗斯／迪斯；文学精确例外 | active |
 | D-C-104 | Hepliaklqana the Forgotten | 被遗忘者惠普利亚卡纳；长名、正文与祭坛共用被动称谓 | active |
+| D-C-105 | Talos artefact proper name | 塔洛斯；塔洛斯之甲，区别 Tartarus | active |
 | D-C-101 | Spell school display names | 全称统一为系；法术列表两字简称；闪避说明消歧 | active |
 | D-C-100 | GENDER_NEUTRAL singular pronouns | 他 / 他的 / 他自己 / 他；移除 ZH 中性先祖 neuter 映射 | active |
 
@@ -4575,3 +4577,13 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 - **Choice**: `Hepliaklqana the Forgotten → 被遗忘者惠普利亚卡纳`。神祇长名、主正文与祭坛说明同步；短名惠普利亚卡纳保持。
 - **Rationale**: `the Forgotten` 指被遗忘者，原“遗忘者”容易成为遗忘他人的主体。主正文中的愿意铭记祖辈并与最伟大祖辈并肩战斗者是信徒，不能将并肩者误接为神。英文证据为 `dat/database/godname.txt:Hepliaklqana lastname`、`dat/descript/gods.txt:Hepliaklqana`、`dat/descript/features.txt:A hazy altar of Hepliaklqana`。
 - **Scope**: 仅此神的明确英文长称及直接回指；不将随机姓名中的同形 `the Forgotten`、记忆主题的一般词或拉丁称号 `Damnatio Memoriae` 一并重命名。后者本轮保留为非必改风格建议。
+
+
+### D-C-105 — Talos 神器专名与 Tartarus 的区分
+
+- **Type**: C — Proper-name correction
+- **Status**: active
+- **Date**: 2026-11-01
+- **Choice**: `Talos → 塔洛斯`；TAG34 兼容神器 `armour of Talos → 塔洛斯之甲`。
+- **Rationale**: 实际英文器名为 Talos，`dat/descript/unrand.txt:armour of Talos` 描述为需要巨大身躯才能穿戴的笨重青铜板甲。旧“塔耳塔洛斯”混入另一专名的词形，不能用作 Talos 的转写。本次完整固定神器名称依赖组已审读；此器正文没有 Talos 的中文回指，保持原有完整器物描述。
+- **Scope**: 只纠正该神器的显示名及其 Talos 词根；不更改 `art-data.txt` 的英文身份、TextDB 查找键、枚举或生命周期，不恢复已移除玩法。D-C-103 的地狱领域 `Tartarus → 塔尔塔罗斯` 及其文学例外均不受本项影响。

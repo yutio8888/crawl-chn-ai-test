@@ -363,7 +363,7 @@ const char* special_missile_type_name(special_missile_type ego, mbn_type t)
         return t == MBN_TERSE ? T_("obsolete") : T_("obsolescence");
 #endif
     case SPMSL_POISONED:
-        return t == MBN_NAME ? T_("poisoned") : T_("poison");
+        return t == MBN_NAME ? C_("missile brand", "poisoned") : T_("poison");
     case SPMSL_CURARE:
         return t == MBN_NAME ? T_("curare-tipped") : T_("curare");
 #if TAG_MAJOR_VERSION == 34
@@ -1221,48 +1221,53 @@ static string gem_type_name(gem_type g)
     return string(gem_adj(g)) + T_(" gem");
 }
 
-static string misc_type_name(int type)
+static const char* _misc_type_name_en(int type)
 {
 #if TAG_MAJOR_VERSION == 34
     if (is_deck_type(type))
-        return "removed deck";
+        return N_("removed deck");
 #endif
 
     switch (static_cast<misc_item_type>(type))
     {
 #if TAG_MAJOR_VERSION == 34
-    case MISC_CRYSTAL_BALL_OF_ENERGY:    return "removed crystal ball";
+    case MISC_CRYSTAL_BALL_OF_ENERGY:    return N_("removed crystal ball");
 #endif
-    case MISC_BOX_OF_BEASTS:             return T_("box of beasts");
+    case MISC_BOX_OF_BEASTS:             return N_("box of beasts");
 #if TAG_MAJOR_VERSION == 34
-    case MISC_BUGGY_EBONY_CASKET:        return "removed ebony casket";
-    case MISC_FAN_OF_GALES:              return "removed fan of gales";
-    case MISC_LAMP_OF_FIRE:              return "removed lamp of fire";
-    case MISC_BUGGY_LANTERN_OF_SHADOWS:  return "removed lantern of shadows";
+    case MISC_BUGGY_EBONY_CASKET:        return N_("removed ebony casket");
+    case MISC_FAN_OF_GALES:              return N_("removed fan of gales");
+    case MISC_LAMP_OF_FIRE:              return N_("removed lamp of fire");
+    case MISC_BUGGY_LANTERN_OF_SHADOWS:  return N_("removed lantern of shadows");
 #endif
-    case MISC_HORN_OF_GERYON:            return T_("horn of Geryon");
-    case MISC_LIGHTNING_ROD:             return T_("lightning rod");
+    case MISC_HORN_OF_GERYON:            return N_("horn of Geryon");
+    case MISC_LIGHTNING_ROD:             return N_("lightning rod");
 #if TAG_MAJOR_VERSION == 34
-    case MISC_BOTTLED_EFREET:            return "empty flask";
-    case MISC_RUNE_OF_ZOT:               return "obsolete rune of zot";
-    case MISC_STONE_OF_TREMORS:          return "removed stone of tremors";
+    case MISC_BOTTLED_EFREET:            return N_("empty flask");
+    case MISC_RUNE_OF_ZOT:               return N_("obsolete rune of zot");
+    case MISC_STONE_OF_TREMORS:          return N_("removed stone of tremors");
 #endif
-    case MISC_QUAD_DAMAGE:               return T_("quad damage");
-    case MISC_PHIAL_OF_FLOODS:           return T_("phial of floods");
-    case MISC_SACK_OF_SPIDERS:           return T_("sack of spiders");
-    case MISC_PHANTOM_MIRROR:            return T_("phantom mirror");
-    case MISC_ZIGGURAT:                  return T_("figurine of a ziggurat");
+    case MISC_QUAD_DAMAGE:               return N_("quad damage");
+    case MISC_PHIAL_OF_FLOODS:           return N_("phial of floods");
+    case MISC_SACK_OF_SPIDERS:           return N_("sack of spiders");
+    case MISC_PHANTOM_MIRROR:            return N_("phantom mirror");
+    case MISC_ZIGGURAT:                  return N_("figurine of a ziggurat");
 #if TAG_MAJOR_VERSION == 34
-    case MISC_XOMS_CHESSBOARD:           return "removed chess piece";
+    case MISC_XOMS_CHESSBOARD:           return N_("removed chess piece");
 #endif
-    case MISC_TIN_OF_TREMORSTONES:       return T_("tin of tremorstones");
-    case MISC_CONDENSER_VANE:            return T_("condenser vane");
-    case MISC_GRAVITAMBOURINE:           return T_("Gell's gravitambourine");
-    case MISC_SHOP_VOUCHER:              return T_("shop voucher");
+    case MISC_TIN_OF_TREMORSTONES:       return N_("tin of tremorstones");
+    case MISC_CONDENSER_VANE:            return N_("condenser vane");
+    case MISC_GRAVITAMBOURINE:           return N_("Gell's gravitambourine");
+    case MISC_SHOP_VOUCHER:              return N_("shop voucher");
 
     default:
-        return "buggy miscellaneous item";
+        return N_("buggy miscellaneous item");
     }
+}
+
+static string misc_type_name(int type)
+{
+    return T_(_misc_type_name_en(type));
 }
 
 const char* gizmo_effect_name(int type)
@@ -2127,7 +2132,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         else if (!dbname && is_xp_evoker(*this) && in_inventory(*this))
             buff << "+" << evoker_plus(item_typ) << " ";
 
-        buff << misc_type_name(item_typ);
+        buff << (dbname ? _misc_type_name_en(item_typ) : misc_type_name(item_typ));
 
         if (is_xp_evoker(*this) && !dbname && !evoker_charges(sub_type))
             buff << (T_(" (inert)"));
@@ -4160,7 +4165,11 @@ vector<string> item_name_list_for_zh_regex(const string &regex)
         item.plus      = kind.plus;
         item.plus2     = kind.plus2;
 
-        string zh_name = item.name(DESC_DBNAME, true, true);
+        // Miscellany keeps DESC_DBNAME in English for database lookup.
+        // Search its translated base name without charge or inert suffixes.
+        string zh_name = item.base_type == OBJ_MISCELLANY
+                         ? misc_type_name(item.sub_type)
+                         : item.name(DESC_DBNAME, true, true);
         lowercase(zh_name);
 
         if (!zh_name.empty() && tpat.matches(zh_name))

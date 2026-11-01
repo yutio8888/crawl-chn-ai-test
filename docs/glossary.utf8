@@ -1368,6 +1368,7 @@ Swiftness	迅捷	domain=spells; source=EN/ZH; 备注=✅
 sword of Cerebov	塞雷波夫之剑	domain=items; source=EN/ZH; Scope / comment=unrand; follows unique name; decision=D-B-021
 Symbol of Torment	折磨之符	domain=spells; source=EN/ZH; 备注=✅
 Tailwind	顺风	domain=status; source=EN/ZH; 依据 / 作用域=status.txt；下一次冲锋移动不耗时；decision=D-C-095
+Talos	塔洛斯	domain=core; source=EN/ZH; 依据 / 作用域=TAG34 神器专名；armour of Talos → 塔洛斯之甲；区别地狱领域 Tartarus；decision=D-C-105
 Tartarus	塔尔塔罗斯	domain=core; source=EN/ZH; 注意事项=游戏地狱领域；区别 Abyss；文学 exact-key 例外见 D-C-103
 tartarus serpent of hell breath	塔尔塔罗斯地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 taunts	嘲讽道	domain=dialogue; source=EN/ZH; 适用角色=高等恶魔、反派

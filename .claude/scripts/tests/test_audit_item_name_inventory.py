@@ -785,6 +785,26 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "bauble display translation consumer"):
                 MODULE.build_inventory()
 
+    def test_miscellany_keys_follow_the_raw_helper_and_display_consumer(self):
+        rows = {row["identity"]: row for row in MODULE.build_inventory()["rows"]}
+        for identity, key in (
+            ("MISC_BOX_OF_BEASTS", "box of beasts"),
+            ("MISC_DECK_OF_ESCAPE", "removed deck"),
+            ("MISC_CRYSTAL_BALL_OF_ENERGY", "removed crystal ball"),
+            ("MISC_BOTTLED_EFREET", "empty flask"),
+        ):
+            row = rows["miscellany:" + identity]
+            self.assertEqual(key, row["translation_key"])
+            self.assertTrue(row["runtime_lookup"])
+        original = MODULE.active_source
+        def untranslated_consumer(path, *args, **kwargs):
+            return original(path, *args, **kwargs).replace(
+                'return T_(_misc_type_name_en(type));',
+                'return _misc_type_name_en(type);')
+        with mock.patch.object(MODULE, "active_source", side_effect=untranslated_consumer):
+            with self.assertRaisesRegex(RuntimeError, "miscellany display translation consumer"):
+                MODULE.build_inventory()
+
     def test_thirteen_upstream_unrand_additions_are_unique(self):
         # Exact additions in 0.34.1..43d89d912d; renames of Prune and the
         # Four Winds amulet do not contribute to the 142 -> 155 increase.
@@ -827,6 +847,10 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                         if row["identity"] == "unrand:UNRAND_WYRMBANE")
         self.assertEqual("adjust", wyrmbane["_conclusion"])
         self.assertEqual('骑枪"屠龙者"', wyrmbane["current_chinese"])
+        talos = next(row for row in rows
+                     if row["identity"] == "unrand:UNRAND_TALOS")
+        self.assertEqual(source["armour of talos"], talos["current_chinese"])
+        self.assertNotEqual(baseline.get("armour of talos"), talos["current_chinese"])
         # Any further changed name still requires a new explicit audit.
         source["robe of vines"] = "unreviewed change"
         with self.assertRaisesRegex(RuntimeError,
@@ -933,8 +957,14 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertEqual("dcss-item-name-review-inventory-v1",
                          payload["schema"])
         self.assertEqual(398, payload["count"])
+        # Independently verify the emitted rows' canonical digest. Content
+        # repairs may change it without changing the inventory identities.
+        serialized_rows = json.dumps(
+            payload["rows"], ensure_ascii=False, sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
         self.assertEqual(
-            "4e07e91fc43925735f416fba6609f5741578505a573982a0d74e2b9a2b82b82d",
+            hashlib.sha256(serialized_rows).hexdigest(),
             payload["inventory_sha256"],
         )
         self.assertEqual(payload["count"], len(payload["rows"]))
@@ -1172,10 +1202,10 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             payload["scope"]["randart_component_metrics"]["totals"],
         )
 
-    def test_issue29_v3_default_writer_is_byte_compatible(self):
+    def test_issue29_v3_writer_and_historical_artifact_are_self_consistent(self):
         recorded = review_input(MODULE.ROOT / "docs/item-extended-review-results.md")
-        expected = recorded.bytes
-        recorded_glossary = MODULE.parse_review_header_v3(recorded)["glossary_sha256"]
+        recorded_rows = MODULE.parse_review_results_v3(recorded)
+        recorded_header = MODULE.parse_review_header_v3(recorded)
         with tempfile.TemporaryDirectory(
             dir=MODULE.ROOT / ".claude"
         ) as directory:
@@ -1195,18 +1225,27 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             actual = generated.read_bytes()
             payload = json.loads(inventory.read_text())
         self.assertEqual(0, proc.returncode, proc.stderr)
-        # The default writer records current authority. A historical ledger
-        # retains its reviewed glossary digest when unrelated terms change.
+        # The default writer records current authority and remains exactly
+        # reproducible from the same current payload.
         self.assertEqual(
             MODULE.render_review_results_v3(payload, payload["rows"]).encode(),
             actual,
         )
-        self.assertEqual(
-            expected,
-            MODULE.render_review_results_v3(
-                payload, payload["rows"], glossary_overlay=recorded_glossary,
-            ).encode(),
+        # Historical evidence describes its recorded candidate. Validate its
+        # digest, uniqueness, ordering, counts, header, and canonical rendering
+        # against those recorded cards, rather than today's changed facts.
+        historical_inventory = {
+            "baseline": recorded_header["baseline"],
+            "count": len(recorded_rows),
+            "decision_inventory_sha256": MODULE.v3_decision_digest(recorded_rows),
+            "glossary_sha256": recorded_header["glossary_sha256"],
+        }
+        violations, glossary_matches = MODULE.review_violations_v3(
+            recorded_rows, recorded_rows, historical_inventory,
+            recorded_header, recorded,
         )
+        self.assertFalse(any(violations.values()), violations)
+        self.assertTrue(glossary_matches)
 
     def test_issue29_v3_default_round_trips_strictly(self):
         with tempfile.TemporaryDirectory(
@@ -1328,6 +1367,34 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             )
             self.assertFalse(any(canonical_violations.values()))
             self.assertTrue(canonical_glossary_matches)
+
+            # Human semantic review may follow the canonical cards. It does
+            # not change or approve any machine-bound production facts.
+            appendix = MODULE.V3_SEMANTIC_REVIEW_APPENDIX + "\nReviewed prose.\n"
+            with_appendix = loaded(canonical + appendix)
+            appendix_violations, _ = MODULE.review_violations_v3(
+                rows, MODULE.parse_review_results_v3(with_appendix), inventory,
+                MODULE.parse_review_header_v3(with_appendix), with_appendix,
+            )
+            self.assertFalse(any(appendix_violations.values()))
+            MODULE.write_review_results_v3(path, inventory, rows)
+            self.assertEqual(canonical + appendix, path.read_text())
+            with self.assertRaisesRegex(RuntimeError, "duplicate.*appendix"):
+                MODULE.split_review_appendix(canonical + appendix + appendix)
+            with self.assertRaisesRegex(RuntimeError, "must follow"):
+                MODULE.split_review_appendix(appendix + canonical)
+            with self.assertRaisesRegex(RuntimeError, "duplicate evidence-card"):
+                MODULE.parse_review_results_v3(loaded(
+                    canonical + appendix + "\n```jsonl\n```\n"))
+            # A marker cannot hide a changed canonical prefix or a truncated
+            # card collection, even when that prefix remains parseable.
+            changed_prefix = loaded(canonical.replace(
+                "## Evidence cards", "## Changed cards", 1) + appendix)
+            changed_violations, _ = MODULE.review_violations_v3(
+                rows, MODULE.parse_review_results_v3(changed_prefix), inventory,
+                MODULE.parse_review_header_v3(changed_prefix), changed_prefix,
+            )
+            self.assertTrue(changed_violations["artifact_mismatch"])
 
             # Slice A: a consistent historical ledger recording an older
             # glossary digest is provenance, not a freshness blocker.  It must

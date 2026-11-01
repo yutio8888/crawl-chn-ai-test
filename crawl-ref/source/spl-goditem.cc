@@ -355,17 +355,12 @@ bool player_is_cancellable()
 }
 
 /**
- * Lists out the effects that will be removed by cancellation.
- *
- * @param debuffs_only   If true, contamination levels are unaffected.
+ * Lists the effects that will end after cancellation or a dispelling attack.
+ * Contamination reduction is described separately by the potion's caller.
  */
-string describe_player_cancellation(bool debuffs_only)
+string describe_player_cancellation()
 {
     vector<string> effects;
-
-    // Try to clarify it doesn't remove all contam?
-    if (!debuffs_only && you.magic_contamination > 0)
-        effects.push_back(T_("as magically contaminated"));
 
     vector<duration_type> buffs = _dispellable_player_buffs();
     for (auto duration : buffs)
@@ -379,7 +374,7 @@ string describe_player_cancellation(bool debuffs_only)
         status_info inf;
         if (fill_status_info(duration, inf) && !inf.short_text.empty())
         {
-            strip_suffix(inf.short_text, " (expiring)");
+            strip_suffix(inf.short_text, T_(" (expiring)"));
             effects.push_back(inf.short_text);
         }
     }
@@ -399,7 +394,7 @@ string describe_player_cancellation(bool debuffs_only)
             continue;
         if (status != STATUS_AIRBORNE)
         {
-            strip_suffix(inf.short_text, " (expiring)");
+            strip_suffix(inf.short_text, T_(" (expiring)"));
             effects.push_back(inf.short_text);
             continue;
         }
@@ -408,7 +403,7 @@ string describe_player_cancellation(bool debuffs_only)
         effects.push_back(T_("flying"));
     }
 
-    return comma_separated_line(begin(effects), end(effects), " or ");
+    return comma_separated_line(begin(effects), end(effects), T_(" or "), T_(", "));
 }
 
 /**

@@ -431,7 +431,8 @@ TILE_EQ:  EVENINGSTAR_BRILLIANCE
 BRAND:    SPWPN_FOUL_FLAME
 FB_BRAND: SPWPN_PAIN
 DESCRIP:  Umbra:     It surrounds you with an aura of shadow, increasing your
- stealth and reducing the accuracy of all others within it.
+ stealth and making creatures within it harder to hit for attackers without
+ night vision.
 
 NAME:    demon blade "Leech"
 OBJ:     OBJ_WEAPONS/WPN_DEMON_BLADE
@@ -1108,7 +1109,8 @@ TILE:    urand_shadows
 BOOL:    inv
 VALUE:   400
 DESCRIP: Umbra:     It surrounds you with an aura of shadow, increasing your
- stealth and reducing the accuracy of all others within it.
+ stealth and making creatures within it harder to hit for attackers without
+ night vision.
 
 # start TAG_MAJOR_VERSION == 34
 NAME:    amulet of Cekugob
@@ -1898,7 +1900,7 @@ VALUE:   600
 BOOL:    evil
 DESCRIP: Reaping:   When you kill an enemy with your weapon, its spirit may be
  forced to fight for you.
-+Hat+:   You can equip an additional hat (on the skull).
++Hat+:   You can equip additional headgear (on the skull).
 
 ENUM:    FISTICLOAK
 NAME:    fungal fisticloak
