@@ -484,7 +484,7 @@ namespace quiver
             {
                 const auto form_verbs = get_form(you.form)->uc_attack_verbs;
                 if (form_verbs.medium) // we use med because it mostly has better flavor
-                    return form_verbs.medium;
+                    return C_("form unarmed attack", form_verbs.medium);
                 else
                 {
                     // this is actually a bitmask, but we will simplify quite a

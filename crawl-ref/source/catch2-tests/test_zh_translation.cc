@@ -39,6 +39,7 @@
 #include "jobs.h"
 #include "lang-en-guard.h"
 #include "losglobal.h"
+#include "lookup-help.h"
 #include "macro.h"
 #include "mapdef.h"
 #include "map-knowledge.h"
@@ -71,6 +72,7 @@
 #include "player-save-info.h"
 #include "positional_format.h"
 #include "random.h"
+#include "quiver.h"
 #include "religion.h"
 #include "skill-menu.h"
 #include "skills.h"
@@ -5618,6 +5620,133 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 }
 
 
+TEST_CASE("forms: status tooltips resolve canonical bodies in both languages",
+          "[zh-translation][status-tooltip][form-status]")
+{
+    // Enumerate identities, not just a count: display names, wizmode names,
+    // and historical TextDB stems differ for several forms.
+    const pair<transformation, const char*> forms[] = {
+        {transformation::spider, "Spider"},
+        {transformation::blade, "Blade"},
+        {transformation::statue, "Statue"},
+        {transformation::serpent, "Serpent"},
+        {transformation::dragon, "Dragon"},
+        {transformation::death, "Death"},
+        {transformation::bat, "Bat"},
+        {transformation::pig, "Pig"},
+#if TAG_MAJOR_VERSION == 34
+        {transformation::appendage, "App"},
+#endif
+        {transformation::tree, "Tree"},
+#if TAG_MAJOR_VERSION == 34
+        {transformation::porcupine, "Porc"},
+#endif
+        {transformation::wisp, "Wisp"},
+        {transformation::jelly, "Jelly"},
+        {transformation::fungus, "Fungus"},
+#if TAG_MAJOR_VERSION == 34
+        {transformation::shadow, "Shadow"},
+        {transformation::hydra, "Hydra"},
+#endif
+        {transformation::storm, "Storm"},
+        {transformation::quill, "Quill"},
+        {transformation::maw, "Maw"},
+        {transformation::flux, "Flux"},
+        {transformation::slaughter, "Slaughter"},
+        {transformation::vampire, "Vampire"},
+        {transformation::bat_swarm, "Swarm"},
+        {transformation::rime_yak, "Yak"},
+        {transformation::hive, "Hive"},
+        {transformation::aqua, "Aqua"},
+        {transformation::sphinx, "Sphinx"},
+        {transformation::werewolf, "Werewolf"},
+        {transformation::walking_scroll, "Scroll"},
+        {transformation::fortress_crab, "Crab"},
+        {transformation::sun_scarab, "Scarab"},
+        {transformation::medusa, "Medusa"},
+        {transformation::eel_hands, "Eel"},
+        {transformation::spore, "Spore"},
+        {transformation::vision, "Vision"},
+        {transformation::jademantle, "Jade"},
+        {transformation::hypnogecko, "Gecko"},
+        {transformation::mistmane, "Mistmane"},
+    };
+    REQUIRE(ARRAYSZ(forms) + 1 == NUM_TRANSFORMS);
+    init_duration_index();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.props[MAKHLEB_SLAUGHTER_BOOST_KEY] = 0;
+        for (size_t i = 0; i < ARRAYSZ(forms); ++i)
+        for (bool expiring : {false, true})
+        {
+            const auto& form = forms[i];
+            CAPTURE(language, i, form.second, expiring);
+            REQUIRE(static_cast<int>(form.first) == i + 1);
+            you.form = form.first;
+            you.duration[DUR_TRANSFORMATION] = expiring ? 1 : 1000;
+            you.props[FLUX_ENERGY_KEY] = expiring ? 1 : FLUX_ENERGY_WARNING;
+            status_info info;
+            REQUIRE(fill_status_info(DUR_TRANSFORMATION, info));
+            CHECK(info.db_key == form.second);
+            CHECK(info.is_expiring == expiring);
+            string expected = getLongDescription(string(form.second) + " status");
+            trim_string_right(expected);
+#if TAG_MAJOR_VERSION == 34
+            // These compatibility-only forms have no English body. Preserve
+            // the existing missing-description fallback rather than inventing
+            // descriptions for obsolete mechanics.
+            if (form.first == transformation::porcupine
+                || form.first == transformation::hydra)
+            {
+                REQUIRE(expected.empty());
+                expected = T_("No description found");
+            }
+            else
+#endif
+                REQUIRE_FALSE(expected.empty());
+            if (expiring)
+                expected += T_(" (expiring)");
+            // A translated or subsequently reformatted light is never a key.
+            info.light_text = "unusable display-only label";
+            CHECK(status_light_description(info) == expected);
+            i18n_cache_clear();
+            CHECK(status_light_description(info) == expected);
+        }
+    }
+}
+
+TEST_CASE("forms: status lookup retains English fallback without a translation layer",
+          "[zh-translation][status-tooltip][form-status]")
+{
+    init_duration_index();
+    string english;
+    {
+        EnTranslationFixture translation;
+        english = getLongDescription("Swarm status");
+        trim_string_right(english);
+        REQUIRE_FALSE(english.empty());
+    }
+    // The production loader permits a display language with no TextDB child.
+    // This exercises the real root database fallback, not a mocked lookup.
+    TranslationFixture translation(lang_t::ZH, nullptr);
+    unwind_var<player> restore(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.form = transformation::bat_swarm;
+    you.duration[DUR_TRANSFORMATION] = 1000;
+    status_info info;
+    REQUIRE(fill_status_info(DUR_TRANSFORMATION, info));
+    CHECK(info.db_key == "Swarm");
+    CHECK(status_light_description(info) == english);
+    info.db_key = "nonexistent form description regression key";
+    CHECK(status_light_description(info) == T_("No description found"));
+}
+
+
 TEST_CASE("issue147: artefact removal localizes the real unequip path",
           "[zh-translation][issue147][artefact-removal]")
 {
@@ -7075,6 +7204,373 @@ struct extended_zero_damage_melee : extended_playtest_melee
     // monster attack lookup and its final rendering remain production code.
     int calc_damage() override { return 0; }
 };
+}
+
+TEST_CASE("forms: pseudo-mutation help identities resolve real TextDB bodies",
+          "[zh-translation][fakemutation-lookup]")
+{
+    init_mut_index();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (const char* id : {"vampire fangs", "bloodcurse", "hive swarm"})
+        {
+            CAPTURE(language, id);
+            const string key = string(id) + " mutation";
+            CHECK(mutation_from_name(id, false) == NUM_MUTATIONS);
+            const auto keys = lookup_help_matching_keys(LOOKUP_HELP_MUTATION, id);
+            CHECK(find(keys.begin(), keys.end(), key) != keys.end());
+            CHECK_FALSE(getLongDescription(key).empty());
+            const string title = uppercase_first(T_(id));
+            if (language == lang_t::ZH)
+                CHECK(title != uppercase_first(id));
+            else
+                CHECK(title == uppercase_first(id));
+        }
+    }
+    // This covers the real help enumeration/lookup boundary; final popup
+    // selection remains a separate interactive frontend check.
+}
+
+TEST_CASE("forms: eel messages use complete count-specific templates",
+          "[zh-translation][form-display]")
+{
+    init_mut_index();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        for (species_type species : {SP_HUMAN, SP_OCTOPODE})
+        for (int missing : {0, 1})
+        {
+            you.species = species;
+            you.form = transformation::eel_hands;
+            you.mutation[MUT_MISSING_HAND] = missing;
+            const bool singular = you.arm_count() == 1;
+            const string parts = hand_transform_parts();
+            const Form* form = get_form();
+            const string transformed = form->transform_message();
+            const string restored = form->get_untransform_message();
+            CHECK(transformed == make_stringf(singular
+                      ? T_("Your %s turns into a wriggling electric eel!")
+                      : T_("Your %s turn into a pair of wriggling electric eels!"),
+                      parts.c_str()));
+            CHECK(restored == make_stringf(singular
+                      ? T_("Your %s reverts to its normal form.")
+                      : T_("Your %s revert to their normal form."), parts.c_str()));
+            const string eels = singular ? T_("an electric eel") : T_("electric eels");
+            CHECK(form->get_description() == make_stringf_p(
+                      T_("You have %1$s for your %2$s."), eels.c_str(), parts.c_str()));
+            if (language == lang_t::ZH)
+            {
+                CHECK(restored.find("its") == string::npos);
+                CHECK(restored.find("their") == string::npos);
+                CHECK(transformed.find("electric eel") == string::npos);
+            }
+            else
+            {
+                CHECK(parts.find("a ") != 0);
+                CHECK(transformed.find(singular ? "a wriggling electric eel!"
+                                               : "a pair of wriggling electric eels!")
+                      != string::npos);
+            }
+        }
+    }
+}
+
+TEST_CASE("skills: title replacements localize genus and every weight class",
+          "[zh-translation][skill-title]")
+{
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        const string genus = C_("skill title genus", "God");
+        // These words also describe an amulet property and a beam. A title
+        // override must not replace the ordinary catalog meanings.
+        if (language == lang_t::ZH)
+        {
+            CHECK(string(T_("Acrobat")) == "杂技");
+            CHECK(string(T_("Vexing")) == "恼怒");
+            CHECK(skill_title_by_rank(SK_DODGING, 3, SP_HUMAN,
+                                      10, 20, 10, GOD_NO_GOD, 0, false) == "杂技师");
+            CHECK(skill_title_by_rank(SK_HEXES, 0, SP_HUMAN,
+                                      10, 20, 10, GOD_NO_GOD, 0, false) == "扰人者");
+        }
+        // Human has no separate adjective/genus data. Both fallback display
+        // forms must localize while raw lookups retain their English identity.
+        for (species::name_type type : {species::SPNAME_PLAIN,
+                                       species::SPNAME_ADJ,
+                                       species::SPNAME_GENUS})
+        {
+            CHECK(species::name(SP_HUMAN, type, true) == "Human");
+            CHECK(species::name(SP_HUMAN, type) == T_("Human"));
+        }
+        const pair<skill_type, unsigned> human_titles[] = {
+            {SK_LONG_BLADES, 3}, {SK_RANGED_WEAPONS, 2}, {SK_NECROMANCY, 4},
+        };
+        for (const auto& skill : human_titles)
+        {
+            const string actual = skill_title_by_rank(skill.first, skill.second,
+                                                      SP_HUMAN, 10, 20, 10,
+                                                      GOD_NO_GOD, 0, false);
+            if (language == lang_t::ZH)
+            {
+                CHECK(actual.find(T_("Human")) != string::npos);
+                CHECK(lowercase_string(actual).find("human") == string::npos);
+            }
+            else
+                CHECK(lowercase_string(actual).find("human") != string::npos);
+        }
+        const string title = skill_title_by_rank(SK_NECROMANCY, 4, SP_DEMIGOD,
+                                                 10, 20, 10, GOD_NO_GOD, 0, false);
+        CHECK(title == replace_all(T_("@Genus_Short@ of Death"), "@Genus_Short@", genus));
+        if (language == lang_t::ZH)
+            CHECK(genus != "God");
+        const pair<species_type, const char*> weights[] = {
+            {SP_TROLL, "Heavy"}, {SP_NAGA, "Cruiser"},
+            {SP_TENGU, "Feather"}, {SP_SPRIGGAN, "Fly"},
+            {SP_DEEP_ELF, "Light"}, {SP_HUMAN, "Middle"},
+        };
+        for (const auto& weight : weights)
+        {
+            CAPTURE(language, weight.second);
+            const string display = C_("skill title weight", weight.second);
+            const string actual = skill_title_by_rank(SK_UNARMED_COMBAT, 4, weight.first,
+                                                      10, 20, 10, GOD_NO_GOD, 0, false);
+            CHECK(actual == replace_all(T_("@Weight@weight Champion"), "@Weight@", display));
+            if (language == lang_t::ZH)
+                CHECK(display != weight.second);
+            else
+                CHECK(actual == string(weight.second) + "weight Champion");
+        }
+        const string walker = skill_title_by_rank(SK_TRANSLOCATIONS, 4, SP_HUMAN,
+                                                  10, 20, 10, GOD_NO_GOD, 0, false);
+        if (language == lang_t::ZH)
+        {
+            CHECK(string(T_("Plane @Walker@")).find("@Walker@") != string::npos);
+            CHECK(walker == replace_all(T_("Plane @Walker@"), "@Walker@",
+                                        C_("skill title walker", "Walker")));
+        }
+        else
+            CHECK(walker == "Plane Walker");
+        CHECK(skill_title_by_rank(SK_NONE, 0) == T_("Adventurer"));
+    }
+}
+
+TEST_CASE("forms: vampire gaze renders localized reflexives with one or two eyes",
+          "[zh-translation][form-display]")
+{
+    init_monsters();
+    init_mut_index();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.form = transformation::vampire;
+        set_skill_level(SK_SHAPESHIFTING, 27, true);
+        scoped_monspeak_world world;
+        monster* target = world.place(MONS_CYCLOPS);
+        REQUIRE(target);
+        REQUIRE(you.can_see(*target));
+        REQUIRE(target->can_see(you));
+        for (int missing_eye : {0, 1})
+        for (gender_type gender : {GENDER_NEUTER, GENDER_NEUTRAL})
+        {
+            CAPTURE(language, missing_eye, gender);
+            you.mutation[MUT_MISSING_EYE] = missing_eye;
+            target->props[MON_GENDER_KEY] = gender;
+            target->del_ench(ENCH_DAZED);
+            string message;
+            for (int attempt = 0; attempt < 100 && !target->has_ench(ENCH_DAZED); ++attempt)
+            {
+                msgwin_temporary_mode temporary;
+                unwinder clear([]() { msgwin_clear_temporary(); });
+                msg::tee observed;
+                vampire_mesmerism_check(*target);
+                if (target->has_ench(ENCH_DAZED))
+                    message = observed.get_store();
+            }
+            REQUIRE(target->has_ench(ENCH_DAZED));
+            const string name = target->name(DESC_THE);
+            const string reflexive = target->pronoun(PRONOUN_REFLEXIVE);
+            const string expected = make_stringf_p(missing_eye
+                      ? T_("%1$s loses %2$s in your eye.")
+                      : T_("%1$s loses %2$s in your eyes."),
+                      name.c_str(), reflexive.c_str());
+            CHECK(message.find(expected) != string::npos);
+            if (language == lang_t::ZH)
+            {
+                CHECK(message.find("itself") == string::npos);
+                CHECK(message.find("themself") == string::npos);
+                CHECK(message.find(reflexive) == message.rfind(reflexive));
+            }
+        }
+    }
+}
+
+TEST_CASE("forms: custom unarmed verbs localize only at player display sinks",
+          "[zh-translation][form-display]")
+{
+    init_monsters();
+    init_properties();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 100;
+        no_notes suppress_notes;
+        scoped_monspeak_world world;
+        monster* target = world.place(MONS_CYCLOPS);
+        REQUIRE(target);
+        for (int index = 1; index < NUM_TRANSFORMS; ++index)
+        {
+            you.form = static_cast<transformation>(index);
+            const FormAttackVerbs verbs = get_form()->uc_attack_verbs;
+            if (!verbs.weak)
+                continue;
+            const char* raw[] = {verbs.weak, verbs.medium, verbs.strong, verbs.devastating};
+            const int damage[] = {0, HIT_WEAK, HIT_MED, HIT_STRONG};
+            for (size_t tier = 0; tier < ARRAYSZ(raw); ++tier)
+            {
+                CAPTURE(language, index, tier, raw[tier]);
+                extended_playtest_melee hit(&you, target);
+                hit.needs_message = true;
+                hit.attacker_visible = hit.defender_visible = true;
+                hit.damage_done = damage[tier];
+                hit.set_attack_verb(damage[tier]);
+                const string translated = C_("form unarmed attack", raw[tier]);
+                CHECK(hit.attack_verb == translated);
+                if (language == lang_t::ZH)
+                    CHECK(translated != raw[tier]);
+                else
+                    CHECK(hit.attack_verb == raw[tier]);
+                msgwin_temporary_mode temporary;
+                unwinder clear([]() { msgwin_clear_temporary(); });
+                msg::tee observed;
+                hit.announce_hit();
+                CHECK(observed.get_store().find(translated) != string::npos);
+                // The immutable table stays English after rendering and cache
+                // invalidation, including verbs used by quiver descriptions.
+                i18n_cache_clear();
+                CHECK(hit.attack_verb == translated);
+            }
+            const auto action = quiver::get_primary_action();
+            REQUIRE(action);
+            CHECK(action->quiver_verb() == C_("form unarmed attack", verbs.medium));
+            CrawlHashTable saved;
+            action->save(saved);
+            CHECK(saved["type"].get_string() == "melee_action");
+            const FormAttackVerbs after = get_form()->uc_attack_verbs;
+            CHECK(string(after.medium) == verbs.medium);
+        }
+        // Use the real zero-damage message path, controlling only damage.
+        you.form = transformation::fungus;
+        extended_zero_damage_melee hit(&you, target);
+        hit.needs_message = true;
+        hit.attacker_visible = hit.defender_visible = true;
+        hit.attk_flavour = AF_PLAIN;
+        hit.set_attack_verb(0);
+        msgwin_temporary_mode temporary;
+        unwinder clear([]() { msgwin_clear_temporary(); });
+        msg::tee observed;
+        REQUIRE(hit.handle_phase_hit());
+        const string line = observed.get_store();
+        CHECK(line.find(C_("form unarmed attack", "release spores at")) != string::npos);
+        if (language == lang_t::ZH)
+            CHECK(line.find("release spores at") == string::npos);
+        else
+            CHECK(line.find("but do no damage.") != string::npos);
+    }
+}
+
+TEST_CASE("forms: talisman previews and mutation dumps localize form labels",
+          "[zh-translation][form-display]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([&saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    init_properties();
+    init_duration_index();
+    init_mut_index();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore(you);
+        you = player();
+        you.species = SP_HUMAN;
+        you.equipment.update();
+        CHECK(get_form(transformation::wisp)->melding_description(true)
+              == C_("form melding", "All Equipment"));
+        CHECK(get_form(transformation::spider)->melding_description(true)
+              == C_("form melding", "All Weapons and Armour"));
+        for (int index = 1; index < NUM_TRANSFORMS; ++index)
+        {
+            you.form = static_cast<transformation>(index);
+            const Form* form = get_form();
+            if (talisman_for_form(you.form) == NUM_TALISMANS)
+                continue;
+            CAPTURE(language, index);
+            item_def talisman;
+            talisman.base_type = OBJ_TALISMANS;
+            talisman.sub_type = talisman_for_form(you.form);
+            talisman.quantity = 1;
+            talisman.flags = ISFLAG_IDENTIFIED;
+            const string preview = get_item_description(talisman);
+            const pair<bool, const char*> labels[] = {
+                {form->changes_anatomy, "Anatomy"},
+                {form->changes_substance, "Substance"},
+                {form->has_blood == FC_FORBID, "Blood"},
+                {form->has_bones == FC_FORBID, "Bones"},
+                {you.form == transformation::eel_hands, "Hands"},
+            };
+            for (const auto& label : labels)
+            {
+                if (!label.first)
+                    continue;
+                const string display = C_("form mutation suppression", label.second);
+                CHECK(preview.find(display) != string::npos);
+                if (language == lang_t::ZH)
+                    CHECK(display != label.second);
+            }
+            if (you.form == transformation::spider)
+            {
+                CHECK(preview.find(C_("form melding", "All Weapons and Armour"))
+                      != string::npos);
+            }
+            if (you.form == transformation::sphinx)
+            {
+                CHECK(preview.find(T_("Barding")) != string::npos);
+                CHECK(preview.find(T_("Yes")) != string::npos);
+                if (language == lang_t::ZH)
+                    CHECK(preview.find("Yes") == string::npos);
+            }
+        }
+        you.form = transformation::blade;
+        set<string> variants;
+        for (int skill : {17, 20, 25})
+        {
+            set_skill_level(SK_SHAPESHIFTING, skill, true);
+            const int penalty = get_form()->get_body_ac_mult();
+            const string fragment = penalty <= -45 ? "much less effective"
+                                  : penalty < -20 ? "less effective"
+                                                  : "slightly less effective";
+            variants.insert(fragment);
+            const string translated = T_(fragment.c_str());
+            const string expected = make_stringf(T_("Your body armour is %s at protecting you."),
+                                                 translated.c_str());
+            CHECK(describe_muts_for_chardump(true).find(expected) != string::npos);
+            if (language == lang_t::ZH)
+                CHECK(translated != fragment);
+        }
+        CHECK(variants.size() == 3);
+    }
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

@@ -1431,6 +1431,9 @@ static void _describe_transform(status_info& inf)
         return;
 
     const Form * const form = get_form();
+    // short_name is the untranslated formdata identity, before status display
+    // localization. Bat Swarm retains its historical TextDB stem.
+    inf.db_key = you.form == transformation::bat_swarm ? "Swarm" : form->short_name;
     inf.light_text = form->short_name;
     inf.short_text = form->get_long_name();
     inf.long_text = form->get_description();

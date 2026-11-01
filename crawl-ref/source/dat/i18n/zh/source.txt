@@ -1085,9 +1085,6 @@ mimic reveal plural|%s are mimics!
 %1$s fails to defend %2$s.
 %1$s未能保护%2$s。
 %%%%
-%1$s loses %2$s in your eye%3$s.
-%1$s在你的眼中%2$s失去了自我。
-%%%%
 %1$s slice%2$s through the folds of space itself!
 %1$s切穿了空间本身的褶皱！
 %%%%
@@ -1446,7 +1443,7 @@ You grip the centipede bauble in your %s and it winds around your %s and fuses w
 %s在阴影中闪烁着邪恶的光芒。
 %%%%
 %s glows dimly in your hand.
-%s在你手中变得暗淡无光。
+%s在你手中散发出微弱的光芒。
 %%%%
 %s glows horrifically with a foul blackness!
 %s散发着可怕邪恶的黑色光芒！
@@ -11374,7 +11371,7 @@ Your blood rage is quickly leaving you.
 你的血怒正在迅速消退。
 %%%%
 Your body armour is %s at protecting you.
-你的身体护甲在保护你方面%s。
+你的身体护甲提供的防护%s。
 %%%%
 Your body collapses into a pile of gold.
 你的身体崩塌成了一堆金币。
@@ -13962,7 +13959,7 @@ Portalist
 传送门师
 %%%%
 Plane @Walker@
-位面行者
+位面@Walker@
 %%%%
 Tinkerer
 修补匠
@@ -14421,7 +14418,7 @@ Master Archer
 弓术大师
 %%%%
 Wishgranter
-许愿者
+遂愿者
 %%%%
 Cogmind
 齿轮心智
@@ -24734,19 +24731,16 @@ If you stay in this area without exploring new floors, Zot will find you after %
  %s 版本 %s
 %%%%
 Your equipment is entirely melded.
-你的装备完全融化了。
+你的装备已全部与你的身体融合。
 %%%%
 Your weapons and armour are melded.
-你的武器和护甲融化了。
+你的武器和护甲已与你的身体融合。
 %%%%
 Your auxiliary armour is melded.
-你的辅助护甲融化了。
+你的辅助护甲已与你的身体融合。
 %%%%
 Your equipment is almost entirely melded
-你的装备几乎完全融化了
-%%%%
-Your %1$s %2$s melded.
-你的%1$s融化了。
+你的装备几乎已全部与你的身体融合
 %%%%
 Your transformation has ended.
 你的变形结束了。
@@ -24822,9 +24816,6 @@ Your fangs allow you to drain the lifeblood from your enemies.
 %%%%
 bloodcurse
 血咒
-%%%%
-When you kill a living creature with a stab, you may create a vampiric thrall.
-你以刺杀杀死活物时，可能会创造一个吸血仆从。
 %%%%
 torment resistance 1
 折磨抗性1
@@ -25828,12 +25819,6 @@ You have a mane of long, stinging tendrils on your head.
 You %s a mane of long, stinging tendrils on your head.
 你%s头上有一丛长长的刺人触须。
 %%%%
-You had %1$s for %2$s.
-你的%2$s当时是%1$s。
-%%%%
-You have %1$s for %2$s.
-你的%2$s是%1$s。
-%%%%
 an electric eel
 一条电鳗
 %%%%
@@ -25842,12 +25827,6 @@ electric eels
 %%%%
 You %1$s %2$s for %3$s.
 你%1$s的%3$s变成了%2$s。
-%%%%
-Your %1$s turn%2$s into%3$s wriggling electric eel%4$s!
-你的%1$s变成了一条扭动的电鳗！
-%%%%
-Your %1$s revert%2$s to %3$s normal form.
-你的%1$s恢复到了%3$s正常形态。
 %%%%
 Eel 
 鳗鱼
@@ -48631,3 +48610,225 @@ Forest
 %%%%
 exclusion terrain|water
 水
+%%%%
+form mutation suppression|Anatomy
+身体结构
+%%%%
+form mutation suppression|Substance
+身体材质
+%%%%
+form mutation suppression|Blood
+血液
+%%%%
+form mutation suppression|Bones
+骨骼
+%%%%
+form mutation suppression|Hands
+手部
+%%%%
+form melding|All Equipment
+全部装备
+%%%%
+form melding|All Weapons and Armour
+全部武器和护甲
+%%%%
+much less effective
+效果大幅减弱
+%%%%
+less effective
+效果减弱
+%%%%
+slightly less effective
+效果略有减弱
+%%%%
+Your %s is melded.
+你的%s已与你的身体融合。
+%%%%
+Your %s are melded.
+你的%s已与你的身体融合。
+%%%%
+form unarmed attack|hit
+击打
+%%%%
+form unarmed attack|bite
+咬
+%%%%
+form unarmed attack|maul
+撕咬
+%%%%
+form unarmed attack|batter
+猛击
+%%%%
+form unarmed attack|blast
+轰击
+%%%%
+form unarmed attack|body-slam
+以身体猛撞
+%%%%
+form unarmed attack|buffet
+抽打
+%%%%
+form unarmed attack|chomp
+猛咬
+%%%%
+form unarmed attack|claw
+爪击
+%%%%
+form unarmed attack|crush
+压碎
+%%%%
+form unarmed attack|engulf
+裹住
+%%%%
+form unarmed attack|eviscerate
+剖腹
+%%%%
+form unarmed attack|flutter at
+扑扇着轻扫
+%%%%
+form unarmed attack|gore
+用角刺穿
+%%%%
+form unarmed attack|gouge
+撕扯
+%%%%
+form unarmed attack|headbutt
+头撞
+%%%%
+form unarmed attack|lash
+抽打
+%%%%
+form unarmed attack|mangle
+撕碎
+%%%%
+form unarmed attack|nip
+轻夹
+%%%%
+form unarmed attack|nip at
+轻咬
+%%%%
+form unarmed attack|pounce on
+扑向
+%%%%
+form unarmed attack|pummel
+殴击
+%%%%
+form unarmed attack|punch
+拳击
+%%%%
+form unarmed attack|read the riot act to
+严厉训斥
+%%%%
+form unarmed attack|release spores at
+喷洒孢子攻击
+%%%%
+form unarmed attack|skewer
+刺穿
+%%%%
+form unarmed attack|slap
+拍击
+%%%%
+form unarmed attack|smack
+掌掴
+%%%%
+form unarmed attack|snap
+猛夹
+%%%%
+form unarmed attack|swat
+拍击
+%%%%
+form unarmed attack|thrash
+猛抽
+%%%%
+form unarmed attack|touch
+触碰
+%%%%
+form unarmed attack|unfurl around
+展开身体裹住
+%%%%
+Your %s turns into a wriggling electric eel!
+你的%s变成了一条扭动的电鳗！
+%%%%
+Your %s turn into a pair of wriggling electric eels!
+你的%s变成了一对扭动的电鳗！
+%%%%
+Your %s reverts to its normal form.
+你的%s恢复了正常形态。
+%%%%
+Your %s revert to their normal form.
+你的%s恢复了正常形态。
+%%%%
+%1$s loses %2$s in your eye.
+%1$s沉醉于你的目光，忘却了%2$s。
+%%%%
+%1$s loses %2$s in your eyes.
+%1$s沉醉于你的目光，忘却了%2$s。
+%%%%
+skill title genus|God
+神
+%%%%
+skill title weight|Heavy
+重
+%%%%
+skill title weight|Cruiser
+次重
+%%%%
+skill title weight|Feather
+羽
+%%%%
+skill title weight|Fly
+蝇
+%%%%
+skill title weight|Light
+轻
+%%%%
+skill title weight|Middle
+中
+%%%%
+You do not regenerate normally while aware of threatening enemies nearby.
+你察觉到附近有构成威胁的敌人时，不会进行常规生命值再生。
+%%%%
+You had %1$s for your %2$s.
+你的%2$s曾是%1$s。
+%%%%
+You have %1$s for your %2$s.
+你的%2$s是%1$s。
+%%%%
+When you kill a natural, plant, or demonic creature with a stab, you may create a vampiric thrall.
+你用偷袭杀死自然生物、植物或恶魔时，可能会创造一个吸血仆从。
+%%%%
+Flawless
+完美无瑕
+%%%%
+True Ascetic
+真正的苦行者
+%%%%
+Incurious
+不好奇的猫
+%%%%
+Ruthless
+冷酷无情
+%%%%
+Miser
+守财奴
+%%%%
+Chaos Fanatic
+混沌狂热者
+%%%%
+Keeper of the Flame
+火焰守护者
+%%%%
+Pinnacle of Evolution
+进化巅峰
+%%%%
+Your normal health regeneration is inhibited while you are aware of nearby threatening enemies.
+你察觉到附近有构成威胁的敌人时，常规生命值再生会受到抑制。
+%%%%
+Your normal health regeneration is no longer inhibited by this mutation.
+此变异不再抑制你的常规生命值再生。
+%%%%
+skill title|Vexing
+扰人者
+%%%%
+skill title|Acrobat
+杂技师

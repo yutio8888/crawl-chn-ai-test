@@ -123,9 +123,10 @@ string Form::melding_description(bool itemized) const
                     return T_("Your equipment is almost entirely melded");
                 else
                 {
-                    return make_stringf_p(T_("Your %1$s %2$s melded."),
-                                        comma_separated_line(tags.begin(), tags.end()).c_str(),
-                                        tags.size() > 1 ? "are" : "is");
+                    return make_stringf(tags.size() > 1
+                                            ? T_("Your %s are melded.")
+                                            : T_("Your %s is melded."),
+                                        comma_separated_line(tags.begin(), tags.end()).c_str());
                 }
             }
         }
@@ -134,9 +135,9 @@ string Form::melding_description(bool itemized) const
     }
 
     if (blocked_slots == EQF_ALL)
-        tags.emplace_back("All Equipment");
+        tags.emplace_back(C_("form melding", "All Equipment"));
     else if (blocked_slots == EQF_PHYSICAL)
-        tags.emplace_back("All Weapons and Armour");
+        tags.emplace_back(C_("form melding", "All Weapons and Armour"));
     else
     {
         for (int i = SLOT_WEAPON; i < SLOT_GIZMO; ++i)
@@ -1318,8 +1319,8 @@ public:
      */
     string get_description(bool past_tense) const override
     {
-        return make_stringf_p(past_tense ? T_("You had %1$s for %2$s.")
-                                       : T_("You have %1$s for %2$s."),
+        return make_stringf_p(past_tense ? T_("You had %1$s for your %2$s.")
+                                       : T_("You have %1$s for your %2$s."),
                             you.arm_count() == 1 ? T_("an electric eel") : T_("electric eels"),
                             hand_transform_parts().c_str());
     }
@@ -1331,10 +1332,10 @@ public:
     {
         const bool singular = you.arm_count() == 1;
 
-        // XXX: a little ugly
-        return make_stringf_p(T_("Your %1$s turn%2$s into%3$s wriggling electric eel%4$s!"),
-                            hand_transform_parts().c_str(), singular ? "s" : "",
-                            singular ? " a" : " a pair of", singular ? "" : "s");
+        return make_stringf(singular
+                            ? T_("Your %s turns into a wriggling electric eel!")
+                            : T_("Your %s turn into a pair of wriggling electric eels!"),
+                            hand_transform_parts().c_str());
     }
 
     /**
@@ -1344,10 +1345,10 @@ public:
     {
         const bool singular = you.arm_count() == 1;
 
-        // XXX: a little ugly
-        return make_stringf_p(T_("Your %1$s revert%2$s to %3$s normal form."),
-                            hand_transform_parts().c_str(), singular ? "s" : "",
-                            singular ? "its" : "their");
+        return make_stringf(singular
+                            ? T_("Your %s reverts to its normal form.")
+                            : T_("Your %s revert to their normal form."),
+                            hand_transform_parts().c_str());
     }
 
     /**
@@ -1829,12 +1830,6 @@ string hand_transform_parts(bool terse)
     else if (!terse && you.arm_count() > 2)
         str = make_stringf_p(C_("hand transform parts", "main %1$s"),
                              str.c_str()); // Op have four main tentacles
-
-    if (you.arm_count() == 1)
-    {
-        str = make_stringf_p(C_("hand transform parts", "a %1$s"),
-                             str.c_str());
-    }
 
     return str;
 }
@@ -2936,11 +2931,11 @@ bool vampire_mesmerism_check(monster& mon)
     {
         if (mon.check_willpower(&you, get_form()->get_effect_chance()) <= 0)
         {
-            // T_() handles the language-dependent eye/眼 suffix differences
-            mprf_p(T_("%1$s loses %2$s in your eye%3$s."),
+            mprf_p(you.has_mutation(MUT_MISSING_EYE)
+                    ? T_("%1$s loses %2$s in your eye.")
+                    : T_("%1$s loses %2$s in your eyes."),
                    mon.name(DESC_THE).c_str(),
-                   mon.pronoun(PRONOUN_REFLEXIVE).c_str(),
-                   you.has_mutation(MUT_MISSING_EYE) ? "" : "s");
+                   mon.pronoun(PRONOUN_REFLEXIVE).c_str());
             mon.daze(random_range(3, 5));
         }
         else

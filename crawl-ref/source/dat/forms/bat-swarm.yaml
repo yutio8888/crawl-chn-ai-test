@@ -32,10 +32,10 @@ fakemuts:
   - ["extremely fast", "You cover ground extremely quickly."]
   - ["", "You are tiny, dextrous, and very evasive."] #short-form "tiny" is automatically added
   - ["vampire fangs", "Your fangs allow you to drain the lifeblood from your enemies."]
-  - ["bloodcurse", "When you kill a living creature with a stab, you may create a vampiric thrall."]
+  - ["bloodcurse", "When you kill a natural, plant, or demonic creature with a stab, you may create a vampiric thrall."]
   - ["torment resistance 1", "You are resistant to unholy torment."]
   - ["very stealthy", "You are very stealthy."]
 badmuts:
   - ["weak attacks", "Your unarmed attacks are very weak."]
-  - ["inhibited regeneration", "You do not regenerate when monsters are visible."]
+  - ["inhibited regeneration", "You do not regenerate normally while aware of threatening enemies nearby."]
   - ["accursed", "You recover more slowly from Doom and Banes."]

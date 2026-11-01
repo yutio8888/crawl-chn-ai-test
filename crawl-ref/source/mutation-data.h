@@ -228,11 +228,11 @@ static const mutation_def mut_data[] =
 { MUT_INHIBITED_REGENERATION, 3, 1, mutflag::bad,
   "inhibited regeneration",
 
-  {"You do not regenerate when monsters are visible.", "", ""},
+  {"You do not regenerate normally while aware of threatening enemies nearby.", "", ""},
 
-  {"Your regeneration stops near monsters.", "", ""},
+  {"Your normal health regeneration is inhibited while you are aware of nearby threatening enemies.", "", ""},
 
-  {"You begin to regenerate regardless of the presence of monsters.", "", ""},
+  {"Your normal health regeneration is no longer inhibited by this mutation.", "", ""},
 
   TILEG_MUT_INHIBITED_REGENERATION,
 },

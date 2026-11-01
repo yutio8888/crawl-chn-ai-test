@@ -131,6 +131,73 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
         self.assertEqual(["status"], MODULE.status_display_literals(
             'inf.short_text = "status";'))
 
+    def test_skill_title_overrides_are_bounded_by_other_skills(self):
+        fragments = MODULE.case_fragments('''
+            case SK_FIRST:
+                result = "First title";
+                break;
+            case SK_SECOND:
+                result = "Second title";
+                break;
+            default:
+                result = "Fallback";
+                break;
+        ''', "SK_")
+        self.assertEqual({"SK_FIRST", "SK_SECOND"}, set(fragments))
+        self.assertNotIn("Second title", fragments["SK_FIRST"])
+        self.assertNotIn("Fallback", fragments["SK_SECOND"])
+
+    def test_shared_titles_bind_context_and_trigger_conditions(self):
+        source = '''
+        string special_conduct_title(skill_type skill, uint8_t rank)
+        {
+            if (rank == 5)
+                return "Unique title";
+            return title;
+        }
+        static string _stk_weight(species_type species)
+        {
+            return "Light";
+        }
+        string skill_title_by_rank(skill_type skill)
+        {
+            result = C_("skill title", result.c_str());
+            return replace_keys(result, replacements);
+        }
+        '''
+        db = {"unique title": "普通含义", "skill title|unique title": "独特称号",
+              "light": "光亮",
+              "skill title weight|light": "轻量",
+              "skill title genus|god": "神"}
+        with mock.patch.object(MODULE, "active_source", return_value=source):
+            rows = MODULE.shared_skill_title_rows(db)
+        shared = next(row for row in rows
+                      if row["identity"] == "skill_title:shared")
+        weight = next(value for value in shared["display_strings"]
+                      if value["english"] == "Light")
+        self.assertEqual("轻量", weight["chinese"])
+        self.assertEqual("skill title weight|Light", weight["resolved_lookup_key"])
+        conduct = next(row for row in rows
+                       if row["identity"] == "skill_title:conduct")
+        self.assertEqual(["Unique title"],
+                         [value["english"] for value in conduct["display_strings"]])
+        self.assertEqual("独特称号", conduct["display_strings"][0]["chinese"])
+        with mock.patch.object(MODULE, "active_source", return_value=source.replace(
+                "rank == 5", "rank == 4")):
+            changed = MODULE.shared_skill_title_rows(db)
+        changed_conduct = next(row for row in changed
+                               if row["identity"] == "skill_title:conduct")
+        self.assertNotEqual(MODULE.fact_sha256(conduct),
+                            MODULE.fact_sha256(changed_conduct))
+
+    def test_skill_title_context_rejects_unknown_producer(self):
+        self.assertIsNone(MODULE.skill_title_context(
+            'result = T_(result.c_str());'))
+        self.assertEqual("skill title", MODULE.skill_title_context(
+            'result = C_("skill title", result.c_str());'))
+        with self.assertRaisesRegex(RuntimeError, "unsupported final skill-title"):
+            MODULE.skill_title_context('result = translate_somehow(result);')
+
     def test_enum_parser_keeps_explicit_expressions_and_excludes_aliases(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "status.h"
@@ -414,6 +481,63 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
             self.payload["count"],
             sum(self.payload["category_counts"].values()),
         )
+
+    def test_status_bodies_include_help_only_and_unmatched_locale_keys(self):
+        english = {
+            "live status": "First line.\n\nSecond clause.",
+            "old status": "An old effect still visible in help.",
+            "missing status": "No Chinese body yet.",
+            "nonstatus key": "Not in the status help filter.",
+        }
+        chinese = {
+            "live status": "第一行。\n\n第二个命题。",
+            "old status": "仍能在帮助中看到的旧效果。",
+            "orphan status": "只有中文的旧条目。",
+        }
+        rows = MODULE.player_status_description_rows(
+            (english, chinese),
+            [{"identity": "duration:DUR_LIVE",
+              "light": {"english": "Live", "chinese": "现行"}}],
+            [{"identity": "status:STATUS_LIVE", "db_keys": ["Live"]}],
+        )
+        by_key = {row["description_key"]: row for row in rows}
+        self.assertEqual(
+            {"live status", "old status", "missing status",
+             "nonstatus key", "orphan status"},
+            set(by_key),
+        )
+        self.assertEqual(english["live status"],
+                         by_key["live status"]["english_description"])
+        self.assertEqual(chinese["live status"],
+                         by_key["live status"]["chinese_description"])
+        self.assertEqual(
+            ["duration:DUR_LIVE", "status:STATUS_LIVE"],
+            by_key["live status"]["producer_candidates"],
+        )
+        self.assertTrue(by_key["old status"]["help_visible"])
+        self.assertEqual([], by_key["old status"]["producer_candidates"])
+        self.assertFalse(by_key["orphan status"]["help_visible"])
+        self.assertFalse(by_key["nonstatus key"]["help_visible"])
+        self.assertIsNone(by_key["orphan status"]["english_description"])
+        self.assertIsNone(by_key["missing status"]["chinese_description"])
+        findings = MODULE.inventory_violations(rows, {})
+        self.assertEqual(
+            ["status_description:missing status"],
+            findings["missing_descriptions"],
+        )
+
+    def test_production_status_bodies_have_independent_key_coverage(self):
+        expected = set()
+        for path in MODULE.DESCRIPTION_FILES["status"]:
+            # Read physical production entries, not the row generator's output.
+            expected.update(entry.canonical_key for entry in
+                            MODULE.parse_entries_physical(path))
+        rows = [row for row in self.payload["rows"]
+                if row["category"] == "status_description"]
+        self.assertEqual(expected, {row["description_key"] for row in rows})
+        self.assertEqual(len(expected), len(rows))
+        self.assertIn("crawl-ref/source/lookup-help.cc",
+                      self.payload["input_sha256"])
 
     def test_production_initializers_match_inventory_categories(self):
         rows = self.payload["rows"]

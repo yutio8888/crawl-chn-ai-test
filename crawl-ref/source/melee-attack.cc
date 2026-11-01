@@ -3175,13 +3175,13 @@ void melee_attack::set_attack_verb(int damage)
         if (verbs.weak != nullptr)
         {
             if (damage < HIT_WEAK)
-                attack_verb = verbs.weak;
+                attack_verb = C_("form unarmed attack", verbs.weak);
             else if (damage < HIT_MED)
-                attack_verb = verbs.medium;
+                attack_verb = C_("form unarmed attack", verbs.medium);
             else if (damage < HIT_STRONG)
-                attack_verb = verbs.strong;
+                attack_verb = C_("form unarmed attack", verbs.strong);
             else
-                attack_verb = verbs.devastating;
+                attack_verb = C_("form unarmed attack", verbs.devastating);
             break;
         }
 

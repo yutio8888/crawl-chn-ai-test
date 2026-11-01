@@ -8985,7 +8985,7 @@ static string _describe_talisman_form(transformation form_type)
     else if (form_type == transformation::sphinx)
     {
         if (!you.has_mutation(MUT_NO_ARMOUR))
-            pr.AddCell(T_("Barding"), "Yes");
+            pr.AddCell(T_("Barding"), T_("Yes"));
         pr.AddCell(T_("Will"), "+");
     }
     else if (form_type == transformation::werewolf)
@@ -9029,15 +9029,15 @@ static string _describe_talisman_form(transformation form_type)
     // Mutation suppression info
     vector<string> changes;
     if (form->changes_anatomy)
-        changes.emplace_back("Anatomy");
+        changes.emplace_back(C_("form mutation suppression", "Anatomy"));
     if (form->changes_substance)
-        changes.emplace_back("Substance");
+        changes.emplace_back(C_("form mutation suppression", "Substance"));
     if (form->has_blood == FC_FORBID)
-        changes.emplace_back("Blood");
+        changes.emplace_back(C_("form mutation suppression", "Blood"));
     if (form->has_bones == FC_FORBID)
-        changes.emplace_back("Bones");
+        changes.emplace_back(C_("form mutation suppression", "Bones"));
     if (form_type == transformation::eel_hands)
-        changes.emplace_back("Hands");
+        changes.emplace_back(C_("form mutation suppression", "Hands"));
 
     if (!changes.empty())
     {

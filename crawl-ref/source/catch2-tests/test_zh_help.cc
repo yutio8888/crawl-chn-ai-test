@@ -778,9 +778,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         { "app status", "你的身体上长出异常的角或爪" },
         { "bat status", "你变成了一只行动迅捷的蝙蝠" },
         { "blade status", "多把凶恶的刀刃正从你的身体上长出" },
-        { "dragon status", "你变成了强大的，吐息火焰的龙" },
+        { "dragon status", "你获得了金龙吐息攻击" },
         { "pact status", "战斗、流血" },
-        { "water status", "你正越过水面" },
+        { "water status", "你正位于水面上" },
     };
     for (const auto& expected : dynamic_statuses)
     {
@@ -821,7 +821,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     const string zh = getLongDescription("destr+++ status");
 
     CHECK(zh.find("你的释放毁灭能力") != string::npos);
-    CHECK(zh.find("如果你再次使用它") != string::npos);
+    CHECK(zh.find("如果你再次使用此能力") != string::npos);
     CHECK(zh.find("<Destr status>") == string::npos);
     CHECK(zh.find("[[Destr status]]") == string::npos);
 

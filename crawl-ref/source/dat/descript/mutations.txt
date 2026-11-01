@@ -406,8 +406,8 @@ heal.
 %%%%
 inhibited regeneration mutation
 
-You do not heal over time while foes are in sight. Other sources of healing,
-such as potions, are unaffected.
+Your normal health regeneration stops while you are aware of nearby
+threatening enemies. Other sources of healing, such as potions, are unaffected.
 %%%%
 speed mutation
 
@@ -1086,15 +1086,17 @@ berserk.
 %%%%
 vampire fangs mutation
 
-When you perform a stab attack against a living monster with blood, you heal for
-a portion of the total damage dealt. When you are at 50% of your max HP or less,
-this has a 2/3 chance to happen on all melee attacks.
+Your fangs can drain health from nearby foes in melee, healing you for a
+portion of the damage dealt. Summoned creatures, creatures that splash acid,
+and creatures immune to negative energy cannot be drained. Stab attacks always
+attempt this; when you are at 50% of your max HP or less, other melee attacks
+have a 2/3 chance to attempt it.
 %%%%
 bloodcurse mutation
 
-When you kill a living monster with a stab attack, they may rise again to serve
-you as a vampiric thrall. Thralls possess all the abilities they had in life,
-but are undead, and gain a vampiric bite attack as well as increased melee
+When you kill a natural, plant, or demonic monster with a stab attack, they may
+rise again to serve you as a vampiric thrall. Thralls possess all the abilities
+they had in life, but are undead, and gain a vampiric bite attack as well as increased melee
 damage against sleeping foes. Spellcaster thralls will also gain knowledge of
 the Vampiric Draining spell.
 
@@ -1121,7 +1123,7 @@ The walls will rapidly melt again if you stop attacking.
 %%%%
 hive swarm mutation
 
-Whenever an injury reduces your health to less than 50%, angry bees will swarm
+Whenever an injury reduces your health to 50% or less, angry bees will swarm
 out of your body to defend you.
 
 This effect cannot happen again until your health is fully recovered.
