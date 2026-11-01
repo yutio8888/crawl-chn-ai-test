@@ -1746,7 +1746,7 @@ void direction_chooser::print_target_description(bool &did_cloud) const
     if (!in_range(target()))
     {
         mprf(MSGCH_EXAMINE_FILTER, "%s",
-             hitfunc ? hitfunc->why_not.c_str() : "Out of range.");
+             hitfunc ? hitfunc->why_not.c_str() : T_("Out of range."));
     }
 }
 
@@ -3179,7 +3179,7 @@ static string _base_feature_desc(dungeon_feature_type grid,
                                  level_id place = level_id::current())
 {
     if (grid == DNGN_ROCK_WALL && place.branch == BRANCH_PANDEMONIUM)
-        return "wall of the weird stuff which makes up Pandemonium";
+        return T_("wall of the weird stuff which makes up Pandemonium");
     else if (feat_is_stone_stair_down(grid) && place.branch == BRANCH_VAULTS
              && place.depth == branches[BRANCH_VAULTS].numlevels - 1)
     {

@@ -1748,7 +1748,7 @@ barrage of energy
 %s从你的典范武器上抹去了%s的印记。
 %%%%
 %s responds to your shapeshifting skill and transforms into a %s!
-%s响应了你的变形技能，变成了%s！
+%s响应了你的变形术技能，变成了%s！
 %%%%
 %s right now would cause you to %s!
 现在%s会导致你%s！
@@ -3232,7 +3232,7 @@ Beware, the minotaur awaits!
 当心，牛头人在等候！
 %%%%
 Beware, you cannot shaft yourself on this level.
-注意，你无法在这个层级使用竖井。
+注意，你无法在这一层使自己掉入竖井。
 %%%%
 bezotted
 佐特逼近
@@ -3482,7 +3482,7 @@ chance to call a sprite on attack: %d%%
 攻击时召唤精灵几率：%d%%
 %%%%
 chance to confuse on hit: %d%%
-击中时迷惑几率：%d%%
+击中时造成混乱的几率：%d%%
 %%%%
 chance to pacify: %d%%
 安抚几率：%d%%
@@ -4163,7 +4163,7 @@ Fedhas protects the tree from harm.
 费德哈斯保护了这棵树。
 %%%%
 fellow slime
-同行黏液
+同道的史莱姆
 %%%%
 figurine of a ziggurat
 通天塔雕像
@@ -4508,7 +4508,7 @@ High
 高
 %%%%
 hit
-攻击
+击中
 %%%%
 hits
 击中
@@ -5117,7 +5117,7 @@ Level memory is imperfect, aborting.
 楼层记忆不完整，正在中止。
 %%%%
 lies inside a sanctuary
-位于避难所内
+位于庇护所内
 %%%%
 light
 光亮
@@ -5309,7 +5309,7 @@ mesmerised
 被迷住
 %%%%
 metal staircase leading down
-向下通往的金属楼梯
+通往下层的金属楼梯
 %%%%
 Metalworking
 金属工艺
@@ -6483,10 +6483,10 @@ Slime begins to ooze from the nearby walls!
 粘液开始从附近的墙壁渗出！
 %%%%
 slimy stone staircase leading down
-向下通往的黏滑石梯
+通往下层的黏滑石梯
 %%%%
 slimy stone staircase leading up
-向上通往的黏滑石梯
+通往上层的黏滑石梯
 %%%%
 Sloth
 懒惰
@@ -6813,7 +6813,7 @@ Strange energies course through your body.
 奇怪的能量在你体内奔涌。
 %%%%
 Strange, the shaft seems to lead back to this level.
-奇怪，竖井似乎通向回这个楼层。
+奇怪，竖井似乎又通回了这一层。
 %%%%
 strangle
 
@@ -7120,7 +7120,7 @@ The arc blade crackles.
 电弧刀噼啪作响。
 %%%%
 The barbed spikes dig painfully into your body as you move.
-倒刺在你移动时痛苦地刺入你的身体。
+你移动时，倒刺扎入你的身体，令你疼痛。
 %%%%
 The black torch is already ablaze!
 黑色火炬已经在燃烧了！
@@ -7156,7 +7156,7 @@ The buzzing within you returns to its normal rhythm.
 你体内的嗡嗡声恢复了正常的节奏。
 %%%%
 The cacophony subsides as you leave the area.
-你离开该区域时，嘈杂攻击平息了。
+你离开该区域时，嘈杂声平息了。
 %%%%
 You have escaped!
 你逃出去了！
@@ -7342,7 +7342,7 @@ The ground shakes violently, spewing rubble!
 大地猛烈震动，喷出了碎石！
 %%%%
 The hatch slams shut behind you.
-舱口在你身后砰地关上了。
+逃生口在你身后砰地关上了。
 %%%%
 The haze of the repulsion field disappears.
 排斥力场的薄雾消失了。
@@ -8181,7 +8181,7 @@ Trog suppresses %s necromantic effect.
 特洛格抑制了%s的死灵效果。
 %%%%
 Trying to dig through that would dissolve your mandibles.
-试图挖穿那个会溶解你的下颌。
+试图挖穿那个会溶解你的大颚。
 %%%%
 turns back into a lifeless stick
 变回了一根无生命的棍子
@@ -8394,7 +8394,7 @@ What are your orders?
 你的命令是什么？
 %%%%
 What level of %s? (default %s, ? - help) 
-哪个层级的%s？（默认为%s，? - 帮助） 
+要去%s的哪一层？（默认为%s，? - 帮助）
 %%%%
 Which rune (ESC to exit)?
 哪个符文（按ESC退出）？
@@ -8508,7 +8508,7 @@ With Pikel's spell broken, his former %s freedom.
  收回了幻象和诅咒。
 %%%%
 within Yredelemnul's grip
-在伊雷德勒姆努的掌控之中
+在伊莱德莱姆努尔的掌控之中
 %%%%
 Without a target and with nowhere to land, your clockwork bee falls apart in a shower of cogs and coils.
 没有目标且无处可落，你的发条蜜蜂在一阵齿轮和线圈的碎雨中散架了。
@@ -8596,7 +8596,7 @@ You %s %s peals of thunder!
 你%s到阵阵%s的雷鸣！
 %%%%
 You %s %s%s.
-你%s%s%s。
+你%3$s%1$s%2$s。
 %%%%
 You %s %s, but do no damage.
 
@@ -8708,7 +8708,7 @@ You are amphibious.
 你是两栖的。
 %%%%
 you are being drained by your emergency flight
-紧急飞行正在消耗你的魔力
+紧急飞行正在使你衰竭
 %%%%
 There are probably monsters nearby
 附近可能有怪物
@@ -8723,7 +8723,7 @@ You are cold-blooded and may be slowed by cold attacks.
 你是冷血动物，可能被寒冷攻击减速。
 %%%%
 you are contaminated with a potentially lethal amount of magic
-你体内的魔法污染已达到致命剂量。
+你受到的诱变辐射可能致命
 %%%%
 You are covering ground slowly.
 你移动缓慢。
@@ -8906,7 +8906,7 @@ You aren't carrying any items that might be thrown or fired.
 你没有携带任何可以投掷或发射的物品。
 %%%%
 You aren't carrying any items that you can evoke.
-你没有携带任何你可以唤起的物品。
+你没有携带任何可激活的物品。
 %%%%
 None of your equipped items are bound to you.
 你装备的物品中没有任何一件与你束缚在一起。
@@ -8933,7 +8933,7 @@ You aren't carrying any weapons that can be blessed.
 你没有携带任何可以被祝福的武器。
 %%%%
 You aren't carrying any weapons that can be branded.
-你没有携带任何可以被铭刻的武器。
+你没有携带任何可以赋予铭印的武器。
 %%%%
 You aren't carrying any weapons that can be enchanted.
 你没有携带任何可以被附魔的武器。
@@ -9482,7 +9482,7 @@ You can't see anything there to charge at.
 你看不到那里有任何可以冲锋的目标。
 %%%%
 You cannot move. (Use ctrl+direction or * direction to attack while stationary and confused.)
-你无法移动。（使用ctrl+方向或*方向在困惑状态下站在原地攻击。）
+你无法移动。（使用ctrl+方向或*方向在混乱状态下原地攻击。）
 %%%%
 You cannot occupy %s.
 你无法占据%s。
@@ -9821,7 +9821,7 @@ You expend health (3 HP) to strengthen your wands.
 你消耗生命（3点）来增强你的魔杖。
 %%%%
 You extend your mandibles.
-你伸出了下颚。
+你伸出了大颚。
 %%%%
 You extract %smagical energy from the potion.
 你从药水中提取了%s法力。
@@ -10673,7 +10673,7 @@ You nearly hit yourself!
 你差点打到自己！
 %%%%
 You nearly stumble into %s!
-你差点绊倒在%s上！
+你差点跌进%s！
 %%%%
 You need %d%%%% to reach level %d.
 你距离升级到 %d 级还有 %d%%。
@@ -10850,7 +10850,7 @@ You recall your battlesphere and imbue it with extra charge.
 你召回了你的战斗法球，并为它注入了额外的充能。
 %%%%
 You reconstitute your solar ember.
-你重新凝聚了你的微型太阳。
+你重新凝聚了你的太阳余烬。
 %%%%
 You redirect %s's attack!
 你重新导向了%s的攻击！
@@ -10874,7 +10874,7 @@ You resist.
 你抵抗了。
 %%%%
 You retract your mandibles.
-你收回了下颚。
+你收回了大颚。
 %%%%
 You return to the normal flow of time.
 你回到了正常的时间流动中。
@@ -11206,7 +11206,7 @@ You're too confused to cast spells.
 你太混乱了，无法施法。
 %%%%
 You're too confused to move!
-你太困惑了，无法移动！
+你太混乱了，无法移动！
 %%%%
 You're too inexperienced to learn that spell!
 你的经验不足，无法学习那个法术！
@@ -11855,7 +11855,7 @@ Zot (%d)
 佐特（%d）
 %%%%
 Zot already knows this place too well. Descend or flee this branch!
-佐特已经太了解这个地方了。离开或逃离这个分支！
+佐特已经太了解这个地方了。向下探索，或逃离这个分支！
 %%%%
 Zot can harm you no longer.
 佐特再也无法伤害你了。
@@ -11876,7 +11876,7 @@ Zot senses the otherworldly energies of your %s gem, and will surely shatter it 
 佐特感知到了你的%s宝石的异界能量，如果你再在这个分支逗留，它一定会将其粉碎！
 %%%%
 Zot's attention fixes on you again. Descend or flee this branch!
-佐特的注意力再次锁定你。离开或逃离这个分支！
+佐特的注意力再次锁定你。向下探索，或逃离这个分支！
 %%%%
 Zot's power is invoked against you!
 佐特的力量被召来对抗你！
@@ -12108,8 +12108,7 @@ _ - 列出分支
 * - 列出路径点
 %%%%
 ? - help
-
-？ - 帮助
+? - 帮助
 %%%%
 Where to? %s
 
@@ -13203,8 +13202,7 @@ broken translucent
 破碎的半透明 
 %%%%
 fire blocked by 
-
-火焰阻隔：
+射击受阻于：
 %%%%
 %s %s
 
@@ -23624,7 +23622,7 @@ and destroy
 并摧毁
 %%%%
  This could place you under penance!
-这可能会让你受到神罚！
+这可能会让你受到惩戒！
 %%%%
  This action would place you under penance!
 这会使你受到神罚！
@@ -24515,7 +24513,7 @@ take off weapon
 卸下
 %%%%
 You don't have anything to inscribe.
-你没有任何需要刻写的东西。
+你没有可供铭刻的物品。
 %%%%
 You take a swig of the potion and bulge your muscles.
 你喝了一大口药水，鼓起了肌肉。
@@ -24536,7 +24534,7 @@ You assume a fearsome visage.
 你摆出了一副可怕的面容。
 %%%%
 The creatures around you are filled with an inner flame!
-你周围的生物被内心的火焰充满了！
+你周围的生物燃起了内焰！
 %%%%
 The air around you briefly surges with heat, but it quickly dissipates.
 你周围的空气短暂地涌动着热量，但很快就消散了。
@@ -29910,7 +29908,7 @@ Really read with monsters nearby while wearing %s?
 附近有怪物，确定要在穿戴%s时阅读吗？
 %%%%
 You can't see any enemy this would conceal you from. Use anyway?
-你看不到任何会被此隐藏的敌人。仍然使用吗？
+你看不到任何无法看穿你隐形的敌人。仍然使用吗？
 %%%%
 Still begin transforming?
 仍然开始变形吗？
@@ -29940,7 +29938,7 @@ Choose to examine item
 选择检查物品        
 %%%%
  on 
- 对 
+，位于
 %%%%
 , or 
 、或 
@@ -36581,7 +36579,7 @@ SHIFT
 Shift
 %%%%
 Abil: 
-技能：
+能力：
 %%%%
 Build '%s'
 建造"%s"
@@ -37628,7 +37626,7 @@ through %s
 穿过%s
 %%%%
 Brand which weapon?
-给哪件武器铭刻？
+给哪件武器赋予铭印？
 %%%%
 Enchant which weapon?
 给哪件武器附魔？
@@ -43083,10 +43081,10 @@ All level %d spells are either disliked by %s or cannot be cast by you.
 所有%d级法术要么不被%s喜欢，要么你无法施放。
 %%%%
 Shopping list: replace %dgp %s with cheaper one? (Y/n)
-购物清单：用更便宜的替换%d金币的%s？（是/否）
+购物清单：用更便宜的替换%d金币的%s？(Y/n)
 %%%%
 Travel to: %s\nYou cannot afford this item; travel there anyway? (y/N)
-前往：%s\n你买不起这件物品；仍然前往吗？（是/否）
+前往：%s\n你买不起这件物品；仍然前往吗？(y/N)
 %%%%
 <w>Features</w>\n--------\n
 <w>功能特性</w>\n--------\n
@@ -47635,7 +47633,7 @@ item operation|memorise from
 %%%%
 
 item operation|zap
-释放魔杖：
+激发
 %%%%
 
 item operation|fire
@@ -49729,4 +49727,79 @@ It makes you vulnerable to %1$s.
 %%%%
 Buggy descriptor!
 描述出错！
+%%%%
+Your icy armour and frozen ramparts will break if you move. Continue?
+移动会破坏你的冰甲和冰冻壁垒。继续吗？
+%%%%
+Your icy armour will break if you move. Continue?
+移动会破坏你的冰甲。继续吗？
+%%%%
+Your frozen ramparts will break if you move. Continue?
+移动会破坏你的冰冻壁垒。继续吗？
+%%%%
+Are you sure you want to %1$s while confused and next to %2$s%3$s?
+你处于混乱状态，旁边就是%2$s%3$s。确定还要%1$s吗？
+%%%%
+In your confused state, you trip and fall back down the stairs.
+你在混乱中绊倒，沿楼梯跌了回去。
+%%%%
+In your confused state, you trip and fall down the stairs.
+你在混乱中绊倒，跌下了楼梯。
+%%%%
+In your confused state, you trip and fall back through the gate.
+你在混乱中绊倒，跌回了大门另一侧。
+%%%%
+In your confused state, you trip and fall through the gate.
+你在混乱中绊倒，跌过了大门。
+%%%%
+beam flavour|water
+水
+%%%%
+wall of the weird stuff which makes up Pandemonium
+由构成万魔殿的怪异物质筑成的墙
+%%%%
+, D - delete waypoint
+，D - 删除路径点
+%%%%
+ (under bush)
+（在灌木下）
+%%%%
+ (under plant)
+（在植物下）
+%%%%
+ %d item
+ %d件物品
+%%%%
+ %d items
+ %d件物品
+%%%%
+Shopping list: %d item, total cost %d gold pieces
+购物清单：%d件物品，总价%d金币
+%%%%
+Shopping list: %d items, total cost %d gold pieces
+购物清单：%d件物品，总价%d金币
+%%%%
+%s glow green for a %s.
+%s泛起绿光，持续了%s。
+%%%%
+%s glows green for a %s.
+%s泛起绿光，持续了%s。
+%%%%
+Wield or put away which item? (- for unarmed)
+持握或收起哪件物品？（- 切换徒手）
+%%%%
+Wield which item? (- for unarmed)
+持握哪件物品？（- 切换徒手）
+%%%%
+Removing %s right now would cause you to drown!
+现在卸下%s会导致你溺水！
+%%%%
+Removing %s right now would cause you to burn!
+现在卸下%s会导致你被灼烧！
+%%%%
+A bound item is preventing you from removing %s.
+一件已束缚的物品使你无法卸下%s。
+%%%%
+melee action|hit
+击打
 %%%%

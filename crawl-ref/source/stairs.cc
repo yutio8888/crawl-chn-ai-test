@@ -110,7 +110,7 @@ static string _bezotting_warning(branch_type branch)
 
     const int turns = turns_until_zot_in(branch);
     return make_stringf(T_("You have just %d turns in %s to find a new floor before Zot consumes you."),
-                        turns, branches[branch].longname);
+                        turns, T_(branches[branch].longname));
 }
 
 bool check_next_floor_warning()
@@ -390,12 +390,18 @@ static bool _check_fall_down_stairs(const dungeon_feature_type ftype, bool going
         && !crawl_state.game_is_descent()
         && coinflip())
     {
-        const char* fall_where = T_("down the stairs");
-        if (!feat_is_staircase(ftype))
-            fall_where = T_("through the gate");
-
-        mprf(T_("In your confused state, you trip and fall %s%s."),
-             going_up ? T_("back ") : "", fall_where);
+        if (feat_is_staircase(ftype))
+        {
+            mpr(going_up
+                ? T_("In your confused state, you trip and fall back down the stairs.")
+                : T_("In your confused state, you trip and fall down the stairs."));
+        }
+        else
+        {
+            mpr(going_up
+                ? T_("In your confused state, you trip and fall back through the gate.")
+                : T_("In your confused state, you trip and fall through the gate."));
+        }
         if (!feat_is_staircase(ftype))
             ouch(1, KILLED_BY_FALLING_THROUGH_GATE);
         else

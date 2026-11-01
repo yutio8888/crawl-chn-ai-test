@@ -7605,7 +7605,7 @@ static string _beam_type_name(beam_type type)
     case BEAM_MMISSILE:              return T_("magic missile");
     case BEAM_FIRE:                  return T_("fire");
     case BEAM_COLD:                  return T_("cold");
-    case BEAM_WATER:                 return T_("water");
+    case BEAM_WATER:                 return C_("beam flavour", "water");
     case BEAM_MAGIC:                 return T_("magic");
     case BEAM_ELECTRICITY:           return T_("electricity");
     case BEAM_MEPHITIC:              return T_("noxious fumes");

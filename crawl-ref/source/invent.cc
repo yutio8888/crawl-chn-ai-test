@@ -540,8 +540,9 @@ string InvMenu::get_select_count_string(int) const
         if (all_sel.empty())
             return "";
 
-        return make_stringf(T_(" %d item%s"), (int)all_sel.size(),
-                                          all_sel.size() > 1 ? "s" : "");
+        return make_stringf(all_sel.size() > 1 ? T_(" %d items")
+                                              : T_(" %d item"),
+                            (int)all_sel.size());
     }
 
     return Menu::get_select_count_string(0);
