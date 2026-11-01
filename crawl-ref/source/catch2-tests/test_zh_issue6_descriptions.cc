@@ -47,10 +47,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     // Exercise the real description producer, including pronouns, list
     // assembly, and newlines, rather than only looking up individual keys.
     const string jelly = issue6_monster_description(MONS_ROYAL_JELLY);
-    CHECK(jelly.find("受伤或死亡时会释放多种史莱姆，"
+    CHECK(jelly.find("受伤或死亡时会释放多种果冻怪，"
                     "数量与受到的伤害成正比。\n") != string::npos);
-    CHECK(jelly.find("被变形时会释放所有史莱姆。\n") != string::npos);
-    CHECK(jelly.find("近战攻击时会额外造成1d5点酸伤害。\n")
+    CHECK(jelly.find("被变形时会释放所有果冻怪。\n") != string::npos);
+    CHECK(jelly.find("被近战击中时会造成1d5点酸伤害。\n")
           != string::npos);
     CHECK(jelly.find("是无定形的，免疫缠绕。\n") != string::npos);
 

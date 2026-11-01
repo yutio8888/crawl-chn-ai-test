@@ -46,17 +46,32 @@ values are translated. Preserve separators, format placeholders, control charact
 
 Serialization identities, Lua/JSON comparison keys, `.des` tags, enum
 identifiers, and TextDB lookup keys stay English. Translate only at a display
-boundary. The one approved save-file exception is `Note::name` for
-`NOTE_MESSAGE` values created by `crawl.take_note`: it is a language-locked
-display snapshot and is not retranslated after a language change. The exception
-does not cover other note types or fields. Its complete consumer boundary is:
+boundary. Three audited `Note::name` cases are language-locked display snapshots:
+`NOTE_MESSAGE` created by `crawl.take_note`, `NOTE_HP_CHANGE` created in
+`ouch()` from `scorefile_entry::death_description(DDV_TERSE)`, and `NOTE_DEATH`
+from its `DDV_NORMAL` death display (`DDV_VERBOSE` in wizard simulation). They are not
+retranslated after a language change. The exceptions do not cover other note
+types or fields. Their complete consumer boundary is:
 
 | Stage | Consumer | Contract |
 |---|---|---|
-| Producer | `l-crawl.cc::crawl_take_note` | Constructs only `NOTE_MESSAGE` from the supplied display string |
+| Message producer | `l-crawl.cc::crawl_take_note` | Constructs `NOTE_MESSAGE`; the complete template and string arguments translate together or the whole message remains English |
+| Injury producer | `ouch()` | Constructs `NOTE_HP_CHANGE` from the current injury display; known beam/event causes translate at the display gate, unknown names remain verbatim |
+| Death producer | `ouch()` | Constructs `NOTE_DEATH` from the normal death display or wizard verbose simulation; the separate literal wizard-revival note is unchanged |
 | Persistence | `Note::save` / `Note::load` | Round-trips `Note::name` without interpreting it |
 | Display | `Note::describe`, notes UI, chardump/morgue | Emits the stored snapshot |
-| Excluded logic | milestone handling, xlog, Lua comparisons, lookup, gameplay | Does not consume `NOTE_MESSAGE.name` |
+| Injury selection | `_is_noteworthy`, `is_noteworthy_hp` | Reads numeric HP, maximum HP and turns, never the name |
+| Death selection | `_is_noteworthy` | Always accepts `NOTE_DEATH`, without inspecting its name |
+| Excluded logic | milestone handling, xlog, Lua comparisons, lookup, gameplay | Does not consume these snapshots' names; `check_milestone` handles only `NOTE_DUNGEON_LEVEL_CHANGE` |
+
+The injury exception documents an existing display snapshot: its source already
+localized monster/weapon names and compact injury labels. It permits completing
+known beam names without making `scorefile_entry` raw fields or log output
+localized. Saved historical snapshots retain their original text.
+Death snapshots already used localized descriptions before this audit. Extended
+xlog `tmsg`/`vmsg` and death milestones instead use `short_kill_message` /
+`long_kill_message`, which scope their generation to English and restore the UI
+language afterward; the saved note is not their input.
 
 The protocol-facing Lua bindings `you.race()`,
 `you.species()`, `you.genus()`, `you.class()`, and `you.monster()` therefore

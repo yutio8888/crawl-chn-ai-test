@@ -246,30 +246,29 @@ string Note::describe(bool when, bool where, bool what) const
                        << place.describe(true, true);
             break;
         case NOTE_LEARN_SPELL:
-            result << T_("Learned a level ")
-                   << spell_difficulty(static_cast<spell_type>(first))
-                   << T_(" spell: ")
-                   << spell_title(static_cast<spell_type>(first));
+            result << make_stringf(T_("Learned a level %d spell: %s"),
+                spell_difficulty(static_cast<spell_type>(first)),
+                spell_title(static_cast<spell_type>(first)));
             break;
         case NOTE_GET_GOD:
             result << T_("Became a worshipper of ")
                    << god_name(static_cast<god_type>(first), true);
             break;
         case NOTE_LOSE_GOD:
-            result << T_("Fell from the grace of ")
-                   << god_name(static_cast<god_type>(first));
+            result << make_stringf(T_("Fell from the grace of %s"),
+                god_name(static_cast<god_type>(first)).c_str());
             break;
         case NOTE_PENANCE:
-            result << T_("Was placed under penance by ")
-                   << god_name(static_cast<god_type>(first));
+            result << make_stringf(T_("Was placed under penance by %s"),
+                god_name(static_cast<god_type>(first)).c_str());
             break;
         case NOTE_MOLLIFY_GOD:
-            result << T_("Was forgiven by ")
-                   << god_name(static_cast<god_type>(first));
+            result << make_stringf(T_("Was forgiven by %s"),
+                god_name(static_cast<god_type>(first)).c_str());
             break;
         case NOTE_GOD_GIFT:
-            result << T_("Received a gift from ")
-                   << god_name(static_cast<god_type>(first));
+            result << make_stringf(T_("Received a gift from %s"),
+                god_name(static_cast<god_type>(first)).c_str());
             if (!name.empty())
                 result << " (" << name << ")";
             break;
@@ -283,9 +282,9 @@ string Note::describe(bool when, bool where, bool what) const
             if (first != 0) // gems
             {
                 const int turns = (first + 9) / 10;
-                result << T_(" with ") << turns
-                       << (first == 1 ? T_(" turn") : T_(" turns"))
-                       << T_(" to spare");
+                result << make_stringf(turns == 1
+                    ? T_(" with %d turn to spare")
+                    : T_(" with %d turns to spare"), turns);
             }
             break;
         case NOTE_ACQUIRE_ITEM:
@@ -404,12 +403,14 @@ string Note::describe(bool when, bool where, bool what) const
             break;
         case NOTE_PARALYSIS:
         {
-            const float turns = first / 10.0;
-            result << T_("Paralysed by ") << name << T_(" for ") << setprecision(2) << turns << T_(" turns");
+            const double turns = first / 10.0;
+            result << make_stringf(T_("Paralysed by %s for %.2g turns"),
+                                   name.c_str(), turns);
         }
             break;
         case NOTE_VEXED:
-            result << T_("Vexed by ") << name << T_(" for ") << first << T_(" turns");
+            result << make_stringf(T_("Vexed by %s for %d turns"),
+                                   name.c_str(), first);
             break;
         case NOTE_RECRUITED_APOSTLE:
             result << T_("Anointed ") << name << T_(" the ") << desc << T_(" as your apostle");
@@ -418,9 +419,8 @@ string Note::describe(bool when, bool where, bool what) const
             result << T_("Your ally ") << name << T_(" died");
             break;
         case NOTE_OFFERED_SPELL:
-            result << T_("Offered knowledge of ")
-                   << spell_title(static_cast<spell_type>(first))
-                   << T_(" by Vehumet.");
+            result << make_stringf(T_("Offered knowledge of %s by Vehumet."),
+                spell_title(static_cast<spell_type>(first)));
             break;
         case NOTE_ANCESTOR_TYPE:
             result << T_("Remembered your ancestor ") << hepliaklqana_ally_name()
@@ -461,7 +461,7 @@ string Note::describe(bool when, bool where, bool what) const
             result << T_("Fled from a divine trial");
             break;
         case NOTE_INFERNAL_MARK:
-            result << T_("Branded self with the ") << name;
+            result << make_stringf(T_("Branded self with the %s"), name.c_str());
             break;
         case NOTE_TESSERACT_ACTIVATED:
             result << T_("Activated a boundless tesseract");

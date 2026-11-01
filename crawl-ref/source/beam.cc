@@ -342,6 +342,18 @@ struct zap_info
 
 #include "zap-data.h"
 
+// Read canonical names directly; displaying an old death must not construct a
+// zap (which computes damage/to-hit and can consume gameplay randomness).
+bool is_known_beam_name(const string &name)
+{
+    if (name.empty())
+        return false;
+    for (const zap_info &zap : zap_data)
+        if (zap.name && name == zap.name)
+            return true;
+    return false;
+}
+
 static int zap_index[NUM_ZAPS];
 
 void init_zap_index()

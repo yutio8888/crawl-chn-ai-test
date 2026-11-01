@@ -1,4 +1,4 @@
-# i18n-safety-v2
+# i18n-safety-v3
 
 This policy is the shared safety contract for DCSS Chinese i18n code.
 
@@ -19,14 +19,26 @@ This policy is the shared safety contract for DCSS Chinese i18n code.
   Translate them with `translated_move_phrase()` and the applicable grammar
   context; update `move_i18n_manifest.json` and require exact-key coverage.
 - Keep protocol, lookup, serialization identities, Lua comparison, and TextDB
-  key values in English. The sole localized serialization exception is
-  `Note::name` on `NOTE_MESSAGE` records created through `crawl.take_note`:
-  consumer tracing proves that value is a display-only snapshot, not an
-  identity. It may use the current display language only when the complete
-  template and every string parameter translate; otherwise the whole note
-  remains English. This snapshot is language-locked, so changing the UI
-  language does not retroactively retranslate it. Do not extend the exception
-  to other note types or fields without a new consumer audit and policy change.
+  key values in English. Three audited `Note::name` cases are localized display
+  snapshots, not identities:
+  - `NOTE_MESSAGE` created through `crawl.take_note` may use the current display
+    language only when the complete template and every string parameter
+    translate; otherwise the whole note remains English.
+  - `NOTE_HP_CHANGE` created in `ouch()` from `death_description(DDV_TERSE)`
+    stores the injury display at creation. Known beam/event causes may translate
+    through the audited display gate; unknown names remain verbatim. The
+    underlying score fields, raw auxiliary cause, and xlog stay canonical.
+  - `NOTE_DEATH` created in `ouch()` from `death_description(DDV_NORMAL)`
+    (or `DDV_VERBOSE` in wizard death simulation) stores the death display at
+    creation. The separate literal wizard-revival note remains unchanged.
+    Logging helpers generate canonical English independently of this snapshot.
+  `Note::save/load` round-trips these snapshots. Their only text consumers are
+  `Note::describe`, the notes UI, and chardump/morgue; injury noteworthiness uses
+  numeric HP and turn fields, not the name; death notes are always noteworthy.
+  All three snapshots are language-locked:
+  changing the UI language does not retroactively retranslate them. Do not
+  extend these exceptions to other note types or fields without a new consumer
+  audit and policy change.
 - When a changed value may serve both identity and display, enumerate its
   producer, every intermediate consumer, and its final sinks. Identity and
   lookup paths use the original value or an English accessor (for example,

@@ -2075,7 +2075,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(std::string(brand_type_name(SPWPN_DRAINING, true)) == "汲取");
     REQUIRE(std::string(brand_type_adj(SPWPN_DRAINING)) == "汲取");
     REQUIRE(std::string(T_("drain")) == "吸血");
-    REQUIRE(std::string(T_("draining")) == "吸取");
+    REQUIRE(std::string(T_("draining")) == "负能量");
 
     init_spell_descs();
     init_spell_name_cache();
@@ -10523,6 +10523,73 @@ TEST_CASE("speech rereview: Beogh gaze retains its actual foe alternative",
             }
             CHECK(rng::current_generator().get_state() == reference_state[monster_foe]);
             CHECK(rng::current_generator().get_count() == reference_count[monster_foe]);
+        }
+    }
+}
+
+TEST_CASE("source rereview: complete note sentences retain event fields across languages",
+          "[zh-translation][source-notes-rereview]")
+{
+    unwind_var<player> restore_player(you);
+    you = player();
+    const vector<Note> events = {
+        Note(NOTE_LOSE_GOD, GOD_ZIN),
+        Note(NOTE_PENANCE, GOD_ZIN),
+        Note(NOTE_MOLLIFY_GOD, GOD_ZIN),
+        Note(NOTE_GOD_GIFT, GOD_ZIN, 0, "gift-name"),
+        Note(NOTE_PARALYSIS, 25, 0, "source-name"),
+        Note(NOTE_VEXED, 7, 0, "source-name"),
+        Note(NOTE_INFERNAL_MARK, 0, 0, "mark-name"),
+        Note(NOTE_GET_ITEM, 10, 0, "gem-name"),
+        Note(NOTE_GET_ITEM, 21, 0, "gem-name"),
+        Note(NOTE_LEARN_SPELL, SPELL_MAGIC_DART),
+        Note(NOTE_OFFERED_SPELL, SPELL_MAGIC_DART),
+    };
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        i18n_cache_clear();
+        const string god = god_name(GOD_ZIN);
+        const string spell = spell_title(SPELL_MAGIC_DART);
+        const vector<string> expected = language == lang_t::ZH
+            ? vector<string>{
+                "失去了" + god + "的恩宠",
+                "受到了" + god + "的惩戒",
+                "得到了" + god + "的赦免",
+                "收到了" + god + "的神赐 (gift-name)",
+                "被source-name麻痹了2.5回合",
+                "因source-name而恼怒了7回合",
+                "给自己烙上了mark-name",
+                "获得了gem-name（距时限尚余1回合）",
+                "获得了gem-name（距时限尚余3回合）",
+                "学会了1级法术：" + spell,
+                "获得了维胡梅特传授的" + spell + "法术知识。",
+            }
+            : vector<string>{
+                "Fell from the grace of " + god,
+                "Was placed under penance by " + god,
+                "Was forgiven by " + god,
+                "Received a gift from " + god + " (gift-name)",
+                "Paralysed by source-name for 2.5 turns",
+                "Vexed by source-name for 7 turns",
+                "Branded self with the mark-name",
+                "Got gem-name with 1 turn to spare",
+                "Got gem-name with 3 turns to spare",
+                "Learned a level 1 spell: " + spell,
+                "Offered knowledge of " + spell + " by Vehumet.",
+            };
+        REQUIRE(events.size() == expected.size());
+        for (size_t i = 0; i < events.size(); ++i)
+        {
+            CAPTURE(i, expected[i]);
+            const Note before = events[i];
+            CHECK(events[i].describe(false, false, true) == expected[i]);
+            CHECK(events[i].name == before.name);
+            CHECK(events[i].desc == before.desc);
+            CHECK(events[i].first == before.first);
+            CHECK(events[i].second == before.second);
+            CHECK(events[i].type == before.type);
+            CHECK(events[i].describe(false, false, false).empty());
         }
     }
 }

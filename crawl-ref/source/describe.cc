@@ -831,17 +831,25 @@ void desc_randart_props(const item_def &item, vector<string> &lines)
             // to fill in to get a complete sentence
             const int idx = max(min(stval + 3, 6), 0);
 
-            const char* prefixes[] =
+            if (idx < 3)
             {
-                T_("It makes you extremely vulnerable to "),
-                T_("It makes you very vulnerable to "),
-                T_("It makes you vulnerable to "),
-                "Buggy descriptor!",
-                T_("It protects you from "),
-                T_("It greatly protects you from "),
-                T_("It renders you almost immune to ")
-            };
-            sdesc = prefixes[idx] + sdesc + '.';
+                const char *sentence = idx == 0
+                    ? N_("It makes you extremely vulnerable to %1$s.")
+                    : idx == 1 ? N_("It makes you very vulnerable to %1$s.")
+                               : N_("It makes you vulnerable to %1$s.");
+                sdesc = make_stringf_p(T_(sentence), sdesc.c_str());
+            }
+            else
+            {
+                const char *const prefixes[] =
+                {
+                    N_("Buggy descriptor!"),
+                    N_("It protects you from "),
+                    N_("It greatly protects you from "),
+                    N_("It renders you almost immune to ")
+                };
+                sdesc = string(T_(prefixes[idx - 3])) + sdesc + '.';
+            }
         }
 
         lines.push_back(_format_prop_desc(_padded_artp_name(desc.property, stval), sdesc.c_str()));
@@ -3726,9 +3734,8 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
         }
         else if (feat_is_staircase(feat) || feat_is_escape_hatch(feat))
         {
-            long_desc += make_stringf(
-                    T_("\nWhile standing here, you can traverse %s "
-                    "with the <w>%s</w> key."),
+            long_desc += make_stringf_p(
+                    T_("\nWhile standing here, you can traverse %1$s with the <w>%2$s</w> key."),
                     desc_the.c_str(),
                     _esc_cmd_to_str(stair_dir).c_str());
 
@@ -3760,27 +3767,39 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
         else if (feat_is_portal(feat)
             || feat == DNGN_ENTER_ZIGGURAT) // augh this is technically a gate
         {
-            long_desc += make_stringf(
-                    T_("\nWhile standing here, you can %senter %s "
-                    "with the <w>%s</w> key; it will vanish after you do so."),
+            long_desc += make_stringf_p(
+                    T_("\nWhile standing here, you can %1$senter %2$s with the <w>%3$s</w> key; it will vanish "
+                    "after you do so."),
                     feat == DNGN_ENTER_TROVE ? T_("try to ") : "",
                     desc_the.c_str(),
                     _esc_cmd_to_str(stair_dir).c_str());
         }
         else if (feat_is_gate(feat))
         {
-            // it's just special case after special case with these descs
-            const string how = feat == DNGN_ENTER_HELL
-                ? (stair_dir == CMD_GO_UPSTAIRS ? "to Hell" : "Hell")
-                : make_stringf(T_("through %s"), desc_the.c_str());
-            long_desc += make_stringf(
-                    T_("\nWhile standing here, you can %s %s "
-                    "with the <w>%s</w> key%s."),
-                    stair_dir == CMD_GO_DOWNSTAIRS ? T_("enter") : T_("exit"),
-                    how.c_str(),
-                    _esc_cmd_to_str(stair_dir).c_str(),
+            const string key = _esc_cmd_to_str(stair_dir);
+            if (feat == DNGN_ENTER_HELL)
+            {
+                const char *sentence = stair_dir == CMD_GO_UPSTAIRS
+                    ? N_("\nWhile standing here, you can exit to Hell with the <w>%1$s</w> key.")
+                    : N_("\nWhile standing here, you can enter Hell with the <w>%1$s</w> key.");
+                long_desc += make_stringf_p(T_(sentence), key.c_str());
+            }
+            else
+            {
+                const string action = stair_dir == CMD_GO_DOWNSTAIRS
+                                      ? T_("enter") : T_("exit");
+                const string condition =
                     (feat == DNGN_ENTER_ZOT || feat == DNGN_EXIT_VAULTS)
-                        ? T_(" if you have enough runes") : "");
+                    ? T_(" if you have enough runes") : "";
+                // Keep the route in the complete sentence. Translating an
+                // independent "through" fragment would force English word
+                // order on the localized enter/exit action.
+                long_desc += make_stringf_p(
+                    T_("\nWhile standing here, you can %1$s through %2$s "
+                       "with the <w>%3$s</w> key%4$s."),
+                    action.c_str(), desc_the.c_str(), key.c_str(),
+                    condition.c_str());
+            }
         }
     }
     else if (feat_is_altar(feat))
@@ -3791,17 +3810,15 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
     }
     else if (feat == DNGN_ENTER_SHOP)
     {
-        long_desc += make_stringf(
-                T_("\nWhile standing here, you can enter <w>%s</w> with "
-                "the <w>%s</w> key."),
+        long_desc += make_stringf_p(
+                T_("\nWhile standing here, you can enter <w>%1$s</w> with the <w>%2$s</w> key."),
                 desc.c_str(),
                 command_to_string(CMD_GO_DOWNSTAIRS).c_str());
     }
     else if (feat == DNGN_TRANSPORTER)
     {
-        long_desc += make_stringf(
-                T_("\nWhile standing here, you can enter %s with "
-                "with the <w>%s</w> key."),
+        long_desc += make_stringf_p(
+                T_("\nWhile standing here, you can enter %1$s with the <w>%2$s</w> key."),
                 desc_the.c_str(),
                 command_to_string(CMD_GO_DOWNSTAIRS).c_str());
     }
@@ -3875,9 +3892,8 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
         const bool openable = feat_is_closed_door(feat);
         const bool sealed = feat_is_sealed(feat);
 
-        long_desc += make_stringf(
-            T_("\nWhile adjacent to it, you can %s%s it by pressing the "
-            "<w>%s</w> key."),
+        long_desc += make_stringf_p(
+            T_("\nWhile adjacent to it, you can %1$s%2$s it by pressing the <w>%3$s</w> key."),
             sealed ? T_("normally ") : "",
             openable ? T_("open") : T_("close"),
             command_to_string(openable ? CMD_OPEN_DOOR : CMD_CLOSE_DOOR).c_str());

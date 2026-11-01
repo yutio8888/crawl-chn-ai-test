@@ -3759,7 +3759,28 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   负责创建，`Note::save/load` 仅原样往返，`Note::describe`、笔记界面及
   chardump/morgue 为最终显示消费者；milestone 仅处理
   `NOTE_DUNGEON_LEVEL_CHANGE`，且 xlog、Lua 比较、查找和玩法逻辑均不读取
-  `NOTE_MESSAGE.name`。其他 note type 或字段不得沿用此例外。
+  `NOTE_MESSAGE.name`。此项原始授权不自动推广到其他 note type 或字段。
+- **2026-11-01 injury snapshot audit**: 新增的精确例外仅为
+  `ouch() → death_description(DDV_TERSE) → NOTE_HP_CHANGE.name`。既有生成器
+  已按界面语言生成紧凑伤势与怪物／武器名称；本次补齐有明确生产来源的射线及
+  事件名，未知名称原样保留。`Note::save/load` 只原样往返；`Note::describe`
+  将 name 放入生命变化的方括号中，笔记界面与 chardump/morgue 仅显示该结果。
+  `_is_noteworthy` 的伤势分支只读数值 HP、最大 HP 与回合，`check_milestone`
+  只处理 `NOTE_DUNGEON_LEVEL_CHANGE`；直接读取 `note.name` 的插图转储分支
+  只处理 `NOTE_USER_NOTE`。未发现此伤势 name 被 xlog、Lua、查找或玩法比较
+  使用。原始 score 字段及辅助死因仍为英文，日志仍走英文边界；保存后的伤势
+  快照不因界面切换而回译。共享 i18n-safety 与架构文档同步登记此有限例外，
+  不改变其他笔记字段的身份约束。
+- **2026-11-01 death snapshot and log audit**: 实现域复核补充确认
+  `ouch() → death_description(DDV_NORMAL) → NOTE_DEATH.name`，以及 WIZARD
+  模拟死亡的 `DDV_VERBOSE` 路径，也原已保存当前语言的显示快照。此次精确纳入
+  同样的原样存取／不追溯重译例外；独立的巫师复活英文常量不改。
+  `_is_noteworthy` 对死亡笔记无条件接受，`Note::describe` 原样显示 name；
+  其余消费者同上，未用此 name 生成协议。复核另发现扩展 xlog 的 tmsg/vmsg
+  及死亡 milestone 直接调用 long/short kill message，原无英文 guard；现于
+  两个生产 helper 内局部强制英文并恢复界面语言，以 EN/ZH/EN 实际生产回归
+  验证，不以读回原始字段代替日志生成验证。此例外仅增加 NOTE_DEATH，
+  不扩大到其他笔记类型。
 - **Readiness translation corrections**: 污水道实体使用语境键
   `sewer drain → 排水口`，不覆盖全局 `drain → 吸血`；传送门名称统一为
   骨堂、堡垒、冰窟、盐之荒原、试炼场、死灵城；Geryon、Cerebov、
