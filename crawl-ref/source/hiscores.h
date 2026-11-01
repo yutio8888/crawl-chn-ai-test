@@ -31,6 +31,10 @@ string hiscores_format_single(const scorefile_entry &se);
 string hiscores_format_single_long(const scorefile_entry &se,
                                    bool verbose = false);
 
+// Render an existing canonical death/monster source name for display only.
+// Identity, xlog, and lookup consumers must keep the original string.
+string death_source_display_name(const string& canonical);
+
 void mark_milestone(const string &type, const string &milestone,
                     const string &origin_level = "", time_t t = 0);
 

@@ -6,6 +6,7 @@
 #include "AppHdr.h"
 
 #include "god-wrath.h"
+#include "lang-en-guard.h"
 
 #include <cmath>
 #include <queue>
@@ -70,36 +71,36 @@ static void _tso_blasts_cleansing_flame(const char *message = nullptr);
 
 static const char *_god_wrath_adjectives[] =
 {
-    "bugginess",        // NO_GOD
-    "wrath",            // Zin
-    "wrath",            // the Shining One (unused)
-    "malice",           // Kikubaaqudgha
-    "anger",            // Yredelemnul
-    "capriciousness",   // Xom
-    "wrath",            // Vehumet
-    "fury",             // Okawaru
-    "fury",             // Makhleb
-    "will",             // Sif Muna
-    "fiery rage",       // Trog
-    "wrath",            // Nemelex
-    "displeasure",      // Elyvilon
-    "touch",            // Lugonu
-    "wrath",            // Beogh
-    "all-consuming vengeance",  // Jiyva
-    "enmity",           // Fedhas Madash
-    "meddling",         // Cheibriados
-    "doom",             // Ashenzari (unused)
-    "darkness",         // Dithmenos
-    "greed",            // Gozag (unused)
-    "adversity",        // Qazlal
-    "disappointment",   // Ru
+    NC_("god wrath noun", "bugginess"),        // NO_GOD
+    NC_("god wrath noun", "wrath"),            // Zin
+    NC_("god wrath noun", "wrath"),            // the Shining One (unused)
+    NC_("god wrath noun", "malice"),           // Kikubaaqudgha
+    NC_("god wrath noun", "anger"),            // Yredelemnul
+    NC_("god wrath noun", "capriciousness"),   // Xom
+    NC_("god wrath noun", "wrath"),            // Vehumet
+    NC_("god wrath noun", "fury"),             // Okawaru
+    NC_("god wrath noun", "fury"),             // Makhleb
+    NC_("god wrath noun", "will"),             // Sif Muna
+    NC_("god wrath noun", "fiery rage"),       // Trog
+    NC_("god wrath noun", "wrath"),            // Nemelex
+    NC_("god wrath noun", "displeasure"),      // Elyvilon
+    NC_("god wrath noun", "touch"),            // Lugonu
+    NC_("god wrath noun", "wrath"),            // Beogh
+    NC_("god wrath noun", "all-consuming vengeance"),  // Jiyva
+    NC_("god wrath noun", "enmity"),           // Fedhas Madash
+    NC_("god wrath noun", "meddling"),         // Cheibriados
+    NC_("god wrath noun", "doom"),             // Ashenzari (unused)
+    NC_("god wrath noun", "darkness"),         // Dithmenos
+    NC_("god wrath noun", "greed"),            // Gozag (unused)
+    NC_("god wrath noun", "adversity"),        // Qazlal
+    NC_("god wrath noun", "disappointment"),   // Ru
 #if TAG_MAJOR_VERSION == 34
-    "progress",         // Pakellas
+    NC_("god wrath noun", "progress"),         // Pakellas
 #endif
-    "fury",             // Uskayaw
-    "memory",           // Hepliaklqana (unused)
-    "rancor",           // Wu Jian
-    "fiery vengeance",  // Ignis
+    NC_("god wrath noun", "fury"),             // Uskayaw
+    NC_("god wrath noun", "memory"),           // Hepliaklqana (unused)
+    NC_("god wrath noun", "rancor"),           // Wu Jian
+    NC_("god wrath noun", "fiery vengeance"),  // Ignis
 };
 COMPILE_CHECK(ARRAYSZ(_god_wrath_adjectives) == NUM_GODS);
 
@@ -118,9 +119,27 @@ static string _god_wrath_name(god_type god)
     const bool use_full_name = god == GOD_FEDHAS      // fedhas is very formal.
                                || god == GOD_WU_JIAN; // apparently.
 
-    return make_stringf_p(T_("the %s of %s"),
-                        _god_wrath_adjectives[god],
+    const ScopedLangEn english;
+    return make_stringf("the %s of %s", _god_wrath_adjectives[god],
                         god_name(god, use_full_name).c_str());
+}
+
+string god_wrath_display_name(const string& canonical)
+{
+    if (Options.language != lang_t::ZH)
+        return canonical;
+    for (int i = GOD_NO_GOD; i < NUM_GODS; ++i)
+    {
+        const god_type god = static_cast<god_type>(i);
+        if (canonical != _god_wrath_name(god))
+            continue;
+        const bool full_name = god == GOD_FEDHAS || god == GOD_WU_JIAN;
+        const string deity = god_name(god, full_name);
+        return make_stringf_p(C_("god wrath", "the %1$s of %2$s"),
+                              C_("god wrath noun", _god_wrath_adjectives[god]),
+                              deity.c_str());
+    }
+    return canonical;
 }
 
 static mgen_data _wrath_mon_data(monster_type mtyp, god_type god)
@@ -1651,18 +1670,18 @@ static bool _ignis_champion()
 
     // Message ordering is a bit touchy here.
     // First, we say what we're doing. TODO: more fun messages
-    const char* message = mons.size() > 1
+    const string message = mons.size() > 1
         ? T_(" anoints %s as instruments of vengeance!")
         : T_(" anoints %s as an instrument of vengeance!");
-    simple_god_message(make_stringf(message,
+    simple_god_message(make_stringf(message.c_str(),
                                     multimonster_name_string(mons).c_str()).c_str(),
                                     false, GOD_IGNIS);
 
     // Describe the effect on the monsters.
-    const char* shroud_key = (mons.size() == 1)
+    const string shroud_key = (mons.size() == 1)
         ? T_("%s is shrouded in protective flame, covering ground quickly, and attacking fiercely!")
         : T_("%s are shrouded in protective flame, covering ground quickly, and attacking fiercely!");
-    mprf(shroud_key,
+    mprf(shroud_key.c_str(),
          mons.size() == 1 ? mons[0]->name(DESC_THE).c_str() : T_("The monsters"));
 
     for (monster* mon : mons)
@@ -1673,7 +1692,7 @@ static bool _ignis_champion()
         // Then we alert it last. It's just reacting, after all.
         behaviour_event(mon, ME_ALERT, &you);
         // Assign blame (so we can look up funny deaths)
-        mons_add_blame(mon, make_stringf(T_("anointed by %s"), god_name(GOD_IGNIS).c_str()));
+        mons_add_blame(mon, make_stringf("anointed by %s", _god_name_en(GOD_IGNIS)));
     }
 
     return true;

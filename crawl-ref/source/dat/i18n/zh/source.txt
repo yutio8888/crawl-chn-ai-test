@@ -1128,7 +1128,7 @@ mimic reveal plural|%s are mimics!
 %s%s释放出%s电流，电击了%s%s
 %%%%
 %s %s erupts in a glittering mayhem of colour.
-%s的%s爆发出一片五彩缤纷的混乱光芒。
+%s%s爆发出一片五彩缤纷的混乱光芒。
 %%%%
 %s %s falls to the floor!
 %s%s掉落在了地上！
@@ -1745,7 +1745,7 @@ barrage of energy
 %s恢复了%s%s的记忆。
 %%%%
 %s removes the imprint of %s from your paragon.
-%s从你的典范武器上抹去了%s的印记。
+%s从你的白金典范身上抹去了%s的印记。
 %%%%
 %s responds to your shapeshifting skill and transforms into a %s!
 %s响应了你的变形术技能，变成了%s！
@@ -1898,10 +1898,10 @@ barrage of energy
 %s从黑暗中攻击%s！
 %%%%
 %s suddenly %s%s!
-%s突然%s了%s！
+%s突然%s%s！
 %%%%
 %s suddenly %sand looks braver for a moment!
-%s突然%s，暂时看起来更勇敢了！
+%s突然%s而且一时间显得更勇敢了！
 %%%%
 %s summons some %s!
 %s召唤了一些%s！
@@ -1994,7 +1994,7 @@ You feel the abyssal rune grow more distant.
 %s的愤怒不会持续太久了。
 %%%%
 %s's %s flies into the air!
-%s的%s飞向了空中！
+%s%s飞向了空中！
 %%%%
 %s's clockwork bee locks onto %s.
 %s的发条蜜蜂锁定了%s。
@@ -2189,7 +2189,7 @@ You feel the abyssal rune grow more distant.
 ，噪音
 %%%%
 , Permanent MP (%d remaining)
-，永久魔力（剩余%d）
+，永久法力（剩余%d）
 %%%%
 , Piety %s
 ，虔诚值%s
@@ -3473,7 +3473,7 @@ Casting: <w>%s</w> <lightgrey>(%s)</lightgrey>
 正在施放: <w>%s</w> <lightgrey>(%s)</lightgrey>
 %%%%
  casts you out from the arena!
- 将你逐出了角斗场！
+将你逐出了竞技场！
 %%%%
  causes a mighty clap of thunder!
  引发了一声惊雷巨响！
@@ -3891,10 +3891,10 @@ Dithmenos
 迪斯姆诺
 %%%%
  divine weapons fail to arrive.
- 的神圣武器未能到来。
+神圣武器未能到来。
 %%%%
  divine wrath fails to arrive.
- 的神圣怒火未能降临。
+神圣怒火未能降临。
 %%%%
 Do you want to bribe the denizens of %s?
 你想贿赂%s的居民吗？
@@ -3906,7 +3906,7 @@ Do you want to play with this combination? [Y/n/q]
 不接受你这样的乞丐的服务！
 %%%%
  does not accept worship from the loveless!
-不接受没有爱人的存在崇拜！
+不接受丧失了爱的存在崇拜！
 %%%%
  does not accept worship from those such as you!
 不接受像你这样的存在崇拜！
@@ -4260,7 +4260,7 @@ Follow me!
 因邪恶
 %%%%
  forces are busy with other wars.
- 的军队正忙于其他战事。
+军队正忙于其他战事。
 %%%%
  forgives your accidental hurry, just this once.
  原谅了你意外的匆忙行为，下不为例。
@@ -4272,7 +4272,7 @@ Follow me!
  原谅了你对盟友的无意攻击，下不为例。
 %%%%
  forgives your inadvertent chaotic act, just this once.
- 原谅了你无意中的混乱行为，下不为例。
+ 原谅了你无意中的混沌行为，下不为例。
 %%%%
  forgives your inadvertent evil act, just this once.
  原谅了你无意中的邪恶行为，下不为例。
@@ -4356,7 +4356,7 @@ ghostly
 鬼魅
 %%%%
  gift of slime is revoked.
-的黏泥赠礼被收回了。
+黏泥赠礼被收回了。
 %%%%
  gifted 
 赐予了你
@@ -5330,7 +5330,7 @@ minions
 随从们
 %%%%
  minions fail to arrive.
- 的仆从未能到来。
+仆从未能到来。
 %%%%
 minions thank you for their
 随从们感谢你给了他们
@@ -6333,7 +6333,7 @@ select action to be Quivered
 选择快捷施放动作
 %%%%
 Select an artefact weapon to imprint upon your Paragon.
-选择一把神器武器铭刻到你的模范上。
+选择一把神器武器，将其印记刻入你的白金典范。
 %%%%
 Select the skills you want to be trained. The chosen skills will be raised to the level shown in <cyan>cyan</cyan>.
 选择你想要训练的技能。所选技能将被提升至<cyan>青色</cyan>显示的等级。
@@ -6372,7 +6372,7 @@ seriously
 严重
 %%%%
  servants fail to arrive.
- 的仆从未能到来。
+仆从未能到来。
 %%%%
 set skill target
 设定技能目标
@@ -6535,7 +6535,7 @@ Some rocks are dislodged from the ceiling.
 一些岩石从天花板上脱落下来。
 %%%%
 Some slimes ooze up out of the ground!
-一些粘液从地下渗了出来！
+一些黏泥生物从地下冒了出来！
 %%%%
 Something
 某个东西
@@ -7195,7 +7195,7 @@ the denizens of %s
 %s的居民
 %%%%
 The divine experience confuses you!
-神圣的体验让你头晕目眩！
+神圣的体验使你陷入混乱！
 %%%%
 The divine experience drains your vigour!
 神圣的体验吸干了你的精力！
@@ -8316,7 +8316,7 @@ Vitriol
 硫酸
 %%%%
  voice booms out: Traitor to your kin!
-的声音轰鸣道：背叛同胞者！
+声音轰鸣道：背叛同胞者！
 %%%%
 vulnerability
 脆弱
@@ -8535,10 +8535,10 @@ wizardry (x%d)
 伤口自行愈合了！
 %%%%
  wrath finds you.
- 的怒火找到了你。
+怒火找到了你。
 %%%%
  wrath scatters you!
- 的怒火将你撕裂传送！
+怒火将你撕裂传送！
 %%%%
 wreathed by umbra
 被暗影环绕
@@ -8660,10 +8660,10 @@ The shaft disappears in a puff of logic!
 竖井在一阵逻辑中消失了！
 %%%%
 you anoint %1$s with ash and charcoal and welcome %1$s as a companion.
-你用灰烬和炭为%1$s涂油，欢迎其成为同伴。
+你将灰烬和木炭涂在%1$s身上，欢迎%1$s成为同伴。
 %%%%
 You anoint %1$s with ash and charcoal and welcome %2$s as a companion.
-你用灰烬和炭为%1$s涂油，欢迎其成为同伴。%2$.0s
+你将灰烬和木炭涂在%1$s身上，欢迎%2$s成为同伴。
 %%%%
 You are %s empty-clawed.
 你%s是空爪状态。
@@ -8696,7 +8696,7 @@ You are already invoking Yredulemnul's grip!
 你已经在施展伊莱德莱姆努尔之握了！
 %%%%
 You are already lashing out.
-你已经在猛烈攻击了。
+你已经发动蛇之鞭笞了。
 %%%%
 You are already making a cacophony!
 你已经在制造刺耳噪音了！
@@ -8858,7 +8858,7 @@ You are too depleted to draw on your %s recklessly!
 你过于虚弱，无法鲁莽地消耗%s！
 %%%%
 You are too exhausted to lash out.
-你太疲惫了，无法猛烈攻击。
+你已力竭，无法发动蛇之鞭笞。
 %%%%
 You are too frail to live.
 你太脆弱了，无法生存。
@@ -9011,7 +9011,7 @@ You begin to imbue your servitor with knowledge of %s.
 你开始向你的仆从灌输%s的知识。
 %%%%
 You begin to imprint %s upon your paragon.
-你开始将印记铭刻到%s上。
+你开始将%s的印记刻入你的白金典范。
 %%%%
 You begin to meditate on the wall.
 你开始冥想这面墙壁。
@@ -9545,10 +9545,10 @@ You cannot walk through the dense trees.
 你无法穿过茂密的树木。
 %%%%
 You cannot wall jump away from %s!
-你不能远离%s进行墙壁跳跃！
+你不能通过蹬墙跳远离%s！
 %%%%
 You cannot wall jump closer to %s!
-你不能靠近%s进行墙壁跳跃！
+你不能通过蹬墙跳靠近%s！
 %%%%
 You cannot wall jump while caught in a %s.
 你被%s困住时无法蹬墙跳。
@@ -10241,7 +10241,7 @@ You feel the presence of a powerless spirit.
 你感到一个无力之灵的存在。
 %%%%
 You feel the Shining One's silent rage upon you!
-你感受到光明之神的沉默怒火降临在你身上！
+你感受到光辉者的沉默怒火降临在你身上！
 %%%%
 You feel the transmutational energy in your body is nearly expended.
 你感到体内的变化能量几乎耗尽了。
@@ -10352,7 +10352,7 @@ You finish imbuing your servitor.
 你完成了向仆从灌输知识。
 %%%%
 You finish imprinting the physical structure of %s upon your paragon.
-你完成了将%s的物理结构铭刻到模范上。
+你完成了将%s的物理结构刻入你的白金典范。
 %%%%
 You finish memorising.
 你完成了记忆法术。
@@ -10490,7 +10490,7 @@ You have nothing you can fire or use right now.
 你现在没有可以发射或使用的东西。
 %%%%
 You have raised the torch once already on this floor. Yredelemnul offers no second chances.
-你已在本层举起过一次火炬。伊雷德勒姆努不会给予第二次机会。
+你已在本层举起过一次火炬。伊莱德莱姆努尔不会给予第二次机会。
 %%%%
 You have recovered your %s.
 你已经恢复了%s。
@@ -10577,7 +10577,7 @@ You hear the singing of a choir!
 你听到了唱诗班的歌声！
 %%%%
 You hold the Black Torch high and begin your conquest of %s in Yredelemnul's name!
-你高举起黑火炬，开始了对%s的征服，以伊雷德勒姆努之名！
+你高举起黑火炬，以伊莱德莱姆努尔之名开始征服%s！
 %%%%
 You imbue your battlesphere with extra charge.
 你为你的战斗法球注入了额外的充能。
@@ -11266,7 +11266,7 @@ Your %s mutation feels more permanent.
 你的%s变异感觉更加永久了。
 %%%%
 Your %s shines brightly with a divine light!
-你的%s闪耀着明亮的光芒！
+你的%s闪耀着明亮的神圣光芒！
 %%%%
 Your %s skill decreases to level %d!
 你的%s技能降低至%d级！
@@ -11569,7 +11569,7 @@ Your magic is already full.
 你的法力已经回满了。
 %%%%
 Your magical essence is drained by the effort!
-你的魔力精华在这场消耗中枯竭了！
+这番努力损耗了你的魔法精华！
 %%%%
 Your magical reserves are too exhausted to conjure more reagents.
 你的魔力储备太枯竭，无法召唤更多试剂。
@@ -13009,16 +13009,16 @@ There isn't enough space to grow briars here.
 这里没有足够的空间生长荆棘。
 %%%%
 You're too exhausted to draw out your power.
-你太疲惫了，无法引出力量。
+你已力竭，无法引出力量。
 %%%%
 You have no need to draw out power.
 你无需引出力量。
 %%%%
 You're too exhausted to power leap.
-你太疲惫了，无法进行强力跳跃。
+你已力竭，无法进行强力跳跃。
 %%%%
 You're too exhausted to unleash your apocalyptic power.
-你太疲惫了，无法释放末日之力。
+你已力竭，无法释放末日之力。
 %%%%
 You have exhausted your breath weapon. Slay more foes!
 你的吐息武器已耗尽。杀死更多敌人吧！
@@ -13254,7 +13254,7 @@ You offer up the Black Torch's flame, and Yredelemnul is satisfied with your con
 %%%%
 You offer up the Black Torch's flame, and feel Yredelemnul's disappointment in your meagre crusade.
 
-你献上黑炬之火，感到伊莱德莱姆努尔对你苍白的十字军感到失望。
+你献上黑火炬之火，感到伊莱德莱姆努尔对你收效甚微的征战感到失望。
 %%%%
 You offer up the Black Torch's flame, and feel Yredelemnul's disdain for your failure.
 
@@ -13285,7 +13285,7 @@ Lets you pick
 选择
 %%%%
  looks rather more confused.
-看起来更加困惑了。
+看起来更加混乱了。
 %%%%
  is shoved forward by the hand of Xom!
 被佐姆之手猛推向前！
@@ -15028,7 +15028,7 @@ god title|Frenzied
 狂乱者
 %%%%
 @Genus@ of Prey
-待宰的@Genus@
+猎食的@Genus@
 %%%%
 Rampant
 暴怒者
@@ -24051,7 +24051,7 @@ You sense an intense heat on the other side of the rock.
 你感应到岩石另一侧有强烈的热量。
 %%%%
  looks rather confused.
-看起来相当困惑。
+看起来相当混乱。
 %%%%
 You attempt to intoxicate your foes!
 你试图使敌人陶醉！
@@ -26185,7 +26185,7 @@ Do you really want to make this sacrifice?
 你真的要做出这个牺牲吗？
 %%%%
 Do you really want to reject the sacrifices Ru is offering?
-你真的要拒绝如神提供的牺牲吗？
+你真的要拒绝入提供的这些献祭选项吗？
 %%%%
 Do you wish to donate half of your money?
 你希望捐献一半的金钱吗？
@@ -26248,7 +26248,7 @@ There are no visible enemies. Unleash your apocalypse anyway?
 没有可见的敌人。仍然释放你的天启吗？
 %%%%
 There's no one hasty visible. Invoke Slouch anyway?
-看不到匆忙的敌人。仍然发动迟缓吗？
+没有可见的生物会受到影响。仍发动懒散步伐吗？
 %%%%
 There's no open space to fill with poison.
 没有可填充毒气的空地。
@@ -29502,8 +29502,7 @@ potent
 强大的
 %%%%
 repeatedly 
-
-连续的
+连续地
 %%%%
 replica 
 
@@ -35455,10 +35454,10 @@ Jiyva will unlock the Slime Pits vault.
 对你的吟诵嗤之以鼻。
 %%%%
  is dazed by your recitation.
-被你的吟诵震慑了。
+被你的吟诵弄得眩晕了。
 %%%%
  is confused by your recitation.
-被你的吟诵迷惑了。
+被你的吟诵弄得混乱了。
 %%%%
  stumbles about in disarray.
 慌乱地踉跄着。
@@ -35482,7 +35481,7 @@ Jiyva will unlock the Slime Pits vault.
 被银光笼罩了。
 %%%%
  quails at your recitation.
-被你的吟诵吓退了。
+因你的吟诵而畏缩了。
 %%%%
  looks feeble and powerless before your recitation.
 在你的吟诵前显得虚弱无力。
@@ -35494,16 +35493,16 @@ Jiyva will unlock the Slime Pits vault.
 被辛之怒逼疯了！
 %%%%
  is left stupefied by the wrath of Zin!
-被辛之怒震慑了！
+被辛之怒弄得呆傻了！
 %%%%
  chaotic flesh sizzles and spatters!
-的混沌之肉滋滋作响，溅出液体！
+混沌之肉滋滋作响，溅出液体！
 %%%%
  chaotic flesh bubbles and boils.
-的混沌之肉冒出气泡，沸腾不已。
+混沌之肉冒出气泡，沸腾不已。
 %%%%
  chaotic flesh runs like molten wax.
-的混沌之肉如熔蜡般流淌。
+混沌之肉如熔蜡般流淌。
 %%%%
  melts away into a sizzling puddle of chaotic flesh.
 溶化成一滩滋滋作响的混沌血肉。
@@ -37542,10 +37541,10 @@ charmed %d monster%s
 魅惑了%d只怪物%s
 %%%%
 drained mp
-吸取了魔法
+吸取了法力
 %%%%
 drained mp, created monsters
-吸取了魔法，创造了怪物
+吸取了法力，创造了怪物
 %%%%
 enchant monster%s (%s, %s)
 附魔怪物%s（%s，%s）
@@ -37587,7 +37586,7 @@ summons %d hostile %s%s
 召唤了%d只敌对%s%s
 %%%%
 summons %d living force lance%s
-召唤了%d根活体力量长枪%s
+召唤了%d个活体力量之矛%s
 %%%%
 the %s of %s
 %2$s之%1$s
@@ -38082,7 +38081,7 @@ This ability takes some time before being effective.
 此能力需要一定时间才能生效。
 %%%%
 Using this ability will hurt you for a large fraction of your current HP.
-使用此能力将消耗你当前生命值的大部分。
+使用此能力会使你损失当前生命值的相当一部分。
 %%%%
 Using this ability invokes torment.
 使用此能力会引发折磨效果。
@@ -43216,7 +43215,7 @@ You feel yourself growing ill in the presence of %s.
 \n如果你做出此牺牲，入赐予你的力量将根据牺牲的价值变强，你可能还会获得新的力量。\n\n牺牲不可撤销。\n
 %%%%
  will brand one of your weapons with the corruption of the Abyss.
- 将用深渊的腐化之力为你的某件武器附魔。
+将以深渊的腐化之力为你的一件武器赋予铭印。
 %%%%
 Your lungs are flooded with %s and you cannot breathe.
 你的肺部被%s淹没，无法呼吸。
@@ -49803,3 +49802,525 @@ A bound item is preventing you from removing %s.
 melee action|hit
 击打
 %%%%
+%%%%
+You are already invoking Yredelemnul's grip!
+你已经在召唤伊莱德莱姆努尔之握了！
+%%%%
+Do you wish to have %s bloodied with pain?
+你希望让%s沾染痛苦之血吗？
+%%%%
+Do you wish to have %s corrupted with distortion?
+你希望让%s受到扭曲的腐化吗？
+%%%%
+Do you wish to have %s blessed with holy wrath?
+你希望让%s受到圣怒的祝福吗？
+%%%%
+Do you wish to donate about half of your money?
+你希望捐献约一半的金钱吗？
+%%%%
+Clouds around you coalesce and take form!
+你周围的云雾凝聚成形！
+%%%%
+ doubts %s magic when faced with ultimate truth!
+面对终极真相，开始怀疑%s魔法！
+%%%%
+ is paralysed by terrible understanding!
+因领悟可怕的真相而陷入麻痹！
+%%%%
+ slows down under the weight of truth!
+被真相的重负压得缓慢了！
+%%%%
+%s swap places with %s!
+%s与%s交换了位置！
+%%%%
+%s swaps places with %s!
+%s与%s交换了位置！
+%%%%
+ (press <w>%1$c</w> on the <w>%2$s</w>bility menu to recruit an apostle)
+（在能力菜单（<w>%2$s</w>）中按<w>%1$c</w>招募使徒）
+%%%%
+You spin and attack %1$s%2$s%3$s.
+你%2$s旋转攻击%1$s%3$s。
+%%%%
+god choice list| or 
+或
+%%%%
+god choice list|, 
+、
+%%%%
+The Council
+无间议会
+%%%%
+Wu Jian speaker|Sifu %1$s%2$s
+%1$s师父%2$s
+%%%%
+The Shining One will no longer bless your followers when you slay foes.
+光辉者不再在你击杀敌人时祝福你的追随者。
+%%%%
+Your bonds shatter.
+你的枷锁破碎了。
+%%%%
+ does not appreciate desertion for chaos!
+不喜欢你背弃信仰、转投混沌！
+%%%%
+ does not appreciate desertion for evil!
+不喜欢你背弃信仰、转投邪恶！
+%%%%
+ does not appreciate desertion!
+不喜欢你背弃信仰！
+%%%%
+Which god (by name)? 
+选择哪位神祇（输入名字）？
+%%%%
+Which god (default %s)? 
+选择哪位神祇（默认%s）？
+%%%%
+The dungeon churns and warps with monstrous intensity.
+地牢以骇人的强度翻腾扭曲。
+%%%%
+The dungeon churns and warps violently around you.
+你周围的地牢剧烈地翻腾扭曲。
+%%%%
+The dungeon churns and shimmers intensely around you.
+你周围的地牢剧烈地翻腾闪烁。
+%%%%
+some nearby snacks are swapped around
+附近的一些零食互换了位置
+%%%%
+some trees are warped by chaos
+一些树木被混沌扭曲了
+%%%%
+Xom scenery list|, and 
+，而且
+%%%%
+Xom scenery list|, 
+，
+%%%%
+A door bursts open
+一扇门猛然打开
+%%%%
+Two doors burst open
+两扇门猛然打开
+%%%%
+Several doors burst open
+几扇门猛然打开
+%%%%
+another door slams shut
+另一扇门砰地关上
+%%%%
+two other doors slam shut
+另外两扇门砰地关上
+%%%%
+several other doors slam shut
+另外几扇门砰地关上
+%%%%
+a door slams shut
+一扇门砰地关上
+%%%%
+two doors slam shut
+两扇门砰地关上
+%%%%
+several doors slam shut
+几扇门砰地关上
+%%%%
+becomes %s, 
+变得%s，
+%%%%
+You and everything else in sight speed up!
+你和视野内的其他所有生物都加速了！
+%%%%
+You and everything else in sight slow down!
+你和视野内的其他所有生物都减速了！
+%%%%
+You and everything else in sight suddenly stop moving!
+你和视野内的其他所有生物都突然停止了行动！
+%%%%
+You feel mightier and more confused.
+你感到更加强大，也更加混乱了。
+%%%%
+You feel mightier and confused.
+你感到更加强大，同时陷入了混乱。
+%%%%
+You feel very mighty and more confused.
+你感到非常强大，也更加混乱了。
+%%%%
+You feel very mighty and confused.
+你感到非常强大，同时陷入了混乱。
+%%%%
+Xom recall delivery|dramatically intoning
+夸张地吟唱
+%%%%
+Xom recall delivery|shouting
+大喊
+%%%%
+Xom recall delivery|barking
+吠叫着念诵
+%%%%
+Xom recall delivery|howling
+嚎叫着念诵
+%%%%
+Xom recall delivery|shouting twice-over
+用双重声音大喊
+%%%%
+Xom recall delivery|roaring
+咆哮着念诵
+%%%%
+Xom recall delivery|screaming
+尖叫着念诵
+%%%%
+Xom recall delivery|bellowing
+吼叫着念诵
+%%%%
+Xom recall delivery|bleating
+咩咩叫着念诵
+%%%%
+Xom recall delivery|trumpeting
+发出号角般的声音念诵
+%%%%
+Xom recall delivery|screeching
+尖啸着念诵
+%%%%
+Xom recall delivery|buzzing
+嗡嗡叫着念诵
+%%%%
+Xom recall delivery|chillingly moaning
+令人毛骨悚然地呻吟着念诵
+%%%%
+Xom recall delivery|gurgling
+咕噜叫着念诵
+%%%%
+Xom recall delivery|croaking
+呱呱叫着念诵
+%%%%
+Xom recall delivery|growling
+低吼着念诵
+%%%%
+Xom recall delivery|hissing
+嘶嘶叫着念诵
+%%%%
+Xom recall delivery|weaving
+编织
+%%%%
+Xom recall delivery|faintly weaving
+微弱地编织
+%%%%
+Xom recall delivery|sneering
+讥笑着念诵
+%%%%
+Xom recall delivery|speaking
+念诵
+%%%%
+Xom recall delivery|squealing
+尖声叫着念诵
+%%%%
+Xom recall delivery|scribing
+书写
+%%%%
+Xom recall delivery|squeaking
+吱吱叫着念诵
+%%%%
+Ru sacrifice list| and 
+和
+%%%%
+Ru sacrifice list|, 
+、
+%%%%
+Ru sacrifice offer|%1$s: %2$s
+%1$s：%2$s
+%%%%
+You cannot wall jump against %s.
+你无法借助%s蹬墙跳。
+%%%%
+god wrath|the %1$s of %2$s
+%2$s之%1$s
+%%%%
+anointed by %1$s
+受%1$s膏立
+%%%%
+something unseen
+某个看不见的东西
+%%%%
+give mutation
+赋予了突变
+%%%%
+give mutations
+赋予了多种突变
+%%%%
+give good mutation
+赋予了有益突变
+%%%%
+give good mutations
+赋予了多种有益突变
+%%%%
+give random mutation
+赋予了随机突变
+%%%%
+give random mutations
+赋予了多种随机突变
+%%%%
+charmed %d monster
+魅惑了%d个怪物
+%%%%
+charmed %d monsters
+魅惑了%d个怪物
+%%%%
+summons %d living force lance
+召唤了%d个活体力量之矛
+%%%%
+summons %d living force lances
+召唤了%d个活体力量之矛
+%%%%
+summons %d hostile shadow creature
+召唤了%d个敌对暗影生物
+%%%%
+summons %d hostile shadow creatures
+召唤了%d个敌对暗影生物
+%%%%
+summons %d hostile chaos creature
+召唤了%d个敌对混沌生物
+%%%%
+summons %d hostile chaos creatures
+召唤了%d个敌对混沌生物
+%%%%
+made a ring of doors, pushed %d other out
+造出一圈门，将%d个怪物推到圈外
+%%%%
+made a ring of doors, pushed %d others out
+造出一圈门，将%d个怪物推到圈外
+%%%%
+made a ring of doors, pulled %d other in
+造出一圈门，将%d个怪物拉进圈内
+%%%%
+made a ring of doors, pulled %d others in
+造出一圈门，将%d个怪物拉进圈内
+%%%%
+buffed friendly %s %d times
+强化了友方%s %d次
+%%%%
+enchant monster (%s, %s)
+给怪物施加魔法效果（%s，%s）
+%%%%
+enchant monsters (%s, %s)
+给多个怪物施加魔法效果（%s，%s）
+%%%%
+torment player (%d/%d hp)
+折磨了玩家（生命%d/%d）
+%%%%
+torment all (%d/%d hp)
+折磨了全体（玩家生命%d/%d）
+%%%%
+summoned %d hostile illusions + %d friendly illusions
+召唤了%d个敌对幻象和%d个友方幻象
+%%%%
+scenery: 
+场景：
+%%%%
+Ru sacrifice offer|corrupt yourself such that
+让自身受到侵蚀，造成以下后果
+%%%%
+Ru sacrifice offer|sacrifice your ability to read unless badly injured
+献祭你的阅读能力，除非身受重伤，否则无法阅读
+%%%%
+Ru sacrifice offer|sacrifice your ability to drink unless badly injured
+献祭你的饮用能力，除非身受重伤，否则无法饮用
+%%%%
+Ru sacrifice offer|sacrifice your ability to go unnoticed
+献祭你不被注意到的能力
+%%%%
+Ru sacrifice offer|sacrifice all use of magical tools
+献祭你使用所有魔法器具的能力
+%%%%
+Ru sacrifice offer|sacrifice your ability to be loved
+献祭你被爱的能力
+%%%%
+Ru sacrifice offer|sacrifice your courage
+献祭你的勇气
+%%%%
+Ru sacrifice offer|sacrifice all use of
+献祭你使用以下学派的能力
+%%%%
+Ru sacrifice offer|sacrifice your Dodging skill
+献祭你的闪避技能
+%%%%
+Ru sacrifice offer|sacrifice your Armour skill
+献祭你的护甲技能
+%%%%
+Ru sacrifice offer|sacrifice one of your %s
+献祭你%s中的一只
+%%%%
+Ru sacrifice offer|sacrifice your experiences
+献祭你的经验
+%%%%
+Ru sacrifice offer|sacrifice your skill
+献祭你的技能
+%%%%
+Ru sacrifice offer|sacrifice an eye
+献祭一只眼睛
+%%%%
+Ru sacrifice offer|sacrifice your resistance to extreme temperatures
+献祭你对极端温度的抗性
+%%%%
+Ru sacrifice offer|sacrifice your ability to change forms
+献祭你改变形态的能力
+%%%%
+%s %s flies into the air!
+%s%s飞向了空中！
+%%%%
+god wrath noun|bugginess
+故障
+%%%%
+god wrath noun|wrath
+神怒
+%%%%
+god wrath noun|malice
+恶意
+%%%%
+god wrath noun|anger
+怒火
+%%%%
+god wrath noun|capriciousness
+反复无常
+%%%%
+god wrath noun|fury
+狂怒
+%%%%
+god wrath noun|will
+意志
+%%%%
+god wrath noun|fiery rage
+烈焰之怒
+%%%%
+god wrath noun|displeasure
+不悦
+%%%%
+god wrath noun|touch
+触碰
+%%%%
+god wrath noun|all-consuming vengeance
+吞噬一切的复仇
+%%%%
+god wrath noun|enmity
+敌意
+%%%%
+god wrath noun|meddling
+干预
+%%%%
+god wrath noun|doom
+厄运
+%%%%
+god wrath noun|darkness
+黑暗
+%%%%
+god wrath noun|greed
+贪婪
+%%%%
+god wrath noun|adversity
+灾厄
+%%%%
+god wrath noun|disappointment
+失望
+%%%%
+god wrath noun|progress
+进步
+%%%%
+god wrath noun|memory
+记忆
+%%%%
+god wrath noun|rancor
+怨恨
+%%%%
+god wrath noun|fiery vengeance
+烈焰复仇
+%%%%
+made a ring of doors, pulled %d in and pushed %d out
+造出一圈门，将%d个怪物拉进圈内，并将%d个怪物推到圈外
+%%%%
+summons %d friend
+召唤了%d个友军
+%%%%
+summons %d friends
+召唤了%d个友军
+%%%%
+%d-stop teleportation journey
+进行了%d站的传送之旅
+%%%%
+%d-stop teleportation journey (dangerous)
+进行了%d站的传送之旅（危险）
+%%%%
+potion effect (%s)
+药水效果（%s）
+%%%%
+%s suddenly %s!
+%s突然%s！
+%%%%
+Xom enchantment list|, 
+，
+%%%%
+deck summary list| and 
+和
+%%%%
+deck summary list|, 
+、
+%%%%
+Xom enchantment predicate|starts petrifying slowly
+开始缓慢地石化
+%%%%
+Xom enchantment predicate|looks paralysed
+看起来麻痹了
+%%%%
+Xom enchantment predicate|looks fragile as glass
+看起来像玻璃般脆弱
+%%%%
+Xom enchantment predicate|looks slow
+看起来缓慢了
+%%%%
+Xom enchantment predicate|looks fast
+看起来迅捷了
+%%%%
+Xom enchantment predicate|looks strong
+看起来强壮了
+%%%%
+Xom enchantment predicate|starts regenerating
+开始再生
+%%%%
+Xom enchantment predicate|looks unusually resistant
+看起来抗性异常强大
+%%%%
+Xom enchantment predicate|starts covering ground quickly
+开始迅速移动
+%%%%
+Xom enchantment predicate|looks slightly transparent
+看起来有些透明
+%%%%
+Xom enchantment predicate|has its spells empowered
+获得了法术强化
+%%%%
+Xom enchantment predicate|starts deflecting missiles
+开始偏转飞弹
+%%%%
+Xom enchantment predicate|starts radiating toxic energy
+开始散发有毒能量
+%%%%
+Xom enchantment predicate|becomes interlaced with chaos
+被混沌之力缠绕了
+%%%%
+Xom enchantment predicate|becomes damage-immune at range
+获得了对非相邻来源伤害的免疫
+%%%%
+Xom enchantment predicate|becomes doubled in vigour
+活力加倍了
+%%%%
+Xom enchantment predicate|starts reflecting injuries
+开始反射所受伤害
+%%%%
+Xom enchantment predicate|looks strong-willed
+看起来意志坚强
+%%%%
+Xom enchantment predicate|becomes touched by paradox
+受到了悖论的触碰
+%%%%
+ (upgrade)
+（强化）
+%%%%
+ (downgrade)
+（弱化）

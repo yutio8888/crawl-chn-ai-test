@@ -6,6 +6,7 @@
 #include "AppHdr.h"
 
 #include "god-abil.h"
+#include "lang-en-guard.h"
 
 #include <cmath>
 #include <numeric>
@@ -182,14 +183,12 @@ bool bless_weapon(god_type god, brand_type brand, colour_t colour)
         return false;
     }
 
-    string what;
-    if (brand == SPWPN_PAIN)
-        what = T_("bloodied with pain");
-    else if (brand == SPWPN_DISTORTION)
-        what = T_("corrupted with distortion");
-    else
-        what = T_("blessed with holy wrath");
-    string prompt = make_stringf(T_("Do you wish to have %s %s?"), wpn.name(DESC_YOUR).c_str(), what.c_str());
+    const char* prompt_key = brand == SPWPN_PAIN
+        ? N_("Do you wish to have %s bloodied with pain?")
+        : brand == SPWPN_DISTORTION
+            ? N_("Do you wish to have %s corrupted with distortion?")
+            : N_("Do you wish to have %s blessed with holy wrath?");
+    const string prompt = make_stringf(T_(prompt_key), wpn.name(DESC_YOUR).c_str());
     if (!yesno(prompt.c_str(), true, 'n'))
     {
         canned_msg(MSG_OK);
@@ -271,7 +270,7 @@ bool zin_donate_gold()
         return false;
     }
 
-    if (!yesno(T_("Do you wish to donate half of your money?"), true, 'n'))
+    if (!yesno(T_("Do you wish to donate about half of your money?"), true, 'n'))
     {
         canned_msg(MSG_OK);
         return false;
@@ -3828,7 +3827,7 @@ static void _gozag_place_shop(int index)
                     decline_pronoun(gender, PRONOUN_POSSESSIVE),
                     shop_type_name(shop->type).c_str(),
                     !shop->shop_suffix_name.empty() ? " " : "",
-                    shop->shop_suffix_name.c_str());
+                    C_("shop name suffix", shop->shop_suffix_name.c_str()));
 }
 
 static bool _shop_type_valid(shop_type type)
@@ -4381,7 +4380,7 @@ spret qazlal_elemental_force(bool fail)
     }
 
     if (placed)
-        mprf(MSGCH_GOD, T_("Clouds arounds you coalesce and take form!"));
+        mprf(MSGCH_GOD, T_("Clouds around you coalesce and take form!"));
     else
         canned_msg(MSG_NOTHING_HAPPENS); // can this ever happen?
 
@@ -5338,44 +5337,47 @@ bool ru_do_sacrifice(ability_type sac)
             you.props[sac_def.sacrifice_vector].get_vector();
         num_sacrifices = sacrifice_muts.size();
 
+        vector<string> schools_display;
+        vector<string> schools_en;
+        string sac_text_en;
         for (int i = 0; i < num_sacrifices; i++)
         {
             mut = AS_MUT(sacrifice_muts[i]);
-
-            // format the text that will be displayed
             if (is_sac_arcana)
             {
-                if (i == num_sacrifices - 1)
-                {
-                    sac_text = make_stringf(
-                        T_("%s and %s"),
-                        sac_text.c_str(),
-                        _arcane_mutation_to_school_name(mut));
-                }
-                else
-                {
-                    sac_text = make_stringf("%s%s, ", sac_text.c_str(),
-                        _arcane_mutation_to_school_name(mut));
-                }
+                schools_display.emplace_back(_arcane_mutation_to_school_name(mut));
+                const ScopedLangEn english;
+                schools_en.emplace_back(_arcane_mutation_to_school_name(mut));
             }
             else
+            {
                 sac_text = innate_mut_upgrade_summary(mut);
+                const ScopedLangEn english;
+                sac_text_en = innate_mut_upgrade_summary(mut);
+            }
         }
-        offer_text = make_stringf("%s: %s", sac_def.sacrifice_text,
-            sac_text.c_str());
+        if (is_sac_arcana)
+        {
+            sac_text = comma_separated_line(schools_display.begin(), schools_display.end(),
+                C_("Ru sacrifice list", " and "), C_("Ru sacrifice list", ", "));
+            sac_text_en = comma_separated_line(schools_en.begin(), schools_en.end(),
+                                               " and ", ", ");
+        }
+        offer_text = make_stringf_p(C_("Ru sacrifice offer", "%1$s: %2$s"),
+            C_("Ru sacrifice offer", sac_def.sacrifice_text), sac_text.c_str());
         mile_text = make_stringf("%s: %s.", sac_def.milestone_text,
-            sac_text.c_str());
+                                sac_text_en.c_str());
     }
     else
     {
         variable_sac = false;
         mut = sac_def.mutation;
         num_sacrifices = 1;
-        string handtxt = "";
         if (sac == ABIL_RU_SACRIFICE_HAND)
-            handtxt = you.hand_name(true);
-
-        offer_text = sac_def.sacrifice_text + handtxt;
+            offer_text = make_stringf(C_("Ru sacrifice offer", sac_def.sacrifice_text),
+                                     you.hand_name(true).c_str());
+        else
+            offer_text = C_("Ru sacrifice offer", sac_def.sacrifice_text);
         mile_text = make_stringf("%s.", sac_def.milestone_text);
     }
 
@@ -5811,22 +5813,23 @@ static int _apply_apocalypse(coord_def where)
         case 0:
             if (mons->antimagic_susceptible())
             {
-            message = T_(" doubts ") + mons->pronoun(PRONOUN_POSSESSIVE)
-                      + T_(" magic when faced with ultimate truth!");
+                message = make_stringf(
+                    T_(" doubts %s magic when faced with ultimate truth!"),
+                    mons->pronoun(PRONOUN_POSSESSIVE).c_str());
                 enchantment = ENCH_ANTIMAGIC;
                 duration = 500 + random2(200);
                 num_dice = 4;
                 break;
             } // if not antimagicable, fall through to paralysis.
         case 1:
-            message = " is paralysed by terrible understanding!";
+            message = T_(" is paralysed by terrible understanding!");
             enchantment = ENCH_PARALYSIS;
             duration = 80 + random2(60);
             num_dice = 4;
             break;
 
         case 2:
-            message = " slows down under the weight of truth!";
+            message = T_(" slows down under the weight of truth!");
             enchantment = ENCH_SLOW;
             duration = 300 + random2(100);
             num_dice = 6;
@@ -6101,7 +6104,7 @@ spret uskayaw_grand_finale(bool fail)
         else if (cell_is_solid(beam.target))
         {
             clear_messages();
-            mprf(T_("You cannot occupy %s."), article_a(feat_type_name(env.grid(beam.target))).c_str());
+            mprf(T_("You cannot occupy %s."), article_a(T_(feat_type_name(env.grid(beam.target)))).c_str());
         }
         else if (you.see_cell_no_trans(beam.target))
         {
@@ -6296,9 +6299,9 @@ spret hepliaklqana_transference(const coord_def& target, bool fail)
     else
         ancestor->swap_with(victim->as_monster(), MV_TRANSLOCATION, true);
 
-    mprf(T_("%s swap%s places with %s!"), victim->name(DESC_THE).c_str(),
-             victim->is_player() ? "" : "s",
-             ancestor->name(DESC_YOUR).c_str());
+    mprf(victim->is_player() ? T_("%s swap places with %s!")
+                             : T_("%s swaps places with %s!"),
+         victim->name(DESC_THE).c_str(), ancestor->name(DESC_YOUR).c_str());
 
     place_cloud(CLOUD_MIST, target, random_range(10,20), ancestor);
     place_cloud(CLOUD_MIST, destination, random_range(10,20), ancestor);
@@ -6424,8 +6427,8 @@ bool wu_jian_can_wall_jump(const coord_def& target, string &error_ret)
     {
         if (!feat_can_wall_jump_against(env.grid(target)))
         {
-            error_ret = string(T_("You cannot wall jump against ")) +
-                feature_description_at(target, false, DESC_THE) + ".";
+            error_ret = make_stringf(T_("You cannot wall jump against %s."),
+                feature_description_at(target, false, DESC_THE).c_str());
         }
         else
             error_ret = "";
@@ -7188,8 +7191,14 @@ void makhleb_inscribe_mark(mutation_type mark)
 
     you.one_time_ability_used.set(GOD_MAKHLEB);
 
-    const string mile_text = make_stringf(T_("accepted the %s"), mutation_name(mark));
-    take_note(Note(NOTE_INFERNAL_MARK, 0, 0, mutation_name(mark)));
+    string mark_en;
+    string mile_text;
+    {
+        const ScopedLangEn english;
+        mark_en = mutation_name(mark);
+        mile_text = make_stringf("accepted the %s", mark_en.c_str());
+    }
+    take_note(Note(NOTE_INFERNAL_MARK, 0, 0, mark_en));
     mark_milestone("mark", mile_text);
 }
 
