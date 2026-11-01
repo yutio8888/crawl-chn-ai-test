@@ -267,7 +267,7 @@ or otherwise unmoveable creature.
 %%%%
 Brothers in Arms spell
 
-<Brothers in Arms ability>
+Summons a huge, angry ally to wreak havoc in a berserk rage.
 %%%%
 Cage of Brambles spell
 
@@ -2182,7 +2182,7 @@ dragons at once.
 %%%%
 Summon Drakes spell
 
-Summons multiple drakes and lindwurms.
+Summons one or more drakes or lindwurms.
 %%%%
 Summon Earth Elementals spell
 
@@ -2190,15 +2190,15 @@ Summons one or more earth elementals.
 %%%%
 Summon Emperor Scorpions spell
 
-Summons multiple noble and monstrous emperor scorpions.
+Summons one or more noble and monstrous emperor scorpions.
 %%%%
 Summon Executioners spell
 
-Summons multiple Executioners to tear apart foes of the caster.
+Summons one or more Executioners to tear apart foes of the caster.
 %%%%
 Summon Eyeballs spell
 
-Summons multiple floating eyeballs that may be able to vitrify, polymorph,
+Summons one or more floating eyeballs that may be able to vitrify, polymorph,
 confuse, mutate or disintegrate.
 %%%%
 Summon Fire Elementals spell

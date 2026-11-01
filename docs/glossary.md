@@ -238,6 +238,12 @@
 | soul | 灵魂 | — |
 | blood | 鲜血 / 血 | 强调用"鲜血"，普通用"血" |
 | Abyss | 深渊 | — |
+| Gehenna | 欣嫩谷 | 游戏地狱领域及直接关联专名；decision=D-C-103 |
+| Cocytus | 悲叹河 | 游戏地狱领域及直接关联专名；地图地貌仍按源文描述；decision=D-C-103 |
+| Tartarus | 塔尔塔罗斯 | 游戏地狱领域；区别 Abyss；文学 exact-key 例外见 D-C-103 |
+| Dis | 迪斯 | 游戏地狱城市短名；区别人物 Dis pater；decision=D-C-103 |
+| the Iron City of Dis | 迪斯铁城 | 分支长名；decision=D-C-103 |
+| Iron City | 铁城 | Dis 的别称；不增补源文未写的地名；decision=D-C-103 |
 | Dungeon | 地牢 | — |
 | Arena | 竞技场 | 分支、地下城特征与世界显示文本统一；裁决 [D-A-044] |
 | Gauntlet | 试炼场 | 分支、地下城特征与世界显示文本统一；裁决 [D-A-045] |
@@ -1180,7 +1186,7 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 | Serpent of Hell | 地狱巨蛇 | monster; source=source.txt; shared display name |
 | Serpent of Hell gehenna | 欣嫩谷地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name |
 | Serpent of Hell cocytus | 悲叹河地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name |
-| Serpent of Hell dis | 铁城地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name |
+| Serpent of Hell dis | 迪斯地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name; decision=D-C-103 |
 | Serpent of Hell tartarus | 塔尔塔罗斯地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name |
 
 ### 新增怪物与先祖类型（trunk B0）
@@ -1580,7 +1586,7 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 | Searing Breath | 灼热吐息 | 📝 |
 | Steam Breath | 蒸汽吐息 | ✅ |
 | cocytus serpent of hell breath | 悲叹河地狱巨蛇吐息 | ✅；复用分支限定实体名 |
-| dis serpent of hell breath | 铁城地狱巨蛇吐息 | ✅；复用分支限定实体名 |
+| dis serpent of hell breath | 迪斯地狱巨蛇吐息 | 复用分支限定实体名；decision=D-C-103 |
 | gehenna serpent of hell breath | 欣嫩谷地狱巨蛇吐息 | ✅；复用分支限定实体名 |
 | tartarus serpent of hell breath | 塔尔塔罗斯地狱巨蛇吐息 | ✅；复用分支限定实体名 |
 

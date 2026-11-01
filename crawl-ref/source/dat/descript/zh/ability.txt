@@ -754,13 +754,13 @@ Globe of Annihilation ability
 
 发射一个翻涌的强烈毁灭力球体，汲取自{{
     if you.get_base_mutation_level("Gehenna destruction") == 1 then
-        return "无尽的火焚地狱之火。"
+        return "无尽的欣嫩谷之火。"
     elseif you.get_base_mutation_level("Cocytus destruction") == 1 then
-        return "冰狱的极寒荒原。"
+        return "悲叹河的极寒荒原。"
     elseif you.get_base_mutation_level("Tartarus destruction") == 1 then
-        return "悲叹地狱的哀嚎悲痛。"
+        return "塔尔塔罗斯的哀嚎悲痛。"
     elseif you.get_base_mutation_level("Dis destruction") == 1 then
-        return "铁城的无情恶毒。"
+        return "迪斯的无情恶毒。"
     else
         return "地狱本身。"
     end
@@ -914,13 +914,13 @@ Unleash Destruction ability
 
 向目标生物引导一股地狱{{
     if you.get_base_mutation_level("Gehenna destruction") == 1 then
-        return "穿透性火焰、熔岩（来自火焚地狱的影响）、闪电或负能量"
+        return "穿透性火焰、熔岩（来自欣嫩谷的影响）、闪电或负能量"
     elseif you.get_base_mutation_level("Cocytus destruction") == 1 then
-        return "穿透性冰霜（来自冰狱的影响）、寒冷、闪电或负能量"
+        return "穿透性冰霜（来自悲叹河的影响）、寒冷、闪电或负能量"
     elseif you.get_base_mutation_level("Tartarus destruction") == 1 then
-        return "穿透性火焰、寒冷、毁灭（来自悲叹地狱的影响）或负能量"
+        return "穿透性火焰、寒冷、毁灭（来自塔尔塔罗斯的影响）或负能量"
     elseif you.get_base_mutation_level("Dis destruction") == 1 then
-        return "穿透性火焰、寒冷、闪电、酸液或金属碎片（后两者来自铁城的影响）"
+        return "穿透性火焰、寒冷、闪电、酸液或金属碎片（后两者来自迪斯的影响）"
     else
         return "火焰、寒冷、闪电或负能量"
     end

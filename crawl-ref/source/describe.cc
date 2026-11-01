@@ -5241,18 +5241,16 @@ static string _player_spell_desc(spell_type spell)
     if (spell == SPELL_BATTLESPHERE)
     {
         vector<spell_type> battlesphere_spells = player_battlesphere_spells();
-        description << T_("Your battlesphere");
         if (battlesphere_spells.empty())
-            description << T_(" is not activated by any of your spells");
+            description << T_("Your battlesphere is not activated by any of your spells.\n");
         else
         {
-            description << T_(" fires when you cast ")
-                        << comma_separated_fn(battlesphere_spells.begin(),
-                                              battlesphere_spells.end(),
-                                              spell_title,
-                                              T_(" or "));
+            const string spells = comma_separated_fn(battlesphere_spells.begin(),
+                                                     battlesphere_spells.end(),
+                                                     spell_title, T_(" or "));
+            description << make_stringf(T_("Your battlesphere fires when you cast %s.\n"),
+                                        spells.c_str());
         }
-        description << T_(".\n");
     }
 
     if (spell == SPELL_SPELLSPARK_SERVITOR)
@@ -5290,11 +5288,15 @@ static string _player_spell_desc(spell_type spell)
     const int limit = summons_limit(spell, true);
     if (limit)
     {
-        description << T_("You can sustain at most ") + number_in_words(limit)
-                    // Attempt to clarify that flayed ghosts are NOT included in the cap
-                    << (spell == SPELL_MARTYRS_KNELL ? T_(" martyred shade") : T_(" creature"))
-                    << (limit > 1 ? T_("s") : "")
-                    << T_(" summoned by this spell.\n");
+        // Flayed ghosts are not included in Martyr's Knell's shade cap.
+        const string format = spell == SPELL_MARTYRS_KNELL
+            ? (limit == 1
+                ? T_("You can sustain at most %s martyred shade summoned by this spell.\n")
+                : T_("You can sustain at most %s martyred shades summoned by this spell.\n"))
+            : (limit == 1
+                ? T_("You can sustain at most %s creature summoned by this spell.\n")
+                : T_("You can sustain at most %s creatures summoned by this spell.\n"));
+        description << make_stringf(format.c_str(), number_in_words(limit).c_str());
     }
 
     if (god_likes_spell(spell, you.religion))
@@ -5437,7 +5439,7 @@ static void _get_spell_description(const spell_type spell,
             else if (spell_has_marionette_override(spell))
             {
                 description += T_("\n\n<magenta>When cast via Aphotic Marionette, "
-                               "this spell will affect the player instead.");
+                               "this spell will affect the player instead.</magenta>\n");
             }
         }
 

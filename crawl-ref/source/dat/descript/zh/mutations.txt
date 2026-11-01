@@ -782,17 +782,17 @@ no translocations magic mutation
 %%%%
 Cocytus destruction mutation
 
-你的释放毁灭能力被冰狱强化。你能够投掷寒冰束而不是火焰，
+你的释放毁灭能力被悲叹河强化。你能够投掷寒冰束而不是火焰，
 你的寒冷束将受害者冻结成固体，减慢其移动。
 %%%%
 Dis destruction mutation
 
-你的释放毁灭能力被铁城强化。你能够投掷腐蚀性酸液束和金属碎片束
+你的释放毁灭能力被迪斯强化。你能够投掷腐蚀性酸液束和金属碎片束
 而不是负能量。
 %%%%
 Gehenna destruction mutation
 
-你的释放毁灭能力被火焚地狱强化。你能够投掷岩浆束而不是寒冷，
+你的释放毁灭能力被欣嫩谷强化。你能够投掷岩浆束而不是寒冷，
 你的火焰束可以剥离受害者的火焰抗性。
 %%%%
 Mark of Annihilation mutation
@@ -885,7 +885,7 @@ Mark of the Tyrant mutation
 %%%%
 Tartarus destruction mutation
 
-你的释放毁灭能力被悲叹地狱强化。你能够投掷毁灭束而不是闪电，
+你的释放毁灭能力被塔尔塔罗斯强化。你能够投掷毁灭束而不是闪电，
 它会降低受害者的意志力，且你的负能量束更加强大。
 %%%%
 accursed mutation

@@ -1124,6 +1124,7 @@ Agent memory is not authoritative. Resolve current context from this file and
 - **Type**: C — Batch ruling
 - **Status**: active
 - **Date**: 2026-07-25
+- **后续调整**：D-C-103 完成四个地狱专名的全依赖组统一后，Dis 限定实体及吐息使用“迪斯”词根；以下旧选择保留为历史记录，其余吐息裁决不变。
 - **Source**: 511 项 spell inventory、当前英中法术/能力描述、zap 实现、
   地狱巨蛇分支技能表与实体映射逐项复核
 - **Scope**: 22 项含独立 `Breath` 词形的标题；20 项现行、2 项
@@ -4388,6 +4389,16 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 - **能力**：`Sacrifice Love` 用“献祭爱”，其友好关系限制不局限爱情。现行先祖职业选择 `Ancestor Life: Knight/Hexer` 分别用“先祖生涯：骑士／诅咒师”，与已审定的元素师共用“生涯”；这些能力回忆先祖生前身份，不是调整生命值。
 - **范围**：只适用于这些独立名称及其直接说明；不机械替换一般生命、爱情、技能或衰竭文本。旧 Battlemage 兼容身份仍按 D-C-095 保留，恢复时连同其名称和正文复审。地狱分支专名留给完整世界名称依赖组裁决。
 
+### D-C-103 — 四个地狱领域的跨界面专名统一（2026-11-01）
+
+- **Status**: active
+- **Source**: 分支、入口出口、领主与巨蛇变体、毁灭能力及变异、关联怪物叙事、神器、书名作者和具名台词的完整依赖组审查；独立复核区分身份不一致与翻译偏好。
+- **裁决**：游戏领域 `Gehenna → 欣嫩谷`、`Cocytus → 悲叹河`、`Tartarus → 塔尔塔罗斯`、`Dis → 迪斯`；`the Iron City of Dis → 迪斯铁城`，单独的 `Iron City → 铁城`。领主、入口、法术和分支显示使用可互相辨认的词根。火焚谷、冰封湖和铁城等旧主题名并非各自错误；此次解决同一游戏身份跨界面无解释地换名的问题。
+- **描述保真**：地名不代替地貌与力量说明；灰烬谷地、极寒荒原、腐朽冥界，以及烈火、寒冰、哀叹各自保留。悲叹河可显化为“这一地狱领域”，不承诺地图必为河道。`fourth Hell` 为第四座地狱领域而非第四层。
+- **关联实体**：Dis 分支限定的地狱巨蛇与吐息统一用“迪斯”，替代 D-C-018 的“铁城”限定根；共同基础名仍是地狱巨蛇。随机书名作者 Asmodeus 与现行人物名统一阿斯摩蒂斯。Guardian、Lord、Queen 等头衔保持各自含义；Asmodeus 的 prince 不因统治者语境被推断必有或必无父王，原王子称谓保留。
+- **精确例外**：`dat/descript/zh/quotes.txt` 的 `cacodemon` 中“科塞特斯河”与 `titan` 中“塔耳塔罗斯”保留文学语境，不声称已核定某出版译本；`dispater` 中 Dis pater 指人物而非城市，保持迪斯帕特。无地名的 `tartarus` 引文不因键名添加地名。这些例外不扩展为所有引文或游戏人物的自由换名许可。
+- **实现边界**：英文 TextDB 查询键、Lua 比较值、枚举、地图身份及保存内容保持英文；显示端翻译。通用 Hell/Hells、普通地狱与同形假命中不机械替换。历史兼容巨蛇吐息保留当前值，恢复时重审。
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -4539,6 +4550,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-097 | B0-3 glossary table ownership (#147) | core 接收非 catalog 词；叛教铭文保留；字面括号误报交 A3 | active |
 | D-C-098 | B0-4 shared catalog keys and registration (#147) | 叛教者／束缚对齐共享键；134项登记、6项 catalog 待修 | active |
 | D-C-102 | Ability and mutation semantic names | 资质欠佳／持久衰竭；献祭爱；先祖生涯 | active |
+| D-C-103 | Four Hell world-name dependencies | 欣嫩谷／悲叹河／塔尔塔罗斯／迪斯；文学精确例外 | active |
 | D-C-101 | Spell school display names | 全称统一为系；法术列表两字简称；闪避说明消歧 | active |
 | D-C-100 | GENDER_NEUTRAL singular pronouns | 他 / 他的 / 他自己 / 他；移除 ZH 中性先祖 neuter 映射 | active |
 
