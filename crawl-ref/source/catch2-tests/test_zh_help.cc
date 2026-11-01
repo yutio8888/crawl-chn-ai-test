@@ -242,6 +242,9 @@ private:
 TEST_CASE("source-rereview: saved death causes localize only at display sinks",
           "[zh-help][source-rereview][hiscores]")
 {
+    // Legacy killer display lazily builds the name cache, whose duplicate-form
+    // filtering needs the monster species table even in a standalone test.
+    init_monsters();
     rng::subgenerator scoped_rng(0x20261101ULL, 0x53434f5245ULL);
     const auto record = [](const string &type, const string &cause,
                            const string &killer = "saved caster") {
@@ -373,6 +376,7 @@ TEST_CASE("source-rereview: saved death causes localize only at display sinks",
 TEST_CASE("source-rereview: HP note death-cause snapshots survive language and save changes",
           "[zh-help][source-rereview][hp-note]")
 {
+    init_monsters();
     for (lang_t captured_language : {lang_t::EN, lang_t::ZH})
     {
         TranslationFixture capture(captured_language,
@@ -433,6 +437,7 @@ TEST_CASE("source-rereview: HP note death-cause snapshots survive language and s
 TEST_CASE("source-rereview: death notes retain their creation language",
           "[zh-help][source-rereview][death-note]")
 {
+    init_monsters();
     for (lang_t captured_language : {lang_t::EN, lang_t::ZH})
     {
         TranslationFixture capture(captured_language,

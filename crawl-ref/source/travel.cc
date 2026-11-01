@@ -492,7 +492,7 @@ bool is_travelsafe_square(const coord_def& c, bool ignore_hostile,
 
     if (_travel_safe_grid)
     {
-        const cell_travel_safety &cell((*_travel_safe_grid)(c));
+        const cell_travel_safety &cell = (*_travel_safe_grid)(c);
         return ignore_hostile? cell.safe_if_ignoring_hostile_terrain
                : cell.safe;
     }
