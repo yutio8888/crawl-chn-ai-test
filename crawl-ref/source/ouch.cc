@@ -826,10 +826,16 @@ static void _maybe_spawn_monsters(int dam, kill_method_type death_type,
             }
             else
             {
-                mprf(T_("You quiver from %s and %s!"),
-                     death_type == KILLED_BY_MONSTER ? "blow" : "blast",
-                     count_created > 1 ? "flood of jellies pours out from you"
-                                       : "jelly pops out");
+                if (death_type == KILLED_BY_MONSTER)
+                {
+                    mpr(count_created > 1
+                        ? T_("You quiver from the blow and a flood of jellies pours out from you!")
+                        : T_("You quiver from the blow and a jelly pops out!"));
+                }
+                else
+                    mpr(count_created > 1
+                        ? T_("You quiver from the blast and a flood of jellies pours out from you!")
+                        : T_("You quiver from the blast and a jelly pops out!"));
             }
         }
     }
@@ -1277,13 +1283,15 @@ static void _god_death_messages(kill_method_type death_type,
             string msg;
             if (you.religion == GOD_BEOGH)
             {
-                msg = T_(" appreciates ") + killer->name(DESC_ITS)
-                        + T_(" killing of a heretic priest.");
+                msg = make_stringf(
+                    T_(" appreciates %s for killing a heretic priest."),
+                    killer->name(DESC_THE).c_str());
             }
             else
             {
-                msg = T_(" appreciates ") + killer->name(DESC_ITS)
-                        + T_(" killing of an apostate.");
+                msg = make_stringf(
+                    T_(" appreciates %s for killing an apostate."),
+                    killer->name(DESC_THE).c_str());
             }
             simple_god_message(msg.c_str(), false, GOD_BEOGH);
         }

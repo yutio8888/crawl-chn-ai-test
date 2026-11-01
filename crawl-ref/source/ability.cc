@@ -2368,7 +2368,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false,
 
     case ABIL_YRED_FATHOMLESS_SHACKLES:
         if (you.duration[DUR_FATHOMLESS_SHACKLES])
-            return fail(T_("You are already invoking Yredulemnul's grip!"));
+            return fail(T_("You are already invoking Yredelemnul's grip!"));
         return true;
 
     case ABIL_BEOGH_RECRUIT_APOSTLE:

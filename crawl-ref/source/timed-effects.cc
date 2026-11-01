@@ -202,9 +202,9 @@ static void _jiyva_effects(int /*time_delta*/)
                     simple_god_message(T_(" gurgles merrily."));
                     break;
                 case 1:
-                    mprf_p(MSGCH_SOUND, T_("You hear %1$s splatter%2$s."),
-                           total_jellies > 1 ? "a series of" : "a",
-                           total_jellies > 1 ? "s" : "");
+                    mprf(MSGCH_SOUND, "%s", total_jellies > 1
+                        ? T_("You hear a series of splatters.")
+                        : T_("You hear a splatter."));
                     break;
                 case 2:
                     simple_god_message(T_(" says: Divide and consume!"));
@@ -726,12 +726,14 @@ static void _drop_tomb(const coord_def& pos, bool premature, bool zin)
             mprf(T_("The walls disappear%s!"), premature ? T_(" prematurely") : "");
         else if (seen_change && zin)
         {
-            mprf_p(T_("Zin %1$s %2$s %3$s."),
-                   (mon) ? T_("releases") : T_("dismisses"),
-                   (mon) ? mon->name(DESC_THE).c_str() : T_("the silver walls,"),
-                   (mon) ? make_stringf(T_("from %s prison"),
-                               mon->pronoun(PRONOUN_POSSESSIVE).c_str()).c_str()
-                         : T_("but there is nothing inside them"));
+            if (mon)
+            {
+                mprf_p(T_("Zin releases %1$s from %2$s prison."),
+                       mon->name(DESC_THE).c_str(),
+                       mon->pronoun(PRONOUN_POSSESSIVE).c_str());
+            }
+            else
+                mpr(T_("Zin dismisses the silver walls, but there is nothing inside them."));
         }
         else
         {

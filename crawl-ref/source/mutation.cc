@@ -1449,21 +1449,23 @@ static void _maybe_remove_equipment(mutation_type mut)
         if (mut == MUT_MISSING_HAND && i < num_direct)
         {
             mprf(T_("You can no longer %s %s!"),
-                    item->base_type == OBJ_JEWELLERY ? "wear" : "hold",
+                    item->base_type == OBJ_JEWELLERY ? T_("wear") : T_("hold"),
                     item->name(DESC_YOUR).c_str());
         }
         else
         {
             if (item_is_melded(*item))
             {
-                mprf(T_("%s is forcibly removed from your body%s!"),
-                        item->name(DESC_YOUR).c_str(),
-                        item->cursed() ? ", shattering the curse!" : "");
+                mprf(item->cursed()
+                     ? T_("%s is forcibly removed from your body, breaking its binding!")
+                     : T_("%s is forcibly removed from your body!"),
+                     item->name(DESC_YOUR).c_str());
             }
             else
             {
-                mprf(T_("%s%s falls off!"), item->name(DESC_YOUR).c_str(),
-                        item->cursed() ? ", shattering the curse!" : "");
+                mprf(item->cursed() ? T_("%s falls off, breaking its binding!")
+                                     : T_("%s falls off!"),
+                     item->name(DESC_YOUR).c_str());
             }
 
             // A mutation made us not only lose an equipment slot
@@ -2159,8 +2161,8 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
         if (you.hp <= 0)
         {
             ouch(0, KILLED_BY_FRAILTY, MID_NOBODY,
-                 make_stringf(T_("gaining the %s mutation"),
-                              mutation_name(mutat)).c_str());
+                 make_stringf("gaining the %s mutation",
+                              mutation_name_en(mutat)).c_str());
         }
     }
 
@@ -2322,7 +2324,7 @@ bool delete_single_mutation_level(mutation_type mutat,
     if (you.hp <= 0)
     {
         ouch(0, KILLED_BY_FRAILTY, MID_NOBODY,
-             make_stringf(T_("losing the %s mutation"), mutation_name(mutat)).c_str());
+             make_stringf("losing the %s mutation", mutation_name_en(mutat)).c_str());
     }
 
     return true;
@@ -2639,7 +2641,7 @@ string get_mutation_tags(mutation_type mut)
 }
 
 
-const char* mutation_name(mutation_type mut, bool allow_category)
+const char* mutation_name_en(mutation_type mut, bool allow_category)
 {
     const char* en;
     if (allow_category && mut >= CATEGORY_MUTATIONS && mut < MUT_NON_MUTATION)
@@ -2650,7 +2652,13 @@ const char* mutation_name(mutation_type mut, bool allow_category)
     else
         en = _get_mutation_def(mut).short_desc;
 
-    return C_("mutation", en);
+    return en;
+}
+
+const char* mutation_name(mutation_type mut, bool allow_category)
+{
+    const char* en = mutation_name_en(mut, allow_category);
+    return en ? C_("mutation", en) : nullptr;
 }
 
 const char* category_mutation_name(mutation_type mut)
@@ -3245,8 +3253,9 @@ bool temp_mutation_wanes()
 
     const int num_remove = min(starting_tmuts, random_range(2, 3));
 
-    mprf(MSGCH_DURATION, T_("You feel the corruptions in your body subside %s."),
-        (num_remove >= starting_tmuts ? "completely" : "somewhat"));
+    mprf(MSGCH_DURATION, "%s", num_remove >= starting_tmuts
+        ? T_("You feel the corruptions in your body subside completely.")
+        : T_("You feel the corruptions in your body subside somewhat."));
 
     for (int i = 0; i < num_remove; ++i)
         delete_temp_mutation(); // chooses randomly

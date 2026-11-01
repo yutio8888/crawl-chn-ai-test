@@ -37,7 +37,7 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
         // we actually need to remove it again?
         if ($container.length === 0 && spellset.length !== 0)
         {
-            root.prepend("<div class='fg4'>Buggy spellset!</div>");
+            root.prepend("<div class='fg4'>法术列表出错！</div>");
             return;
         }
         $container.attr("id", "").addClass("menu_contents spellset");
@@ -359,15 +359,39 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
                     .addClass("fg"+desc.colour).html(desc.favour);
         var powers_list = desc.powers_list.split("\n").slice(3, -1);
         var $powers = $panes.eq(0).find(".god-powers");
-        var re = /^(<[a-z]*>)?(.*\.) *(\(.*\))?$/;
+        var colour = desc.colour;
         for (var i = 0; i < powers_list.length; i++)
         {
-            var matches = powers_list[i].match(re);
-            var colour = (matches.length == 4 && matches[1] === "<darkgrey>")
-                ? 8 : desc.colour;
-            var power = matches[2], cost = matches[3] || "";
+            var power = powers_list[i].trimEnd(), cost = "";
+            var prefix = power.match(/^<([a-z]+)>/);
+            if (prefix)
+            {
+                colour = prefix[1] === "darkgrey" ? 8 : desc.colour;
+                power = power.slice(prefix[0].length);
+            }
+            // The native table ends cost columns in parentheses. Do not
+            // require English sentence punctuation; retain an unrecognised
+            // row whole rather than losing its text or aborting the popup.
+            var close = power.slice(-1);
+            var open = close === ")" ? "(" : close === "）" ? "（" : "";
+            if (open)
+            {
+                var depth = 0;
+                for (var j = power.length - 1; j >= 0; --j)
+                {
+                    if (power[j] === close)
+                        ++depth;
+                    else if (power[j] === open && --depth === 0)
+                    {
+                        cost = power.slice(j);
+                        power = power.slice(0, j).trimEnd();
+                        break;
+                    }
+                }
+            }
             $powers.append("<div class='power fg"+colour+"'><div>"
-                +power+"</div><div>"+cost+"</div></div>");
+                +util.formatted_string_to_html(power)+"</div><div>"
+                +util.formatted_string_to_html(cost)+"</div></div>");
         }
 
         desc.powers = fmt_body_txt(desc.powers);
@@ -936,7 +960,7 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
     {
         var $popup = $(".templates > .describe-generic").clone();
         $popup.find(".header > span").html(util.formatted_string_to_html(msg.prompt));
-        $popup.find(".body").html("Do you want to play this combination? [Y/n/q]");
+        $popup.find(".body").html("要使用这个组合开始游戏吗？[Y/n/q]");
 
         var $canvas = $popup.find(".header > canvas");
         var renderer = new cr.DungeonCellRenderer();
@@ -1022,12 +1046,12 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
         {
             popup = handler
                 ? handler(msg)
-                : $("<div>Unhandled UI type " + msg.type + "</div>");
+                : $("<div>未处理的界面类型：" + msg.type + "</div>");
         }
         catch (err)
         {
             console.log(err);
-            popup = $("<div>Buggy UI of type " + msg.type + "</div>");
+            popup = $("<div>界面出错，类型：" + msg.type + "</div>");
         }
         ui.show_popup(popup, msg["ui-centred"], msg.generation_id);
     }

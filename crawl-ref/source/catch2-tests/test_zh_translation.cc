@@ -11,6 +11,7 @@
 #include "acquire.h"
 #include "act-iter.h"
 #include "art-enum.h"
+#include "areas.h"
 #include "artefact.h"
 #include "beam.h"
 #include "branch.h"
@@ -32,6 +33,7 @@
 #include "fineff.h"
 #include "files.h"
 #include "god-conduct.h"
+#include "god-wrath.h"
 #include "god-companions.h"
 #include "ghost.h"
 #include "god-abil.h"
@@ -10592,4 +10594,997 @@ TEST_CASE("source rereview: complete note sentences retain event fields across l
             CHECK(events[i].describe(false, false, false).empty());
         }
     }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: player frailty causes preserve canonical xlog and localize display",
+                 "[zh-translation][player-rereview][death-protocol]")
+{
+    REQUIRE(Options.language == lang_t::ZH);
+    init_monsters();
+    init_properties();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.your_name = "PlayerRereview";
+    you.birth_time = 1599999900;
+    you.last_keypress_time = chrono::system_clock::from_time_t(you.birth_time);
+    you.species = SP_HUMAN;
+    you.char_class = JOB_MONK;
+    you.chr_class_name = get_job_name(you.char_class);
+    you.where_are_you = BRANCH_DUNGEON;
+    you.depth = 1;
+    you.hp_max = 20;
+    you.base_stats.init(10);
+    you.skills[SK_FIGHTING] = 1;
+    you.equipment.update();
+    you.set_position(coord_def(20, 20));
+    const coord_def player_position = you.pos();
+    const unsigned old_map_id = env.level_map_ids(player_position);
+    unwinder restore_map_id([player_position, old_map_id]() {
+        env.level_map_ids(player_position) = old_map_id;
+    });
+    env.level_map_ids(player_position) = INVALID_MAP_INDEX;
+    const string mutation_en = mutation_name_en(MUT_FRAIL);
+    const string mutation_display = mutation_name(MUT_FRAIL);
+    REQUIRE(mutation_en != mutation_display);
+    {
+        ScopedLangEn english;
+        CHECK(string(mutation_name(MUT_FRAIL)) == mutation_en);
+    }
+
+    struct cause_case { string canonical; string display; };
+    const string form_en = transform_name(transformation::tree);
+    const string form_display = get_form(transformation::tree)->get_short_name();
+    const cause_case cases[] =
+    {
+        { "gaining the " + mutation_en + " mutation",
+          make_stringf(T_("gaining the %s mutation"), mutation_display.c_str()) },
+        { "losing the " + mutation_en + " mutation",
+          make_stringf(T_("losing the %s mutation"), mutation_display.c_str()) },
+        { "gaining the " + form_en + " transformation",
+          make_stringf(T_("gaining the %s transformation"), form_display.c_str()) },
+        { "losing the " + form_en + " form",
+          make_stringf(T_("losing the %s form"), form_display.c_str()) },
+        { "unknown historical frailty cause", "unknown historical frailty cause" },
+        { "gaining the unknown historical form transformation",
+          make_stringf(T_("gaining the %s transformation"), "unknown historical form") },
+    };
+    for (const cause_case& cause : cases)
+    {
+        INFO(cause.canonical);
+        // Real score construction and xlog parsing, rather than a fixture
+        // reimplementation of the production cause parser.
+        scorefile_entry live(0, MID_NOBODY, KILLED_BY_FRAILTY,
+                             cause.canonical.c_str(), true);
+        live.init(1600000000);
+        const string serialized = live.raw_string();
+        REQUIRE_FALSE(serialized.empty());
+        CHECK(xlog_fields(serialized).str_field("kaux") == cause.canonical);
+        scorefile_entry restored;
+        REQUIRE(restored.parse(serialized));
+        const string display = restored.death_description(scorefile_entry::DDV_VERBOSE);
+        CHECK(display.find(cause.display) != string::npos);
+        {
+            ScopedLangEn english;
+            const string en = restored.death_description(scorefile_entry::DDV_VERBOSE);
+            CHECK(en.find(cause.canonical) != string::npos);
+        }
+        CHECK(xlog_fields(restored.raw_string()).str_field("kaux") == cause.canonical);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: player flooded substances stay English across display language changes",
+                 "[zh-translation][player-rereview][flooded]")
+{
+    init_monsters();
+    init_properties();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.set_position(coord_def(20, 20));
+    you.equipment.update();
+    scoped_env_monster_slot attacker_slot(coord_def(20, 21));
+    monster* attacker = attacker_slot.place(MONS_MERFOLK_AQUAMANCER);
+    REQUIRE(attacker != nullptr);
+    string attacker_en;
+    const string attacker_zh = attacker->name(DESC_A, true);
+    {
+        ScopedLangEn english;
+        attacker_en = attacker->name(DESC_A, true);
+    }
+    REQUIRE(attacker_en != attacker_zh);
+    for (const char* substance : { "water", "ooze" })
+    {
+        INFO(substance);
+        you.duration[DUR_FLOODED] = 0;
+        you.duration[DUR_FLOODED_IMMUNITY] = 0;
+        string message;
+        {
+            msg::tee tee(message);
+            REQUIRE(you.floodify(attacker, 30, substance));
+        }
+        CHECK(you.props[WATER_HOLD_SUBSTANCE_KEY].get_string() == substance);
+        CHECK(you.props[WATER_HOLDER_NAME_KEY].get_string() == attacker_en);
+        const string expected_substance = string(substance) == "water" ? "水" : "软泥";
+        CHECK(message.find(expected_substance) != string::npos);
+        CHECK(message.find("深水") == string::npos);
+        status_info chinese;
+        REQUIRE(fill_status_info(DUR_FLOODED, chinese));
+        CHECK(chinese.db_key == "Flooded");
+        CHECK(chinese.long_text.find(expected_substance) != string::npos);
+        CHECK(chinese.long_text.find("深水") == string::npos);
+        {
+            ScopedLangEn english;
+            status_info en;
+            REQUIRE(fill_status_info(DUR_FLOODED, en));
+            CHECK(en.long_text.find(substance) != string::npos);
+            CHECK(en.db_key == "Flooded");
+            CHECK(you.props[WATER_HOLD_SUBSTANCE_KEY].get_string() == substance);
+        }
+        i18n_cache_clear();
+        status_info rebuilt;
+        REQUIRE(fill_status_info(DUR_FLOODED, rebuilt));
+        CHECK(rebuilt.long_text == chinese.long_text);
+        CHECK(you.props[WATER_HOLD_SUBSTANCE_KEY].get_string() == substance);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Zin recitation title localizes only its display book",
+                 "[zh-translation][player-rereview][recitation]")
+{
+    for (const auto& book : { pair<int, const char*>{ RECITE_CHAOTIC, "Abominations" },
+                             { RECITE_IMPURE, "Ablutions" },
+                             { RECITE_HERETIC, "Apostates" },
+                             { RECITE_UNHOLY, "Anathema" } })
+    {
+        // Chapter/verse seed arithmetic is unchanged at its real consumer.
+        const string zh = zin_recite_text(28, book.first, -1);
+        CHECK(zh == string(C_("Zin recitation book", book.second)) + " 2:2");
+        {
+            ScopedLangEn english;
+            CHECK(zin_recite_text(28, book.first, -1) == string(book.second) + " 2:2");
+        }
+        CHECK(zin_recite_text(28, book.first, -1) == zh);
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: mountain boots translate fixed events and a dynamic puller at the sink",
+                 "[zh-translation][player-rereview][dislodge]")
+{
+    init_monsters();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.set_position(coord_def(20, 20));
+    you.equipment.update();
+    unique_item_status_guard restore_unique(UNRAND_MOUNTAIN_BOOTS);
+    item_def& boots = you.inv[0];
+    boots.quantity = 1;
+    REQUIRE(make_item_unrandart(boots, UNRAND_MOUNTAIN_BOOTS));
+    boots.link = 0;
+    boots.pos = ITEM_IN_INVENTORY;
+    you.equipment.add(boots, SLOT_BOOTS);
+    you.equipment.update(); // production caches are rebuilt separately from add()
+    REQUIRE(you.unrand_equipped(UNRAND_MOUNTAIN_BOOTS));
+    for (const char* event : { "being knocked back", "being dragged", "being pulled",
+                               "being lured by song", "being moved by the vortex",
+                               "falling", "falling into an unexpected shaft" })
+    {
+        const string canonical = event;
+        string output;
+        {
+            msg::tee tee(output);
+            REQUIRE(you.resists_dislodge(event));
+        }
+        CHECK(string(event) == canonical);
+        const string display = C_("dislodge event", event);
+        CHECK(output.find(display) != string::npos);
+        CHECK(output.find(event) == string::npos);
+        {
+            ScopedLangEn english;
+            string en;
+            {
+                msg::tee tee(en);
+                REQUIRE(you.resists_dislodge(event));
+            }
+            CHECK(en.find(event) != string::npos);
+        }
+    }
+    scoped_env_monster_slot slot(coord_def(20, 21));
+    monster* puller = slot.place(MONS_KRAKEN_TENTACLE);
+    REQUIRE(puller != nullptr);
+    string output;
+    const string display_name = puller->name(DESC_THE);
+    {
+        msg::tee tee(output);
+        REQUIRE(you.resists_dislodge("being pulled", puller));
+    }
+    CHECK(output.find(display_name) != string::npos);
+    CHECK(output.find("being pulled") == string::npos);
+    string empty_output;
+    {
+        msg::tee tee(empty_output);
+        CHECK(you.resists_dislodge());
+    }
+    CHECK(empty_output.empty());
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Abyss distortion notes serialize English and translate only known display causes",
+                 "[zh-translation][player-rereview][note-protocol]")
+{
+    for (const char* cause : { "rebranding a weapon of distortion",
+                               "unwielding a weapon of distortion", "" })
+    {
+        const string canonical = make_stringf("Cast into level %d of the Abyss", 2)
+            + (*cause ? " (" + string(cause) + ")" : "");
+        Note original(NOTE_MESSAGE, 0, 0, canonical, "abyss entry");
+        vector<unsigned char> buffer;
+        writer output(&buffer);
+        original.save(output);
+        reader input(buffer);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        Note loaded;
+        loaded.load(input);
+        CHECK(loaded.name == canonical);
+        CHECK(loaded.desc == "abyss entry");
+        const Note snapshot(NOTE_MESSAGE, 0, 0, canonical);
+        CHECK(snapshot.describe(false, false, true) == canonical);
+        const string display = *cause
+            ? make_stringf(T_("Cast into level %d of the Abyss (%s)"), 2, T_(cause))
+            : make_stringf(T_("Cast into level %d of the Abyss"), 2);
+        CHECK(loaded.describe(false, false, true) == display);
+        CHECK(loaded.name == canonical);
+        {
+            ScopedLangEn english;
+            CHECK(loaded.describe(false, false, true) == canonical);
+        }
+        CHECK(loaded.describe(false, false, true) == display);
+        vector<unsigned char> after;
+        writer after_output(&after);
+        loaded.save(after_output);
+        CHECK(after == buffer);
+    }
+    // Unknown causes and malformed prefix lookalikes stay entirely unchanged.
+    for (const char* text : {
+        "Cast into level 2 of the Abyss (unknown old cause)",
+        "Cast into level 2 of the Abyss (unwielding a weapon of distortion) extra",
+        "Cast into level 0 of the Abyss (unwielding a weapon of distortion)",
+        "Cast into level 02 of the Abyss (unwielding a weapon of distortion)",
+        "Cast into level 999999999999999999 of the Abyss (unwielding a weapon of distortion)",
+        "arbitrary user note",
+    })
+    {
+        Note note(NOTE_MESSAGE, 0, 0, text, "abyss entry");
+        CHECK(note.describe(false, false, true) == text);
+        CHECK(note.name == text);
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: invisibility refusal joins one through four real glowing sources",
+                 "[zh-translation][player-rereview][invisibility]")
+{
+    init_monsters();
+    init_properties();
+    const int count = GENERATE(1, 2, 3, 4);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.set_position(coord_def(20, 20));
+    you.equipment.update();
+    unique_item_status_guard restore_eos(UNRAND_EOS);
+    unique_item_status_guard restore_crown(UNRAND_VAINGLORY);
+    item_def& weapon = you.inv[0];
+    weapon.quantity = 1;
+    REQUIRE(make_item_unrandart(weapon, UNRAND_EOS));
+    weapon.link = 0;
+    weapon.pos = ITEM_IN_INVENTORY;
+    you.equipment.add(weapon, SLOT_WEAPON);
+    if (count >= 2)
+    {
+        item_def& crown = you.inv[1];
+        crown.quantity = 1;
+        REQUIRE(make_item_unrandart(crown, UNRAND_VAINGLORY));
+        crown.link = 1;
+        crown.pos = ITEM_IN_INVENTORY;
+        you.equipment.add(crown, SLOT_HELMET);
+    }
+    if (count >= 3)
+    {
+        item_def& armour = you.inv[2];
+        armour.base_type = OBJ_ARMOUR;
+        armour.sub_type = ARM_ROBE;
+        armour.quantity = 1;
+        armour.link = 2;
+        armour.pos = ITEM_IN_INVENTORY;
+        REQUIRE(set_item_ego_type(armour, OBJ_ARMOUR, SPARM_LIGHT));
+        you.equipment.add(armour, SLOT_BODY_ARMOUR);
+    }
+    if (count >= 4)
+        you.religion = GOD_SHINING_ONE;
+    you.equipment.update(); // refresh active unrand and armour-ego caches
+    invalidate_agrid();
+    unwinder restore_areas([]() { invalidate_agrid(); });
+    const char* source_keys[] = { "weapon", "crown", "armour", "divine halo" };
+    const char* english[] = {
+        "Your weapon glows too brightly for you to become invisible.",
+        "Your weapon and crown glow too brightly for you to become invisible.",
+        "Your weapon, crown and armour glow too brightly for you to become invisible.",
+        "Your weapon, crown, armour and divine halo glow too brightly for you to become invisible."
+    };
+    string reason;
+    REQUIRE_FALSE(invis_allowed(true, &reason));
+    CHECK(reason.find('\n') == string::npos);
+    string joined;
+    for (int i = 0; i < count; ++i)
+    {
+        if (i)
+        {
+            joined += i == count - 1 ? C_("invisibility sources", " and ")
+                                     : C_("invisibility sources", ", ");
+        }
+        const string display = T_(source_keys[i]);
+        CHECK(reason.find(display) != string::npos);
+        joined += display;
+    }
+    const string expected = make_stringf(count == 1
+        ? T_("Your %s glows too brightly for you to become invisible.")
+        : T_("Your %s glow too brightly for you to become invisible."), joined.c_str());
+    CHECK(reason == expected);
+    {
+        ScopedLangEn en;
+        string en_reason;
+        REQUIRE_FALSE(invis_allowed(true, &en_reason));
+        CHECK(en_reason == english[count - 1]);
+    }
+}
+
+namespace
+{
+struct divine_prompt_answer
+{
+    lua_State* state = clua.state();
+    int previous;
+    explicit divine_prompt_answer(bool yes)
+    {
+        lua_getglobal(state, "c_answer_prompt");
+        previous = luaL_ref(state, LUA_REGISTRYINDEX);
+        lua_pushboolean(state, yes);
+        lua_pushcclosure(state, [](lua_State* ls) -> int
+        {
+            lua_pushvalue(ls, lua_upvalueindex(1));
+            return 1;
+        }, 1);
+        lua_setglobal(state, "c_answer_prompt");
+    }
+    ~divine_prompt_answer()
+    {
+        lua_rawgeti(state, LUA_REGISTRYINDEX, previous);
+        lua_setglobal(state, "c_answer_prompt");
+        luaL_unref(state, LUA_REGISTRYINDEX, previous);
+    }
+};
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "divine rereview: real Makhleb inscription preserves canonical milestone and note",
+                 "[zh-translation][divine-rereview][mark-protocol]")
+{
+    init_monsters();
+    init_properties();
+    init_duration_index();
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<vector<Note>> restore_notes(note_list);
+    const bool old_notes_active = notes_are_active();
+    unwinder restore_note_state([&]() { activate_notes(old_notes_active); });
+    activate_notes(true);
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    unwind_var<bool> crashed(crawl_state.game_crashed, true);
+    unwind_var<bool> need_save(crawl_state.need_save, true);
+#if defined(DGL_MILESTONES) && defined(UNIX)
+    char temporary[] = "/tmp/catch2-divine-mark-XXXXXX";
+    REQUIRE(mkdtemp(temporary) != nullptr);
+    const string directory = temporary;
+    const string filename = catpath(directory,
+        "milestones" + crawl_state.game_type_qualifier());
+    unwind_var<string> shared_dir(Options.shared_dir, directory);
+    unwinder cleanup([&]() { unlink_u(filename.c_str()); rmdir(directory.c_str()); });
+#endif
+    const mutation_type mark = MUT_MAKHLEB_MARK_HAEMOCLASM;
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        unwind_var<lang_t> lang(Options.language, language);
+        you = player();
+        you.your_name = "DivineMark";
+        you.birth_time = 1599999900;
+        you.species = SP_GARGOYLE; // no blood terrain changes in this fixture
+        you.char_class = JOB_MONK;
+        you.chr_class_name = get_job_name(you.char_class);
+        you.religion = GOD_MAKHLEB;
+        you.hp = you.hp_max = 90;
+        you.base_stats.init(10);
+        you.equipment.update();
+        you.where_are_you = BRANCH_DUNGEON;
+        you.depth = 1;
+        you.num_turns += static_cast<int>(note_list.size()) + 1;
+        scoped_monspeak_world world;
+        divine_prompt_answer answer(true);
+        rng::subgenerator random(7, 0x4456494e454d4152ULL);
+        makhleb_inscribe_mark(mark);
+        CHECK(Options.language == language);
+        CHECK(you.hp == 30);
+        CHECK(you.mutation[mark] == 1);
+        CHECK(you.one_time_ability_used.get(GOD_MAKHLEB));
+        const auto note = std::find_if(note_list.rbegin(), note_list.rend(),
+            [](const Note& entry) { return entry.type == NOTE_INFERNAL_MARK; });
+        REQUIRE(note != note_list.rend());
+        CHECK(note->name == "Mark of Haemoclasm");
+        CHECK(note->describe(false, false, true)
+              == make_stringf(T_("Branded self with the %s"), mutation_name(mark)));
+#if defined(USE_TILE_WEB) || defined(DGL_MILESTONES)
+        CHECK(you.props["last_milestone_type"].get_string() == "mark");
+        CHECK(you.props["last_milestone"].get_string() == "accepted the Mark of Haemoclasm");
+#endif
+#if defined(DGL_MILESTONES) && defined(UNIX)
+        std::ifstream file(filename);
+        REQUIRE(file.good());
+        string line, last;
+        while (std::getline(file, line)) last = line;
+        REQUIRE(file.eof());
+        CHECK(xlog_fields(last).str_field("type") == "mark");
+        CHECK(xlog_fields(last).str_field("milestone") == "accepted the Mark of Haemoclasm");
+#endif
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "divine rereview: every known mark note roundtrips canonically with legacy fallback",
+                 "[zh-translation][divine-rereview][mark-notes]")
+{
+    init_mut_index();
+    int marks = 0;
+    for (int i = 0; i < NUM_MUTATIONS; ++i)
+    {
+        const mutation_type mark = static_cast<mutation_type>(i);
+        if (!mutation_name(mark) || !is_makhleb_mark(mark)) continue;
+        ++marks;
+        string canonical;
+        { ScopedLangEn english; canonical = mutation_name(mark); }
+        Note original(NOTE_INFERNAL_MARK, 0, 0, canonical);
+        vector<unsigned char> bytes;
+        writer output(&bytes);
+        original.save(output);
+        reader input(bytes);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        Note loaded;
+        loaded.load(input);
+        for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+        {
+            unwind_var<lang_t> lang(Options.language, language);
+            CHECK(loaded.describe(false, false, true)
+                  == make_stringf(T_("Branded self with the %s"), mutation_name(mark)));
+            CHECK(loaded.name == canonical);
+            vector<unsigned char> after;
+            writer after_output(&after);
+            loaded.save(after_output);
+            CHECK(after == bytes);
+        }
+    }
+    REQUIRE(marks > 0);
+    const Note unknown(NOTE_INFERNAL_MARK, 0, 0, "legacy unknown mark");
+    CHECK(unknown.describe(false, false, true)
+          == make_stringf(T_("Branded self with the %s"), "legacy unknown mark"));
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "divine rereview: real Ignis anointment reaches English blame score and monster save",
+                 "[zh-translation][divine-rereview][blame-protocol]")
+{
+    init_monsters();
+    init_properties();
+    init_duration_index();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    constexpr uint64_t sequence = 0x4456494e4549474eULL;
+    uint64_t seed = 0;
+    // Probe only the two published branch-guard RNG draws. The actual wrath
+    // call below must prove it reached the intended producer (fail closed).
+    for (uint64_t candidate = 1; candidate < 100; ++candidate)
+    {
+        rng::subgenerator probe(candidate, sequence);
+        one_chance_in(3);
+        if (coinflip()) { seed = candidate; break; }
+    }
+    REQUIRE(seed != 0);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        unwind_var<lang_t> lang(Options.language, language);
+        you = player();
+        you.your_name = "DivineIgnis";
+        you.birth_time = 1599999900;
+        you.last_keypress_time = chrono::system_clock::from_time_t(you.birth_time);
+        you.species = SP_HUMAN;
+        you.char_class = JOB_MONK;
+        you.chr_class_name = get_job_name(you.char_class);
+        you.where_are_you = BRANCH_DUNGEON;
+        you.depth = 1;
+        you.hp = you.hp_max = 100;
+        you.base_stats.init(10);
+        you.equipment.update();
+        you.duration[DUR_BEOGH_DIVINE_CHALLENGE] = 100; // disallow shaft transitions
+        // The wrath scans the full LOS radius, beyond this fixture's cleared
+        // rectangle. Zero-initialized cells otherwise alias monster slot 0.
+        unwind_var<decltype(env.mgrid)> restore_grid(env.mgrid);
+        env.mgrid.init(NON_MONSTER);
+        scoped_monspeak_world world;
+        monster* champion = world.place(MONS_ORC);
+        REQUIRE(champion);
+        champion->set_hit_dice(10);
+        REQUIRE_FALSE(you.shaftable());
+        {
+            rng::subgenerator random(seed, sequence);
+            REQUIRE(divine_retribution(GOD_IGNIS, true, true));
+        }
+        REQUIRE(champion->has_ench(ENCH_FIRE_CHAMPION));
+        const CrawlVector& blame = champion->props[BLAME_KEY].get_vector();
+        REQUIRE(blame.size() == 1);
+        CHECK(blame[0].get_string() == "anointed by Ignis");
+        scorefile_entry score(1, champion->mid, KILLED_BY_MONSTER, nullptr, true);
+        score.init(1600000000);
+        const xlog_fields fields(score.raw_string());
+        CHECK(fields.str_field("ikiller") == "Ignis");
+        CHECK(fields.str_field("kpath") == "anointed by Ignis");
+        const string before = score.raw_string();
+        const string display = score.death_description(scorefile_entry::DDV_VERBOSE);
+        if (language == lang_t::ZH)
+            CHECK(display.find(make_stringf_p(T_("anointed by %1$s"), god_name(GOD_IGNIS).c_str())) != string::npos);
+        CHECK(score.raw_string() == before);
+        // The final producer entry determines ikiller; the full ordered chain
+        // must survive both the score consumer and monster serialization.
+        mons_add_blame(champion, "summoned by the wrath of Zin", true);
+        scorefile_entry chained(1, champion->mid, KILLED_BY_MONSTER, nullptr, true);
+        chained.init(1600000000);
+        const xlog_fields chain(chained.raw_string());
+        CHECK(chain.str_field("ikiller") == "Ignis");
+        CHECK(chain.str_field("kpath") == "summoned by the wrath of Zin:anointed by Ignis");
+        vector<unsigned char> bytes;
+        writer output(&bytes);
+        marshallMonster(output, *champion);
+        reader input(bytes);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        monster loaded;
+        unmarshallMonster(input, loaded);
+        REQUIRE(loaded.props[BLAME_KEY].get_vector().size() == 2);
+        CHECK(loaded.props[BLAME_KEY].get_vector()[0].get_string() == "summoned by the wrath of Zin");
+        CHECK(loaded.props[BLAME_KEY].get_vector()[1].get_string() == "anointed by Ignis");
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "divine rereview: Xom known note shapes render without changing save payloads",
+                 "[zh-translation][divine-rereview][xom-notes]")
+{
+    init_monsters();
+    init_spell_descs();
+    init_spell_name_cache();
+    const pair<string, string> cases[] =
+    {
+        { "buffed friendly orc 2 times", make_stringf(T_("buffed friendly %s %d times"), mons_type_name(MONS_ORC, DESC_PLAIN).c_str(), 2) },
+        { "charmed 1 monster", make_stringf(T_("charmed %d monster"), 1) },
+        { "charmed 2 monsters", make_stringf(T_("charmed %d monsters"), 2) },
+        { "give mutations", T_("give mutations") },
+        { "lit up 2 webs", make_stringf(T_("lit up %d webs"), 2) },
+        { "summons 2 friends", make_stringf(T_("summons %d friends"), 2) },
+        { "summons friendly orc", make_stringf(T_("summons friendly %s"), mons_type_name(MONS_ORC, DESC_PLAIN).c_str()) },
+        { "made a garden", T_("made a garden") },
+        { "spooky wave of despair", T_("spooky wave of despair") },
+        { "3-stop teleportation journey", make_stringf(T_("%d-stop teleportation journey"), 3) },
+        { "3-stop teleportation journey (dangerous)", make_stringf(T_("%d-stop teleportation journey (dangerous)"), 3) },
+        { "cast spell 'Magic Dart'", make_stringf(T_("cast spell '%s'"), spell_title(SPELL_MAGIC_DART)) },
+        { "potion effect (curing)", make_stringf(T_("potion effect (%s)"), potion_type_name(POT_CURING)) },
+        { "divine lightning + 2 bolts", make_stringf(T_("divine lightning + %d bolts"), 2) },
+        { "made a ring of doors, pushed 1 other out", make_stringf(T_("made a ring of doors, pushed %d other out"), 1) },
+        { "made a ring of doors, pulled 2 others in", make_stringf(T_("made a ring of doors, pulled %d others in"), 2) },
+        { "made a ring of doors, pulled 2 in and pushed 1 out", make_stringf(T_("made a ring of doors, pulled %d in and pushed %d out"), 2, 1) },
+        { "summons 2 living force lances", make_stringf(T_("summons %d living force lances"), 2) },
+        { "summons 2 hostile shadow creatures", make_stringf(T_("summons %d hostile shadow creatures"), 2) },
+        { "summons 1 hostile chaos creature", make_stringf(T_("summons %d hostile chaos creature"), 1) },
+        { "summoned 1 hostile illusion + 2 friendly illusions", make_stringf(T_("summoned %d hostile illusions + %d friendly illusions"), 1, 2) },
+        { "torment player (25/50 hp)", make_stringf(T_("torment player (%d/%d hp)"), 25, 50) },
+        { "torment all (25/50 hp)", make_stringf(T_("torment all (%d/%d hp)"), 25, 50) },
+        { "drained mp", T_("drained mp") },
+        { "drained mp, created monsters", T_("drained mp, created monsters") },
+        { "good polymorph orc -> something unseen", make_stringf(T_("%s polymorph %s -> %s"), T_("good"), mons_type_name(MONS_ORC, DESC_PLAIN).c_str(), T_("something unseen")) },
+        { "scenery: 2 fountains blood, 3 doors open", string(T_("scenery: ")) + make_stringf(T_("%d fountains blood"), 2) + C_("Xom scenery list", ", ") + make_stringf(T_("%d doors open"), 3) },
+    };
+    for (const auto& value : cases)
+    {
+        CAPTURE(value.first);
+        REQUIRE(value.first != value.second);
+        Note original(NOTE_XOM_EFFECT, 100, -1, value.first);
+        vector<unsigned char> bytes;
+        writer output(&bytes);
+        original.save(output);
+        reader input(bytes);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        Note loaded;
+        loaded.load(input);
+        CHECK(loaded.name == value.first);
+        CHECK(loaded.describe(false, false, true) == string(T_("XOM: ")) + value.second);
+        {
+            ScopedLangEn en;
+            CHECK(loaded.describe(false, false, true) == "XOM: " + value.first);
+        }
+        vector<unsigned char> after;
+        writer after_output(&after);
+        loaded.save(after_output);
+        CHECK(after == bytes);
+    }
+    // Minimal malformed/unknown mutations must retain the complete payload.
+    for (const char* name : { "charmed -1 monsters", "charmed 1 monsters extra",
+        "divine lightning + 99999999999999999999 bolts", "good polymorph orc -> ",
+        "buffed friendly orc unknown times", "buffed friendly  2 times",
+        "summons friendly ", "torment all (25/x hp)",
+        "made a ring of doors, pulled 2 in and pushed unknown out",
+        "scenery: 2 unknown scenery objects", "future unknown Xom action" })
+    {
+        Note note(NOTE_XOM_EFFECT, 100, -1, name);
+        CHECK(note.describe(false, false, true) == string(T_("XOM: ")) + name);
+    }
+    for (const char* text : { "god gift: a +13 unknown future item",
+                              "god gift: unknown saved artefact" })
+    {
+        const Note gift(NOTE_XOM_EFFECT, 100, -1, text);
+        CHECK(gift.describe(false, false, true) == "XOM: " + string(text));
+        CHECK(gift.name == text);
+    }
+    string effect_en;
+    { ScopedLangEn english; effect_en = description_for_ench(ENCH_HASTE); }
+    const Note enchant(NOTE_XOM_EFFECT, 100, -1,
+        "enchant monsters (good, " + effect_en + ")");
+    CHECK(enchant.describe(false, false, true) == string(T_("XOM: "))
+        + make_stringf(T_("enchant monsters (%s, %s)"), T_("good"),
+                       description_for_ench(ENCH_HASTE).c_str()));
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "divine rereview: canonical wrath names translate only through real display consumers",
+                 "[zh-translation][divine-rereview][wrath-display]")
+{
+    init_monsters();
+    init_properties();
+    const string canonical = "the fiery rage of Trog";
+    const string expected = make_stringf_p(C_("god wrath", "the %1$s of %2$s"),
+        C_("god wrath noun", "fiery rage"), god_name(GOD_TROG).c_str());
+    CHECK(god_wrath_display_name(canonical) == expected);
+    CHECK(god_wrath_display_name("the unknown rage of Trog") == "the unknown rage of Trog");
+    {
+        ScopedLangEn en;
+        CHECK(god_wrath_display_name(canonical) == canonical);
+    }
+    monster avatar;
+    avatar.type = MONS_GOD_WRATH_AVATAR;
+    avatar.flags = MF_NAME_REPLACE;
+    avatar.mname = canonical;
+    monster_info info(&avatar, MILEV_NAME);
+    CHECK(info.common_name(DESC_PLAIN) == expected);
+    CHECK(avatar.mname == canonical);
+    // An ordinary named creature does not inherit the avatar naming rule.
+    avatar.type = MONS_ORC;
+    monster_info ordinary(&avatar, MILEV_NAME);
+    CHECK(ordinary.common_name(DESC_PLAIN) == canonical);
+    const Note paralysis(NOTE_PARALYSIS, 25, 0, canonical);
+    CHECK(paralysis.describe(false, false, true)
+          == make_stringf(T_("Paralysed by %s for %.2g turns"), expected.c_str(), 2.5));
+    CHECK(paralysis.name == canonical);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "divine rereview: all Ru offer branches localize without applying declined sacrifices",
+                 "[zh-translation][divine-rereview][ru-offers]")
+{
+    init_properties();
+    init_mut_index();
+    init_sac_index();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.religion = GOD_RU;
+    you.hp = you.hp_max = 100;
+    you.base_stats.init(10);
+    you.equipment.update();
+    const auto before = you.mutation;
+    you.props[PURITY_SAC_KEY].new_vector(SV_INT).push_back(MUT_WEAK);
+    you.props[ESSENCE_SAC_KEY].new_vector(SV_INT).push_back(MUT_LOW_MAGIC);
+    you.props[HEALTH_SAC_KEY].new_vector(SV_INT).push_back(MUT_FRAIL);
+    auto& arcana = you.props[ARCANA_SAC_KEY].new_vector(SV_INT);
+    arcana.push_back(MUT_NO_FIRE_MAGIC);
+    arcana.push_back(MUT_NO_ICE_MAGIC);
+    arcana.push_back(MUT_NO_AIR_MAGIC);
+    const pair<ability_type, const char*> offers[] =
+    {
+        { ABIL_RU_SACRIFICE_PURITY, "corrupt yourself such that" },
+        { ABIL_RU_SACRIFICE_ESSENCE, "corrupt yourself such that" },
+        { ABIL_RU_SACRIFICE_HEALTH, "corrupt yourself such that" },
+        { ABIL_RU_SACRIFICE_WORDS, "sacrifice your ability to read unless badly injured" },
+        { ABIL_RU_SACRIFICE_DRINK, "sacrifice your ability to drink unless badly injured" },
+        { ABIL_RU_SACRIFICE_STEALTH, "sacrifice your ability to go unnoticed" },
+        { ABIL_RU_SACRIFICE_ARTIFICE, "sacrifice all use of magical tools" },
+        { ABIL_RU_SACRIFICE_LOVE, "sacrifice your ability to be loved" },
+        { ABIL_RU_SACRIFICE_COURAGE, "sacrifice your courage" },
+        { ABIL_RU_SACRIFICE_ARCANA, "sacrifice all use of" },
+        { ABIL_RU_SACRIFICE_NIMBLENESS, "sacrifice your Dodging skill" },
+        { ABIL_RU_SACRIFICE_DURABILITY, "sacrifice your Armour skill" },
+        { ABIL_RU_SACRIFICE_HAND, "sacrifice one of your %s" },
+        { ABIL_RU_SACRIFICE_EXPERIENCE, "sacrifice your experiences" },
+        { ABIL_RU_SACRIFICE_SKILL, "sacrifice your skill" },
+        { ABIL_RU_SACRIFICE_EYE, "sacrifice an eye" },
+        { ABIL_RU_SACRIFICE_RESISTANCE, "sacrifice your resistance to extreme temperatures" },
+        { ABIL_RU_SACRIFICE_FORMS, "sacrifice your ability to change forms" },
+    };
+    divine_prompt_answer decline(false);
+    for (const auto& offer : offers)
+    {
+        CAPTURE(offer.first, offer.second);
+        you.sacrifice_piety[offer.first] = 10;
+        string output;
+        {
+            msg::tee capture(output);
+            REQUIRE_FALSE(ru_do_sacrifice(offer.first));
+        }
+        const string phrase = offer.first == ABIL_RU_SACRIFICE_HAND
+            ? make_stringf(C_("Ru sacrifice offer", offer.second), you.hand_name(true).c_str())
+            : string(C_("Ru sacrifice offer", offer.second));
+        CHECK(output.find(phrase) != string::npos);
+        CHECK(output.find(offer.second) == string::npos);
+        for (int mutation = 0; mutation < NUM_MUTATIONS; ++mutation)
+            CHECK(you.mutation[mutation] == before[mutation]);
+        CHECK(you.hp == 100);
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "divine rereview: actual Xom torment notes match the player-only or area branch",
+                 "[zh-translation][divine-rereview][xom-torment]")
+{
+    init_monsters();
+    init_properties();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<vector<Note>> restore_notes(note_list);
+    const bool active = notes_are_active();
+    activate_notes(true);
+    unwinder restore_active([&]() { activate_notes(active); });
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    for (bool player_only : {false, true})
+    {
+        unwind_var<lang_t> lang(Options.language, language);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 100;
+        you.base_stats.init(10);
+        you.gift_timeout = 100;
+        you.penance[GOD_XOM] = player_only ? 1 : 0;
+        you.equipment.update();
+        scoped_monspeak_world world;
+        rng::subgenerator random(19, 0x4456494e45544f52ULL);
+        const size_t before = note_list.size();
+        xom_take_action(XOM_BAD_TORMENT, 50);
+        REQUIRE(note_list.size() > before);
+        const Note& note = note_list.back();
+        REQUIRE(note.type == NOTE_XOM_EFFECT);
+        CHECK(note.name == make_stringf(player_only
+            ? "torment player (%d/%d hp)" : "torment all (%d/%d hp)", you.hp, you.hp_max));
+        CHECK(note.describe(false, false, true) == string(T_("XOM: "))
+            + make_stringf(player_only ? T_("torment player (%d/%d hp)")
+                                      : T_("torment all (%d/%d hp)"), you.hp, you.hp_max));
+        CHECK(you.hp < 100);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "divine rereview: actual Xom non-stasis time messages cover all three effects",
+                 "[zh-translation][divine-rereview][xom-time]")
+{
+    init_monsters();
+    init_properties();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<vector<Note>> restore_notes(note_list);
+    const bool active = notes_are_active();
+    activate_notes(true);
+    unwinder restore_active([&]() { activate_notes(active); });
+    const char* keys[] = {
+        "You and everything else in sight speed up!",
+        "You and everything else in sight slow down!",
+        "You and everything else in sight suddenly stop moving!"
+    };
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        unwind_var<lang_t> lang(Options.language, language);
+        bool seen[] = { false, false, false };
+        for (uint64_t seed = 1; seed < 64 && !(seen[0] && seen[1] && seen[2]); ++seed)
+        {
+            you = player();
+            you.species = SP_HUMAN;
+            you.hp = you.hp_max = 100;
+            you.base_stats.init(10);
+            you.gift_timeout = 100;
+            you.equipment.update();
+            scoped_monspeak_world world;
+            rng::subgenerator random(seed, 0x4456494e4554494dULL);
+            string output;
+            {
+                msg::tee tee(output);
+                xom_take_action(XOM_BAD_TIME_CONTROL, 50);
+            }
+            int matches = 0;
+            for (int i = 0; i < 3; ++i)
+            {
+                if (output.find(T_(keys[i])) == string::npos) continue;
+                seen[i] = true;
+                ++matches;
+                if (language == lang_t::ZH)
+                    CHECK(output.find(keys[i]) == string::npos);
+            }
+            REQUIRE(matches == 1);
+        }
+        REQUIRE(seen[0]);
+        REQUIRE(seen[1]);
+        REQUIRE(seen[2]);
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "divine rereview: every ordinary and hyper enchantment uses a complete predicate",
+                 "[zh-translation][divine-rereview][xom-predicates]")
+{
+    // Exact live producer domains: 8 ordinary and 15 hyper entries, with four
+    // shared effects. This checks the finite interface rather than flag labels.
+    const enchant_type ordinary[] = { ENCH_PETRIFYING, ENCH_PARALYSIS,
+        ENCH_VITRIFIED, ENCH_SLOW, ENCH_HASTE, ENCH_MIGHT, ENCH_REGENERATION,
+        ENCH_RESISTANCE };
+    const enchant_type hyper[] = { ENCH_MIGHT, ENCH_SWIFT, ENCH_HASTE, ENCH_INVIS,
+        ENCH_EMPOWERED_SPELLS, ENCH_DEFLECT_MISSILES, ENCH_RESISTANCE,
+        ENCH_REGENERATION, ENCH_TOXIC_RADIANCE, ENCH_CHAOS_LACE, ENCH_WARDING,
+        ENCH_DOUBLED_VIGOUR, ENCH_MIRROR_DAMAGE, ENCH_STRONG_WILLED,
+        ENCH_PARADOX_TOUCHED };
+    for (const auto effect : ordinary)
+    {
+        const string predicate = xom_enchantment_predicate(effect);
+        CHECK(contains_non_ascii(predicate));
+        CHECK(predicate.find('\n') == string::npos);
+        ScopedLangEn en;
+        CHECK_FALSE(contains_non_ascii(xom_enchantment_predicate(effect)));
+    }
+    for (const auto effect : hyper)
+    {
+        const string predicate = xom_enchantment_predicate(effect);
+        CHECK(contains_non_ascii(predicate));
+        CHECK(predicate.find('\n') == string::npos);
+        ScopedLangEn en;
+        CHECK_FALSE(contains_non_ascii(xom_enchantment_predicate(effect)));
+    }
+    init_monsters();
+    init_properties();
+    init_duration_index();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    unwind_var<vector<Note>> restore_notes(note_list);
+    for (bool multiple : {false, true})
+    {
+        you = player();
+        you.species = SP_HUMAN;
+        you.experience_level = 20;
+        you.hp = you.hp_max = 100;
+        you.base_stats.init(10);
+        you.gift_timeout = 100;
+        you.equipment.update();
+        scoped_monspeak_world world;
+        monster* target = world.place(MONS_ORC);
+        REQUIRE(target);
+        if (multiple) target->base_attitude = ATT_FRIENDLY;
+        string output;
+        {
+            rng::subgenerator random(11, 0x4456505245444943ULL);
+            msg::tee tee(output);
+            xom_take_action(multiple ? XOM_GOOD_HYPER_ENCHANT_MONSTER
+                                     : XOM_GOOD_ENCHANT_MONSTER, 50);
+        }
+        int emitted = 0;
+        if (multiple)
+        {
+            for (const auto effect : hyper)
+                if (target->has_ench(effect))
+                {
+                    ++emitted;
+                    CHECK(output.find(xom_enchantment_predicate(effect)) != string::npos);
+                }
+            CHECK(emitted > 1);
+        }
+        else
+        {
+            for (const auto effect : ordinary)
+                if (target->has_ench(effect))
+                {
+                    ++emitted;
+                    CHECK(output.find(xom_enchantment_predicate(effect)) != string::npos);
+                }
+            CHECK(emitted == 1);
+        }
+    }
+}
+
+TEST_CASE("divine rereview: real deck summaries use bare categories and locale separators",
+          "[zh-translation][divine-rereview][deck-summary]")
+{
+    unwind_var<player> restore_player(you);
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    you = player();
+    you.props[NEMELEX_STACK_KEY].new_vector(SV_INT);
+    const deck_type types[] = { DECK_OF_ESCAPE, DECK_OF_DESTRUCTION, DECK_OF_SUMMONING };
+    const char* names[] = { "escape", "destruction", "summoning" };
+    CHECK(deck_name(DECK_STACK) == "stacked deck");
+    for (int i = 0; i < 3; ++i)
+        CHECK(deck_name(types[i]) == "deck of " + string(names[i]));
+    for (int count : {1, 2, 3})
+    {
+        reset_cards();
+        for (int i = 0; i < count; ++i)
+        {
+            const string canonical_key = "deck of " + string(names[i]);
+            you.props[canonical_key] = i + 1;
+            CHECK(deck_cards(types[i]) == i + 1);
+        }
+        const string summary = deck_summary();
+        for (int i = 0; i < count; ++i)
+            CHECK(you.props["deck of " + string(names[i])].get_int() == i + 1);
+        CHECK(summary.find('\n') == string::npos);
+        CHECK(summary.find("deck of") == string::npos);
+        for (int i = 0; i < count; ++i)
+        {
+            CHECK(summary.find(make_stringf(i == 0 ? T_("%d %s card")
+                                                  : T_("%d %s cards"), i + 1, T_(names[i]))) != string::npos);
+        }
+        if (language == lang_t::EN && count == 3)
+            CHECK(summary == "1 escape card, 2 destruction cards and 3 summoning cards");
+    }
+    // The actual gift producer must still read the same canonical properties;
+    // saturating every deck forces its display-only sufficiency branch.
+    you.religion = GOD_NEMELEX_XOBEH;
+    for (int i = 0; i < 3; ++i)
+        you.props["deck of " + string(names[i])] = 999;
+    rng::subgenerator random(1, 0x4456494e45444543ULL);
+    string output;
+    {
+        msg::tee messages(output);
+        CHECK_FALSE(gift_cards());
+    }
+    CHECK_FALSE(output.empty());
+    bool displayed_category = false;
+    for (int i = 0; i < 3; ++i)
+    {
+        CHECK(you.props["deck of " + string(names[i])].get_int() == 999);
+        displayed_category |= output.find(T_(names[i])) != string::npos;
+        if (language == lang_t::ZH)
+            CHECK(output.find(names[i]) == string::npos);
+    }
+    CHECK(displayed_category);
 }

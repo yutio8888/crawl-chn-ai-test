@@ -1057,6 +1057,33 @@ template<class T> static bool _update_int(bool force, T& current, T next,
         return false;
 }
 
+// Only these status identities are queried by player.js:has_status. Other
+// short_db_key producers may contain display text, so do not expose them as
+// protocol identities. Add new client queries here with their producer audit.
+static string _web_status_key(int status, const status_info& inf)
+{
+    switch (status)
+    {
+    case DUR_BERSERK:
+    case DUR_DIVINE_STAMINA:
+    case DUR_DIVINE_VIGOUR:
+    case DUR_CONF:
+    case DUR_PARALYSIS:
+    case DUR_PETRIFIED:
+    case DUR_SLEEP:
+    case DUR_SILENCE:
+    case DUR_GOZAG_GOLD_AURA:
+    case STATUS_STAT_ZERO:
+        return inf.short_db_key;
+    case STATUS_SILENCE:
+        return "silenced";
+    case STATUS_NET:
+        return "held";
+    default:
+        return "";
+    }
+}
+
 static bool _update_statuses(player_info& c)
 {
     bool changed = false;
@@ -1067,6 +1094,8 @@ static bool _update_statuses(player_info& c)
         if (!fill_status_info(*si, inf)) // this will reset inf itself
             continue;
 
+        inf.short_db_key = _web_status_key(*si, inf);
+
         if (!inf.light_text.empty() || !inf.short_text.empty())
         {
             if (!changed)
@@ -1076,7 +1105,8 @@ static bool _update_statuses(player_info& c)
                 if (counter >= c.status.size()
                     || inf.light_text != c.status[counter].light_text
                     || inf.light_colour != c.status[counter].light_colour
-                    || inf.short_text != c.status[counter].short_text)
+                    || inf.short_text != c.status[counter].short_text
+                    || inf.short_db_key != c.status[counter].short_db_key)
                 {
                     changed = true;
                 }
@@ -1303,12 +1333,14 @@ void TilesFramework::_send_player(bool force_full)
         c.position = pos;
     }
 
-    if (force_full || _update_statuses(c))
+    if (_update_statuses(c) || force_full)
     {
         json_open_array("status");
         for (const status_info &status : c.status)
         {
             json_open_object();
+            // An empty key explicitly means no client-queryable identity.
+            json_write_string("key", status.short_db_key);
             if (!status.light_text.empty())
             {
                 if (!status.light_text_formatted.empty())
@@ -2067,6 +2099,17 @@ void TilesFramework::_send_map(bool spectator_only)
     m_monster_locs = new_monster_locs;
 }
 
+static bool _monster_list_excluded(const monster_info& m)
+{
+    // Preserve the old English list exceptions using monster identity. Vine
+    // tentacles and all tentacle segments were not matched by /tentacle$/.
+    const bool exception = (m.type == MONS_BALLISTOMYCETE && m.is_active)
+                           || m.type == MONS_KRAKEN_TENTACLE
+                           || m.type == MONS_STARSPAWN_TENTACLE
+                           || m.type == MONS_ELDRITCH_TENTACLE;
+    return !mons_class_gives_xp(m.type) && !exception;
+}
+
 void TilesFramework::_send_monster(const coord_def &gc, const monster_info* m,
                                    map<uint32_t, coord_def>& new_monster_locs,
                                    bool force_full)
@@ -2104,6 +2147,9 @@ void TilesFramework::_send_monster(const coord_def &gc, const monster_info* m,
 
     if (force_full || (last->pluralised_name() != m->pluralised_name()))
         json_write_string("plural", m->pluralised_name());
+
+    if (force_full || _monster_list_excluded(*last) != _monster_list_excluded(*m))
+        json_write_bool("list_excluded", _monster_list_excluded(*m));
 
     if (force_full || last->type != m->type)
     {

@@ -151,4 +151,8 @@
     <string name="reading_size_preview">Preview: lists, descriptions and messages</string>
     <string name="map_scale_help">Map zoom changes tile size separately; use the in-game zoom controls.</string>
     <string name="reading_percentage">%1$d%%</string>
+    <string name="sdl_startup_error">An error occurred while trying to start the application. Please try again and/or reinstall.</string>
+    <string name="sdl_error_detail">Error: %1$s</string>
+    <string name="sdl_error_title">SDL Error</string>
+    <string name="sdl_exit">Exit</string>
 </resources>
