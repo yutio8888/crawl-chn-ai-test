@@ -102,7 +102,9 @@ void WebTextArea::put_character(char32_t chr, int fg, int bg, int x, int y)
     {
         if (m_cbuf[row + cell] != value || m_abuf[row + cell] != colour
             || !m_combining[row + cell].empty())
+        {
             m_dirty = true;
+        }
         m_combining[row + cell].clear();
         m_cbuf[row + cell] = value;
         m_abuf[row + cell] = colour;
