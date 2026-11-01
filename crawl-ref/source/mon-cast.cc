@@ -1630,7 +1630,7 @@ static void _cast_beckoning_gale(monster &caster, mon_spell_slot, bolt&)
                 || (new_foe_pos != caster.pos() && actor_at(new_foe_pos))
                 || foe->is_player() && need_expiration_warning(new_foe_pos)
                 || foe->is_constricted()
-                || foe->resists_dislodge("being dragged"))
+                || foe->resists_dislodge(NC_("dislodge event", "being dragged")))
             {
                 continue;
             }

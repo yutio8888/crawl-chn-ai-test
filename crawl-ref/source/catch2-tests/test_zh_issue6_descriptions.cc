@@ -21,6 +21,7 @@
 #include "syscalls.h"
 #include "test_zh_fixture.h"
 #include "unwind.h"
+#include "xom.h"
 #include "unicode.h"
 
 namespace
@@ -118,7 +119,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                          "Despite %1$s appearance, %2$s can open doors.\n"), "它的", "它")
           == "尽管它的外表如此，它仍能开门。\n");
     CHECK(make_stringf(C_("attack prompt", "fire in %s direction"), "M")
-          == "向M的方向");
+          == "朝M的方向射击");
     CHECK(string(C_("attack prompt", "your ally ")) == "你的盟友");
     CHECK(string(C_("attack prompt", "your "))
           + C_("attack prompt", "ally ") == "你的盟友");
@@ -129,12 +130,17 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                                C_("god wrath list", ", ")) == "A、B和C");
     CHECK(string(T_("  [<w>J</w>/<w>Enter</w>]: join"))
           == "  [<w>J</w>/<w>回车</w>]: 皈依");
-    CHECK(make_stringf(T_("%s suddenly %s%s!"), "M",
-                       C_("xom enchantment", "starts "), "E")
-          == "M突然开始了E！");
-    CHECK(make_stringf(T_("%s suddenly %s%s!"), "M",
-                       C_("xom enchantment", "looks "), "E")
-          == "M突然看起来了E！");
+    // The live consumer now takes complete typed predicates, rather than
+    // combining aspect-bearing flag labels with a second starts/looks verb.
+    for (const auto effect : { ENCH_REGENERATION, ENCH_HASTE })
+    {
+        const string predicate = xom_enchantment_predicate(effect);
+        REQUIRE(predicate == (effect == ENCH_REGENERATION
+                              ? "开始再生" : "看起来迅捷了"));
+        CHECK(make_stringf(T_("%s suddenly %s!"), "M", predicate.c_str())
+              == "M突然" + predicate + "！");
+    }
+
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

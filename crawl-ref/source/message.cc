@@ -2292,7 +2292,7 @@ bool simple_monster_message(const monster& mons, const char *event,
 string god_speaker(god_type which_deity)
 {
     if (which_deity == GOD_WU_JIAN)
-       return "The Council";
+       return T_("The Council");
     else
        return uppercase_first(god_name(which_deity));
 }
@@ -2312,7 +2312,9 @@ void simple_god_message(const char *event, bool need_possessive,
 void wu_jian_sifu_message(const char *event)
 {
     string msg;
-    msg = uppercase_first(string("Sifu ") + wu_jian_random_sifu_name() + event);
+    const string name = wu_jian_random_sifu_name();
+    msg = make_stringf_p(C_("Wu Jian speaker", "Sifu %1$s%2$s"),
+                         name.c_str(), event);
     god_speaks(GOD_WU_JIAN, msg.c_str());
 }
 

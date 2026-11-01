@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "god-wrath.h"
 
 #include <cmath>
 #include <algorithm>
@@ -2549,13 +2550,13 @@ string monster::arm_name(bool plural, bool *can_plural) const
 string monster::blood_name() const
 {
     if (has_blood())
-        return "blood";
+        return N_("blood");
 
     mon_holy_type holi = holiness();
     if (holi & (MH_DEMONIC | MH_HOLY))
-        return "ichor";
+        return N_("ichor");
     else if (holi & MH_PLANT && mons_genus(type) != MONS_FUNGUS)
-        return "sap";
+        return N_("sap");
     // XXX: Not bothering to fill this out, since it's currently never called.
     else if (holi & (MH_NONLIVING | MH_UNDEAD))
         return "???";
@@ -2569,11 +2570,11 @@ string monster::blood_name() const
         case MON_SHAPE_ARACHNID:
         case MON_SHAPE_SNAIL:
         case MON_SHAPE_SNAKE:   // Worms; real snakes have actual blood.
-            return "haemolymph";
+            return N_("haemolymph");
 
         case MON_SHAPE_ORB:
             if (mons_genus(type) == MONS_FLOATING_EYE)
-                return "vitreous fluid";
+                return N_("vitreous fluid");
             break;
 
         default:
@@ -2581,7 +2582,7 @@ string monster::blood_name() const
     }
 
     // Generic fallback
-    return "vital fluids";
+    return N_("vital fluids");
 }
 
 int monster::mindex() const
@@ -4227,7 +4228,10 @@ bool monster::corrode(const actor* source, const char* corrosion_msg, int amount
     if (you.see_cell(pos()))
     {
         if (!has_ench(ENCH_CORROSION))
-            mprf(T_("%s corrodes %s!"), T_(corrosion_msg), name(DESC_THE).c_str());
+        {
+            const string display_source = god_wrath_display_name(corrosion_msg);
+            mprf(T_("%s corrodes %s!"), T_(display_source.c_str()), name(DESC_THE).c_str());
+        }
         else
             mprf(T_("%s seems to be corroded for longer."), name(DESC_THE).c_str());
     }
@@ -5943,7 +5947,7 @@ bool monster::floodify(const actor* attacker, int duration, const char* substanc
         // something that can be called lungs.
         const bool has_lungs = get_mon_shape(*this) < MON_SHAPE_INSECT;
         mprf(T_("%s floods into %s %s!"),
-                substance, name(DESC_ITS).c_str(),
+                C_("flood substance", substance), name(DESC_ITS).c_str(),
                 has_lungs ? (T_("lungs")) : (T_("airways")));
     }
 

@@ -164,6 +164,7 @@ private:
     bool mons_attack_effects() override;
     void mons_apply_attack_flavour(attack_flavour flavour = AF_PLAIN);
     string mons_attack_verb();
+    string mons_body_attack_phrase(const string& verb);
     string mons_attack_desc();
     // TODO: Unify do_poison and poison_monster
     bool mons_do_poison();

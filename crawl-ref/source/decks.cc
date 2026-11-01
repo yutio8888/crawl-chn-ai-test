@@ -359,12 +359,14 @@ bool gift_cards()
         for (deck_type deck : sufficiency)
         {
             const deck_type_data *deck_data = map_find(all_decks, deck);
-            deck_names.push_back(deck_data ? deck_data->name : "bugginess");
+            deck_names.push_back(deck_data ? T_(deck_data->name.c_str()) : T_("bugginess"));
         }
         mprf(MSGCH_GOD, you.religion,
              T_("%s goes to deal, but finds you have enough %s cards."),
              god_name(you.religion).c_str(),
-             join_strings(deck_names.begin(), deck_names.end(), " and ").c_str());
+             comma_separated_line(deck_names.begin(), deck_names.end(),
+                                  C_("deck summary list", " and "),
+                                  C_("deck summary list", ", ")).c_str());
     }
 
     return dealt_cards;
@@ -384,7 +386,7 @@ string deck_summary()
     {
         int cards = deck_cards((deck_type) i);
         const deck_type_data *deck_data = map_find(all_decks, (deck_type) i);
-        const string name = deck_data ? deck_data->name : "bugginess";
+        const string name = deck_data ? T_(deck_data->name.c_str()) : T_("bugginess");
         if (cards)
         {
             if (cards == 1)
@@ -399,7 +401,9 @@ string deck_summary()
             }
         }
     }
-    return comma_separated_line(stats.begin(), stats.end());
+    return comma_separated_line(stats.begin(), stats.end(),
+                                C_("deck summary list", " and "),
+                                C_("deck summary list", ", "));
 }
 
 string which_decks(card_type card)

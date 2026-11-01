@@ -1057,7 +1057,7 @@ bool do_west_wind_shot()
 
     prototype.dmg_mult = 33;
     prototype.pierce = true;
-    prototype.set_projectile_prefix("wind-blessed");
+    prototype.set_projectile_prefix(N_("wind-blessed"));
 
     // Downscale damage from slow weapons versus the player's movement speed.
     const int attack_delay = you.attack_delay().roll() * BASELINE_DELAY;

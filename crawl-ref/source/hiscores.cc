@@ -11,6 +11,7 @@
  */
 
 #include "AppHdr.h"
+#include "god-wrath.h"
 
 #include "hiscores.h"
 
@@ -57,6 +58,7 @@
 #include "state.h"
 #include "status.h"
 #include "stringutil.h"
+#include "transform.h"
 #ifdef USE_TILE
  #include "tilepick.h"
 #endif
@@ -1927,6 +1929,9 @@ static string _death_source_display_desc(const string &death_source_name)
     if (Options.language != lang_t::ZH || death_source_name.empty())
         return death_source_name;
 
+    const string wrath = god_wrath_display_name(death_source_name);
+    if (wrath != death_source_name)
+        return wrath;
     const string translated = T_(death_source_name.c_str());
     if (translated != death_source_name)
         return translated;
@@ -1969,6 +1974,11 @@ static string _death_source_display_desc(const string &death_source_name)
     return death_source_name;
 }
 
+string death_source_display_name(const string& canonical)
+{
+    return _death_source_display_desc(canonical);
+}
+
 string scorefile_entry::death_source_display_desc() const
 {
     if (Options.language == lang_t::ZH && !death_source_name_zh.empty())
@@ -1993,6 +2003,7 @@ static string _killerpath_display_desc(const string &killerpath)
     };
     static const blame_prefix prefixes[] =
     {
+        { "anointed by ",            N_("anointed by %1$s") },
         { "led by ",                 "led by %1$s" },
         { "summoned by ",            "summoned by %1$s" },
         { "woven by ",               "woven by %1$s" },
@@ -2079,6 +2090,51 @@ string scorefile_entry::terse_missile_cause() const
         mcause += "/" + missile;
 
     return mcause;
+}
+
+static string _frailty_cause_display(const string& cause)
+{
+    const struct
+    {
+        const char* prefix;
+        const char* suffix;
+        const char* format;
+        bool mutation;
+    } forms[] =
+    {
+        { "gaining the ", " mutation", N_("gaining the %s mutation"), true },
+        { "losing the ", " mutation", N_("losing the %s mutation"), true },
+        { "gaining the ", " transformation", N_("gaining the %s transformation"), false },
+        { "losing the ", " form", N_("losing the %s form"), false },
+    };
+    for (const auto& form : forms)
+    {
+        const size_t prefix_length = strlen(form.prefix);
+        const size_t suffix_length = strlen(form.suffix);
+        if (starts_with(cause, form.prefix) && ends_with(cause, form.suffix)
+            && cause.size() > prefix_length + suffix_length)
+        {
+            const string name = cause.substr(prefix_length,
+                cause.size() - prefix_length - suffix_length);
+            string display = name;
+            if (form.mutation)
+                display = C_("mutation", name.c_str());
+            else
+            {
+                for (int i = 0; i < NUM_TRANSFORMS; ++i)
+                {
+                    const Form* candidate = get_form(static_cast<transformation>(i));
+                    if (candidate->wiz_name == name)
+                    {
+                        display = candidate->get_short_name();
+                        break;
+                    }
+                }
+            }
+            return make_stringf(T_(form.format), display.c_str());
+        }
+    }
+    return cause;
 }
 
 string scorefile_entry::terse_beam_cause() const
@@ -2317,6 +2373,9 @@ static string _death_beam_display_name(const string &cause)
     const string fragment = fragmentation_name_display(cause);
     if (fragment != cause)
         return fragment;
+    const string projectile = projectile_display_name(cause);
+    if (projectile != cause)
+        return projectile;
     if (is_known_beam_name(cause))
         return T_(cause.c_str());
 
@@ -2561,7 +2620,8 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                     beam = terse_beam_cause();
                 trim_string(beam);
                 if (!beam.empty())
-                    desc += make_stringf(T_(" (%s)"), beam.c_str());
+                    desc += make_stringf(T_(" (%s)"),
+                        (chinese ? _death_beam_display_name(beam) : beam).c_str());
             }
         }
         else if (isupper(auxkilldata[0]))  // already made (ie shot arrows)
@@ -2570,7 +2630,19 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             // Darn it to heck.
             if (chinese)
             {
-                if (death_source_name == "you")
+                const string missile = terse_missile_name();
+                const string missile_display = projectile_display_name(missile);
+                if (!terse && !missile.empty() && missile_display != missile
+                    && !death_source_display_desc().empty()
+                    && (starts_with(auxkilldata, "Hit by ")
+                        || starts_with(auxkilldata, "Shot with ")))
+                {
+                    desc += make_stringf_p(starts_with(auxkilldata, "Hit by ")
+                        ? T_("Hit by a%s %s thrown by %s")
+                        : T_("Shot with a%s %s by %s"),
+                        "", missile_display.c_str(), death_source_display_desc().c_str());
+                }
+                else if (death_source_name == "you")
                 {
                     desc += terse ? C_("damage source", "their own ranged attack")
                                   : T_("Killed by their own ranged attack");
@@ -3313,10 +3385,14 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         break;
 
     case KILLED_BY_FRAILTY:
+    {
+        const string cause = chinese ? _frailty_cause_display(auxkilldata)
+                                     : auxkilldata;
         desc += chinese ? (terse ? T_("frailty")
-                                 : make_stringf(T_("Became unviable by %s"), auxkilldata.c_str()))
+                                 : make_stringf(T_("Became unviable by %s"), cause.c_str()))
                         : (terse ? "frailty" : "Became unviable by " + auxkilldata);
         break;
+    }
 
     case KILLED_BY_BARBS:
         desc += chinese ? (terse ? T_("barbs") : T_("Succumbed to barbed spike wounds"))
@@ -3551,7 +3627,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                 if (you.props.exists(DISABLED_BY_KEY))
                 {
                     const string disabled_source =
-                        you.props[DISABLED_BY_KEY].get_string();
+                        god_wrath_display_name(you.props[DISABLED_BY_KEY].get_string());
                     disabled_by = make_stringf_p(
                         T_(" by %1$s"),
                         disabled_source.c_str());

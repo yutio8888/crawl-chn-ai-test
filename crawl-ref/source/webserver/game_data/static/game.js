@@ -414,12 +414,12 @@ function ($, exports, comm, client, key_conversion, dungeon_renderer, display,
         var mi = $("#mobile_input input");
         if (focused)
         {
-            mi.attr("placeholder", "Tap here to close keyboard");
+            mi.attr("placeholder", "轻点此处关闭键盘");
             mi.css("background", "rgba(100, 100, 100, 0.5)");
         }
         else
         {
-            mi.attr("placeholder", "Tap here for keyboard input");
+            mi.attr("placeholder", "轻点此处使用键盘输入");
             mi.css("background", "rgba(0, 0, 0, 0.5)");
         }
     }

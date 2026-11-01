@@ -432,9 +432,9 @@ void banished(const string &who)
                      level_id(BRANCH_ABYSS), true);
     // This is an honest abyss entry, mark milestone and take note
     // floor_transition will determine our final destination in the abyss
-    const string what = make_stringf(T_("Cast into level %d of the Abyss"),
+    const string what = make_stringf("Cast into level %d of the Abyss",
                                      you.depth) + _who_banished(who);
-    take_note(Note(NOTE_MESSAGE, 0, 0, what), true);
+    take_note(Note(NOTE_MESSAGE, 0, 0, what, "abyss entry"), true);
     mark_milestone("abyss.enter",
         "was cast into the Abyss!" + _who_banished(who), "parent");
 

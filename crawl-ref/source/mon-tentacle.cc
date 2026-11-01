@@ -862,7 +862,7 @@ void move_solo_tentacle(monster* tentacle)
 
         // Don't drag things that cannot move
         if (!constrictee->is_stationary()
-            && !constrictee->resists_dislodge("being pulled by " + tentacle->name(DESC_THE)))
+            && !constrictee->resists_dislodge(NC_("dislodge event", "being pulled"), tentacle))
         {
             if (retract_found)
             {
@@ -1110,7 +1110,7 @@ void move_child_tentacles(monster* mons)
             constrictee = actor_by_mid((*tentacle->constricting)[0]);
             if (feat_has_solid_floor(env.grid(old_pos))
                 && constrictee->is_habitable(old_pos)
-                && !constrictee->resists_dislodge("being pulled by " + tentacle->name(DESC_THE)))
+                && !constrictee->resists_dislodge(NC_("dislodge event", "being pulled"), tentacle))
             {
                 pull_constrictee = true;
             }
@@ -1291,9 +1291,9 @@ void mons_create_tentacles(monster* head)
         }
     }
 
-    if (unsigned(possible_count) > adj_squares.size())
+    if (static_cast<unsigned>(possible_count) > adj_squares.size())
         possible_count = adj_squares.size();
-    else if (adj_squares.size() > unsigned(possible_count))
+    else if (adj_squares.size() > static_cast<unsigned>(possible_count))
         shuffle_array(adj_squares);
 
     int visible_count = 0;

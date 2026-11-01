@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "enchant-type.h"
 #include "kill-method-type.h"
 #include "maybe-bool.h"
 #include "monster.h"
@@ -111,6 +112,8 @@ xom_event_type xom_acts(int sever, maybe_bool niceness = maybe_bool::maybe,
                         int tension = -1, bool debug = false);
 xom_event_type xom_choose_action(bool niceness,  int sever, int tension);
 void xom_take_action(xom_event_type action, int sever);
+// Complete display predicate for the finite ordinary/hyper-enchantment effects.
+string xom_enchantment_predicate(enchant_type enchantment);
 
 void xom_maybe_reverts_banishment();
 void xom_check_lost_item(const item_def& item);

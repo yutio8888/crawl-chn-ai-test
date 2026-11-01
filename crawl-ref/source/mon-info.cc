@@ -6,6 +6,7 @@
 **/
 
 #include "AppHdr.h"
+#include "god-wrath.h"
 
 #include "mon-info.h"
 
@@ -1130,7 +1131,7 @@ string monster_info::_core_name() const
     string s;
 
     if (is(MB_NAME_REPLACE))
-        s = mname;
+        s = type == MONS_GOD_WRATH_AVATAR ? god_wrath_display_name(mname) : mname;
     else if (invalid_monster_type(nametype) && nametype != MONS_PROGRAM_BUG)
         s = "INVALID MONSTER";
     else

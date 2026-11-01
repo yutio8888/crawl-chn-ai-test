@@ -979,17 +979,17 @@ const PotionEffect* get_potion_effect(potion_type pot)
 
 static const map<potion_type, string> _spore_msg =
 {
-    { POT_CURING, "curing" },
-    { POT_HEAL_WOUNDS, "healing" },
-    { POT_HASTE, "quickening", },
-    { POT_MIGHT, "strenghtening", },
-    { POT_BRILLIANCE, "amplifying" },
-    { POT_ENLIGHTENMENT, "enlightening" },
-    { POT_INVISIBILITY, "invisible" },
-    { POT_MAGIC, "magical" },
-    { POT_BERSERK_RAGE, "infuriating" },
-    { POT_RESISTANCE, "bolstering" },
-    { POT_MIST, N_("insubstantial") },
+    { POT_CURING, NC_("fungus spores", "curing") },
+    { POT_HEAL_WOUNDS, NC_("fungus spores", "healing") },
+    { POT_HASTE, NC_("fungus spores", "quickening"), },
+    { POT_MIGHT, NC_("fungus spores", "strenghtening"), },
+    { POT_BRILLIANCE, NC_("fungus spores", "amplifying") },
+    { POT_ENLIGHTENMENT, NC_("fungus spores", "enlightening") },
+    { POT_INVISIBILITY, NC_("fungus spores", "invisible") },
+    { POT_MAGIC, NC_("fungus spores", "magical") },
+    { POT_BERSERK_RAGE, NC_("fungus spores", "infuriating") },
+    { POT_RESISTANCE, NC_("fungus spores", "bolstering") },
+    { POT_MIST, NC_("fungus spores", "insubstantial") },
 };
 
 static void _handle_potion_fungus(potion_type potion)
@@ -1018,7 +1018,7 @@ static void _handle_potion_fungus(potion_type potion)
 
 
     mprf(T_("Your fungus emits %s spores!"),
-         _spore_msg.at(potion).c_str());
+         C_("fungus spores", _spore_msg.at(potion).c_str()));
 
 
     for (int i = 0; i < num_affected; ++i)
