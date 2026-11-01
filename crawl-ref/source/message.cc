@@ -1070,6 +1070,8 @@ void webtiles_send_messages()
     if (_more != _last_more)
     {
         tiles.json_write_bool("more", _more);
+        if (_more)
+            tiles.json_write_string("more_text", T_("--more--"));
         _last_more = _more;
     }
     buffer.send();
