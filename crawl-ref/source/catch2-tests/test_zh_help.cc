@@ -776,7 +776,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 
     const vector<std::pair<string, string>> dynamic_statuses = {
         { "app status", "你的身体上长出异常的角或爪" },
-        { "bat status", "你变成了行动迅捷的吸血蝠" },
+        { "bat status", "你变成了一只行动迅捷的蝙蝠" },
         { "blade status", "多把凶恶的刀刃正从你的身体上长出" },
         { "dragon status", "你变成了强大的，吐息火焰的龙" },
         { "pact status", "战斗、流血" },
