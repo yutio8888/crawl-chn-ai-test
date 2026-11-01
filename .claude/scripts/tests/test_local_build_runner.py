@@ -147,6 +147,21 @@ class LocalBuildTests(unittest.TestCase):
                 else:
                     self.git("checkout", "--", name)
 
+    def test_install_path_marker_is_ignored_without_ignoring_source_overrides(self):
+        # Use the production ignore file, not a duplicate of its new rule.
+        self.write("crawl-ref/.gitignore", (ROOT / "crawl-ref/.gitignore").read_text())
+        self.commit_workflow()
+        before = lb.snapshot(self.repo)
+        self.write("crawl-ref/source/.install-path-cflags", '-DSAVE_DIR_PATH="fixture"\n')
+        self.assertEqual(lb.snapshot(self.repo), before)
+        for name in ("crawl-ref/source/.install-path-cflags.h",
+                     "crawl-ref/source/nested/.install-path-cflags"):
+            with self.subTest(name=name):
+                self.write(name, "untracked source or unrelated marker\n")
+                with self.assertRaisesRegex(lb.BuildError, "worktree must be clean"):
+                    lb.snapshot(self.repo)
+                (self.repo / name).unlink()
+
     def test_unknown_ignored_header_rejected_but_known_generated_header_allowed(self):
         self.write("crawl-ref/source/config.h", "generated\n")
         lb.snapshot(self.repo)

@@ -127,6 +127,7 @@ makefile.dep
 /source/*.ilk
 /source/rltiles/*.d
 /source/.cflags
+/source/.install-path-cflags
 /source/.ver
 /source/rltiles/.cflags
 /source/.android-cflags
