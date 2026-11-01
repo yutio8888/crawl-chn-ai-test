@@ -26,9 +26,9 @@ that are restricted to just those situations.
 How to create macros and keymaps?
 =================================
 
-The simplest way is in-game: Press either the '~' key or Ctrl-D, select
-'m' to define a macro, then choose a key to assign for your macro and
-enter the command sequence. For some keys (or key combinations), Crawl
+The simplest way is in-game: Press Ctrl-D to open the macro editor,
+then '~' to create or edit a macro. Choose its trigger key and enter
+the command sequence. Ctrl-E also opens the quick macro editor. For some keys (or key combinations), Crawl
 will display a strange number (for example \{13} for the Return key).
 These numbers are the key codes for certain non-alphanumeric keys and
 can vary between different systems.
@@ -36,26 +36,25 @@ can vary between different systems.
 By default, most upper- and lowercase alphanumeric keys are already
 assigned functions in Crawl. While you are free to remap those keys as
 well, it might be best to start with some of the currently unused keys,
-such as Ins or the function keys (F1 to F12), possibly combined with
-Ctrl, Shift or both. On some systems, it may also be possible to
+such as Ins, possibly combined with Ctrl, Shift or both. Function keys
+may already have bindings: F1 opens the game menu, for example. On some systems, it may also be possible to
 incorporate the Alt (Meta) key.
 
-Defining keymaps works in exactly the same way. Just press 'k'
-(default), 'x' (level-map), 't' (targeting) or 'c' (confirmation)
-instead of 'm' after pressing '~'.
+Defining keymaps works in the same editor. Press '!' to cycle between
+macros and the default, menu, level-map, targeting and confirmation
+keymap contexts, then use '~' to create or edit a mapping.
 
-After defining such a macro or keymap, you should test it. If you are
-comfortable with it, you should then save the macro. To save all macros
-and keymaps, press '~' and then 's' to save macros at the tilde prompt).
+After defining a macro or keymap, test it. Changes are saved when you
+normally save and exit or end the game.
 
 
 The macro.txt file
 ==================
 
-Macros and keymaps are stored in a file called macro.txt in your
-settings/ directory. You can change where the file is read from and
-written to by specifying a different directory with the macro_dir
-option in your init file (see options_guide.txt for details). The
+Macros and keymaps are stored in a file called macro.txt. Its directory
+depends on your platform and configuration. You can choose where the
+file is read from and written to with the macro_dir option in your
+init file (see options_guide.txt for details). The
 macro.txt file is human readable and editable, but you might have to
 figure out the key codes for non-alphanumeric keys through in-game
 experimentation or external utilities.
@@ -69,8 +68,8 @@ describes the macro trigger key and consists of "M:" followed by the
 character or keycode of that key (for example 'a', 'A' or \{9} for
 the A, Shift-A or Tab keys). The second one describes the macro action
 and consists of "A:" followed by the command sequence to be associated
-with the above key (for example "zap" for zapping the spell in slot a
-at the previous target). Individual macro definitions should be
+with the above key (for example "za." to cast the spell in slot a
+at the default target shown by the targeting interface). Individual macro definitions should be
 separated by empty lines.
 
 For keymaps just replace the "M:" on the first line of the definition
@@ -112,8 +111,7 @@ A:za
 
 Now that we've taken care of summoning, we still need to command our
 summoned creatures. The following macro should make that easier as
-well. Note that this macro assumes that the default_target option is
-set to true (it is by default; see crawl_options.txt for details).
+well. It confirms the default target shown by the targeting interface.
 
 # Tab: Order allies to attack your previous or the nearest target
 M:\{9}
@@ -122,8 +120,7 @@ A:ta.
 
 Conjurers need a slightly different macros for casting, such as this
 one, as they need to press '.' or Return to confirm firing at a target.
-Again, this macro assumes that the default_target option is set to
-true.
+This confirms the default target shown by the targeting interface.
 
 # F1: cast spell 'a' at your previous or the nearest target
 M:\{368}
