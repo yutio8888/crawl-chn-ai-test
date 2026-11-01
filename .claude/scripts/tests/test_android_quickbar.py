@@ -326,6 +326,23 @@ int main() {
 
 
 class AndroidFirstRunTests(unittest.TestCase):
+    def test_control_letter_labels_match_dispatched_android_keycodes(self) -> None:
+        # DCSSKeyboardBase.onClick parses tag codes verbatim into KeyEvents.
+        # Android KEYCODE_A..Z are consecutive (29..54); CTRL_LEFT is 113.
+        android = "{http://schemas.android.com/apk/res/android}"
+        root = ET.parse(ANDROID_RES / "layout/keyboard_ctrl.xml").getroot()
+        checked = set()
+        for node in root.iter("Button"):
+            label = node.attrib.get(android + "text", "")
+            match = re.match(r"\^([a-z])", label)
+            if not match:
+                continue
+            letter = match.group(1)
+            codes = [int(code) for code in node.attrib[android + "tag"].split(",")]
+            self.assertEqual([113, 29 + ord(letter) - ord("a")], codes, label)
+            checked.add(letter)
+        self.assertIn("l", checked)  # ^l must send Ctrl+L (40), not Ctrl+N (42).
+
     def string_names(self, qualifier: str) -> set[str]:
         root = ET.parse(ANDROID_RES / qualifier / "strings.xml").getroot()
         return {node.attrib["name"] for node in root if "name" in node.attrib}

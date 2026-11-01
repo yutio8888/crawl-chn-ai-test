@@ -618,26 +618,26 @@ def generate_token_email(token):
     lobby_url = config.get('lobby_url', '')
     url_text = lobby_url + "?ResetToken=" + to_unicode(token)
 
-    msg_body_plaintext = """Someone (hopefully you) has requested to reset the password for your account at %s.
+    msg_body_plaintext = """有人（希望是你本人）申请重置你在%s上的账号密码。
 
-If you initiated this request, please use this link to reset your password:
+如果此申请由你发起，请使用以下链接重置密码：
 
     %s
 
-This link will expire in %d hour(s). If you did not ask to reset your password,
-feel free to ignore this email.
+此链接将在%d小时后过期。
+如果你没有申请重置密码，可以忽略这封邮件。
 """ % (lobby_url, url_text, config.get('recovery_token_lifetime'))
 
     msg_body_html = """<html>
   <head></head>
   <body>
-    <p>Someone (hopefully you) has requested to reset the password for your
-       account at %s.<br /><br />
-       If you initiated this request, please use this link to reset your
-       password:<br /><br />
+    <p>有人（希望是你本人）申请重置你在%s上的账号密码。
+       <br /><br />
+       如果此申请由你发起，请使用以下链接重置密码：
+       <br /><br />
        &emsp;<a href='%s'>%s</a><br /><br />
-       This link will expire in %d hour(s). If you did not ask to reset your
-       password, feel free to ignore this email.
+       此链接将在%d小时后过期。
+       如果你没有申请重置密码，可以忽略这封邮件。
     </p>
   </body>
 </html>""" % (lobby_url, url_text, url_text, config.get('recovery_token_lifetime'))
@@ -681,7 +681,7 @@ def send_forgot_password(email):  # type: (str) -> Tuple[bool, Optional[str]]
     token = create_password_token(userid)
     msg_body_plaintext, msg_body_html = generate_token_email(token)
 
-    send_email(email, 'Request to reset your password',
+    send_email(email, '重置密码申请',
                msg_body_plaintext, msg_body_html)
 
     return True, None

@@ -97,6 +97,7 @@ class ReviewerRoutingTests(unittest.TestCase):
             "cloud-review-results.md",
             "command-review-results.md",
             "decorlines-review-results.md",
+            "frontend-review-results.md",
             "god-review-results.md",
             "graffiti-review-results.md",
             "guide-review-results.md",

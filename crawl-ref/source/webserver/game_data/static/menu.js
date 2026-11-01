@@ -692,7 +692,7 @@ function ($, comm, client, ui, enums, cr, util, options, scroller) {
         }
 
         if (!data || !data.prompt)
-            prompt = "Select what? (regex) ";
+            prompt = "要选择什么？（正则表达式）";
         else
             prompt = data.prompt;
         title.html(prompt);
