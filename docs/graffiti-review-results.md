@@ -107,3 +107,12 @@ PR #194 trunk 移植：仅重绑定本台账的术语权威及派生摘要；恢
 本轮当前源文件绑定（历史源摘要仍保留在上方）：
 - EN source SHA-256: `b8afe234b240512623f41ccee8610aff65c2a422a6c39c528980e13e5a0f29c9`
 - ZH source SHA-256: `5a46a08372a1c86eec39c2227332b7708e9a8ebd1f41e43167e974b1cf1d17cb`
+
+## 本轮消费者定位说明
+
+本轮冻结生产版本为 `d2d19e5640af7fb04d2e8af769d146f8bf1b1412`。严格schema中由工具常量规定的 consumer / producer / evidence_locations 行号是历史契约锚点，不表示该版本的当前行号；当前语义追踪使用逐卡 fresh rationale 和下列按符号核对的定位。冻结正文、源文件摘要及身份集合仍绑定本轮生产版本。
+
+以下行号均为 `crawl-ref/source/` 下相应文件，箭头表示历史契约行号→本轮当前位置：
+
+- database.cc：来源项130→131、147→148；_getRandomisedStr 1497→1544。
+- directn.cc：名称替换3090→3171；xom.cc：替换3213→3347。

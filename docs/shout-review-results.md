@@ -151,3 +151,9 @@ PR #194 trunk 移植：仅重绑定本台账的术语权威及派生摘要；恢
 - 覆盖：124/124，集合双向相等、无重复。结论：`{"keep": 122, "defer terminology": 2}`。
 - 新审核证据：`.claude/metrics/verify/full-shout-rereview-20261101/review.json`；更改逐项记录在本批次 key-actions.json。
 - 本段只记录文字复审及候选绑定；代码profile、独立落地复核和CI见本批次最终报告，不以本段代替。
+
+## 本轮消费者定位说明
+
+本轮冻结生产版本为 `d2d19e5640af7fb04d2e8af769d146f8bf1b1412`。严格schema中由工具常量规定的 consumer / producer / evidence_locations 行号是历史契约锚点，不表示该版本的当前行号；当前语义追踪使用逐卡 fresh rationale 和下列按符号核对的定位。冻结正文、源文件摘要及身份集合仍绑定本轮生产版本。
+
+本域当前消费者事实已由当前清单提取，或按稳定符号和路径表述；不以历史叙述中的行号替代本轮正文及消费者复核。

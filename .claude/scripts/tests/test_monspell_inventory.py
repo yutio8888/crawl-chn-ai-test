@@ -2504,6 +2504,14 @@ class TrunkLedgerScopeTests(unittest.TestCase):
                             for v in card["proposed_" + language + "_variants"]])
                 else:
                     self.assertEqual(card["current_chinese"], card["proposed_translation"])
+                    reviews = card["legacy_variant_reviews" if domain == "monspell"
+                                   else "variant_reviews"]
+                    for language, entries, field in (
+                            ("english", en, "english"),
+                            ("chinese", zh, "current_chinese")):
+                        self.assertEqual(variants(entries[key]), [
+                            (v["weight"], v[field]) for v in reviews],
+                            (key, language, "reviewed weights"))
 
         changed = {
             key for key in old.keys() & en.keys()
@@ -2554,6 +2562,9 @@ class TrunkLedgerScopeTests(unittest.TestCase):
             text.replace("| `summon illusion cast` | `mara summon cast`", "| `summon illusion cast` | `wrong cast`"),
             text.replace("EN source SHA-256: `", "EN stale source SHA-256: `"),
             text.replace('"current_chinese":[', '"current_chinese":["unreviewed drift",', 1),
+            re.sub(r'"weight":(\d+)',
+                   lambda match: '"weight":' + str(int(match.group(1)) + 1),
+                   text, count=1),
         ]:
             with self.subTest(mutation=mutation[:80]), self.assertRaises(AssertionError):
                 self.validate_scope("monspell", mutation)

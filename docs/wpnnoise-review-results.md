@@ -124,3 +124,15 @@ PR #194 trunk 移植：仅重绑定本台账的术语权威及派生摘要；恢
 本轮当前源文件绑定（历史源摘要仍保留在上方）：
 - EN source SHA-256: `a303a726f66d936c8e689b1bdab547c582aa8446154beae101873f1f7927e792`
 - ZH source SHA-256: `d263b514a98bc21a5c48058820cd81241a417b54fd35596654957647f1b88784`
+
+## 本轮消费者定位说明
+
+本轮冻结生产版本为 `d2d19e5640af7fb04d2e8af769d146f8bf1b1412`。严格schema中由工具常量规定的 consumer / producer / evidence_locations 行号是历史契约锚点，不表示该版本的当前行号；当前语义追踪使用逐卡 fresh rationale 和下列按符号核对的定位。冻结正文、源文件摘要及身份集合仍绑定本轮生产版本。
+
+以下行号均为 `crawl-ref/source/` 下相应文件，箭头表示历史契约行号→本轮当前位置：
+
+- database.cc：getSpeakString 2307→2356；_getRandomisedStr 1497→1544；_call_recursive_replacement 1386→1433；_execute_embedded_lua 526→532。
+- shout.cc：item_noise 304→305，noisy_equipment 386→395；melee-attack.cc调用2011→2086。
+- art-func.h：tier 355→352；gong函数479→466、查询481→468、终端484→471、noisy调用486→473；whisper 1207→1154、包装1208→1155；Zong招呼1866→1788、包装1871→1793、告别1882→1804；fungus装备1893→1815、查询1894→1816、world1911→1835、查询1913→1837。
+- player-equip.cc：hat 2198→2284、包装2218→2304；player-reacts.cc：eel 1279→1298、solo1280→1299、action1282→1301、head/skin1286拆分为1313/1315、talk1291→1319。
+- spl-cast.cc：848→902、包装851→905。新增scales消费者已按符号和文件绑定；实际显示调用为art-func.h的1877、1883、1889、1895。

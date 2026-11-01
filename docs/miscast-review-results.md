@@ -72,3 +72,12 @@ PR #194 trunk 移植：仅重绑定本台账的术语权威及派生摘要；恢
 - Identity coverage: `33/33`；缺失、额外及重复 identity 均为零。
 - 当前 identity 结论：`{"keep":33}`。
 - 逐 variant 覆盖：`193`；保持 production locator 顺序。
+
+## 本轮消费者定位说明
+
+本轮冻结生产版本为 `d2d19e5640af7fb04d2e8af769d146f8bf1b1412`。严格schema中由工具常量规定的 consumer / producer / evidence_locations 行号是历史契约锚点，不表示该版本的当前行号；当前语义追踪使用逐卡 fresh rationale 和下列按符号核对的定位。冻结正文、源文件摘要及身份集合仍绑定本轮生产版本。
+
+以下行号均为 `crawl-ref/source/` 下相应文件，箭头表示历史契约行号→本轮当前位置：
+
+- database.cc：speak加载项120→121。
+- spl-miscast.cc：效果表145→144；_do_msg 34、db_key 39、hand块49、monster分支59和标点72未移动。
