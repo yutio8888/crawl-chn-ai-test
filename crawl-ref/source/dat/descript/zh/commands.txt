@@ -62,7 +62,7 @@ CMD_DISPLAY_RELIGION
 %%%%
 CMD_DISPLAY_RELIGION verbose
 
-显示你信仰的神祇的好恶、戒律，以及当前的虔诚度和神赐的能力。
+显示你信仰的神祇的好恶、戒律，以及你当前的信仰状况和神赐能力。
 %%%%
 CMD_DISPLAY_MUTATIONS
 
@@ -78,8 +78,7 @@ CMD_DISPLAY_CHARACTER_STATUS
 %%%%
 CMD_DISPLAY_CHARACTER_STATUS verbose
 
-显示当前移动速度、攻击速度、潜行、魔法抗性以及
-任何当前生效的附魔或状态效果的详细信息。
+显示移动速度、命中、攻击速度、伤害等级，以及当前生效的强化或状态效果等详细信息。
 %%%%
 CMD_DISPLAY_KNOWN_OBJECTS
 
@@ -123,19 +122,19 @@ CMD_CHARACTER_DUMP verbose
 %%%%
 CMD_AUTOFIGHT
 
-攻击最近的怪物
+攻击附近怪物
 %%%%
 CMD_AUTOFIGHT verbose
 
-向最近的敌对怪物移动，或用你所持的武器攻击相邻的怪物。
+用当前武器攻击射程内选定的敌对怪物，或向其接近。自动战斗设置还可允许使用能直接造成伤害的箭袋动作。
 %%%%
 CMD_AUTOFIGHT_NOMOVE
 
-攻击相邻怪物
+原地攻击
 %%%%
 CMD_AUTOFIGHT_NOMOVE verbose
 
-用你所持的武器攻击相邻的怪物。
+在不移动的前提下，用当前武器或可用的直接伤害箭袋动作攻击选定的敌对怪物，具体行为受自动战斗设置影响。
 %%%%
 CMD_WAIT
 
@@ -227,7 +226,7 @@ CMD_MAP_ADD_WAYPOINT
 %%%%
 CMD_MAP_ADD_WAYPOINT verbose
 
-将目前所在位置设为导航点。
+将地图光标所在位置设为导航点。
 %%%%
 CMD_MAP_EXCLUDE_AREA
 

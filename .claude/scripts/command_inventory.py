@@ -46,9 +46,9 @@ canonical key space is the production lowercase (lowercase_string) of the
 C++-trimmed key line. The complete key list of each file is merged with
 the production DBM_REPLACE last-wins semantics and every override
 (including the baseline's in-file EN duplicate `CMD_EXPLORE_NO_REST`
-terse key) is recorded as an override fact, never dropped silently. Only
-the `CMD_*` key subspace is audited (the files also carry unrelated
-`android command menu|*` keys); every CMD_-prefixed physical key must
+terse key) is recorded as an override fact, never dropped silently. The
+enum-backed `CMD_*` subspace is modeled separately from additional
+`android command menu|*` keys; every CMD_-prefixed physical key must
 match the `CMD_[A-Z0-9_]+( verbose)?` shape or the run aborts. The key
 sets are reported split terse/verbose, with the en_only/zh_only
 bidirectional differences; every key is back-referenced to its enum
@@ -57,7 +57,10 @@ from the reverse table (e.g. the baseline ZH-only `CMD_SHOW_KEYBOARD
 verbose`, which names a command that does not exist in the enum) are
 reported truthfully in `unresolved_keys` / `stale_keys` instead of being
 silently passed; the baseline itself contains such a key, so aborting on
-it would make the tool unusable on the real tree.
+it would make the tool unusable on the real tree. All non-CMD description
+keys are additionally recorded from the EN/ZH union as command-extra identities,
+including unbound retained Android menu text. These bind raw bodies and do not
+infer whether a current UI calls them; the reviewer records lifecycle evidence.
 
 Consumers modeled: describe.cc `get_command_description()` (USE_TILE_LOCAL)
 looks up `command_to_name(cmd)` [+ " verbose"], with the verbose -> terse
@@ -131,6 +134,7 @@ from i18n_shared import (AuditInput, load_review_input,  # noqa: E402
 #: Git-tree paths of the audited inputs (repo-root relative).
 COMMAND_TYPE_H = "crawl-ref/source/command-type.h"
 MACRO_CC = "crawl-ref/source/macro.cc"
+COMMAND_MENU_CC = "crawl-ref/source/topbar-drawer.cc"
 COMMANDS_EN = "crawl-ref/source/dat/descript/commands.txt"
 COMMANDS_ZH = "crawl-ref/source/dat/descript/zh/commands.txt"
 SOURCE_TXT = "crawl-ref/source/dat/i18n/zh/source.txt"
@@ -1225,6 +1229,48 @@ def build_inventory(command_enum: CommandEnum,
 # Strict review-ledger coverage (identity-bound canonical JSONL)
 # ---------------------------------------------------------------------------
 
+def build_extra_inventory(en_effective: dict[str, DescEntry],
+                          zh_effective: dict[str, DescEntry]
+                          ) -> list[dict[str, object]]:
+    """Bind every non-command description body in the language union.
+
+    These are raw TextDB keys, not enum aliases. Display fields contain the
+    available body only: unlike enum descriptions, UI-specific fallback and
+    reachability are not inferred here. The consumer source is separately
+    frozen in the input digest and reviewed with the body.
+    """
+    rows: list[dict[str, object]] = []
+    for canonical in sorted(set(en_effective) | set(zh_effective)):
+        if canonical.startswith("cmd_"):
+            continue
+        en = en_effective.get(canonical)
+        zh = zh_effective.get(canonical)
+        raw_key = (en or zh).raw_key
+        en_value = en.value if en else None
+        zh_value = zh.value if zh else None
+        rows.append({
+            "identity": f"command-extra:{raw_key}",
+            "member": None,
+            "source_kind": "additional-description",
+            "canonical_key": canonical,
+            "raw_key_en": en.raw_key if en else None,
+            "raw_key_zh": zh.raw_key if zh else None,
+            "name_in_map": False,
+            "lookup_name": raw_key,
+            "lifecycle": "retained-description",
+            "terse_en": en_value,
+            "terse_zh": zh_value,
+            "verbose_en": None,
+            "verbose_zh": None,
+            "terse_display_en": _desc_display(en_value) if en else None,
+            "terse_display_zh": _desc_display(zh_value) if zh else None,
+            "verbose_display_en": None,
+            "verbose_display_zh": None,
+            "missing_t": ["terse_zh"] if en and not zh else [],
+        })
+    return rows
+
+
 def fact_sha256(row: dict[str, object]) -> str:
     """Digest one complete inventory row in canonical JSON form."""
     encoded = json.dumps(
@@ -1549,6 +1595,7 @@ def main() -> int:
     input_paths = {
         "command-type.h": COMMAND_TYPE_H,
         "macro.cc": MACRO_CC,
+        "topbar-drawer.cc": COMMAND_MENU_CC,
         "commands_en": COMMANDS_EN,
         "commands_zh": COMMANDS_ZH,
         "source.txt": SOURCE_TXT,
@@ -1631,6 +1678,9 @@ def main() -> int:
         raise SystemExit(
             f"inventory size {len(inventory)} != enum member count "
             f"{len(members)}")
+
+    extra_inventory = build_extra_inventory(en_effective, zh_effective)
+    inventory.extend(extra_inventory)
 
     payload = {
         "baseline": baseline,
@@ -1716,7 +1766,9 @@ def main() -> int:
     print(f"commands overrides: EN={en_overrides} ZH={zh_overrides}")
     print(f"source.txt: {len(source_entries)} entries; "
           f"CMD-shaped keys: {source_cmd_keys}")
-    print(f"inventory entries: {len(inventory)} (= enum members)")
+    print(f"inventory entries: {len(inventory)} "
+          f"({len(members)} enum members + "
+          f"{len(extra_inventory)} additional descriptions)")
     if "review_coverage" in payload:
         print("review coverage: " + json.dumps(
             payload["review_coverage"],
