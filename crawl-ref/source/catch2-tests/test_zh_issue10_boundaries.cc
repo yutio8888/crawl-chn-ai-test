@@ -850,12 +850,14 @@ TEST_CASE("family: real player escape attempts consume every constrictor possess
         {
             CHECK(text.find("的的") == string::npos);
             CHECK(text.find("的对") == string::npos);
-            CHECK(text.find(escaped ? "掌控" : "束缚减弱") != string::npos);
+            CHECK(text.find(escaped ? "挣脱了" : "束缚减弱") != string::npos);
         }
         else
         {
             CHECK(text.find("'s's") == string::npos);
             CHECK(text.find(escaped ? "You break free of" : "hold on you weakens") != string::npos);
+            if (escaped)
+                CHECK(text.find("grasp.") != string::npos);
         }
         if (!escaped)
             you.stop_being_constricted(true);

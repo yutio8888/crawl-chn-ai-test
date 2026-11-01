@@ -1050,7 +1050,7 @@ void monster::remove_enchantment_effect(const mon_enchant &me, bool quiet)
         {
             mprf_p(T_("%1$s finishes expelling the %2$s from %3$s %4$s."),
                    name(DESC_THE).c_str(),
-                   props[WATER_HOLD_SUBSTANCE_KEY].get_string().c_str(),
+                   C_("flood substance", props[WATER_HOLD_SUBSTANCE_KEY].get_string().c_str()),
                    pronoun(PRONOUN_POSSESSIVE).c_str(),
                    T_(get_mon_shape(*this) >= MON_SHAPE_INSECT
                       ? "airways" : "lungs"));
@@ -1401,7 +1401,7 @@ static bool _merfolk_avatar_movement_effect(const monster* mons)
         || you.cannot_act()
         || you.clarity()
         || you.cannot_move()
-        || you.resists_dislodge("being lured by song"))
+        || you.resists_dislodge(NC_("dislodge event", "being lured by song")))
     {
         return true;
     }

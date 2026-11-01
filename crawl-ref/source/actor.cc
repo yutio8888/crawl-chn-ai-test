@@ -1085,7 +1085,7 @@ void actor::collide(coord_def newpos, const actor *agent, int damage)
 
 bool actor::knockback(const actor &cause, int dist, int dmg, string source_name, coord_def source_pos)
 {
-    if (is_stationary() || resists_dislodge("being knocked back"))
+    if (is_stationary() || resists_dislodge(NC_("dislodge event", "being knocked back")))
         return false;
 
     const coord_def source = source_pos.origin() ? cause.pos() : source_pos;
@@ -1183,7 +1183,7 @@ bool actor::stumble_away_from(coord_def targ, string src)
 
     if (newpos.origin()
         || actor_at(newpos)
-        || resists_dislodge("being knocked back"))
+        || resists_dislodge(NC_("dislodge event", "being knocked back")))
     {
         return false;
     }
