@@ -569,7 +569,7 @@ as "<cyan>A kobold comes into view</cyan>".
 Monster spell sets can be overridden with a <w>spells</w>: tag, used as follows:
 
 *<w>goblin spells:throw_flame.50.wizard</w>
-*<w>ancient lich spells:symbol_of_torment.26.wizard; glaciate.51.wizard</w>
+*<w>ancient lich spells:symbol_of_torment.26.wizard;glaciate.51.wizard</w>
 
 (a list of spell slots, consisting of a spell name with spaces replaced with
 underscores, a frequency of casting and set of spell slot flags specified
@@ -680,7 +680,7 @@ keys generally must be entered by number. When entering a keycode  as part of a
 macro action, it should be wrapped using the following syntax for keycode n:
 <w>\{n}</w>. This should also be used when defining a keycode by number in your
 rc file. Example: when defining a macro that triggers F1, you can write
-"\{F1\}" or "\{-265}". For named keys as part of a macro definition, the \{}
+"\{F1}" or "\{-265}". For named keys as part of a macro definition, the \{}
 may be omitted.
 
 Positive numeric values are ASCII character codes. Negative values are

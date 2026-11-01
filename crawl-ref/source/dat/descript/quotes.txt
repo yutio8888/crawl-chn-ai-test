@@ -1340,7 +1340,7 @@ morningstar "Eos"
 “But soon as early Dawn appeared, the rosy-fingered, then gathered the folk
  about the pyre of glorious Hector.”
     -Homer, _The Iliad_, XXIV, 776.
-     trans. A. T. Murray, 1857.
+     trans. A. T. Murray, 1924-1925.
 %%%%
 pearl dragon scales
 
@@ -2168,7 +2168,7 @@ Antaeus
  touched earth so it was that he waxed stronger, wherefore some said that he
  was a son of Earth.”
     -Pseudo-Apollodorus , _Library and Epitome_, 2.5.11. ca. 150 BC.
-    trans. Sir James George Frazer, 1913.
+    trans. Sir James George Frazer, 1921.
 
 “The head foreman in the mine, called Antaeus,
  was an obese giant with a thick black beard
@@ -2633,7 +2633,7 @@ __cap-S_suffix
  fright, but understood the voices of the birds flying overhead, and from what
  he learned from them he foretold to men what should come to pass.”
     -Pseudo-Apollodorus , _Library and Epitome_, 1.9.11. circa 150 BC.
-    trans. Sir James George Frazer, 1913.
+    trans. Sir James George Frazer, 1921.
 
 “A snake, with mottles rare,
  Surveyed my chamber floor,
@@ -4084,7 +4084,6 @@ stone giant
  like rills of water, along the field.”
     -Miguel de Cervantes Saavedra, _The Ingenious Gentleman Don Quixote of La
      Mancha_, IV, 10. 1605.
-     trans. Carlos Fuentes, 1997.
 %%%%
 sun demon
 
