@@ -64,6 +64,8 @@
 #include "env.h"
 #include "hints.h"
 #include "player.h"
+#include "player-stats.h"
+#include "status.h"
 #include "unwind.h"
 #include "beam.h"
 #include "hiscores.h"
@@ -1744,4 +1746,49 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     // These checks also accept ZH descriptions once the assets are migrated.
     check_externalised_altar_hints();
     CHECK(getHintString("death").find("请节哀！") != string::npos);
+}
+
+TEST_CASE("WebTiles: zero-stat status keeps an English key and current display language",
+          "[zh-help][webtiles][status]")
+{
+    unwind_var<player> restore_player(you);
+    init_duration_index();
+    const char* const keys[] = {
+        "", "lost strength", "lost intelligence", "lost strength and intelligence",
+        "lost dexterity", "lost strength and dexterity",
+        "lost intelligence and dexterity", "lost strength, intelligence and dexterity"
+    };
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (int mask = 1; mask < 8; ++mask)
+        {
+            INFO("stat mask " << mask << ", language " << static_cast<int>(language));
+            you = player();
+            you.species = SP_HUMAN;
+            you.attribute[ATTR_STAT_ZERO] = mask;
+            for (int i = STAT_STR; i <= STAT_DEX; ++i)
+                you.base_stats[i] = mask & (1 << i) ? 0 : 10;
+
+            status_info info;
+            REQUIRE(fill_status_info(STATUS_STAT_ZERO, info));
+            CHECK(info.short_db_key == keys[mask]);
+            CHECK(info.db_key == "Crippled");
+            CHECK(info.light_text == T_("Crippled"));
+            CHECK(Options.language == language);
+            for (int i = STAT_STR; i <= STAT_DEX; ++i)
+            {
+                CHECK(you.base_stats[i] == (mask & (1 << i) ? 0 : 10));
+                if (mask & (1 << i))
+                {
+                    CHECK(info.short_text.find(stat_desc(static_cast<stat_type>(i), SD_NAME))
+                          != string::npos);
+                }
+            }
+            if (language == lang_t::EN)
+                CHECK(info.short_text == info.short_db_key);
+            else
+                CHECK(info.short_text != info.short_db_key);
+        }
+    }
 }

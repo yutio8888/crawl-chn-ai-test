@@ -490,6 +490,8 @@ function (exports, $, key_conversion, chat, comm) {
     function account_error_message(message)
     {
         var messages = {
+            "Could not initialize your rc and morgue!<br>This probably means there is something wrong with the server configuration.": "无法初始化你的配置文件和角色档案！\n这可能是服务器配置有误所致。",
+            "The maximum number of connections has been reached, sorry :(": "连接数已达到上限，抱歉。",
             "Account is disabled.": "账号已停用。",
             "Account is disabled": "账号已停用。",
             "New account creation is disabled.": "当前不允许注册新账号。",
@@ -686,7 +688,7 @@ function (exports, $, key_conversion, chat, comm) {
 
     function server_announcement(data)
     {
-        var text = '<span class="fg5">Serverwide announcement: </span><span>'
+        var text = '<span class="fg5">全服公告：</span><span>'
             + data.text + '</span>';
         chat.show_in_chat(text);
     }
@@ -1083,7 +1085,17 @@ function (exports, $, key_conversion, chat, comm) {
         set_layer("crt");
         hide_dialog();
         chat.reset_visibility(false);
-        $("#crt").html(msg + "<br><br>");
+        if (msg === "Could not initialize your rc and morgue!<br>This probably means there is something wrong with the server configuration."
+            || msg === "The maximum number of connections has been reached, sorry :(")
+        {
+            // This known account error is plain text. Keep server-provided
+            // HTML for other close reasons, such as the shutdown template.
+            $("#crt").empty().append($("<span>")
+                .css("white-space", "pre-line").text(account_error_message(msg)))
+                .append("<br><br>");
+        }
+        else
+            $("#crt").html(msg + "<br><br>");
         showing_close_message = true;
         return true;
     }
@@ -1226,8 +1238,11 @@ function (exports, $, key_conversion, chat, comm) {
         }
 
         var username_entry = $(make_watch_link(data));
-        username_entry.text(data.username);
+        username_entry.text(data.username.replace(/^\[account hold\] /, "[账号审核中] "));
         set("username", username_entry);
+        // Sorting continues to use the canonical username, including its
+        // account-state prefix, rather than the localized visible label.
+        entry.find(".username").data("sort", data.username);
         set("game_id", data.game_id);
         set("xl", data.xl);
         set("char", data.char);

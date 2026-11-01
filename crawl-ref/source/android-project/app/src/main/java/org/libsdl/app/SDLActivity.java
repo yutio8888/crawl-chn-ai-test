@@ -212,12 +212,12 @@ public class SDLActivity extends AppCompatActivity {
         if (mBrokenLibraries)
         {
             AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
-            dlgAlert.setMessage("An error occurred while trying to start the application. Please try again and/or reinstall."
+            dlgAlert.setMessage(getString(R.string.sdl_startup_error)
                   + System.getProperty("line.separator")
                   + System.getProperty("line.separator")
-                  + "Error: " + errorMsgBrokenLib);
-            dlgAlert.setTitle("SDL Error");
-            dlgAlert.setPositiveButton("Exit",
+                  + getString(R.string.sdl_error_detail, errorMsgBrokenLib));
+            dlgAlert.setTitle(R.string.sdl_error_title);
+            dlgAlert.setPositiveButton(R.string.sdl_exit,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog,int id) {

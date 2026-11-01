@@ -216,8 +216,12 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
     {
         for (var i = 0; i < player.status.length; ++i)
         {
-            if (player.status[i].text &&
-                player.status[i].text.match(status_name) &&
+            var status = player.status[i];
+            // Empty keys on new payloads must not fall back to display text.
+            // Only older servers without the field use the English fallback.
+            var key = Object.prototype.hasOwnProperty.call(status, "key")
+                      ? status.key : status.text;
+            if (key && key.match(status_name) &&
                 (col == null || player.status[i].col == col))
                 return true;
         }

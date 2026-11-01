@@ -428,8 +428,7 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
         self.reset_idle_timeouts()
 
         if config.get('max_connections') < len(sockets):
-            self.append_message("connection_closed('The maximum number of "
-                              + "connections has been reached, sorry :(');")
+            self.send_message("close", reason="The maximum number of connections has been reached, sorry :(")
             self.close()
         elif shutting_down:
             self.close()
@@ -807,10 +806,10 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
             self.send_message("game_started")
             self.restore_blocklist()
             self.process.handle_notification(self.process.username,
-                            "'/help' to see available chat commands")
+                            "输入“/help”可查看可用的聊天命令。")
             if not config.get('max_chat_length'):
                 self.process.handle_notification(self.process.username,
-                            "Regular chat is disabled on this server")
+                            "此服务器已禁用普通聊天。")
 
 
             if config.get('dgl_mode'):
@@ -1089,7 +1088,7 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
             self.send_message("watching_started", username = process.username)
             if not config.get('max_chat_length'):
                 process.handle_notification(self.username,
-                                            "Chat is disabled on this server")
+                                            "此服务器已禁用聊天。")
         else:
             if self.watched_game:
                 self.stop_watching()
@@ -1110,11 +1109,11 @@ class CrawlWebSocket(tornado.websocket.WebSocketHandler):
         if receiver:
             if self.account_restricted():
                 self.send_message("chat",
-                        content='Your account is restricted; chat unavailable')
+                        content='你的账号受到限制，无法聊天。')
                 return
             if self.username is None:
                 self.send_message("chat",
-                        content='You need to log in to send messages!')
+                        content='请先登录再发送消息！')
                 return
 
             if not receiver.handle_chat_command(self, text):

@@ -16,6 +16,7 @@
 #include "evoke.h"
 #include "fight.h" // weapon_cleaves
 #include "item-prop.h"
+#include "lang-en-guard.h"
 #include "level-state-type.h"
 #include "mon-abil.h"
 #include "mutation.h"
@@ -250,18 +251,26 @@ bool fill_status_info(int status, status_info& inf)
             break;
 
         vector<string> stat_str;
+        vector<string> stat_keys;
         for (int i = STAT_STR; i <= STAT_DEX; ++i)
         {
             stat_type stat = static_cast<stat_type>(i);
             if (you.stat(stat, false) <= 0)
+            {
                 stat_str.emplace_back(stat_desc(stat, SD_NAME));
+                ScopedLangEn en;
+                stat_keys.emplace_back(stat_desc(stat, SD_NAME));
+            }
         }
 
         string msg = comma_separated_line(stat_str.begin(), stat_str.end());
+        const string key = comma_separated_line(stat_keys.begin(), stat_keys.end(),
+                                                " and ", ", ");
 
         inf.light_text   = T_("Crippled");
         inf.db_key       = "Crippled";
         inf.light_colour = LIGHTRED;
+        inf.short_db_key = make_stringf("lost %s", key.c_str());
         inf.short_text   = make_stringf(T_("lost %s"), msg.c_str());
         inf.long_text    = make_stringf(T_("You have no %s!"), msg.c_str());
     }
