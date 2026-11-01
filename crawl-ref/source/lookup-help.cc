@@ -204,7 +204,7 @@ static bool _is_soh(string name)
 static string _soh_name(monster_type m_type)
 {
     branch_type b = serpent_of_hell_branch(m_type);
-    return make_stringf(T_("Serpent of Hell (%s)"), branches[b].longname);
+    return make_stringf(T_("Serpent of Hell (%s)"), T_(branches[b].longname));
 }
 
 static monster_type _mon_by_name(string name)

@@ -305,6 +305,7 @@ clever	聪慧	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=m
 Cloud	云	domain=magic; source=EN/ZH; 状态=✅ 已确认（现行 `X Cloud` 后缀系列 8 项；另有 4 项已移除兼容记录）
 Cloud Cone	云雾锥	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；非 `X Cloud` 后缀成员，暂缓术语；恢复时复审
 clumsy	笨拙	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Cocytus	悲叹河	domain=core; source=EN/ZH; 注意事项=游戏地狱领域及直接关联专名；地图地貌仍按源文描述；decision=D-C-103
 cocytus serpent of hell breath	悲叹河地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 coglin	齿轮地精	domain=species; source=EN/ZH
 Cold Breath	寒霜吐息	domain=spells; source=EN/ZH; 备注=✅；与 `Breathe Frost → 吐息寒霜` 复用元素词
@@ -400,7 +401,8 @@ Dimension Anchor	维度锚定	domain=spells; source=EN/ZH; 备注=✅
 Dimensional Bullseye	维度靶心	domain=spells; source=EN/ZH; 备注=✅
 Diminish Spells	削弱法术	domain=spells; source=EN/ZH; 备注=✅
 dire flail	双头链枷	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
-dis serpent of hell breath	铁城地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
+Dis	迪斯	domain=core; source=EN/ZH; 注意事项=游戏地狱城市短名；区别人物 Dis pater；decision=D-C-103
+dis serpent of hell breath	迪斯地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=复用分支限定实体名；decision=D-C-103
 Discord	纷乱	domain=spells; source=EN/ZH; 备注=📝
 Disjunction	空间分离	domain=spells; source=EN/ZH; 备注=✅
 Dispater	迪斯帕特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -615,6 +617,7 @@ Gaze	凝视	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行）
 Gecko	壁虎	domain=magic; source=EN/ZH; 依据 / 作用域=Hypnogecko 短名/status；不译成泛称蜥蜴；decision=D-C-095
 gecko talisman	壁虎护符	domain=items; source=EN/ZH; 依据 / 作用域=item-prop.cc；对应 Hypnogecko／Gecko；decision=D-C-095
 gecko-form	迷魂壁虎形态	domain=magic; source=EN/ZH; 依据 / 作用域=form-gen.py 从短名派生的长名；与完整形态对应；decision=D-C-095
+Gehenna	欣嫩谷	domain=core; source=EN/ZH; 注意事项=游戏地狱领域及直接关联专名；decision=D-C-103
 gehenna serpent of hell breath	欣嫩谷地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 Gell's Gavotte	盖尔之加沃特	domain=spells; source=EN/ZH; 备注=✅；重定向局部重力，使视野内生物随方向翻滚
 Gell's Gravitas	盖尔之重力	domain=spells; source=EN/ZH; 备注=✅；重力铃鼓专用效果，将怪物拉拢并固定
@@ -761,6 +764,7 @@ Invisibility	隐形	domain=core; source=EN/ZH; 注意事项=不可被看见 | do
 Invisibility	隐身术	domain=spells; source=EN/ZH; 备注=✅；使施法者隐形
 Invisibility Other	使他人隐形	domain=spells; source=EN/ZH; 备注=🆕；使附近盟友隐形
 Invocations	祈神	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Iron City	铁城	domain=core; source=EN/ZH; 注意事项=Dis 的别称；不增补源文未写的地名；decision=D-C-103
 Iron Shot	铁弹	domain=spells; source=EN/ZH; 备注=✅；`shot` 指重型金属弹体，不机械统一为“射击”
 Irradiate	辐射	domain=spells; source=EN/ZH; 备注=✅
 Iskenderun's Battlesphere	伊斯肯德伦之战斗法球	domain=spells; source=EN/ZH; 备注=🆕；与实体及运行时 `battlesphere → 战斗法球` 统一
@@ -1145,7 +1149,7 @@ Sentinel's Mark	哨兵印记	domain=spells; source=EN/ZH; 备注=✅；向同层
 Seracfall	冰塔崩塌	domain=spells; source=EN/ZH; 备注=✅
 Serpent	蛇形	domain=magic; source=EN/ZH; 依据 / 作用域=form 名称／伤害标签；serpent:short_name；decision=D-C-098
 Serpent of Hell cocytus	悲叹河地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
-Serpent of Hell dis	铁城地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
+Serpent of Hell dis	迪斯地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name; decision=D-C-103
 Serpent of Hell gehenna	欣嫩谷地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
 Serpent of Hell tartarus	塔尔塔罗斯地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
 sewage sovereign	污水君主	domain=monsters; source=EN/ZH; 依据 / 作用域=monsters.txt；统治污水领域的巨型变异猪；decision=D-C-095
@@ -1363,6 +1367,7 @@ Swiftness	迅捷	domain=spells; source=EN/ZH; 备注=✅
 sword of Cerebov	塞雷波夫之剑	domain=items; source=EN/ZH; Scope / comment=unrand; follows unique name; decision=D-B-021
 Symbol of Torment	折磨之符	domain=spells; source=EN/ZH; 备注=✅
 Tailwind	顺风	domain=status; source=EN/ZH; 依据 / 作用域=status.txt；下一次冲锋移动不耗时；decision=D-C-095
+Tartarus	塔尔塔罗斯	domain=core; source=EN/ZH; 注意事项=游戏地狱领域；区别 Abyss；文学 exact-key 例外见 D-C-103
 tartarus serpent of hell breath	塔尔塔罗斯地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 taunts	嘲讽道	domain=dialogue; source=EN/ZH; 适用角色=高等恶魔、反派
 telencephalon	端脑	domain=monsters; source=EN/ZH; 依据 / 作用域=monsters.txt；魔法晶体与变异脑组织构成，保留原名解剖学术语；decision=D-C-095
@@ -1376,6 +1381,7 @@ terrified	惊恐	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变�
 the Cold Snap	骤寒	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；寒冷突然到来；decision=D-C-095
 the Floe	浮冰	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；漂浮冰块；decision=D-C-095
 the Frost Giant	霜巨人	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；复用现行怪物名，不另造冰系称号；decision=D-C-095
+the Iron City of Dis	迪斯铁城	domain=core; source=EN/ZH; 注意事项=分支长名；decision=D-C-103
 the Mountaintop	山巅	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；冰系书名地貌意象；decision=D-C-095
 the Polar Bear	北极熊	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；复用现行怪物名；decision=D-C-095
 the Shard Shrike	碎片伯劳	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；复用现行怪物名；decision=D-C-095

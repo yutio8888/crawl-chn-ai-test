@@ -6149,6 +6149,24 @@ const char* zh_monster_name(const string& en)
     return it != zh_names.end() ? it->second : nullptr;
 }
 
+// These suffixes are saved English identities produced by monster_polymorph.
+// Translate only their display templates; arbitrary custom names stay literal.
+string mons_name_with_suffix(const string& base, const string& suffix)
+{
+    if (Options.language == lang_t::ZH)
+    {
+        if (suffix == "shaped Royal Jelly")
+            return make_stringf(T_("%s shaped Royal Jelly"), base.c_str());
+        if (suffix == "shaped Lernaean hydra")
+            return make_stringf(T_("%s shaped Lernaean hydra"), base.c_str());
+        if (suffix == "shaped Enchantress")
+            return make_stringf(T_("%s shaped Enchantress"), base.c_str());
+        if (suffix == "shaped Serpent of Hell")
+            return make_stringf(T_("%s shaped Serpent of Hell"), base.c_str());
+    }
+    return base + " " + suffix;
+}
+
 bool mons_is_rider(monster_type mc)
 {
     return mc == MONS_SPRIGGAN_RIDER

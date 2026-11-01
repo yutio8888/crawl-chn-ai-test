@@ -1532,7 +1532,7 @@ VISUAL:@The_monster@ 阴沉着脸，用@possessive@双手在@possessive@长袍�
 
 @The_monster@ 说："安泰俄斯说我是他最中意的狗头人。我！"
 
-@The_monster@ 说："迪斯帕特话不多，但我知道他们欣赏我。"
+@The_monster@ 说："迪斯帕特话不多，但我知道他欣赏我。"
 
 @The_monster@ 说："我摸过格律翁的角一次。"
 

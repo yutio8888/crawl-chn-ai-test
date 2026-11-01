@@ -2439,24 +2439,33 @@ def parse_cpp_annotations(parser, source: bytes):
                         normalized[begin:args.end_byte - 1] = (
                             b"0" + b" " * (len(operand) - 1))
                         changed = True
-        # ability.cc generic_cost::cost has a trailing purity annotation.
-        # Only lower an intact function prototype followed by the exact PURE
+        # ability.cc and mon-util.h use trailing purity annotations.
+        # Only lower an intact function prototype followed by a known exact
         # recovery node and a real semicolon. Expressions, fields, unknown
         # suffixes and malformed declarators remain visible to validation.
         if node.type in ("declaration", "field_declaration"):
             declarator = node.child_by_field_name("declarator")
-            if (declarator is not None
-                    and declarator.type == "function_declarator"
+            function = declarator
+            while (function is not None and function.type in
+                   ("pointer_declarator", "reference_declarator")):
+                function = function.child_by_field_name("declarator")
+            function_name = (function.child_by_field_name("declarator")
+                             if function is not None else None)
+            if (declarator is not None and function is not None
+                    and function.type == "function_declarator"
+                    and function_name is not None
+                    and function_name.type in
+                    ("identifier", "field_identifier", "qualified_identifier")
                     and not declarator.has_error):
                 suffix = source[declarator.end_byte:node.end_byte]
-                match = re.fullmatch(rb"\s+(?P<pure>PURE)\s*;", suffix)
+                match = re.fullmatch(rb"\s+(?P<pure>PURE|IMMUTABLE)\s*;", suffix)
                 errors = [child for child in node.children if child.type == "ERROR"]
                 if (match is not None and len(errors) == 1
-                        and errors[0].text == b"PURE"
+                        and errors[0].text == match.group("pure")
                         and errors[0].start_byte == declarator.end_byte + match.start("pure")
                         and not node.children[-1].is_missing):
                     begin = errors[0].start_byte
-                    normalized[begin:begin + 4] = b"    "
+                    normalized[begin:errors[0].end_byte] = b" " * len(errors[0].text)
                     changed = True
         if node.type in ("function_definition", "declaration"):
             declarator = node.child_by_field_name("declarator")

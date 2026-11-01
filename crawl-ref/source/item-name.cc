@@ -2239,6 +2239,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         monster_flags_t name_flags;
         const string _name = get_corpse_name(*this, &name_flags);
         const monster_flags_t name_type = name_flags & MF_NAME_MASK;
+        string corpse_species;
 
         if (!_name.empty() && name_type == MF_NAME_ADJECTIVE)
             buff << _name << " ";
@@ -2249,11 +2250,21 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         {
             const monster_type mc = mon_type;
             if (!(mons_is_unique(mc) && mons_species(mc) == mc))
-                buff << mons_type_name(mc, DESC_PLAIN) << ' ';
+                corpse_species = mons_type_name(mc, DESC_PLAIN);
         }
 
-        if (!_name.empty() && name_type == MF_NAME_SUFFIX)
-            buff << _name << " ";
+        if (!dbname && !corpse_species.empty()
+            && !_name.empty() && name_type == MF_NAME_SUFFIX)
+        {
+            buff << mons_name_with_suffix(corpse_species, _name) << ' ';
+        }
+        else
+        {
+            if (!corpse_species.empty())
+                buff << corpse_species << ' ';
+            if (!_name.empty() && name_type == MF_NAME_SUFFIX)
+                buff << _name << " ";
+        }
 
         if (item_typ == CORPSE_BODY)
             buff << (T_("corpse"));

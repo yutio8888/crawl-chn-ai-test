@@ -3208,7 +3208,7 @@ __NONE
 %%%%
 highlevel Conjuration Fire owner
 
-阿斯蒙蒂斯
+阿斯摩蒂斯
 
 塞雷波夫
 
@@ -3222,7 +3222,7 @@ __NONE
 %%%%
 highlevel Conjuration Summoning owner
 
-阿斯蒙蒂斯
+阿斯摩蒂斯
 
 迪斯帕特
 
@@ -3242,7 +3242,7 @@ __NONE
 %%%%
 highlevel Fire Summoning owner
 
-阿斯蒙蒂斯
+阿斯摩蒂斯
 
 __NONE
 %%%%
@@ -3266,7 +3266,7 @@ __NONE
 %%%%
 highlevel Conjuration owner
 
-阿斯蒙蒂斯
+阿斯摩蒂斯
 
 埃列什基伽勒
 
@@ -3315,7 +3315,7 @@ __NONE
 %%%%
 highlevel Fire owner
 
-阿斯蒙蒂斯
+阿斯摩蒂斯
 
 塞雷波夫
 
@@ -3384,7 +3384,7 @@ __NONE
 %%%%
 highlevel Summoning owner
 
-阿斯蒙蒂斯
+阿斯摩蒂斯
 
 迪斯帕特
 

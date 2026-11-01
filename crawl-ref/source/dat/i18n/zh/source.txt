@@ -12201,19 +12201,19 @@ Hell
 %%%%
 Dis
 
-铁之城
+迪斯
 %%%%
 Gehenna
 
-火焚谷
+欣嫩谷
 %%%%
 Cocytus
 
-冰封湖
+悲叹河
 %%%%
 Tartarus
 
-深渊牢狱
+塔尔塔罗斯
 %%%%
 Zot
 
@@ -12353,7 +12353,7 @@ the Vestibule of Hell
 %%%%
 the Iron City of Dis
 
-铁之城·迪斯
+迪斯铁城
 %%%%
 the Realm of Zot
 
@@ -17064,7 +17064,7 @@ cocytus serpent of hell breath
 悲叹河地狱巨蛇吐息
 %%%%
 dis serpent of hell breath
-铁城地狱巨蛇吐息
+迪斯地狱巨蛇吐息
 %%%%
 tartarus serpent of hell breath
 塔尔塔罗斯地狱巨蛇吐息
@@ -18932,7 +18932,7 @@ spatial disruption
 +视野
 %%%%
 Cocytus destruction
-科塞特斯毁灭
+悲叹河毁灭
 %%%%
 Dis destruction
 迪斯毁灭
@@ -18941,7 +18941,7 @@ East Wind's embodiment
 东风化身
 %%%%
 Gehenna destruction
-基希纳毁灭
+欣嫩谷毁灭
 %%%%
 HP casting
 生命施法
@@ -18983,7 +18983,7 @@ South Wind's embodiment
 南风化身
 %%%%
 Tartarus destruction
-塔耳塔洛斯毁灭
+塔尔塔罗斯毁灭
 %%%%
 West Wind's embodiment
 西风化身
@@ -20192,16 +20192,16 @@ You do not regenerate.
 你无法再生。
 %%%%
 You draw destruction from the endless fires of Gehenna.
-你从基希纳的无尽火焰中汲取毁灭之力。
+你从欣嫩谷的无尽火焰中汲取毁灭之力。
 %%%%
 You draw destruction from the frigid wastes of Cocytus.
-你从科塞特斯的冰冷荒原中汲取毁灭之力。
+你从悲叹河的冰冷荒原中汲取毁灭之力。
 %%%%
 You draw destruction from the ruthless spite of Dis.
 你从迪斯的无情怨恨中汲取毁灭之力。
 %%%%
 You draw destruction from the wailing grief of Tartarus.
-你从塔耳塔洛斯的哀嚎悲伤中汲取毁灭之力。
+你从塔尔塔罗斯的哀嚎悲伤中汲取毁灭之力。
 %%%%
 You expend magic power (3 MP) to strengthen your wands.
 你消耗魔力（3点）来增强你的魔杖。
@@ -22979,7 +22979,7 @@ gateway leading out of Cocytus
 通往悲叹河之外的传送门
 %%%%
 gateway leading out of Dis
-通往狄斯之外的传送门
+通往迪斯之外的传送门
 %%%%
 gateway leading out of Gehenna
 通往欣嫩谷之外的传送门
@@ -22997,16 +22997,16 @@ gateway to a bazaar
 通往集市的传送门
 %%%%
 gateway to the Iron City of Dis
-通往狄斯铁城的传送门
+通往迪斯铁城的传送门
 %%%%
 gateway to the ashen valley of Gehenna
-通往欣嫩谷的传送门
+通往欣嫩谷这片灰烬谷地的传送门
 %%%%
 gateway to the decaying netherworld of Tartarus
-通往塔尔塔罗斯的传送门
+通往塔尔塔罗斯腐朽冥界的传送门
 %%%%
 gateway to the freezing wastes of Cocytus
-通往悲叹河的传送门
+通往悲叹河极寒荒原的传送门
 %%%%
 glowing golden altar of the Shining One
 光辉者的金色辉光祭坛
@@ -27396,16 +27396,16 @@ You feel your magical power running wild!
 你感到魔力失控了！
 %%%%
 You feel your soul grow bitter with the corrosive destruction of Dis.
-你感到灵魂因狄斯的腐蚀毁灭而变苦。
+你感到灵魂在迪斯腐蚀性的毁灭之力下变得怨毒。
 %%%%
 You feel your soul grow cold with the frigid destruction of Cocytus.
-你感到灵魂因科赛特斯的严寒毁灭而变冷。
+你感到灵魂因悲叹河的严寒毁灭而变冷。
 %%%%
 You feel your soul grow hot with the fiery destruction of Gehenna.
-你感到灵魂因基赫纳的烈焰毁灭而变热。
+你感到灵魂因欣嫩谷的烈焰毁灭而变热。
 %%%%
 You feel your soul grow tainted with the deathly destruction of Tartarus.
-你感到灵魂因塔塔罗斯的死亡毁灭而变得污浊。
+你感到灵魂因塔尔塔罗斯的死亡毁灭而变得污浊。
 %%%%
 You feel your time running out.
 你感到时间不多了。
@@ -28733,15 +28733,6 @@ Miscasting this spell causes magic contamination
  and also 
 并可能造成
 %%%%
-Your battlesphere
-你的战斗法球
-%%%%
- is not activated by any of your spells
-不会被你的任何法术激活
-%%%%
- fires when you cast 
-会在你施放
-%%%%
 Your servitor
 你的仆从
 %%%%
@@ -28758,13 +28749,7 @@ Your servitor can be imbued with this spell.\n
 你的仆从可以被赋予此法术。\n
 %%%%
 This inflicts up to 40% magical contamination when cast by you.\n
-施放时会对你造成至多40%%的魔法污染。\n
-%%%%
-You can sustain at most 
-你最多可以维持
-%%%%
- martyred shade
- 个殉道暗影
+由你施放时，此法术会造成至多40%的诱变辐射。\n
 %%%%
  creature
  个生物
@@ -28772,11 +28757,8 @@ You can sustain at most
 greatly 
 极大地
 %%%%
- summoned by this spell.\n
- 由此法术召唤。\n
-%%%%
 This spell is empowered while you are enkindled.\n
-此法术在燃魂状态下被强化。\n
+此法术在点燃状态下得到强化。\n
 %%%%
 \nYou cannot cast this spell: %s\n
 \n你无法施放此法术：%s\n
@@ -33639,16 +33621,16 @@ Your life essence is reduced. (-10%% HP)\n
 你的生命精华减少了。(-10%% 生命值)\n
 %%%%
 Your destruction is augmented by the fires of Gehenna.\n
-你的毁灭被火焚地狱之力增强。\n
+你的毁灭之力受到欣嫩谷烈火的强化。\n
 %%%%
 Your destruction is augmented by the ice of Cocytus.\n
-你的毁灭被冰狱之力增强。\n
+你的毁灭之力受到悲叹河寒冰的强化。\n
 %%%%
 Your destruction is augmented by the lamentations of Tartarus.\n
-你的毁灭被悲叹地狱之力增强。\n
+你的毁灭之力受到塔尔塔罗斯哀叹的强化。\n
 %%%%
 Your destruction is augmented by the Iron City of Dis.\n
-你的毁灭被铁城之力增强。\n
+你的毁灭之力受到迪斯铁城的强化。\n
 %%%%
 Your destruction will be augmented by one of the four Hells.\n
 你的毁灭将被四大地狱之一增强。\n
@@ -43578,10 +43560,10 @@ It sometimes fires a blinding ray at enemies whose attacks you dodge.
 \n你目前没有任何可以以此移除的附魔。\n
 %%%%
 \n\n<magenta>This spell cannot be performed via Aphotic Marionette.</magenta>\n
-\n\n<magenta>此法术无法通过暗影牵线木偶施展。</magenta>\n
+\n\n<magenta>此法术无法通过无光傀儡施放。</magenta>\n
 %%%%
-\n\n<magenta>When cast via Aphotic Marionette, this spell will affect the player instead.
-\n\n<magenta>通过暗影牵线木偶施展时，此法术将影响施法者本人。
+\n\n<magenta>When cast via Aphotic Marionette, this spell will affect the player instead.</magenta>\n
+\n\n<magenta>通过无光傀儡施放时，此法术将转而对你生效。</magenta>\n
 %%%%
 %s can sustain at most %s creature summoned by this spell.\n
 %s最多能维持该法术召唤的%s个生物。\n
@@ -48925,3 +48907,33 @@ flag long|soul-gripped
 %%%%
 flag short|soul-gripped
 灵魂被攫住
+%%%%
+Your battlesphere is not activated by any of your spells.\n
+你的任何法术都无法激活你的战斗法球。\n
+%%%%
+Your battlesphere fires when you cast %s.\n
+你施放%s时，你的战斗法球会开火。\n
+%%%%
+You can sustain at most %s creature summoned by this spell.\n
+你最多可以维持此法术召唤的%s个生物。\n
+%%%%
+You can sustain at most %s creatures summoned by this spell.\n
+你最多可以维持此法术召唤的%s个生物。\n
+%%%%
+You can sustain at most %s martyred shade summoned by this spell.\n
+你最多可以维持此法术召唤的%s个殉道暗影。\n
+%%%%
+You can sustain at most %s martyred shades summoned by this spell.\n
+你最多可以维持此法术召唤的%s个殉道暗影。\n
+%%%%
+%s shaped Royal Jelly
+变成%s模样的果冻王
+%%%%
+%s shaped Lernaean hydra
+变成%s模样的勒拿多头蛇
+%%%%
+%s shaped Enchantress
+变成%s模样的妖术女王
+%%%%
+%s shaped Serpent of Hell
+变成%s模样的地狱巨蛇

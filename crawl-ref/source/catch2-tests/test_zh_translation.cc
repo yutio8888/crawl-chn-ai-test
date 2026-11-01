@@ -7196,6 +7196,113 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     }
 }
 
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "spell world: polymorphed unique names preserve saved suffix identities",
+                 "[zh-translation][spells-world-rereview]")
+{
+    init_monsters();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 100;
+    scoped_monspeak_world world;
+    monster* serpent = world.place(MONS_SERPENT_OF_HELL);
+    REQUIRE(serpent);
+    define_monster(*serpent);
+    REQUIRE(monster_polymorph(serpent, MONS_HELLWING));
+    const string saved = "shaped Serpent of Hell";
+    REQUIRE(serpent->mname == saved);
+    REQUIRE(serpent->flags & MF_NAME_SUFFIX);
+    for (lang_t language : {lang_t::ZH, lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string displayed = serpent->name(DESC_PLAIN);
+        INFO(displayed);
+        CHECK(displayed.find(mons_type_name(MONS_HELLWING, DESC_PLAIN)) != string::npos);
+        CHECK((displayed.find(saved) != string::npos) == (language == lang_t::EN));
+        CHECK(monster_info(serpent).full_name(DESC_PLAIN) == displayed);
+        CHECK(serpent->name(DESC_DBNAME) == "hellwing");
+        CHECK(serpent->mname == saved);
+    }
+
+    // Stored suffixes also reach the corpse display path. This fixture tests
+    // saved-name rendering, not whether every original unique leaves a corpse.
+    REQUIRE(mons_is_unique(MONS_CEREBOV));
+    REQUIRE(mons_species(MONS_CEREBOV) == MONS_CEREBOV);
+    for (const char* suffix : {"shaped Royal Jelly", "shaped Lernaean hydra",
+                               "shaped Enchantress", "shaped Serpent of Hell",
+                               "shaped CustomName"})
+    {
+        item_def corpse;
+        corpse.base_type = OBJ_CORPSES;
+        corpse.sub_type = CORPSE_BODY;
+        corpse.quantity = 1;
+        corpse.mon_type = MONS_YAK;
+        corpse.props[CORPSE_NAME_KEY] = string(suffix);
+        corpse.props[CORPSE_NAME_TYPE_KEY].get_int64() = monster_flags_t(MF_NAME_SUFFIX).flags;
+        for (lang_t language : {lang_t::ZH, lang_t::EN})
+        {
+            TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+            const string displayed = corpse.name(DESC_PLAIN);
+            INFO(displayed);
+            CHECK(displayed.find(mons_type_name(MONS_YAK, DESC_PLAIN)) != string::npos);
+            const bool literal = language == lang_t::EN || string(suffix) == "shaped CustomName";
+            CHECK((displayed.find(suffix) != string::npos) == literal);
+            CHECK(get_corpse_name(corpse) == suffix);
+            // Database names and a suppressed unique species prefix retain
+            // their existing raw suffix path, including custom identities.
+            CHECK(corpse.name(DESC_DBNAME).find(suffix) != string::npos);
+            corpse.mon_type = MONS_CEREBOV;
+            CHECK(corpse.name(DESC_PLAIN).find(suffix) != string::npos);
+            corpse.mon_type = MONS_YAK;
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "spell world: player spell details render complete conditional sentences",
+                 "[zh-translation][spells-world-rereview]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([&saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    init_monsters();
+    init_properties();
+    init_spell_descs();
+    init_zap_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> live_game(crawl_state.need_save, true);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 100;
+        you.experience_level = 20;
+        const string inactive = player_spell_desc(SPELL_BATTLESPHERE);
+        CHECK(inactive.find(language == lang_t::ZH ? "无法激活" : "not activated") != string::npos);
+        REQUIRE(add_spell_to_memory(SPELL_MAGIC_DART));
+        const string active = player_spell_desc(SPELL_BATTLESPHERE);
+        INFO(active);
+        CHECK(active.find(spell_title(SPELL_MAGIC_DART)) != string::npos);
+        CHECK(active.find(language == lang_t::ZH ? "开火" : "fires when you cast") != string::npos);
+        for (spell_type spell : {SPELL_SUMMON_ICE_BEAST, SPELL_SUMMON_SMALL_MAMMAL,
+                                 SPELL_MARTYRS_KNELL})
+        {
+            const string description = player_spell_desc(spell);
+            INFO(description);
+            CHECK(description.find(number_in_words(summons_limit(spell, true))) != string::npos);
+            CHECK(description.find(language == lang_t::ZH ? "此法术召唤的" : "summoned by this spell") != string::npos);
+            if (spell == SPELL_MARTYRS_KNELL)
+                CHECK(description.find(language == lang_t::ZH ? T_("martyred shade") : "martyred shade") != string::npos);
+        }
+        const string irradiate = player_spell_desc(SPELL_IRRADIATE);
+        CHECK(irradiate.find("40%") != string::npos);
+        CHECK(irradiate.find("40%%") == string::npos);
+    }
+}
+
 
 namespace
 {

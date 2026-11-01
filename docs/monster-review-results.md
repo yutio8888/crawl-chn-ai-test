@@ -1,8 +1,8 @@
 # Issue #24 怪物翻译全量复审结果
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
-- 术语表 SHA-256：`90a9e990243dbcc3657ff2b491abee689d0af2df04213540bde08fdda751baa2`
-- 清单 SHA-256：`f80fbeef8762b1cd608f744fbb90e27bb1a5052d877e7539ce74ec130cbaac2c`
+- 术语表 SHA-256：`e47b7b2aee9e32cd5448b15eb45dea34cfdea82b31d9161e8bf30fff8dd24b8a`
+- 清单 SHA-256：`647b6bd6533f14ac94b52da2fc2976b99be0a98d5bfaede749271a7448da63f7`
 - 身份总数：813（现行 689；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -426,7 +426,7 @@
 | `monster:MONS_GERYON` | current; exposure=unique; name=Geryon→格律翁; genus=MONS_HELL_LORD; species=MONS_GERYON; data=crawl-ref/source/dat/mons/geryon.yaml; desc=EN/ZH | keep |
 | `monster:MONS_DISPATER` | current; exposure=unique; name=Dispater→迪斯帕特; genus=MONS_HELL_LORD; species=MONS_DISPATER; data=crawl-ref/source/dat/mons/dispater.yaml; desc=EN/ZH | keep |
 | `monster:MONS_ASMODEUS` | current; exposure=unique; name=Asmodeus→阿斯摩蒂斯; genus=MONS_HELL_LORD; species=MONS_ASMODEUS; data=crawl-ref/source/dat/mons/asmodeus.yaml; desc=EN/ZH | keep |
-| `monster:MONS_ANTAEUS` | current; exposure=unique; name=Antaeus→安泰俄斯; genus=MONS_GIANT; species=MONS_TITAN; data=crawl-ref/source/dat/mons/antaeus.yaml; desc=EN/ZH | keep |
+| `monster:MONS_ANTAEUS` | current; exposure=unique; name=Antaeus→安泰俄斯; genus=MONS_GIANT; species=MONS_TITAN; data=crawl-ref/source/dat/mons/antaeus.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ERESHKIGAL` | current; exposure=unique; name=Ereshkigal→埃列什基伽勒; genus=MONS_HELL_LORD; species=MONS_ERESHKIGAL; data=crawl-ref/source/dat/mons/ereshkigal.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ROYAL_JELLY` | current; exposure=unique; name=Royal Jelly→果冻王; genus=MONS_JELLY; species=MONS_JELLY; data=crawl-ref/source/dat/mons/royal-jelly.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ENCHANTRESS` | current; exposure=unique; name=Enchantress→妖术女王; genus=MONS_SPRIGGAN; species=MONS_SPRIGGAN; data=crawl-ref/source/dat/mons/enchantress.yaml; desc=EN/ZH | retranslate: description corrected |
@@ -628,7 +628,7 @@
 | `monster:MONS_MUTANT_BEAST` | current; exposure=ordinary; name=mutant beast→变异野兽; genus=MONS_MUTANT_BEAST; species=MONS_MUTANT_BEAST; data=crawl-ref/source/dat/mons/mutant-beast.yaml; desc=EN/ZH | keep |
 | `monster:MONS_JUGGERNAUT` | current; exposure=ordinary; name=juggernaut→巨像; genus=MONS_GIANT; species=MONS_JUGGERNAUT; data=crawl-ref/source/dat/mons/juggernaut.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SPARK_WASP` | current; exposure=ordinary; name=spark wasp→火花蜂; genus=MONS_SPARK_WASP; species=MONS_SPARK_WASP; data=crawl-ref/source/dat/mons/spark-wasp.yaml; desc=EN/ZH | keep |
-| `monster:MONS_OBLIVION_HOUND` | current; exposure=ordinary; name=oblivion hound→湮灭猎犬; genus=MONS_HOUND; species=MONS_OBLIVION_HOUND; data=crawl-ref/source/dat/mons/oblivion-hound.yaml; desc=EN/ZH | keep |
+| `monster:MONS_OBLIVION_HOUND` | current; exposure=ordinary; name=oblivion hound→湮灭猎犬; genus=MONS_HOUND; species=MONS_OBLIVION_HOUND; data=crawl-ref/source/dat/mons/oblivion-hound.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_DEEP_ELF_ELEMENTALIST` | current; exposure=ordinary; name=deep elf elementalist→精灵元素师; genus=MONS_ELF; species=MONS_ELF; data=crawl-ref/source/dat/mons/deep-elf-elementalist.yaml; desc=EN/ZH | keep |
 | `monster:MONS_DEEP_ELF_ARCHER` | current; exposure=ordinary; name=deep elf archer→精灵弓箭手; genus=MONS_ELF; species=MONS_ELF; data=crawl-ref/source/dat/mons/deep-elf-archer.yaml; desc=EN/ZH | keep |
 | `monster:MONS_DEMONIC_PLANT` | current; exposure=ordinary; name=demonic plant→恶魔植物; genus=MONS_PLANT; species=MONS_DEMONIC_PLANT; data=crawl-ref/source/dat/mons/demonic-plant.yaml; desc=EN/ZH | keep |
@@ -708,7 +708,7 @@
 | `monster:MONS_VV` | current; exposure=unique; name=Vv→芙芙; genus=MONS_VV; species=MONS_VV; data=crawl-ref/source/dat/mons/vv.yaml; desc=EN/ZH | keep |
 | `monster:MONS_ZENATA` | current; exposure=unique; name=Zenata→泽娜塔; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/zenata.yaml; desc=EN/ZH | keep |
 | `monster:MONS_METEORAN` | current; exposure=ordinary; name=meteoran→流星人; genus=MONS_METEORAN; species=MONS_METEORAN; data=crawl-ref/source/dat/mons/meteoran.yaml; desc=N/A | keep |
-| `monster:MONS_GRUNN` | current; exposure=unique; name=Grunn→格伦; genus=MONS_GNOLL; species=MONS_GNOLL; data=crawl-ref/source/dat/mons/grunn.yaml; desc=EN/ZH | keep |
+| `monster:MONS_GRUNN` | current; exposure=unique; name=Grunn→格伦; genus=MONS_GNOLL; species=MONS_GNOLL; data=crawl-ref/source/dat/mons/grunn.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_STARFLOWER` | current; exposure=ordinary; name=starflower→星花; genus=MONS_PLANT; species=MONS_STARFLOWER; data=crawl-ref/source/dat/mons/starflower.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SICKLY_MERFOLK_SIREN` | current; exposure=ordinary; name=sickly merfolk siren→病弱人鱼塞壬; genus=MONS_MERFOLK; species=MONS_MERFOLK; data=crawl-ref/source/dat/mons/sickly-merfolk-siren.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_MALARIOUS_MERFOLK_AVATAR` | current; exposure=ordinary; name=malarious merfolk avatar→疟病人鱼化身; genus=MONS_MERFOLK; species=MONS_MERFOLK; data=crawl-ref/source/dat/mons/malarious-merfolk-avatar.yaml; desc=EN/ZH | retranslate: name and description corrected |
