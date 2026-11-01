@@ -2195,8 +2195,13 @@ string mon_attack_name_short(attack_type attack)
     case AT_TAIL_SLAP:     return T_("tail");
     case AT_TRUNK_SLAP:    return T_("trunk");
     case AT_POUNCE:        return T_("pounce");
+    case AT_HIT:
+    case AT_WEAP_ONLY:
+#if TAG_MAJOR_VERSION == 34
+    case AT_SHOOT:
+#endif
     case AT_CHERUB:
-    case AT_RANDOM:        return T_("hit"); // eh
+    case AT_RANDOM:        return C_("melee action", "hit"); // eh
     default:
         return mon_attack_name(attack, false);
     }

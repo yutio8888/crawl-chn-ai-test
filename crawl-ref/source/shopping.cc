@@ -2449,10 +2449,10 @@ formatted_string ShoppingListMenu::calc_title()
     const int total_cost = you.props[SHOPPING_LIST_COST_KEY];
 
     fs.textcolour(title->colour);
-    fs.cprintf(make_stringf_p(T_("Shopping list: %1$d %2$s%3$s, total cost %4$d gold pieces"),
-                title->quantity, title->text.c_str(),
-                title->quantity > 1 ? "s" : "",
-                total_cost));
+    fs.cprintf(make_stringf(title->quantity > 1
+                ? T_("Shopping list: %d items, total cost %d gold pieces")
+                : T_("Shopping list: %d item, total cost %d gold pieces"),
+                title->quantity, total_cost));
 
     return fs;
 }

@@ -161,8 +161,8 @@ static string _default_use_title(operation_types oper)
             : T_("Equip which item?");
     case OPER_WIELD:
         return Options.equip_unequip
-            ? T_("Wield or put away which item? (- to cancel)")
-            : T_("Wield which item? (- to cancel)");
+            ? T_("Wield or put away which item? (- for unarmed)")
+            : T_("Wield which item? (- for unarmed)");
     case OPER_WEAR:
         if (Options.equip_unequip)
             return T_("Wear or take off which item?");
@@ -1390,9 +1390,11 @@ bool warn_about_changing_gear(const vector<item_def*>& to_remove, item_def* to_e
             {
                 if (++removed_flight >= equipped_flight)
                 {
-                    mprf(MSGCH_PROMPT, T_("Removing %s right now would cause you to %s!"),
-                            item->name(DESC_YOUR).c_str(),
-                            env.grid(you.pos()) == DNGN_DEEP_WATER ? "drown" : "burn");
+                    mprf(MSGCH_PROMPT,
+                         env.grid(you.pos()) == DNGN_DEEP_WATER
+                            ? T_("Removing %s right now would cause you to drown!")
+                            : T_("Removing %s right now would cause you to burn!"),
+                         item->name(DESC_YOUR).c_str());
                     return false;
                 }
             }
@@ -1583,7 +1585,7 @@ bool handle_chain_removal(vector<item_def*>& to_remove, bool interactive)
 
             if ((int)chain_remove.size() < chain_remove_num)
             {
-                mprf(MSGCH_PROMPT, T_("A cursed item is preventing you from removing %s."),
+                mprf(MSGCH_PROMPT, T_("A bound item is preventing you from removing %s."),
                         to_remove[n]->name(DESC_INVENTORY).c_str());
                 return false;
             }
@@ -2589,9 +2591,10 @@ bool enchant_armour(item_def &arm, bool quiet)
     {
         const bool plural = armour_is_hide(arm)
                             && arm.sub_type != ARM_TROLL_LEATHER_ARMOUR;
-        string glow = conjugate_verb_for_display(N_("glow"), plural);
         const string dur = is_enchantable_armour(arm) ? T_("moment") : T_("while");
-        mprf(T_("%s %s green for a %s."), iname.c_str(), glow.c_str(), dur.c_str());
+        mprf(plural ? T_("%s glow green for a %s.")
+                    : T_("%s glows green for a %s."),
+             iname.c_str(), dur.c_str());
     }
 
     return true;

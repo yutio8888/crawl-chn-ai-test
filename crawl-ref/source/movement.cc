@@ -42,6 +42,7 @@
 #include "nearby-danger.h"
 #include "player.h"
 #include "player-reacts.h"
+#include "positional_format.h"
 #include "prompt.h"
 #include "random.h"
 #include "religion.h"
@@ -176,21 +177,17 @@ void player_did_deliberate_movement()
 
 static bool _cancel_ice_move()
 {
-    vector<string> effects;
     if (i_feel_safe(false, true, true))
         return false;
 
-    if (you.duration[DUR_ICY_ARMOUR])
-        effects.push_back("icy armour");
-
-    if (you.duration[DUR_FROZEN_RAMPARTS])
-        effects.push_back("frozen ramparts");
-
-    if (!effects.empty())
+    const bool armour = you.duration[DUR_ICY_ARMOUR];
+    const bool ramparts = you.duration[DUR_FROZEN_RAMPARTS];
+    if (armour || ramparts)
     {
-        string prompt = "Your "
-                        + comma_separated_line(effects.begin(), effects.end())
-                        + " will break if you move. Continue?";
+        const string prompt = armour && ramparts
+            ? T_("Your icy armour and frozen ramparts will break if you move. Continue?")
+            : armour ? T_("Your icy armour will break if you move. Continue?")
+                     : T_("Your frozen ramparts will break if you move. Continue?");
 
         if (!yesno(prompt.c_str(), false, 'n'))
         {
@@ -292,16 +289,14 @@ static bool _check_confused_attack(bool stationary)
 
     if (bad_mons)
     {
-        string prompt = "";
-        prompt += T_("Are you sure you want to ");
-        prompt += T_(!stationary ? "stumble around" : "swing wildly");
-        prompt += T_(" while confused and next to ");
-
         string name = remove_prepended_the(bad_mons->name(DESC_PLAIN));
-        if (!starts_with(bad_adj, "your"))
+        if (Options.language != lang_t::ZH && !starts_with(bad_adj, "your"))
             bad_adj = "the " + bad_adj;
-        prompt += bad_adj + name + bad_suff;
-        prompt += "?";
+        name = bad_adj + name;
+        string prompt = make_stringf_p(
+            T_("Are you sure you want to %1$s while confused and next to %2$s%3$s?"),
+            T_(!stationary ? "stumble around" : "swing wildly"),
+            name.c_str(), bad_suff.c_str());
 
         if (penance)
             prompt += T_(" This could place you under penance!");

@@ -492,7 +492,7 @@ bool is_travelsafe_square(const coord_def& c, bool ignore_hostile,
 
     if (_travel_safe_grid)
     {
-        const cell_travel_safety &cell((*_travel_safe_grid)(c));
+        const cell_travel_safety &cell = (*_travel_safe_grid)(c);
         return ignore_hostile? cell.safe_if_ignoring_hostile_terrain
                : cell.safe;
     }
@@ -882,7 +882,11 @@ void explore_pickup_event(int did_pickup, int tried_pickup)
                         }
 
                         set_item_autopickup(*si, AP_FORCE_OFF);
-                        ap_disabled.push_back(pluralise(si->name(DESC_DBNAME)));
+                        // Miscellany keeps its database name in English.
+                        // Use its display subtype only for this message.
+                        const string name = si->base_type == OBJ_MISCELLANY
+                            ? sub_type_string(*si) : si->name(DESC_DBNAME);
+                        ap_disabled.push_back(pluralise(name));
                     }
 
                     if (!ap_disabled.empty())
@@ -4456,7 +4460,7 @@ void TravelCache::add_waypoint(int x, int y)
     else if (!is_connected_branch(you.where_are_you))
         mprf(MSGCH_PROMPT, T_("Waypoints will disappear once you leave this level."));
     mprf(MSGCH_PROMPT, T_("Assign waypoint to what number? (0-9%s) "),
-         waypoints_exist? ", D - delete waypoint" : "");
+         waypoints_exist ? T_(", D - delete waypoint") : "");
 
     int keyin = toalower(get_ch());
 
@@ -5159,9 +5163,9 @@ void explore_discoveries::add_item(const item_def &i)
     string itemname = menu_colour_item_name(i, DESC_A);
     monster* mon = monster_at(i.pos);
     if (mon && mons_species(mon->type) == MONS_BUSH)
-        itemname += " (under bush)";
+        itemname += T_(" (under bush)");
     else if (mon && mon->type == MONS_PLANT)
-        itemname += " (under plant)";
+        itemname += T_(" (under plant)");
 
     items.emplace_back(itemname, i);
 

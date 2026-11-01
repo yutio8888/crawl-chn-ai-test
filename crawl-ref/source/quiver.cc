@@ -502,7 +502,7 @@ namespace quiver
             else if (_either_weapon_cleaves())
                 return T_("cleave");
             else
-                return T_("hit"); // could use more subtype flavor Vs?
+                return C_("melee action", "hit"); // could use more subtype flavor Vs?
         }
 
         formatted_string valid_quiver_description(bool short_desc=false) const override

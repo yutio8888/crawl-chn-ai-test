@@ -16,6 +16,7 @@
 #include "format.h"
 #include "ghost.h"
 #include "i18n.h"
+#include "invent.h"
 #include "item-prop.h"
 #include "item-status-flag-type.h"
 #include "item-use.h"
@@ -145,6 +146,37 @@ string observe_message(const std::function<void()> &emit)
     // an encounter), so retain all of its actual emissions and strip markup.
     return formatted_string::parse_string(raw).tostring();
 }
+
+// Observe the actual prompt at the supported Lua answer hook, and decline it
+// before any interactive UI or gameplay continuation can run.
+struct action_prompt_capture
+{
+    string prompt;
+    lua_State *ls = clua.state();
+    int previous;
+
+    action_prompt_capture()
+    {
+        lua_getglobal(ls, "c_answer_prompt");
+        previous = luaL_ref(ls, LUA_REGISTRYINDEX);
+        lua_pushlightuserdata(ls, &prompt);
+        lua_pushcclosure(ls, [](lua_State *state) -> int
+        {
+            auto *text = static_cast<string*>(lua_touserdata(state, lua_upvalueindex(1)));
+            *text = luaL_checkstring(state, 1);
+            lua_pushboolean(state, false);
+            return 1;
+        }, 1);
+        lua_setglobal(ls, "c_answer_prompt");
+    }
+
+    ~action_prompt_capture()
+    {
+        lua_rawgeti(ls, LUA_REGISTRYINDEX, previous);
+        lua_setglobal(ls, "c_answer_prompt");
+        luaL_unref(ls, LUA_REGISTRYINDEX, previous);
+    }
+};
 
 string target_description(const monster &m, bool ally_target)
 {
@@ -278,8 +310,204 @@ TEST_CASE("issue 10 cloud and armour consumers use display verbs",
     armour.quantity = 1;
     armour.plus = 0;
     const string glow = observe_message([&] { REQUIRE(enchant_armour(armour, false)); });
-    CHECK(glow.find(language == lang_t::ZH ? "发亮" : "glows") != string::npos);
+    CHECK(glow.find(language == lang_t::ZH ? "泛起绿光" : "glows green") != string::npos);
     CHECK(armour.plus == 1);
+}
+
+TEST_CASE("item action messages preserve armour number and duration",
+          "[zh-translation][actions-rereview]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH, lang_t::EN);
+    const armour_type type = GENERATE(ARM_ROBE, ARM_FIRE_DRAGON_ARMOUR);
+    const bool final_enchantment = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    item_def armour;
+    armour.base_type = OBJ_ARMOUR;
+    armour.sub_type = type;
+    armour.quantity = 1;
+    armour.plus = final_enchantment ? armour_max_enchant(armour) - 1 : 0;
+    const int old_plus = armour.plus;
+    const string message = observe_message([&] { REQUIRE(enchant_armour(armour, false)); });
+    CAPTURE(language, type, message);
+    CHECK(armour.plus == old_plus + 1);
+    if (language == lang_t::ZH)
+    {
+        CHECK(message.find("泛起绿光，持续了") != string::npos);
+        CHECK(message.find(final_enchantment ? T_("while") : T_("moment")) != string::npos);
+        CHECK(message.find("发亮绿色") == string::npos);
+    }
+    else
+    {
+        CHECK(message.find(type == ARM_ROBE ? " glows green" : " glow green") != string::npos);
+        CHECK(message.find(final_enchantment ? "for a while." : "for a moment.") != string::npos);
+    }
+}
+
+TEST_CASE("item action inventory counts use language appropriate number",
+          "[zh-translation][actions-rereview]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH, lang_t::EN);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    struct count_menu : InvMenu
+    {
+        count_menu() : InvMenu(MF_MULTISELECT | MF_PAGED_INVENTORY) {}
+        using InvMenu::get_select_count_string;
+        void add_selected(const item_def &item)
+        {
+            InvEntry *entry = new InvEntry(item);
+            add_entry(entry);
+            entry->selected_qty = 1;
+            sel.push_back(entry);
+        }
+    } menu;
+    CHECK(menu.get_select_count_string(0).empty());
+    item_def items[2];
+    for (int i = 0; i < 2; ++i)
+    {
+        items[i].base_type = OBJ_POTIONS;
+        items[i].sub_type = POT_CURING;
+        items[i].quantity = 1;
+        items[i].link = i;
+        menu.add_selected(items[i]);
+        CHECK(menu.get_selitems(true).size() == static_cast<size_t>(i + 1));
+        CHECK(menu.get_select_count_string(i + 1)
+              == (language == lang_t::ZH ? make_stringf(" %d件物品", i + 1)
+                                        : i == 0 ? " 1 item" : " 2 items"));
+    }
+}
+
+TEST_CASE("item action flight removal warnings translate the actual terrain risk",
+          "[zh-translation][actions-rereview]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH, lang_t::EN);
+    const dungeon_feature_type terrain = GENERATE(DNGN_DEEP_WATER, DNGN_LAVA);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    item_def &ring = you.inv[0];
+    ring.base_type = OBJ_JEWELLERY;
+    ring.sub_type = RING_FLIGHT;
+    ring.quantity = 1;
+    ring.link = 0;
+    ring.pos = ITEM_IN_INVENTORY;
+    ring.flags |= ISFLAG_IDENTIFIED;
+    equip_item(SLOT_RING, 0, false, true);
+    REQUIRE(you.equip_flight() == 1);
+    env.grid(you.pos()) = terrain;
+    const string message = observe_message([&]
+    {
+        CHECK_FALSE(warn_about_changing_gear({&ring}, nullptr, true));
+    });
+    CAPTURE(language, terrain, message);
+    CHECK(message.find(ring.name(DESC_YOUR)) != string::npos);
+    if (language == lang_t::ZH)
+    {
+        CHECK(message.find(terrain == DNGN_DEEP_WATER ? "溺水" : "被灼烧") != string::npos);
+        CHECK(message.find("drown") == string::npos);
+        CHECK(message.find("burn") == string::npos);
+    }
+    else
+        CHECK(message.find(terrain == DNGN_DEEP_WATER ? "drown!" : "burn!") != string::npos);
+    CHECK(you.equip_flight() == 1);
+}
+
+TEST_CASE("navigation feature descriptions translate the Pandemonium wall at the sink",
+          "[zh-translation][actions-rereview]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH, lang_t::EN);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    const string description = feature_description(DNGN_ROCK_WALL, "", DESC_PLAIN,
+                                                   level_id(BRANCH_PANDEMONIUM, 1));
+    CHECK(description == T_("wall of the weird stuff which makes up Pandemonium"));
+    if (language == lang_t::ZH)
+        CHECK(description.find("Pandemonium") == string::npos);
+}
+
+TEST_CASE("navigation ice movement warnings preserve both active effects",
+          "[zh-translation][actions-rereview]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH, lang_t::EN);
+    const int effects = GENERATE(1, 2, 3);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    world.place(MONS_ORC, coord_def(21, 20));
+    you.duration[DUR_ICY_ARMOUR] = effects & 1 ? 50 : 0;
+    you.duration[DUR_FROZEN_RAMPARTS] = effects & 2 ? 50 : 0;
+    action_prompt_capture capture;
+    CHECK(cancel_harmful_move(false));
+    const char *expected = effects == 3
+        ? "Your icy armour and frozen ramparts will break if you move. Continue?"
+        : effects == 1 ? "Your icy armour will break if you move. Continue?"
+                       : "Your frozen ramparts will break if you move. Continue?";
+    CAPTURE(language, effects, capture.prompt);
+    CHECK(capture.prompt == T_(expected));
+    if (language == lang_t::ZH)
+    {
+        CHECK(capture.prompt.find("icy armour") == string::npos);
+        CHECK(capture.prompt.find("frozen ramparts") == string::npos);
+    }
+    CHECK(you.duration[DUR_ICY_ARMOUR] == (effects & 1 ? 50 : 0));
+    CHECK(you.duration[DUR_FROZEN_RAMPARTS] == (effects & 2 ? 50 : 0));
+}
+
+TEST_CASE("navigation confusion prompts preserve ally and penance clauses",
+          "[zh-translation][actions-rereview]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH, lang_t::EN);
+    const bool stationary = GENERATE(false, true);
+    const bool penance = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *ally = world.place(MONS_ORC, coord_def(21, 20));
+    ally->base_attitude = ATT_FRIENDLY;
+    you.religion = penance ? GOD_ELYVILON : GOD_NO_GOD;
+    you.duration[DUR_CONF] = 50;
+    action_prompt_capture capture;
+    CHECK_FALSE(check_confused_move(stationary));
+    CAPTURE(language, stationary, penance, capture.prompt);
+    CHECK(capture.prompt.find(ally->name(DESC_PLAIN)) != string::npos);
+    CHECK(capture.prompt.find(T_(stationary ? "swing wildly" : "stumble around")) != string::npos);
+    CHECK((capture.prompt.find(T_(" This could place you under penance!")) != string::npos) == penance);
+    if (language == lang_t::ZH)
+    {
+        CHECK(capture.prompt.find("the ") == string::npos);
+        CHECK(capture.prompt.find("while confused") == string::npos);
+        CHECK(capture.prompt.find("你的") != string::npos);
+    }
+    else
+        CHECK(capture.prompt.find("while confused and next to your ") != string::npos);
+    CHECK(ally->hit_points == 50);
+    CHECK(you.duration[DUR_CONF] == 50);
+}
+
+TEST_CASE("navigation water beam uses its display context",
+          "[zh-translation][actions-rereview]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH, lang_t::EN);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    bolt beam;
+    beam.flavour = beam.real_flavour = BEAM_WATER;
+    CHECK(beam.get_short_name() == C_("beam flavour", "water"));
+    CHECK(beam.get_short_name() == (language == lang_t::ZH ? "水" : "water"));
+    CHECK(beam.flavour == BEAM_WATER);
+}
+
+TEST_CASE("item action hit labels remain distinct from successful hits",
+          "[zh-translation][actions-rereview]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH, lang_t::EN);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    for (attack_type type : {AT_HIT, AT_WEAP_ONLY, AT_CHERUB, AT_RANDOM,
+#if TAG_MAJOR_VERSION == 34
+                             AT_SHOOT,
+#endif
+                            })
+    {
+        CHECK(mon_attack_name_short(type) == (language == lang_t::ZH ? "击打" : "hit"));
+    }
+    CHECK(mon_attack_name(AT_HIT, true) == (language == lang_t::ZH ? "击中" : "hit"));
 }
 
 TEST_CASE("issue 10 blink escapes use contextual movement at the real sink",
