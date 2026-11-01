@@ -649,9 +649,14 @@ class MonspellInventoryTests(unittest.TestCase):
         inventory = build(glossary)
         self.assertEqual(CURRENT_INVENTORY_SHA256,
                          inventory["inventory_sha256"])
-        MODULE.validate_results(
-            ROOT / "docs/monspell-review-results.md", inventory, None
-        )
+        # The current ledger may describe a later full review. Keep this
+        # exact historical regression paired with its immutable ledger.
+        ledger = self.root / "historical-monspell-ledger.md"
+        ledger.write_bytes(subprocess.check_output(
+            ["git", "-C", str(ROOT), "show",
+             "9770e911ee7d40b51a61a1717aecda148c983412:docs/monspell-review-results.md"]
+        ))
+        MODULE.validate_results(ledger, inventory, None)
 
     def write_results(self, records: list[dict], suffix: str = "") -> Path:
         path = self.root / f"results-{self.id().split('.')[-1]}{suffix}.md"
@@ -2462,8 +2467,9 @@ class TrunkLedgerScopeTests(unittest.TestCase):
         }
         additions = self.TRUNK_ADDITIONS if domain == "monspell" else set()
         self.assertEqual(set(frozen_zh) | additions, set(zh))
-        for key, entry in frozen_zh.items():
-            self.assertEqual(entry.value, zh[key].value, key)
+        records = [json.loads(line) for line in text.split("```jsonl\n", 1)[1]
+                   .split("\n```", 1)[0].splitlines()]
+        metadata, cards = records[0], records[1:]
 
         def variants(entry):
             result, error = MODULE.shared._parse_weighted_entry(
@@ -2471,6 +2477,33 @@ class TrunkLedgerScopeTests(unittest.TestCase):
             )
             self.assertIsNone(error)
             return [(v["weight"], v["raw_pattern"]) for v in result]
+
+        if metadata["baseline"] == self.BASELINES[domain]:
+            # The original ledger only approved the frozen translation.
+            for key, entry in frozen_zh.items():
+                self.assertEqual(entry.value, zh[key].value, key)
+        else:
+            # A subsequent full audit replaces that historical constraint:
+            # every current identity and both language bodies must be bound
+            # by its card. A later baseline alone cannot authorize drift.
+            self.assertEqual(len(cards), metadata["identity_count"])
+            self.assertEqual(len(cards), len({card["key"] for card in cards}))
+            self.assertEqual(set(en) | set(zh), {card["key"] for card in cards})
+            for card in cards:
+                key = card["key"]
+                for language, entries in (("english", en), ("chinese", zh)):
+                    expected_text = [text for _, text in variants(entries[key])]
+                    field = "current_" + language
+                    actual = (card[field] if field in card else
+                              [v["text"] for v in card[field + "_variants"]])
+                    self.assertEqual(expected_text, actual, (key, language))
+                if domain == "graffiti":
+                    for language, entries in (("english", en), ("chinese", zh)):
+                        self.assertEqual(variants(entries[key]), [
+                            (v["weight"], v["text"])
+                            for v in card["proposed_" + language + "_variants"]])
+                else:
+                    self.assertEqual(card["current_chinese"], card["proposed_translation"])
 
         changed = {
             key for key in old.keys() & en.keys()
@@ -2520,6 +2553,7 @@ class TrunkLedgerScopeTests(unittest.TestCase):
             re.sub(r"^\| `antimagic gaze goji cast`.*\n", "", text, flags=re.M),
             text.replace("| `summon illusion cast` | `mara summon cast`", "| `summon illusion cast` | `wrong cast`"),
             text.replace("EN source SHA-256: `", "EN stale source SHA-256: `"),
+            text.replace('"current_chinese":[', '"current_chinese":["unreviewed drift",', 1),
         ]:
             with self.subTest(mutation=mutation[:80]), self.assertRaises(AssertionError):
                 self.validate_scope("monspell", mutation)

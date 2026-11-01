@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import importlib.util
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -185,7 +186,12 @@ class GraffitiInventoryTests(unittest.TestCase):
         self.assertEqual(58, len(evidence["cards"]))
 
     def test_checked_in_ledger_binds_complete_production_inventory(self):
-        records = MODULE._strict_block(RESULTS)
+        ledger = self.root / "historical-graffiti-ledger.md"
+        ledger.write_bytes(subprocess.check_output(
+            ["git", "-C", str(ROOT), "show",
+             "9770e911ee7d40b51a61a1717aecda148c983412:docs/graffiti-review-results.md"]
+        ))
+        records = MODULE._strict_block(ledger)
         inventory = copy.deepcopy(self.inventory)
         inventory["dumps"]["english"]["artifact_sha256"] = records[0][
             "english_production_dump_sha256"
@@ -200,7 +206,7 @@ class GraffitiInventoryTests(unittest.TestCase):
         )
         self.assertEqual(records[0]["inventory_sha256"],
                          inventory["inventory_sha256"])
-        evidence = MODULE.validate_results(RESULTS, inventory, records=records)
+        evidence = MODULE.validate_results(ledger, inventory, records=records)
         self.assertEqual(58, len(evidence["cards"]))
 
     def test_missing_identity_and_current_text_drift_fail_closed(self):
