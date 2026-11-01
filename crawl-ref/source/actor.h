@@ -219,8 +219,9 @@ public:
                          const char* corrosion_msg = "the acid",
                          int amount = 4) = 0;
     virtual bool resists_dislodge(string /*event*/ = "",
-                                  const actor* /*puller*/ = nullptr) const
+                                  const actor* puller = nullptr) const
     {
+        (void)puller;
         return false;
     }
 

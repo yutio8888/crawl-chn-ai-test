@@ -1291,9 +1291,9 @@ void mons_create_tentacles(monster* head)
         }
     }
 
-    if (unsigned(possible_count) > adj_squares.size())
+    if (static_cast<unsigned>(possible_count) > adj_squares.size())
         possible_count = adj_squares.size();
-    else if (adj_squares.size() > unsigned(possible_count))
+    else if (adj_squares.size() > static_cast<unsigned>(possible_count))
         shuffle_array(adj_squares);
 
     int visible_count = 0;

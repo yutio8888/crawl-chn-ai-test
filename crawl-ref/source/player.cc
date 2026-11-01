@@ -8999,7 +8999,10 @@ bool player::floodify(const actor* attacker, int dur, const char* substance)
     duration[DUR_FLOODED] = dur;
     props[WATER_HOLD_SUBSTANCE_KEY] = substance;
     props[WATER_HOLDER_KEY].get_int() = attacker->mid;
-    props[WATER_HOLDER_NAME_KEY] = attacker->name(DESC_A, true);
+    {
+        const ScopedLangEn english;
+        props[WATER_HOLDER_NAME_KEY] = attacker->name(DESC_A, true);
+    }
 
     mprf(MSGCH_WARN, T_("%s floods into your lungs!"), C_("flood substance", substance));
 

@@ -10686,6 +10686,16 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     you.species = SP_HUMAN;
     you.set_position(coord_def(20, 20));
     you.equipment.update();
+    scoped_env_monster_slot attacker_slot(coord_def(20, 21));
+    monster* attacker = attacker_slot.place(MONS_MERFOLK_AQUAMANCER);
+    REQUIRE(attacker != nullptr);
+    string attacker_en;
+    const string attacker_zh = attacker->name(DESC_A, true);
+    {
+        ScopedLangEn english;
+        attacker_en = attacker->name(DESC_A, true);
+    }
+    REQUIRE(attacker_en != attacker_zh);
     for (const char* substance : { "water", "ooze" })
     {
         INFO(substance);
@@ -10694,9 +10704,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         string message;
         {
             msg::tee tee(message);
-            REQUIRE(you.floodify(&you, 30, substance));
+            REQUIRE(you.floodify(attacker, 30, substance));
         }
         CHECK(you.props[WATER_HOLD_SUBSTANCE_KEY].get_string() == substance);
+        CHECK(you.props[WATER_HOLDER_NAME_KEY].get_string() == attacker_en);
         const string expected_substance = string(substance) == "water" ? "水" : "软泥";
         CHECK(message.find(expected_substance) != string::npos);
         CHECK(message.find("深水") == string::npos);
