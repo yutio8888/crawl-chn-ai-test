@@ -164,9 +164,16 @@ public:
     void send_dump_info(const string& type, const string& filename);
 
     string get_message();
-    void write_message(PRINTF(1, ));
+#ifdef __GNUC__
+    void write_message(const char *format, ...)
+        __attribute__((format(CRAWL_PRINTF_FORMAT, 2, 3)));
+    void send_message(const char *format, ...)
+        __attribute__((format(CRAWL_PRINTF_FORMAT, 2, 3)));
+#else
+    void write_message(const char *format, ...);
+    void send_message(const char *format, ...);
+#endif
     void finish_message();
-    void send_message(PRINTF(1, ));
     void flush_messages();
 
     bool has_receivers() { return !m_dest_addrs.empty(); }
