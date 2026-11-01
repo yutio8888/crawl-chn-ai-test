@@ -7,6 +7,7 @@
 
 #include "god-abil.h"
 #include "lang-en-guard.h"
+#include "positional_format.h"
 
 #include <cmath>
 #include <numeric>

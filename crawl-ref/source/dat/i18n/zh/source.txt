@@ -28768,7 +28768,7 @@ You spin around.
 你原地转了圈。
 %%%%
 %s goes to deal, but finds you have enough %s cards.
-%s来发牌，但发现你已经有足够的%s。
+%s来发牌，但发现你已经有足够的%s牌。
 %%%%
 It currently has %d cards 
 当前有%d张牌，
