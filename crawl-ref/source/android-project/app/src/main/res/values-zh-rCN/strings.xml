@@ -95,4 +95,8 @@
     <string name="reading_size_preview">预览：列表、描述和消息</string>
     <string name="map_scale_help">地图缩放单独调整图块大小；请使用游戏内的缩放控件。</string>
     <string name="reading_percentage">%1$d%%</string>
+    <string name="sdl_startup_error">启动应用时发生错误。请重试，或重新安装应用。</string>
+    <string name="sdl_error_detail">错误：%1$s</string>
+    <string name="sdl_error_title">SDL 错误</string>
+    <string name="sdl_exit">退出</string>
 </resources>

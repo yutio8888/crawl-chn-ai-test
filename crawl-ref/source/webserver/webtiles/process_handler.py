@@ -229,19 +229,19 @@ class CrawlProcessHandlerBase(object):
         # TODO: generalize
         # the chat window is basically fixed width, and these are calibrated
         # to not do a linewrap
-        self.handle_notification(source, "The following chat commands are available:")
-        self.chat_help_message(source, "/help", "show chat command help")
-        self.chat_help_message(source, "/hide", "hide the chat window")
+        self.handle_notification(source, "可用的聊天命令如下：")
+        self.chat_help_message(source, "/help", "显示聊天命令帮助")
+        self.chat_help_message(source, "/hide", "隐藏聊天窗口")
         if self.is_player(source):
-            self.chat_help_message(source, "/kick <name> [<minutes>]", "kick <name> for some time")
-            self.chat_help_message(source, "", "default: 15 minutes. Not saved across sessions.")
-            self.chat_help_message(source, "/block <name>", "kick and block <name>")
-            self.chat_help_message(source, "", "Must be present in channel. Special names:")
-            self.chat_help_message(source, "", "[anon] disables anonymous spectating")
-            self.chat_help_message(source, "", "[all] disables spectating")
-            self.chat_help_message(source, "/blocklist", "show your entire blocklist")
-            self.chat_help_message(source, "/unblock <name>", "remove <name> from blocklist")
-            self.chat_help_message(source, "/unblock *", "clear your blocklist")
+            self.chat_help_message(source, "/kick <name> [<minutes>]", "将<name>移出，并暂时禁止其观战")
+            self.chat_help_message(source, "", "默认15分钟；不会跨会话保留。")
+            self.chat_help_message(source, "/block <name>", "将<name>移出并禁止其观战")
+            self.chat_help_message(source, "", "该观众必须当前在场。也可使用以下特殊名称：")
+            self.chat_help_message(source, "", "[anon]：禁止匿名观战")
+            self.chat_help_message(source, "", "[all]：禁止所有观战")
+            self.chat_help_message(source, "/blocklist", "显示完整的观战屏蔽名单")
+            self.chat_help_message(source, "/unblock <name>", "将<name>移出观战屏蔽名单")
+            self.chat_help_message(source, "/unblock *", "清空观战屏蔽名单")
 
     def handle_chat_command(self, source_ws, text):
         # type: (CrawlWebSocket, str) -> bool
@@ -399,7 +399,7 @@ class CrawlProcessHandlerBase(object):
         if len(l) == 0:
             return
         self.blocked = {u for u in l if u != source}
-        self.handle_notification(source, "Restoring blocklist.")
+        self.handle_notification(source, "正在恢复观战屏蔽名单。")
         self.show_block_list(source)
         self.logger.debug("Player '%s' restoring blocklist %s" %
                                             (source, repr(list(self.blocked))))
@@ -414,7 +414,7 @@ class CrawlProcessHandlerBase(object):
     def kick(self, source, target_args):
         if not self.is_player(source):
             self.handle_notification(source,
-                            "You do not have permission to kick spectators.")
+                            "你无权移出观众。")
             return False
 
         args = target_args.split(maxsplit=1)
@@ -427,7 +427,7 @@ class CrawlProcessHandlerBase(object):
             pass
 
         if (source == target):
-            self.handle_notification(source, "You can't kick yourself!")
+            self.handle_notification(source, "你不能移出自己！")
             return False
         player_name, watchers = self.get_watchers()
         watchers = set(watchers)
@@ -435,9 +435,9 @@ class CrawlProcessHandlerBase(object):
         if target in watchers:
             self.logger.info("Player '%s' has kicked '%s' (%dm)" % (source, target, interval))
             self.handle_notification(source,
-                "Spectator '%s' has been kicked for %d minutes." % (target, interval))
+                "观众“%s”已被移出，%d分钟内无法观战。" % (target, interval))
         else:
-            self.handle_notification(source, "Kick who??")
+            self.handle_notification(source, "要移出哪位观众？")
             return False
 
         self.kicked[target] = [time.time(), interval * 60]
@@ -453,10 +453,10 @@ class CrawlProcessHandlerBase(object):
     def block(self, source, target):
         if not self.is_player(source):
             self.handle_notification(source,
-                            "You do not have permission to block spectators.")
+                            "你无权屏蔽观众。")
             return False
         if (source == target):
-            self.handle_notification(source, "You can't block yourself!")
+            self.handle_notification(source, "你不能屏蔽自己！")
             return False
         player_name, watchers = self.get_watchers()
         watchers = set(watchers)
@@ -464,17 +464,17 @@ class CrawlProcessHandlerBase(object):
         if target in watchers:
             self.logger.info("Player '%s' has blocked '%s'" % (source, target))
             self.handle_notification(source,
-                                "Spectator '%s' has now been blocked." % target)
+                                "已禁止观众“%s”观战。" % target)
         elif target == "[anon]":
             self.logger.info("Player '%s' has disabled anonymous spectating." % source)
-            self.handle_notification(source, "Anonymous spectating disabled.")
+            self.handle_notification(source, "已禁止匿名观战。")
         elif target == "[all]":
             self.logger.info("Player '%s' has disabled spectating." % source)
-            self.handle_notification(source, "Spectating disabled.")
+            self.handle_notification(source, "已禁止观战。")
         else:
             # this means that players can't block a username that isn't currently
             # in their chat -- good/bad?
-            self.handle_notification(source, "Block who??")
+            self.handle_notification(source, "要屏蔽哪位观众？")
             return False
         self.blocked |= {target}
         self.save_blocklist(source)
@@ -484,21 +484,21 @@ class CrawlProcessHandlerBase(object):
     def unblock(self, source, target):
         if not self.is_player(source):
             self.handle_notification(source,
-                            "You do not have permission to unblock spectators.")
+                            "你无权解除观众的观战限制。")
             return False
         if (source == target):
             self.handle_notification(source,
-                                    "You can't unblock (or block) yourself!")
+                                    "你不能解除对自己的屏蔽（也不能屏蔽自己）！")
             return False
         if target == "*":
             if len(self.kicked):
                 self.kicked = {}
-                self.handle_notification(source, "Kicks cleared.")
+                self.handle_notification(source, "临时移出限制已清除。")
             if (len(self.blocked) == 0):
-                self.handle_notification(source, "No one is blocked!")
+                self.handle_notification(source, "没有屏蔽任何人！")
                 return False
             self.logger.info("Player '%s' has cleared their blocklist." % (source))
-            self.handle_notification(source, "You have cleared your blocklist.")
+            self.handle_notification(source, "你已清空观战屏蔽名单。")
             self.blocked = set()
             self.save_blocklist(source)
             self.update_watcher_description()
@@ -507,17 +507,17 @@ class CrawlProcessHandlerBase(object):
         did_something = False
         if target in self.kicked:
             del self.kicked[target]
-            self.handle_notification(source, "Removing '%s' from kicks" % target)
+            self.handle_notification(source, "正在解除对“%s”的临时观战限制。" % target)
             did_something = True
 
         if not target in self.blocked:
             if not did_something:
-                self.handle_notification(source, "Unblock who??")
+                self.handle_notification(source, "要解除哪位观众的屏蔽？")
             return False
 
         # these messages are more or less ok for [all], [anon]
         self.logger.info("Player '%s' has unblocked '%s'" % (source, target))
-        self.handle_notification(source, "You have unblocked '%s'." % target)
+        self.handle_notification(source, "你已解除对“%s”的观战限制。" % target)
         self.blocked -= {target}
         self.save_blocklist(source)
         self.update_watcher_description()
@@ -529,9 +529,9 @@ class CrawlProcessHandlerBase(object):
         names = list(self.blocked)
         names.sort(key=lambda s: s.lower())
         if len(names) == 0:
-            self.handle_notification(source, "No one is blocked.")
+            self.handle_notification(source, "没有屏蔽任何人。")
         else:
-            self.handle_notification(source, "You have blocked: " +
+            self.handle_notification(source, "你已禁止以下对象观战：" +
                                                             ", ".join(names))
         return True
 

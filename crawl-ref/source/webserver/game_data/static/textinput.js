@@ -107,7 +107,7 @@ function ($, comm, client, enums, util, options, ui) {
 
             input_div.attr("id", "input_text");
             if (!prompt)
-                prompt = "Input here (ESC to cancel): ";
+                prompt = "在此输入（按 Esc 取消）：";
             input_div.append($("<span>").append(prompt));
             input_div.append($("<span class='input_dialog_box'>").append(input));
             ui.show_popup("#input_dialog");
