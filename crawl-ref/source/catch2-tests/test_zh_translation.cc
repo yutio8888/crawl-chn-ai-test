@@ -11124,6 +11124,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         you.base_stats.init(10);
         you.equipment.update();
         you.duration[DUR_BEOGH_DIVINE_CHALLENGE] = 100; // disallow shaft transitions
+        // The wrath scans the full LOS radius, beyond this fixture's cleared
+        // rectangle. Zero-initialized cells otherwise alias monster slot 0.
+        unwind_var<decltype(env.mgrid)> restore_grid(env.mgrid);
+        env.mgrid.init(NON_MONSTER);
         scoped_monspeak_world world;
         monster* champion = world.place(MONS_ORC);
         REQUIRE(champion);
@@ -11294,6 +11298,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 {
     init_properties();
     init_mut_index();
+    init_sac_index();
     unwind_var<player> restore_player(you);
     you = player();
     you.species = SP_HUMAN;
@@ -11302,9 +11307,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     you.base_stats.init(10);
     you.equipment.update();
     const auto before = you.mutation;
-    you.props[PURITY_SAC_KEY].new_vector(SV_INT).push_back(MUT_FRAIL);
+    you.props[PURITY_SAC_KEY].new_vector(SV_INT).push_back(MUT_WEAK);
     you.props[ESSENCE_SAC_KEY].new_vector(SV_INT).push_back(MUT_LOW_MAGIC);
-    you.props[HEALTH_SAC_KEY].new_vector(SV_INT).push_back(MUT_WEAK);
+    you.props[HEALTH_SAC_KEY].new_vector(SV_INT).push_back(MUT_FRAIL);
     auto& arcana = you.props[ARCANA_SAC_KEY].new_vector(SV_INT);
     arcana.push_back(MUT_NO_FIRE_MAGIC);
     arcana.push_back(MUT_NO_ICE_MAGIC);
@@ -11345,7 +11350,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             : string(C_("Ru sacrifice offer", offer.second));
         CHECK(output.find(phrase) != string::npos);
         CHECK(output.find(offer.second) == string::npos);
-        CHECK(you.mutation == before);
+        for (int mutation = 0; mutation < NUM_MUTATIONS; ++mutation)
+            CHECK(you.mutation[mutation] == before[mutation]);
         CHECK(you.hp == 100);
     }
 }

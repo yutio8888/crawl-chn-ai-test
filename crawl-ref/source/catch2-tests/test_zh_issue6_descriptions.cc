@@ -135,7 +135,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     for (const auto effect : { ENCH_REGENERATION, ENCH_HASTE })
     {
         const string predicate = xom_enchantment_predicate(effect);
-        REQUIRE(contains_non_ascii(predicate));
+        REQUIRE(predicate == (effect == ENCH_REGENERATION
+                              ? "开始再生" : "看起来迅捷了"));
         CHECK(make_stringf(T_("%s suddenly %s!"), "M", predicate.c_str())
               == "M突然" + predicate + "！");
     }
