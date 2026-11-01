@@ -1173,17 +1173,19 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         )
 
     def test_issue29_v3_default_writer_is_byte_compatible(self):
-        expected = (
-            MODULE.ROOT / "docs/item-extended-review-results.md"
-        ).read_bytes()
+        recorded = review_input(MODULE.ROOT / "docs/item-extended-review-results.md")
+        expected = recorded.bytes
+        recorded_glossary = MODULE.parse_review_header_v3(recorded)["glossary_sha256"]
         with tempfile.TemporaryDirectory(
             dir=MODULE.ROOT / ".claude"
         ) as directory:
             generated = Path(directory) / "review.md"
+            inventory = Path(directory) / "inventory.json"
             proc = subprocess.run(
                 [
                     sys.executable, str(SCRIPT), "--scope", "issue29-v2",
                     "--write-review-results", str(generated),
+                    "--output", str(inventory),
                 ],
                 cwd=MODULE.ROOT,
                 text=True,
@@ -1191,8 +1193,20 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                 check=False,
             )
             actual = generated.read_bytes()
+            payload = json.loads(inventory.read_text())
         self.assertEqual(0, proc.returncode, proc.stderr)
-        self.assertEqual(expected, actual)
+        # The default writer records current authority. A historical ledger
+        # retains its reviewed glossary digest when unrelated terms change.
+        self.assertEqual(
+            MODULE.render_review_results_v3(payload, payload["rows"]).encode(),
+            actual,
+        )
+        self.assertEqual(
+            expected,
+            MODULE.render_review_results_v3(
+                payload, payload["rows"], glossary_overlay=recorded_glossary,
+            ).encode(),
+        )
 
     def test_issue29_v3_default_round_trips_strictly(self):
         with tempfile.TemporaryDirectory(
