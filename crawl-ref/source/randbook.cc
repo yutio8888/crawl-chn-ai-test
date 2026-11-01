@@ -17,6 +17,7 @@
 #include "item-status-flag-type.h"
 #include "items.h"
 #include "options.h"
+#include "positional_format.h"
 #include "god-conduct.h"
 #include "religion.h"
 #include "spl-book.h"
@@ -572,10 +573,10 @@ static string _gen_randbook_name(string subject, string owner,
 
     if (!real_subject.empty())
     {
-        return make_stringf(T_("%s%s of %s"),
-                            apostrophised_owner.c_str(),
-                            getRandNameString("book_noun").c_str(),
-                            real_subject.c_str());
+        return make_stringf_p(C_("randbook subject", "%1$s%2$s of %3$s"),
+                              apostrophised_owner.c_str(),
+                              getRandNameString("book_noun").c_str(),
+                              real_subject.c_str());
     }
 
     string name;
@@ -733,7 +734,7 @@ static string _gen_randbook_owner(god_type god, spschool disc1,
         {
             if (highlevel)
                 lookups.push_back("highlevel " + d1_name + " owner");
-            lookups.push_back(d1_name + "owner");
+            lookups.push_back(d1_name + " owner");
         }
 
         for (string &lookup : lookups)

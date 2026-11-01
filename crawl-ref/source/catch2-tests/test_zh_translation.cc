@@ -13,6 +13,7 @@
 #include "art-enum.h"
 #include "artefact.h"
 #include "beam.h"
+#include "branch.h"
 #include "clua.h"
 #include "dlua.h"
 #include "database.h"
@@ -77,6 +78,7 @@
 #include "player-save-info.h"
 #include "positional_format.h"
 #include "random.h"
+#include "randbook.h"
 #include "quiver.h"
 #include "religion.h"
 #include "skill-menu.h"
@@ -85,6 +87,7 @@
 #include "species.h"
 #include "species-type.h"
 #include "spl-util.h"
+#include "spl-book.h"
 #include "spl-cast.h"
 #include "spl-goditem.h"
 #include "spell-type.h"
@@ -889,6 +892,314 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     const auto chinese = observe(lang_t::ZH);
     CHECK(english.first == english.second);
     CHECK(chinese.first == chinese.second);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "shared names: branch substitution localizes only generated display",
+                 "[zh-translation][shared-rereview][artefact][tags]")
+{
+    init_properties();
+    item_def item;
+    item.base_type = OBJ_WEAPONS;
+    item.sub_type = WPN_DAGGER;
+    item.quantity = 1;
+    item.rnd = 1;
+    item.flags = ISFLAG_IDENTIFIED;
+    item.pos = coord_def(-1, -1);
+    REQUIRE(make_item_randart(item, true));
+
+    vector<item_def> snapshots;
+    vector<string> snapshot_names;
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        array<bool, NUM_BRANCHES> seen{};
+        size_t count = 0;
+        for (uint64_t seed = 1; seed < 4096 && count < seen.size(); ++seed)
+        {
+            int branch;
+            {
+                rng::subgenerator choice(seed, 0x5a4ed001ULL);
+                branch = random2(NUM_BRANCHES);
+            }
+            const string raw = branches[branch].longname;
+            const string expected = language == lang_t::ZH ? T_(raw.c_str()) : raw;
+            rng::subgenerator actual(seed, 0x5a4ed001ULL);
+            CHECK(replace_name_parts("@branch_name@", item) == expected);
+            CHECK(string(branches[branch].longname) == raw);
+            if (!seen[branch])
+            {
+                seen[branch] = true;
+                ++count;
+            }
+        }
+        REQUIRE(count == seen.size());
+        CHECK(item.name(DESC_DBNAME) == item_base_name(item));
+        CHECK(string(weapon_base_name(WPN_DAGGER)) == "dagger");
+
+        // Exercise the complete DB-name generator, including its real width
+        // retry, rather than inventing a name or exposing a test-only hook.
+        string generated;
+        for (uint64_t seed = 1; seed < 4096 && generated.empty(); ++seed)
+        {
+            rng::subgenerator actual(seed, 0x5a4ed002ULL);
+            const string candidate = make_artefact_name(item);
+            for (const auto &branch : branches)
+            {
+                const string place = T_(branch.longname);
+                const string expected = language == lang_t::ZH
+                    ? place + item_base_name(item)
+                    : item_base_name(item) + " of " + place;
+                if (candidate == expected)
+                {
+                    generated = candidate;
+                    break;
+                }
+            }
+        }
+        REQUIRE_FALSE(generated.empty());
+        set_artefact_name(item, generated);
+        vector<unsigned char> bytes;
+        writer output(&bytes);
+        marshallItem(output, item, true);
+        reader input(bytes);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        item_def loaded;
+        unmarshallItem(input, loaded);
+        snapshots.push_back(loaded);
+        snapshot_names.push_back(generated);
+        i18n_cache_clear();
+        for (size_t i = 0; i < snapshots.size(); ++i)
+        {
+            CHECK(get_artefact_name(snapshots[i], true) == snapshot_names[i]);
+            CHECK(snapshots[i].name(DESC_DBNAME) == item_base_name(item));
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "shared names: subject books keep owner subject and noun in order",
+                 "[zh-translation][shared-rereview][randbook][tags]")
+{
+    init_properties();
+    init_spell_descs();
+    vector<item_def> snapshots;
+    vector<string> snapshot_names;
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        item_def book;
+        book.base_type = OBJ_BOOKS;
+        book.quantity = 1;
+        book.rnd = 1;
+        book.pos = coord_def(-1, -1);
+        init_book_theme_randart(book, {SPELL_MAGIC_DART});
+        const string lookup_before = book.name(DESC_DBNAME);
+        for (const string owner : {string("SharedOwner"), string("Xom")})
+        {
+            const uint64_t seed = 0x5a4ed003ULL;
+            string noun;
+            {
+                rng::subgenerator expected_rng(seed, 0x5a4ed003ULL);
+                noun = getRandNameString("book_noun");
+            }
+            REQUIRE_FALSE(noun.empty());
+            const string display_owner = language == lang_t::ZH
+                ? T_(owner.c_str()) : owner;
+            const string prefix = apostrophise(display_owner)
+                                  + (language == lang_t::ZH ? "" : " ");
+            const string expected = language == lang_t::ZH
+                ? prefix + "SharedSubject之" + noun
+                : prefix + noun + " of SharedSubject";
+            {
+                rng::subgenerator actual(seed, 0x5a4ed003ULL);
+                name_book_theme_randart(book, spschool::conjuration,
+                                        spschool::conjuration,
+                                        owner, "SharedSubject");
+            }
+            REQUIRE(get_artefact_name(book, true) == expected);
+            CHECK(book.props[BOOK_TITLED_KEY].get_bool());
+            CHECK(book.name(DESC_DBNAME) == lookup_before);
+            {
+                ScopedLangEn english;
+                CHECK(book.name(DESC_DBNAME) == "book of Fixed Theme");
+            }
+            vector<unsigned char> bytes;
+            writer output(&bytes);
+            marshallItem(output, book, true);
+            reader input(bytes);
+            input.setMinorVersion(TAG_MINOR_VERSION);
+            item_def loaded;
+            unmarshallItem(input, loaded);
+            snapshots.push_back(loaded);
+            snapshot_names.push_back(expected);
+        }
+
+        bool saw_unowned = false;
+        for (uint64_t seed = 1; seed < 512 && !saw_unowned; ++seed)
+        {
+            rng::subgenerator actual(seed, 0x5a4ed004ULL);
+            name_book_theme_randart(book, spschool::conjuration,
+                                    spschool::conjuration, "", "SharedSubject");
+            if (book.props[BOOK_TITLED_KEY].get_bool())
+                continue;
+            const string name = get_artefact_name(book, true);
+            if (language == lang_t::ZH)
+            {
+                CHECK(starts_with(name, "SharedSubject之"));
+                CHECK(name.size() > string("SharedSubject之").size());
+            }
+            else
+            {
+                CHECK(ends_with(name, " of SharedSubject"));
+                CHECK(name.size() > string(" of SharedSubject").size());
+            }
+            saw_unowned = true;
+        }
+        REQUIRE(saw_unowned);
+        i18n_cache_clear();
+        for (size_t i = 0; i < snapshots.size(); ++i)
+            CHECK(get_artefact_name(snapshots[i], true) == snapshot_names[i]);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "shared names: ordinary school owner keys reach real book generation",
+                 "[zh-translation][shared-rereview][randbook]")
+{
+    init_properties();
+    init_spell_descs();
+    using row = std::pair<spschool, spell_type>;
+    const row rows[] = {
+        {spschool::air, SPELL_SHOCK},
+        {spschool::alchemy, SPELL_STING},
+        {spschool::conjuration, SPELL_MAGIC_DART},
+        {spschool::earth, SPELL_SANDBLAST},
+        {spschool::forgecraft, SPELL_KINETIC_GRAPNEL},
+        {spschool::hexes, SPELL_SLOW},
+        {spschool::ice, SPELL_FREEZE},
+        {spschool::necromancy, SPELL_SOUL_SPLINTER},
+        {spschool::summoning, SPELL_SUMMON_SMALL_MAMMAL},
+        {spschool::translocation, SPELL_APPORTATION},
+    };
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (const auto &entry : rows)
+        {
+            const string school = spelltype_long_name_en(entry.first);
+            INFO("school=" << school << " language=" << static_cast<int>(language));
+            REQUIRE(get_spell_disciplines(entry.second) & entry.first);
+            REQUIRE(getRandNameString(school + "owner").empty());
+            string owner;
+            for (uint64_t seed = 1; seed < 128; ++seed)
+            {
+                rng::subgenerator lookup(seed, 0x5a4ed005ULL);
+                owner = getRandNameString(school + " owner");
+                if (!owner.empty() && owner != "__NONE")
+                    break;
+            }
+            REQUIRE_FALSE(owner.empty());
+            REQUIRE(owner != "__NONE");
+            const string display_owner = language == lang_t::ZH
+                ? T_(owner.c_str()) : owner;
+            const string prefix = apostrophise(display_owner)
+                                  + (language == lang_t::ZH ? "" : " ");
+            item_def book;
+            book.base_type = OBJ_BOOKS;
+            book.quantity = 1;
+            book.rnd = 1;
+            init_book_theme_randart(book, {entry.second});
+            bool saw_owner = false;
+            for (uint64_t seed = 1; seed < 2048 && !saw_owner; ++seed)
+            {
+                rng::subgenerator actual(seed, 0x5a4ed006ULL);
+                name_book_theme_randart(book, entry.first, entry.first,
+                                        "", "SharedSubject");
+                saw_owner = starts_with(get_artefact_name(book, true), prefix);
+            }
+            REQUIRE(saw_owner);
+            CHECK(string(spelltype_long_name_en(entry.first)) == school);
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "shared names: god gift death overrides use a complete esteem template",
+                 "[zh-translation][shared-rereview][artefact]")
+{
+    init_properties();
+    unwind_var<string> player_name(you.your_name, "SharedPlayer");
+    item_def item;
+    item.base_type = OBJ_WEAPONS;
+    item.sub_type = WPN_DAGGER;
+    item.quantity = 1;
+    item.rnd = 1;
+    item.flags = ISFLAG_IDENTIFIED;
+    item.orig_monnum = -GOD_OKAWARU;
+    item.pos = coord_def(-1, -1);
+    REQUIRE(make_item_randart(item, true));
+    vector<item_def> snapshots;
+    vector<string> snapshot_names;
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        uint64_t chosen_seed = 0;
+        string expected;
+        for (uint64_t seed = 1; seed < 16384; ++seed)
+        {
+            rng::subgenerator lookup(seed, 0x5a4ed007ULL);
+            if (!coinflip())
+                continue;
+            const string raw = getRandNameString("Okawaru weapon");
+            if (raw.find("@player_death@") == string::npos
+                && raw.find("@player_doom@") == string::npos)
+            {
+                continue;
+            }
+            const string god = apostrophise(god_name(GOD_OKAWARU, false));
+            const string esteem = getRandNameString("divine_esteem");
+            expected = language == lang_t::ZH
+                ? god + esteem : "of " + god + " " + esteem;
+            if (strwidth(expected) <= 25)
+            {
+                chosen_seed = seed;
+                break;
+            }
+        }
+        REQUIRE(chosen_seed != 0);
+        rng::subgenerator actual(chosen_seed, 0x5a4ed007ULL);
+        const string generated = make_artefact_name(item);
+        const string expected_name = language == lang_t::ZH
+            ? expected + item_base_name(item)
+            : item_base_name(item) + " " + expected;
+        CHECK(generated == expected_name);
+        if (language == lang_t::ZH)
+            CHECK(generated.find("of ") == string::npos);
+        CHECK(string(_god_name_en(GOD_OKAWARU)) == "Okawaru");
+        set_artefact_name(item, generated);
+        vector<unsigned char> bytes;
+        writer output(&bytes);
+        marshallItem(output, item, true);
+        reader input(bytes);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        item_def loaded;
+        unmarshallItem(input, loaded);
+        snapshots.push_back(loaded);
+        snapshot_names.push_back(generated);
+        i18n_cache_clear();
+        for (size_t i = 0; i < snapshots.size(); ++i)
+            CHECK(get_artefact_name(snapshots[i], true) == snapshot_names[i]);
+
+        // No-god and Xom gifts retain the player-specific path.
+        for (god_type origin : {GOD_NO_GOD, GOD_XOM})
+        {
+            item.orig_monnum = origin == GOD_NO_GOD ? 0 : -origin;
+            const string death = replace_name_parts("@player_death@", item);
+            CHECK(death.find("SharedPlayer") != string::npos);
+        }
+        item.orig_monnum = -GOD_OKAWARU;
+    }
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

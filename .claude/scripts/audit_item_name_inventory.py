@@ -1735,26 +1735,43 @@ def paired_component_rows(
                 f"{len(en_values)} != {len(zh_values)}"
             )
         if len(base_english) != len(base_values):
-            # One historical randname block split a continuation with a blank
-            # line. Accept only a complete, ordered reconstruction of the
-            # unchanged English block and the unchanged Chinese paragraphs.
+            # A historical block split a token-bearing English continuation
+            # into separate Chinese candidates. Recover that old pairing from
+            # its own weights and per-line tokens, not from today's wording:
+            # legitimate later translation edits must retain the old evidence.
             if base_english != en_values:
                 raise RuntimeError(f"{category}:{key} ambiguous review-base pairing")
             aligned = []
             cursor = 0
-            for weight, current in zh_values:
-                combined = ""
-                while cursor < len(base_values):
-                    old_weight, text = base_values[cursor]
-                    if old_weight != (weight if not combined else 10):
-                        raise RuntimeError(f"{category}:{key} review-base weight mismatch")
-                    combined = text if not combined else combined + "\n" + text
-                    cursor += 1
-                    if combined == current:
-                        aligned.append((weight, current))
-                        break
-                else:
+            markers = lambda text: Counter(re.findall(
+                r"@[A-Za-z_][A-Za-z0-9_]*@", text
+            ))
+            for weight, english in base_english:
+                if cursor >= len(base_values):
                     raise RuntimeError(f"{category}:{key} ambiguous review-base pairing")
+                old_weight, text = base_values[cursor]
+                if old_weight != weight:
+                    raise RuntimeError(f"{category}:{key} review-base weight mismatch")
+                if markers(english) == markers(text):
+                    aligned.append((weight, text))
+                    cursor += 1
+                    continue
+                # Only a complete, marked multiline source gives an
+                # unambiguous boundary for joining historical candidates.
+                source_lines = english.splitlines()
+                parts = base_values[cursor:cursor + len(source_lines)]
+                if (len(source_lines) < 2 or len(parts) != len(source_lines)
+                        or any(not markers(line) for line in source_lines)):
+                    raise RuntimeError(f"{category}:{key} ambiguous review-base pairing")
+                for index, (line, (part_weight, part)) in enumerate(
+                    zip(source_lines, parts)
+                ):
+                    if part_weight != (weight if index == 0 else 10):
+                        raise RuntimeError(f"{category}:{key} review-base weight mismatch")
+                    if "\n" in part or markers(line) != markers(part):
+                        raise RuntimeError(f"{category}:{key} ambiguous review-base pairing")
+                aligned.append((weight, "\n".join(part for _, part in parts)))
+                cursor += len(parts)
             if cursor != len(base_values):
                 raise RuntimeError(f"{category}:{key} unused review-base paragraphs")
             base_values = aligned
