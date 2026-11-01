@@ -491,6 +491,7 @@ function (exports, $, key_conversion, chat, comm) {
     {
         var messages = {
             "Could not initialize your rc and morgue!<br>This probably means there is something wrong with the server configuration.": "无法初始化你的配置文件和角色档案！\n这可能是服务器配置有误所致。",
+            "The maximum number of connections has been reached, sorry :(": "连接数已达到上限，抱歉。",
             "Account is disabled.": "账号已停用。",
             "Account is disabled": "账号已停用。",
             "New account creation is disabled.": "当前不允许注册新账号。",
@@ -1084,7 +1085,8 @@ function (exports, $, key_conversion, chat, comm) {
         set_layer("crt");
         hide_dialog();
         chat.reset_visibility(false);
-        if (msg === "Could not initialize your rc and morgue!<br>This probably means there is something wrong with the server configuration.")
+        if (msg === "Could not initialize your rc and morgue!<br>This probably means there is something wrong with the server configuration."
+            || msg === "The maximum number of connections has been reached, sorry :(")
         {
             // This known account error is plain text. Keep server-provided
             // HTML for other close reasons, such as the shutdown template.

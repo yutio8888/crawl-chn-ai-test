@@ -5,6 +5,7 @@ import collections
 import json
 import shutil
 import subprocess
+import types
 import unittest
 from pathlib import Path
 
@@ -169,7 +170,7 @@ assert.equal($("#reset_token_error").content, "密码重置令牌无效。");
 assert.equal($("#reset_token_error").mode, "text");
 ''')
 
-    def test_close_handler_translates_only_the_known_login_initialization_error(self):
+    def test_close_handler_translates_only_known_plain_text_errors(self):
         self.run_client(r'''
 const reason = "Could not initialize your rc and morgue!<br>"
     + "This probably means there is something wrong with the server configuration.";
@@ -182,6 +183,11 @@ assert.equal(crt.appended[0].content,"无法初始化你的配置文件和角色
 assert.equal(crt.appended[0].styles["white-space"],"pre-line");
 assert.equal(crt.appended[1],"<br><br>");
 assert.equal(data.reason,reason);
+const capacity = Object.freeze({reason:"The maximum number of connections has been reached, sorry :("});
+assert.equal(handlers.close(capacity),true);
+assert.equal(crt.appended[0].mode,"text");
+assert.equal(crt.appended[0].content,"连接数已达到上限，抱歉。");
+assert.equal(capacity.reason,"The maximum number of connections has been reached, sorry :(");
 // Shutdown HTML, arbitrary diagnostics and near-matches retain the existing
 // HTML path. Do not globally translate/textify server close reasons.
 for (const unknown of ["<b>Server shutdown</b>","Unknown reason",reason+" ","Account is disabled."]) {
@@ -223,6 +229,45 @@ for (const [username,display,watchable] of [
 
 
 class WebTilesServerDisplayTests(unittest.TestCase):
+    def test_capacity_close_is_a_json_message_flushed_before_close(self):
+        tree = ast.parse(SERVER.read_text(encoding="utf-8"))
+        websocket = next(node for node in tree.body
+                         if isinstance(node, ast.ClassDef) and node.name == "CrawlWebSocket")
+        names = {"open", "send_message", "append_message", "flush_messages"}
+        methods = [node for node in websocket.body
+                   if isinstance(node, ast.FunctionDef) and node.name in names]
+        self.assertEqual(names, {node.name for node in methods})
+        for limit, over_capacity in ((0, True), (1, False)):
+            with self.subTest(limit=limit):
+                namespace = {"tornado": types.SimpleNamespace(websocket=types.SimpleNamespace()),
+                             "config": {"max_connections": limit, "dgl_mode": True},
+                             "sockets": set(), "shutting_down": False,
+                             "json_encode": json.dumps}
+                exec(compile(ast.Module(body=methods, type_ignores=[]), str(SERVER), "exec"), namespace)
+                socket_type = type("Socket", (), {name: namespace[name] for name in names})
+                socket = socket_type()
+                socket.client_closed = False
+                socket.message_queue = []
+                socket.subprotocol = "no-compression"
+                socket.request = types.SimpleNamespace(remote_ip="127.0.0.1")
+                socket.ws_connection = types.SimpleNamespace(stream=types.SimpleNamespace(
+                    socket=types.SimpleNamespace(fileno=lambda: 1)))
+                socket.logger = types.SimpleNamespace(info=lambda *args: None)
+                socket.reset_idle_timeouts = lambda: None
+                events = []
+                socket._send_raw_message = lambda frame: events.append(("frame", json.loads(frame)))
+                socket.close = lambda: events.append(("close", None))
+                socket.send_lobby = lambda: events.append(("lobby", None))
+                socket.open()
+                self.assertIn(socket, namespace["sockets"])
+                if over_capacity:
+                    self.assertEqual(events, [("frame", {"msgs": [{"msg": "close", "reason":
+                        "The maximum number of connections has been reached, sorry :("}]}),
+                        ("close", None)])
+                    self.assertEqual([], socket.message_queue)
+                else:
+                    self.assertEqual(events, [("lobby", None)])
+
     def test_real_game_links_template_keeps_raw_save_state_and_disabled_links(self):
         try:
             from tornado.template import Template
@@ -303,7 +348,8 @@ class WebTilesServerDisplayTests(unittest.TestCase):
         for game_id in ("ordinary", "unknown", "playing", "escaped"):
             self.assertIn('href="#play-' + game_id + '"', html)
         self.assertIn("[slot full] suffix", html)
-        self.assertIn("[playing]", html)
+        self.assertIn("[游戏进行中]", html)
+        self.assertEqual("[playing]", socket.save_info["playing"])
         self.assertIn("&lt;b&gt;custom&lt;/b&gt;", html)
         for game_id in ("first", "ordinary"):
             self.assertIn('data-game_id="' + game_id + '"', html)
