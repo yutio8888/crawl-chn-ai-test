@@ -7228,6 +7228,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 
     // Stored suffixes also reach the corpse display path. This fixture tests
     // saved-name rendering, not whether every original unique leaves a corpse.
+    REQUIRE(mons_is_unique(MONS_CEREBOV));
+    REQUIRE(mons_species(MONS_CEREBOV) == MONS_CEREBOV);
     for (const char* suffix : {"shaped Royal Jelly", "shaped Lernaean hydra",
                                "shaped Enchantress", "shaped Serpent of Hell",
                                "shaped CustomName"})
@@ -7251,7 +7253,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             // Database names and a suppressed unique species prefix retain
             // their existing raw suffix path, including custom identities.
             CHECK(corpse.name(DESC_DBNAME).find(suffix) != string::npos);
-            corpse.mon_type = MONS_ROYAL_JELLY;
+            corpse.mon_type = MONS_CEREBOV;
             CHECK(corpse.name(DESC_PLAIN).find(suffix) != string::npos);
             corpse.mon_type = MONS_YAK;
         }
