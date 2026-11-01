@@ -69,16 +69,38 @@
 | Conjuration / Conjurations | 咒法系 |
 | Hexes | 诅咒系 |
 | Summoning / Summonings | 召唤系 |
-| Necromancy | 死灵术 |
-| Translocation | 传送系 |
-| Forgecraft | 锻造术 |
-| Fire Magic | 火焰魔法 |
-| Ice Magic | 寒冰魔法 |
-| Air Magic | 空气魔法 |
-| Earth Magic | 大地魔法 |
+| Necromancy | 死灵系 |
+| Translocation / Translocations | 传送系 |
+| Forgecraft | 锻造系 |
+| Fire Magic | 火焰系 |
+| `spell school\|Fire` | 火焰系 |
+| Ice Magic | 寒冰系 |
+| `spell school\|Ice` | 寒冰系 |
+| Air Magic | 空气系 |
+| `spell school\|Air` | 空气系 |
+| Earth Magic | 大地系 |
+| `spell school\|Earth` | 大地系 |
 | Poison Magic | 毒素魔法 |
-| Alchemy | 炼金术 |
+| Alchemy | 炼金系 |
 | Shapeshifting | 变形术 |
+
+现行学派全称及对应技能名统一使用“××系”；法术列表使用下表两字简称（D-C-101）。
+“Fire / Ice / Air / Earth”仅在 `spell school` 上下文使用学派全称，普通元素词不加“系”。
+旧版 Poison Magic 和非学派技能 Shapeshifting 不在此次统一范围内；书名、职业名及泛指魔法技艺的叙述不机械改名。
+
+| EN | ZH | 作用域 |
+|----|----|--------|
+| Conj | 咒法 | 学派简称；法术列表；D-C-101 |
+| Hex | 诅咒 | 学派简称；法术列表；D-C-101 |
+| Summ | 召唤 | 学派简称；法术列表；D-C-101 |
+| Necr | 死灵 | 学派简称；法术列表；D-C-101 |
+| Tloc | 传送 | 学派简称；法术列表；D-C-101 |
+| Frge | 锻造 | 学派简称；法术列表；D-C-101 |
+| Fire | 火焰 | 学派简称；法术列表；D-C-101 |
+| Ice | 寒冰 | 学派简称；法术列表；D-C-101 |
+| Air | 空气 | 学派简称；法术列表；D-C-101 |
+| Erth | 大地 | 学派简称；法术列表；D-C-101 |
+| Alch | 炼金 | 学派简称；法术列表；D-C-101 |
 
 ### 法术命名高频词根
 
@@ -377,6 +399,17 @@
 
 | EN | ZH | 依据 / 作用域 |
 |----|----|---------------|
+| `spell defence\|AC` | 护甲 | 法术详情；避免沿用紧凑面板缩写；decision=D-C-101 |
+| `spell defence\|EV` | 闪避 | 法术详情；避免沿用紧凑面板缩写；decision=D-C-101 |
+| `spell defence\|SH` | 盾牌格挡 | 法术详情；避免沿用紧凑面板缩写；decision=D-C-101 |
+| `spell resistance\|Will` | 意志力 | 法术详情；避免沿用紧凑面板缩写；decision=D-C-101 |
+| `spell resistance\|rF` | 火焰抗性 | 法术详情；避免沿用紧凑面板缩写；decision=D-C-101 |
+| `spell resistance\|rC` | 寒冷抗性 | 法术详情；避免沿用紧凑面板缩写；decision=D-C-101 |
+| `spell resistance\|rElec` | 电击抗性 | 法术详情；避免沿用紧凑面板缩写；decision=D-C-101 |
+| `spell resistance\|rPois` | 毒素抗性 | 法术详情；避免沿用紧凑面板缩写；decision=D-C-101 |
+| `spell resistance\|rNeg` | 负能量抗性 | 法术详情；避免沿用紧凑面板缩写；decision=D-C-101 |
+| `spell resistance\|rCorr` | 腐蚀抗性 | 法术详情；避免沿用紧凑面板缩写；decision=D-C-101 |
+| `spell resistance\|rSteam` | 蒸汽抗性 | 法术详情；避免沿用紧凑面板缩写；decision=D-C-101 |
 | attack of opportunity / attacks of opportunity | 借机攻击 | player invis desc 与 blind／unable to see you 怪物状态；不译为普通的措手不及伤害；decision=D-C-096 |
 
 
@@ -425,6 +458,8 @@
 | `armour ego full name\|infusion` | 灌注 | armour ego context key; decision=D-B-020 |
 | `armour ego full name\|invisibility` | 隐形 | armour ego context key; decision=D-B-020 |
 | `book full name\|Necromancy` | 死灵术 | book context key; decision=D-B-020 |
+| `staff type\|alchemy` | 炼金术 | 法杖类型词保留原名，区别学派全称；decision=D-C-101 |
+| `staff type\|necromancy` | 死灵术 | 法杖类型词保留原名，区别学派全称；decision=D-C-101 |
 | broad axe | 阔刃斧 | weapon; decision=D-B-018 |
 | dragon-coil talisman | 盘龙护符 | talisman; decision=D-B-018 |
 | dire flail | 双头链枷 | weapon; decision=D-B-017 |
@@ -739,11 +774,11 @@
 | Spellcasting | 施法能力 | skill; source=source.txt; decision=D-C-001 |
 | Summonings | 召唤系 | skill; source=source.txt; decision=D-C-001 |
 | Translocations | 传送系 | skill; source=source.txt; decision=D-C-001 |
-| Forgecraft | 锻造术 | skill; source=source.txt; decision=D-C-001 |
-| Fire Magic | 火焰魔法 | skill; source=source.txt; decision=D-C-001 |
-| Ice Magic | 寒冰魔法 | skill; source=source.txt; decision=D-C-001 |
-| Air Magic | 空气魔法 | skill; source=source.txt; decision=D-C-001 |
-| Earth Magic | 大地魔法 | skill; source=source.txt; decision=D-C-001 |
+| Forgecraft | 锻造系 | skill; source=source.txt; decision=D-C-101 |
+| Fire Magic | 火焰系 | skill; source=source.txt; decision=D-C-101 |
+| Ice Magic | 寒冰系 | skill; source=source.txt; decision=D-C-101 |
+| Air Magic | 空气系 | skill; source=source.txt; decision=D-C-101 |
+| Earth Magic | 大地系 | skill; source=source.txt; decision=D-C-101 |
 | Invocations | 祈神 | skill; source=source.txt; decision=D-C-001 |
 | Evocations | 魔力释放 | skill; source=source.txt; decision=D-A-052 |
 | Shapeshifting | 变形术 | skill; source=source.txt; decision=D-C-001 |

@@ -14,6 +14,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[3]
+# Immutable terminology snapshot used by the checked-in historical ledgers.
+GLOSSARY_REF = "518f33d1c98cf35f13d43fffdc1a463b676d1c11"
 SCRIPT = ROOT / ".claude/scripts/monflee_inventory.py"
 sys.path.insert(0, str(SCRIPT.parent))
 SPEC = importlib.util.spec_from_file_location("monflee_inventory", SCRIPT)
@@ -274,11 +276,12 @@ class MonfleeInventoryTests(unittest.TestCase):
         zh_path = self.write_dump(
             "production-zh.json", exact_artifact(PRODUCTION_BASELINE, "zh")
         )
+        glossary = self.root / "historical-glossary.md"
+        glossary.write_bytes(subprocess.check_output(
+            ["git", "-C", str(ROOT), "show", f"{GLOSSARY_REF}:docs/glossary.md"]
+        ))
         inventory = MODULE.build_inventory(
-            PRODUCTION_BASELINE,
-            en_path,
-            zh_path,
-            ROOT / "docs/glossary.md",
+            PRODUCTION_BASELINE, en_path, zh_path, glossary,
         )
         inventory["dumps"]["english"]["artifact_sha256"] = (
             PRODUCTION_EN_ARTIFACT_SHA256

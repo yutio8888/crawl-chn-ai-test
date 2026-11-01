@@ -4371,6 +4371,15 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-C-101 — 学派全称与法术列表简称统一（2026-11-01）
+
+- **Status**: active
+- **Source**: 用户确认全称统一为“××系”，法术列表使用两字简称。
+- **裁决**：现行学派及对应技能统一为咒法系、诅咒系、召唤系、死灵系、传送系、锻造系、火焰系、寒冰系、空气系、大地系、炼金系。已学法术和法术库列表复用既有两字简称；法术详情仍用全称。此项更新 D-C-001 对相关技能的旧译法。
+- **实现边界**：学派全称使用 `spell school` 上下文；普通元素词、英文解析与数据库键保持独立。书名、法杖类型名、职业名、泛指技艺的叙述以及已移除学派、非学派技能不做机械替换。
+- **法术详情**：防御行使用护甲、闪避、盾牌格挡；抗性行使用意志力及各抗性全称。以独立上下文保留紧凑面板的原有缩写；AC 50% 表示减伤效果减半，AC x3 表示三次独立护甲减伤判定，保留冰爆等条件。
+- **关联修订**：闪避说明中的 enchantments 改为“须用意志力抵抗的魔法效果”；它是绕过闪避的机制分类，包括传送系的放逐，不能缩窄为诅咒系效果。保留爆炸这一独立例外。
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -4521,6 +4530,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-096 | B0-2 missing terms and mutagenic (#147) | 补登记；诱变词根统一，固定法术名例外；资产修订交接 | active |
 | D-C-097 | B0-3 glossary table ownership (#147) | core 接收非 catalog 词；叛教铭文保留；字面括号误报交 A3 | active |
 | D-C-098 | B0-4 shared catalog keys and registration (#147) | 叛教者／束缚对齐共享键；134项登记、6项 catalog 待修 | active |
+| D-C-101 | Spell school display names | 全称统一为系；法术列表两字简称；闪避说明消歧 | active |
 | D-C-100 | GENDER_NEUTRAL singular pronouns | 他 / 他的 / 他自己 / 他；移除 ZH 中性先祖 neuter 映射 | active |
 
 

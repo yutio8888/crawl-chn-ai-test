@@ -439,6 +439,26 @@ def property_literals(text, array_name):
     return rows
 
 
+def contextual_staff_names(text, db):
+    """Follow staff_type_name's contextual lookup and unqualified fallback."""
+    rows = property_literals(text, "Staff_prop")
+    body = function_body(text, "staff_type_name")
+    name = r"Staff_prop\s*\[\s*Staff_index\s*\[\s*s\s*\]\s*\]\s*\.\s*name"
+    contextual = re.findall(
+        rf'return\s+C_\s*\(\s*"([^"\n]+)"\s*,\s*{name}\s*\)\s*;', body
+    )
+    plain = re.findall(rf"return\s+T_\s*\(\s*{name}\s*\)\s*;", body)
+    if (len(contextual) + len(plain) != 1
+            or len(re.findall(r"\b(?:C_|T_)\s*\(", body)) != 1):
+        raise RuntimeError("unparsed staff-type translation producer")
+    if contextual:
+        for row in rows.values():
+            qualified = f"{contextual[0]}|{row['en']}"
+            if qualified.lower() in db:
+                row["key"] = qualified
+    return rows
+
+
 def contextual_brand_forms(text):
     """Parse the narrow C_() overrides layered over weapon-brand arrays."""
     name_body = function_body(text, "brand_type_name")
@@ -765,7 +785,7 @@ def build_inventory():
     add(rows, "jewellery_effect", current(jewellery, "OBJ_JEWELLERY"),
         db, jewel_render)
 
-    staff = property_literals(item_prop, "Staff_prop")
+    staff = contextual_staff_names(item_prop, db)
     add(rows, "staff", current(staff, "OBJ_STAVES"), db,
         lambda en, zh, _: f"{zh}法杖" if zh else None)
 

@@ -2090,7 +2090,7 @@ const char* staff_type_name(stave_type s)
     if (s == NUM_STAVES)
         return "bugginess"; // used for known items
     ASSERT_RANGE(s, 0, NUM_STAVES);
-    return T_(Staff_prop[Staff_index[s]].name);
+    return C_("staff type", Staff_prop[Staff_index[s]].name);
 }
 
 skill_type staff_skill(stave_type s)

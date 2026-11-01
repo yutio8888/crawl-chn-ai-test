@@ -4,6 +4,7 @@
 
 #include "act-iter.h"
 #include "areas.h"
+#include "beam.h"
 #include "cloud.h"
 #include "clua.h"
 #include "database.h"
@@ -1100,4 +1101,39 @@ TEST_CASE("monster encounter equipment retains its subject across locales",
             CHECK(emitted.find(" are ") == string::npos);
         }
     }
+}
+
+TEST_CASE("sirocco knockback localizes its cause without changing beam identity",
+          "[zh-translation][scorching-wind-knockback]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    init_zap_index();
+    unwind_var<use_animations_type> restore_animations(
+        Options.use_animations, use_animations_type());
+    monster *mon = world.place(MONS_TERENCE, coord_def(21, 20));
+    mon->flags |= MF_SEEN | MF_WAS_IN_VIEW;
+    mon->hit_points = mon->max_hit_points = 1000;
+    bolt wind;
+    zappy(ZAP_SIROCCO, 100, false, wind);
+    wind.source = you.pos();
+    wind.target = mon->pos();
+    wind.source_id = MID_PLAYER;
+    wind.thrower = KILL_YOU;
+    wind.range = 1;
+    wind.hit = AUTOMATIC_HIT;
+    wind.aimed_at_spot = true;
+    wind.origin_spell = SPELL_SIROCCO;
+    const string message = observe_message([&] { wind.fire(); });
+    CHECK(wind.name == "scorching wind");
+    CHECK(mon->pos() == coord_def(23, 20));
+    if (language == lang_t::ZH)
+    {
+        CHECK(message.find("特伦斯被灼热风击退了。") != string::npos);
+        CHECK(message.find("scorching wind") == string::npos);
+    }
+    else
+        CHECK(message.find("Terence is knocked back by the scorching wind.")
+              != string::npos);
 }

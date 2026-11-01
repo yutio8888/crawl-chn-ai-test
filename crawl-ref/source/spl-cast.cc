@@ -135,7 +135,7 @@ static string _spell_base_description(spell_type spell, bool transient)
     desc << chop_string(spell_title(spell), 32);
 
     // spell schools
-    desc << spell_schools_string(spell);
+    desc << spell_schools_string(spell, Options.language == lang_t::ZH);
 
     const int so_far = strwidth(desc.str()) - (strwidth(colour_to_str(highlight))+2);
     if (so_far < 58)
@@ -3614,12 +3614,12 @@ string spell_defence_string(spell_type spell, bool is_monster, int pow)
         case ac_type::none:         break;
         case ac_type::half:         checks.push_back(T_("AC (50%)")); break;
         case ac_type::triple:       checks.push_back(T_("AC (x3)")); break;
-        default:                    checks.push_back(T_("AC")); break;
+        default:                    checks.push_back(C_("spell defence", "AC")); break;
     }
     if (info.ev)
-        checks.push_back(T_("EV"));
+        checks.push_back(C_("spell defence", "EV"));
     if (info.sh)
-        checks.push_back(T_("SH"));
+        checks.push_back(C_("spell defence", "SH"));
 
     if (checks.empty())
         return T_("None");
@@ -3636,16 +3636,15 @@ string spell_resist_string(spell_type spell, bool is_monster, int pow)
 
     vector<string> descs;
     if (info.will)
-        descs.push_back(T_("Will"));
+        descs.push_back(C_("spell resistance", "Will"));
     if (info.resist_override)
         descs.push_back(T_(info.resist_override));
     else for (beam_type flavour : info.resists)
     {
         const bool varies = flavour == BEAM_CHAOS || flavour == BEAM_RANDOM;
+        const char *resist = beam_resist_name(get_beam_resist_type(flavour));
         const string name = varies ? T_("Varies")
-                                  : beam_resist_name(get_beam_resist_type(flavour))
-                                      ? T_(beam_resist_name(get_beam_resist_type(flavour)))
-                                      : "";
+                                   : resist ? C_("spell resistance", resist) : "";
         if (name.empty())
             continue;
         const int pct = beam_resistible_fraction(flavour);
@@ -3729,7 +3728,7 @@ string range_string(int range, int maxrange, int minrange)
     return ret;
 }
 
-string spell_schools_string(spell_type spell)
+string spell_schools_string(spell_type spell, bool abbreviated)
 {
     string desc;
 
@@ -3740,7 +3739,8 @@ string spell_schools_string(spell_type spell)
         {
             if (already)
                 desc += "/";
-            desc += spelltype_long_name(bit);
+            desc += abbreviated ? spelltype_short_name(bit)
+                                : spelltype_long_name(bit);
             already = true;
         }
     }

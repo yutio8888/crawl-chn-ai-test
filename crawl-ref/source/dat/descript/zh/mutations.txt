@@ -741,7 +741,7 @@ inability to train armour mutation
 %%%%
 no air magic mutation
 
-你的空气魔法技能等级为 0，你也无法训练它。
+你的空气系技能等级为 0，你也无法训练它。
 %%%%
 no conjurations magic mutation
 
@@ -749,11 +749,11 @@ no conjurations magic mutation
 %%%%
 no earth magic mutation
 
-你的大地魔法技能等级为 0，你也无法训练它。
+你的大地系技能等级为 0，你也无法训练它。
 %%%%
 no fire magic mutation
 
-你的火焰魔法技能等级为 0，你也无法训练它。
+你的火焰系技能等级为 0，你也无法训练它。
 %%%%
 no hexes magic mutation
 
@@ -761,15 +761,15 @@ no hexes magic mutation
 %%%%
 no ice magic mutation
 
-你的寒冰魔法技能等级为 0，你也无法训练它。
+你的寒冰系技能等级为 0，你也无法训练它。
 %%%%
 no necromancy magic mutation
 
-你的死灵术技能等级为0，你也无法训练它。
+你的死灵系技能等级为0，你也无法训练它。
 %%%%
 no alchemy magic mutation
 
-你的炼金术技能等级为0，你也无法训练它。
+你的炼金系技能等级为0，你也无法训练它。
 %%%%
 no summoning magic mutation
 
@@ -1121,7 +1121,7 @@ multiplicity bane
 %%%%
 no forgecraft magic mutation
 
-你的锻造术技能固定为 0，且无法训练该技能。
+你的锻造系技能固定为 0，且无法训练该技能。
 %%%%
 no jewellery mutation
 

@@ -16,6 +16,8 @@ from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[3]
+# Immutable terminology snapshot used by the checked-in historical ledgers.
+GLOSSARY_REF = "518f33d1c98cf35f13d43fffdc1a463b676d1c11"
 SCRIPT = ROOT / ".claude/scripts/miscname_inventory.py"
 sys.path.insert(0, str(SCRIPT.parent))
 SPEC = importlib.util.spec_from_file_location("miscname_inventory", SCRIPT)
@@ -336,8 +338,8 @@ class MiscnameInventoryTests(unittest.TestCase):
                                     "Lua control flow"):
             MODULE._pair_candidate(en, zh)
 
-    def test_repository_ledger_binds_exact_clean_candidate(self):
-        """Exercise the production ledger against the exact current commit.
+    def test_repository_ledger_binds_exact_clean_candidate_sources(self):
+        """Exercise current candidate source/ledger binding with historical terms.
 
         This integration test needs a clean committed candidate. Local unbound
         changed-scope verification still runs the fixture regressions but reports
@@ -382,17 +384,26 @@ class MiscnameInventoryTests(unittest.TestCase):
             f"miscname-exact-candidate-{os.getpid()}-{id(self)}.json"
         )
         self.addCleanup(lambda: output.unlink(missing_ok=True))
-        self.assertEqual(0, MODULE.main([
-            "--baseline-ref", PRODUCTION_BASELINE,
-            "--english-dump", str(baseline_en),
-            "--localized-dump", str(baseline_zh),
-            "--glossary", str(ROOT / "docs/glossary.md"),
-            "--review-results", str(ROOT / "docs/miscname-review-results.md"),
-            "--candidate-ref", candidate,
-            "--candidate-english-dump", str(candidate_en),
-            "--candidate-localized-dump", str(candidate_zh),
-            "--inventory-output", str(output),
-        ]))
+        # This test covers current candidate source/ledger binding. Keep only
+        # the terminology input at the ledger's historical revision; actual
+        # glossary changes are checked by terminology-specific verification.
+        historical_glossary = subprocess.check_output(
+            ["git", "-C", str(ROOT), "show", f"{GLOSSARY_REF}:docs/glossary.md"]
+        )
+        with mock.patch.object(MODULE, "_read_glossary",
+                               return_value=historical_glossary) as glossary:
+            self.assertEqual(0, MODULE.main([
+                "--baseline-ref", PRODUCTION_BASELINE,
+                "--english-dump", str(baseline_en),
+                "--localized-dump", str(baseline_zh),
+                "--glossary", str(ROOT / "docs/glossary.md"),
+                "--review-results", str(ROOT / "docs/miscname-review-results.md"),
+                "--candidate-ref", candidate,
+                "--candidate-english-dump", str(candidate_en),
+                "--candidate-localized-dump", str(candidate_zh),
+                "--inventory-output", str(output),
+            ]))
+        glossary.assert_called_once_with(ROOT / "docs/glossary.md", candidate)
         audited = json.loads(output.read_text(encoding="utf-8"))
         self.assertEqual(10, len(audited["review_evidence"]["cards"]))
         self.assertEqual(
@@ -482,7 +493,7 @@ class MiscnameInventoryTests(unittest.TestCase):
         )
         for profile, scope, candidate, expected in cases:
             with self.subTest(profile=profile, scope=scope, candidate=candidate):
-                probe = type(self)("test_repository_ledger_binds_exact_clean_candidate")
+                probe = type(self)("test_repository_ledger_binds_exact_clean_candidate_sources")
                 with mock.patch.dict(os.environ, {
                     "ZH_VERIFY_PROFILE": profile,
                     "ZH_VERIFY_SCOPE": scope,
@@ -490,7 +501,7 @@ class MiscnameInventoryTests(unittest.TestCase):
                 }, clear=True), mock.patch.object(
                     subprocess, "check_output", return_value=" M tracked-file\n"
                 ), self.assertRaises(expected):
-                    probe.test_repository_ledger_binds_exact_clean_candidate()
+                    probe.test_repository_ledger_binds_exact_clean_candidate_sources()
 
     def test_inventory_output_must_be_tmp(self):
         with self.assertRaises(Exception):

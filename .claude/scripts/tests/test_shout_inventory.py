@@ -15,6 +15,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[3]
+# Immutable terminology snapshot used by the checked-in historical ledgers.
+GLOSSARY_REF = "518f33d1c98cf35f13d43fffdc1a463b676d1c11"
 SCRIPT = ROOT / ".claude/scripts/shout_inventory.py"
 sys.path.insert(0, str(SCRIPT.parent))
 SPEC = importlib.util.spec_from_file_location("shout_inventory", SCRIPT)
@@ -318,7 +320,8 @@ class ShoutInventoryTests(unittest.TestCase):
         cls.zh_path.write_text(json.dumps(cls.zh, ensure_ascii=False),
                                encoding="utf-8")
         cls.inventory = MODULE.build_inventory(
-            BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md"
+            BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md",
+            glossary_ref=GLOSSARY_REF,
         )
 
     @classmethod

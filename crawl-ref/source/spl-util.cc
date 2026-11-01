@@ -1446,7 +1446,7 @@ const char* spelltype_long_name_en(spschool which_spelltype)
 
 const char* spelltype_long_name(spschool which_spelltype)
 {
-    return T_(spelltype_long_name_en(which_spelltype));
+    return C_("spell school", spelltype_long_name_en(which_spelltype));
 }
 
 skill_type spell_type2skill(spschool spelltype)

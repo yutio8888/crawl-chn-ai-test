@@ -18,6 +18,8 @@ from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[3]
+# Immutable terminology snapshot used by the checked-in historical ledgers.
+GLOSSARY_REF = "518f33d1c98cf35f13d43fffdc1a463b676d1c11"
 SCRIPT = ROOT / ".claude/scripts/monspell_inventory.py"
 sys.path.insert(0, str(SCRIPT.parent))
 from audit_monspell_phase0 import build_inventory as build_phase0_inventory  # noqa: E402
@@ -633,7 +635,11 @@ class MonspellInventoryTests(unittest.TestCase):
             )
             return inventory
 
-        inventory = build(ROOT / "docs/glossary.md")
+        glossary = self.root / "historical-glossary.md"
+        glossary.write_bytes(subprocess.check_output(
+            ["git", "-C", str(ROOT), "show", f"{GLOSSARY_REF}:docs/glossary.md"]
+        ))
+        inventory = build(glossary)
         self.assertEqual(CURRENT_INVENTORY_SHA256,
                          inventory["inventory_sha256"])
         MODULE.validate_results(

@@ -59,7 +59,7 @@ struct sortable_spell
                 level(spell_levels_required(s)),
                 difficulty(spell_difficulty(s)),
                 name(spell_title(s)),
-                school(spell_schools_string(s))
+                school(spell_schools_string(s, Options.language == lang_t::ZH))
     {
     }
 

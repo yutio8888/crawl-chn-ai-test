@@ -683,6 +683,23 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                             MODULE.active_source(source)
 
     def test_contextual_item_overrides_fail_closed_on_syntax_drift(self):
+        item_prop = MODULE.active_source(MODULE.SRC / "item-prop.cc")
+        staff_db = {"staff type|alchemy": "炼金术", "alchemy": "炼金系",
+                    "fire": "火焰"}
+        staves = MODULE.contextual_staff_names(item_prop, staff_db)
+        self.assertEqual("staff type|alchemy", staves["STAFF_ALCHEMY"]["key"])
+        self.assertEqual("fire", staves["STAFF_FIRE"]["key"])
+        self.assertEqual("alchemy", MODULE.contextual_staff_names(
+            item_prop, {"alchemy": "炼金系"})["STAFF_ALCHEMY"]["key"])
+        old_staff = item_prop.replace('C_("staff type",', 'T_(', 1)
+        self.assertEqual("alchemy", MODULE.contextual_staff_names(
+            old_staff, staff_db)["STAFF_ALCHEMY"]["key"])
+        broken_staff = item_prop.replace(
+            'C_("staff type", Staff_prop[Staff_index[s]].name)',
+            'C_("staff type", another_name)', 1)
+        with self.assertRaisesRegex(RuntimeError, "unparsed staff-type"):
+            MODULE.contextual_staff_names(broken_staff, staff_db)
+
         item_name = MODULE.active_source(MODULE.SRC / "item-name.cc")
         broken_brand = item_name.replace(
             "brand == SPWPN_DRAINING", "brand != SPWPN_DRAINING", 1
@@ -917,7 +934,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                          payload["schema"])
         self.assertEqual(398, payload["count"])
         self.assertEqual(
-            "35a9b6065482079f501befbee3aeb40220b6c78d334fb89f097631c3babef43c",
+            "4e07e91fc43925735f416fba6609f5741578505a573982a0d74e2b9a2b82b82d",
             payload["inventory_sha256"],
         )
         self.assertEqual(payload["count"], len(payload["rows"]))
@@ -940,6 +957,13 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertFalse(payload["missing_chinese"])
         self.assertFalse(payload["missing_forms"])
         by_identity = {row["identity"]: row for row in payload["rows"]}
+        for identity, key, name in (
+            ("STAFF_ALCHEMY", "alchemy", "炼金术法杖"),
+            ("STAFF_NECROMANCY", "necromancy", "死灵术法杖"),
+        ):
+            staff = by_identity[f"staff:{identity}"]
+            self.assertEqual(f"staff type|{key}", staff["translation_key"])
+            self.assertEqual(name, staff["current_chinese_name"])
         self.assertEqual(
             "armour ego full name|invisibility",
             by_identity["armour_ego:SPARM_INVISIBILITY"]["translation_key"],
