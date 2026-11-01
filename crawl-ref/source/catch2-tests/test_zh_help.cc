@@ -76,6 +76,54 @@
 using std::string;
 using std::vector;
 
+TEST_CASE("ability-slot: overwrite protection matches canonical names in every language",
+          "[zh-help][ability-slot-rereview]")
+{
+    unwind_var<decltype(you.ability_letter_table)> restore_slots(you.ability_letter_table);
+    unwind_var<decltype(Options.auto_ability_letters)> restore_rules(Options.auto_ability_letters);
+    struct slot_case
+    {
+        ability_type existing;
+        const char *letters;
+        int expected_slot;
+    };
+    const slot_case cases[] = {
+        { ABIL_EVOKE_TURN_INVISIBLE, "+a", 1 },
+        { ABIL_EVOKE_TURN_INVISIBLE, "+ac", 2 },
+        { ABIL_RENOUNCE_RELIGION, "+a", 0 },
+    };
+    for (lang_t language : { lang_t::EN, lang_t::ZH, lang_t::EN })
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (const slot_case &entry : cases)
+        {
+            INFO("language=" << static_cast<int>(language)
+                 << " existing=" << ability_name(entry.existing, true)
+                 << " rule=" << entry.letters);
+            you.ability_letter_table.init(ABIL_NON_ABILITY);
+            you.ability_letter_table[0] = entry.existing;
+            you.ability_letter_table[1] = ABIL_EVOKE_BLINK;
+            Options.auto_ability_letters.clear();
+            Options.auto_ability_letters.emplace_back(text_pattern("^evoke ", true),
+                                                      entry.letters);
+            REQUIRE(Options.auto_ability_letters[0].first.matches(
+                lowercase_string(ability_name(ABIL_EVOKE_BLINK, true))));
+            if (language == lang_t::ZH)
+                REQUIRE(ability_name(entry.existing) != ability_name(entry.existing, true));
+
+            CHECK(auto_assign_ability_slot(1) == entry.expected_slot);
+            for (int slot = 0; slot < 52; ++slot)
+            {
+                const ability_type expected = slot == entry.expected_slot
+                    ? ABIL_EVOKE_BLINK
+                    : slot == (entry.expected_slot == 0 ? 1 : 0)
+                        ? entry.existing : ABIL_NON_ABILITY;
+                CHECK(you.ability_letter_table[slot] == expected);
+            }
+        }
+    }
+}
+
 namespace {
 
 static bool contains_cjk_text(const string& text)

@@ -10,21 +10,52 @@
 #include "mon-cast-target.h"
 #include "mon-speak.h"
 #include "monster.h"
+#include "options.h"
 #include "player.h"
 #include "random.h"
 #include "spl-util.h"
 #include "state.h"
 #include "stringutil.h"
+#include "syscalls.h"
+#include "unwind.h"
 
 #include "test_player_fixture.h"
 
 #include <fcntl.h>
+#include <locale.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <utility>
 
 namespace
 {
+// The standalone Catch entry point does not run main()'s locale startup.
+// Dump keys must use the same non-ASCII casing as an initialized UTF-8 game.
+struct scoped_phase0_game_locale
+{
+    const string saved_locale = setlocale(LC_ALL, nullptr);
+
+    bool initialise() const
+    {
+#ifdef DGAMELAUNCH
+        if (!setlocale(LC_CTYPE, ""))
+#else
+        if (!setlocale(LC_ALL, ""))
+#endif
+            return false;
+#if defined(UNIX) && !defined(__ANDROID__)
+        return ensure_utf8_ctype();
+#else
+        return true;
+#endif
+    }
+
+    ~scoped_phase0_game_locale()
+    {
+        setlocale(LC_ALL, saved_locale.c_str());
+    }
+};
+
 struct saved_phase0_cell
 {
     coord_def position;
@@ -849,6 +880,8 @@ TEST_CASE("Phase 0 canonical English SpeakDB dump is deterministic",
           "[single-file][textdb][phase0]")
 {
     ensure_test_data_root();
+    scoped_phase0_game_locale game_locale;
+    REQUIRE(game_locale.initialise());
     const textdb_phase0::canonical_speakdb_dump first_dump =
         textdb_phase0::dump_canonical_english_speakdb_typed();
     const textdb_phase0::canonical_speakdb_dump second_dump =
@@ -885,6 +918,80 @@ TEST_CASE("Phase 0 canonical English SpeakDB dump is deterministic",
     CHECK(monspell_keys.size() == 283);
     CHECK(monspell_variants == 393);
     CHECK(key_set_fingerprint(monspell_keys) == 0x5582da4d7b0f78b0ULL);
+}
+
+TEST_CASE("Phase 0 dump startup folds UTF-8 keys without leaking locale or language",
+          "[single-file][textdb][phase0][dump-locale]")
+{
+    ensure_test_data_root();
+    scoped_phase0_game_locale restore_original_locale;
+    REQUIRE(setlocale(LC_ALL, "C") != nullptr);
+    const string c_locale = setlocale(LC_ALL, nullptr);
+    const lang_t original_language = Options.language;
+    const char *const original_language_name = Options.lang_name;
+    string canonical_english;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        unwind_var<lang_t> display_language(Options.language, language);
+        const char *const requested_name = language == lang_t::ZH ? "zh" : nullptr;
+        unwind_var<const char *> language_name(Options.lang_name, requested_name);
+        {
+            scoped_phase0_game_locale game_locale;
+            REQUIRE(game_locale.initialise());
+            const textdb_phase0::source source =
+                { "utf8-fixture.txt", "%%%%\nÅKEY\nBody Å stays unchanged\n%%%%\n" };
+            const textdb_phase0::canonical_speakdb_dump fixture =
+                textdb_phase0::canonicalise_source_dump({source});
+            REQUIRE(fixture.sources.size() == 1);
+            CHECK(fixture.sources[0].normalized_utf8 == source.text);
+            REQUIRE(fixture.entries.size() == 1);
+            CHECK(fixture.entries[0].canonical_key == "åkey");
+            CHECK(fixture.entries[0].raw_body == "Body Å stays unchanged\n");
+            REQUIRE(fixture.entries[0].variants.size() == 1);
+            CHECK(fixture.entries[0].variants[0].raw_pattern
+                  == "Body Å stays unchanged");
+            CHECK(fixture.entries[0].variants[0].locator.canonical_key == "åkey");
+
+            const textdb_phase0::canonical_speakdb_dump dump =
+                textdb_phase0::dump_canonical_english_speakdb_typed();
+            CHECK(dump.source_directory == "database/");
+            for (const string key : {string("default 'å'"),
+                                     string("friendly good god 'å'"),
+                                     string("neutral good god 'å'")})
+            {
+                const textdb_phase0::canonical_entry *entry =
+                    find_canonical_entry(dump.entries, key);
+                REQUIRE(entry != nullptr);
+                CHECK(has_source_history(*entry, "database/monspeak.txt"));
+                for (const auto &variant : entry->variants)
+                    CHECK(variant.locator.canonical_key == key);
+                string uppercase = key;
+                uppercase.replace(uppercase.find("å"), string("å").size(), "Å");
+                CHECK(find_canonical_entry(dump.entries, uppercase) == nullptr);
+            }
+            const auto source_snapshot = std::find_if(
+                dump.sources.begin(), dump.sources.end(),
+                [](const textdb_phase0::source_snapshot &candidate)
+                {
+                    return candidate.source_name == "database/monspeak.txt";
+                });
+            REQUIRE(source_snapshot != dump.sources.end());
+            CHECK(source_snapshot->normalized_utf8.find("default 'Å'\n")
+                  != string::npos);
+            CHECK(source_snapshot->normalized_utf8.find("default 'å'\n")
+                  == string::npos);
+            const string serialized = serialize_textdb_phase0_artifact(dump);
+            if (canonical_english.empty())
+                canonical_english = serialized;
+            else
+                CHECK(serialized == canonical_english);
+            CHECK(Options.language == language);
+            CHECK(Options.lang_name == requested_name);
+        }
+        CHECK(string(setlocale(LC_ALL, nullptr)) == c_locale);
+    }
+    CHECK(Options.language == original_language);
+    CHECK(Options.lang_name == original_language_name);
 }
 
 TEST_CASE("Issue 16 repaired Chinese monspeak boundaries parse as intended",
@@ -4328,6 +4435,8 @@ TEST_CASE("Phase 0 database expansion leaves bracket randomness untouched",
 TEST_CASE("write production TextDB Phase 0 artifact",
           "[.textdb-phase0-dump]")
 {
+    scoped_phase0_game_locale game_locale;
+    REQUIRE(game_locale.initialise());
     const char *output_path = std::getenv("TEXTDB_PHASE0_DUMP");
     REQUIRE(output_path != nullptr);
     REQUIRE(*output_path != '\0');

@@ -4496,7 +4496,7 @@ int auto_assign_ability_slot(int slot)
                 }
                 else if (overwrite)
                 {
-                    const string str = lowercase_string(ability_name(existing_ability));
+                    const string str = lowercase_string(ability_name(existing_ability, true));
                     // Don't overwrite an ability matched by the same rule.
                     if (mapping.first.matches(str))
                         continue;

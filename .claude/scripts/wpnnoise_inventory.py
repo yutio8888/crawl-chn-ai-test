@@ -7,8 +7,8 @@ source discovery, TextDB parsing, weighted-variant derivation, artifact
 validation, hashing, candidate binding, and safe output.  Only wpnnoise's
 consumer-specific invariants and strict review schema live here.
 
-The baseline inventory stays frozen at the pre-landing shape (731 EN / 720 ZH,
-including the six asymmetric keys and every one-sided ordinal fact).  The
+The baseline inventory freezes the selected exact-Git source membership,
+weighted variants, asymmetries and every one-sided ordinal fact.  The
 strict review card schema v2 adds ``reviewed_actions``: per-card action records
 bound to baseline source locators and exact proposed/removed text that
 represent reviewed one-sided structural changes (EN-only missing variants
@@ -89,6 +89,12 @@ ALLOWED_CONTROLS = {
     "WARN",
 }
 
+CALLER_TOKENS = {
+    "@CAPS@", "@NOCAPS@", "@The_weapon@", "@the_weapon@", "@Your_weapon@",
+    "@your_weapon@", "@weapon@", "@player_name@", "@player_god@",
+    "@player_genus@", "@a_player_genus@", "@player_genus_plural@", "@head@", "@skin@",
+}
+
 # Frozen Issue #60 baseline shape (verified against the production dumps).
 EXPECTED_IDENTITY_COUNT = 65
 EXPECTED_EN_VARIANT_COUNT = 731
@@ -140,6 +146,15 @@ ROOT_KEYS = (
     "eel hand actions",
     "eel hand solo actions",
 )
+
+# Direct equip/unequip roots introduced after the historical Issue #60 audit.
+# Their literal lookup and display call are checked against the exact Git tree.
+SCALES_ROOTS = {
+    "fire dragon occultist scales greeting": "_FIRE_DRAGON_OCCULTIST_SCALES_equip",
+    "fire dragon occultist scales farewell": "_FIRE_DRAGON_OCCULTIST_SCALES_unequip",
+    "ice dragon arcanist scales greeting": "_ICE_DRAGON_ARCANIST_SCALES_equip",
+    "ice dragon arcanist scales farewell": "_ICE_DRAGON_ARCANIST_SCALES_unequip",
+}
 
 # Per-key EN/ZH variant counts frozen at the baseline.  One-sided variants
 # (EN-only or ZH-only ordinals) are baseline facts: the review covers every ZH
@@ -369,6 +384,19 @@ FROZEN_PRODUCERS = {
          "mode": "recursive @key@ replacement over the selected pattern"},
     ],
 }
+
+FROZEN_CONSUMER["SCALES"] = {
+    "localized_lookup": "crawl-ref/source/database.cc",
+    "equip_unequip_display": "crawl-ref/source/art-func.h",
+}
+FROZEN_ACTUAL_BEHAVIOR["SCALES"] = (
+    "Equip/unequip calls getSpeakString with the stable literal root and "
+    "displays the selected pattern directly with MSGCH_TALK when show_msgs permits."
+)
+FROZEN_DISPLAY_CONTEXT["SCALES"] = "Scales equip/unequip talk message."
+FROZEN_PRODUCERS["SCALES"] = [{
+    "location": "crawl-ref/source/art-func.h", "mode": "equip/unequip literal lookup",
+}]
 
 REENTRY_TRIGGER = (
     "英文或中文 TextDB source、production key/variant/weight/control/token/Lua/"
@@ -688,6 +716,25 @@ def _definition_lines(source: str, label: str) -> dict[str, int]:
     return lines
 
 
+def _scales_consumer_roots(ref: str, label: str) -> set[str]:
+    source = _candidate_regular_blob(ref, "crawl-ref/source/art-func.h", label).decode("utf-8")
+    roots = set()
+    for key, function in SCALES_ROOTS.items():
+        if function not in source:
+            continue
+        match = re.search(r"static void " + re.escape(function)
+                          + r"\([^\n]*\)\n\{(.*?)\n\}", source, re.S)
+        _require(match is not None, f"{label} unsupported scales consumer {function}")
+        expected = (f'if (!show_msgs || *show_msgs) '
+                    f'mprf(MSGCH_TALK, "%s", getSpeakString("{key}").c_str());')
+        _require(" ".join(match.group(1).split()) == expected,
+                 f"{label} unsupported scales consumer {function}")
+        roots.add(key)
+    _require(not roots or roots == set(SCALES_ROOTS),
+             f"{label} incomplete scales consumer family")
+    return roots
+
+
 def _dump_binding(
     artifact: dict[str, Any], raw: bytes, label: str, role: str = "baseline",
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
@@ -722,9 +769,11 @@ def _dump_binding(
         )
 
     actual_keys = {entry["canonical_key"] for entry in touching}
-    _require(actual_keys == set(ROOT_KEYS) | {
-        key for key in DEPENDENCY_GROUP if key not in ROOT_KEYS
-    }, f"{label} wpnnoise key set mismatch")
+    definitions = _definition_lines(source_snapshot, label)
+    _require(actual_keys == set(definitions), f"{label} wpnnoise key set mismatch")
+    _require(set(ROOT_KEYS) <= actual_keys
+             and actual_keys <= set(DEPENDENCY_GROUP) | set(SCALES_ROOTS),
+             f"{label} wpnnoise key set mismatch (unknown consumer route)")
     ordinals = sorted(
         entry["effective_provenance"]["definition_ordinal"]
         for entry in touching
@@ -774,48 +823,21 @@ def _dump_binding(
             "variants": variants,
         })
 
-    is_english = directory == "database/"
-    _require(len(rows) == EXPECTED_IDENTITY_COUNT,
-             f"{label} wpnnoise identity count mismatch")
-    if is_english or role == "baseline":
-        _require(
-            sum(len(row["variants"]) for row in rows)
-            == (EXPECTED_EN_VARIANT_COUNT if is_english
-                else EXPECTED_ZH_VARIANT_COUNT),
-            f"{label} wpnnoise variant count mismatch",
-        )
-        _require(
-            sum(len(variant["random_site_counts"])
-                for row in rows for variant in row["variants"])
-            == (EXPECTED_EN_RANDOM_SITES if is_english
-                else EXPECTED_ZH_RANDOM_SITES),
-            f"{label} wpnnoise random-site count mismatch",
-        )
-        _require(
-            sum(variant["lua_site_count"]
-                for row in rows for variant in row["variants"])
-            == (EXPECTED_EN_LUA_SITES if is_english else EXPECTED_ZH_LUA_SITES),
-            f"{label} wpnnoise Lua site count mismatch",
-        )
-        _require(
-            sum(variant["control_prefix"] == "VISUAL"
-                for row in rows for variant in row["variants"])
-            == (EXPECTED_EN_VISUAL_PREFIXES if is_english
-                else EXPECTED_ZH_VISUAL_PREFIXES),
-            f"{label} wpnnoise VISUAL control count mismatch",
-        )
-        _require(
-            sum(variant["control_prefix"] == "SOUND"
-                for row in rows for variant in row["variants"])
-            == (EXPECTED_EN_SOUND_PREFIXES if is_english
-                else EXPECTED_ZH_SOUND_PREFIXES),
-            f"{label} wpnnoise SOUND control count mismatch",
-        )
-    # A candidate-role ZH dump is exempt from the frozen baseline totals: the
-    # reviewed-action gate proves every candidate variant position (count,
-    # weight, control, tokens, random sites, Lua) against the baseline or the
-    # EN source, so the aggregates are covered per position instead.
-    # Candidate EN keeps every frozen total because English is immutable.
+    unknown_tokens = {
+        token for row in rows for variant in row["variants"]
+        for token in variant["runtime_tokens"]
+        if token[1:-1].lower() not in actual_keys and token not in CALLER_TOKENS
+    }
+    _require(not unknown_tokens, f"{label} unresolved runtime tokens: {sorted(unknown_tokens)!r}")
+    # Reconstruct baseline membership and counts from the source snapshot.
+    # Exact-Git binding at the entry point proves this is the selected commit;
+    # checking here also rejects artifact-only truncations in direct callers.
+    derived = shared._derive_scoped_from_sources(
+        artifact["sources"], directory, label, source_basename=SOURCE_BASENAME)
+    derived_counts = {entry["canonical_key"]: len(entry["variants"])
+                      for entry in derived["entries"]}
+    _require(all(len(row["variants"]) == derived_counts[row["key"]] for row in rows),
+             f"{label} wpnnoise variant count mismatch")
     binding = {
         "artifact_sha256": _sha256(raw),
         "database_name": artifact["database_name"],
@@ -858,16 +880,6 @@ def _pair_entries(
                      f"{label} variant count differs for {key!r}: EN "
                      f"{en_count} vs ZH {zh_count} (unreviewed one-sided "
                      f"change)")
-        elif en_count != zh_count:
-            frozen = ASYMMETRIC_VARIANT_KEYS.get(key)
-            _require(
-                frozen == (en_count, zh_count),
-                f"{label} variant count differs for {key!r}: EN {en_count} "
-                f"vs ZH {zh_count} (expected frozen {frozen!r})",
-            )
-        else:
-            _require(key not in ASYMMETRIC_VARIANT_KEYS,
-                     f"{label} frozen asymmetric key {key!r} has equal counts")
         # ZH variants are the complete review list (variant_ordinal is the ZH
         # file ordinal).  Paired ordinals carry the ordinal-paired EN pattern;
         # ZH-only ordinals carry english=None.  EN-only ordinals are recorded
@@ -942,6 +954,8 @@ def _pair_entries(
 
 
 def _route_for(key: str) -> str:
+    if key in SCALES_ROOTS:
+        return "SCALES"
     if key in ROOT_KEYS:
         if key.startswith("singing sword"):
             return "SINGING_SWORD"
@@ -961,7 +975,7 @@ def _route_for(key: str) -> str:
 
 
 def _lifecycle_for(key: str) -> str:
-    if key in ROOT_KEYS:
+    if key in ROOT_KEYS or key in SCALES_ROOTS:
         return "direct-production-root"
     return "recursive-internal-fragment"
 
@@ -1031,7 +1045,7 @@ def _reachability_proof(
     reached = set(roots)
     witnesses: dict[str, list[str]] = {}
     queue: deque[tuple[str, tuple[str, ...]]] = deque(
-        (root, (root,)) for root in ROOT_KEYS
+        (root, (root,)) for root in (*ROOT_KEYS, *sorted(roots - set(ROOT_KEYS)))
     )
     while queue:
         key, path = queue.popleft()
@@ -1225,7 +1239,9 @@ def build_inventory(
         entry["referencing_sites"] = _expected_referencing_sites(
             entry, en_references, zh_references
         )
-        entry["dependency_group"] = DEPENDENCY_GROUP[entry["key"]]
+        entry["dependency_group"] = (DEPENDENCY_GROUP[entry["key"]]
+                                     if entry["key"] in DEPENDENCY_GROUP
+                                     else "Scales equip/unequip messages")
         entry["evidence_locations"] = _expected_evidence_locations(entry)
         entries.append(entry)
 
@@ -1240,8 +1256,8 @@ def build_inventory(
         entry["key"] for entry in entries
         if entry["lifecycle"] == "recursive-internal-fragment"
     }
-    roots = set(ROOT_KEYS)
-    _require(len(fragments | roots) == EXPECTED_IDENTITY_COUNT,
+    roots = set(ROOT_KEYS) | _scales_consumer_roots(baseline_ref, "baseline")
+    _require(fragments | roots == key_set,
              "wpnnoise identity/lifecycle coverage mismatch")
     reachability = {
         "english": _reachability_proof(en_rows, key_set, roots, fragments),
@@ -1277,17 +1293,18 @@ def build_inventory(
             _read_artifact_bytes(glossary_path, "glossary"))
     scope = {
         "source_basename": SOURCE_BASENAME,
-        "expected_identity_count": EXPECTED_IDENTITY_COUNT,
-        "expected_en_variant_count": EXPECTED_EN_VARIANT_COUNT,
-        "expected_zh_variant_count": EXPECTED_ZH_VARIANT_COUNT,
-        "expected_en_random_sites": EXPECTED_EN_RANDOM_SITES,
-        "expected_zh_random_sites": EXPECTED_ZH_RANDOM_SITES,
-        "expected_en_lua_sites": EXPECTED_EN_LUA_SITES,
-        "expected_zh_lua_sites": EXPECTED_ZH_LUA_SITES,
+        "expected_identity_count": len(entries),
+        "expected_en_variant_count": sum(len(row["variants"]) for row in en_rows),
+        "expected_zh_variant_count": sum(len(row["variants"]) for row in zh_rows),
+        "expected_en_random_sites": sum(len(v["random_site_counts"]) for row in en_rows for v in row["variants"]),
+        "expected_zh_random_sites": sum(len(v["random_site_counts"]) for row in zh_rows for v in row["variants"]),
+        "expected_en_lua_sites": sum(v["lua_site_count"] for row in en_rows for v in row["variants"]),
+        "expected_zh_lua_sites": sum(v["lua_site_count"] for row in zh_rows for v in row["variants"]),
         "lua_comparison_strings": list(LUA_COMPARISON_STRINGS),
-        "root_keys": list(ROOT_KEYS),
+        "root_keys": [*ROOT_KEYS, *sorted(roots - set(ROOT_KEYS))],
         "asymmetric_variant_keys": {
-            key: list(counts) for key, counts in sorted(ASYMMETRIC_VARIANT_KEYS.items())
+            entry["key"]: [entry["en_variant_count"], entry["zh_variant_count"]]
+            for entry in entries if entry["en_variant_count"] != entry["zh_variant_count"]
         },
     }
     core = {
@@ -1648,7 +1665,7 @@ def _review_bindings_from_block(
     consumes any malformed review data; the full card semantics (including
     action-vs-entry binding) are validated by ``_validate_card``.
     """
-    _require(len(records) == EXPECTED_IDENTITY_COUNT + 1,
+    _require(len(records) > 1,
              "review evidence metadata/card coverage mismatch")
     actions_by_key: dict[str, list[dict[str, Any]]] = {}
     proposals_by_key: dict[str, list[str]] = {}
@@ -1889,7 +1906,7 @@ def validate_results(
 ) -> dict[str, Any]:
     if records is None:
         records = _strict_block(path)
-    _require(len(records) == EXPECTED_IDENTITY_COUNT + 1,
+    _require(len(records) == len(inventory["entries"]) + 1,
              "review evidence metadata/card coverage mismatch")
     metadata, cards = records[0], records[1:]
     _require_exact_fields(metadata, METADATA_FIELDS, "review metadata")
@@ -1900,7 +1917,7 @@ def validate_results(
     _require(metadata["inventory_sha256"] == inventory["inventory_sha256"],
              "review metadata inventory_sha256 mismatch")
     _require(_is_int(metadata["identity_count"])
-             and metadata["identity_count"] == EXPECTED_IDENTITY_COUNT,
+             and metadata["identity_count"] == len(inventory["entries"]),
              "review metadata identity_count mismatch")
     _require(metadata["english_production_dump_sha256"]
              == inventory["dumps"]["english"]["artifact_sha256"],
@@ -1908,14 +1925,14 @@ def validate_results(
     _require(metadata["chinese_production_dump_sha256"]
              == inventory["dumps"]["localized"]["artifact_sha256"],
              "review metadata chinese_production_dump_sha256 mismatch")
-    _require(metadata["en_variant_count"] == EXPECTED_EN_VARIANT_COUNT
-             and metadata["zh_variant_count"] == EXPECTED_ZH_VARIANT_COUNT,
+    _require(metadata["en_variant_count"] == inventory["scope"]["expected_en_variant_count"]
+             and metadata["zh_variant_count"] == inventory["scope"]["expected_zh_variant_count"],
              "review metadata variant counts mismatch")
-    _require(metadata["en_random_site_count"] == EXPECTED_EN_RANDOM_SITES
-             and metadata["zh_random_site_count"] == EXPECTED_ZH_RANDOM_SITES,
+    _require(metadata["en_random_site_count"] == inventory["scope"]["expected_en_random_sites"]
+             and metadata["zh_random_site_count"] == inventory["scope"]["expected_zh_random_sites"],
              "review metadata random-site counts mismatch")
-    _require(metadata["en_lua_site_count"] == EXPECTED_EN_LUA_SITES
-             and metadata["zh_lua_site_count"] == EXPECTED_ZH_LUA_SITES,
+    _require(metadata["en_lua_site_count"] == inventory["scope"]["expected_en_lua_sites"]
+             and metadata["zh_lua_site_count"] == inventory["scope"]["expected_zh_lua_sites"],
              "review metadata Lua site counts mismatch")
 
     expected_entries = {entry["identity"]: entry for entry in inventory["entries"]}
@@ -2033,6 +2050,10 @@ def add_candidate(
         review_records
     )
     entry_by_key = {entry["key"]: entry for entry in inventory["entries"]}
+    _require(len(review_records) == len(entry_by_key) + 1
+             and len(actions_by_key) == len(entry_by_key)
+             and set(actions_by_key) == set(entry_by_key),
+             "review evidence metadata/card coverage mismatch")
     _require(
         set(actions_by_key) <= set(entry_by_key),
         f"reviewed action keys outside the inventory: "
@@ -2078,6 +2099,9 @@ def add_candidate(
     _zh_binding, zh_rows = _dump_binding(
         zh_dump, zh_raw, "candidate ZH", role="candidate"
     )
+    candidate_roots = set(ROOT_KEYS) | _scales_consumer_roots(candidate_ref, "candidate")
+    _require(candidate_roots == set(inventory["scope"]["root_keys"]),
+             "candidate root consumer set drift")
     entries = _pair_entries(en_rows, zh_rows, "candidate", role="candidate")
 
     # EN no-drift proof without ZH projection: the candidate EN side must

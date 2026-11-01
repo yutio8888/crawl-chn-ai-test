@@ -353,7 +353,7 @@ SOUND:@The_monster@ @says@：“@imp_taunt@”
 %%%%
 moth of wrath
 
-VISUAL:@The_monster_possessive@毛发因愤怒而竖起，当它注意到你时。
+VISUAL:当它注意到你时，@The_monster_possessive@毛发因愤怒而竖起。
 %%%%
 iron imp
 
@@ -447,9 +447,9 @@ _riddle_prefix_
 
 你向@the_monster@提出了@_riddle_adj_@谜语
 
-你向@the_monster@问了一个@_riddle_adj_@谜语
+你向@the_monster@问了@_riddle_adj_@谜语
 
-你用一个@_riddle_adj_@谜语挑战@the_monster@
+你用@_riddle_adj_@谜语挑战@the_monster@
 %%%%
 Sphinx riddle success
 

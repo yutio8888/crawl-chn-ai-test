@@ -1902,6 +1902,7 @@
       "seal doors cast",
       "searing breath cast",
       "seismic stomp cast",
+      "shadow creatures strange machine cast",
       "shadow shot cast",
       "sheza's dance cast",
       "silent berserker rage rupert cast",
@@ -1933,6 +1934,7 @@
       "stunning burst cast",
       "summon eyeballs dissolution cast",
       "summon illusion cast",
+      "summon illusion strange machine cast",
       "summon mortal champion fravashi cast",
       "summon water elementals elemental wellspring cast",
       "sun moth cast",
@@ -2073,7 +2075,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 244
+          "ordinal": 246
         }
       ],
       "variants": [
@@ -2321,7 +2323,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 236
+          "ordinal": 238
         }
       ],
       "variants": [
@@ -2379,7 +2381,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 245
+          "ordinal": 247
         }
       ],
       "variants": [
@@ -2840,7 +2842,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 280
+          "ordinal": 282
         }
       ],
       "variants": [
@@ -3160,7 +3162,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 267
+          "ordinal": 269
         }
       ],
       "variants": [
@@ -3555,7 +3557,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 258
+          "ordinal": 260
         }
       ],
       "variants": [
@@ -3715,7 +3717,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 217
+          "ordinal": 219
         }
       ],
       "variants": [
@@ -3954,7 +3956,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 218
+          "ordinal": 220
         }
       ],
       "variants": [
@@ -4926,7 +4928,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 238
+          "ordinal": 240
         }
       ],
       "variants": [
@@ -4963,7 +4965,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 246
+          "ordinal": 248
         }
       ],
       "variants": [
@@ -5262,7 +5264,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 226
+          "ordinal": 228
         }
       ],
       "variants": [
@@ -5431,7 +5433,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 242
+          "ordinal": 244
         }
       ],
       "variants": [
@@ -5563,7 +5565,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 248
+          "ordinal": 250
         }
       ],
       "variants": [
@@ -5600,7 +5602,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 247
+          "ordinal": 249
         }
       ],
       "variants": [
@@ -5658,7 +5660,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 250
+          "ordinal": 252
         }
       ],
       "variants": [
@@ -5915,7 +5917,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 257
+          "ordinal": 259
         }
       ],
       "variants": [
@@ -6280,7 +6282,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 225
+          "ordinal": 227
         }
       ],
       "variants": [
@@ -6426,7 +6428,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 252
+          "ordinal": 254
         }
       ],
       "variants": [
@@ -6463,7 +6465,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 251
+          "ordinal": 253
         }
       ],
       "variants": [
@@ -7313,7 +7315,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 240
+          "ordinal": 242
         }
       ],
       "variants": [
@@ -7698,7 +7700,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 263
+          "ordinal": 265
         }
       ],
       "variants": [
@@ -7749,7 +7751,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 264
+          "ordinal": 266
         }
       ],
       "variants": [
@@ -8793,7 +8795,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 254
+          "ordinal": 256
         }
       ],
       "variants": [
@@ -8851,7 +8853,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 279
+          "ordinal": 281
         }
       ],
       "variants": [
@@ -8888,7 +8890,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 278
+          "ordinal": 280
         }
       ],
       "variants": [
@@ -9049,7 +9051,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 266
+          "ordinal": 268
         }
       ],
       "variants": [
@@ -9100,7 +9102,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 256
+          "ordinal": 258
         }
       ],
       "variants": [
@@ -9144,7 +9146,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 243
+          "ordinal": 245
         }
       ],
       "variants": [
@@ -9422,7 +9424,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 232
+          "ordinal": 234
         }
       ],
       "variants": [
@@ -9480,7 +9482,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 265
+          "ordinal": 267
         }
       ],
       "variants": [
@@ -9649,7 +9651,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 273
+          "ordinal": 275
         }
       ],
       "variants": [
@@ -9708,7 +9710,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 272
+          "ordinal": 274
         }
       ],
       "variants": [
@@ -10368,7 +10370,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 259
+          "ordinal": 261
         }
       ],
       "variants": [
@@ -10839,7 +10841,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 262
+          "ordinal": 264
         }
       ],
       "variants": [
@@ -10868,7 +10870,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 261
+          "ordinal": 263
         }
       ],
       "variants": [
@@ -10905,7 +10907,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 260
+          "ordinal": 262
         }
       ],
       "variants": [
@@ -10956,7 +10958,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 269
+          "ordinal": 271
         }
       ],
       "variants": [
@@ -11058,7 +11060,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 268
+          "ordinal": 270
         }
       ],
       "variants": [
@@ -11415,7 +11417,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 255
+          "ordinal": 257
         }
       ],
       "variants": [
@@ -11459,7 +11461,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 241
+          "ordinal": 243
         }
       ],
       "variants": [
@@ -11532,7 +11534,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 219
+          "ordinal": 221
         }
       ],
       "variants": [
@@ -11626,7 +11628,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 220
+          "ordinal": 222
         }
       ],
       "variants": [
@@ -12188,6 +12190,49 @@
               "end": 33,
               "start": 21,
               "token": "possessive"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "04bb8d4ab60892941d9b8d097e4efdddc128db0ff9365b5c093c015ba1de732f",
+      "key": "shadow creatures strange machine cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 216
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [
+            {
+              "line": 1,
+              "prefix": "VISUAL",
+              "start": 0
+            }
+          ],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "shadow creatures strange machine cast",
+            "variant_ordinal": 0
+          },
+          "text": "VISUAL:Shadows flit across @the_monster@'s surface and appear to come alive.",
+          "text_fingerprint": "7719fdc3f5a8f8e9e7be04770c382a78c5c178e5e89a5ac72863f0e1b1567bb8",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 40,
+              "start": 27,
+              "token": "the_monster"
             }
           ],
           "variant_ordinal": 0,
@@ -12812,7 +12857,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 234
+          "ordinal": 236
         }
       ],
       "variants": [
@@ -13948,6 +13993,49 @@
     {
       "defined_in_monspell": true,
       "effective_source": "monspell.txt",
+      "entry_text_fingerprint": "aa53be9c9c0e1df446ecf752e3be79674e1fd99ce3a548d0134587faf41d117d",
+      "key": "summon illusion strange machine cast",
+      "overridden": false,
+      "source_history": [
+        {
+          "file": "monspell.txt",
+          "ordinal": 217
+        }
+      ],
+      "variants": [
+        {
+          "control_prefixes": [
+            {
+              "line": 1,
+              "prefix": "VISUAL",
+              "start": 0
+            }
+          ],
+          "lua_sites": [],
+          "random_substring_sites": [],
+          "snapshot_locator": {
+            "canonical_key": "summon illusion strange machine cast",
+            "variant_ordinal": 0
+          },
+          "text": "VISUAL:The shadows dancing upon @the_monster@ coalesce into cruel familiarity.",
+          "text_fingerprint": "dd1683411cdc415a102fda3cced8e461a2f25c12b926874484157ab25624b89c",
+          "tokens": [
+            {
+              "canonical_key": "the_monster",
+              "classification": "runtime",
+              "end": 45,
+              "start": 32,
+              "token": "the_monster"
+            }
+          ],
+          "variant_ordinal": 0,
+          "weight": 10
+        }
+      ]
+    },
+    {
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
       "entry_text_fingerprint": "ded5d6a5c78bcf27bd149af7f47aac4bc3903fdc66bfe85d39d00cf1ebf9cee8",
       "key": "summon mortal champion fravashi cast",
       "overridden": false,
@@ -14028,7 +14116,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 216
+          "ordinal": 218
         }
       ],
       "variants": [
@@ -14102,7 +14190,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 222
+          "ordinal": 224
         }
       ],
       "variants": [
@@ -14146,7 +14234,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 223
+          "ordinal": 225
         }
       ],
       "variants": [
@@ -14402,7 +14490,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 224
+          "ordinal": 226
         }
       ],
       "variants": [
@@ -14710,7 +14798,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 249
+          "ordinal": 251
         }
       ],
       "variants": [
@@ -14834,7 +14922,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 253
+          "ordinal": 255
         }
       ],
       "variants": [
@@ -15009,7 +15097,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 274
+          "ordinal": 276
         }
       ],
       "variants": [
@@ -15112,7 +15200,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 271
+          "ordinal": 273
         }
       ],
       "variants": [
@@ -15149,7 +15237,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 270
+          "ordinal": 272
         }
       ],
       "variants": [
@@ -15449,7 +15537,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 221
+          "ordinal": 223
         }
       ],
       "variants": [
@@ -15631,7 +15719,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 228
+          "ordinal": 230
         }
       ],
       "variants": [
@@ -15660,7 +15748,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 230
+          "ordinal": 232
         }
       ],
       "variants": [
@@ -15689,7 +15777,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 235
+          "ordinal": 237
         }
       ],
       "variants": [
@@ -15718,7 +15806,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 277
+          "ordinal": 279
         }
       ],
       "variants": [
@@ -15747,7 +15835,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 229
+          "ordinal": 231
         }
       ],
       "variants": [
@@ -16310,7 +16398,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 227
+          "ordinal": 229
         }
       ],
       "variants": [
@@ -16347,7 +16435,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 231
+          "ordinal": 233
         }
       ],
       "variants": [
@@ -16522,7 +16610,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 233
+          "ordinal": 235
         }
       ],
       "variants": [
@@ -16638,7 +16726,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 237
+          "ordinal": 239
         }
       ],
       "variants": [
@@ -16675,7 +16763,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 276
+          "ordinal": 278
         }
       ],
       "variants": [
@@ -16756,7 +16844,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 275
+          "ordinal": 277
         }
       ],
       "variants": [
@@ -16953,7 +17041,7 @@
       "source_history": [
         {
           "file": "monspell.txt",
-          "ordinal": 239
+          "ordinal": 241
         }
       ],
       "variants": [
@@ -16983,8 +17071,8 @@
     }
   ],
   "schema_version": 1,
-  "semantic_fingerprint": "d2647788a4d73dbe7dfe809048d7dff4cddc044798a93efae1513af7d6749119",
-  "source_fingerprint": "d86a9c3c6edadd8111af8f5c51cdcc6152c8adce7f5666e7fde97183cd97f5bd",
+  "semantic_fingerprint": "11d35ab7d18b48c84d542f445b0987a244664574f7895b93d98cec30d1c1a1d4",
+  "source_fingerprint": "d724b74ab4dc1622755f895f6c3fbd889a46d9af26eaf1948c05ad00488da7ff",
   "speakdb_directory": "database/",
   "speakdb_files": [
     "monspeak.txt",
@@ -17001,13 +17089,13 @@
   "summary": {
     "closure_cycles": 0,
     "closure_edge_sites": 18,
-    "closure_keys": 285,
+    "closure_keys": 287,
     "lua_sites": 1,
-    "monspell_keys": 281,
+    "monspell_keys": 283,
     "overridden_keys": 0,
     "random_substring_sites": 13,
     "recursive_tokens": 15,
-    "runtime_tokens": 661,
-    "variants": 391
+    "runtime_tokens": 663,
+    "variants": 393
   }
 }

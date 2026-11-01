@@ -6,7 +6,7 @@ const catalog_source &generated_monspell_catalog()
     {
         1,
         "monspell",
-        "d2647788a4d73dbe7dfe809048d7dff4cddc044798a93efae1513af7d6749119",
+        "11d35ab7d18b48c84d542f445b0987a244664574f7895b93d98cec30d1c1a1d4",
         { "en", "zh" },
         {
             {
@@ -3479,7 +3479,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"beam", "resolved_beam"}, {"target", "resolved_target"} },
                         { "actor", "beam", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} breathes ${beam} at ${target}."}, {"en", "NEXT_TO", "${actor} breathes ${beam} next to ${target}."}, {"en", "PAST", "${actor} breathes ${beam} past ${target}."}, {"zh", "AT", "${actor}向${target}吐出${beam}。"}, {"zh", "NEXT_TO", "${actor}向${target}旁边吐出${beam}。"}, {"zh", "PAST", "${actor}向${target}身后吐出${beam}。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} breathes ${beam} at ${target}."}, {"en", "NEXT_TO", "${actor} breathes ${beam} next to ${target}."}, {"en", "PAST", "${actor} breathes ${beam} past ${target}."}, {"zh", "AT", "${actor}向${target}吐出${beam}。"}, {"zh", "NEXT_TO", "${actor}向${target}旁边吐出${beam}。"}, {"zh", "PAST", "${actor}吐出${beam}，从${target}旁边掠过。"} } },
                     },
                         {},
                         {  },
@@ -4643,7 +4643,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"possessive", "actor_possessive_pronoun"}, {"target", "resolved_target"} },
                         { "actor", "possessive", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} blasts ${possessive} cannon at ${target}."}, {"en", "NEXT_TO", "${actor} blasts ${possessive} cannon next to ${target}."}, {"en", "PAST", "${actor} blasts ${possessive} cannon past ${target}."}, {"zh", "AT", "${actor}用火炮轰击${target}。"}, {"zh", "NEXT_TO", "${actor}用火炮轰击${target}旁边。"}, {"zh", "PAST", "${actor}用火炮轰击${target}身后。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} blasts ${possessive} cannon at ${target}."}, {"en", "NEXT_TO", "${actor} blasts ${possessive} cannon next to ${target}."}, {"en", "PAST", "${actor} blasts ${possessive} cannon past ${target}."}, {"zh", "AT", "${actor}用火炮轰击${target}。"}, {"zh", "NEXT_TO", "${actor}用火炮轰击${target}旁边。"}, {"zh", "PAST", "${actor}开炮，炮火从${target}旁边掠过。"} } },
                     },
                         {},
                         {  },
@@ -6004,7 +6004,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"beam", "resolved_beam"}, {"target", "resolved_target"} },
                         { "actor", "beam", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} breathes ${beam} at ${target}."}, {"en", "NEXT_TO", "${actor} breathes ${beam} next to ${target}."}, {"en", "PAST", "${actor} breathes ${beam} past ${target}."}, {"zh", "AT", "${actor}向${target}吐出${beam}。"}, {"zh", "NEXT_TO", "${actor}向${target}旁边吐出${beam}。"}, {"zh", "PAST", "${actor}向${target}身后吐出${beam}。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} breathes ${beam} at ${target}."}, {"en", "NEXT_TO", "${actor} breathes ${beam} next to ${target}."}, {"en", "PAST", "${actor} breathes ${beam} past ${target}."}, {"zh", "AT", "${actor}向${target}吐出${beam}。"}, {"zh", "NEXT_TO", "${actor}向${target}旁边吐出${beam}。"}, {"zh", "PAST", "${actor}吐出${beam}，从${target}旁边掠过。"} } },
                     },
                         {},
                         {  },
@@ -6758,6 +6758,34 @@ const catalog_source &generated_monspell_catalog()
                 },
             },
             {
+                "shadow creatures strange machine cast",
+                "fnv1a64:0cd2dafe3af913e7",
+                "fnv1a64:7b495c421828dc96",
+                entry_mode::CANDIDATE,
+                {
+                    {
+                        "mon.cast.shadow_creatures_strange_machine_cast.visual.v1", false,
+                        0, 10,
+                        "7719fdc3f5a8f8e9e7be04770c382a78c5c178e5e89a5ac72863f0e1b1567bb8",
+                        "VISUAL:Shadows flit across @the_monster@'s surface and appear to come alive.",
+                        cast_frame::DIRECT_EFFECT,
+                        false,
+                        { false, false, false, false, true },
+                        materialization_policy::NONE,
+                        { {"actor_lower", "actor_ref_lower"} },
+                        { "actor_lower" },
+                    {
+                      { sensory_mode::VISUAL, "", false, false, { {"en", "NONE", "Shadows flit across ${actor_lower}'s surface and appear to come alive."}, {"zh", "NONE", "阴影掠过${actor_lower}的表面，仿佛活了过来。"} } },
+                    },
+                        {},
+                        {  },
+                        {  },
+                        {  },
+                        {  },
+                    },
+                },
+            },
+            {
                 "shadow shot cast",
                 "fnv1a64:cdd91d68645a418d",
                 "fnv1a64:197756c46eb24bae",
@@ -6775,7 +6803,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} fires at ${target}."}, {"en", "NEXT_TO", "${actor} fires next to ${target}."}, {"en", "PAST", "${actor} fires past ${target}."}, {"zh", "AT", "${actor}向${target}射击。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边射击。"}, {"zh", "PAST", "${actor}朝${target}身后射击。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} fires at ${target}."}, {"en", "NEXT_TO", "${actor} fires next to ${target}."}, {"en", "PAST", "${actor} fires past ${target}."}, {"zh", "AT", "${actor}向${target}射击。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边射击。"}, {"zh", "PAST", "${actor}射出的弹丸从${target}旁边掠过。"} } },
                     },
                         {},
                         {  },
@@ -7562,6 +7590,34 @@ const catalog_source &generated_monspell_catalog()
                         { "actor" },
                     {
                       { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} shimmers."}, {"zh", "NONE", "${actor}发出微光。"} } },
+                    },
+                        {},
+                        {  },
+                        {  },
+                        {  },
+                        {  },
+                    },
+                },
+            },
+            {
+                "summon illusion strange machine cast",
+                "fnv1a64:c522aa43f2278780",
+                "fnv1a64:0f8478021d1dd811",
+                entry_mode::CANDIDATE,
+                {
+                    {
+                        "mon.cast.summon_illusion_strange_machine_cast.visual.v1", false,
+                        0, 10,
+                        "dd1683411cdc415a102fda3cced8e461a2f25c12b926874484157ab25624b89c",
+                        "VISUAL:The shadows dancing upon @the_monster@ coalesce into cruel familiarity.",
+                        cast_frame::DIRECT_EFFECT,
+                        false,
+                        { false, false, false, false, true },
+                        materialization_policy::NONE,
+                        { {"actor_lower", "actor_ref_lower"} },
+                        { "actor_lower" },
+                    {
+                      { sensory_mode::VISUAL, "", false, false, { {"en", "NONE", "The shadows dancing upon ${actor_lower} coalesce into cruel familiarity."}, {"zh", "NONE", "在${actor_lower}上舞动的阴影凝成了残酷而熟悉的形象。"} } },
                     },
                         {},
                         {  },

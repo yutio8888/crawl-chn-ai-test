@@ -3127,6 +3127,51 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: weapon hymn localizes the godless display fallback",
+                 "[zh-translation][item-noise][speech-rereview]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+
+    item_def item;
+    item.base_type = OBJ_WEAPONS;
+    item.sub_type = WPN_DOUBLE_SWORD;
+    item.quantity = 1;
+    item.plus = 11;
+    item.flags = ISFLAG_UNRANDART | ISFLAG_IDENTIFIED;
+    item.unrand_idx = UNRAND_SINGING_SWORD;
+
+    for (const lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        Options.language = language;
+        Options.lang_name = language == lang_t::ZH ? "zh" : nullptr;
+        i18n_cache_clear();
+        databaseSystemInit();
+        for (const god_type god : {GOD_NO_GOD, GOD_ZIN})
+        {
+            you.religion = god;
+            const uint64_t seed = find_speak_seed(
+                "singing sword no_tension", "@player_god@", false);
+            REQUIRE(seed != 0);
+            const item_noise_observation observed = observe_real_root(
+                language, item, "singing sword no_tension", "@player_god@",
+                0, seed);
+            const string expected_god = god == GOD_NO_GOD
+                ? (language == lang_t::ZH ? "无神论" : "atheism")
+                : god_name(god);
+            CHECK(observed.tee.find(expected_god) != string::npos);
+            CHECK(observed.store.find(expected_god) != string::npos);
+            CHECK(observed.store.find('@') == string::npos);
+            CHECK(you.religion == god);
+            if (language == lang_t::ZH)
+                CHECK(observed.store.find("atheism") == string::npos);
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: issue 61 singing sword silenced renders The through the grammar layer",
                  "[zh-translation][item-noise][issue-61]")
 {
@@ -4773,6 +4818,50 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             string(species::name(test.species)) + " " + test.lookup;
         INFO("localized key=" << localized_key);
         REQUIRE(getMiscString(localized_key) == "");
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: sparkling fountain checks the actual worshipped god",
+                 "[zh-translation][decorlines][speech-rereview]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.set_position(coord_def(20, 20));
+
+    for (const lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh"
+                                                                : nullptr);
+        for (const god_type god : {GOD_NO_GOD, GOD_ZIN, GOD_CHEIBRIADOS})
+        {
+            you.religion = god;
+            bool saw_sip = false;
+            bool saw_refusal = false;
+            for (uint64_t seed = 1; seed <= 64; ++seed)
+            {
+                rng::subgenerator sample(seed, 0xdec011ae20261101ULL);
+                const string text = getMiscString(
+                    "default peaceful fountain_sparkling");
+                INFO("god=" << god << " language=" << int(language)
+                     << " seed=" << seed << " text=" << text);
+                REQUIRE_FALSE(text.empty());
+                REQUIRE(text.find("{{") == string::npos);
+                const bool sip = text.find(language == lang_t::ZH
+                    ? "喝了一小口" : "take a small sip") != string::npos;
+                const bool refusal = text.find(language == lang_t::ZH
+                    ? "决定不喝" : "decide not to drink") != string::npos;
+                saw_sip |= sip;
+                saw_refusal |= refusal;
+                if (god != GOD_NO_GOD)
+                    CHECK_FALSE(sip);
+            }
+            CHECK(saw_refusal);
+            CHECK(saw_sip == (god == GOD_NO_GOD));
+            CHECK(you.religion == god);
+        }
     }
 }
 
@@ -10367,5 +10456,73 @@ assert(ok, err)
         const int result = dlua.execstring(script.c_str(), "Trog wizard real callback regression");
         INFO(dlua.error);
         REQUIRE(result == 0);
+    }
+}
+
+TEST_CASE("speech rereview: Beogh gaze retains its actual foe alternative",
+          "[zh-translation][monspeak-gaze][speech-rereview]")
+{
+    init_monsters();
+    init_properties();
+    init_mon_name_cache();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.hp = you.hp_max = 10;
+    you.religion = GOD_BEOGH;
+    uint64_t reference_state[2] = {};
+    uint64_t reference_count[2] = {};
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        scoped_monspeak_database database(language);
+        scoped_monspeak_world world;
+        monster *speaker = world.place(MONS_ORC);
+        REQUIRE(speaker);
+        speaker->base_attitude = ATT_FRIENDLY;
+        scoped_env_monster_slot foe_slot(coord_def(21, 21));
+        monster *target = foe_slot.place(MONS_RAT);
+        REQUIRE(target);
+        string raw;
+        for (uint64_t seed = 1; seed <= 512; ++seed)
+        {
+            rng::subgenerator random(seed, 0x67617a65);
+            raw = getSpeakString("_friendly_beogh_speech_rare_");
+            if (raw.find("@at_foe/around@") != string::npos)
+                break;
+        }
+        REQUIRE(raw.find("@at_foe/around@") != string::npos);
+        REQUIRE(raw.find("VISUAL:") == 0);
+        for (int monster_foe = 0; monster_foe != 2; ++monster_foe)
+        {
+            speaker->foe = monster_foe ? target->mindex() : MHITYOU;
+            rng::subgenerator random(0x67617a65, 0x72657669);
+            const string rendered = do_mon_str_replacements(raw, *speaker, S_SILENT);
+            CAPTURE(language, monster_foe, rendered);
+            CHECK(rendered.find('@') == string::npos);
+            CHECK(rendered.find("VISUAL:") == 0);
+            if (language == lang_t::ZH)
+            {
+                CHECK(rendered.find("紧张地") != string::npos);
+                if (monster_foe)
+                {
+                    CHECK(rendered.find("看向" + target->name(DESC_THE)) != string::npos);
+                    CHECK(rendered.find("环顾四周") == string::npos);
+                }
+                else
+                    CHECK(rendered.find("环顾四周") != string::npos);
+            }
+            else
+            {
+                CHECK(rendered.find(monster_foe
+                      ? "looks at " + target->name(DESC_THE) + " nervously"
+                      : "looks around nervously") != string::npos);
+                if (!reference_state[monster_foe])
+                {
+                    reference_state[monster_foe] = rng::current_generator().get_state();
+                    reference_count[monster_foe] = rng::current_generator().get_count();
+                }
+            }
+            CHECK(rng::current_generator().get_state() == reference_state[monster_foe]);
+            CHECK(rng::current_generator().get_count() == reference_count[monster_foe]);
+        }
     }
 }

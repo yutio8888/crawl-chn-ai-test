@@ -328,6 +328,35 @@ class ShoutInventoryTests(unittest.TestCase):
     def tearDownClass(cls):
         cls.temp.cleanup()
 
+    def test_current_exact_git_baseline_freezes_current_facts(self):
+        baseline = "9770e911ee7d40b51a61a1717aecda148c983412"
+        en = exact_artifact(baseline, "database/")
+        zh = exact_artifact(baseline, "database/zh/")
+        en_path, zh_path = self.root / "current-en.json", self.root / "current-zh.json"
+        en_path.write_text(json.dumps(en, ensure_ascii=False), encoding="utf-8")
+        zh_path.write_text(json.dumps(zh, ensure_ascii=False), encoding="utf-8")
+        inventory = MODULE.build_inventory(
+            baseline, en_path, zh_path, ROOT / "docs/glossary.md")
+        self.assertEqual(676, inventory["dumps"]["english"]["variant_count"])
+        self.assertEqual(676, inventory["dumps"]["localized"]["variant_count"])
+        self.assertEqual({}, inventory["scope"]["baseline_asymmetry"])
+        closure = set(inventory["scope"]["speakdb_monspeak_closure_keys"])
+        self.assertIn("thy_body_or_spiritual_part", closure)
+        self.assertNotIn("body_or_spiritual_part", closure)
+        complete = MODULE._speakdb_monspeak_facts(baseline, "current")["closure_keys"]
+        self.assertNotIn("body_or_spiritual_part", complete)
+        graph = MODULE._speakdb_token_edges(baseline, "current complete graph")
+        self.assertIn("friendly hound", graph)
+
+    def test_candidate_cannot_expand_frozen_scope_on_both_sides(self):
+        entries = [{"key": entry["key"]} for entry in self.inventory["entries"]]
+        entries.append({"key": "unknown_joint_candidate_key"})
+        with mock.patch.object(MODULE.hardened.shared, "_require_candidate_commit"), \
+                mock.patch.object(MODULE, "_load_dataset", return_value={"entries": entries}):
+            with self.assertRaisesRegex(MODULE.InventoryError, "key set differs from frozen inventory"):
+                MODULE.add_candidate(copy.deepcopy(self.inventory), BASELINE, BASELINE,
+                                     self.en_path, self.zh_path)
+
     def records(self) -> list[dict]:
         cards = [card_for(entry) for entry in self.inventory["entries"]]
         cards.sort(key=lambda card: card["identity"])

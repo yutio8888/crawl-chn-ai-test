@@ -298,9 +298,14 @@ class MonfleeInventoryTests(unittest.TestCase):
         )
         self.assertEqual(CURRENT_INVENTORY_SHA256,
                          inventory["inventory_sha256"])
-        MODULE.validate_results(
-            ROOT / "docs/monflee-review-results.md", inventory, None
-        )
+        # The current ledger may describe a later full review. Keep this
+        # exact historical regression paired with its immutable ledger.
+        ledger = self.root / "historical-monflee-ledger.md"
+        ledger.write_bytes(subprocess.check_output(
+            ["git", "-C", str(ROOT), "show",
+             "9770e911ee7d40b51a61a1717aecda148c983412:docs/monflee-review-results.md"]
+        ))
+        MODULE.validate_results(ledger, inventory, None)
 
     def test_schema_and_source_snapshot_binding_fail_closed(self):
         bad = artifact("en")

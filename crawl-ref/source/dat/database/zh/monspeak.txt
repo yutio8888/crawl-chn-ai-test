@@ -363,11 +363,11 @@ VISUAL:@The_monster@ 看起来很烦躁。
 
 @The_monster@ 上下打量着 @foe@。"你不是真正的战士！让你看看什么叫战士！"
 
-@The_monster@ 对 @foe@ 说："我曾把好些人马骑士送进死地。连大象一起。"
+@The_monster@ 对 @foe@ 说："我曾把一支支甲马人军团送进死地。连他们的大象一起。"
 
-@The_monster@ 对 @foe@ 尖叫道："我恨人马骑士！他们没有荣誉！"
+@The_monster@ 对 @foe@ 尖叫道："我恨甲马人！他们没有荣誉！"
 
-@The_monster@ 对 @foe@ 说："我退休到这个副本里。你想退到阴间去吗？"
+@The_monster@ 对 @foe@ 说："我退休到这个地牢里。你想退到阴间去吗？"
 
 @The_monster@ 对 @foe@ 尖叫道："我退休了！滚开！"
 
@@ -493,7 +493,7 @@ VISUAL:@The_monster@ 鞠了一躬。
 
 @The_monster@ 对 @foe@ 说："我鄙视不光彩的对手。"
 
-@The_monster@ 对 @foe@ 说："杀死你是我的职责，但也是我的荣幸。"
+@The_monster@ 对 @foe@ 说："杀死你是我的职责，也是我的乐趣。"
 
 @The_monster@ 咕哝道："我从来没训练过应对这种情况。"
 
@@ -568,7 +568,7 @@ VISUAL:@The_monster@ 被一阵突然的微风吹得东倒西歪。
 
 VISUAL:@The_monster_possessive@眼柄晃动着，差点把 @possessive@巫师帽抖下来。
 
-@The_monster@ 咕噜道："你这速度正好是我喜欢的食物。快！"
+@The_monster@ 咕噜道："你就跟我喜欢的食物一样——快餐！"
 
 @The_monster@ 咕噜道："慢下来，让我吃了你。"
 
@@ -614,7 +614,7 @@ VISUAL:@The_monster@ 咧嘴露出锋利的牙齿。
 
 @The_monster@ 说："等一下。"
 
-@The_monster@ 说："就站在那里别动一下……"
+@The_monster@ 说："就在那儿停一会儿……"
 
 @The_monster@ 说："别动一根肌肉。"
 
@@ -839,7 +839,7 @@ VISUAL:@The_monster@ 看起来急于把这事了结。
 _Harold_rare_
 VISUAL:@The_monster@ 停顿了片刻，@possessive@脸上带着微笑想象着什么。
 
-@The_monster@ 盘算道："我想用你的赏金买个 @_Harold_retirement_plan_@……" @player_only@
+@The_monster@ 盘算道："我想用你的赏金买下@_Harold_retirement_plan_@……" @player_only@
 
 @The_monster@ 问："你介意我把我的船命名为'@player_name@'号吗？毕竟是你的脑袋付的钱。" @player_only@
 
@@ -871,10 +871,10 @@ w:3
 @The_monster@ 低头看着 @possessive@致命伤口，哭喊道："可是……这是我退休前的最后一天……"
 
 w:2
-@The_monster@ 用 @possessive@ 最后一口气喘息道："我后悔应该少工作些……"
+@The_monster@ 用 @possessive@ 最后一口气喘息道："真希望我以前少工作一些……"
 
 w:1
-@The_monster@ 倒地，紧紧按着 @possessive@伤口。"但我本来要买个 @_Harold_retirement_plan_@ 的……"
+@The_monster@ 倒地，紧紧按着 @possessive@伤口。"但我本来要买下@_Harold_retirement_plan_@ 的……"
 %%%%
 Harold triumphant
 
@@ -882,13 +882,13 @@ Harold triumphant
 
 @The_monster@ 说："该退休了。"
 
-@The_monster@ 叹了口气："终于，我可以弄个 @_Harold_retirement_plan_@ 安定下来了。"
+@The_monster@ 叹了口气："终于，我可以购得@_Harold_retirement_plan_@ 安定下来了。"
 
 @The_monster@ 叹了口气："这之后，老 @the_monster@ 就只有 @_Harold_ret_hobby_@ 了。"
 %%%%
 _Harold_retirement_plan_
 
-@_Harold_ret_house_@ @_Harold_ret_place_@
+@_Harold_ret_place_@的@_Harold_ret_house_@
 
 钓鱼船
 
@@ -963,9 +963,9 @@ VISUAL:@The_monster@ 威胁地绷紧了一条肱二头肌。
 _Robin_rare_
 @The_monster@ 说："像你这样可怜的小 @player_genus@，永远也找不到宝珠！"
 
-@The_monster@ 说："匍匐在我面前吧，哥布林中最强大的存在！"
+@The_monster@ 说："向我这大地精中的最强者躬身行礼！"
 
-@The_monster@ 说："我的哥布林们会大啖你的骨头。"
+@The_monster@ 说："我的地精们会大啖你的骨头。"
 
 w:2
 @The_monster@ 说："我们把山地矮人都灭了——你就是下一个！"
@@ -1126,7 +1126,7 @@ VISUAL:@The_monster_possessive@眼睛看起来燃烧着火焰。
 VISUAL:@The_monster@ 短暂地被一团火焰遮蔽了。
 %%%%
 _Azrael_rare_
-@The_monster@ 咧嘴笑着问 @foe,@「你[易燃吗|不易燃吗|感到热吗]？」
+@The_monster@ 咧嘴笑着问 @foe,@「你[易燃吗|可燃吗|感到热吗]？」
 
 @The_monster@ 对 @foe@ 说："今晚我们有美味的 @foe_genus@ 烤肉串吃了！"
 
@@ -1263,7 +1263,7 @@ VISUAL:@The_monster@ 给 @reflexive@ 加了一个魔法光环，但它很快就�
 @The_monster@ 咕哝着咒语的词句，但顺序不对。
 %%%%
 _Maggie_rare_
-@The_monster@ 对 @foe@ 说："如果你死在副本里，但周围没有人看到，那这重要吗？"
+@The_monster@ 对 @foe@ 说："如果你死在地牢里，但周围没有人看到，那这重要吗？"
 
 @The_monster@ 对 @foe@ 说："是兰斯大师派你来的吗？"
 
@@ -1371,7 +1371,7 @@ VISUAL:@The_monster@ 朝你呼出了烟灰。
 
 VISUAL:@The_monster@ 迸发出黑暗的能量！
 
-@The_monster@ @_Menkaure_verb_@几个词。
+@The_monster@ @_Menkaure_verb_@，说出几个词。
 
 VISUAL:@The_monster@ 干巴巴地@_Menkaure_verb_@。
 
@@ -1382,13 +1382,13 @@ VISUAL:@The_monster@ 咧嘴一笑。
 _Menkaure_rare_
 @The_monster_possessive@脚踝释放出一缕尘烟，@subjective@坦白道："其实我不是真的木乃伊，你知道的。"
 
-VISUAL:@The_monster@ 忘记了如何说话，被岁月沉寂了。
+VISUAL:@The_monster@ 已被漫长岁月夺去了言语能力，忘记了如何说话。
 
 VISUAL:@The_monster@ 不祥地朝 @foe@ 打了个手势。
 
 @The_monster@ 对 @foe@ 喊道："你打扰了我的安息！死！"
 
-@The_monster@ @_Menkaure_verb_@对 @foe@ 说："尘归尘，土归土。"
+@The_monster@ 对 @foe@ @_Menkaure_verb_@："尘归尘，土归土。"
 
 @The_monster@ 对 @foe@ 喊道："时光之沙将把你从历史中抹去！"
 
@@ -1406,7 +1406,7 @@ _Menkaure_verb_
 
 咕哝着
 
-沙沙作响地
+沙沙作响
 
 轻语着
 %%%%
@@ -1439,7 +1439,7 @@ w:1
 @The_monster@ 说："站住别动，好吗？我有一记绝招想试试。"
 
 w:1
-@The_monster@ 说："我可是教训过那个大家伙。你没问题。"
+@The_monster@ 说："我可是教训过那个大家伙。对付你不成问题。"
 
 w:1
 @The_monster@ 试图跟 @foe@ 讲一个关于多头蛇、@possessive@血和婚姻的复杂故事。
@@ -1636,7 +1636,7 @@ VISUAL:@The_monster@ 用@possessive@武器朝 @foe@ 比划了一下。
 @The_monster@ 对 @foe@ 说："当魔法与剑合在一起，没什么能挡在它们面前。"
 %%%%
 _Duvessa_rare_
-@The_monster@ 对 @foe@ @_shouts_@："你可以跑，但你永远也逃不出我们的手心！" @player_only@
+@The_monster@ 对 @foe@ @_shouts_@："你可以跑，但别想永远逃开我们！" @player_only@
 
 @The_monster@ 对 @foe@ 说："我不在乎外表，我在乎的是技巧！"
 
@@ -1718,23 +1718,23 @@ VISUAL:@The_monster@ 看起来很放松。
 
 @The_monster@ 唱着："和平当下，自由当下！和平当下，自由当下！"
 
-@The_monster@ @_Norris_verb_@对 @foe@ 说："人生就是苦难。我来帮你。"
+@The_monster@ 对 @foe@ @_Norris_verb_@："人生就是苦难。我来帮你。"
 
-@The_monster@ @_Norris_verb_@对 @foe@ 说："重回宇宙之流吧！"
+@The_monster@ 对 @foe@ @_Norris_verb_@："重回宇宙之流吧！"
 
 @The_monster@ 对 @foe@ 说："有时候，沉下去比游着更好。"
 
 @The_monster@ 对 @foe@ 说："深呼吸。"
 
-@The_monster@ @_Norris_verb_@对 @foe@ 说："平和！我为你带来永恒的平和！"
+@The_monster@ 对 @foe@ @_Norris_verb_@："平和！我为你带来永恒的平和！"
 
-@The_monster@ @_Norris_verb_@对 @foe@ 说："让浪涛带走你吧。"
+@The_monster@ 对 @foe@ @_Norris_verb_@："让浪涛带走你吧。"
 
-@The_monster@ @_Norris_verb_@对 @foe@ 说："顺其自然就好。"
+@The_monster@ 对 @foe@ @_Norris_verb_@："顺其自然就好。"
 
-@The_monster@ @_Norris_verb_@对 @foe@ 说："何必拖延那不可避免之事？"
+@The_monster@ 对 @foe@ @_Norris_verb_@："何必拖延那不可避免之事？"
 
-@The_monster@ @_Norris_verb_@对 @foe@ 说："先抓住小浪，再追大浪。"
+@The_monster@ 对 @foe@ @_Norris_verb_@："先抓住小浪，再追大浪。"
 %%%%
 _Norris_rare_
 VISUAL:@The_monster@ 看起来非常心平气和。
@@ -1743,15 +1743,15 @@ VISUAL:@The_monster@ 看起来非常心平气和。
 
 @The_monster@ @_Norris_verb_@："我觉得我真该试一次死亡。"
 
-@The_monster@ @_Norris_verb_@对 @foe@ 说："你对接下来发生的事就一点也不好奇吗？"
+@The_monster@ 对 @foe@ @_Norris_verb_@："你对接下来发生的事就一点也不好奇吗？"
 
-@The_monster@ @_Norris_verb_@对 @foe@ 说："宇宙就像一条大鱼。"
+@The_monster@ 对 @foe@ @_Norris_verb_@："宇宙就像一条大鱼。"
 
 @The_monster@ @_Norris_verb_@："智慧在于知道何时该放弃。"
 
-@The_monster@ @_Norris_verb_@对 @foe@ 说："只有傻瓜才怕死。我拥抱它。"
+@The_monster@ 对 @foe@ @_Norris_verb_@："只有傻瓜才怕死。我拥抱它。"
 
-@The_monster@ @_Norris_verb_@对 @foe@ 说："死后你会找到内心的平和。"
+@The_monster@ 对 @foe@ @_Norris_verb_@："死后你会找到内心的平和。"
 
 @The_monster@ 沉思道："人能两次踏入同一条河流吗？"
 
@@ -1759,9 +1759,9 @@ VISUAL:@The_monster@ 看起来非常心平气和。
 
 @The_monster@ 对 @foe@ 叹气道："觉悟是一种沉重的责任。"
 
-@The_monster@ @_Norris_verb_@对 @foe@ 说："让我们一起喂天鲨吧。"
+@The_monster@ 对 @foe@ @_Norris_verb_@："让我们一起喂天鲨吧。"
 
-@The_monster@ @_Norris_verb_@对 @foe@ 说："我们都由神明构成。"
+@The_monster@ 对 @foe@ @_Norris_verb_@："我们都由神明构成。"
 %%%%
 ############ ROXANNE ### 岩石学法师
 Roxanne
@@ -1792,7 +1792,7 @@ _Roxanne_rare_
 
 @The_monster@ 琢磨道："也许油会管用？大概不会。"
 
-@The_monster@ 对 @foe@ 断言道："过几分钟你就会成为虫子的大餐，而我则要忍受[千万年|亿万年]。"
+@The_monster@ 对 @foe@ 断言道："过几分钟你就会成为虫子的大餐，而我则要忍受[数千年|亿万年]。"
 
 @The_monster@ 对 @foe@ 说："你或许是个勇猛的战士，但绝不是个石匠！"
 
@@ -1893,7 +1893,7 @@ w:50
 
 @The_monster@ 说："蚊子要我的血干嘛？"
 
-@The_monster@ 说："希望这些沼泽蠕虫都淹死。"
+@The_monster@ 说："希望这些沼泽虫都淹死。"
 
 @The_monster@ 说："该死，我把火焰剑忘在家里了。"
 
@@ -1903,7 +1903,7 @@ w:50
 
 @The_monster@ 说："好歹有块干燥的陆地。我讨厌被弄湿。"
 
-@The_monster@ 说："是不是爆发什么青蛙瘟疫了？还好不是蝗虫。"
+@The_monster@ 说："这里是青蛙泛滥成灾了还是什么？至少不是蝗虫。"
 
 @The_monster@ 说："多头蛇的头越多，我就越讨厌它们。"
 %%%%
@@ -1919,9 +1919,9 @@ w:50
 
 @The_monster@ 说："至少这地方没有沼泽那么臭。"
 
-@The_monster@ 说："那些海妖的声音开始震得我耳朵疼了。"
+@The_monster@ 说："那些塞壬的声音开始震得我耳朵疼了。"
 
-@The_monster@ 说："海妖就那声音？我唱得都比那好！"
+@The_monster@ 说："塞壬就那声音？我唱得都比那好！"
 
 @The_monster@ 说："这海从哪来的？我还以为这地方是地下。"
 
@@ -1933,7 +1933,7 @@ w:50
 
 @The_monster@ 说："我全身湿透了。我讨厌被弄湿！"
 
-@The_monster@ 说："那些克拉肯看起来根本不像真的。"
+@The_monster@ 说："那些海怪看起来根本不像真的。"
 
 @The_monster@ 说："我在找美杜莎女士。你见过她吗？"
 
@@ -1995,7 +1995,7 @@ w:50
 
 @The_monster@ 说："每次觉得有人在看我的时候，我就僵住了。"
 
-@The_monster@ 说："酸液泡让我想起胃反流。我恨反流。"
+@The_monster@ 说："酸液团让我想起胃反流。我恨反流。"
 
 @The_monster@ 说："这些黏糊糊的东西是什么情况？简直是黏液世界。我恨黏液。"
 
@@ -2003,7 +2003,7 @@ w:50
 
 @The_monster@ 说："希望符文别是黏的。"
 
-@The_monster@ 说："一块石头硌了我的脚趾。我恨那个。"
+@The_monster@ 说："一块石头在我的脚趾上把自己磕了一下。我讨厌这样。"
 
 @The_monster@ 说："水银到底有什么神奇的啊？"
 %%%%
@@ -2240,9 +2240,9 @@ w:50
 
 @The_monster@ 说："呕，你一身瘴气！"
 
-@The_monster@ 说："我讨厌活尸。"
+@The_monster@ 说："我讨厌可怜虫。"
 
-@The_monster@ 说："要挖多深才能有源源不断的活尸？"
+@The_monster@ 说："要挖多深才能有源源不断的可怜虫？"
 
 @The_monster@ 说："你一定很爱痛苦。我讨厌它。"
 
@@ -2764,11 +2764,11 @@ VISUAL:@The_monster@ [高兴地|兴奋地]吠叫着！
 
 VISUAL:@The_monster@ 傻乎乎地绕着圈跑！
 
-VISUAL:@The_monster@ 期待地看着你{{
+VISUAL:@The_monster@ {{
   if you.race() == "Felid" then
-      return "，然后又趴了下去"
+      return "低头期待地望着你"
   else
-     return "，又抬头望了望"
+     return "抬头期待地望着你"
   end
 }}。
 
@@ -2946,7 +2946,7 @@ w:50
 
 @The_monster@ 说："你看起来像个无所不知的人。我讨厌那样。"
 
-@The_monster@ 说："就算全知全能，要是啥也做不了，又有什么意义？"
+@The_monster@ 说："就算全知，要是啥也做不了，又有什么意义？"
 
 @The_monster@ 朝你做了个鬼脸，喊道："该死！"
 
@@ -3005,7 +3005,7 @@ w:5
 
 @The_monster@ 说："你一定把能用来赌咒的神都骂光了吧。"
 
-@The_monster@ 说："你错过了普世神庙吗？"
+@The_monster@ 说："你错过了普世神殿吗？"
 %%%%
 Gozag permabribe
 @The_monster@ 朝 @foe@ 贪婪地咧嘴笑着，叮当地晃着一袋钱币。
@@ -3516,7 +3516,7 @@ w:5
 @The_monster@ 不知对谁 @_orc_shouts_@。
 
 w:2
-@The_monster@ @_loudly_or_repeatedly_@ @_shouts_@ 打气之词，也不知谁在听。
+@The_monster@ @_loudly_or_repeatedly_@ @_shouts_@，发出鼓励的话语，也不知是在说给谁听。
 
 @The_monster@ 唱了几句兽人颂歌。
 %%%%
@@ -3601,7 +3601,7 @@ w:5
 _friendly_beogh_speech_common_
 
 w:5
-@The_monster@ @_loudly_or_repeatedly_@ @_shouts_@ 打气@_orc_modifier_@
+@The_monster@ @_loudly_or_repeatedly_@ @_shouts_@，发出鼓励的话语@_orc_modifier_@
 
 @The_monster@ 喊道："兽人为比欧弗杀，兽人为比欧弗死！"
 
@@ -3651,7 +3651,7 @@ _friendly_beogh_speech_rare_
 
 @The_monster@ @_says_or_shouts_@："我们倒下的兄弟不会被遗忘。"
 
-VISUAL:@The_monster@ 紧张地看了看四周。
+VISUAL:@The_monster@紧张地@at_foe/around@。
 
 @The_monster@ 看着 @foe@ 说："我实在不想为你效劳而死，@player_name@。"
 
@@ -4220,7 +4220,7 @@ VISUAL:@The_monster@对@foe@疯狂地转动着@possessive@眼睛。
 @The_monster@ 对 @foe@ 说："想从我这里逃走是@_pointless_@的！"
 %%%%
 _Polyphemus_rare_
-VISUAL:@The_monster@似乎在打量@foe@，盘算着把@possessive@当作下一顿大餐。
+VISUAL:@The_monster@似乎在打量@foe@，盘算着@possessive@下一顿大餐。
 
 VISUAL:@The_monster@愤怒地在@surface@上跺脚。
 
@@ -4296,7 +4296,7 @@ _Saint Roka rival_
 @The_monster@喊道："兽人们，注意了：这个骗子不过是个{{ return crawl.t_(you.race()) }}！"
 %%%%
 _Sojobo_advice_
-@The_monster@ 对 @foe@ 说："能而示之不能，用而示之不用。"
+@The_monster@ 对 @foe@ 说："强而示弱，弱而示强。"
 
 @The_monster@ 对 @foe@ 说："知彼知己，百战不殆。"
 
@@ -4304,19 +4304,19 @@ _Sojobo_advice_
 
 @The_monster@ 对 @foe@ 说："兵者，诡道也。"
 
-@The_monster@ 对 @foe@ 说："善战者，不战而屈人之兵。"
+@The_monster@ 对 @foe@ 说："善战者，避无谓之战。"
 
-@The_monster@ 对 @foe@ 说："乱而取之。"
+@The_monster@ 对 @foe@ 说："制敌之秘，全在惑敌。"
 
 @The_monster@ 对 @foe@ 说："避实而击虚。"
 
-@The_monster@ 对 @foe@ 说："攻而必取者，攻其所不守也。"
+@The_monster@ 对 @foe@ 说："进攻乃防守之要。"
 
 @The_monster@ 对 @foe@ 说："善战者，致人而不致于人。"
 
 @The_monster@ 对 @foe@ 说："出其所不趋，趋其所不意。"
 
-@The_monster@ 对 @foe@ 说："多算胜，少算不胜。"
+@The_monster@ 对 @foe@ 说："谋定而后动。"
 %%%%
 _Sojobo_common_
 VISUAL:@The_monster@摆出一个剑术架势。
@@ -4358,7 +4358,7 @@ _Sprozz_common_
 
 
 
-@The_monster@咧嘴笑道："很快，每个养蜂场都会想要一块斯普罗兹的份额！"
+@The_monster@咧嘴笑道："很快，每个养蜂场都会想从斯普罗兹的生意里分一杯羹！"
 
 
 
@@ -4483,7 +4483,7 @@ _Wiglaf_rare_
 _Xak'krixis_monster_thoughts_
 
 
-@The_monster@沉吟道："唉，若能像跳蛛一般自由跃动……"
+@The_monster@沉吟道："唉，若能像跳跃蜘蛛一般自由跃动……"
 
 
 
@@ -4491,7 +4491,7 @@ _Xak'krixis_monster_thoughts_
 
 
 
-@The_monster@沉吟道："唉，若能像日之蛾一般耀眼夺目……"
+@The_monster@沉吟道："唉，若能像太阳蛾一般耀眼夺目……"
 
 
 
@@ -4499,7 +4499,7 @@ _Xak'krixis_monster_thoughts_
 
 
 
-@The_monster@沉吟道："唉，若能像怒之蛾一般激发炽热激情……"
+@The_monster@沉吟道："唉，若能像愤怒飞蛾一般激发炽热激情……"
 
 
 
@@ -5377,7 +5377,7 @@ _crazy_yiuf_wordlist2_
 # Nemelex's deck of destruction
 _deck_of_destruction_line_
 
-@The_monster@抽到了堕落。"有太多方法可以变异了！"
+@The_monster@抽到了退化。"有太多方法可以变异了！"
 
 @The_monster@抽到了宝珠。"毁灭之球可疼了！"
 
@@ -5407,7 +5407,7 @@ _deck_of_escape_line_
 # Nemelex's deck of summoning
 _deck_of_summoning_line_
 
-@The_monster@抽到了剑舞。"希望武器的准头不错！"
+@The_monster@抽到了舞蹈。"希望武器的准头不错！"
 
 @The_monster@抽到了元素。"到处都是元素兽！"
 
@@ -5417,7 +5417,7 @@ _deck_of_summoning_line_
 
 @The_monster@抽到了游侠。"会射击的新朋友！"
 
-@The_monster@抽到了蜂群。"蜜蜂，到处都是蜜蜂！"
+@The_monster@抽到了虫群。"蜜蜂，到处都是蜜蜂！"
 %%%%
 _deck_of_oddities_card_
 
@@ -5463,14 +5463,14 @@ _deck_of_punishment_line_
 
 
 
-@The_monster@抽到了幽魂。"吸取生命可疼了！"
+@The_monster@抽到了幽魂。"衰竭真难受！"
 
 
 
 @The_monster@抽到了神怒。"神明惩罚你的方式太多了！"
 %%%%
 _demon_taunt_
-@The_monster@ @says@："@demon_taunt@"
+@The_monster@ 对 @foe@ @says@："@demon_taunt@"
 %%%%
 _dissolution_rare_
 @The_monster@说："吾等由黏液而来，亦终归黏液。"
@@ -5683,7 +5683,7 @@ VISUAL:@The_monster@试图找地方躲起来。
 _friendly_fleeing_rare_
 
 
-@The_monster@@_shouts_@道："等等我，@player_name@！你能帮帮我吗？"
+@The_monster@@_shouts_@："等等我，@player_name@！你能帮帮我吗？"
 
 
 
@@ -5881,7 +5881,7 @@ _good_god_
 艾利维隆
 %%%%
 _hell_lord_taunt_
-@The_monster@ @says@："@demon_taunt@"
+@The_monster@ 对 @foe@ @says@："@demon_taunt@"
 %%%%
 _high_priest_
 @_high_priest_common_@
@@ -6086,7 +6086,7 @@ _mercenary_guard_medium_
 
 @The_monster@ 对 @foe@ 说："来这里是你最后的错误。"
 
-@The_monster@ 对 @foe@ 说："最好的防守就是最好的进攻。"
+@The_monster@ 对 @foe@ 说："最好的进攻就是出色的进攻。"
 
 @The_monster@ 对 @foe@ 吼道："立刻返回，否则我要你的命！"
 %%%%
@@ -6187,7 +6187,7 @@ _player_ghost_rare_
 
 # Hamlet
 
-@The_monster@@_wails_@道："死去，睡去，仅此而已。"
+@The_monster@@_wails_@："死去，睡去，仅此而已。"
 
 
 
@@ -6213,7 +6213,7 @@ _player_ghost_rare_
 
 
 
-@The_monster@@_wails_@道："你绝不能在我成功之处失败！"
+@The_monster@@_wails_@："你绝不能在我成功之处失败！"
 %%%%
 _pointless_
 
@@ -6243,7 +6243,7 @@ w:80
 
 突变药剂——恶魔的酿造！
 
-耐克索克与兹克兹尔——愿它们全部被消灭！
+内科塞克与泽科齐尔——愿它们全部被消灭！
 
 尊重智慧生命的正确饮食。
 
@@ -6255,7 +6255,7 @@ w:80
 
 伊莱德莱姆努尔的堕落。
 
-卢格努的斥责。
+对卢格努的谴责。
 
 辛与光辉者的同盟。
 
@@ -6270,23 +6270,23 @@ w:80
 _recite_what_
 
 
-一首关于……的诗
+一首诗，主题是
 
 
 
-关于……的圣典
+一段圣典，其内容涉及
 
 
 
-辛关于……的训言
+辛的训言，阐述的是
 
 
 
-以洪亮之声论……
+洪亮的诵辞，阐述的是
 
 
 
-以响亮之声论……
+响亮的诵辞，阐述的是
 %%%%
 _recites_start_
 
@@ -6295,14 +6295,14 @@ _recites_start_
 
 
 
-投入
+展开
 
 
 
-着手
+着手进行
 %%%%
 _says_imp_taunt_
-@The_monster@ @says@："@imp_taunt@"
+@The_monster@ 对 @foe@ @says@："@imp_taunt@"
 %%%%
 _says_or_shouts_
 
@@ -6355,9 +6355,9 @@ VISUAL:@The_monster@似乎在倾听。
 ## END silenced humanoid ##
 %%%%
 _spectator_speech_
-@The_monster@@_loudly_or_repeatedly_@地对你发出嘲笑。
+@The_monster@@_loudly_or_repeatedly_@对你发出嘲笑。
 
-@The_monster@@_loudly_or_repeatedly_@地欢呼。
+@The_monster@@_loudly_or_repeatedly_@欢呼。
 
 @The_monster@赞许地@_shouts_@。
 
@@ -6847,7 +6847,7 @@ w:7
 
 @The_monster@ 对 @foe@ 说："在这下面，你不做兽人就什么都不是。"
 
-@The_monster@ 对 @foe@ 说："在兽人矿山里，兽人专杀你们这种东西！"
+@The_monster@ 对 @foe@ 说："在兽人矿坑里，兽人专杀你们这种东西！"
 %%%%
 Sojobo
 @_Sojobo_common_@
@@ -6934,7 +6934,7 @@ w:20
 @_wizard_@
 
 w:1
-@The_monster@[抱怨|嘟囔]着神秘术士的事。
+@The_monster@[抱怨|嘟囔]着神秘学者的事。
 
 w:9
 __NONE
@@ -7029,7 +7029,7 @@ VISUAL:@The_monster@短暂地长出一张与你惊人相似的脸。
 @The_monster@以嘈杂的声音语无伦次地胡言乱语。
 %%%%
 cherub
-@The_monster@以四部和声咏唱赞美光辉之神。
+@The_monster@以四部和声咏唱赞美光辉者。
 
 @The_monster_possessive@狮首咆哮！
 
@@ -7072,7 +7072,7 @@ VISUAL:你在@the_monster@身上看到自己支离破碎的倒影扭曲蠕动。
 %%%%
 death cob
 w:1
-死亡玉米讲了一个老掉牙的笑话。
+死亡玉米棒讲了一个老掉牙的笑话。
 
 w:1999
 __NONE
@@ -7188,7 +7188,7 @@ VISUAL:@The_monster_possessive@牌组短暂地闪耀出诡异的七彩光芒。
 
 @The_monster@咧嘴笑道："这么多牌！全都拜@my_God@所赐！"
 
-@The_monster@拒绝提供保险。
+@The_monster@拒绝接受保险。
 
 w:20
 @_deck_of_destruction_line_@
@@ -7224,7 +7224,7 @@ w:1
 @The_monster@ 对 @foe@ 尖叫道："@Foe_god@对我来说不过是个麻烦，凡人！"
 
 w:1
-@The_monster@ 对 @foe@ 尖叫道："@Foe_god@会在我剥你皮的时候哭泣的！"
+@The_monster@ 对 @foe@ 尖叫道："@Foe_god@会在我剥你尸体的皮的时候哭泣的！"
 %%%%
 hell lord
 
@@ -7246,11 +7246,11 @@ laughing skull
 
 
 
-@The_monster@对着历史终将遗忘在场的每一个人@_laughs_@。
+@The_monster@为历史终将遗忘在场每个人这一事实而@_laughs_@。
 
 
 
-@The_monster@对着地牢毫无慈悲与尊严@_laughs_@。
+@The_monster@为地牢的冷酷无情、毫无尊严而@_laughs_@。
 
 
 
@@ -7336,11 +7336,11 @@ w:1
 protean progenitor
 VISUAL:@The_monster_possessive@形态[|短暂地][波动|摇曳]着，透着深深的疲惫。
 
-VISUAL:@The_monster_possessive@那[三重嵌套的|六颗尖牙的|九只冒烟的]眼睛缓缓眨动。
+VISUAL:@The_monster_possessive@那[三只嵌套在一起的|六只有尖牙的|九只冒烟的]眼睛缓缓眨动。
 
 VISUAL:@The_monster@[闪烁着|噼啪作响]，[叹息着|咕哝着]，[招引着|重重踩踏着]。
 
-VISUAL:@The_monster@展开又缩回了隐藏的[触角|吐丝器|伪足]。
+VISUAL:@The_monster@展开并压扁了隐藏的[触角|吐丝器|伪足]。
 
 w:20
 __NONE
@@ -7416,15 +7416,15 @@ w:40
 
 @The_monster@正在布道，谈论着@_recite_subject_@
 
-@The_monster@@_recites_start_@一场@_lecture_modifier_@的演讲，关于@_recite_subject_@
+@The_monster@@_recites_start_@一场@_lecture_modifier_@演讲，关于@_recite_subject_@
 
-@The_monster@详细解释了关于@_recite_subject_@
+@The_monster@详细讲解了@_recite_subject_@
 
-@The_monster@阐释了@_important_subject_@的重要性
+@The_monster@阐释了以下内容的重要性：@_important_subject_@
 
-@The_monster@@_recites_start_@一场@_lecture_modifier_@的布道，关于@_recite_subject_@
+@The_monster@@_recites_start_@一场@_lecture_modifier_@布道，关于@_recite_subject_@
 
-@The_monster@@_recites_start_@一场@_lecture_modifier_@的讲话，关于@_recite_subject_@
+@The_monster@@_recites_start_@一场@_lecture_modifier_@讲话，关于@_recite_subject_@
 
 w:5
 @The_monster@谈论着@_recite_subject_@
@@ -8212,7 +8212,7 @@ _friendly_imp_greeting
 
 @The_monster@说道："让我们@_cause_or_spread_@@_mayhem_@！"
 
-@The_monster@说道："我@_truckle_@于您的@_vassalage_@，@_suck_up_address_@@_suck_up_adj1_@且@_suck_up_adj2_@的@_suck_up_noun_@！"
+@The_monster@说道："我@_truckle_@于您的@_vassalage_@，@_suck_up_address_@@_suck_up_adj1_@且@_suck_up_adj2_@@_suck_up_noun_@！"
 
 w:300
 __NONE
@@ -8240,7 +8240,7 @@ Alchemy player ghost
 @The_monster@ 对 @foe@ 说："杀了我又如何。你还是会死。"
 
 
-@The_monster@ 对 @foe@ 说："别动，不然毒会蔓延得更快。"
+@The_monster@ 对 @foe@ 说："别动，不然毒会更快要你的命。"
 
 
 @The_monster@ 对 @foe@ 说："我已经不需要呼吸了，但你还得喘气！"
@@ -8251,7 +8251,7 @@ Armour player ghost
 @The_monster@ 说："你伤不了我！"
 
 
-@The_monster@ 说："我是不朽的！"
+@The_monster@ 说："我是无敌的！"
 
 
 @The_monster@ 说："我是钢铁铸就的！"
@@ -8337,7 +8337,7 @@ Cheibriados player ghost
 Conjurations player ghost
 
 
-VISUAL:@The_monster@ 瞄准了你。
+VISUAL:@The_monster@ 开始瞄准。
 
 
 @The_monster@ 说："我要把你炸成碎片。"
@@ -8466,7 +8466,7 @@ w:50
 
 @The_monster@ 说："这些精灵没一个会打架的。我讨厌这样。"
 
-@The_monster@ 说："话说回来，建个刀锋大厅又有什么意义？"
+@The_monster@ 说："话说回来，建个刀锋殿堂又有什么意义？"
 %%%%
 Elyvilon Donald
 w:50
@@ -8605,10 +8605,10 @@ Gozag player ghost
 VISUAL:@The_monster@ 向你晃了晃一个鼓鼓的钱袋。
 
 
-@The_monster@ 说："你真是金玉其表。"
+@The_monster@ 说："你真像金子一样好。"
 
 
-@The_monster@ 说："看来好死后生活是买不来的。"
+@The_monster@ 说："看来美好的来世是买不来的。"
 %%%%
 Hepliaklqana Donald
 w:50
@@ -8721,17 +8721,17 @@ w:50
 
 @The_monster@ 说："啊。这下知道那些东西都去哪了。"
 
-@The_monster@ 说："找到宝珠之后你打算开个史莱姆养殖场吗？"
+@The_monster@ 说："找到宝珠之后你打算开个果冻怪养殖场吗？"
 
-@The_monster@ 说："我讨厌史莱姆占领一整层。"
+@The_monster@ 说："我讨厌果冻怪占领一整层。"
 
-@The_monster@ 说："你的史莱姆吃了我的午餐。我讨厌这样。"
+@The_monster@ 说："你的果冻怪吃了我的午餐。我讨厌这样。"
 
 @The_monster@ 说："我讨厌黏液。"
 
 @The_monster@ 说："你一定很讨厌门。"
 
-@The_monster@ 说："我装成史莱姆的话，能拿你的东西吗？"
+@The_monster@ 说："我装成果冻怪的话，能拿你的东西吗？"
 %%%%
 Jiyva player ghost
 
@@ -8772,7 +8772,7 @@ Kikubaaqudgha player ghost
 Long Blades player ghost
 VISUAL:@The_monster@ 将@possessive@利刃横在身前，严阵以待。
 
-@The_monster@ 说："剑在人在，剑亡人亡。"
+@The_monster@ 说："以剑为生，亦将死于剑下。"
 %%%%
 Lugonu Donald
 w:50
@@ -8836,7 +8836,7 @@ Makhleb player ghost
 @The_monster@ 说："对付你不需要恶魔支援。"
 
 
-@The_monster@ 说："我生前就是为了杀你这种人而乐此不疲地赴死。"
+@The_monster@ 说："我死去，就是为了以毁灭你这种人为乐。"
 
 
 @The_monster@ 说："毁灭是一门超越生死的职业。"
@@ -8845,7 +8845,7 @@ Makhleb player ghost
 @The_monster@ 对 @foe@ 说："先让你受苦，再让你死。"
 
 
-@The_monster@ 夸口道："我熬过了血肉之锅！如今已无所畏惧！"
+@The_monster@ 夸口道："我熬过了血肉熔炉！如今已无所畏惧！"
 %%%%
 Necromancy player ghost
 
@@ -8897,13 +8897,13 @@ Nemelex Xobeh player ghost
 @The_monster@ 对你说："牌面上你的未来可不好。"
 
 
-@The_monster@ 对 @foe@ 说："我来为你发出死亡的牌局！"
+@The_monster@ 对 @foe@ 说："我要把死亡之牌发给你！"
 %%%%
 Okawaru Donald
 w:50
 @_generic_Donald_@
 
-@The_monster@ 说："奥卡瓦鲁总让我想起巧克力。"
+@The_monster@ 说："奥卡瓦鲁总让我想起佛手瓜。"
 
 @The_monster@ 说："哦，嘿！我正想换个新盾牌。你有备用的吗？"
 
@@ -9083,10 +9083,10 @@ Shapeshifting player ghost
 @The_monster@ 说："色即是空，空即是色。"
 
 
-VISUAL:@The_monster@ 短暂地变得莫名地像一只 @_form_@。
+VISUAL:@The_monster@ 短暂地变得莫名地像@_form_@。
 
 
-VISUAL:@The_monster@ 短暂地变成了一只 @_form_@，然后变了回来。
+VISUAL:@The_monster@ 短暂地变成了@_form_@，然后变了回来。
 %%%%
 Shields player ghost
 
@@ -9094,7 +9094,7 @@ Shields player ghost
 @The_monster@ 说："你能打中我，但伤不了我。"
 %%%%
 Short Blades player ghost
-@The_monster@ 说："匕首不在长，好用就行。"
+@The_monster@ 说："刀刃不论大小，就看你怎么用。"
 
 @The_monster@ 对 @foe@ 说："你嘲笑我的短刃，我就嘲笑你冰冷的尸体。"
 
@@ -9119,7 +9119,7 @@ Sif Muna player ghost
 Slings player ghost
 
 
-@The_monster@ 说："爬得越高，摔得越重！"
+@The_monster@ 说："个头越大，倒下时摔得越重！"
 
 
 VISUAL:@The_monster@ 在 @possessive@ 头顶上方挥舞着一把幽灵投石索。
@@ -9156,7 +9156,7 @@ Staves player ghost
 @The_monster@ 说："我最擅长杖退那些羸弱的冒险者。"
 
 
-VISUAL:@The_monster@ 旋转着 @possessive@齐眉棍。
+VISUAL:@The_monster@ 旋转着 @possessive@长棍。
 
 
 @The_monster@ 扬言要敲碎你的头骨。 @player_only@
@@ -9340,7 +9340,7 @@ w:50
 
 @The_monster@ 说："不用找了，底下只有破烂。"
 
-@The_monster@ 说："我问典狱长符文在哪。她当面把门摔上了。"
+@The_monster@ 说："我问宝库看守符文在哪。她当面把门摔上了。"
 
 @The_monster@ 说："我不记得收到过什么聚会的邀请函。"
 
@@ -9348,7 +9348,7 @@ w:50
 
 @The_monster@ 说："为了放些破烂占这么大地方。"
 
-@The_monster@ 说："之前看到了一些半人马骑兵，不过我先溜了。"
+@The_monster@ 说："之前看到了一些牦牛人马，不过我先溜了。"
 
 @The_monster@ 说："之前看到了一条龙，不过我没靠太近——它脾气看起来挺善变的。"
 
@@ -9612,10 +9612,10 @@ confused zin angel
 @The_monster@ 语无伦次地胡言乱语着。
 
 
-@The_monster@ 对着地面长篇大论地讲述着关于 @_important_subject_@ 的内容。
+@The_monster@ 对着地面长篇大论地讲述：@_important_subject_@
 
 
-@The_monster@ 对着 @possessive@脚长篇大论地讲述着关于 @_important_subject_@ 的内容。
+@The_monster@ 对着 @possessive@脚长篇大论地讲述：@_important_subject_@
 
 
 VISUAL:@The_monster@ 出神地凝视了片刻。

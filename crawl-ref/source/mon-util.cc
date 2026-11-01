@@ -4481,6 +4481,18 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
 
     msg = maybe_pick_random_substring(msg);
 
+    // This alternative describes a whole gaze predicate in Chinese. Keep
+    // the English preposition/alternative path below unchanged.
+    if (Options.language == lang_t::ZH
+        && msg.find("@at_foe/around@") != string::npos)
+    {
+        const string gaze = foe && !foe->is_player()
+            ? make_stringf(C_("monster speech gaze", "looks at %s"),
+                           foe->name(DESC_THE).c_str())
+            : C_("monster speech gaze", "looks around");
+        msg = replace_all(msg, "@at_foe/around@", gaze);
+    }
+
     // FIXME: Handle player_genus in case it was not generalised to foe_genus.
     msg = replace_all(msg, "@a_player_genus@",
                 article_a(species::name(you.species, species::SPNAME_GENUS)));
