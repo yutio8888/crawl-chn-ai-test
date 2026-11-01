@@ -268,7 +268,9 @@ static string _xom_effect_note_display(const string& name)
         const size_t prefix = strlen(event.prefix), suffix = strlen(event.suffix);
         if (!starts_with(name, event.prefix) || !ends_with(name, event.suffix)
             || name.size() <= prefix + suffix)
+        {
             continue;
+        }
         int count;
         if (_xom_note_count(name.substr(prefix, name.size() - prefix - suffix), count))
             return make_stringf(T_(event.format), count);
@@ -349,7 +351,9 @@ static string _xom_effect_note_display(const string& name)
         int count;
         if (space == string::npos || space == 0
             || !_xom_note_count(body.substr(space + 1), count))
+        {
             return name;
+        }
         const string monster = _xom_note_monster_display(body.substr(0, space));
         return make_stringf(T_("buffed friendly %s %d times"), monster.c_str(), count);
     }
@@ -423,7 +427,9 @@ static string _xom_effect_note_display(const string& name)
         int hp, max_hp;
         if (!_xom_note_count(name.substr(prefix.size(), slash - prefix.size()), hp)
             || !_xom_note_count(name.substr(slash + 1, name.size() - slash - 5), max_hp))
+        {
             return name;
+        }
         return make_stringf(T_(key), hp, max_hp);
     }
 
@@ -473,8 +479,10 @@ static string _xom_effect_note_display(const string& name)
                 return name;
         }
         if (!translated.empty())
+        {
             return string(T_("scenery: ")) + join_strings(
                 translated.begin(), translated.end(), C_("Xom scenery list", ", "));
+        }
     }
     return name;
 }
