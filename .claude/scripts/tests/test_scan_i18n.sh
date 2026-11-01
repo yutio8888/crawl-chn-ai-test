@@ -880,7 +880,9 @@ production_blocks = list(module._iter_decision_blocks(production_content))
 # Issue #147 adds D-C-095 through 098; PR #178 adds D-C-099
 # (Tranquillity spelling alignment). No old decision blocks retire.
 # PR #198 adds D-B-023 and D-C-100 (lance/Wyrmbane and singular neutral pronouns).
-assert len(production_blocks) == 179, len(production_blocks)
+# D-C-101 unifies spell-school display names and clarifies spell details.
+assert len(production_blocks) == 180, len(production_blocks)
+assert "D-C-101" in {decision_id for decision_id, _ in production_blocks}
 for decision_id, block in production_blocks:
     fields = module._decision_metadata_fields(block)
     assert fields.get("Status") == ["active"], (decision_id, fields)
@@ -1374,7 +1376,8 @@ try:
     )
     # D-C-099 adds one active Status declaration to the prior fixture.
     # PR #198 adds D-B-023 and D-C-100, each with one active Status declaration.
-    assert len(production_declarations) == 431, len(
+    # D-C-101 adds one active Status declaration.
+    assert len(production_declarations) == 432, len(
         production_declarations
     )
     assert all(
