@@ -3479,7 +3479,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"beam", "resolved_beam"}, {"target", "resolved_target"} },
                         { "actor", "beam", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} breathes ${beam} at ${target}."}, {"en", "NEXT_TO", "${actor} breathes ${beam} next to ${target}."}, {"en", "PAST", "${actor} breathes ${beam} past ${target}."}, {"zh", "AT", "${actor}向${target}吐出${beam}。"}, {"zh", "NEXT_TO", "${actor}向${target}旁边吐出${beam}。"}, {"zh", "PAST", "${actor}向${target}身后吐出${beam}。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} breathes ${beam} at ${target}."}, {"en", "NEXT_TO", "${actor} breathes ${beam} next to ${target}."}, {"en", "PAST", "${actor} breathes ${beam} past ${target}."}, {"zh", "AT", "${actor}向${target}吐出${beam}。"}, {"zh", "NEXT_TO", "${actor}向${target}旁边吐出${beam}。"}, {"zh", "PAST", "${actor}吐出${beam}，从${target}旁边掠过。"} } },
                     },
                         {},
                         {  },
@@ -4643,7 +4643,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"possessive", "actor_possessive_pronoun"}, {"target", "resolved_target"} },
                         { "actor", "possessive", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} blasts ${possessive} cannon at ${target}."}, {"en", "NEXT_TO", "${actor} blasts ${possessive} cannon next to ${target}."}, {"en", "PAST", "${actor} blasts ${possessive} cannon past ${target}."}, {"zh", "AT", "${actor}用火炮轰击${target}。"}, {"zh", "NEXT_TO", "${actor}用火炮轰击${target}旁边。"}, {"zh", "PAST", "${actor}用火炮轰击${target}身后。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} blasts ${possessive} cannon at ${target}."}, {"en", "NEXT_TO", "${actor} blasts ${possessive} cannon next to ${target}."}, {"en", "PAST", "${actor} blasts ${possessive} cannon past ${target}."}, {"zh", "AT", "${actor}用火炮轰击${target}。"}, {"zh", "NEXT_TO", "${actor}用火炮轰击${target}旁边。"}, {"zh", "PAST", "${actor}开炮，炮火从${target}旁边掠过。"} } },
                     },
                         {},
                         {  },
@@ -6004,7 +6004,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"beam", "resolved_beam"}, {"target", "resolved_target"} },
                         { "actor", "beam", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} breathes ${beam} at ${target}."}, {"en", "NEXT_TO", "${actor} breathes ${beam} next to ${target}."}, {"en", "PAST", "${actor} breathes ${beam} past ${target}."}, {"zh", "AT", "${actor}向${target}吐出${beam}。"}, {"zh", "NEXT_TO", "${actor}向${target}旁边吐出${beam}。"}, {"zh", "PAST", "${actor}向${target}身后吐出${beam}。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} breathes ${beam} at ${target}."}, {"en", "NEXT_TO", "${actor} breathes ${beam} next to ${target}."}, {"en", "PAST", "${actor} breathes ${beam} past ${target}."}, {"zh", "AT", "${actor}向${target}吐出${beam}。"}, {"zh", "NEXT_TO", "${actor}向${target}旁边吐出${beam}。"}, {"zh", "PAST", "${actor}吐出${beam}，从${target}旁边掠过。"} } },
                     },
                         {},
                         {  },
@@ -6803,7 +6803,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} fires at ${target}."}, {"en", "NEXT_TO", "${actor} fires next to ${target}."}, {"en", "PAST", "${actor} fires past ${target}."}, {"zh", "AT", "${actor}向${target}射击。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边射击。"}, {"zh", "PAST", "${actor}朝${target}身后射击。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} fires at ${target}."}, {"en", "NEXT_TO", "${actor} fires next to ${target}."}, {"en", "PAST", "${actor} fires past ${target}."}, {"zh", "AT", "${actor}向${target}射击。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边射击。"}, {"zh", "PAST", "${actor}射出的弹丸从${target}旁边掠过。"} } },
                     },
                         {},
                         {  },

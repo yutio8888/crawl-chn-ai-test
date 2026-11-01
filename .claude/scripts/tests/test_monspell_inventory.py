@@ -1227,6 +1227,80 @@ class MonspellInventoryTests(unittest.TestCase):
         zh["entries"][0]["variants"][0]["raw_pattern"] = "VISUAL:@The_monster@前缀漂移。"
         self.assert_rejected("VISUAL control prefix count", zh=zh)
 
+    def test_projectile_target_is_a_narrow_zh_compatibility_token(self):
+        with self.patched():
+            _, en = MODULE._dump_binding(self.en_dump, b"fixture", "EN", set(KEYS))
+            _, zh = MODULE._dump_binding(self.zh_dump, b"fixture", "ZH", set(KEYS))
+        en_variant = next(row for row in en if row["key"] == "beta beam cast")["variants"][0]
+        zh_variant = next(row for row in zh if row["key"] == "beta beam cast")["variants"][0]
+        en_variant["runtime_tokens"] = ["@The_monster@", "@beam@", "@at@", "@target@"]
+        zh_variant["runtime_tokens"] = ["@The_monster@", "@beam@", MODULE.ZH_PROJECTILE_TARGET]
+        accepted = MODULE._paired_entries(en, zh, "fixture", compatibility_keys={"beta beam cast"})
+        beta = next(row for row in accepted if row["key"] == "beta beam cast")
+        self.assertEqual(beta["variants"][0]["runtime_tokens"], zh_variant["runtime_tokens"])
+
+        for allowed in (None, set(), {"alpha strike cast"}):
+            with self.subTest(allowed=allowed), self.assertRaisesRegex(
+                    MODULE.InventoryError, "requires a compiled CANDIDATE"):
+                MODULE._paired_entries(en, zh, "fixture", compatibility_keys=allowed)
+        for bad_tokens, message in (
+            ([MODULE.ZH_PROJECTILE_TARGET, MODULE.ZH_PROJECTILE_TARGET], "exactly one"),
+            ([MODULE.ZH_PROJECTILE_TARGET, "@target@"], "exactly one"),
+            ([MODULE.ZH_PROJECTILE_TARGET, "@at@"], "exactly one"),
+            (["@projectile_target_typo@"], "not a subset"),
+        ):
+            original = zh_variant["runtime_tokens"]
+            zh_variant["runtime_tokens"] = bad_tokens
+            with self.subTest(tokens=bad_tokens), self.assertRaisesRegex(MODULE.InventoryError, message):
+                MODULE._paired_entries(en, zh, "fixture", compatibility_keys={"beta beam cast"})
+            zh_variant["runtime_tokens"] = original
+        for source_tokens in (["@at@", "@foe@"], ["@target@"], [MODULE.ZH_PROJECTILE_TARGET]):
+            en_variant["runtime_tokens"] = ["@The_monster@", "@beam@", *source_tokens]
+            message = "ZH compatibility display only" if MODULE.ZH_PROJECTILE_TARGET in source_tokens else "requires an EN target relation"
+            with self.subTest(source=source_tokens), self.assertRaisesRegex(MODULE.InventoryError, message):
+                MODULE._paired_entries(en, zh, "fixture", compatibility_keys={"beta beam cast"})
+
+    def test_projectile_token_route_is_derived_from_catalog_mode(self):
+        header, fragments = fixture_manifest(self.phase0["semantic_fingerprint"])
+        manifest = MODULE._normalise_manifest({
+            **header, "entries": [entry for fragment in fragments.values()
+                                  for entry in fragment["entries"]],
+        }, header.get("catalog_order", []))
+        catalog = MODULE._catalog_binding(manifest, set(KEYS), "fixture")
+        candidates = {key for key, binding in catalog.items()
+                      if binding["entry_mode"] == "CANDIDATE"}
+        self.assertIn("beta beam cast", candidates)
+        for key, binding in catalog.items():
+            if binding["entry_mode"] != "CANDIDATE":
+                self.assertNotIn(key, candidates)
+        self.assertTrue(any(binding["entry_mode"] == "CLOSURE_ONLY"
+                            for binding in catalog.values()))
+
+    def test_projectile_token_cannot_collide_with_a_recursive_db_key(self):
+        artifact = copy.deepcopy(self.zh_dump)
+        beta = next(entry for entry in artifact["entries"]
+                    if entry["canonical_key"] == "beta beam cast")
+        beta["variants"][0]["raw_pattern"] = "@The_monster@发射@beam@，@projectile_target@。"
+        collision = copy.deepcopy(artifact["entries"][0])
+        collision["canonical_key"] = "projectile_target"
+        for provenance in [collision["effective_provenance"], *collision["source_history"]]:
+            provenance["source_name"] = "database/zh/other.txt"
+        artifact["entries"].append(collision)
+        with self.assertRaisesRegex(MODULE.InventoryError, "collides with a DB key"):
+            MODULE._dump_binding(artifact, b"fixture", "ZH", set(KEYS))
+
+    def test_current_target_relation_consumer_has_an_exact_source_anchor(self):
+        mon_cast_path = "crawl-ref/source/mon-cast.cc"
+        source = (ROOT / mon_cast_path).read_bytes()
+        original = MODULE.shared._git_blob_at_oid
+        with mock.patch.object(MODULE.shared, "_git_blob_at_oid", side_effect=(
+                lambda ref, path, label: source if path == mon_cast_path
+                else original(ref, path, label))):
+            consumer, _ = MODULE._producer_consumer_facts(CANDIDATE)
+        line = source.decode("utf-8").splitlines().index(
+            "static string _legacy_zh_target_phrase(const string &target,") + 1
+        self.assertEqual(consumer["legacy_zh_target_relations"], f"{mon_cast_path}:{line}")
+
     def test_route_derivation_uses_snapshot_and_stable_id(self):
         def write_manifest(fragments):
             manifest_dir = self.make_manifest_dir("manifest-suppress")

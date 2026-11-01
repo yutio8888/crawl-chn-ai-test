@@ -19,6 +19,10 @@ errors, weight and control-prefix parity on every paired ordinal, a ZH token
 vocabulary that is a subset of the EN vocabulary, frozen variant/token/site
 counts, and a frozen two-key asymmetry.  Per-variant EN==ZH token equality is
 not asserted (the plan's literal formulation does not hold on baseline data).
+Newer baselines may additionally use one explicit ZH compatibility-display
+marker, ``@projectile_target@``. It requires a compiled CANDIDATE route and a
+paired EN target relation; all other vocabulary and historical candidate
+token-binding checks remain strict.
 """
 
 from __future__ import annotations
@@ -45,6 +49,7 @@ from i18n_shared import lowercase_string
 SCHEMA_VERSION = 1
 PHASE0_SCHEMA_VERSION = 1
 SOURCE_BASENAME = "monspell.txt"
+ZH_PROJECTILE_TARGET = "@projectile_target@"
 STRICT_BEGIN = "<!-- BEGIN STRICT MONSPELL REVIEW EVIDENCE v1 -->"
 STRICT_END = "<!-- END STRICT MONSPELL REVIEW EVIDENCE v1 -->"
 DOMAIN = "monspell"
@@ -384,6 +389,10 @@ def _dump_binding(
         artifact["sources"], directory, label, source_basename=SOURCE_BASENAME)["entries"]
     source_variants = [variant for entry in source_entries for variant in entry["variants"]]
     variants = [variant for row in rows for variant in row["variants"]]
+    if any(ZH_PROJECTILE_TARGET in variant["runtime_tokens"] for variant in variants):
+        _require(not any(entry["canonical_key"] == "projectile_target"
+                         for entry in artifact["entries"]),
+                 f"{label} projectile target display token collides with a DB key")
     _require(len(variants) == len(source_variants),
              f"{label} monspell variant count mismatch")
     _require(sum(len(variant["runtime_tokens"]) for variant in variants)
@@ -420,6 +429,7 @@ def _dump_binding(
 def _paired_entries(
     en_rows: list[dict[str, Any]], zh_rows: list[dict[str, Any]], label: str,
     expected_asymmetry: dict[str, tuple[int, int]] | None = None,
+    compatibility_keys: set[str] | None = None,
 ) -> list[dict[str, Any]]:
     en_by_key = {row["key"]: row for row in en_rows}
     zh_by_key = {row["key"]: row for row in zh_rows}
@@ -433,7 +443,9 @@ def _paired_entries(
         for row in zh_rows for variant in row["variants"]
         for token in variant["runtime_tokens"]
     }
-    _require(zh_vocabulary <= en_vocabulary,
+    _require(ZH_PROJECTILE_TARGET not in en_vocabulary,
+             f"{label} projectile target token is ZH compatibility display only")
+    _require(zh_vocabulary - {ZH_PROJECTILE_TARGET} <= en_vocabulary,
              f"{label} ZH token vocabulary is not a subset of the EN vocabulary")
     entries = []
     for key in sorted(en_by_key.keys() | zh_by_key.keys()):
@@ -457,6 +469,22 @@ def _paired_entries(
                 en_variant["control_prefix"] == zh_variant["control_prefix"],
                 f"{label} control prefix differs for {key!r} variant {ordinal}",
             )
+        for ordinal, zh_variant in enumerate(zh["variants"]):
+            if ZH_PROJECTILE_TARGET not in zh_variant["runtime_tokens"]:
+                continue
+            _require(compatibility_keys is not None and key in compatibility_keys,
+                     f"{label} projectile target token requires a compiled "
+                     f"CANDIDATE compatibility route: {key!r}")
+            _require(ordinal < en_count,
+                     f"{label} projectile target token has no paired EN variant")
+            source_tokens = en["variants"][ordinal]["runtime_tokens"]
+            _require("@at@" in source_tokens and "@target@" in source_tokens,
+                     f"{label} projectile target token requires an EN target relation")
+            _require(zh_variant["runtime_tokens"].count(ZH_PROJECTILE_TARGET) == 1
+                     and "@at@" not in zh_variant["runtime_tokens"]
+                     and "@target@" not in zh_variant["runtime_tokens"],
+                     f"{label} projectile target token must replace exactly one "
+                     f"complete target relation: {key!r} variant {ordinal}")
         # legacy_variants models the COMPLETE ZH variant list (variant_ordinal
         # is the ZH file ordinal). Paired ordinals carry the EN raw pattern;
         # ZH-only ordinals (ZH has no EN counterpart) carry english=None. This
@@ -684,6 +712,11 @@ def _producer_consumer_facts(ref: str) -> tuple[dict[str, str], list[dict[str, s
     }
     producers = [{"location": anchor("crawl-ref/source/mon-cast.cc", r"^static void _speech_keys\("),
                   "mode": FROZEN_PRODUCERS[0]["mode"]}]
+    mon_cast = shared._decode_utf8(shared._git_blob_at_oid(
+        ref, "crawl-ref/source/mon-cast.cc", "consumer evidence"), "consumer evidence")
+    if re.search(r"^static string _legacy_zh_target_phrase\(", mon_cast, re.M):
+        consumer["legacy_zh_target_relations"] = anchor(
+            "crawl-ref/source/mon-cast.cc", r"^static string _legacy_zh_target_phrase\(")
     # The original Issue #59 ledger anchored the start of this search region,
     # two lines before the call. Retain that exact historical digest only for
     # its original derived layout; new baselines use the call's exact line.
@@ -1356,7 +1389,11 @@ def build_inventory(
                if any(item["source_name"] == "database/zh/monspell.txt"
                       for item in entry["source_history"])}
     zh_binding, zh_rows = _dump_binding(zh_dump, zh_raw, "baseline ZH", zh_keys)
-    legacy_entries = _paired_entries(en_rows, zh_rows, "baseline")
+    legacy_entries = _paired_entries(
+        en_rows, zh_rows, "baseline", compatibility_keys={
+            key for key, binding in catalog.items()
+            if binding["entry_mode"] == "CANDIDATE"
+        })
     legacy_by_key = {entry["key"]: entry for entry in legacy_entries}
 
     try:
@@ -1761,7 +1798,11 @@ def add_candidate(
     zh_binding, zh_rows = _dump_binding(
         zh_dump, zh_raw, "candidate ZH", zh_keys
     )
-    entries = _paired_entries(en_rows, zh_rows, "candidate")
+    entries = _paired_entries(
+        en_rows, zh_rows, "candidate", compatibility_keys={
+            entry["key"] for entry in inventory["entries"]
+            if entry["entry_mode"] == "CANDIDATE"
+        })
 
     # EN no-drift proof without ZH projection: the candidate EN side must
     # equal the baseline EN side at the exact-Git level.  The complete EN

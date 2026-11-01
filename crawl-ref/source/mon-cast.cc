@@ -9552,15 +9552,74 @@ resolved_monspell_cast_message resolve_monspell_cast_message(
     return result;
 }
 
+static string _legacy_zh_target_phrase(const string &target,
+                                       speech_target_relation relation,
+                                       bool projectile)
+{
+    if (projectile)
+    {
+        switch (relation)
+        {
+        case speech_target_relation::AT:
+            return make_stringf(C_("monspell raw projectile target", "at %s"),
+                                target.c_str());
+        case speech_target_relation::NEXT_TO:
+            return make_stringf(C_("monspell raw projectile target", "next to %s"),
+                                target.c_str());
+        case speech_target_relation::PAST:
+            return make_stringf(C_("monspell raw projectile target", "past %s"),
+                                target.c_str());
+        }
+    }
+    else
+    {
+        switch (relation)
+        {
+        case speech_target_relation::AT:
+            return make_stringf(C_("monspell raw direction", "at %s"),
+                                target.c_str());
+        case speech_target_relation::NEXT_TO:
+            return make_stringf(C_("monspell raw direction", "next to %s"),
+                                target.c_str());
+        case speech_target_relation::PAST:
+            return make_stringf(C_("monspell raw direction", "past %s"),
+                                target.c_str());
+        }
+    }
+    return target;
+}
+
 static void _speech_fill_target(string& targ_prep, string& target,
                                 const monster* mons, const bolt& pbolt,
                                 bool gestured,
-                                const speech_target_observer *observer)
+                                const speech_target_observer *observer,
+                                string *zh_compatibility_message)
 {
     const resolved_speech_target resolved =
         resolve_speech_target(mons, pbolt, gestured, observer);
     targ_prep = resolved.preposition_display;
     target = resolved.display;
+    if (zh_compatibility_message)
+    {
+        // Bind complete direction phrases before the ordinary individual
+        // tokens. The foe marker belongs to mons_speaks_msg, not the beam
+        // target: keep it intact until that existing consumer resolves it.
+        for (const string &marker : { string("@target@"), string("@foe@") })
+        {
+            const string phrase = _legacy_zh_target_phrase(
+                marker == "@target@" ? target : marker,
+                resolved.relation, false);
+            for (const string &separator : { string(""), string(" ") })
+            {
+                *zh_compatibility_message = replace_all(
+                    *zh_compatibility_message, "@at@" + separator + marker,
+                    phrase);
+            }
+        }
+        *zh_compatibility_message = replace_all(
+            *zh_compatibility_message, "@projectile_target@",
+            _legacy_zh_target_phrase(target, resolved.relation, true));
+    }
 }
 
 static bool _legacy_message_implies_gesture(const string &message)
@@ -9664,7 +9723,10 @@ void mons_cast_noise(monster* mons, const bolt &pbolt,
         {
             _speech_fill_target(targ_prep, target, mons, pbolt, gestured,
                                 diagnostics
-                                    ? diagnostics->target_observer : nullptr);
+                                    ? diagnostics->target_observer : nullptr,
+                                speech.legacy_behavior_compatibility
+                                    && Options.language == lang_t::ZH
+                                    ? &msg : nullptr);
         }
 
         msg = replace_all(msg, "@at@",     targ_prep);

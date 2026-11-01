@@ -65,7 +65,7 @@ localized dump carries the zh/shout.txt winners; the override evidence is
 recorded per card and the per-language variant totals freeze the raw-body
 identity model (3429 EN / 3407 ZH).
 
-The strict JSONL review ledger (one metadata record plus 733 cards) is the
+The strict JSONL review ledger (one metadata record plus one card per identity) is the
 issue #70 audit trail.  ``--scaffold-output`` generates the initial empty
 ledger (exclusive create at ``docs/monspeak-review-results.md`` through the
 decorlines hardened write transaction, which fails closed when a ledger
@@ -513,7 +513,9 @@ POSTPROCESS_TOKENS = frozenset({
 # to the literal English alternative ("around") on the player-foe branch
 # and to " at @foe@" on the monster-foe branch, so it is equally English
 # display syntax and must be covered by the same data-side exception;
-# the ZH data drops/replaces it instead of leaking English.  ``@foe@``
+# current ZH data may retain this exact alternative: the localized gaze
+# consumer renders a complete predicate before the generic English helper.
+# Other compound alternatives retain the historical behavior. ``@foe@``
 # itself stays bidirectionally required and every other token stays
 # exactly aligned; the exception is narrow -- only these two exact
 # lowercase tokens plus their slash-alternative forms (``@Foe@`` and any

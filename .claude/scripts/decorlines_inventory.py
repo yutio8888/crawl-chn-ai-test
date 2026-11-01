@@ -43,7 +43,7 @@ form wiz_name access, ``_god_name_en``, ``dungeon_feature_name`` and
 both fallback chains), so a consumer regression to a localized species
 prefix is rejected instead of silently reclassifying the roots.
 
-The strict JSONL review ledger (one metadata record plus 132 cards) is the
+The strict JSONL review ledger (one metadata record plus one card per identity) is the
 issue #67 audit trail.  ``--scaffold-output`` generates the initial empty
 ledger (exclusive create at ``docs/decorlines-review-results.md``, which
 fails closed when a ledger already exists); the later zh-translator phase

@@ -52,7 +52,7 @@ never becomes an identity.  ``__buggy`` is the only in-file sentinel key
 (``__DEFAULT``/``__NEXT``/``__NONE`` are runtime-only fallback values and
 must never be ShoutDB keys).
 
-The strict JSONL review ledger (one metadata record plus 124 cards) is the
+The strict JSONL review ledger (one metadata record plus one card per identity) is the
 issue #69 audit trail.  ``--scaffold-output`` generates the initial empty
 ledger (exclusive create at ``docs/shout-review-results.md`` through the
 decorlines hardened write transaction, which fails closed when a ledger

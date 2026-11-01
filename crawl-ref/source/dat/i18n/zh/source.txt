@@ -49486,3 +49486,30 @@ skill title|God-Hated
 %%%%
 skill title|Trooper
 士兵
+%%%%
+atheism
+无神论
+%%%%
+monspell raw direction|at %s
+朝%s
+%%%%
+monspell raw direction|next to %s
+朝%s旁边
+%%%%
+monspell raw direction|past %s
+朝%s身后
+%%%%
+monspell raw projectile target|at %s
+直奔%s而去
+%%%%
+monspell raw projectile target|next to %s
+飞向%s旁边
+%%%%
+monspell raw projectile target|past %s
+从%s旁边掠过
+%%%%
+monster speech gaze|looks at %s
+看向%s
+%%%%
+monster speech gaze|looks around
+环顾四周

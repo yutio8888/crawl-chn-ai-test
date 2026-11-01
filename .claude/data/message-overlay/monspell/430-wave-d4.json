@@ -285,7 +285,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} blasts ${possessive} cannon past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}用火炮轰击${target}。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}用火炮轰击${target}旁边。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}用火炮轰击${target}身后。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}开炮，炮火从${target}旁边掠过。" }
           ]
         }],
         "materialization_cases": [], "recursive_dependency_fingerprints": {}

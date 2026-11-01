@@ -215,7 +215,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} breathes ${beam} past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}吐出${beam}。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}向${target}旁边吐出${beam}。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}向${target}身后吐出${beam}。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}吐出${beam}，从${target}旁边掠过。" }
           ]
         }],
         "materialization_cases": [],
@@ -249,7 +249,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} breathes ${beam} past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}吐出${beam}。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}向${target}旁边吐出${beam}。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}向${target}身后吐出${beam}。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}吐出${beam}，从${target}旁边掠过。" }
           ]
         }],
         "materialization_cases": [],
