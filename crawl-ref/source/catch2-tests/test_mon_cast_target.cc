@@ -1299,6 +1299,166 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
 }
 
 TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "raw Chinese compatibility preserves complete target relations",
+                 "[single-file][mon-cast-target][monspell-relations][compatibility]")
+{
+    ensure_phase1_overlay_loaded();
+    scoped_zh_database localized_database;
+    scoped_overlay_restore restore_overlay;
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+    // Raw TextDB handles bind their language at databaseSystemInit; changing
+    // Options and the i18n cache alone only switches structured rendering.
+    auto reload_legacy_database = []()
+    {
+        databaseSystemShutdown();
+        databaseSystemInit();
+        i18n_cache_clear();
+        fork_message_overlay::reset_monspell_overlay_for_test();
+        REQUIRE(fork_message_overlay::load_monspell_overlay(
+                    textdb_phase0::dump_canonical_english_speakdb(), nullptr)
+                .state == fork_message_overlay::domain_state::DISABLED);
+    };
+
+    struct cast_case
+    {
+        monster_type caster;
+        spell_type spell;
+        const char *key;
+        bool projectile;
+        bool foe;
+    };
+    const cast_case cases[] = {
+        { MONS_ORC, SPELL_SEARING_BREATH, "searing breath cast", true, false },
+        { MONS_GUARDIAN_SPHINX, SPELL_SMITING,
+          "smiting guardian sphinx cast", false, false },
+        { MONS_WIGLAF, SPELL_HELLFIRE_MORTAR,
+          "hellfire mortar wiglaf cast", false, true },
+    };
+    for (const cast_case &cast : cases)
+    {
+        source.type = cast.caster;
+        source.base_attitude = ATT_HOSTILE;
+        source.foe = cast.foe ? world.placed_candidates()[0]->mindex() : MHITYOU;
+        uint64_t seed = 0x74617267;
+        if (cast.foe)
+        {
+            seed = 0;
+            scoped_test_language language(lang_t::EN);
+            reload_legacy_database();
+            for (uint64_t trial = 1; trial <= 4096; ++trial)
+            {
+                rng::subgenerator random(trial, 0x72656c61);
+                if (getSpeakString(cast.key).find("@foe@") != string::npos)
+                {
+                    seed = trial;
+                    break;
+                }
+            }
+            REQUIRE(seed != 0);
+        }
+        for (speech_target_relation relation : {
+                 speech_target_relation::AT, speech_target_relation::NEXT_TO,
+                 speech_target_relation::PAST })
+        {
+            bolt beam = make_target_beam(relation == speech_target_relation::AT
+                                        ? you.pos() : coord_def(25, 23));
+            beam.aimed_at_spot = relation == speech_target_relation::NEXT_TO;
+            beam.source = source.pos();
+            beam.source_id = source.mid;
+            check_registered_source_identity(source, &beam);
+            vector<speech_target_observer_event> baseline_events;
+            vector<mon_speech_final_emission> baseline_emissions;
+            {
+                scoped_test_language language(lang_t::EN);
+                reload_legacy_database();
+                rng::subgenerator random(seed, 0x72656c61);
+                const resolved_monspell_cast_message selected =
+                    resolve_monspell_cast_message(source, beam, true,
+                                                   { cast.key }, false, false);
+                REQUIRE_FALSE(selected.structured);
+                REQUIRE(selected.legacy_behavior_compatibility);
+                const speech_target_observer observer =
+                    { observe_target_event, &baseline_events };
+                const resolved_speech_target target =
+                    resolve_speech_target(&source, beam, false, &observer);
+                REQUIRE(target.relation == relation);
+                string text = replace_all(selected.text, "@at@",
+                                          target.preposition_display);
+                text = replace_all(text, "@target@", target.display);
+                text = replace_all(text, "@beam@",
+                                   resolve_speech_beam(beam, true).display_text);
+                const mon_speech_emission_observer emission =
+                    { observe_cast_emission, &baseline_emissions };
+                mons_speaks_msg(&source, text, MSGCH_MONSTER_SPELL,
+                                false, false, &emission);
+                REQUIRE(baseline_emissions.size() == 1);
+            }
+            uint64_t english_state = 0;
+            uint64_t english_count = 0;
+            for (lang_t language : { lang_t::EN, lang_t::ZH, lang_t::EN })
+            {
+                scoped_test_language display(language);
+                reload_legacy_database();
+                rng::subgenerator random(seed, 0x72656c61);
+                vector<speech_target_observer_event> events;
+                vector<mon_speech_final_emission> emissions;
+                const speech_target_observer observer =
+                    { observe_target_event, &events };
+                const mon_speech_emission_observer emission =
+                    { observe_cast_emission, &emissions };
+                const mons_cast_noise_diagnostics diagnostics =
+                    { &observer, &emission };
+                mons_cast_noise(&source, beam, cast.spell, MON_SPELL_MAGICAL,
+                                &diagnostics);
+                CAPTURE(cast.key, static_cast<int>(relation),
+                        static_cast<int>(language));
+                REQUIRE(emissions.size() == 1);
+                const string &text = emissions[0].line;
+                CAPTURE(text);
+                CHECK(text.find('@') == string::npos);
+                CHECK_FALSE(emissions[0].already_rendered);
+                REQUIRE(events.size() == baseline_events.size());
+                for (size_t i = 0; i < events.size(); ++i)
+                {
+                    CHECK(events[i].kind == baseline_events[i].kind);
+                    CHECK(events[i].bound == baseline_events[i].bound);
+                    CHECK(events[i].selected == baseline_events[i].selected);
+                }
+                if (language == lang_t::EN)
+                {
+                    CHECK(text == baseline_emissions[0].line);
+                    if (!english_state)
+                    {
+                        english_state = rng::current_generator().get_state();
+                        english_count = rng::current_generator().get_count();
+                    }
+                }
+                else
+                {
+                    const char *phrase = relation == speech_target_relation::AT
+                        ? (cast.projectile ? "直奔" : "朝")
+                        : relation == speech_target_relation::NEXT_TO
+                            ? "旁边" : (cast.projectile ? "旁边掠过" : "身后");
+                    CHECK(text.find(phrase) != string::npos);
+                    if (cast.projectile)
+                        CHECK(text.find("身后") == string::npos);
+                    if (cast.foe && relation == speech_target_relation::AT)
+                    {
+                        CHECK(text.find("朝" + source.get_foe()->name(DESC_THE))
+                              != string::npos);
+                        CHECK(text.find("朝你") == string::npos);
+                    }
+                }
+                CHECK(rng::current_generator().get_state() == english_state);
+                CHECK(rng::current_generator().get_count() == english_count);
+            }
+        }
+    }
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                  "structured cast ignores external legacy target observer",
                  "[single-file][mon-cast-target][message-overlay][phase2][diagnostics]")
 {

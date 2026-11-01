@@ -373,7 +373,7 @@ void item_noise(const item_def &item, actor &act, string msg, int loudness)
     // replace references to player name and god
     msg = replace_all(msg, "@player_name@", you.your_name);
     msg = replace_all(msg, "@player_god@",
-                      you_worship(GOD_NO_GOD) ? "atheism"
+                      you_worship(GOD_NO_GOD) ? T_("atheism")
                       : god_name(you.religion, coinflip()));
     msg = replace_all(msg, "@player_genus@",
                 species::name(you.species, species::SPNAME_GENUS));

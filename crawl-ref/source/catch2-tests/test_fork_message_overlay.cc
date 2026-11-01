@@ -73,6 +73,91 @@ struct special_slot_overlay_reset
     }
 };
 
+TEST_CASE("strange machine visual spells use explicit metadata",
+          "[single-file][message-overlay][monspell-rereview]")
+{
+    using namespace fork_message_overlay;
+    ensure_overlay_data_root();
+    databaseSystemInit();
+    special_slot_overlay_reset reset;
+    REQUIRE(load_monspell_overlay(
+        textdb_phase0::dump_canonical_english_speakdb()).state
+        == domain_state::ENABLED);
+
+    const string keys[] = {
+        "shadow creatures strange machine cast",
+        "summon illusion strange machine cast",
+    };
+    const string english[] = {
+        "Shadows flit across the strange machine's surface and appear to come alive.",
+        "The shadows dancing upon the strange machine coalesce into cruel familiarity.",
+    };
+    const string chinese[] = {
+        "阴影掠过奇异机械的表面，仿佛活了过来。",
+        "在奇异机械上舞动的阴影凝成了残酷而熟悉的形象。",
+    };
+    for (size_t i = 0; i < 2; ++i)
+    {
+        CAPTURE(keys[i]);
+        CHECK(route_monspell_message(keys[i], "en").route
+              == message_route::STRUCTURED);
+        CHECK(route_monspell_message(keys[i], "zh").route
+              == message_route::STRUCTURED);
+        for (bool visible : {true, false})
+        {
+            for (message_attempt attempt : {
+                    message_attempt::NORMAL_OR_UNSEEN,
+                    message_attempt::SILENT_UNPREFIXED_FALLBACK})
+            {
+                runtime_applicability applicability;
+                applicability.caster_visibility = visible
+                    ? message_visibility::VISIBLE : message_visibility::UNSEEN;
+                size_t binding_calls = 0;
+                const canonical_materialization materialized =
+                    materialize_monspell_candidate(
+                        keys[i], attempt, applicability,
+                        [&](const binding_requirements &requirements)
+                        {
+                            ++binding_calls;
+                            CHECK_FALSE(requirements.resolves_target);
+                            CHECK_FALSE(requirements.implies_gesture);
+                            runtime_bindings values = beam_bindings(
+                                target_relation::NONE);
+                            values.cast.frame = requirements.frame;
+                            values.actor.canonical_en = "the strange machine";
+                            values.actor.lower_localized = {
+                                { "en", "the strange machine" },
+                                { "zh", "奇异机械" },
+                            };
+                            return values;
+                        });
+                if (!visible
+                    && attempt == message_attempt::NORMAL_OR_UNSEEN)
+                {
+                    CHECK(materialized.result == message_result::INAPPLICABLE);
+                    CHECK(binding_calls == 0);
+                    continue;
+                }
+                REQUIRE(materialized.result == message_result::RENDERED);
+                CHECK(binding_calls == 1);
+                for (const string language : {string("en"), string("zh"),
+                                              string("en")})
+                {
+                    const render_result rendered =
+                        render_materialized_candidate(materialized, language);
+                    REQUIRE(rendered.result == message_result::RENDERED);
+                    REQUIRE(rendered.lines.size() == 1);
+                    CHECK(rendered.lines[0].text
+                          == (language == "zh" ? chinese[i] : english[i]));
+                    CHECK(rendered.lines[0].sensory == sensory_mode::VISUAL);
+                    CHECK_FALSE(rendered.lines[0].implies_gesture);
+                    CHECK_FALSE(rendered.lines[0].audible);
+                }
+            }
+        }
+    }
+}
+
 TEST_CASE("special monspell slots preserve legacy bindings narrowly",
           "[single-file][message-overlay][special-slots]")
 {
@@ -751,7 +836,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
     {
         scoped_overlay_reset reset;
         const catalog_source generated = generated_monspell_catalog();
-        CHECK(generated.entries.size() == 262);
+        CHECK(generated.entries.size() == 264);
         size_t candidate_keys = 0;
         size_t closure_keys = 0;
         size_t legacy_keys = 0;
@@ -785,10 +870,10 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
             for (const catalog_variant &variant : entry.variants)
                 materialization_cases += variant.materialization_cases.size();
         }
-        CHECK(candidate_keys == 250);
+        CHECK(candidate_keys == 252);
         CHECK(closure_keys == 2);
         CHECK(legacy_keys == 10);
-        CHECK(candidate_variants == 341);
+        CHECK(candidate_variants == 343);
         CHECK(closure_variants == 2);
         CHECK(legacy_variants == 12);
         CHECK(materialization_cases == 35);
@@ -798,7 +883,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         const load_report &report = load_monspell_overlay(canonical);
         CHECK(report.state == domain_state::ENABLED);
         CHECK(report.failure == load_failure::NONE);
-        CHECK(report.structured_key_count == 250);
+        CHECK(report.structured_key_count == 252);
         CHECK(monspell_overlay_covers("BEAM CATCHALL CAST"));
         CHECK(monspell_overlay_covers("march of sorrows bone dragon cast"));
         CHECK(monspell_overlay_covers("ensnare arachne cast"));
@@ -864,7 +949,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         variant.lines = { line };
         const load_report &valid = load_monspell_overlay(canonical, &source);
         REQUIRE(valid.state == domain_state::ENABLED);
-        CHECK(valid.structured_key_count == 250);
+        CHECK(valid.structured_key_count == 252);
         CHECK(monspell_overlay_covers(entry.canonical_key));
 
         reset_monspell_overlay_for_test();
@@ -1012,7 +1097,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         replace_catalog_entry(source, suppress_catalog_entry(canonical));
         const load_report &valid = load_monspell_overlay(canonical, &source);
         REQUIRE(valid.state == domain_state::ENABLED);
-        CHECK(valid.structured_key_count == 250);
+        CHECK(valid.structured_key_count == 252);
         CHECK(monspell_overlay_covers("siren song cast"));
 
         reset_monspell_overlay_for_test();

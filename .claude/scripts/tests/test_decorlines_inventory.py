@@ -219,6 +219,47 @@ class DecorlinesInventoryTests(unittest.TestCase):
     def tearDownClass(cls):
         cls.temp.cleanup()
 
+    def test_current_exact_git_baseline_freezes_current_facts(self):
+        baseline = "9770e911ee7d40b51a61a1717aecda148c983412"
+        en = exact_artifact(baseline, "database/")
+        zh = exact_artifact(baseline, "database/zh/")
+        en_path, zh_path = self.root / "current-en.json", self.root / "current-zh.json"
+        en_path.write_text(json.dumps(en, ensure_ascii=False), encoding="utf-8")
+        zh_path.write_text(json.dumps(zh, ensure_ascii=False), encoding="utf-8")
+        inventory = MODULE.build_inventory(
+            baseline, en_path, zh_path, ROOT / "docs/glossary.md")
+        self.assertEqual(209, inventory["dumps"]["english"]["variant_count"])
+        self.assertEqual(209, inventory["dumps"]["localized"]["variant_count"])
+        self.assertEqual({}, inventory["scope"]["baseline_asymmetry"])
+        cards = [card_for(entry) for entry in inventory["entries"]]
+        self.assertEqual(209, MODULE._expected_metadata(inventory, cards)["zh_variant_count"])
+
+    def test_current_dump_namespace_and_unbound_token_mutations_fail_closed(self):
+        baseline = "9770e911ee7d40b51a61a1717aecda148c983412"
+        en = exact_artifact(baseline, "database/")
+        path = self.root / "current-mutated.json"
+        wrong_namespace = copy.deepcopy(en)
+        wrong_namespace["database_name"] = "speak"
+        path.write_text(json.dumps(wrong_namespace), encoding="utf-8")
+        with self.assertRaisesRegex(MODULE.InventoryError, "database_name"):
+            MODULE._load_dataset(baseline, path, "database/", "negative", "baseline")
+        scoped = next(entry for entry in en["entries"]
+                      if entry["effective_provenance"]["source_name"]
+                      == "database/decorlines.txt")
+        scoped["variants"][0]["raw_pattern"] += "@unknown_audit_token@"
+        path.write_text(json.dumps(en), encoding="utf-8")
+        with self.assertRaises(MODULE.InventoryError):
+            MODULE._load_dataset(baseline, path, "database/", "negative", "baseline")
+
+    def test_candidate_cannot_expand_frozen_scope_on_both_sides(self):
+        entries = [{"key": entry["key"]} for entry in self.inventory["entries"]]
+        entries.append({"key": "unknown_joint_candidate_key"})
+        with mock.patch.object(MODULE.hardened.shared, "_require_candidate_commit"), \
+                mock.patch.object(MODULE, "_load_dataset", return_value={"entries": entries}):
+            with self.assertRaisesRegex(MODULE.InventoryError, "key set differs from frozen inventory"):
+                MODULE.add_candidate(copy.deepcopy(self.inventory), BASELINE, BASELINE,
+                                     self.en_path, self.zh_path)
+
     def records(self) -> list[dict]:
         cards = [card_for(entry) for entry in self.inventory["entries"]]
         return [MODULE._expected_metadata(self.inventory, cards), *cards]

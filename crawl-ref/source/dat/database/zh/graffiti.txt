@@ -350,7 +350,7 @@ w:2
 一堂由@_graffiti_professor_shapeshifting_type_@@_graffiti_professor_@教授的变形术补习课
 
 w:2
-一堂由@_graffiti_professor_necromancy_type_@@_graffiti_professor_@教授的死灵术补习课
+一堂由@_graffiti_professor_necromancy_type_@@_graffiti_professor_@教授的死灵系补习课
 
 w:2
 @random_skill_magic@补习课，由@_graffiti_professor_necromancy_type_@@_graffiti_professor_@教授
@@ -933,23 +933,23 @@ _graffiti_vengeance_reason_
 
 抛弃了@_graffiti_author_any_@
 
-抛弃了他们
+抛弃了那人
 
 背叛了@_graffiti_author_any_@
 
-背叛了他们
+背叛了那人
 
 杀害了@_graffiti_author_any_@
 
-杀害了他们
+杀害了那人
 
 偷了@_graffiti_author_any_@的东西
 
-偷了他们的东西
+偷了那人的东西
 
 伤害了@_graffiti_author_any_@
 
-伤害了他们
+伤害了那人
 %%%%
 _graffiti_wares_quality_
 

@@ -71,8 +71,13 @@ class MiscastInventoryTests(unittest.TestCase):
         cls.inventory = MODULE.build_inventory(
             BASELINE, cls.en_path, cls.zh_path, cls.glossary_path
         )
-        records = MODULE._strict_block(RESULTS)
-        # The checked-in ledger binds the real production-dump byte hashes.
+        ledger = cls.root / "historical-miscast-ledger.md"
+        ledger.write_bytes(subprocess.check_output(
+            ["git", "-C", str(ROOT), "show",
+             "9770e911ee7d40b51a61a1717aecda148c983412:docs/miscast-review-results.md"]
+        ))
+        records = MODULE._strict_block(ledger)
+        # The frozen ledger binds the real production-dump byte hashes.
         # The synthetic artifacts above exercise the same exact-Git derivation
         # but have different JSON serialization bytes, so align only those two
         # metadata bindings for strict-ledger mutation tests.

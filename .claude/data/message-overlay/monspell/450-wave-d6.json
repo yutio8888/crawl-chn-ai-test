@@ -371,7 +371,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} fires past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}射击。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边射击。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}身后射击。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}射出的弹丸从${target}旁边掠过。" }
           ]
         }],
         "materialization_cases": [], "recursive_dependency_fingerprints": {}

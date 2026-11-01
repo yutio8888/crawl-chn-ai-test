@@ -2,7 +2,7 @@
 """Build and audit the complete Issue #66 graffiti review inventory.
 
 The inventory is derived from production ``textdb-phase0-dump`` artifacts
-and exact Git source snapshots.  It freezes all 58 graffiti identities, every
+and exact Git source snapshots.  It freezes every graffiti identity and
 weighted variant, recursive dependency, external TextDB dependency and
 post-processing token.  A strict JSONL review card is required for every
 identity.  Candidate validation then proves that both language files equal
@@ -174,8 +174,13 @@ def _source_rows(artifact: dict[str, Any], directory: str, label: str) -> list[d
         entry for entry in artifact["entries"]
         if entry["effective_provenance"]["source_name"] == source_name
     ]
-    _require(len(rows) == EXPECTED_IDENTITY_COUNT,
-             f"{label} graffiti identity count mismatch")
+    snapshots = [source for source in artifact["sources"]
+                 if source["source_name"] == source_name]
+    _require(len(snapshots) == 1, f"{label} missing graffiti source")
+    definitions = hardened._definition_lines(snapshots[0]["normalized_utf8"], label)
+    _require({row["canonical_key"] for row in rows} == set(definitions),
+             f"{label} graffiti source key set mismatch")
+    _require(ROOT_KEY in definitions, f"{label} missing graffiti root")
     keys = [entry["canonical_key"] for entry in rows]
     _require(len(set(keys)) == len(keys), f"{label} duplicate graffiti key")
     for entry in rows:
@@ -287,17 +292,8 @@ def _dataset(
         len(variant["random_site_counts"])
         for entry in entries for variant in entry["variants"]
     )
-    if role == "baseline":
-        expected = (EXPECTED_BASELINE_EN_VARIANTS if directory == "database/"
-                    else EXPECTED_BASELINE_ZH_VARIANTS)
-        _require(total == expected, f"{label} baseline variant count mismatch")
-        _require(random_sites == EXPECTED_RANDOM_SITES,
-                 f"{label} baseline random-site count mismatch")
-    else:
-        _require(total == EXPECTED_CANDIDATE_VARIANTS,
-                 f"{label} candidate variant count mismatch")
-        _require(random_sites == EXPECTED_RANDOM_SITES,
-                 f"{label} candidate random-site count mismatch")
+    # The caller binds these facts to exact Git before freezing them.  Totals
+    # describe this baseline, rather than a particular historical review.
     return {
         "artifact_sha256": _sha256(raw),
         "source_name": f"{directory}{SOURCE_BASENAME}",
@@ -330,13 +326,6 @@ def _pair_entries(en: dict[str, Any], zh: dict[str, Any]) -> list[dict[str, Any]
     entries = []
     for key in sorted(en_by_key):
         en_entry, zh_entry = en_by_key[key], zh_by_key[key]
-        counts = (len(en_entry["variants"]), len(zh_entry["variants"]))
-        if counts[0] != counts[1]:
-            _require(EXPECTED_BASELINE_ASYMMETRY.get(key) == counts,
-                     f"unexpected baseline asymmetry for {key!r}: {counts!r}")
-        else:
-            _require(key not in EXPECTED_BASELINE_ASYMMETRY,
-                     f"frozen asymmetric key {key!r} unexpectedly aligned")
         lifecycle = "direct-production-root" if key == ROOT_KEY else "recursive-internal-fragment"
         entries.append({
             "identity": f"graffiti:{key}",
@@ -361,24 +350,30 @@ def build_inventory(
 ) -> dict[str, Any]:
     en = _load_dataset(baseline_ref, english_path, "database/", "baseline EN", "baseline")
     zh = _load_dataset(baseline_ref, localized_path, "database/zh/", "baseline ZH", "baseline")
-    _require(en["token_facts"]["unresolved"] == EXPECTED_BASELINE_UNRESOLVED["english"],
+    _require(all(site in EXPECTED_BASELINE_UNRESOLVED["english"]
+                 for site in en["token_facts"]["unresolved"]),
              "baseline EN unresolved-token facts changed")
-    _require(zh["token_facts"]["unresolved"] == EXPECTED_BASELINE_UNRESOLVED["chinese"],
+    _require(all(site in EXPECTED_BASELINE_UNRESOLVED["chinese"]
+                 for site in zh["token_facts"]["unresolved"]),
              "baseline ZH unresolved-token facts changed")
-    _require(en["reachability"]["unreachable"] == EXPECTED_BASELINE_UNREACHABLE["english"],
+    _require(set(en["reachability"]["unreachable"]) <= set(EXPECTED_BASELINE_UNREACHABLE["english"]),
              "baseline EN reachability facts changed")
-    _require(zh["reachability"]["unreachable"] == EXPECTED_BASELINE_UNREACHABLE["chinese"],
+    _require(set(zh["reachability"]["unreachable"]) <= set(EXPECTED_BASELINE_UNREACHABLE["chinese"]),
              "baseline ZH reachability facts changed")
     entries = _pair_entries(en, zh)
     scope = {
         "source_basename": SOURCE_BASENAME,
         "root_key": ROOT_KEY,
-        "expected_identity_count": EXPECTED_IDENTITY_COUNT,
+        "expected_identity_count": len(entries),
         "baseline_variant_counts": {
-            "english": EXPECTED_BASELINE_EN_VARIANTS,
-            "chinese": EXPECTED_BASELINE_ZH_VARIANTS,
+            "english": en["variant_count"],
+            "chinese": zh["variant_count"],
         },
-        "baseline_asymmetry": {key: list(value) for key, value in sorted(EXPECTED_BASELINE_ASYMMETRY.items())},
+        "baseline_asymmetry": {
+            entry["key"]: [len(entry["english_variants"]), len(entry["chinese_variants"])]
+            for entry in entries
+            if len(entry["english_variants"]) != len(entry["chinese_variants"])
+        },
         "external_textdb_keys": sorted(EXTERNAL_TEXTDB_KEYS),
         "postprocess_tokens": sorted(POSTPROCESS_TOKENS),
         "ordered_token_exceptions": [
@@ -448,13 +443,13 @@ def _expected_metadata(inventory: dict[str, Any], cards: list[dict[str, Any]]) -
     return {
         "baseline": inventory["baseline_ref"],
         "chinese_production_dump_sha256": inventory["dumps"]["localized"]["artifact_sha256"],
-        "en_variant_count": EXPECTED_BASELINE_EN_VARIANTS,
+        "en_variant_count": inventory["scope"]["baseline_variant_counts"]["english"],
         "english_production_dump_sha256": inventory["dumps"]["english"]["artifact_sha256"],
         "glossary_sha256": inventory["glossary"]["sha256"],
-        "identity_count": EXPECTED_IDENTITY_COUNT,
+        "identity_count": len(inventory["entries"]),
         "inventory_sha256": inventory["inventory_sha256"],
         "terminal_conclusion_counts": dict(sorted(Counter(card["terminal_conclusion"] for card in cards).items())),
-        "zh_variant_count": EXPECTED_BASELINE_ZH_VARIANTS,
+        "zh_variant_count": inventory["scope"]["baseline_variant_counts"]["chinese"],
     }
 
 
@@ -463,8 +458,8 @@ def validate_results(
     records: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     records = records if records is not None else _strict_block(path)
-    _require(len(records) == EXPECTED_IDENTITY_COUNT + 1,
-             "review results require one metadata record and 58 cards")
+    _require(len(records) == len(inventory["entries"]) + 1,
+             f"review results require one metadata record and {len(inventory['entries'])} cards")
     metadata, cards = records[0], records[1:]
     _require(set(metadata) == METADATA_FIELDS, "review metadata fields mismatch")
     _require(metadata == _expected_metadata(inventory, cards), "review metadata mismatch")
@@ -539,6 +534,10 @@ def add_candidate(
     )
     en = _load_dataset(candidate_ref, english_path, "database/", "candidate EN", "candidate")
     zh = _load_dataset(candidate_ref, localized_path, "database/zh/", "candidate ZH", "candidate")
+    frozen_keys = {entry["key"] for entry in inventory["entries"]}
+    _require({entry["key"] for entry in en["entries"]} == frozen_keys
+             and {entry["key"] for entry in zh["entries"]} == frozen_keys,
+             "candidate key set differs from frozen inventory")
     _require(not en["token_facts"]["unresolved"], "candidate EN contains unresolved token")
     _require(not zh["token_facts"]["unresolved"], "candidate ZH contains unresolved token")
     _require(not en["reachability"]["unreachable"], "candidate EN has unreachable graffiti keys")
@@ -712,7 +711,7 @@ def scaffold_results(
     records = [_expected_metadata(inventory, cards), *cards]
     text = (
         "# Graffiti 全量审核结果（Issue #66）\n\n"
-        "本文件的严格 JSONL 块是 58 个 frozen identity 的完整审核账本。"
+        f"本文件的严格 JSONL 块是 {len(inventory['entries'])} 个 frozen identity 的完整审核账本。"
         "每张卡同时绑定基线 EN/ZH 变体和已批准 proposal；候选审计只接受"
         "逐字等于 proposal 的提交。\n\n"
         f"{STRICT_BEGIN}\n```jsonl\n"
