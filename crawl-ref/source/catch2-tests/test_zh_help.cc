@@ -1780,8 +1780,10 @@ TEST_CASE("WebTiles: zero-stat status keeps an English key and current display l
             {
                 CHECK(you.base_stats[i] == (mask & (1 << i) ? 0 : 10));
                 if (mask & (1 << i))
+                {
                     CHECK(info.short_text.find(stat_desc(static_cast<stat_type>(i), SD_NAME))
                           != string::npos);
+                }
             }
             if (language == lang_t::EN)
                 CHECK(info.short_text == info.short_db_key);
