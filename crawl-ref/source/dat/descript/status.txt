@@ -49,7 +49,8 @@ temporary regeneration.
 %%%%
 -Regen status
 
-Your health has stopped regenerating due to the presence of nearby monsters.
+Your normal health regeneration has stopped because you are aware of nearby
+threatening enemies.
 %%%%
 MPRegen status
 
@@ -226,7 +227,7 @@ without taking damage.
 %%%%
 Sick status
 
-You have been sickened, and your health will no longer regenerate.
+You have been sickened, stopping your normal health regeneration.
 %%%%
 Vertigo status
 
@@ -503,9 +504,10 @@ ready to wind your coils around foes and crush them to death.
 Maw status
 
 Your midsection has transformed into a giant mouth, gnashing and ready to devour
-foes. The mouth may devour slain creatures, healing you to an extent increased
-by your Shapeshifting skill and the power of the creature eaten. Skill also
-increases the damage done by the maw.
+foes. The mouth may devour slain creatures, temporarily increasing your health
+regeneration. Your Shapeshifting skill increases this regeneration bonus and
+the damage done by the maw. More powerful creatures provide a longer-lasting
+regeneration bonus.
 %%%%
 Statue status
 
@@ -517,32 +519,21 @@ electricity, negative energy and torment.
 Dragon status
 
 {{
-    local desc = "You have been transformed into a mighty"
+    local race = you.race()
+    local draconian = race:find("Draconian")
+    local desc = "You have been transformed into a mighty dragon. " ..
+                 "This form grants resistance to poison"
 
-    if you.race():find("Draconian") then
-        desc = desc .. " dragon"
-        if you.race() ~= "Grey Draconian" then
-            desc = desc .. ", increasing the power of any innate breath attacks"
-        end
-        if you.race() == "Red Draconian" then
-            desc = desc .. ". You are highly resistant to fire and " ..
-                           "resistant to poison, but vulnerable to cold"
-        elseif you.race() == "White Draconian" then
-            desc = desc .. ". You are highly resistant to cold and " ..
-                           "resistant to poison, but vulnerable to fire"
-        elseif you.race() == "Green Draconian" then
-            desc = desc .. " and retaining your innate colour"
-        else
-            desc = desc .. ". You retain your innate colour, and are " ..
-                           "also resistant to poison"
-        end
-    else
-        desc = desc .. ", fire-breathing dragon. You are highly resistant " ..
-                       "to fire and resistant to poison, but vulnerable to " ..
-                       "cold"
+    if not draconian or race == "Draconian" then
+        desc = desc .. ", fire and cold"
     end
-
     desc = desc .. "."
+
+    if not draconian then
+        desc = desc .. " You gain a golden breath attack."
+    elseif race ~= "Draconian" then
+        desc = desc .. " Your innate breath attack grows stronger."
+    end
 
     return desc
 }} Your melee attacks deal incredible damage, and you are much more robust but
@@ -618,9 +609,8 @@ on experience level instead of on Unarmed Combat skill.
 Fungus status
 
 You have been transformed into a sentient fungus. You are highly evasive and
-can release spores to cause confusion when attacking in melee, but are unable
-to move when hostile creatures are present. You are resistant to poison and
-immune to negative energy.
+can release spores to confuse breathing creatures when attacking in melee,
+but can become too terrified to move when threatening enemies are nearby.
 
 Any equipped weapons and armour are melded, and you are unable to cast spells.
 The effectiveness of your melee attacks while in this form is based on
@@ -1094,8 +1084,8 @@ Vampire status
 
 You are a vampire - a creature that straddles the border between life and
 undeath. You can drink the lifeblood of the living to heal, and even turn those
-you slay stealthily into vampiric thralls, but do not heal in the presence of
-monsters.
+you slay stealthily into vampiric thralls, but your normal health regeneration
+stops while you are aware of nearby threatening enemies.
 %%%%
 Swarm status
 

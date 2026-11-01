@@ -642,17 +642,22 @@ A fearsome weapon with a forked, razor-sharp blade.
 dragon-coil talisman
 
 An intricate carving, inlaid with dragon tooth and scale. {{
+    local race = you.race()
     local desc = "Transforms the wearer into a mighty"
 
-    if you.race():find("Draconian") then
-        desc = desc .. " dragon. The wearer retains their innate colour, " ..
-                       "becomes resistant to poison, and their breath weapon's " ..
-                       "power and recharge rate are greatly increased."
+    if race:find("Draconian") then
+        desc = desc .. " dragon. The wearer becomes resistant to poison"
+        if race == "Draconian" then
+            desc = desc .. ", fire, and cold."
+        else
+            desc = desc .. ", and their innate breath weapon's power and " ..
+                           "recharge rate are greatly increased."
+        end
     else
         desc = desc .. " golden dragon. The wearer becomes resistant to fire, " ..
                        "cold, and poison, and gains a powerful breath attack " ..
-                       "that inflicts all three types of damage at once, but " ..
-                       "only recharges as you gain XP."
+                       "that deals fire and cold damage and leaves poisonous " ..
+                       "clouds, but only recharges as you gain XP."
     end
     return desc
 }}
@@ -1434,9 +1439,10 @@ sanguine talisman
 A vial of roiling blood that pulses with the beat of an unseen heart. Transforms
 the wearer into a fearsome vampire - a creature that straddles the border between
 life and undeath. They can drink the lifeblood of the living to heal themselves,
-and even turn those they slay stealthily into vampiric thralls, but do not heal
-in the presence of monsters. Their hypnotic gaze often prevents monsters from
-shouting when alerted and may even daze them. At great effort, they can also
+and even turn those they slay stealthily into vampiric thralls, but their normal
+health regeneration stops while they are aware of nearby threatening enemies.
+Their hypnotic gaze often prevents monsters from shouting when alerted and may
+even daze them. At great effort, they can also
 scatter into a swarm of bats - either to flee or to assail their enemies.
 %%%%
 sanguine gem
@@ -1460,9 +1466,10 @@ A small golden cameo of a beetle. Transforms the wearer into a sun scarab, a
 fiery insect that carries around a mote of searing heat and light outside
 itself, like a tiny sun.
 
-This solar ember burns adjacent enemies whenever the scarab attacks, and can be
-healed by swapping with it. In addition, the scarab's own mandibles can reduce
-enemies' fire resistance and Fire spells are easier for the wearer to cast.
+This solar ember burns adjacent enemies every second time the scarab attacks,
+and can be healed by swapping with it. In addition, the scarab's own mandibles
+can reduce enemies' fire resistance and Fire spells are easier for the wearer
+to cast.
 %%%%
 scarf
 

@@ -3,7 +3,7 @@
 
 The inventory is derived from production C++ enums/initializers and TextDB
 inputs.  It covers mutations, displayed player durations/statuses,
-non-religious abilities, skills/titles, core stats, and monster-status
+non-religious abilities, skills/titles, core stats, and player/monster-status
 description slots.  God-specific abilities are recorded as explicit
 exclusions because Issue #25 owns their identity conclusions.
 """
@@ -121,10 +121,12 @@ REVIEW_DECISION_FIELDS = {
 REVIEW_CATEGORY_HEADINGS = (
     ("attribute", "属性证据卡"),
     ("skill", "技能证据卡"),
+    ("skill_title", "共享技能称号证据卡"),
     ("ability", "非神祇能力证据卡"),
     ("mutation", "变异证据卡"),
     ("duration", "时长状态证据卡"),
     ("status", "附加状态证据卡"),
+    ("status_description", "玩家状态正文证据卡"),
     ("monster_status", "怪物状态证据卡"),
 )
 
@@ -324,7 +326,7 @@ def translation(db, english, context=None):
 
 def case_fragments(body, prefix):
     matches = list(re.finditer(
-        r"\bcase\s+((?:STATUS_|DUR_)[A-Z0-9_]+)\s*:", body
+        rf"\bcase\s+((?:STATUS_|DUR_|{re.escape(prefix)})[A-Z0-9_]+)\s*:", body
     ))
     result = {}
     for index, match in enumerate(matches):
@@ -713,11 +715,25 @@ def useless_skills():
     return set(re.findall(r"\bcase\s+(SK_[A-Z0-9_]+)\s*:", body))
 
 
+def skill_title_context(body):
+    contextual = re.search(
+        r'\bresult\s*=\s*C_\(\s*"([^"\\]+)"\s*,\s*result\.c_str\(\)\s*\)',
+        body,
+    )
+    if contextual:
+        return contextual.group(1)
+    if re.search(r"\bresult\s*=\s*T_\(\s*result\.c_str\(\)\s*\)", body):
+        return None
+    raise RuntimeError("unsupported final skill-title translation producer")
+
+
 def skill_rows(db, descriptions):
     en_desc, zh_desc = descriptions
     identities = concrete_enum_identities(SKILL_TYPE, "SK_")
     identities = identities[:identities.index("SK_BLANK_LINE")]
     source = active_source(SKILL_CODE)
+    title_body = exact_function_body(source, r"\bstring\s+skill_title_by_rank")
+    title_context = skill_title_context(title_body)
     table_rows = ordered_initializer_rows(
         source,
         r"\bstatic\s+const\s+char\s*\*\s*skill_titles"
@@ -743,9 +759,10 @@ def skill_rows(db, descriptions):
                 f"unexpected special skill titles: {array_name}: {strings}"
             )
         special_title_sets[array_name] = [
-            translation(db, title) for title in strings[1:]
+            translation(db, title, title_context) for title in strings[1:]
         ]
     obsolete = useless_skills()
+    title_branches = case_fragments(title_body, "SK_")
     rows = []
     for identity, raw in zip(identities, table_rows):
         strings = cpp_strings(raw)
@@ -759,17 +776,66 @@ def skill_rows(db, descriptions):
             "lifecycle": "compatibility" if identity in obsolete else "current",
             "english_source_name": name,
             "current_chinese_name": translation(db, name)["chinese"],
-            "titles": [translation(db, title) for title in titles],
+            "titles": [translation(db, title, title_context) for title in titles],
             "abbreviation": abbreviation,
             "description_key": name,
             "english_description": en_desc.get(name.lower()),
             "chinese_description": zh_desc.get(name.lower()),
             "source_file": relative(SKILL_CODE),
         }
+        branch = title_branches.get(identity, "")
+        row["conditional_titles"] = [
+            translation(db, value, title_context) for value in dict.fromkeys(re.findall(
+                r'\bresult\s*=\s*"((?:[^"\\]|\\.)*)"\s*;', branch
+            ))
+        ]
+        row["title_override_producer"] = normalize_producer_fragment(branch)
         if identity == "SK_UNARMED_COMBAT":
             row["special_title_sets"] = special_title_sets
         rows.append(row)
     return rows
+
+
+def shared_skill_title_rows(db):
+    """Bind shared title producers separately from skill-specific overrides."""
+    source = active_source(SKILL_CODE)
+    conduct = exact_function_body(source, r"\bstring\s+special_conduct_title")
+    weights = exact_function_body(source, r"\bstring\s+_stk_weight")
+    title = exact_function_body(source, r"\bstring\s+skill_title_by_rank")
+    title_context = skill_title_context(title)
+    # The entire producer is bound as well as its finite literal results.
+    # Species names and god titles remain owned by their respective domains.
+    conduct_titles = list(dict.fromkeys(re.findall(
+        r'\breturn\s+"((?:[^"\\]|\\.)*)"\s*;', conduct
+    )))
+    weight_titles = list(dict.fromkeys(re.findall(
+        r'\breturn\s+"((?:[^"\\]|\\.)*)"\s*;', weights
+    )))
+    return [{
+        "identity": "skill_title:conduct",
+        "category": "skill_title",
+        "lifecycle": "current",
+        "english_source_name": "shared conduct titles",
+        "display_strings": [translation(db, value, title_context)
+                            for value in conduct_titles],
+        "producer_fragment": normalize_producer_fragment(conduct),
+        "source_file": relative(SKILL_CODE),
+    }, {
+        "identity": "skill_title:shared",
+        "category": "skill_title",
+        "lifecycle": "current",
+        "english_source_name": "title substitutions and fallback",
+        "display_strings": [
+            translation(db, "Adventurer"),
+            translation(db, "God", "skill title genus"),
+            translation(db, "Walker", "skill title walker"),
+            *(translation(db, value, "skill title weight")
+              for value in weight_titles),
+        ],
+        "producer_fragment": normalize_producer_fragment(title),
+        "weight_producer_fragment": normalize_producer_fragment(weights),
+        "source_file": relative(SKILL_CODE),
+    }]
 
 
 def attribute_rows(db):
@@ -795,6 +861,49 @@ def attribute_rows(db):
             "current_chinese_name": translation(db, strings[0])["chinese"],
             "display_strings": [translation(db, value) for value in strings],
             "source_file": relative(STAT_CODE),
+        })
+    return rows
+
+
+def player_status_description_rows(descriptions, durations, statuses):
+    """Bind every body, independently of the bounded producer extraction.
+
+    English ``... status`` keys are discoverable in lookup-help even when no
+    current gameplay producer uses them. Producer candidates only join literal
+    keys and duration light defaults; overrides, form mappings and computed
+    keys still require the reviewer's consumer evidence.
+    """
+    en_desc, zh_desc = descriptions
+    producers = {}
+    for row in durations:
+        light = row.get("light")
+        if light and light.get("english"):
+            key = (light["english"] + " status").lower()
+            producers.setdefault(key, set()).add(row["identity"])
+    for row in statuses:
+        for stem in row.get("db_keys", []):
+            key = (stem + " status").lower()
+            producers.setdefault(key, set()).add(row["identity"])
+    rows = []
+    for key in sorted(set(en_desc) | set(zh_desc)):
+        help_visible = key in en_desc and key.endswith(" status")
+        rows.append({
+            "identity": f"status_description:{key}",
+            "category": "status_description",
+            "lifecycle": "current-help" if help_visible else "unmapped",
+            "english_source_name": key,
+            "description_key": key,
+            "english_description": en_desc.get(key),
+            "chinese_description": zh_desc.get(key),
+            "help_visible": help_visible,
+            "producer_candidates": sorted(producers.get(key, set())),
+            "producer_coverage": "literal keys and duration defaults only",
+            "source_file": relative(DESCRIPTION_FILES["status"][0]),
+            "chinese_source_file": relative(DESCRIPTION_FILES["status"][1]),
+            "consumers": [
+                "crawl-ref/source/lookup-help.cc:_status_filter/_describe_key",
+                "crawl-ref/source/status.cc:status_light_description",
+            ],
         })
     return rows
 
@@ -842,8 +951,11 @@ def inventory_violations(rows, descriptions, status_proof=None):
     )
     missing_descriptions = sorted(
         row["identity"] for row in rows
-        if row["category"] in {"mutation", "ability", "skill", "monster_status"}
-        and row["lifecycle"] == "current"
+        if row["category"] in {
+            "mutation", "ability", "skill", "monster_status",
+            "status_description",
+        }
+        and row["lifecycle"] in {"current", "current-help"}
         and (
             not row.get("english_description")
             or not row.get("chinese_description")
@@ -857,10 +969,11 @@ def inventory_violations(rows, descriptions, status_proof=None):
             "duration",
             "status",
             "skill",
+            "skill_title",
             "attribute",
         }
         and row["lifecycle"] == "current"
-        for field in ("display_strings", "titles")
+        for field in ("display_strings", "titles", "conditional_titles")
         for item in row.get(field, [])
         if item["english"] and not item["translation_present"]
     )
@@ -949,6 +1062,11 @@ def build_inventory():
     )
     durations = duration_rows(db)
     statuses, status_proof = status_rows(db, with_proof=True)
+    status_descriptions = player_status_description_rows(
+        (descriptions["status"]["english"], descriptions["status"]["chinese"]),
+        durations,
+        statuses,
+    )
     abilities, excluded_abilities = ability_rows(
         db,
         (
@@ -964,13 +1082,14 @@ def build_inventory():
         ),
     )
     attributes = attribute_rows(db)
+    shared_titles = shared_skill_title_rows(db)
     monster_statuses = monster_status_rows((
         descriptions["monster_status"]["english"],
         descriptions["monster_status"]["chinese"],
     ))
     rows = sorted(
         mutation + durations + statuses + abilities + skills
-        + attributes + monster_statuses,
+        + attributes + monster_statuses + status_descriptions + shared_titles,
         key=lambda row: row["identity"],
     )
     inputs = [
@@ -981,6 +1100,8 @@ def build_inventory():
         DURATION_DATA,
         STATUS_TYPE,
         STATUS_CODE,
+        SRC / "lookup-help.cc",
+        SRC / "database.cc",
         ABILITY_TYPE,
         ABILITY_CODE,
         SKILL_TYPE,
@@ -1003,8 +1124,10 @@ def build_inventory():
             "included": [
                 "mutation definitions and all player-facing mutation strings",
                 "duration/status producers used by fill_status_info",
+                "complete EN/ZH player-status TextDB body union, including help-only keys",
                 "non-religious ability definitions and descriptions",
                 "current and save-compatibility skills, descriptions and titles",
+                "skill-specific title overrides and shared conduct/substitution producers",
                 "core Strength/Intelligence/Dexterity display forms",
                 "English monster-status TextDB slots and their ZH counterparts",
             ],
@@ -1014,6 +1137,7 @@ def build_inventory():
                 "balance, formulas, probabilities and costs",
                 "internal durations without any change to their game behaviour",
                 "Wiki-derived identity counts",
+                "exhaustive computed HUD-key and platform reachability proof",
             ],
             "excluded_god_ability_identities": excluded_abilities,
         },
@@ -1057,7 +1181,7 @@ def _split_legacy_decision(value):
 def legacy_review_decisions(text):
     matches = re.findall(
         r"^\|\s*`((?:mutation|duration|status|ability|skill|attribute|"
-        r"monster_status):[^`]+)`\s*\|.*?\|\s*([^|\n]+?)\s*\|\s*$",
+        r"monster_status|status_description|skill_title):[^`]+)`\s*\|.*?\|\s*([^|\n]+?)\s*\|\s*$",
         text,
         re.MULTILINE,
     )

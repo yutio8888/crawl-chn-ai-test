@@ -726,9 +726,9 @@ static vector<pair<string,string>> _get_form_fakemuts()
         {
             result.push_back({"blade armour",
                     _badmut(make_stringf(T_("Your body armour is %s at protecting you."),
-                          penalty_percent <=  -45 ? "much less effective"
-                        : penalty_percent <   -20 ? "less effective"
-                                                  : "slightly less effective"
+                          penalty_percent <=  -45 ? T_("much less effective")
+                        : penalty_percent <   -20 ? T_("less effective")
+                                                  : T_("slightly less effective")
             ))});
         }
     }
@@ -1228,7 +1228,7 @@ private:
             {
                 const string* mut = (string*)(items[i]->data);
                 describe_info inf;
-                inf.title = uppercase_first(*mut).c_str();
+                inf.title = uppercase_first(T_(mut->c_str()));
 
                 const string key = make_stringf("%s mutation", mut->c_str());
                 string lookup = getLongDescription(key);

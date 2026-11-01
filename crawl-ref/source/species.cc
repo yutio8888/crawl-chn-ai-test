@@ -99,8 +99,9 @@ namespace species
             return raw ? def.genus_name : T_(def.genus_name);
         else if (spname_type == SPNAME_ADJ && def.adj_name)
             return raw ? def.adj_name : T_(def.adj_name);
-        // Display path: use T_() for i18n translation lookup
-        if (!raw && spname_type == SPNAME_PLAIN)
+        // Missing genus/adjective forms use the plain display name too.
+        // Raw callers still receive the canonical English identity below.
+        if (!raw)
         {
             if (speci == SP_POLTERGEIST)
                 return C_("species name", "Poltergeist");

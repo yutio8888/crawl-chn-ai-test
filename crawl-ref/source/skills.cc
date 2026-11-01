@@ -2269,8 +2269,7 @@ string special_conduct_title(skill_type best_skill, uint8_t skill_rank)
  * @return              An appropriate and/or humorous title.
  */
 
-// Chinese skill title translations are now handled by T_() in skill_title_by_rank().
-// See line ~2385: result = T_(result.c_str());
+// Skill titles use a display context, with ordinary SourceDB fallback.
 
 string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
                            species_type species, int dex, int str, int intel,
@@ -2279,7 +2278,7 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
 
     // paranoia
     if (is_invalid_skill(best_skill))
-        return "Adventurer";
+        return T_("Adventurer");
 
     // Increment rank by one to "skip" skill name in array {dlb}:
     ++skill_rank;
@@ -2541,21 +2540,22 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
     // Translate title before placeholder replacement
     // so that template titles like "@Adj@ Blade" use a single key.
     if (!result.empty())
-        result = T_(result.c_str());
+        result = C_("skill title", result.c_str());
 
+    const string weight = _stk_weight(species);
     const map<string, string> replacements =
     {
         { "Adj", species::name(species, species::SPNAME_ADJ) },
         { "Genus", species::name(species, species::SPNAME_GENUS) },
         { "genus", lowercase_string(species::name(species, species::SPNAME_GENUS)) },
-        { "Genus_Short", species == SP_DEMIGOD ? "God" :
+        { "Genus_Short", species == SP_DEMIGOD ? C_("skill title genus", "God") :
                            species::name(species, species::SPNAME_GENUS) },
         // Chinese titles use a complete noun rather than appending
         // the English agent suffix to the walking verb.
         { "Walker", Options.language == lang_t::ZH
                         ? C_("skill title walker", "Walker")
                                                    : species::walking_title(species) + "er" },
-        { "Weight", _stk_weight(species) },
+        { "Weight", C_("skill title weight", weight.c_str()) },
     };
 
     return replace_keys(result, replacements);
