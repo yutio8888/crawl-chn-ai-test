@@ -3245,8 +3245,10 @@ TEST_CASE("Phase 0 legacy EN and ZH database traces expose known drift",
         "unseen spit acid cast",
         "unseen spit poison cast",
     };
-    set<string> expected_different = guardian_roots;
-    expected_different.insert(unseen_roots.begin(), unseen_roots.end());
+    // The speech rereview aligned the two guardian-serpent weight pools.
+    // Keep checking those roots for parity; only the audited unseen roots
+    // still have a recursive-selection difference in the legacy path.
+    const set<string> expected_different = unseen_roots;
 
     set<string> dynamic_different;
     set<string> guardian_top_difference;
@@ -3309,7 +3311,7 @@ TEST_CASE("Phase 0 legacy EN and ZH database traces expose known drift",
     }
 
     CHECK(dynamic_different == expected_different);
-    CHECK(guardian_top_difference == guardian_roots);
+    CHECK(guardian_top_difference.empty());
     CHECK(unseen_recursive_rng_difference == unseen_roots);
     // The seed range is accepted only if every statically selectable key in
     // the complete recursive closure was observed, with every ordinal hit.
@@ -3321,6 +3323,8 @@ TEST_CASE("Phase 0 legacy EN and ZH database traces expose known drift",
 
     vector<string> canonical_driven_roots(expected_different.begin(),
                                           expected_different.end());
+    canonical_driven_roots.insert(canonical_driven_roots.end(),
+                                  guardian_roots.begin(), guardian_roots.end());
     canonical_driven_roots.push_back("orb of entropy cast");
     bool canonical_driven_equal = true;
     for (uint64_t seed = 0; seed < 128 && canonical_driven_equal; ++seed)
