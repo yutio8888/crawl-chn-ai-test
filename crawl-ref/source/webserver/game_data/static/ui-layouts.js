@@ -453,23 +453,23 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
         var have_quote = desc.quote !== "";
         var have_status = desc.status !== "";
 
-        var footer0 = "<b class=\"fg15\">Description</b>";
+        var footer0 = "<b class=\"fg15\">描述</b>";
         if (have_status)
-            footer0 += " | Status";
+            footer0 += " | 状态";
         if (have_quote)
-            footer0 += " | Quote";
+            footer0 += " | 引言";
 
-        var footer1 = "Description";
+        var footer1 = "描述";
         if (have_status)
-            footer1 += " | <b class=\"fg15\">Status</b>";
+            footer1 += " | <b class=\"fg15\">状态</b>";
         if (have_quote)
-            footer1 += " | Quote";
+            footer1 += " | 引言";
 
-        var footer2 = "Description";
+        var footer2 = "描述";
         if (have_status)
-            footer2 += " | Status";
+            footer2 += " | 状态";
         if (have_quote)
-            footer2 += " | <b class=\"fg15\">Quote</b>";
+            footer2 += " | <b class=\"fg15\">引言</b>";
 
         $footer_panes.eq(0).html(footer0);
         $footer_panes.eq(1).html(footer1);

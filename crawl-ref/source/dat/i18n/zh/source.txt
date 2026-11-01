@@ -28394,8 +28394,17 @@ decreases
 increases
 提高
 %%%%
-%1$sIt makes you %2$s%3$s stealthy.
-%1$s使你变得%3$s潜行。
+%sIt makes you more stealthy.
+%s提高你的潜行能力。
+%%%%
+%sIt makes you much more stealthy.
+%s大幅提高你的潜行能力。
+%%%%
+%sIt makes you less stealthy.
+%s降低你的潜行能力。
+%%%%
+%sIt makes you much less stealthy.
+%s大幅降低你的潜行能力。
 %%%%
 much 
 极
@@ -33144,7 +33153,7 @@ verb|are
 被
 %%%%
 verb|are shoved
-猛退
+被推得
 %%%%
 verb|hold
 死死守住
@@ -37216,9 +37225,6 @@ weapon of %s
 %8d %s the %s (level %d
 %8d %s，%s（等级%d
 %%%%
-%d %sexclusion%s
-%d个%s禁区%s
-%%%%
 %d (base %d)
 %d（基础%d）
 %%%%
@@ -38045,7 +38051,7 @@ Poison%s and paralysis/slowing
 易受
 %%%%
  vulnerable to silver and hated by Zin.\n
-易受银器伤害，并被吉恩憎恨。\n
+易受银器伤害，并被辛憎恨。\n
 %%%%
  cold-blooded and may be slowed by cold attacks.\n
 是冷血动物，可能被寒冷攻击减速。\n
@@ -39771,7 +39777,7 @@ This entry is an exact match for '%s'. To see non-exact matches, press space.
 ，你对抗突变吗？
 %%%%
  Zin will disapprove.
- 吉恩不会认可的。
+ 辛不会认可的。
 %%%%
 You cannot currently memorise any of the available spells because you cannot use those schools of magic.
 你目前无法记忆任何可用法术，因为你无法使用魔法。
@@ -40794,7 +40800,7 @@ status|Wave
 火焰波
 %%%%
 status|Weak
-脆弱
+虚弱
 %%%%
 status|Werewolf
 狼人
@@ -41415,7 +41421,7 @@ status|transformed
 变形
 %%%%
 status|weakness
-脆弱
+虚弱
 %%%%
 regeneration
 再生
@@ -48496,3 +48502,132 @@ spell resistance|rCorr
 %%%%
 spell resistance|rSteam
 蒸汽抗性
+%%%%
+scintillating statue
+闪光雕像
+%%%%
+golden statue
+金雕像
+%%%%
+silver statue
+银雕像
+%%%%
+mystic cage
+神秘牢笼
+%%%%
+arcane conduit
+奥术导管
+%%%%
+misfortune conduit
+厄运导管
+%%%%
+dimensional conduit
+维度导管
+%%%%
+alchemical conduit
+炼金导管
+%%%%
+fiery conduit
+火焰导管
+%%%%
+icy conduit
+寒冰导管
+%%%%
+earthen conduit
+大地导管
+%%%%
+storm conduit
+风暴导管
+%%%%
+enigmatic dynamo
+神秘发电机
+%%%%
+nascence circuit
+新生电路
+%%%%
+garden patch
+花圃
+%%%%
+floral vase
+插花瓶
+%%%%
+mourning vase
+悼念花瓶
+%%%%
+broken floral vase
+破碎的插花瓶
+%%%%
+orcish standard
+兽人军旗
+%%%%
+infernal standard
+地狱军旗
+%%%%
+caliginous standard
+幽暗军旗
+%%%%
+fur brush
+毛刷
+%%%%
+set of bottled spirits
+一组瓶装烈酒
+%%%%
+djembe set
+非洲手鼓组
+%%%%
+skull pike
+头骨长矛
+%%%%
+mop and bucket
+拖把和水桶
+%%%%
+bloodied mop and bucket
+染血的拖把和水桶
+%%%%
+assortment of trash
+杂乱垃圾
+%%%%
+weapon-inlaid floor
+武器镶嵌地板
+%%%%
+empty mutation catalyst
+空诱变催化器
+%%%%
+dual wield|a pair of %s
+一对%s
+%%%%
+trample verb|slip
+打着滑
+%%%%
+%d exclusion
+%d个禁区
+%%%%
+%d exclusions
+%d个禁区
+%%%%
+%d more exclusion
+另有%d个禁区
+%%%%
+%d more exclusions
+另有%d个禁区
+%%%%
+exclusion:
+禁区：
+%%%%
+exclusions:
+禁区：
+%%%%
+(visited)
+（已到访）
+%%%%
+Dwarven Hall
+矮人大厅
+%%%%
+Hall of Blades
+刀锋殿堂
+%%%%
+Forest
+森林
+%%%%
+exclusion terrain|water
+水

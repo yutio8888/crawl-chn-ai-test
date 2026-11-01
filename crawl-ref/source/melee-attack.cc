@@ -5195,7 +5195,8 @@ bool melee_attack::do_knockback(bool slippery)
         const char *verb = slippery ? N_("slip")
                          : can_stumble ? N_("stumble")
                                        : NC_("verb", "are shoved");
-        const char *context = slippery || can_stumble ? nullptr : "verb";
+        const char *context = slippery ? "trample verb"
+                            : can_stumble ? nullptr : "verb";
         mprf(T_("%s %s backwards!"),
              defender_name(false).c_str(),
              defender->verb_for_display(verb, context).c_str());

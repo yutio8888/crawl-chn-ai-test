@@ -18,6 +18,7 @@
 #include "dungeon.h"
 #include "english.h"
 #include "env.h"
+#include "exclude.h"
 #include "feature.h"
 #include "files.h"
 #include "libutil.h"
@@ -214,6 +215,24 @@ int overview_knows_num_portals(dungeon_feature_type portal)
     return num;
 }
 
+// Compact overview locations are display text. Keep level_id::describe()
+// canonical for parsers, protocol fields and saved identities elsewhere.
+static string _overview_branch_name(branch_type branch)
+{
+    return Options.language == lang_t::ZH ? T_(branches[branch].shortname)
+                                          : branches[branch].abbrevname;
+}
+
+static string _overview_level_name(level_id level)
+{
+    if (Options.language != lang_t::ZH)
+        return level.describe();
+    string name = _overview_branch_name(level.branch);
+    if (brdepth[level.branch] != 1)
+        name += level.depth ? make_stringf(":%d", level.depth) : ":$";
+    return name;
+}
+
 static string _portals_description_string()
 {
     string disp;
@@ -235,7 +254,7 @@ static string _portals_description_string()
                 else
                 {
                     disp += ' ';
-                    disp += entry.first.id.describe(false, true);
+                    disp += _overview_level_name(entry.first.id);
                 }
                 last_id = entry.first.id;
 
@@ -321,22 +340,23 @@ static string _get_seen_branches(bool display, bool &any_shafted)
 
             string entry_desc;
             for (auto lvl : stair_level[branch])
-                entry_desc += " " + lvl.describe(false, true);
+                entry_desc += " " + _overview_level_name(lvl);
 
             // "D" is a little too short here
             // XX "Gauntlet" is too long
             const char *brname = branch == BRANCH_DUNGEON
                 ? it->shortname : it->abbrevname;
-            const string display_brname = branch == BRANCH_DUNGEON
-                ? T_(brname) : brname;
+            const string display_brname = Options.language == lang_t::ZH
+                ? T_(it->shortname) : brname;
 
             if (entry_desc.size() == 0 && branch != BRANCH_DUNGEON
                 && you.where_are_you != branch)
             {
                 // previously visited portal branches
                 cells.push_back(make_stringf(
-                    "<yellow>%7s</yellow> <darkgrey>(visited)</darkgrey>",
-                    brname));
+                    "<yellow>%*s%s</yellow> <darkgrey>%s</darkgrey>",
+                    max(0, 7 - strwidth(display_brname)), "",
+                    display_brname.c_str(), T_("(visited)")));
             }
             else
             {
@@ -397,6 +417,8 @@ static string _get_unseen_branches()
     string disp;
 
     const bool descent = crawl_state.game_is_descent();
+    const int columns = Options.language == lang_t::ZH ? 3 : 4;
+    const int column_width = Options.language == lang_t::ZH ? 26 : 20;
 
     for (branch_iterator it; it; ++it)
     {
@@ -428,18 +450,20 @@ static string _get_unseen_branches()
                 bool in_dungeon = you.where_are_you == BRANCH_DUNGEON;
 
                 snprintf(buffer, sizeof buffer,
-                    "<darkgrey>%6s: %s:%d</darkgrey>",
-                    T_(it->abbrevname),
-                    T_(branches[you.where_are_you].abbrevname),
+                    "<darkgrey>%*s%s: %s:%d</darkgrey>",
+                    max(0, 6 - strwidth(_overview_branch_name(branch))), "",
+                    _overview_branch_name(branch).c_str(),
+                    _overview_branch_name(you.where_are_you).c_str(),
                     in_dungeon ? 12 : branches[you.where_are_you].numlevels);
 
                 disp += buffer;
                 num_printed_branches++;
 
-                disp += (num_printed_branches % 4) == 0
+                disp += (num_printed_branches % columns) == 0
                         ? "\n"
-                        // Each branch entry takes up 20 spaces
-                        : string(20 + 21 - strwidth(string(buffer)), ' ');
+                        // Padding excludes the colour tags.
+                        : string(max(0, column_width + 21
+                                        - strwidth(string(buffer))), ' ');
             }
             else
             {
@@ -450,28 +474,31 @@ static string _get_unseen_branches()
                     if (it->mindepth != it->maxdepth)
                     {
                         snprintf(buffer, sizeof buffer,
-                            "<darkgrey>%6s: %s:%d-%d</darkgrey>",
-                                T_(it->abbrevname),
-                                T_(branches[parent].abbrevname),
+                            "<darkgrey>%*s%s: %s:%d-%d</darkgrey>",
+                                max(0, 6 - strwidth(_overview_branch_name(branch))), "",
+                                _overview_branch_name(branch).c_str(),
+                                _overview_branch_name(parent).c_str(),
                                 it->mindepth,
                                 it->maxdepth);
                     }
                     else
                     {
                         snprintf(buffer, sizeof buffer,
-                            "<darkgrey>%6s: %s:%d</darkgrey>",
-                                T_(it->abbrevname),
-                                T_(branches[parent].abbrevname),
+                            "<darkgrey>%*s%s: %s:%d</darkgrey>",
+                                max(0, 6 - strwidth(_overview_branch_name(branch))), "",
+                                _overview_branch_name(branch).c_str(),
+                                _overview_branch_name(parent).c_str(),
                                 it->mindepth);
                     }
 
                     disp += buffer;
                     num_printed_branches++;
 
-                    disp += (num_printed_branches % 4) == 0
+                    disp += (num_printed_branches % columns) == 0
                             ? "\n"
-                            // Each branch entry takes up 20 spaces
-                            : string(20 + 21 - strwidth(string(buffer)), ' ');
+                            // Padding excludes the colour tags.
+                            : string(max(0, column_width + 21
+                                            - strwidth(string(buffer))), ' ');
                 }
 
             }
@@ -640,7 +667,7 @@ static string _get_shops(bool display)
             }
             disp += existing ? "<lightgrey>" : "<darkgrey>";
 
-            const string loc = entry.first.id.describe(false, true);
+            const string loc = _overview_level_name(entry.first.id);
             disp += loc;
             column_count += strwidth(loc);
 
@@ -1065,9 +1092,17 @@ string get_level_annotation(level_id li, bool skip_excl, bool skip_uniq,
     if (!skip_excl)
         if (string *excl = map_find(level_exclusions, li))
         {
-            if (note.length() > 0)
-                note += ", ";
-            note += *excl;
+            string description = *excl;
+            if (li == level_id::current())
+                description = curr_excludes.get_exclusion_desc(li, true);
+            else if (const LevelInfo *info = travel_cache.find_level_info(li))
+                description = info->get_excludes().get_exclusion_desc(li, true);
+            if (!description.empty())
+            {
+                if (!note.empty())
+                    note += ", ";
+                note += description;
+            }
         }
 
     if (!skip_uniq)
@@ -1083,7 +1118,7 @@ string get_level_annotation(level_id li, bool skip_excl, bool skip_uniq,
 
 static const string _get_coloured_level_annotation(level_id li)
 {
-    string place = "<yellow>" + li.describe() + "</yellow>";
+    string place = "<yellow>" + _overview_level_name(li) + "</yellow>";
     int col = level_annotation_has("!", li) ? LIGHTRED : WHITE;
     return place + " " + get_level_annotation(li, false, false, true, col);
 }
@@ -1193,7 +1228,7 @@ static int _prompt_annotate_branch(level_id lid)
             brs.push_back(it->id);
 
     mprf(MSGCH_PROMPT, T_("Annotate which branch? (. - %s, ? - help, ! - show branch list)"),
-        lid.describe(false, true).c_str());
+        _overview_level_name(lid).c_str());
 
     while (true)
     {
@@ -1300,7 +1335,7 @@ void annotate_level(level_id li)
              old.c_str());
     }
 
-    const string prompt = make_stringf(T_("Add new annotation for %s (include '!' for warning): "), li.describe().c_str());
+    const string prompt = make_stringf(T_("Add new annotation for %s (include '!' for warning): "), _overview_level_name(li).c_str());
 
     char buf[77];
     if (msgwin_get_line_autohist(prompt, buf, sizeof(buf), old))

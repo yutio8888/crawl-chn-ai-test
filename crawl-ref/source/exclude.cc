@@ -19,6 +19,8 @@
 #include "english.h"
 #include "env.h"
 #include "hints.h"
+#include "feature.h"
+#include "lang-en-guard.h"
 #include "libutil.h"
 #include "mon-util.h"
 #include "options.h"
@@ -29,6 +31,7 @@
 #include "tiles-build-specific.h"
 #include "travel.h"
 #include "view.h"
+#include "unwind.h"
 
 // defined in dgn-overview.cc
 extern set<pair<string, level_id> > auto_unique_annotations;
@@ -430,6 +433,78 @@ int get_exclusion_radius(const coord_def &p)
     return 0;
 }
 
+// Older Chinese saves contain display names. Recognise only exact known
+// names; arbitrary user/vault descriptions remain unchanged.
+static string _exclusion_description(const string &description, bool display)
+{
+    string name = description;
+    bool detected = false;
+    {
+        unwind_var<lang_t> chinese(Options.language, lang_t::ZH);
+        const string suffixes[] = { " (detected)", T_(" (detected)") };
+        for (const string &suffix : suffixes)
+            if (!suffix.empty() && ends_with(name, suffix))
+            {
+                name.resize(name.size() - suffix.size());
+                detected = true;
+                break;
+            }
+    }
+    string result = name;
+    bool known = false;
+    for (int i = 0; i < NUM_MONSTERS; ++i)
+    {
+        const monster_type type = static_cast<monster_type>(i);
+        if (!get_monster_data(type))
+            continue;
+        const string english = mons_type_name_en(type, DESC_PLAIN);
+        string chinese;
+        {
+            unwind_var<lang_t> language(Options.language, lang_t::ZH);
+            chinese = mons_type_name(type, DESC_PLAIN);
+        }
+        if (name == english || name == chinese)
+        {
+            result = display ? mons_type_name(type, DESC_PLAIN) : english;
+            known = true;
+            break;
+        }
+    }
+    if (!known)
+        for (int i = 0; i < NUM_FEATURES; ++i)
+        {
+            const auto feat = static_cast<dungeon_feature_type>(i);
+            if (is_valid_feature_type(feat) && name == feat_type_name(feat))
+            {
+                result = !display ? name : name == "water"
+                    ? C_("exclusion terrain", "water") : T_(name.c_str());
+                known = true;
+                break;
+            }
+        }
+    if (!known)
+        return description;
+    if (detected)
+        result += display ? T_(" (detected)") : " (detected)";
+    return result;
+}
+
+bool is_cloud_exclusion(const string &description)
+{
+    unwind_var<lang_t> chinese(Options.language, lang_t::ZH);
+    for (int i = CLOUD_NONE + 1; i < NUM_CLOUD_TYPES; ++i)
+    {
+        const auto type = static_cast<cloud_type>(i);
+        if (description == cloud_type_name_en(type, true) + " cloud"
+            || description == make_stringf(T_("%s cloud"),
+                                           cloud_type_name(type, true).c_str()))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 string get_exclusion_desc(const coord_def &p)
 {
     if (travel_exclude *exc = curr_excludes.get_exclude_root(p))
@@ -452,7 +527,7 @@ static void _tile_exclude_gmap_update(const coord_def &p)
 
 static void _exclude_update()
 {
-    set_level_exclusion_annotation(curr_excludes.get_exclusion_desc());
+    set_level_exclusion_annotation(curr_excludes.get_exclusion_desc(level_id::current()));
     travel_cache.update_excludes();
 }
 
@@ -542,10 +617,7 @@ void set_exclude(const coord_def &p, int radius, bool autoexcl, bool vaultexcl,
         if (exc->desc.empty() && defer_updates)
         {
             if (cloud_struct* cloud = cloud_at(p))
-            {
-                exc->desc = make_stringf(T_("%s cloud"),
-                                         cloud->cloud_name(true).c_str());
-            }
+                exc->desc = cloud_type_name_en(cloud->type, true) + " cloud";
         }
         else if (exc->radius == radius)
             return;
@@ -564,9 +636,9 @@ void set_exclude(const coord_def &p, int radius, bool autoexcl, bool vaultexcl,
             const map_cell& cell = env.map_knowledge(p);
             if (cell.mon_type() != MONS_NO_MONSTER)
             {
-                desc = mons_type_name(cell.mon_type(), DESC_PLAIN);
+                desc = mons_type_name_en(cell.mon_type(), DESC_PLAIN);
                 if (cell.detected_monster())
-                    desc += T_(" (detected)");
+                    desc += " (detected)";
             }
             else
             {
@@ -575,8 +647,7 @@ void set_exclude(const coord_def &p, int radius, bool autoexcl, bool vaultexcl,
             }
         }
         else if (cloud_struct* cloud = cloud_at(p))
-            desc = make_stringf(T_("%s cloud"),
-                                cloud->cloud_name(true).c_str());
+            desc = cloud_type_name_en(cloud->type, true) + " cloud";
 
         curr_excludes.add_exclude(p, radius, autoexcl, desc, vaultexcl);
     }
@@ -599,10 +670,11 @@ void maybe_remove_autoexclusion(const coord_def &p)
         // We don't want to remove excluded clouds, check exc desc
         // XXX: This conditional is a mess.
         string desc = exc->desc;
-        bool cloudy_exc = ends_with(desc, "cloud");
+        bool cloudy_exc = is_cloud_exclusion(desc);
         if ((!m || !you.can_see(*m)
                 || !_need_auto_exclude(m)
-                || mons_type_name(m->type, DESC_PLAIN) != desc)
+                || mons_type_name_en(m->type, DESC_PLAIN)
+                   != _exclusion_description(desc, false))
             && !cloudy_exc)
         {
             del_exclude(p);
@@ -612,89 +684,72 @@ void maybe_remove_autoexclusion(const coord_def &p)
     }
 }
 
-// Lists all exclusions on the current level.
-string exclude_set::get_exclusion_desc()
+// Summarise structured exclusions for either storage or display. Group by
+// canonical identity before applying display names and Chinese grammar.
+string exclude_set::get_exclusion_desc(level_id level, bool display) const
 {
-    vector<string> desc;
+    map<string, int> counts;
+    set<string> unique_names;
+    for (const auto &annotation : auto_unique_annotations)
+        if (annotation.second == level)
+            unique_names.insert(_exclusion_description(annotation.first, false));
     int count_other = 0;
-    for (auto &entry : exclude_roots)
+    for (const auto &entry : exclude_roots)
     {
-        travel_exclude &ex = entry.second;
-
-        // Don't count cloud exclusions.
-        if (strstr(ex.desc.c_str(), "cloud"))
+        const string &raw = entry.second.desc;
+        if (is_cloud_exclusion(raw))
             continue;
-
-        // Don't duplicate if there's already an annotation from unique monsters.
-        auto ma = auto_unique_annotations.find(make_pair(ex.desc,
-                                                         level_id::current()));
-        if (ma != auto_unique_annotations.end())
+        const string name = _exclusion_description(raw, false);
+        if (unique_names.count(name))
             continue;
-
-        if (!ex.desc.empty())
-            desc.push_back(ex.desc);
+        if (name.empty())
+            ++count_other;
         else
-            count_other++;
+            ++counts[name];
     }
 
-    if (desc.size() > 1)
+    const auto format = [&]() -> string
     {
-        // Combine identical descriptions.
-        sort(desc.begin(), desc.end());
-        vector<string> help = desc;
-        desc.clear();
-        string old_desc = "";
-        int count = 1;
-        for (unsigned int i = 0; i < help.size(); ++i)
+        vector<string> descriptions;
+        for (const auto &entry : counts)
         {
-            string tmp = help[i];
-            if (i == 0)
-                old_desc = tmp;
+            const string name = display
+                ? _exclusion_description(entry.first, true) : entry.first;
+            if (entry.second == 1)
+                descriptions.push_back(name);
             else
             {
-                if (strcmp(tmp.c_str(), old_desc.c_str()) == 0)
-                    count++;
-                else
-                {
-                    if (count == 1)
-                        desc.push_back(old_desc);
-                    else
-                    {
-                        desc.push_back(make_stringf(T_("%d %s"),
-                                       count, pluralise(old_desc).c_str()));
-                        count = 1;
-                    }
-                    old_desc = tmp;
-                }
+                const string plural = Options.language == lang_t::ZH
+                    ? name : pluralise(name);
+                descriptions.push_back(make_stringf(T_("%d %s"),
+                                                    entry.second, plural.c_str()));
             }
         }
-        if (count == 1)
-            desc.push_back(old_desc);
-        else
+        if (count_other)
         {
-            desc.push_back(make_stringf("%d %s",
-                           count, pluralise(old_desc).c_str()));
+            const string count_format = descriptions.empty()
+                ? (count_other == 1 ? T_("%d exclusion") : T_("%d exclusions"))
+                : (count_other == 1 ? T_("%d more exclusion")
+                                    : T_("%d more exclusions"));
+            descriptions.push_back(make_stringf(count_format.c_str(), count_other));
         }
-    }
-
-    if (count_other > 0)
-    {
-        desc.push_back(make_stringf(T_("%d %sexclusion%s"),
-                                    count_other, desc.empty() ? "" : "more ",
-                                    count_other > 1 ? "s" : ""));
-    }
-    else if (desc.empty())
-        return "";
-
-    string desc_str = "";
-    if (desc.size() > 1 || count_other == 0)
-    {
-        desc_str += "exclusion";
-        if (desc.size() > 1)
-            desc_str += "s";
-        desc_str += ": ";
-    }
-    return desc_str + comma_separated_line(desc.begin(), desc.end());
+        if (descriptions.empty())
+            return "";
+        string prefix;
+        if (descriptions.size() > 1 || !count_other)
+        {
+            prefix = descriptions.size() > 1 ? T_("exclusions:")
+                                             : T_("exclusion:");
+        }
+        if (!prefix.empty() && Options.language != lang_t::ZH)
+            prefix += " ";
+        return prefix + comma_separated_line(descriptions.begin(),
+                                             descriptions.end());
+    };
+    if (display)
+        return format();
+    ScopedLangEn english;
+    return format();
 }
 
 void marshallExcludes(writer& outf, const exclude_set& excludes)

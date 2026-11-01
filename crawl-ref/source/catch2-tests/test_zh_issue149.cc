@@ -754,6 +754,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     unwind_var<branch_type> root(root_branch, BRANCH_DUNGEON);
     unwind_var<int> depth(brdepth[BRANCH_DUNGEON], 15);
     unwind_var<int> temple_depth(brdepth[BRANCH_TEMPLE], 1);
+    unwind_var<int> lair_depth(brdepth[BRANCH_LAIR], 5);
+    unwind_var<int> shoals_depth(brdepth[BRANCH_SHOALS], 4);
     unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
     unwind_var<TravelCache> explored(travel_cache, TravelCache());
     unwind_var<map<branch_type, set<level_id>>> discovered(stair_level, {});
@@ -762,6 +764,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     you.depth = 5;
     // A real D:5 arrival has a travel record for the stairs back to D:4.
     // Unseen branch ranges are conditional on that explored-level cache.
+    stair_level[BRANCH_SHOALS].insert(level_id(BRANCH_LAIR, 3));
     stair_info arrival;
     arrival.position = you.pos();
     arrival.grid = DNGN_STONE_STAIRS_UP_I;
@@ -799,6 +802,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             CHECK(overview.find(language == lang_t::ZH ? "神殿" : "Temple") != string::npos);
             CHECK((overview.find("Temple:") != string::npos) == (language == lang_t::EN));
             CHECK(overview.find(":4-7") != string::npos);
+            CHECK(overview.find(language == lang_t::ZH ? "兽巢:3" : "Lair:3")
+                  != string::npos);
+            CHECK((overview.find("Lair:3") != string::npos)
+                  == (language == lang_t::EN));
+            CHECK(level_id(BRANCH_LAIR, 3).describe() == "Lair:3");
             for (const string &line : split_string("\n", overview, false))
             {
                 if (line.find("(5/15)") == string::npos)

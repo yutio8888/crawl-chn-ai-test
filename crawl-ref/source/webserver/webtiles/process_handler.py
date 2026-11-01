@@ -563,9 +563,9 @@ class CrawlProcessHandlerBase(object):
         anon_count = len(self.get_anon())
         s = ", ".join(watcher_names)
         if len(watcher_names) > 0 and anon_count > 0:
-            s = s + " and %i Anon" % anon_count
+            s = s + " 和 %i 位匿名观众" % anon_count
         elif anon_count > 0:
-            s = "%i Anon" % anon_count
+            s = "%i 位匿名观众" % anon_count
         self.send_to_all("update_spectators",
                          count = self.watcher_count(),
                          names = s)

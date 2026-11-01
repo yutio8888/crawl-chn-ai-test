@@ -1159,6 +1159,7 @@ void TilesFramework::_send_player(bool force_full)
             N_("Time:"), N_("Turn:"), N_("Noise:"), N_("Gold:"),
             N_("Doom:"), N_("Contam:"),
             N_("*WIZARD*"), N_("*EXPLORE*"),
+            N_(" of "),
         };
         json_open_object("hud_labels");
         for (const char *caption : captions)
@@ -1178,10 +1179,15 @@ void TilesFramework::_send_player(bool force_full)
                    "species_display_name");
     string god = "";
     if (you_worship(GOD_JIYVA))
-        god = god_name_jiyva(true);
+        god = string(_god_name_en(GOD_JIYVA)) + " " + you.jiyva_second_name;
     else if (!you_worship(GOD_NO_GOD))
         god = _god_name_en(you.religion);
     _update_string(force_full, c.god, god, "god");
+    const string display_god = you_worship(GOD_NO_GOD) ? ""
+        : you_worship(GOD_JIYVA) ? god_name_jiyva(true)
+                               : god_name(you.religion);
+    _update_string(force_full, c.god_display_name, display_god,
+                   "god_display_name");
     _update_int(force_full, c.under_penance, (bool) player_under_penance(), "penance");
     int prank = 0;
     if (you_worship(GOD_XOM))
@@ -1242,7 +1248,7 @@ void TilesFramework::_send_player(bool force_full)
     }
 
     _update_int(force_full, c.experience_level, you.experience_level, "xl");
-    _update_int(force_full, c.exp_progress, (int8_t) get_exp_progress(), "progress");
+    _update_int(force_full, c.exp_progress, get_exp_progress(), "progress");
     _update_int(force_full, c.gold, you.gold, "gold");
     _update_int(force_full, c.noise,
                 (you.wizard ? you.get_noise_perception(false) : -1), "noise");

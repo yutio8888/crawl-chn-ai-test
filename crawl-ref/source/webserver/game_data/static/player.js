@@ -409,7 +409,8 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
 
         var species_god = player.species_display_name;
         if (player.god != "")
-            species_god += " of " + player.god;
+            species_god += hud_caption(" of ")
+                + (player.god_display_name || player.god);
         if (player.god == "Xom")
         {
             if (player.piety_rank >=0)
@@ -627,6 +628,7 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
         .on("game_init.player", function () {
             $.extend(player, {
                 name: "", god: "", title: "", species: "",
+                god_display_name: "",
                 species_display_name: "",
                 hud_labels: {},
                 hp: 0, hp_max: 0, real_hp_max: 0, poison_survival: 0,
