@@ -281,6 +281,13 @@ enum monster_info_flags
     NUM_MB_FLAGS
 };
 
+// A stable TextDB identity paired with its localized display heading.
+struct monster_status_descriptor
+{
+    string key;
+    string description;
+};
+
 struct monster_info_base
 {
     coord_def pos;
@@ -421,6 +428,7 @@ struct monster_info : public monster_info_base
     string full_name(description_level_type desc = DESC_PLAIN) const;
 
     vector<string> attributes() const;
+    vector<monster_status_descriptor> attribute_descriptors() const;
 
     const char *pronoun(pronoun_type variant) const;
     bool pronoun_plurality() const;

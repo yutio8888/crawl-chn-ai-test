@@ -73,7 +73,7 @@ catching their breath monstatus
 %%%%
 chanting recall monstatus
 
-这个生物正在吟唱召回之词。这会在短暂延迟后将楼层中其他地方的
+这个生物正在吟唱召回之言。这会在短暂延迟后将楼层中其他地方的
 有智力的盟友召唤到施法者附近，但可以被大多数阻止施法的效果打断。
 %%%%
 charmed monstatus
@@ -84,7 +84,7 @@ charmed monstatus
 concentrated venom monstatus
 
 这个生物的天然毒液被强化了，使其通过攻击或吐息武器施加的毒素
-有概率减速和窒息易受影响的目標。
+有概率减速和窒息易受影响的目标。
 %%%%
 confused monstatus
 
@@ -249,7 +249,7 @@ heavily contaminated monstatus
 %%%%
 heavily drained monstatus
 
-这个生物被严重削弱，其近战攻击命中率降低，法术和特殊攻击属性威力降低，
+这个生物陷入重度衰竭，其近战攻击命中率降低，法术和特殊攻击属性威力降低，
 并且更容易受到许多状态效果的影响。
 %%%%
 idealised monstatus
@@ -259,8 +259,8 @@ idealised monstatus
 %%%%
 incited by Gozag monstatus
 
-这个生物因戈扎格·伊姆·萨戈兹之怒而被激发至极高的速度。
-它们的加速或狂暴状态是永久的，不会随时间或通过刻意的魔法干预而消退。
+这个生物因哥萨戈·亿·赛格斯之怒而被激发至极高的速度。
+其加速或狂暴状态是永久的，不会随时间或通过刻意的魔法干预而消退。
 %%%%
 indifferent monstatus
 
@@ -294,7 +294,7 @@ lashing out in frustration monstatus
 %%%%
 lightly drained monstatus
 
-这个生物被轻度削弱，其近战攻击命中率略有下降，法术和特殊攻击属性威力有所降低，
+这个生物陷入轻度衰竭，其近战攻击命中率略有下降，法术和特殊攻击属性威力有所降低，
 并且稍微更容易受到许多状态效果的影响。
 %%%%
 lost in madness monstatus
@@ -315,7 +315,7 @@ magic-sapped monstatus
 marked with the sign of ruin monstatus
 
 这个生物被诅咒为注定的衰败与毁灭。每当其受到近战攻击伤害时，
-将被严重削弱，并且被减速、虚弱或致盲。
+将陷入重度衰竭，并且被减速、虚弱或致盲。
 %%%%
 mesmerising monstatus
 
@@ -375,7 +375,7 @@ peaceful monstatus
 %%%%
 petrifying slowly monstatus
 
-这个生物很快就会完全石化。其移动和行动速度减慢50%，几乎无法闪避攻击，
+这个生物很快就会完全石化。其移动和行动所需时间增加50%，几乎无法闪避攻击，
 但也受到33%的伤害减免。
 
 [[low-tier stab monstatus]]
@@ -413,7 +413,7 @@ ready to howl monstatus
 %%%%
 ready to sunder monstatus
 
-这个生物的崩裂武器已完全充能，其下一次攻击将更加精准、造成大幅增加的伤害、
+这个生物的碎裂武器已完全充能，其下一次攻击将更加精准、造成大幅增加的伤害、
 并且劈砍范围扩大。如果它移动了，此效果将消失。
 %%%%
 reflecting blocked projectiles monstatus
@@ -456,7 +456,8 @@ sharing their pain monstatus
 %%%%
 sheltered from injuries monstatus
 
-这个生物受到的一半伤害被转移到保护它的盟友身上。
+这个生物原本会受到的伤害有一半被抵消。
+保护它的盟友会承受被抵消伤害的一半。
 %%%%
 sick monstatus
 
@@ -496,8 +497,8 @@ soul-gripped monstatus
 %%%%
 soul-splintered monstatus
 
-这个生物的一部分灵魂被提取成了灵魂光球，在光球重新与它结合之前，
-无法再次使用此法术。
+这个生物的一部分灵魂被提取成了灵魂微光。在微光重新与它结合之前，
+无法再次对这个生物使用此法术。
 %%%%
 spells empowered monstatus
 
@@ -543,7 +544,7 @@ surrounded by flames monstatus
 %%%%
 surrounded by fog monstatus
 
-这个生物周围环绕着一圈紫色烟雾。
+这个生物周围环绕着一圈灰色烟雾。
 %%%%
 surrounded by foul miasma monstatus
 
@@ -649,11 +650,11 @@ withering away monstatus
 low-tier stab monstatus
 
 <blue>你对该生物进行的近战攻击有概率（与你的潜行和武器技能成正比）使其措手不及，
-造成额外伤害，使用短剑时效果尤佳。</blue>
+造成额外伤害，使用短刃武器时效果尤佳。</blue>
 %%%%
 high-tier stab monstatus
 
-<blue>你对该生物进行的近战攻击将造成大幅增加的伤害，使用短剑时效果尤佳。</blue>
+<blue>你对该生物进行的近战攻击将造成大幅增加的伤害，使用短刃武器时效果尤佳。</blue>
 %%%%
 deflecting missiles monstatus
 

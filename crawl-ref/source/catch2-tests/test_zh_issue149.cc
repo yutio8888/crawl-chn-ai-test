@@ -1030,7 +1030,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             CHECK(dump.find(english_life) == string::npos);
         }
         const string menu = ability_name(ABIL_HEPLIAKLQANA_TYPE_HEXER, false);
-        CHECK(menu == (language == lang_t::ZH ? "先祖生命：诅咒师" : "Ancestor Life: Hexer"));
+        CHECK(menu == (language == lang_t::ZH ? "先祖生涯：诅咒师" : "Ancestor Life: Hexer"));
         CHECK(ability_name(ABIL_HEPLIAKLQANA_TYPE_HEXER, true) == "Ancestor Life: Hexer");
         const string details = get_ability_desc(ABIL_HEPLIAKLQANA_TYPE_HEXER, false);
         INFO(details);

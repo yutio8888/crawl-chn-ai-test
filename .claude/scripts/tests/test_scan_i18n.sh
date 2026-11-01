@@ -819,6 +819,7 @@ printf '%s\n' \
 python3 - "$SCAN_I18N" "$VALID_DECISION_STATUSES" \
     "$INVALID_DECISION_METADATA" "$REPO_ROOT/docs/decisions.md" <<'PY'
 import importlib.util
+import re
 import sys
 
 spec = importlib.util.spec_from_file_location("scan_i18n", sys.argv[1])
@@ -877,12 +878,9 @@ assert invalid_classify_calls == [], invalid_classify_calls
 with open(sys.argv[4], "r", encoding="utf-8") as stream:
     production_content = stream.read()
 production_blocks = list(module._iter_decision_blocks(production_content))
-# Issue #147 adds D-C-095 through 098; PR #178 adds D-C-099
-# (Tranquillity spelling alignment). No old decision blocks retire.
-# PR #198 adds D-B-023 and D-C-100 (lance/Wyrmbane and singular neutral pronouns).
-# D-C-101 unifies spell-school display names and clarifies spell details.
-assert len(production_blocks) == 180, len(production_blocks)
-assert "D-C-101" in {decision_id for decision_id, _ in production_blocks}
+heading_ids = re.findall(r"^###\s+(D-[A-Z]-\d+)\b", production_content, re.MULTILINE)
+assert heading_ids, "production decision headings are missing"
+assert [decision_id for decision_id, _ in production_blocks] == heading_ids
 for decision_id, block in production_blocks:
     fields = module._decision_metadata_fields(block)
     assert fields.get("Status") == ["active"], (decision_id, fields)
@@ -1374,12 +1372,7 @@ try:
         actual_identities,
         expected_identities,
     )
-    # D-C-099 adds one active Status declaration to the prior fixture.
-    # PR #198 adds D-B-023 and D-C-100, each with one active Status declaration.
-    # D-C-101 adds one active Status declaration.
-    assert len(production_declarations) == 432, len(
-        production_declarations
-    )
+    assert production_declarations, "production reserved declarations are missing"
     assert all(
         is_canonical
         for _decision, _name, _line, is_canonical

@@ -2439,6 +2439,25 @@ def parse_cpp_annotations(parser, source: bytes):
                         normalized[begin:args.end_byte - 1] = (
                             b"0" + b" " * (len(operand) - 1))
                         changed = True
+        # ability.cc generic_cost::cost has a trailing purity annotation.
+        # Only lower an intact function prototype followed by the exact PURE
+        # recovery node and a real semicolon. Expressions, fields, unknown
+        # suffixes and malformed declarators remain visible to validation.
+        if node.type in ("declaration", "field_declaration"):
+            declarator = node.child_by_field_name("declarator")
+            if (declarator is not None
+                    and declarator.type == "function_declarator"
+                    and not declarator.has_error):
+                suffix = source[declarator.end_byte:node.end_byte]
+                match = re.fullmatch(rb"\s+(?P<pure>PURE)\s*;", suffix)
+                errors = [child for child in node.children if child.type == "ERROR"]
+                if (match is not None and len(errors) == 1
+                        and errors[0].text == b"PURE"
+                        and errors[0].start_byte == declarator.end_byte + match.start("pure")
+                        and not node.children[-1].is_missing):
+                    begin = errors[0].start_byte
+                    normalized[begin:begin + 4] = b"    "
+                    changed = True
         if node.type in ("function_definition", "declaration"):
             declarator = node.child_by_field_name("declarator")
             if declarator is not None and declarator.type == "function_declarator":

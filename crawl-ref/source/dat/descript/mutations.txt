@@ -141,8 +141,8 @@ guaranteed to trigger if your foe does any damage.
 time-warped blood mutation
 
 Your blood has desynchronised itself from the flow of time. Whenever you fall
-below 66% of your maximum HP, the spilling of your blood surges strangely
-through your surroundings, hasting two of your strongest allies in sight for
+to two-thirds of your maximum HP or less, the spilling of your blood surges
+strangely through your surroundings, hasting two of your strongest allies in sight for
 each level of this mutation. After doing so, your blood will be unable to
 further dilate time until your HP has fully recovered.
 %%%%
@@ -639,7 +639,7 @@ deformed.
 %%%%
 black mark mutation
 
-When you strike a foe in melee, the black mark on your body may debilitate
+When you damage a foe in melee, the black mark on your body may debilitate
 them. This can weaken foes, drain their health, or disrupt their magic.
 %%%%
 aura of silence mutation
@@ -857,7 +857,7 @@ for it to reconstitute itself.
 %%%%
 tendrils mutation
 
-When struck in melee, the slimy tendrils covering your body may grab your
+When attacked in melee, the slimy tendrils covering your body may grab your
 attacker's weapon and yank it from their grasp, disarming them.
 %%%%
 jelly sensing items mutation
@@ -931,7 +931,7 @@ runic magic mutation
 You cast spells with the assistance of glyphs marked upon your armour, greatly
 reducing the complex movements which would otherwise be required.
 
-(The encumbrance rating of all armour you wear is reduced by 1/2 for purposes
+(The encumbrance rating of your body armour is reduced by 1/2 for purposes
 of spell success.)
 %%%%
 off-hand wielding mutation
@@ -1402,7 +1402,7 @@ Enemies who die to this explosion will always explode themselves.
 %%%%
 Mark of the Celebrant mutation
 
-Whenever you fall below 50% of your maximum HP, you perform an infernal rite,
+Whenever you fall to 50% of your maximum HP or less, you perform an infernal rite,
 unleashing a flurry of blood arrows aimed at nearby enemies. You will fire at
 least one arrow for every valid target, but may fire additional ones if few are
 present. Invocations increases the damage of these arrows, and Makhleb will

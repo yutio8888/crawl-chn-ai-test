@@ -50,6 +50,7 @@ SKILL_TYPE = SRC / "skill-type.h"
 SKILL_CODE = SRC / "skills.cc"
 STAT_TYPE = SRC / "stat-type.h"
 STAT_CODE = SRC / "player-stats.cc"
+MONSTER_FLAGS = SRC / "mon-info-flag-name.h"
 
 DESCRIPTION_FILES = {
     "mutation": (
@@ -123,11 +124,14 @@ REVIEW_CATEGORY_HEADINGS = (
     ("skill", "技能证据卡"),
     ("skill_title", "共享技能称号证据卡"),
     ("ability", "非神祇能力证据卡"),
+    ("ability_description", "全部能力正文证据卡"),
     ("mutation", "变异证据卡"),
+    ("mutation_description", "全部变异正文证据卡"),
     ("duration", "时长状态证据卡"),
     ("status", "附加状态证据卡"),
     ("status_description", "玩家状态正文证据卡"),
     ("monster_status", "怪物状态证据卡"),
+    ("monster_status_flag", "怪物状态标签证据卡"),
 )
 
 REVISED_MUTATION_IDENTITIES = {
@@ -923,6 +927,60 @@ def monster_status_rows(descriptions):
     } for key, value in sorted(en_desc.items())]
 
 
+def complete_description_rows(category, descriptions):
+    """Include orphan/compatibility bodies without asserting live reachability."""
+    en_desc, zh_desc = descriptions
+    return [{
+        "identity": f"{category}_description:{key}",
+        "category": f"{category}_description",
+        "lifecycle": "static-body",
+        "english_source_name": key,
+        "description_key": key,
+        "english_description": en_desc.get(key),
+        "chinese_description": zh_desc.get(key),
+        "source_file": relative(DESCRIPTION_FILES[category][0]),
+        "chinese_source_file": relative(DESCRIPTION_FILES[category][1]),
+    } for key in sorted(set(en_desc) | set(zh_desc))]
+
+
+def monster_status_flag_rows(db):
+    rows = []
+    for raw in ordered_initializer_rows(
+        active_source(MONSTER_FLAGS),
+        r"\bstatic\s+const\s+vector\s*<\s*monster_info_flag_name\s*>\s+monster_info_flag_names",
+    ):
+        fields = initializer_fields(raw)
+        identity = re.fullmatch(r"\s*(MB_[A-Z0-9_]+)\s*", fields[0])
+        if len(fields) != 4 or identity is None:
+            raise RuntimeError(f"unparsed monster flag row: {raw}")
+        displays = []
+        for field, context in zip(fields[1:], ("flag short", "flag long", "flag short")):
+            literal = r'"(?:\\.|[^"\\])*"'
+            plain = re.fullmatch(literal, field.strip())
+            contextual = re.fullmatch(
+                rf"NC_\(\s*({literal})\s*,\s*({literal})\s*\)", field.strip()
+            )
+            if plain is None and contextual is None:
+                raise RuntimeError(f"nonliteral monster flag label: {raw}")
+            strings = cpp_strings(field)
+            if contextual is not None:
+                if len(strings) != 2 or strings[0] != context:
+                    raise RuntimeError(f"unexpected monster flag context: {raw}")
+                strings = strings[1:]
+            if len(strings) != 1:
+                raise RuntimeError(f"nonliteral monster flag label: {raw}")
+            displays.append(translation(db, strings[0], context))
+        rows.append({
+            "identity": "monster_status_flag:" + identity[1],
+            "category": "monster_status_flag",
+            "lifecycle": "flag-table",
+            "display_strings": displays,
+            "display_order": ["short", "long", "plural"],
+            "source_file": relative(MONSTER_FLAGS),
+        })
+    return rows
+
+
 def description_payload():
     result = {}
     for category, (english, chinese) in DESCRIPTION_FILES.items():
@@ -1087,9 +1145,16 @@ def build_inventory():
         descriptions["monster_status"]["english"],
         descriptions["monster_status"]["chinese"],
     ))
+    complete_bodies = []
+    for category in ("mutation", "ability"):
+        complete_bodies.extend(complete_description_rows(category, (
+            descriptions[category]["english"], descriptions[category]["chinese"],
+        )))
+    flag_rows = monster_status_flag_rows(db)
     rows = sorted(
         mutation + durations + statuses + abilities + skills
-        + attributes + monster_statuses + status_descriptions + shared_titles,
+        + attributes + monster_statuses + status_descriptions + shared_titles
+        + complete_bodies + flag_rows,
         key=lambda row: row["identity"],
     )
     inputs = [
@@ -1108,6 +1173,7 @@ def build_inventory():
         SKILL_CODE,
         STAT_TYPE,
         STAT_CODE,
+        MONSTER_FLAGS,
         *(path for pair in DESCRIPTION_FILES.values() for path in pair),
         ROOT / "docs/glossary.md",
         ROOT / "docs/decisions.md",
@@ -1126,13 +1192,15 @@ def build_inventory():
                 "duration/status producers used by fill_status_info",
                 "complete EN/ZH player-status TextDB body union, including help-only keys",
                 "non-religious ability definitions and descriptions",
+                "complete EN/ZH ability and mutation TextDB body unions",
+                "all monster flag-table short/long/plural display labels",
                 "current and save-compatibility skills, descriptions and titles",
                 "skill-specific title overrides and shared conduct/substitution producers",
                 "core Strength/Intelligence/Dexterity display forms",
                 "English monster-status TextDB slots and their ZH counterparts",
             ],
             "excluded": [
-                "god-specific abilities and passives owned by Issue #25",
+                "god-specific ability definitions and passives owned by Issue #25",
                 "spell/item identity re-review",
                 "balance, formulas, probabilities and costs",
                 "internal durations without any change to their game behaviour",
@@ -1181,7 +1249,7 @@ def _split_legacy_decision(value):
 def legacy_review_decisions(text):
     matches = re.findall(
         r"^\|\s*`((?:mutation|duration|status|ability|skill|attribute|"
-        r"monster_status|status_description|skill_title):[^`]+)`\s*\|.*?\|\s*([^|\n]+?)\s*\|\s*$",
+        r"monster_status|monster_status_flag|status_description|mutation_description|ability_description|skill_title):[^`]+)`\s*\|.*?\|\s*([^|\n]+?)\s*\|\s*$",
         text,
         re.MULTILINE,
     )

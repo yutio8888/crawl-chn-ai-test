@@ -446,8 +446,8 @@ you, but will neither follow you nor obey any direct instructions.
 %%%%
 petrifying slowly monstatus
 
-This creature will soon become fully petrified. Its movement and actions are
-50% slower and it is nearly unable to dodge attacks, though it also takes 33%
+This creature will soon become fully petrified. Its movement and actions take
+50% longer and it is nearly unable to dodge attacks, though it also takes 33%
 less damage.
 
 [[low-tier stab monstatus]]
@@ -538,8 +538,8 @@ sharing their pain monstatus
 %%%%
 sheltered from injuries monstatus
 
-Half of the damage suffered by this creature is redirected to the ally protecting it
-instead.
+Half of the damage this creature would suffer is prevented. The ally
+protecting it takes half of the damage prevented.
 %%%%
 sick monstatus
 
@@ -638,7 +638,7 @@ This creature trails a ring of flame clouds around itself.
 %%%%
 surrounded by fog monstatus
 
-This creature trails a ring of purple smoke around itself.
+This creature trails a ring of grey smoke around itself.
 %%%%
 surrounded by foul miasma monstatus
 

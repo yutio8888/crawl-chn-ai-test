@@ -82,6 +82,8 @@ void target_item(item_def &item);
 void desc_randart_props(const item_def &item, vector<string> &lines);
 string damage_rating(const item_def *item, int *rating_value = nullptr);
 
+class formatted_string;
+formatted_string get_monster_status_descriptions(const monster_info& mi);
 int describe_monster(const monster_info &mi, const string& footer = "");
 
 void get_monster_db_desc(const monster_info &mi, describe_info &inf,

@@ -62,6 +62,8 @@ amulet of Tranquillity	宁静项链	domain=items; source=EN/ZH; 依据 / 作用�
 anaconda	水蟒	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 ancestor	先祖	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Ancestor Life: Elementalist	先祖生涯：元素师	domain=abilities; source=EN/ZH; 依据 / 作用域=ability.cc；先祖类型 Elementalist，非新玩家背景；decision=D-C-095
+Ancestor Life: Hexer	先祖生涯：诅咒师	domain=abilities; source=EN/ZH; 依据 / 作用域=与现行Knight/Elementalist共用生涯词根；decision=D-C-102
+Ancestor Life: Knight	先祖生涯：骑士	domain=abilities; source=EN/ZH; 依据 / 作用域=现行先祖职业回忆；Life指生前经历，非生命值；decision=D-C-102
 ancient champion	远古冠军	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 ancient lich	远古巫妖	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 ancient zyme	古酶	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -1008,6 +1010,7 @@ patch of mould	霉菌丛	domain=core; source=EN/ZH; 依据 / 作用域=feature-d
 penance	惩戒（律法神）/ 苦修（自我牺牲神）	domain=core; source=EN/ZH; 注意事项=按神祇类型选择
 Permafrost Eruption	永冻爆发	domain=spells; source=EN/ZH; 备注=✅；地底严寒与落石轰击敌人最密集处，不在施法者身旁爆发
 Perniones	冻疮	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；pernio 复数，允许随机组件近义同译；decision=D-C-095
+persistent drain	持久衰竭	domain=mutations; source=EN/ZH; Scope / comment=MUT_PERSISTENT_DRAIN；经验恢复生命上限衰竭较慢，不是自然回血减半；decision=D-C-102
 Petrification	石化	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Petrify	石化	domain=spells; source=EN/ZH; 备注=✅
 Petrifying Cloud	石化云	domain=spells; source=EN/ZH; 备注=✅ 现行
@@ -1115,6 +1118,7 @@ Rust Breath	锈蚀吐息	domain=spells; source=EN/ZH; 备注=✅
 rusted inspector	锈蚀监察者	domain=monsters; source=EN/ZH; 依据 / 作用域=monsters.txt；失修、抑制魔法的金属监控构装体；decision=D-C-095
 Rutra	鲁特拉	domain=items; source=EN/ZH; Scope / comment=unrand lore proper name; decision=D-B-021
 Sacrifice	献祭	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
+Sacrifice Love	献祭爱	domain=abilities; source=EN/ZH; 依据 / 作用域=入的献祭能力；覆盖爱与友好关系，不限爱情；decision=D-C-102
 Saint Roka	圣罗卡	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Saint Roka title	弥赛亚圣罗卡	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Salvo	齐射	domain=items; source=EN/ZH; 依据 / 作用域=art-data.txt / status.txt；附带攻击其他目标的连续射击效果；decision=D-C-095
@@ -1419,6 +1423,7 @@ unbound	未束缚	domain=abilities; source=EN/ZH; 依据 / 作用域=Ashenzari �
 undead	亡灵	domain=core; source=EN/ZH
 Unleash Destruction	释放毁灭	domain=spells; source=EN/ZH; 备注=✅；马科列布能力的虚拟法术标题
 unshakeable will	意志不可动摇	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；slaughter:fakemuts；不声称是可遗传突变；保留 unshakeable 的绝对强度，不弱化为普通坚韧；catalog 待负责译者修订；decision=D-C-098
+unskilled	资质欠佳	domain=mutations; source=EN/ZH; Scope / comment=MUT_UNSKILLED；降低技能资质，仍能获得和训练技能；decision=D-C-102
 Upheaval	剧变	domain=spells; source=EN/ZH; 备注=✅
 Urug	乌鲁格	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Urug title	兽人弩炮乌鲁格	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt

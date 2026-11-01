@@ -1845,14 +1845,24 @@ static vector<string> _monster_description_suffixes(const monster_info& mi,
     return suffixes;
 }
 
-// Returns the list of all descriptors that would be appended to the monster's
-// name if viewed with x. (eg: "strong, inner flame")
-vector<string> get_monster_status_descriptors(const monster_info& mi)
+// Only descriptors with stable monstatus identities belong here. Dynamic
+// wounds, constriction, cloud names, and targeting chances are display text,
+// not TextDB keys, and have no corresponding monstatus entries.
+vector<monster_status_descriptor> get_monster_status_descriptors(const monster_info& mi)
 {
-    vector<string> suffixes;
-    _append_container(suffixes, _cell_description_suffixes(mi.pos));
-    _append_container(suffixes, _monster_description_suffixes(mi));
-    return suffixes;
+    vector<monster_status_descriptor> descriptors;
+    if (silenced(mi.pos))
+        descriptors.push_back({"silenced monstatus", T_("silenced")});
+    _append_container(descriptors, mi.attribute_descriptors());
+
+    if (mi.attitude != ATT_FRIENDLY && !mi.fellow_slime())
+    {
+        if (mi.attitude == ATT_GOOD_NEUTRAL)
+            descriptors.push_back({"peaceful monstatus", T_("peaceful")});
+        else if (mi.attitude != ATT_HOSTILE && !mi.is(MB_FRENZIED))
+            descriptors.push_back({"indifferent monstatus", T_("indifferent")});
+    }
+    return descriptors;
 }
 
 string cell_monster_description(const coord_def& pos, bool include_areas, targeting_behaviour* behavior)

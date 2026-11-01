@@ -118,22 +118,22 @@ struct deck_type_data
 static map<deck_type, deck_type_data> all_decks =
 {
     { DECK_OF_ESCAPE, {
-        "escape", "which may bring the user to safety or impede their foes.",
+        "escape", N_("which may bring the user to safety or impede their foes."),
         deck_of_escape,
         13,
     } },
     { DECK_OF_DESTRUCTION, {
-        "destruction", "which hurl death and destruction with wild abandon.",
+        "destruction", N_("which hurl death and destruction with wild abandon."),
         deck_of_destruction,
         26,
     } },
     { DECK_OF_SUMMONING, {
-        "summoning", "depicting a range of weird and wonderful creatures.",
+        "summoning", N_("depicting a range of weird and wonderful creatures."),
         deck_of_summoning,
         13,
     } },
     { DECK_OF_PUNISHMENT, {
-        "punishment", "which wreak havoc on the user.", deck_of_punishment,
+        "punishment", N_("which wreak havoc on the user."), deck_of_punishment,
         0, // Not a user deck
     } },
 };
@@ -294,9 +294,7 @@ const string stack_top()
 const string deck_contents(deck_type deck)
 {
     if (deck == DECK_STACK)
-        return "Remaining cards: " + stack_contents();
-
-    string output = "It may contain the following cards: ";
+        return make_stringf(T_("Remaining cards: %s"), stack_contents().c_str());
 
     // This way of doing things is intended to prevent a card
     // that appears in multiple subdecks from showing up twice in the
@@ -306,21 +304,19 @@ const string deck_contents(deck_type deck)
     for (const auto& cww : pdeck)
         cards.insert(cww.first);
 
-    output += comma_separated_fn(cards.begin(), cards.end(), card_name);
-    output += ".";
-
-    return output;
+    const string names = comma_separated_fn(cards.begin(), cards.end(), card_name);
+    return make_stringf(T_("It may contain the following cards: %s."), names.c_str());
 }
 
 const string deck_flavour(deck_type deck)
 {
     if (deck == DECK_STACK)
-        return "set aside for later.";
+        return T_("set aside for later.");
 
     deck_type_data* deck_data = map_find(all_decks, deck);
 
     if (deck_data)
-        return deck_data->flavour;
+        return T_(deck_data->flavour.c_str());
 
     return "";
 }
