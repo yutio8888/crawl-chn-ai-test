@@ -1509,8 +1509,10 @@ static int _describe_mutation(const string &key, const string &suffix,
         // Form and other pseudo-mutations have canonical TextDB keys but no
         // mutation enum. Use the generic body display for those help entries.
         if (!getLongDescription(key).empty())
+        {
             return _describe_key(key, suffix, footer, "", nullptr,
                                  uppercase_first(T_(mutation_name.c_str())));
+        }
         ui::error(make_stringf(T_("Unable to get '%s' by name"), key.c_str()));
         return 0;
     }

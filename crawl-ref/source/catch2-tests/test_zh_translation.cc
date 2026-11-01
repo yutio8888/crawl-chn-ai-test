@@ -7540,8 +7540,10 @@ TEST_CASE("forms: talisman previews and mutation dumps localize form labels",
                     CHECK(display != label.second);
             }
             if (you.form == transformation::spider)
+            {
                 CHECK(preview.find(C_("form melding", "All Weapons and Armour"))
                       != string::npos);
+            }
             if (you.form == transformation::sphinx)
             {
                 CHECK(preview.find(T_("Barding")) != string::npos);
