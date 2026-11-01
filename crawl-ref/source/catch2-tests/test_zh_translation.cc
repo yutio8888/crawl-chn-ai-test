@@ -11,6 +11,7 @@
 #include "acquire.h"
 #include "act-iter.h"
 #include "art-enum.h"
+#include "areas.h"
 #include "artefact.h"
 #include "beam.h"
 #include "branch.h"
@@ -10595,6 +10596,359 @@ TEST_CASE("source rereview: complete note sentences retain event fields across l
     }
 }
 
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: player frailty causes preserve canonical xlog and localize display",
+                 "[zh-translation][player-rereview][death-protocol]")
+{
+    REQUIRE(Options.language == lang_t::ZH);
+    init_monsters();
+    init_properties();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.your_name = "PlayerRereview";
+    you.birth_time = 1599999900;
+    you.last_keypress_time = chrono::system_clock::from_time_t(you.birth_time);
+    you.species = SP_HUMAN;
+    you.char_class = JOB_MONK;
+    you.chr_class_name = get_job_name(you.char_class);
+    you.where_are_you = BRANCH_DUNGEON;
+    you.depth = 1;
+    you.hp_max = 20;
+    you.base_stats.init(10);
+    you.skills[SK_FIGHTING] = 1;
+    you.equipment.update();
+    you.set_position(coord_def(20, 20));
+    const coord_def player_position = you.pos();
+    const unsigned old_map_id = env.level_map_ids(player_position);
+    unwinder restore_map_id([player_position, old_map_id]() {
+        env.level_map_ids(player_position) = old_map_id;
+    });
+    env.level_map_ids(player_position) = INVALID_MAP_INDEX;
+    const string mutation_en = mutation_name_en(MUT_FRAIL);
+    const string mutation_display = mutation_name(MUT_FRAIL);
+    REQUIRE(mutation_en != mutation_display);
+    {
+        ScopedLangEn english;
+        CHECK(string(mutation_name(MUT_FRAIL)) == mutation_en);
+    }
+
+    struct cause_case { string canonical; string display; };
+    const string form_en = transform_name(transformation::tree);
+    const string form_display = get_form(transformation::tree)->get_short_name();
+    const cause_case cases[] =
+    {
+        { "gaining the " + mutation_en + " mutation",
+          make_stringf(T_("gaining the %s mutation"), mutation_display.c_str()) },
+        { "losing the " + mutation_en + " mutation",
+          make_stringf(T_("losing the %s mutation"), mutation_display.c_str()) },
+        { "gaining the " + form_en + " transformation",
+          make_stringf(T_("gaining the %s transformation"), form_display.c_str()) },
+        { "losing the " + form_en + " form",
+          make_stringf(T_("losing the %s form"), form_display.c_str()) },
+        { "unknown historical frailty cause", "unknown historical frailty cause" },
+        { "gaining the unknown historical form transformation",
+          make_stringf(T_("gaining the %s transformation"), "unknown historical form") },
+    };
+    for (const cause_case& cause : cases)
+    {
+        INFO(cause.canonical);
+        // Real score construction and xlog parsing, rather than a fixture
+        // reimplementation of the production cause parser.
+        scorefile_entry live(0, MID_NOBODY, KILLED_BY_FRAILTY,
+                             cause.canonical.c_str(), true);
+        live.init(1600000000);
+        const string serialized = live.raw_string();
+        REQUIRE_FALSE(serialized.empty());
+        CHECK(xlog_fields(serialized).str_field("kaux") == cause.canonical);
+        scorefile_entry restored;
+        REQUIRE(restored.parse(serialized));
+        const string display = restored.death_description(scorefile_entry::DDV_VERBOSE);
+        CHECK(display.find(cause.display) != string::npos);
+        {
+            ScopedLangEn english;
+            const string en = restored.death_description(scorefile_entry::DDV_VERBOSE);
+            CHECK(en.find(cause.canonical) != string::npos);
+        }
+        CHECK(xlog_fields(restored.raw_string()).str_field("kaux") == cause.canonical);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: player flooded substances stay English across display language changes",
+                 "[zh-translation][player-rereview][flooded]")
+{
+    init_monsters();
+    init_properties();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.set_position(coord_def(20, 20));
+    you.equipment.update();
+    scoped_env_monster_slot attacker_slot(coord_def(20, 21));
+    monster* attacker = attacker_slot.place(MONS_MERFOLK_AQUAMANCER);
+    REQUIRE(attacker != nullptr);
+    string attacker_en;
+    const string attacker_zh = attacker->name(DESC_A, true);
+    {
+        ScopedLangEn english;
+        attacker_en = attacker->name(DESC_A, true);
+    }
+    REQUIRE(attacker_en != attacker_zh);
+    for (const char* substance : { "water", "ooze" })
+    {
+        INFO(substance);
+        you.duration[DUR_FLOODED] = 0;
+        you.duration[DUR_FLOODED_IMMUNITY] = 0;
+        string message;
+        {
+            msg::tee tee(message);
+            REQUIRE(you.floodify(attacker, 30, substance));
+        }
+        CHECK(you.props[WATER_HOLD_SUBSTANCE_KEY].get_string() == substance);
+        CHECK(you.props[WATER_HOLDER_NAME_KEY].get_string() == attacker_en);
+        const string expected_substance = string(substance) == "water" ? "水" : "软泥";
+        CHECK(message.find(expected_substance) != string::npos);
+        CHECK(message.find("深水") == string::npos);
+        status_info chinese;
+        REQUIRE(fill_status_info(DUR_FLOODED, chinese));
+        CHECK(chinese.db_key == "Flooded");
+        CHECK(chinese.long_text.find(expected_substance) != string::npos);
+        CHECK(chinese.long_text.find("深水") == string::npos);
+        {
+            ScopedLangEn english;
+            status_info en;
+            REQUIRE(fill_status_info(DUR_FLOODED, en));
+            CHECK(en.long_text.find(substance) != string::npos);
+            CHECK(en.db_key == "Flooded");
+            CHECK(you.props[WATER_HOLD_SUBSTANCE_KEY].get_string() == substance);
+        }
+        i18n_cache_clear();
+        status_info rebuilt;
+        REQUIRE(fill_status_info(DUR_FLOODED, rebuilt));
+        CHECK(rebuilt.long_text == chinese.long_text);
+        CHECK(you.props[WATER_HOLD_SUBSTANCE_KEY].get_string() == substance);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Zin recitation title localizes only its display book",
+                 "[zh-translation][player-rereview][recitation]")
+{
+    for (const auto& book : { pair<int, const char*>{ RECITE_CHAOTIC, "Abominations" },
+                             { RECITE_IMPURE, "Ablutions" },
+                             { RECITE_HERETIC, "Apostates" },
+                             { RECITE_UNHOLY, "Anathema" } })
+    {
+        // Chapter/verse seed arithmetic is unchanged at its real consumer.
+        const string zh = zin_recite_text(28, book.first, -1);
+        CHECK(zh == string(C_("Zin recitation book", book.second)) + " 2:2");
+        {
+            ScopedLangEn english;
+            CHECK(zin_recite_text(28, book.first, -1) == string(book.second) + " 2:2");
+        }
+        CHECK(zin_recite_text(28, book.first, -1) == zh);
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: mountain boots translate fixed events and a dynamic puller at the sink",
+                 "[zh-translation][player-rereview][dislodge]")
+{
+    init_monsters();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.set_position(coord_def(20, 20));
+    you.equipment.update();
+    unique_item_status_guard restore_unique(UNRAND_MOUNTAIN_BOOTS);
+    item_def& boots = you.inv[0];
+    boots.quantity = 1;
+    REQUIRE(make_item_unrandart(boots, UNRAND_MOUNTAIN_BOOTS));
+    boots.link = 0;
+    boots.pos = ITEM_IN_INVENTORY;
+    you.equipment.add(boots, SLOT_BOOTS);
+    you.equipment.update(); // production caches are rebuilt separately from add()
+    REQUIRE(you.unrand_equipped(UNRAND_MOUNTAIN_BOOTS));
+    for (const char* event : { "being knocked back", "being dragged", "being pulled",
+                               "being lured by song", "being moved by the vortex",
+                               "falling", "falling into an unexpected shaft" })
+    {
+        const string canonical = event;
+        string output;
+        {
+            msg::tee tee(output);
+            REQUIRE(you.resists_dislodge(event));
+        }
+        CHECK(string(event) == canonical);
+        const string display = C_("dislodge event", event);
+        CHECK(output.find(display) != string::npos);
+        CHECK(output.find(event) == string::npos);
+        {
+            ScopedLangEn english;
+            string en;
+            {
+                msg::tee tee(en);
+                REQUIRE(you.resists_dislodge(event));
+            }
+            CHECK(en.find(event) != string::npos);
+        }
+    }
+    scoped_env_monster_slot slot(coord_def(20, 21));
+    monster* puller = slot.place(MONS_KRAKEN_TENTACLE);
+    REQUIRE(puller != nullptr);
+    string output;
+    const string display_name = puller->name(DESC_THE);
+    {
+        msg::tee tee(output);
+        REQUIRE(you.resists_dislodge("being pulled", puller));
+    }
+    CHECK(output.find(display_name) != string::npos);
+    CHECK(output.find("being pulled") == string::npos);
+    string empty_output;
+    {
+        msg::tee tee(empty_output);
+        CHECK(you.resists_dislodge());
+    }
+    CHECK(empty_output.empty());
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Abyss distortion notes serialize English and translate only known display causes",
+                 "[zh-translation][player-rereview][note-protocol]")
+{
+    for (const char* cause : { "rebranding a weapon of distortion",
+                               "unwielding a weapon of distortion", "" })
+    {
+        const string canonical = make_stringf("Cast into level %d of the Abyss", 2)
+            + (*cause ? " (" + string(cause) + ")" : "");
+        Note original(NOTE_MESSAGE, 0, 0, canonical, "abyss entry");
+        vector<unsigned char> buffer;
+        writer output(&buffer);
+        original.save(output);
+        reader input(buffer);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        Note loaded;
+        loaded.load(input);
+        CHECK(loaded.name == canonical);
+        CHECK(loaded.desc == "abyss entry");
+        const Note snapshot(NOTE_MESSAGE, 0, 0, canonical);
+        CHECK(snapshot.describe(false, false, true) == canonical);
+        const string display = *cause
+            ? make_stringf(T_("Cast into level %d of the Abyss (%s)"), 2, T_(cause))
+            : make_stringf(T_("Cast into level %d of the Abyss"), 2);
+        CHECK(loaded.describe(false, false, true) == display);
+        CHECK(loaded.name == canonical);
+        {
+            ScopedLangEn english;
+            CHECK(loaded.describe(false, false, true) == canonical);
+        }
+        CHECK(loaded.describe(false, false, true) == display);
+        vector<unsigned char> after;
+        writer after_output(&after);
+        loaded.save(after_output);
+        CHECK(after == buffer);
+    }
+    // Unknown causes and malformed prefix lookalikes stay entirely unchanged.
+    for (const char* text : {
+        "Cast into level 2 of the Abyss (unknown old cause)",
+        "Cast into level 2 of the Abyss (unwielding a weapon of distortion) extra",
+        "Cast into level 0 of the Abyss (unwielding a weapon of distortion)",
+        "Cast into level 02 of the Abyss (unwielding a weapon of distortion)",
+        "Cast into level 999999999999999999 of the Abyss (unwielding a weapon of distortion)",
+        "arbitrary user note",
+    })
+    {
+        Note note(NOTE_MESSAGE, 0, 0, text, "abyss entry");
+        CHECK(note.describe(false, false, true) == text);
+        CHECK(note.name == text);
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: invisibility refusal joins one through four real glowing sources",
+                 "[zh-translation][player-rereview][invisibility]")
+{
+    init_monsters();
+    init_properties();
+    const int count = GENERATE(1, 2, 3, 4);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.set_position(coord_def(20, 20));
+    you.equipment.update();
+    unique_item_status_guard restore_eos(UNRAND_EOS);
+    unique_item_status_guard restore_crown(UNRAND_VAINGLORY);
+    item_def& weapon = you.inv[0];
+    weapon.quantity = 1;
+    REQUIRE(make_item_unrandart(weapon, UNRAND_EOS));
+    weapon.link = 0;
+    weapon.pos = ITEM_IN_INVENTORY;
+    you.equipment.add(weapon, SLOT_WEAPON);
+    if (count >= 2)
+    {
+        item_def& crown = you.inv[1];
+        crown.quantity = 1;
+        REQUIRE(make_item_unrandart(crown, UNRAND_VAINGLORY));
+        crown.link = 1;
+        crown.pos = ITEM_IN_INVENTORY;
+        you.equipment.add(crown, SLOT_HELMET);
+    }
+    if (count >= 3)
+    {
+        item_def& armour = you.inv[2];
+        armour.base_type = OBJ_ARMOUR;
+        armour.sub_type = ARM_ROBE;
+        armour.quantity = 1;
+        armour.link = 2;
+        armour.pos = ITEM_IN_INVENTORY;
+        REQUIRE(set_item_ego_type(armour, OBJ_ARMOUR, SPARM_LIGHT));
+        you.equipment.add(armour, SLOT_BODY_ARMOUR);
+    }
+    if (count >= 4)
+        you.religion = GOD_SHINING_ONE;
+    you.equipment.update(); // refresh active unrand and armour-ego caches
+    invalidate_agrid();
+    unwinder restore_areas([]() { invalidate_agrid(); });
+    const char* source_keys[] = { "weapon", "crown", "armour", "divine halo" };
+    const char* english[] = {
+        "Your weapon glows too brightly for you to become invisible.",
+        "Your weapon and crown glow too brightly for you to become invisible.",
+        "Your weapon, crown and armour glow too brightly for you to become invisible.",
+        "Your weapon, crown, armour and divine halo glow too brightly for you to become invisible."
+    };
+    string reason;
+    REQUIRE_FALSE(invis_allowed(true, &reason));
+    CHECK(reason.find('\n') == string::npos);
+    string joined;
+    for (int i = 0; i < count; ++i)
+    {
+        if (i)
+        {
+            joined += i == count - 1 ? C_("invisibility sources", " and ")
+                                     : C_("invisibility sources", ", ");
+        }
+        const string display = T_(source_keys[i]);
+        CHECK(reason.find(display) != string::npos);
+        joined += display;
+    }
+    const string expected = make_stringf(count == 1
+        ? T_("Your %s glows too brightly for you to become invisible.")
+        : T_("Your %s glow too brightly for you to become invisible."), joined.c_str());
+    CHECK(reason == expected);
+    {
+        ScopedLangEn en;
+        string en_reason;
+        REQUIRE_FALSE(invis_allowed(true, &en_reason));
+        CHECK(en_reason == english[count - 1]);
+    }
+}
 
 namespace
 {

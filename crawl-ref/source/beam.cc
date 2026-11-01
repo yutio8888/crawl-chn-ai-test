@@ -5423,7 +5423,7 @@ void bolt::knockback_actor(actor *act, int dam)
 
 void bolt::pull_actor(actor *act, int dam)
 {
-    if (!act || !can_pull(*act, dam) || act->resists_dislodge("being pulled"))
+    if (!act || !can_pull(*act, dam) || act->resists_dislodge(NC_("dislodge event", "being pulled")))
         return;
 
     // How far we'll try to pull the actor to make them adjacent to the source.

@@ -585,7 +585,7 @@ void melee_attack::do_ooze_flood()
         && defender->alive()
         && coinflip())
     {
-        defender->floodify(attacker, random_range(30, 70), T_("ooze"));
+        defender->floodify(attacker, random_range(30, 70), "ooze");
     }
 }
 
@@ -4491,7 +4491,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         if (coinflip())
         {
             defender->floodify(attacker, random_range(30, 60),
-                               attacker->type == MONS_VOID_OOZE ? T_("ooze") : "water");
+                               attacker->type == MONS_VOID_OOZE ? "ooze" : "water");
         }
         break;
 
@@ -5166,7 +5166,7 @@ bool melee_attack::do_knockback(bool slippery)
         // Prevent trample/drown combo when flight is expiring
         || defender->is_player() && need_expiration_warning(new_pos)
         || defender->is_constricted()
-        || defender->resists_dislodge(needs_message ? "being knocked back" : ""))
+        || defender->resists_dislodge(needs_message ? NC_("dislodge event", "being knocked back") : ""))
     {
         if (needs_message)
         {
@@ -5242,7 +5242,7 @@ bool melee_attack::do_drag()
         || (new_defender_pos != attacker->pos() && actor_at(new_defender_pos))
         || defender->is_player() && need_expiration_warning(new_defender_pos)
         || defender->is_constricted()
-        || defender->resists_dislodge(needs_message ? "being dragged" : ""))
+        || defender->resists_dislodge(needs_message ? NC_("dislodge event", "being dragged") : ""))
     {
         return false;
     }

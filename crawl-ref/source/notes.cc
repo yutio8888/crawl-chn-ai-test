@@ -479,6 +479,57 @@ static string _xom_effect_note_display(const string& name)
     return name;
 }
 
+// Abyss entry notes are persisted as canonical English. Recognize only the
+// exact producer format and known distortion causes. The caller also requires
+// the producer's existing desc-field marker, so language-locked crawl.take_note
+// snapshots and historical NOTE_MESSAGE records stay untouched.
+static string _abyss_entry_note_display(const string& text)
+{
+    if (Options.language != lang_t::ZH)
+        return text;
+
+    const string prefix = "Cast into level ";
+    const string suffix = " of the Abyss";
+    if (!starts_with(text, prefix))
+        return text;
+    const size_t end_level = text.find(suffix, prefix.size());
+    if (end_level == string::npos)
+        return text;
+    const string digits = text.substr(prefix.size(), end_level - prefix.size());
+    // Canonical depth is a positive decimal integer. Bound parsing before
+    // arithmetic so malformed/historical notes fail back without data loss.
+    if (digits.empty() || digits.size() > 3 || digits[0] == '0'
+        || digits.find_first_not_of("0123456789") != string::npos)
+    {
+        return text;
+    }
+    int depth = 0;
+    for (const char digit : digits)
+        depth = depth * 10 + digit - '0';
+
+    const string tail = text.substr(end_level + suffix.size());
+    if (tail.empty())
+        return make_stringf(T_("Cast into level %d of the Abyss"), depth);
+    if (tail != " (rebranding a weapon of distortion)"
+        && tail != " (unwielding a weapon of distortion)")
+    {
+        return text;
+    }
+
+    const char* cause_key = tail == " (rebranding a weapon of distortion)"
+        ? N_("rebranding a weapon of distortion")
+        : N_("unwielding a weapon of distortion");
+    const string cause = T_(cause_key);
+    const string format = T_("Cast into level %d of the Abyss (%s)");
+    // Do not form a mixed-language note if an asset is missing.
+    if (cause.empty() || cause == cause_key
+        || format == "Cast into level %d of the Abyss (%s)")
+    {
+        return text;
+    }
+    return make_stringf(format.c_str(), depth, cause.c_str());
+}
+
 string Note::describe(bool when, bool where, bool what) const
 {
     ostringstream result;
@@ -665,7 +716,7 @@ string Note::describe(bool when, bool where, bool what) const
             result << Options.user_note_prefix << name;
             break;
         case NOTE_MESSAGE:
-            result << name;
+            result << (desc == "abyss entry" ? _abyss_entry_note_display(name) : name);
             break;
         case NOTE_SEEN_FEAT:
             result << T_("Found ") << name;

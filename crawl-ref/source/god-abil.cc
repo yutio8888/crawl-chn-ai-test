@@ -600,11 +600,12 @@ string zin_recite_text(const int seed, const int prayertype, int step)
     }
     else
     {
-        const string bookname = (prayertype == RECITE_CHAOTIC)  ?  "Abominations" :
-                                (prayertype == RECITE_IMPURE)   ?  "Ablutions"    :
-                                (prayertype == RECITE_HERETIC)  ?  "Apostates"    :
-                                (prayertype == RECITE_UNHOLY)   ?  "Anathema"     :
-                                                                   "Bugginess";
+        const string bookname = (prayertype == RECITE_CHAOTIC)
+            ? C_("Zin recitation book", "Abominations")
+            : (prayertype == RECITE_IMPURE) ? C_("Zin recitation book", "Ablutions")
+            : (prayertype == RECITE_HERETIC) ? C_("Zin recitation book", "Apostates")
+            : (prayertype == RECITE_UNHOLY) ? C_("Zin recitation book", "Anathema")
+            : C_("Zin recitation book", "Bugginess");
         ostringstream out;
         out << bookname << ' ' << (chapter + 1) << ':' << (verse + 1);
         return out.str();

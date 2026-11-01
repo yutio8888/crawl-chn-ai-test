@@ -1605,7 +1605,7 @@ static bool _ignis_shaft()
 
     // player::do_shaft() already checks resist_dislodge, but the message is a
     // bit worse.
-    if (!you.resists_dislodge("falling"))
+    if (!you.resists_dislodge(NC_("dislodge event", "falling")))
         you.do_shaft();
     return true;
 }
