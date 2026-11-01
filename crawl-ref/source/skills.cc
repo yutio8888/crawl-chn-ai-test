@@ -13,6 +13,7 @@
 #include <cstring>
 #include <functional>
 #include <sstream>
+#include <set>
 
 #include "ability.h"
 #include "clua.h"
@@ -27,6 +28,7 @@
 #include "item-prop.h"
 #include "items.h"
 #include "libutil.h"
+#include "lang-en-guard.h"
 #include "message.h"
 #include "mutation.h"
 #include "notes.h"
@@ -2174,6 +2176,32 @@ static string _stk_weight(species_type species)
         return "Middle";
 }
 
+static string _render_skill_title(string result, species_type species)
+{
+    // Translate title before placeholder replacement
+    // so that template titles like "@Adj@ Blade" use a single key.
+    if (!result.empty())
+        result = C_("skill title", result.c_str());
+
+    const string weight = _stk_weight(species);
+    const map<string, string> replacements =
+    {
+        { "Adj", species::name(species, species::SPNAME_ADJ) },
+        { "Genus", species::name(species, species::SPNAME_GENUS) },
+        { "genus", lowercase_string(species::name(species, species::SPNAME_GENUS)) },
+        { "Genus_Short", species == SP_DEMIGOD ? C_("skill title genus", "God") :
+                           species::name(species, species::SPNAME_GENUS) },
+        // Chinese titles use a complete noun rather than appending
+        // the English agent suffix to the walking verb.
+        { "Walker", Options.language == lang_t::ZH
+                        ? C_("skill title walker", "Walker")
+                                                   : species::walking_title(species) + "er" },
+        { "Weight", C_("skill title weight", weight.c_str()) },
+    };
+
+    return replace_keys(result, replacements);
+}
+
 unsigned get_skill_rank(unsigned skill_lev)
 {
     // Translate skill level into skill ranking {dlb}:
@@ -2183,6 +2211,152 @@ unsigned get_skill_rank(unsigned skill_lev)
                            (skill_lev <= 26) ? 3
                            /* level 27 */    : 4;
 }
+
+// Shared by the title selector and the finite saved-title display matcher.
+// Only English literal keys live here; translated results are never retained.
+enum special_title_type
+{
+    ST_FLAWLESS,
+    ST_TRUE_ASCETIC,
+    ST_INCURIOUS,
+    ST_RUTHLESS,
+    ST_MISER,
+    ST_CHAOS_FANATIC,
+    ST_KEEPER_OF_THE_FLAME,
+    ST_PINNACLE_OF_EVOLUTION,
+    ST_HELL_KNIGHT,
+    ST_DEATH_KNIGHT,
+    ST_PHARAOH,
+    ST_CRUSHER,
+    ST_KRAKEN,
+    ST_YOKOZUNA,
+    ST_WEIGHTLESS_CHAMPION,
+    ST_HERCULEAN,
+    ST_BLADEMASTER,
+    ST_SWORDFISH,
+    ST_IRON_TROLL,
+    ST_IRON_GOLEM,
+    ST_DEFENDER,
+    ST_POLTERGUARDIAN,
+    ST_MASTER_ARCHER,
+    ST_UNDYING_ARMOURY,
+    ST_WISHGRANTER,
+    ST_COGMIND,
+    ST_ASCENDANT,
+    ST_WALLBREAKER,
+    ST_FAERIE_DRAGON,
+    ST_SIREN,
+    ST_NECROMECH,
+    ST_PETITE_MORT,
+    ST_CORPSEFLOWER,
+    ST_BRIMSTONE_SMITER,
+    ST_TITANCASTER,
+    ST_FROGWRIGHT,
+    ST_DEMONOLOGIST,
+    ST_HELLBINDER,
+    ST_TELETUNNELER,
+    ST_SPATIAL_MAELSTROM,
+    ST_SWAMP_DRAGON,
+    ST_FIRE_DRAGON,
+    ST_HIGHLY_COMBUSTIBLE,
+    ST_MOLTEN,
+    ST_SMOKELESS_FLAME,
+    ST_FIRE_STORM,
+    ST_ICE_DRAGON,
+    ST_MARID,
+    ST_POLAR_VORTEX,
+    ST_STORM_DRAGON,
+    ST_TWISTER,
+    ST_IRON_DRAGON,
+    ST_THIEF_OF_DIVINITY,
+    ST_ROYAL_MUMMY,
+    ST_FORBIDDEN_ONE,
+    ST_BLOOD_SAINT,
+    ST_NECRODANCER,
+    ST_PEARL_DRAGON,
+    ST_ROCKSLIME,
+    ST_BLACK_LOTUS,
+    ST_NIGHTSHADE,
+    ST_COBGOBLIN,
+    ST_LAUGHING_SKULL,
+    ST_DANSE_MACABRE,
+    ST_ABYSSOPELAGIC,
+    ST_LEVIATHAN,
+    ST_GOD_HATED,
+    NUM_SPECIAL_TITLES,
+};
+
+static const char* special_title_templates[] =
+{
+    NC_("skill title", "Flawless"),
+    NC_("skill title", "True Ascetic"),
+    NC_("skill title", "Incurious"),
+    NC_("skill title", "Ruthless"),
+    NC_("skill title", "Miser"),
+    NC_("skill title", "Chaos Fanatic"),
+    NC_("skill title", "Keeper of the Flame"),
+    NC_("skill title", "Pinnacle of Evolution"),
+    NC_("skill title", "Hell Knight"),
+    NC_("skill title", "Death Knight"),
+    NC_("skill title", "Pharaoh"),
+    NC_("skill title", "Crusher"),
+    NC_("skill title", "Kraken"),
+    NC_("skill title", "Yokozuna"),
+    NC_("skill title", "Weightless Champion"),
+    NC_("skill title", "Herculean"),
+    NC_("skill title", "Blademaster"),
+    NC_("skill title", "Swordfish"),
+    NC_("skill title", "Iron Troll"),
+    NC_("skill title", "Iron Golem"),
+    NC_("skill title", "Defender"),
+    NC_("skill title", "Polterguardian"),
+    NC_("skill title", "Master Archer"),
+    NC_("skill title", "Undying Armoury"),
+    NC_("skill title", "Wishgranter"),
+    NC_("skill title", "Cogmind"),
+    NC_("skill title", "Ascendant"),
+    NC_("skill title", "Wallbreaker"),
+    NC_("skill title", "Faerie Dragon"),
+    NC_("skill title", "Siren"),
+    NC_("skill title", "Necromech"),
+    NC_("skill title", "Petite Mort"),
+    NC_("skill title", "Corpseflower"),
+    NC_("skill title", "Brimstone Smiter"),
+    NC_("skill title", "Titancaster"),
+    NC_("skill title", "Frogwright"),
+    NC_("skill title", "Demonologist"),
+    NC_("skill title", "Hellbinder"),
+    NC_("skill title", "Teletunneler"),
+    NC_("skill title", "Spatial Maelstrom"),
+    NC_("skill title", "Swamp Dragon"),
+    NC_("skill title", "Fire Dragon"),
+    NC_("skill title", "Highly Combustible"),
+    NC_("skill title", "Molten"),
+    NC_("skill title", "Smokeless Flame"),
+    NC_("skill title", "Fire Storm"),
+    NC_("skill title", "Ice Dragon"),
+    NC_("skill title", "Marid"),
+    NC_("skill title", "Polar Vortex"),
+    NC_("skill title", "Storm Dragon"),
+    NC_("skill title", "Twister"),
+    NC_("skill title", "Iron Dragon"),
+    NC_("skill title", "Thief of Divinity"),
+    NC_("skill title", "Royal Mummy"),
+    NC_("skill title", "Forbidden One"),
+    NC_("skill title", "Blood Saint"),
+    NC_("skill title", "Necrodancer"),
+    NC_("skill title", "Pearl Dragon"),
+    NC_("skill title", "Rockslime"),
+    NC_("skill title", "Black Lotus"),
+    NC_("skill title", "Nightshade"),
+    NC_("skill title", "Cobgoblin"),
+    NC_("skill title", "Laughing Skull"),
+    NC_("skill title", "Danse Macabre"),
+    NC_("skill title", "Abyssopelagic"),
+    NC_("skill title", "Leviathan"),
+    NC_("skill title", "God-Hated"),
+};
+COMPILE_CHECK(ARRAYSZ(special_title_templates) == NUM_SPECIAL_TITLES);
 
 /**
  * Special conduct skill title tracking, extending the range of skill titles
@@ -2204,49 +2378,49 @@ string special_conduct_title(skill_type best_skill, uint8_t skill_rank)
 
     // All gem runs, as per the graceful banner (graceful seems a weird title)
     if (gems_held_intact() >= 11)
-        return "Flawless";
+        return special_title_templates[ST_FLAWLESS];
 
     // A very hard version of the ascetic banner
     if (you.experience_level > 17
         && !you.action_count.count(make_pair(CACT_USE, caction_compound(OBJ_POTIONS)))
         && !you.action_count.count(make_pair(CACT_USE, caction_compound(OBJ_SCROLLS))))
     {
-        return "True Ascetic";
+        return special_title_templates[ST_TRUE_ASCETIC];
     }
 
     // All rune deathless felid
     if (you.species == SP_FELID && runes_in_pack() >= you.obtainable_runes && you.deaths == 0)
-        return "Incurious";
+        return special_title_templates[ST_INCURIOUS];
 
     // A harder version of the ruthless efficiency banner
     if (you.experience_level < 19 && player_has_orb())
-        return "Ruthless";
+        return special_title_templates[ST_RUTHLESS];
 
     // Shopless, with Gozag
     if (you_worship(GOD_GOZAG) && you.experience_level > 17
         && you.attribute[ATTR_PURCHASES] == 0)
     {
-        return "Miser";
+        return special_title_templates[ST_MISER];
     }
 
     // all runes with a zealot without ever abandoning
     if (runes_in_pack() >= you.obtainable_runes && you.char_class == JOB_CHAOS_KNIGHT
         && you_worship(GOD_XOM) && you.worshipped[GOD_XOM] == 1)
     {
-        return "Chaos Fanatic";
+        return special_title_templates[ST_CHAOS_FANATIC];
     }
 
     if (runes_in_pack() >= you.obtainable_runes && you.char_class == JOB_CINDER_ACOLYTE
         && you_worship(GOD_IGNIS) && you.worshipped[GOD_IGNIS] == 1)
     {
-        return "Keeper of the Flame";
+        return special_title_templates[ST_KEEPER_OF_THE_FLAME];
     }
 
     // Award for being very good at crab
     if (you.form == transformation::fortress_crab
         && best_skill == SK_SHAPESHIFTING && skill_rank == 5)
     {
-        return "Pinnacle of Evolution";
+        return special_title_templates[ST_PINNACLE_OF_EVOLUTION];
     }
 
     return title;
@@ -2291,31 +2465,31 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
         {
         case SK_FIGHTING:
             if (species == SP_HUMAN && skill_rank == 5 && god == GOD_MAKHLEB)
-                result = "Hell Knight";
+                result = special_title_templates[ST_HELL_KNIGHT];
             else if (species == SP_HUMAN && skill_rank == 5 && god == GOD_YREDELEMNUL)
-                result = "Death Knight";
+                result = special_title_templates[ST_DEATH_KNIGHT];
             break;
 
         case SK_UNARMED_COMBAT:
             if (species == SP_MUMMY && skill_rank == 5)
-                result = "Pharaoh";
+                result = special_title_templates[ST_PHARAOH];
             else if (species == SP_FELID)
                 result = claw_and_tooth_titles[skill_rank];
             else if (species == SP_OCTOPODE && skill_rank == 4)
-                result = "Crusher";
+                result = special_title_templates[ST_CRUSHER];
             else if (species == SP_OCTOPODE && skill_rank == 5)
-                result = "Kraken";
+                result = special_title_templates[ST_KRAKEN];
             else if (species == SP_ONI && skill_rank == 5)
-                result = "Yokozuna";
+                result = special_title_templates[ST_YOKOZUNA];
             else if (str >= dex && (species == SP_DJINNI || species == SP_POLTERGEIST)
                         && skill_rank == 5)
             {
-                result = "Weightless Champion";
+                result = special_title_templates[ST_WEIGHTLESS_CHAMPION];
             }
             else if (str > intel + dex && species == SP_DEMIGOD
                         && skill_rank == 5)
             {
-                result = "Herculean";
+                result = special_title_templates[ST_HERCULEAN];
             }
             else
             {
@@ -2326,45 +2500,45 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
 
         case SK_SHORT_BLADES:
             if (species::is_elven(species) && skill_rank == 5)
-                result = "Blademaster";
+                result = special_title_templates[ST_BLADEMASTER];
             break;
 
         case SK_LONG_BLADES:
             if (species == SP_MERFOLK && skill_rank == 5)
-                result = "Swordfish";
+                result = special_title_templates[ST_SWORDFISH];
             break;
 
         case SK_ARMOUR:
             if (species == SP_TROLL && skill_rank == 5)
-                result = "Iron Troll";
+                result = special_title_templates[ST_IRON_TROLL];
             else if (species == SP_COGLIN && skill_rank == 5)
-                result = "Iron Golem";
+                result = special_title_templates[ST_IRON_GOLEM];
             break;
 
         case SK_SHIELDS:
             if (species == SP_SPRIGGAN && skill_rank > 3)
-                result = "Defender";
+                result = special_title_templates[ST_DEFENDER];
             else if (species == SP_POLTERGEIST && skill_rank == 5)
-                result = "Polterguardian";
+                result = special_title_templates[ST_POLTERGUARDIAN];
             break;
 
         case SK_RANGED_WEAPONS:
             if (species::is_elven(species) && skill_rank == 5)
-                result = "Master Archer";
+                result = special_title_templates[ST_MASTER_ARCHER];
             break;
 
         case SK_THROWING:
             if (species == SP_POLTERGEIST && skill_rank == 5)
-                result = "Undying Armoury";
+                result = special_title_templates[ST_UNDYING_ARMOURY];
             break;
 
         case SK_SPELLCASTING:
             if (species == SP_DJINNI && skill_rank == 5)
-                result = "Wishgranter";
+                result = special_title_templates[ST_WISHGRANTER];
             else if (species == SP_COGLIN && skill_rank == 5)
-                result = "Cogmind";
+                result = special_title_templates[ST_COGMIND];
             else if (species == SP_DEMIGOD && skill_rank == 5)
-                result = "Ascendant";
+                result = special_title_templates[ST_ASCENDANT];
             else if (god == GOD_SIF_MUNA)
                 result = god_title(god, species, piety);
             break;
@@ -2372,36 +2546,36 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
         case SK_CONJURATIONS:
             // Stay safe, Winslem :(
             if (species == SP_TROLL && skill_rank > 3)
-                result = "Wallbreaker";
+                result = special_title_templates[ST_WALLBREAKER];
             break;
 
         // For all draconian titles, intentionally don't restrict by drac
         // colour to avoid frustrating players deliberately trying for these
         case SK_HEXES:
             if (species::is_draconian(species) && skill_rank == 5)
-                result = "Faerie Dragon";
+                result = special_title_templates[ST_FAERIE_DRAGON];
             else if (species == SP_MERFOLK && skill_rank == 5)
-                result = "Siren";
+                result = special_title_templates[ST_SIREN];
             break;
 
         case SK_NECROMANCY:
             if (species == SP_COGLIN && skill_rank == 5)
-                result = "Necromech";
+                result = special_title_templates[ST_NECROMECH];
             else if (species == SP_SPRIGGAN && skill_rank == 5)
-                result = "Petite Mort";
+                result = special_title_templates[ST_PETITE_MORT];
             else if (species == SP_VINE_STALKER && skill_rank == 5)
-                result = "Corpseflower";
+                result = special_title_templates[ST_CORPSEFLOWER];
             else if (god == GOD_KIKUBAAQUDGHA)
                 result = god_title(god, species, piety);
             break;
 
         case SK_FORGECRAFT:
             if (species == SP_ONI && skill_rank == 4)
-                result = "Brimstone Smiter";
+                result = special_title_templates[ST_BRIMSTONE_SMITER];
             else if (species == SP_ONI && skill_rank == 5)
-                result = "Titancaster";
+                result = special_title_templates[ST_TITANCASTER];
             else if (species == SP_BARACHI && skill_rank == 5)
-                result = "Frogwright";
+                result = special_title_templates[ST_FROGWRIGHT];
             break;
 
         case SK_SUMMONINGS:
@@ -2409,99 +2583,99 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
             {
                 // retro goody-bag for decidedly non-goodies
                 if (skill_rank == 4)
-                    result = "Demonologist";
+                    result = special_title_templates[ST_DEMONOLOGIST];
                 else if (skill_rank == 5)
-                    result = "Hellbinder";
+                    result = special_title_templates[ST_HELLBINDER];
             }
             break;
 
         case SK_TRANSLOCATIONS:
             if (species == SP_FORMICID && skill_rank == 5)
-                result = "Teletunneler";
+                result = special_title_templates[ST_TELETUNNELER];
             else if (species == SP_POLTERGEIST && skill_rank == 5)
-                result = "Spatial Maelstrom";
+                result = special_title_templates[ST_SPATIAL_MAELSTROM];
             break;
 
         case SK_ALCHEMY:
             if (species::is_draconian(species) && skill_rank == 5)
-                result = "Swamp Dragon";
+                result = special_title_templates[ST_SWAMP_DRAGON];
             break;
 
         case SK_FIRE_MAGIC:
             if (species::is_draconian(species) && skill_rank == 5)
-                result = "Fire Dragon";
+                result = special_title_templates[ST_FIRE_DRAGON];
             else if (species == SP_MUMMY && skill_rank == 5)
-                result = "Highly Combustible";
+                result = special_title_templates[ST_HIGHLY_COMBUSTIBLE];
             else if (species == SP_GARGOYLE && skill_rank == 5)
-                result = "Molten";
+                result = special_title_templates[ST_MOLTEN];
             else if (species == SP_DJINNI && skill_rank == 5)
-                result = "Smokeless Flame";
+                result = special_title_templates[ST_SMOKELESS_FLAME];
             else if (species == SP_POLTERGEIST && skill_rank == 5)
-                result = "Fire Storm";
+                result = special_title_templates[ST_FIRE_STORM];
             break;
 
         case SK_ICE_MAGIC:
             if (species::is_draconian(species) && skill_rank == 5)
-                result = "Ice Dragon";
+                result = special_title_templates[ST_ICE_DRAGON];
             else if (species == SP_DJINNI && skill_rank == 5)
-                result = "Marid";
+                result = special_title_templates[ST_MARID];
             else if (species == SP_POLTERGEIST && skill_rank == 5)
-                result = "Polar Vortex";
+                result = special_title_templates[ST_POLAR_VORTEX];
             break;
 
         case SK_AIR_MAGIC:
             if (species::is_draconian(species) && skill_rank == 5)
-                result = "Storm Dragon";
+                result = special_title_templates[ST_STORM_DRAGON];
             else if (species == SP_POLTERGEIST && skill_rank == 5)
-                result = "Twister";
+                result = special_title_templates[ST_TWISTER];
             break;
 
         case SK_EARTH_MAGIC:
             if (species::is_draconian(species) && skill_rank == 5)
-                result = "Iron Dragon";
+                result = special_title_templates[ST_IRON_DRAGON];
             break;
 
         case SK_STEALTH:
             if (species == SP_DEMIGOD && skill_rank == 5)
-                result = "Thief of Divinity";
+                result = special_title_templates[ST_THIEF_OF_DIVINITY];
             break;
 
         case SK_INVOCATIONS:
             if (species == SP_MUMMY && skill_rank == 5 && god == GOD_GOZAG)
-                result = "Royal Mummy";
+                result = special_title_templates[ST_ROYAL_MUMMY];
             else if (species == SP_MUMMY && skill_rank == 5 && god == GOD_NEMELEX_XOBEH)
-                result = "Forbidden One";
+                result = special_title_templates[ST_FORBIDDEN_ONE];
             else if (species == SP_DEMONSPAWN && skill_rank == 5 && is_evil_god(god))
-                result = "Blood Saint";
+                result = special_title_templates[ST_BLOOD_SAINT];
             else if (species == SP_MUMMY && skill_rank == 5 && god == GOD_USKAYAW)
-                result = "Necrodancer";
+                result = special_title_templates[ST_NECRODANCER];
             else if (species::is_draconian(species) && skill_rank == 5 && is_good_god(god))
-                result = "Pearl Dragon";
+                result = special_title_templates[ST_PEARL_DRAGON];
             else if (species == SP_GARGOYLE && skill_rank == 5 && god == GOD_JIYVA)
-                result = "Rockslime";
+                result = special_title_templates[ST_ROCKSLIME];
             else if (species == SP_VINE_STALKER && skill_rank == 5 && god == GOD_NEMELEX_XOBEH)
-                result = "Black Lotus";
+                result = special_title_templates[ST_BLACK_LOTUS];
             else if (species == SP_VINE_STALKER && skill_rank == 5 && god == GOD_DITHMENOS)
-                result = "Nightshade";
+                result = special_title_templates[ST_NIGHTSHADE];
             else if (species == SP_COGLIN && skill_rank == 5 && god == GOD_FEDHAS)
-                result = "Cobgoblin"; // hm.
+                result = special_title_templates[ST_COBGOBLIN]; // hm.
             else if (species == SP_REVENANT && skill_rank == 5 && god == GOD_XOM)
-                result = "Laughing Skull";
+                result = special_title_templates[ST_LAUGHING_SKULL];
             else if (species == SP_REVENANT && skill_rank == 5 && god == GOD_USKAYAW)
-                result = "Danse Macabre";
+                result = special_title_templates[ST_DANSE_MACABRE];
             else if ((species == SP_MERFOLK || species == SP_OCTOPODE)
                 && skill_rank == 5 && god == GOD_LUGONU)
             {
-                result = "Abyssopelagic";
+                result = special_title_templates[ST_ABYSSOPELAGIC];
             }
             else if (species == SP_OCTOPODE && skill_rank == 5 && is_evil_god(god))
-                result = "Leviathan";
+                result = special_title_templates[ST_LEVIATHAN];
             else if (god != GOD_NO_GOD)
                 result = god_title(god, species, piety);
             else if (species == SP_BARACHI)
             {
                 // C.f. the barachi species lore, true believers!
-                result = "God-Hated";
+                result = special_title_templates[ST_GOD_HATED];
             }
             break;
 
@@ -2537,28 +2711,7 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
             result = skill_titles[best_skill][skill_rank];
     }
 
-    // Translate title before placeholder replacement
-    // so that template titles like "@Adj@ Blade" use a single key.
-    if (!result.empty())
-        result = C_("skill title", result.c_str());
-
-    const string weight = _stk_weight(species);
-    const map<string, string> replacements =
-    {
-        { "Adj", species::name(species, species::SPNAME_ADJ) },
-        { "Genus", species::name(species, species::SPNAME_GENUS) },
-        { "genus", lowercase_string(species::name(species, species::SPNAME_GENUS)) },
-        { "Genus_Short", species == SP_DEMIGOD ? C_("skill title genus", "God") :
-                           species::name(species, species::SPNAME_GENUS) },
-        // Chinese titles use a complete noun rather than appending
-        // the English agent suffix to the walking verb.
-        { "Walker", Options.language == lang_t::ZH
-                        ? C_("skill title walker", "Walker")
-                                                   : species::walking_title(species) + "er" },
-        { "Weight", C_("skill title weight", weight.c_str()) },
-    };
-
-    return replace_keys(result, replacements);
+    return _render_skill_title(result, species);
 }
 
 /** What is the player's current title.
@@ -2566,17 +2719,69 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
  *  @param the whether to prepend a definite article.
  *  @returns the title.
  */
-string player_title(bool the)
+static string _title_with_article(const string& title, bool the)
 {
-    const skill_type best = best_skill(SK_FIRST_SKILL, SK_LAST_SKILL);
-    const string title =
-            skill_title_by_rank(best, get_skill_rank(you.skills[best]));
     const string article = !the ? ""
         : Options.language == lang_t::ZH ? ""
         : title == "Petite Mort" ? C_("title article", "La ")
         : title == "Who Hides the Stars" ? C_("title article", ", ")
         : C_("title article", "the ");
     return article + title;
+}
+
+string player_title(bool the)
+{
+    const skill_type best = best_skill(SK_FIRST_SKILL, SK_LAST_SKILL);
+    const string title =
+            skill_title_by_rank(best, get_skill_rank(you.skills[best]));
+    return _title_with_article(title, the);
+}
+
+string translated_ghost_title(const string& saved_title, species_type species)
+{
+    // EN and unknown historical/ZH snapshots remain byte-for-byte unchanged.
+    // Never run arbitrary saved strings through the general translation DB.
+    if (Options.language != lang_t::ZH || saved_title.empty())
+        return saved_title;
+
+    set<string> matches;
+    const auto consider = [&](const string& english, const string& translated)
+    {
+        string canonical;
+        {
+            ScopedLangEn protocol_language;
+            canonical = _title_with_article(english, true);
+        }
+        if (saved_title == english || saved_title == canonical)
+            matches.insert(translated);
+    };
+    const auto consider_skill = [&](const char* key)
+    {
+        string english;
+        {
+            ScopedLangEn protocol_language;
+            english = _render_skill_title(key, species);
+        }
+        consider(english, _render_skill_title(key, species));
+    };
+
+    for (const auto& titles : skill_titles)
+        for (int rank = 1; rank <= 5; ++rank)
+            consider_skill(titles[rank]);
+    for (int rank = 1; rank <= 5; ++rank)
+    {
+        consider_skill(martial_arts_titles[rank]);
+        consider_skill(claw_and_tooth_titles[rank]);
+    }
+    for (const char* key : special_title_templates)
+        consider_skill(key);
+    consider("Adventurer", T_("Adventurer"));
+    for (const auto& title : god_title_translation_pairs(species))
+        consider(title.first, title.second);
+
+    // Different contexts can have the same English spelling. Do not guess
+    // which title was saved if their current translations disagree.
+    return matches.size() == 1 ? *matches.begin() : saved_title;
 }
 
 skill_type best_skill(skill_type min_skill, skill_type max_skill,

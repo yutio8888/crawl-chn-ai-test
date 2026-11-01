@@ -1102,6 +1102,7 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 
 | EN | ZH | Scope / comment |
 |----|----|----------------|
+| draconian shifter | 龙人移位者 | monster；操纵战场位置与阻止空间传送，不指身体变形；decision=D-C-106 |
 | acid blob | 酸液团 | monster; source=source.txt |
 | acid dragon | 酸龙 | monster; source=source.txt |
 | adder | 蝰蛇 | monster; source=source.txt |

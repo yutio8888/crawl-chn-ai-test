@@ -9321,6 +9321,305 @@ TEST_CASE("items rereview: missile prefixes and compatibility display preserve E
 }
 
 
+TEST_CASE("monsters rereview: revised TextDB bodies keep canonical lookups across display languages",
+          "[zh-translation][monsters-rereview][textdb]")
+{
+    init_monsters();
+    init_properties();
+    init_mut_index();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 100;
+    you.equipment.update();
+    scoped_monspeak_world world;
+    // Reuse the same monster snapshots through language/cache changes, as an
+    // already open detail view does. TextDB identities must remain English.
+    const monster_info donald(MONS_DONALD);
+    const monster_info shifter(MONS_DRACONIAN_SHIFTER);
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        string donald_body;
+        for (species_type species : {SP_HUMAN, SP_MERFOLK, SP_OCTOPODE, SP_BARACHI})
+        {
+            you.species = species;
+            // Swimming also depends on form; Donald's description makes no
+            // unsupported comparison with either permanent or temporary traits.
+            for (transformation form : {transformation::none, transformation::serpent})
+            {
+                you.form = form;
+                const string body = getLongDescription(donald.db_name());
+                REQUIRE_FALSE(body.empty());
+                CHECK_FALSE(rule_embedded_lua_error(body));
+                if (donald_body.empty())
+                    donald_body = body;
+                CHECK(body == donald_body);
+                CHECK(donald.db_name() == "Donald");
+                CHECK(you.species == species);
+                CHECK(you.form == form);
+            }
+        }
+        you.species = SP_HUMAN;
+        you.form = transformation::none;
+        for (const monster_info* info : {&donald, &shifter})
+        {
+            const string raw = info->db_name();
+            const string body = getLongDescription(raw);
+            describe_info description;
+            bool has_stats = false;
+            get_monster_db_desc(*info, description, has_stats);
+            CAPTURE(language, raw, body);
+            CHECK(description.body.str().find(body) != string::npos);
+            if (language == lang_t::ZH)
+            {
+                CHECK(contains_non_ascii(body));
+                CHECK_FALSE(rule_mixed_cn_en(body));
+            }
+            i18n_cache_clear();
+            CHECK(getLongDescription(raw) == body);
+            CHECK(info->db_name() == raw);
+        }
+        if (language == lang_t::EN)
+        {
+            CHECK(donald_body.find("Despite his hatred of water,") != string::npos);
+            CHECK(donald_body.find("Unlike you") == string::npos);
+            const string body = getLongDescription(shifter.db_name());
+            CHECK(body.find("prevent its enemies from translocating") != string::npos);
+            CHECK(body.find("outside of it") == string::npos);
+        }
+        CHECK(Options.language == language);
+    }
+}
+
+TEST_CASE("monsters rereview: splinterfrost destruction damage uses a complete translated sentence",
+          "[zh-translation][monsters-rereview][splinterfrost]")
+{
+    init_monsters();
+    init_zap_index();
+    init_spell_descs();
+    monster_info info(MONS_SPLINTERFROST_BARRICADE);
+    info.hd = 15;
+    for (bool explicit_power : {false, true})
+    {
+        if (explicit_power)
+            info.props[SPLINTERFROST_POWER_KEY] = 60;
+        else
+            info.props.erase(SPLINTERFROST_POWER_KEY);
+        for (mid_t summoner : {MID_PLAYER, MID_NOBODY})
+        {
+            info.summoner_id = summoner;
+            for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+            {
+                TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+                bolt beam;
+                // Reuse the real zap damage producer; do not duplicate its
+                // player/monster scaling or dice arithmetic in the test.
+                // These powers give integral player dice sizes, avoiding the
+                // producer's random rounding between independent calls.
+                zappy(ZAP_SPLINTERFROST_FRAGMENT, explicit_power ? 60 : 15,
+                      summoner != MID_PLAYER, beam);
+                const string dice = make_stringf(T_("%dd%d"),
+                                                beam.damage.num, beam.damage.size);
+                const char* key = "\nIt deals %s damage when destroyed.\n";
+                const string expected = make_stringf(T_(key), dice.c_str());
+                describe_info description;
+                bool has_stats = false;
+                get_monster_db_desc(info, description, has_stats);
+                const string body = description.body.str();
+                CAPTURE(language, explicit_power, summoner, dice, body);
+                CHECK(body.find(expected) != string::npos);
+                if (language == lang_t::ZH)
+                {
+                    CHECK(string(T_(key)) != key);
+                    CHECK(body.find("damage when destroyed") == string::npos);
+                }
+                i18n_cache_clear();
+                CHECK(info.db_name() == "splinterfrost barricade");
+                CHECK(info.hd == 15);
+                CHECK(info.summoner_id == summoner);
+                CHECK(info.props.exists(SPLINTERFROST_POWER_KEY) == explicit_power);
+                if (explicit_power)
+                    CHECK(info.props[SPLINTERFROST_POWER_KEY].get_int() == 60);
+            }
+        }
+    }
+}
+
+
+// tag_read/write_ghosts use this existing serialization scratch vector.
+extern vector<ghost_demon> global_ghosts;
+
+TEST_CASE("monsters rereview: canonical ghost snapshots localize known titles without using the viewer state",
+          "[zh-translation][monsters-rereview][ghost-titles]")
+{
+    init_properties();
+    init_monsters();
+    init_mut_index();
+    init_duration_index();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    unwind_var<vector<ghost_demon>> restore_ghosts(global_ghosts);
+    no_notes suppress_notes;
+    for (lang_t source_language : {lang_t::EN, lang_t::ZH})
+        for (int scenario = 0; scenario < 5; ++scenario)
+        {
+            TranslationFixture source_mode(source_language,
+                source_language == lang_t::ZH ? "zh" : nullptr);
+            you = player();
+            you.species = SP_HUMAN;
+            you.char_class = JOB_FIGHTER;
+            you.your_name = "Saved user @name";
+            you.hp = you.hp_max = 100;
+            you.experience_level = 12;
+            you.base_stats[STAT_STR] = 8;
+            you.base_stats[STAT_DEX] = 30;
+            you.base_stats[STAT_INT] = 20;
+            you.equipment.update();
+            scoped_monspeak_world world;
+            // Ordinary, stat-dependent, species-template, conduct, and divine
+            // selectors all use their real production conditions at death.
+            set_skill_level(SK_FIGHTING, 15, true);
+            if (scenario == 1)
+                set_skill_level(SK_UNARMED_COMBAT, 27, true);
+            else if (scenario == 2)
+                set_skill_level(SK_LONG_BLADES, 21, true);
+            else if (scenario == 3)
+                you.experience_level = 18;
+            else if (scenario == 4)
+            {
+                set_skill_level(SK_SPELLCASTING, 20, true);
+                you.religion = GOD_SIF_MUNA;
+                you.raw_piety = 160;
+            }
+            string canonical;
+            {
+                ScopedLangEn protocol_language;
+                canonical = player_title();
+            }
+            string chinese;
+            {
+                ZhTranslationFixture display_mode;
+                chinese = player_title();
+            }
+            REQUIRE(canonical != chinese);
+            ghost_demon saved;
+            saved.init_player_ghost();
+            CAPTURE(source_language, scenario, canonical, chinese);
+            CHECK(saved.title == canonical);
+            CHECK(saved.name == "Saved user @name");
+            CHECK(Options.language == source_language);
+
+            vector<unsigned char> buffer;
+            writer output(&buffer);
+            tag_write_ghosts(output, {saved});
+            reader input(buffer);
+            input.setMinorVersion(TAG_MINOR_VERSION);
+            const vector<ghost_demon> loaded = tag_read_ghosts(input);
+            REQUIRE(loaded.size() == 1);
+            CHECK(loaded.front().title == canonical);
+            CHECK(loaded.front().name == saved.name);
+            CHECK(loaded.front().species == saved.species);
+            CHECK(loaded.front().best_skill == saved.best_skill);
+
+            monster* ghost = world.place(MONS_PLAYER_GHOST);
+            REQUIRE(ghost);
+            ghost->set_ghost(loaded.front());
+            ghost->ghost_demon_init();
+            ghost->mname = saved.name;
+            const monster_info snapshot(ghost);
+            REQUIRE(snapshot.i_ghost.title == canonical);
+            // Remembered out-of-LOS monsters use the map-cell save path,
+            // independently of the bones ghost_demon serialization above.
+            map_cell remembered;
+            remembered.set_monster(snapshot);
+            vector<unsigned char> map_buffer;
+            writer map_output(&map_buffer);
+            marshallMapCell(map_output, remembered);
+            reader map_input(map_buffer);
+            map_input.setMinorVersion(TAG_MINOR_VERSION);
+            map_cell restored;
+            unmarshallMapCell(map_input, restored);
+            REQUIRE(restored.monsterinfo());
+            REQUIRE(restored.monsterinfo()->i_ghost.title == canonical);
+            CHECK(restored.monsterinfo()->mname == saved.name);
+            // A viewer's stats, god, wealth, penance, and conduct need not
+            // resemble the deceased player's title-selection inputs.
+            you.species = SP_OCTOPODE;
+            you.religion = GOD_GOZAG;
+            you.raw_piety = 0;
+            you.gold = 99999;
+            you.attribute[ATTR_TRAITOR] = GOD_MAKHLEB;
+            you.penance[GOD_MAKHLEB] = 1;
+            for (lang_t display_language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+            {
+                TranslationFixture display_mode(display_language,
+                    display_language == lang_t::ZH ? "zh" : nullptr);
+                const string expected = display_language == lang_t::ZH
+                    ? chinese : canonical;
+                for (bool concise : {false, true})
+                {
+                    const string description = get_ghost_description(snapshot, concise);
+                    CAPTURE(display_language, concise, description);
+                    CHECK(description.find(expected) != string::npos);
+                    CHECK(description.find(saved.name) != string::npos);
+                    CHECK(get_ghost_description(*restored.monsterinfo(), concise)
+                          == description);
+                    if (display_language == lang_t::ZH)
+                        CHECK(description.find(canonical) == string::npos);
+                    i18n_cache_clear();
+                    CHECK(get_ghost_description(snapshot, concise) == description);
+                }
+                CHECK(snapshot.i_ghost.title == canonical);
+                CHECK(snapshot.mname == saved.name);
+                CHECK(ghost->ghost->title == canonical);
+                CHECK(loaded.front().title == canonical);
+                CHECK(you.species == SP_OCTOPODE);
+                CHECK(you.religion == GOD_GOZAG);
+                CHECK(you.gold == 99999);
+                CHECK(Options.language == display_language);
+            }
+            vector<unsigned char> after_display;
+            writer unchanged_output(&after_display);
+            tag_write_ghosts(unchanged_output, loaded);
+            CHECK(after_display == buffer);
+            vector<unsigned char> map_after_display;
+            writer map_unchanged_output(&map_after_display);
+            marshallMapCell(map_unchanged_output, restored);
+            CHECK(map_after_display == map_buffer);
+            if (scenario == 0)
+            {
+                // A recognized legacy English title may omit the article.
+                monster_info legacy(snapshot);
+                legacy.i_ghost.title = "Trooper";
+                ZhTranslationFixture display_mode;
+                const string translated = C_("skill title", "Trooper");
+                REQUIRE(translated != "Trooper");
+                CHECK(get_ghost_description(legacy, false).find(translated)
+                      != string::npos);
+                CHECK(legacy.i_ghost.title == "Trooper");
+            }
+            // Old ZH snapshots and unknown externally supplied strings are
+            // preserved. Recognition never feeds arbitrary strings to T_/C_.
+            for (const string& title : {chinese, string("You attack %s."),
+                                       string("User supplied @title")})
+            {
+                monster_info legacy(snapshot);
+                legacy.i_ghost.title = title;
+                for (lang_t language : {lang_t::ZH, lang_t::EN})
+                {
+                    TranslationFixture display_mode(language,
+                        language == lang_t::ZH ? "zh" : nullptr);
+                    CHECK(get_ghost_description(legacy, false).find(title)
+                          != string::npos);
+                    CHECK(legacy.i_ghost.title == title);
+                }
+            }
+        }
+}
+
+
 namespace
 {
 string first_world_des_lua_block(const char* relative_path)

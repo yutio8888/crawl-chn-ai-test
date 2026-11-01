@@ -437,6 +437,7 @@ Dowan	多万	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monste
 Dowan title	多万，杜维莎的哥哥	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 draconian	龙人	domain=species; source=EN/ZH; 裁决=[D-A-007]; 复合格式=颜色 + 龙人（黑龙人、绿龙人）
 Draconian Breath	龙人吐息	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+draconian shifter	龙人移位者	domain=monsters; source=EN/ZH; Scope / comment=monster；操纵战场位置与阻止空间传送，不指身体变形；decision=D-C-106
 dragon	龙	domain=core; source=EN/ZH
 dragon claw	龙爪	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；dragon:fakemuts；不声称是可遗传突变；decision=D-C-098
 Dragon Form	巨龙变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审

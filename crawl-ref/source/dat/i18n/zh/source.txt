@@ -34362,7 +34362,7 @@ draconian scorcher
 龙人灼烧者
 %%%%
 draconian shifter
-龙人变形者
+龙人移位者
 %%%%
 draconian stormcaller
 龙人风暴召唤者
@@ -49273,3 +49273,210 @@ Flames erupt from the wizard's cell! Trog roars with frustration!
 %%%%
 Flames erupt from the wizard's empty cell! Trog roars with frustration!
 巫师空空的牢房中突然腾起烈焰！特洛格懊恼地咆哮起来！
+%%%%
+\nIt deals %s damage when destroyed.\n
+\n它被摧毁时会造成%s点伤害。\n
+%%%%
+skill title|Flawless
+完美无瑕
+%%%%
+skill title|True Ascetic
+真正的苦行者
+%%%%
+skill title|Incurious
+不好奇的猫
+%%%%
+skill title|Ruthless
+冷酷无情
+%%%%
+skill title|Miser
+守财奴
+%%%%
+skill title|Chaos Fanatic
+混沌狂热者
+%%%%
+skill title|Keeper of the Flame
+火焰守护者
+%%%%
+skill title|Pinnacle of Evolution
+进化巅峰
+%%%%
+skill title|Hell Knight
+地狱骑士
+%%%%
+skill title|Death Knight
+死亡骑士
+%%%%
+skill title|Pharaoh
+法老
+%%%%
+skill title|Crusher
+粉碎者
+%%%%
+skill title|Kraken
+海怪
+%%%%
+skill title|Yokozuna
+横纲
+%%%%
+skill title|Weightless Champion
+无重量冠军
+%%%%
+skill title|Herculean
+大力神
+%%%%
+skill title|Blademaster
+剑圣
+%%%%
+skill title|Swordfish
+剑鱼
+%%%%
+skill title|Iron Troll
+铁巨魔
+%%%%
+skill title|Iron Golem
+铁魔像
+%%%%
+skill title|Defender
+防御者
+%%%%
+skill title|Polterguardian
+骚灵护卫
+%%%%
+skill title|Master Archer
+弓术大师
+%%%%
+skill title|Undying Armoury
+不灭军械库
+%%%%
+skill title|Wishgranter
+遂愿者
+%%%%
+skill title|Cogmind
+齿轮心智
+%%%%
+skill title|Ascendant
+升华者
+%%%%
+skill title|Wallbreaker
+破墙者
+%%%%
+skill title|Faerie Dragon
+仙灵龙
+%%%%
+skill title|Siren
+塞壬
+%%%%
+skill title|Necromech
+死灵机甲
+%%%%
+skill title|Petite Mort
+小死
+%%%%
+skill title|Corpseflower
+尸花
+%%%%
+skill title|Brimstone Smiter
+硫磺击打者
+%%%%
+skill title|Titancaster
+巨神施法者
+%%%%
+skill title|Frogwright
+蛙匠
+%%%%
+skill title|Demonologist
+恶魔学者
+%%%%
+skill title|Hellbinder
+地狱缚者
+%%%%
+skill title|Teletunneler
+传送隧道者
+%%%%
+skill title|Spatial Maelstrom
+空间乱流
+%%%%
+skill title|Swamp Dragon
+沼泽龙
+%%%%
+skill title|Fire Dragon
+火龙
+%%%%
+skill title|Highly Combustible
+高度可燃
+%%%%
+skill title|Molten
+熔融者
+%%%%
+skill title|Smokeless Flame
+无烟之火
+%%%%
+skill title|Fire Storm
+火焰风暴
+%%%%
+skill title|Ice Dragon
+冰龙
+%%%%
+skill title|Marid
+马里德
+%%%%
+skill title|Polar Vortex
+极地漩涡
+%%%%
+skill title|Storm Dragon
+风暴龙
+%%%%
+skill title|Twister
+旋风
+%%%%
+skill title|Iron Dragon
+铁龙
+%%%%
+skill title|Thief of Divinity
+神性窃贼
+%%%%
+skill title|Royal Mummy
+皇家木乃伊
+%%%%
+skill title|Forbidden One
+禁忌者
+%%%%
+skill title|Blood Saint
+血之圣徒
+%%%%
+skill title|Necrodancer
+死灵舞者
+%%%%
+skill title|Pearl Dragon
+珍珠龙
+%%%%
+skill title|Rockslime
+岩石黏泥
+%%%%
+skill title|Black Lotus
+黑莲花
+%%%%
+skill title|Nightshade
+夜影
+%%%%
+skill title|Cobgoblin
+地精妖
+%%%%
+skill title|Laughing Skull
+笑颅骨
+%%%%
+skill title|Danse Macabre
+死亡之舞
+%%%%
+skill title|Abyssopelagic
+深渊远洋者
+%%%%
+skill title|Leviathan
+利维坦
+%%%%
+skill title|God-Hated
+神憎者
+%%%%
+skill title|Trooper
+士兵

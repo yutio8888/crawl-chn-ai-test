@@ -7831,7 +7831,7 @@ static string _desc_splinterfrost_dam(const monster_info &mi)
     if (mi.props.exists(SPLINTERFROST_POWER_KEY))
         pow = mi.props[SPLINTERFROST_POWER_KEY].get_int();
     zappy(ZAP_SPLINTERFROST_FRAGMENT, pow, mi.summoner_id != MID_PLAYER, beam);
-    return make_stringf("%dd%d", beam.damage.num, beam.damage.size);
+    return make_stringf(T_("%dd%d"), beam.damage.num, beam.damage.size);
 }
 
 // Fetches the monster's database description and reads it into inf.
@@ -7948,7 +7948,8 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
         break;
 
     case MONS_SPLINTERFROST_BARRICADE:
-        inf.body << "\nIt deals " << _desc_splinterfrost_dam(mi) << " damage when destroyed.\n";
+        inf.body << make_stringf(T_("\nIt deals %s damage when destroyed.\n"),
+                                 _desc_splinterfrost_dam(mi).c_str());
         break;
 
     case MONS_PROGRAM_BUG:
@@ -8560,7 +8561,7 @@ string get_ghost_description(const monster_info &mi, bool concise)
 
     const species_type gspecies = mi.i_ghost.species;
 
-    string title = mi.i_ghost.title;
+    string title = translated_ghost_title(mi.i_ghost.title, gspecies);
 #if TAG_MAJOR_VERSION == 34
     if (title.empty())
     {

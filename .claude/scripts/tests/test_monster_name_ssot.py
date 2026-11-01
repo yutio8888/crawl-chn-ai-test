@@ -358,6 +358,29 @@ class MonsterNameSsotTests(unittest.TestCase):
             self.assertTrue(result["coverage_equal"])
             self.assertTrue(result["artifact_exact"])
             self.assertEqual(0, cli_result())
+            appendix = (audit.SEMANTIC_REVIEW_APPENDIX
+                        + "Body review: monster-body:adder; keep; venom retained.\n")
+            path.write_text(rendered + appendix, encoding="utf-8")
+            result = audit.review_coverage(payload, review_input(path), baseline)
+            self.assertTrue(result["coverage_equal"])
+            audit.write_review_results(payload, path, baseline)
+            self.assertEqual(rendered + appendix, path.read_text(encoding="utf-8"))
+            path.write_text((rendered + appendix).replace(
+                "current; exposure=internal_or_special;", "CORRUPTED;", 1),
+                encoding="utf-8")
+            result = audit.review_coverage(payload, review_input(path), baseline)
+            self.assertFalse(result["artifact_exact"])
+            for malformed in (
+                rendered + appendix + appendix,
+                audit.SEMANTIC_REVIEW_APPENDIX + rendered,
+                rendered + audit.SEMANTIC_REVIEW_APPENDIX,
+                rendered + appendix + "| `monster:MONS_FAKE` | forged | keep |\n",
+            ):
+                with self.subTest(malformed=malformed[-160:]):
+                    path.write_text(malformed, encoding="utf-8")
+                    with self.assertRaises(audit.AuditInputError):
+                        audit.review_coverage(payload, review_input(path), baseline)
+            path.write_text(rendered, encoding="utf-8")
             cli_payload = json.loads(
                 inventory.read_text(encoding="utf-8")
             )
