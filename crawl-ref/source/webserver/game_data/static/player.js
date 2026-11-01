@@ -5,6 +5,12 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
 
     var player = {}, last_time;
 
+    function hud_caption(english)
+    {
+        // English is also the fallback for older game servers.
+        return player.hud_labels && player.hud_labels[english] || english;
+    }
+
     var stat_boosters = {
         "str": "vitalised",
         "int": "vitalised",
@@ -102,7 +108,7 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
             noise_cat = "blank";
             // I couldn't get this to work just directly putting the text in #stats_noise_bar,
             // because clearing the text later will adjust the span width.
-            $("#stats_noise_status").text("Silenced");
+            $("#stats_noise_status").text(hud_caption("Silenced"));
         } else {
             $("#stats_noise_status").text("");
         }
@@ -388,10 +394,14 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
      */
     function update_stats_pane()
     {
+        $("#stats .stats_caption[data-caption]").each(function () {
+            $(this).text(hud_caption($(this).attr("data-caption")));
+        });
         $("#stats_titleline").text(player.name
                                     + (player.title[0] === "," ? "" : " ")
                                     + player.title);
-        $("#stats_wizmode").text(player.wizard ? "*WIZARD*" : player.explore ? "*EXPLORE*" : "");
+        $("#stats_wizmode").text(player.wizard ? hud_caption("*WIZARD*")
+                                : player.explore ? hud_caption("*EXPLORE*") : "");
 
         // Setup species
         // TODO: Move to a proper initialisation task
@@ -425,7 +435,7 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
 
         if (player.god == "Gozag")
         {
-            $("#stats_gozag_gold_label").text(" Gold: ");
+            $("#stats_gozag_gold_label").text(" " + hud_caption("Gold:") + " ");
             $("#stats_gozag_gold_label").css("padding-left", "0.5em");
             $("#stats_gozag_gold").text(player.gold);
         } else {
@@ -443,7 +453,7 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
             $("#stats_" + simple_stats[i]).text(player[simple_stats[i]]);
 
         $("#stats_hpline > .stats_caption").text(
-            (player.real_hp_max != player.hp_max) ? "HP:" : "Health:");
+            hud_caption((player.real_hp_max != player.hp_max) ? "HP:" : "Health:"));
 
         if (player.real_hp_max != player.hp_max)
             $("#stats_real_hp_max").text("(" + player.real_hp_max + ")");
@@ -480,12 +490,12 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
 
         if (options.get("show_game_time") === true)
         {
-            $("#stats_time_caption").text("Time:");
+            $("#stats_time_caption").text(hud_caption("Time:"));
             $("#stats_time").text((player.time / 10.0).toFixed(1));
         }
         else
         {
-            $("#stats_time_caption").text("Turn:");
+            $("#stats_time_caption").text(hud_caption("Turn:"));
             $("#stats_time").text(player.turn);
         }
 
@@ -612,6 +622,7 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
         .on("game_init.player", function () {
             $.extend(player, {
                 name: "", god: "", title: "", species: "",
+                hud_labels: {},
                 hp: 0, hp_max: 0, real_hp_max: 0, poison_survival: 0,
                 mp: 0, mp_max: 0, dd_real_mp_max: 0,
                 ac: 0, ev: 0, sh: 0,

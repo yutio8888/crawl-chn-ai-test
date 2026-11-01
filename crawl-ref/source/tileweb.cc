@@ -1137,6 +1137,25 @@ void TilesFramework::_send_player(bool force_full)
     json_write_string("msg", "player");
     json_treat_as_empty();
 
+    if (force_full)
+    {
+        // The browser owns the HUD layout, but display text follows the
+        // game's language. Keep English keys stable for client-side lookup.
+        static const char * const captions[] = {
+            N_("HP:"), N_("Health:"), N_("Magic:"),
+            N_("AC:"), N_("EV:"), N_("SH:"), N_("XL:"), N_("Next:"),
+            N_("Str:"), N_("Int:"), N_("Dex:"), N_("Place:"),
+            N_("Time:"), N_("Turn:"), N_("Noise:"), N_("Gold:"),
+            N_("Doom:"), N_("Contam:"),
+            N_("*WIZARD*"), N_("*EXPLORE*"),
+        };
+        json_open_object("hud_labels");
+        for (const char *caption : captions)
+            json_write_string(caption, T_(caption));
+        json_write_string("Silenced", C_("webtiles_hud", "Silenced"));
+        json_close_object();
+    }
+
     _update_string(force_full, c.name, you.your_name, "name");
     _update_string(force_full, c.job_title, filtered_lang(player_title()),
                    "title");
@@ -2440,36 +2459,8 @@ void TilesFramework::put_ucs_string(char32_t *str)
     if (m_print_area == nullptr)
         return;
 
-    while (*str)
-    {
-        if (*str == '\r')
-            continue;
-
-        if (*str == '\n')
-        {
-            m_print_x = 0;
-            m_print_y++;
-            // TODO: Clear end of line?
-        }
-        else
-        {
-            if (m_print_x >= m_print_area->mx)
-            {
-                m_print_x = 0;
-                m_print_y++;
-            }
-
-            if (m_print_y < m_print_area->my)
-            {
-                m_print_area->put_character(*str, m_print_fg, m_print_bg,
-                                            m_print_x, m_print_y);
-            }
-
-            m_print_x++;
-        }
-
-        str++;
-    }
+    m_print_area->put_string(str, m_print_fg, m_print_bg,
+                             m_print_x, m_print_y);
 }
 
 void TilesFramework::clear_to_end_of_line()
