@@ -85,6 +85,7 @@ struct player_info
     int lives, deaths;
 
     string place;
+    string place_display_name;
     int depth;
     coord_def position;
 

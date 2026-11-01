@@ -909,7 +909,7 @@ public:
                 | MF_ARROWS_SELECT | MF_INIT_HOVER | MF_SHOW_EMPTY
                 // To have the ctrl-f menu show up in webtiles
                 | MF_ALLOW_FILTER,
-                T_("spell")),
+                "spell"),
         current_action(_default_action),
         default_action(_default_action),
         spells(list),
