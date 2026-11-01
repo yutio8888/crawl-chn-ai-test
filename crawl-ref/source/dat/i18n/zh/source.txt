@@ -49195,3 +49195,6 @@ It surrounds you with an aura of shadow, increasing your stealth and making crea
 %%%%
 god title|Lightning Rod
 避雷针
+%%%%
+buggy miscellaneous item
+有问题的杂项物品

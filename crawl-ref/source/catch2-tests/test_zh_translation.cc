@@ -5593,7 +5593,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(ego_title_for_display("draining (drain) weapon ego").find(C_("weapon brand full name", "draining")) != string::npos);
     REQUIRE(ego_title_for_display("invisibility (+Inv) armour ego").find(
                 C_("armour ego full name", "invisibility")) != string::npos);
-    REQUIRE(ego_title_for_display("poisoned (poison) missile ego").find(T_("poisoned")) != string::npos);
+    REQUIRE(ego_title_for_display("poisoned (poison) missile ego").find(
+                C_("missile brand", "poisoned")) != string::npos);
     {
         EnTranslationFixture english;
         check();
