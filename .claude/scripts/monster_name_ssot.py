@@ -969,6 +969,27 @@ TERMINAL_CONCLUSIONS = {
     "defer implementation",
 }
 
+SEMANTIC_REVIEW_APPENDIX = "\n## Full-content semantic review\n"
+
+
+def split_review_appendix(text: str) -> tuple[str, str]:
+    """Preserve human body review prose alongside the strict enum ledger.
+
+    Appendix prose is not machine approval of semantic coverage. Canonical
+    enum cards still require exact comparison with the current inventory.
+    """
+    count = text.count(SEMANTIC_REVIEW_APPENDIX)
+    if count > 1:
+        raise AuditInputError("duplicate monster semantic review appendix")
+    if not count:
+        return text, ""
+    canonical, marker, appendix = text.partition(SEMANTIC_REVIEW_APPENDIX)
+    if not canonical.endswith("|\n") or not appendix.strip():
+        raise AuditInputError("monster semantic review appendix must follow the cards")
+    if re.search(r"^\|\s*`monster:", appendix, re.MULTILINE):
+        raise AuditInputError("enum cards cannot be added in the semantic appendix")
+    return canonical, marker + appendix
+
 
 def _resolve_commit(ref: str) -> str:
     try:
@@ -1000,7 +1021,7 @@ def review_coverage(
     baseline_ref: str,
 ) -> dict[str, object]:
     """Prove one evidence-card row and terminal conclusion per identity."""
-    text = review_input.text
+    text, _appendix = split_review_appendix(review_input.text)
     baseline_oid = _resolve_commit(baseline_ref)
     baseline_matches = re.findall(
         rf"^- 基线：`{re.escape(baseline_oid)}`$",
@@ -1203,8 +1224,10 @@ def write_review_results(
 ) -> None:
     """Write the deterministic per-identity review ledger."""
     output.parent.mkdir(parents=True, exist_ok=True)
+    appendix = split_review_appendix(output.read_text(encoding="utf-8"))[1] \
+        if output.exists() else ""
     output.write_text(
-        render_review_results(payload, baseline_ref),
+        render_review_results(payload, baseline_ref) + appendix,
         encoding="utf-8",
     )
 

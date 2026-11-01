@@ -4554,6 +4554,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-103 | Four Hell world-name dependencies | 欣嫩谷／悲叹河／塔尔塔罗斯／迪斯；文学精确例外 | active |
 | D-C-104 | Hepliaklqana the Forgotten | 被遗忘者惠普利亚卡纳；长名、正文与祭坛共用被动称谓 | active |
 | D-C-105 | Talos artefact proper name | 塔洛斯；塔洛斯之甲，区别 Tartarus | active |
+| D-C-106 | draconian shifter | 龙人移位者；空间移位，区别身体变形 | active |
 | D-C-101 | Spell school display names | 全称统一为系；法术列表两字简称；闪避说明消歧 | active |
 | D-C-100 | GENDER_NEUTRAL singular pronouns | 他 / 他的 / 他自己 / 他；移除 ZH 中性先祖 neuter 映射 | active |
 
@@ -4587,3 +4588,15 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 - **Choice**: `Talos → 塔洛斯`；TAG34 兼容神器 `armour of Talos → 塔洛斯之甲`。
 - **Rationale**: 实际英文器名为 Talos，`dat/descript/unrand.txt:armour of Talos` 描述为需要巨大身躯才能穿戴的笨重青铜板甲。旧“塔耳塔洛斯”混入另一专名的词形，不能用作 Talos 的转写。本次完整固定神器名称依赖组已审读；此器正文没有 Talos 的中文回指，保持原有完整器物描述。
 - **Scope**: 只纠正该神器的显示名及其 Talos 词根；不更改 `art-data.txt` 的英文身份、TextDB 查找键、枚举或生命周期，不恢复已移除玩法。D-C-103 的地狱领域 `Tartarus → 塔尔塔罗斯` 及其文学例外均不受本项影响。
+
+
+### D-C-106 — draconian shifter 的空间移位语义
+
+- **Type**: C — Contextual monster-name correction
+- **Status**: active
+- **Date**: 2026-11-01
+- **Choice**: `draconian shifter → 龙人移位者`，取代龙人变形者。
+- **Source**: 完整检索 shifter／shapeshifter 依赖，包括 `dat/mons/draconian-shifter.yaml`、`mon-spell.h:MST_DRACONIAN_SHIFTER`、EN/ZH怪物正文、职业Shapeshifter、形态变化怪物与显示后缀，以及 `dat/des/sprint/fedhas.des:oklob plant ... name:shifter` 自定义怪物。
+- **Rationale**: 龙人此职业当前法术是 Dimension Anchor、Blink Other、Blink Range、Blink Allies Encircle；操纵战场位置及阻止空间传送，不改变身体形态。其旧正文“任何地方／世界之外”与现行技能不符，已由代码owner同步收窄英文承诺。中文正文明确阻止空间传送，不声称禁止普通走动。
+- **Dependency boundary**: 职业 `Shapeshifter → 变形人`、shapeshifter／glowing shapeshifter 与 shape-shifter 提示指真正形体变化，保留各自当前译法。fedhas 自定义 `oklob plant shifter` 会 Blink Other，具有相同的空间含义；其正文是 `<oklob plant annihilator>` 别名，保持英文键与别名，不新增身份或恢复玩法。当前SourceDB没有独立plain shifter词条，不由此发明全局词根替换。
+- **Scope**: 只修此龙人怪物的独立显示名与同身份正文，保留英文查询、枚举、生成表和生命周期。采用现有龙人基词，不把shifter混同Shapeshifter职业或变形怪。

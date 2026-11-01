@@ -18,6 +18,7 @@
 #include "item-name.h"
 #include "item-prop.h"
 #include "jobs.h"
+#include "lang-en-guard.h"
 #include "mon-cast.h"
 #include "mon-transit.h"
 #include "mpr.h"
@@ -534,7 +535,10 @@ void ghost_demon::init_player_ghost()
     best_skill = ::best_skill(SK_FIRST_SKILL, SK_LAST_SKILL);
     best_skill_level = you.skills[best_skill];
     xl = you.experience_level;
-    title = player_title();
+    {
+        ScopedLangEn protocol_language;
+        title = player_title();
+    }
 
     flies = true;
 
