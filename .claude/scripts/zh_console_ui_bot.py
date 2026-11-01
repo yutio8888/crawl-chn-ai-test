@@ -58,7 +58,7 @@ HELP_CASES = [
     ('cloud', 'l', None, None), ('card', 'c', None, None),
     ('skill', 'k', None, None), ('passive', 'p', None, None),
     ('status', 't', None, None),
-    ('status:bat', 't', 'Bat', '行动迅捷的吸血蝠'),
+    ('status:bat', 't', 'Bat', '行动迅捷的蝙蝠'),
     ('monster', 'm', 'rat', '鼠'),
     ('spell', 's', 'Magic Dart', '魔法飞弹'),
     ('ability', 'a', 'Berserk', '狂暴'),
