@@ -555,7 +555,7 @@ WINDRES := $(CROSSHOST)-windres
 
 endif
 
-# Share persistent caches by target, but only let the main worktree and the two
+# Share persistent caches by target, but only let the main worktree and the
 # dedicated build worktrees update them. Other worktrees can consume cache hits
 # without changing cached results, statistics, or configuration.
 CCACHE_PROGRAM := $(shell command -v ccache 2>/dev/null)
@@ -564,18 +564,24 @@ GIT_WORKTREE_ROOT := $(shell git rev-parse --show-toplevel 2>/dev/null)
 MAIN_REPO_ROOT := $(patsubst %/.git,%,$(GIT_COMMON_DIR))
 
 ifneq ($(strip $(ANDROID)),)
-  CCACHE_PROFILE := android-tiles
+  ANDROID_VARIANT ?= buildTest
+  CCACHE_PROFILE := android-tiles/$(ANDROID_VARIANT)/host
 else ifeq ($(strip $(CROSSHOST)),x86_64-w64-mingw32)
   CCACHE_PROFILE := mingw-tiles
 else ifneq ($(strip $(CROSSHOST)),)
   # Do not mix unknown cross toolchains into the MinGW cache. Add an explicit
   # profile before enabling ccache for another supported cross target.
   CCACHE_PROFILE :=
+else ifneq ($(strip $(WEBTILES)),)
+  CCACHE_PROFILE := webtiles
+else ifneq ($(strip $(TILES)),)
+  CCACHE_PROFILE := native-tiles
 else
   CCACHE_PROFILE := console
 endif
 
 CCACHE_WRITE_WORKTREES := $(MAIN_REPO_ROOT) \
+                         $(MAIN_REPO_ROOT)/.worktrees/linux-console \
                          $(MAIN_REPO_ROOT)/.worktrees/mingw-tiles \
                          $(MAIN_REPO_ROOT)/.worktrees/android-tiles
 

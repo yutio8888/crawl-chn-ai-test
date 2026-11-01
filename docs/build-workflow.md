@@ -10,6 +10,7 @@ worktrees to mutate shared caches.
 |---|---|---|
 | Main repository | WSL console | `crawl-ref/source/util/build-console.sh` |
 | Main repository (macOS) | macOS Tiles DMG | `make TILES=y mac-app-tiles-dmg -j4` |
+| `.worktrees/linux-console` | Linux Console PR build | `.claude/scripts/local_build.py run --target linux` |
 | `.worktrees/mingw-tiles` | Windows tiles | `crawl-ref/source/util/build-tiles.sh` |
 | `.worktrees/android-tiles` | Android APK | `crawl-ref/source/util/build-android.sh` |
 
@@ -19,7 +20,8 @@ Releases, and the manual publication gate are defined in
 
 Routine pull requests, scheduled runs, and manual branch runs
 execute tooling and static CI gates on Ubuntu and compile Android, Linux, and
-Windows. Android debug APKs remain available for device testing; Windows builds
+Windows, with same-repository PR builds eligible for the local reuse described
+below. Remote Android debug APKs remain available for device testing; Windows builds
 compile Tiles without creating or uploading a release ZIP. Release tags matching
 the workflow's stable or trunk tag rules additionally run the macOS tooling and
 static gates, build the macOS DMG, and package and upload Windows Tiles. Tagged
@@ -61,6 +63,46 @@ Control-click menu or “Open Anyway” in System Settings → Privacy & Securit
 The release notes must also provide the SHA-256 check and the quarantine-removal
 command for users who need the explicit command-line override.
 
+## Local PR build preflight
+
+Linux Console, Windows Tiles and Android PR builds can run locally before a push. Install the
+dependencies from the matching job in [ci.yml](../.github/workflows/ci.yml),
+including its Java, Gradle, Android SDK and NDK versions. Set `JAVA_HOME` and
+`ANDROID_SDK_ROOT` for that installation and put the matching tools on `PATH`.
+The local runner reads the workflow's build commands and tool versions; it
+does not maintain a second version list.
+
+From a clean committed checkout with initialized submodules:
+
+```bash
+python3 .claude/scripts/local_build.py run --target all
+# Or select --target linux / --target windows / --target android.
+```
+
+The runner isolates each heavy build step through `run_isolated.sh` and reuses
+the dedicated detached build worktrees and caches. It refuses
+dirty or mismatched sources/submodules, locks the selected build worktrees,
+limits build concurrency, and checks the source state again after building.
+Logs remain under the existing `.claude/metrics/verify/` directory. Android's
+PR profile includes project preparation, launcher unit tests and the arm64
+`buildTest` APK; it does not establish four-ABI or release-signing coverage.
+
+For an authorized push, add `--push --publish`. Only after all selected builds
+succeed does the runner push the current branch and publish GitHub commit
+statuses `local-build/linux-console`, `local-build/windows-tiles` and/or
+`local-build/android-buildtest` for
+the exact tested SHA. For a new PR, run this before creating the PR. Existing
+PRs allow a short lookup window after a push; if publication arrives too late,
+the ordinary remote build still runs. Publishing requires a GitHub credential
+with permission to write commit statuses in the origin repository.
+
+CI reuses each platform independently, only for same-repository PRs whose
+current base is an ancestor of the tested head. A newer failed/pending status,
+missing or mismatched evidence, a fork, diverged base or lookup failure retains
+the normal build. Tags, schedules and manual workflows still build remotely.
+Other checks remain required. A locally reused Android build has its APK in
+the local build worktree; the skipped remote job does not upload an artifact.
+
 ## Windows Tiles
 
 Create the dedicated detached worktree once from the main repository root:
@@ -83,8 +125,8 @@ cd crawl-ref/source
 bash util/build-tiles.sh
 ```
 
-The helper refuses a dirty `.worktrees/mingw-tiles`, synchronizes the detached
-worktree to the main checkout's exact HEAD, and runs the MinGW tiles build.
+The helper refuses a dirty caller or `.worktrees/mingw-tiles`, synchronizes the
+detached worktree to the calling checkout's exact HEAD, and runs the MinGW build.
 
 GitHub Actions builds the distributable archive with
 `make CROSSHOST=x86_64-w64-mingw32 package-windows-tiles -j4` and uploads the
@@ -237,10 +279,17 @@ Persistent caches live in the ignored root `.ccache/` directory:
 | Profile | Directory |
 |---|---|
 | Console | `.ccache/console` |
+| WebTiles | `.ccache/webtiles` |
+| Native tiles | `.ccache/native-tiles` |
 | Windows tiles | `.ccache/mingw-tiles` |
-| Android | `.ccache/android-tiles` |
+| Android host preparation | `.ccache/android-tiles/<variant>/host` |
+| Android NDK | `.ccache/android-tiles/<variant>/ndk` |
 
-Only the main worktree and the two dedicated build worktrees write their
+Android variants use separate directories. ABI, compiler and compiler-option
+differences remain part of ccache's normal content key; caches are not recreated
+per commit. Gradle/NDK also retain their existing per-variant/ABI outputs.
+
+Only the main worktree and the dedicated build worktrees write their
 matching cache. Other worktrees use it read-only with statistics disabled and
 temporary files outside the persistent cache.
 

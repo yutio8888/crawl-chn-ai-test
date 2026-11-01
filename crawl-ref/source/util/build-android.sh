@@ -20,7 +20,14 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")"/.. && pwd)"
-REPO_ROOT="$(cd "$HERE/../.." && pwd)"
+CALLER_ROOT="$(git -C "$HERE" rev-parse --show-toplevel)"
+GIT_COMMON_DIR="$(git -C "$HERE" rev-parse --path-format=absolute --git-common-dir)"
+REPO_ROOT="${GIT_COMMON_DIR%/.git}"
+CALLER_HEAD="$(git -C "$CALLER_ROOT" rev-parse HEAD)"
+if [ -n "$(git -C "$CALLER_ROOT" status --porcelain --untracked-files=all --ignore-submodules=none)" ]; then
+    echo "ERROR: caller worktree must be clean before building its HEAD." >&2
+    exit 1
+fi
 WT="$REPO_ROOT/.worktrees/android-tiles"
 WT_SOURCE="$WT/crawl-ref/source"
 SDK_ROOT="${ANDROID_SDK_ROOT:-$HOME/Android}"
@@ -74,8 +81,8 @@ export ANDROID_SDK_ROOT="$SDK_ROOT"
 # Both the host preparation build and ndk-build use the dedicated persistent
 # Android cache. NDK_CCACHE is consumed by the NDK's compiler recipes.
 if command -v ccache >/dev/null 2>&1; then
-    export CCACHE_DIR="$REPO_ROOT/.ccache/android-tiles"
-    export CCACHE_TEMPDIR="/tmp/crawl-ccache-$(id -u)/android-tiles"
+    export CCACHE_DIR="$REPO_ROOT/.ccache/android-tiles/$VARIANT/host"
+    export CCACHE_TEMPDIR="/tmp/crawl-ccache-$(id -u)/android-tiles/$VARIANT/host"
     unset CCACHE_READONLY CCACHE_NOSTATS
     export CCACHE_NOREADONLY=1 CCACHE_STATS=1
     export NDK_CCACHE=ccache
@@ -86,11 +93,21 @@ else
     echo "ccache mode: disabled"
 fi
 
-# 1. Sync worktree to main worktree HEAD (local only)
-MAIN_HEAD="$(cd "$REPO_ROOT" && git rev-parse HEAD)"
+# 1. Sync the detached build worktree to the caller HEAD (local only)
+MAIN_HEAD="$CALLER_HEAD"
 echo "=== [1/4] Syncing android-tiles worktree to $MAIN_HEAD ==="
+exec 9>"$GIT_COMMON_DIR/local-build-android-tiles.lock"
+flock -n 9 || { echo "ERROR: android-tiles build is already active." >&2; exit 1; }
 cd "$WT"
-if [ -n "$(git status --porcelain --untracked-files=all)" ]; then
+if [ "$(git rev-parse --path-format=absolute --git-common-dir)" != "$GIT_COMMON_DIR" ]; then
+    echo "ERROR: build worktree must belong to the caller repository." >&2
+    exit 1
+fi
+if git symbolic-ref -q HEAD >/dev/null; then
+    echo "ERROR: build worktree must have a detached HEAD: $WT" >&2
+    exit 1
+fi
+if [ -n "$(git status --porcelain --untracked-files=all --ignore-submodules=none)" ]; then
     echo "ERROR: $WT has local changes; refusing destructive sync." >&2
     echo "Commit, stash, or remove them explicitly, then retry." >&2
     exit 1
@@ -111,7 +128,7 @@ echo "       Now at: $(git rev-parse --short HEAD)"
 # 2. Run make android (prepares data, rltiles, cflags, gradle files)
 echo "=== [2/4] Preparing Android project (make ANDROID=$ANDROID_VER TILES=y android) ==="
 cd "$WT_SOURCE"
-make ANDROID="$ANDROID_VER" TILES=y android -j8
+make ANDROID="$ANDROID_VER" ANDROID_VARIANT="$VARIANT" TILES=y android -j4 NPROC=4
 
 # The template retains the historical default for direct Makefile users.
 # This helper supports arbitrary SDK locations by replacing the generated
@@ -131,9 +148,15 @@ APK_DIR="$WT_SOURCE/android-project/app/build/outputs/apk/$VARIANT"
 if [ -d "$APK_DIR" ]; then
     find "$APK_DIR" -maxdepth 1 -type f -name "app-${VARIANT}*.apk" -delete
 fi
-# Generate gradle wrapper if missing (e.g. after clean worktree sync)
+# The tracked wrapper is the single Gradle version source for local builds.
 if [ ! -x gradlew ]; then
-    gradle wrapper --gradle-version 8.13
+    echo "ERROR: tracked Gradle wrapper is missing or not executable." >&2
+    exit 1
+fi
+if command -v ccache >/dev/null 2>&1; then
+    export CCACHE_DIR="$REPO_ROOT/.ccache/android-tiles/$VARIANT/ndk"
+    export CCACHE_TEMPDIR="/tmp/crawl-ccache-$(id -u)/android-tiles/$VARIANT/ndk"
+    mkdir -p "$CCACHE_DIR" "$CCACHE_TEMPDIR"
 fi
 case "$VARIANT" in
     buildTest) GRADLE_TASK="assembleBuildTest" ;;
@@ -143,7 +166,7 @@ case "$VARIANT" in
         exit 1
         ;;
 esac
-./gradlew --no-daemon ":app:$GRADLE_TASK"
+./gradlew --no-daemon --max-workers=4 ":app:$GRADLE_TASK"
 
 # 4. Locate and report APK
 shopt -s nullglob
