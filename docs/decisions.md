@@ -160,7 +160,7 @@ Agent memory is not authoritative. Resolve current context from this file and
 - **Date**: 2026-07-05
 - **Source**: Monster name terminology batch
 - **Choice**: 精灵 (不加"深"前缀)
-- **Rejected**: 深精灵 (Chinese fantasy convention: 精灵 already implies subterranean elves; DCSS has no surface elf to distinguish from)
+- **Rejected**: 深精灵 (not adopted for the compact display name; this deliberately omits the spatial qualifier, not because 精灵 inherently means subterranean elf)
 - **Rationale**: DCSS has no generic "elf" monster — only "deep elf X" subtypes, so "精灵" unambiguously means "deep elf" in monster context. Player species "High Elf → 高等精灵" also uses 精灵, mirroring the English relationship. The "deep" spatial connotation is sacrificed for natural Chinese readability.
 - **Examples**: deep elf annihilator → 精灵湮灭者, deep elf blademaster → 精灵剑圣, deep elf high priest → 精灵大祭司
 

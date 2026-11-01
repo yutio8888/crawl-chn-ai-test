@@ -98,6 +98,7 @@
 #include "test_zh_helpers.h"
 #include "unwind.h"
 #include "xom.h"
+#include "viewgeom.h"
 
 #include <cstring>
 #include <cstdlib>
@@ -108,6 +109,7 @@
 #ifdef UNIX
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/wait.h>
 #endif
 
 string bind_random_body_part_message(string msg, bool plural);
@@ -8835,3 +8837,225 @@ TEST_CASE("Beogh challenge emits a fully localized introduction from the real pr
         CHECK(Options.language == language);
     }
 }
+
+TEST_CASE("species display: innate text and divine substitutions retain raw identities",
+          "[zh-translation][species-rereview]")
+{
+    init_mut_index();
+    init_properties();
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        i18n_cache_clear();
+        unwind_var<player> restore_player(you);
+        for (int sp = 0; sp < NUM_SPECIES; ++sp)
+        {
+            const auto species_id = static_cast<species_type>(sp);
+            if (!species::is_valid(species_id))
+                continue;
+            you = player();
+            you.species = species_id;
+            you.experience_level = 15;
+            const auto raw_long = species::fake_mutations(species_id, false);
+            const auto raw_short = species::fake_mutations(species_id, true);
+            const string child = species::child_name(species_id);
+            const string change = species::orcification_msg(species_id);
+            const string title = god_title(GOD_HEPLIAKLQANA, species_id,
+                                          piety_breakpoint(0));
+            INFO(species::name(species_id, species::SPNAME_PLAIN, true));
+            CHECK(title.find(T_(child.c_str())) != string::npos);
+            if (language == lang_t::ZH)
+                CHECK(string(T_(child.c_str())) != child);
+            msg::tee messages;
+            beogh_increase_orcification();
+            CHECK(messages.get_store().find(T_(change.c_str())) != string::npos);
+            CHECK(you.props[ORCIFICATION_LEVEL_KEY].get_int() == 1);
+            if (language == lang_t::ZH)
+                CHECK(string(T_(change.c_str())) != change);
+            beogh_increase_orcification();
+            CHECK(you.props[ORCIFICATION_LEVEL_KEY].get_int() == 2);
+            CHECK(species::child_name(species_id) == child);
+            CHECK(species::orcification_msg(species_id) == change);
+            for (auto form : {transformation::none, transformation::bat})
+            {
+                you.form = form;
+                const string verbose = describe_muts_for_chardump(true);
+                const string terse_form = terse_mutation_list();
+                CHECK(terse_form.find("()") == string::npos);
+                for (const auto& raw : raw_short)
+                {
+                    if (!raw.empty())
+                    {
+                        CHECK(terse_form.find(T_(raw.c_str())) != string::npos);
+                        if (language == lang_t::ZH)
+                            CHECK(terse_form.find(raw) == string::npos);
+                    }
+                }
+                for (const auto& raw : raw_long)
+                {
+                    if (raw.empty())
+                        continue;
+                    INFO(verbose);
+                    CHECK(verbose.find(T_(raw.c_str())) != string::npos);
+                    if (language == lang_t::ZH)
+                        CHECK(verbose.find(raw) == string::npos);
+                }
+            }
+            you.form = transformation::none;
+            const string terse = terse_mutation_list();
+            for (const auto& raw : raw_short)
+            {
+                if (raw.empty())
+                    continue;
+                CHECK(terse.find(T_(raw.c_str())) != string::npos);
+                // The menu's help lookup uses raw English, while a missing
+                // body falls back to the already displayed long description.
+                const string body_key = raw + " mutation";
+                const string body = getLongDescription(body_key);
+                const auto matches = lookup_help_matching_keys(
+                    LOOKUP_HELP_MUTATION, raw);
+                CHECK((find(matches.begin(), matches.end(), body_key) != matches.end())
+                      == !body.empty());
+                if (raw == "insubstantial")
+                {
+                    CHECK_FALSE(body.empty());
+                    CHECK(find(matches.begin(), matches.end(), body_key) != matches.end());
+                }
+                if (raw == "permanent stasis")
+                {
+                    CHECK(body.empty());
+                    CHECK_FALSE(raw_long.empty());
+                    CHECK(describe_muts_for_chardump(true).find(
+                          T_(raw_long.front().c_str())) != string::npos);
+                }
+                if (language == lang_t::ZH)
+                    CHECK(string(T_(raw.c_str())) != raw);
+            }
+            CHECK(species::fake_mutations(species_id, false) == raw_long);
+            CHECK(species::fake_mutations(species_id, true) == raw_short);
+            if (you.racial_ac(false) > 0 && !species::is_removed(species_id))
+            {
+                const int ac = you.racial_ac(false) / 100;
+                const string expected = species_id == SP_NAGA
+                    ? make_stringf(T_("Your serpentine skin is tough. (AC +%d)"), ac)
+                    : make_stringf(T_("Your %s scales are hard. (AC +%d)"),
+                                   T_(species::scale_type(species_id)), ac);
+                const string verbose = describe_muts_for_chardump(true);
+                CHECK(verbose.find(expected) != string::npos);
+                if (language == lang_t::ZH)
+                {
+                    CHECK(verbose.find("scales are hard") == string::npos);
+                    CHECK(verbose.find("serpentine skin") == string::npos);
+                }
+            }
+        }
+    }
+}
+
+#if defined(UNIX) && !defined(USE_TILE)
+TEST_CASE("species display: actual draconian maturation translates every colour and aptitude change",
+          "[zh-translation][species-rereview]")
+{
+    // The console headless backend has no leave operation. As in the existing
+    // console-wrap tests, isolate it so this real level_change() path cannot
+    // alter the parent suite's IO state. Every child assertion is fatal.
+    const pid_t child = fork();
+    REQUIRE(child >= 0);
+    if (child != 0)
+    {
+        int status = 0;
+        REQUIRE(waitpid(child, &status, 0) == child);
+        REQUIRE(WIFEXITED(status));
+        REQUIRE(WEXITSTATUS(status) == 0);
+        return;
+    }
+    unwinder fail_child([]() { fflush(nullptr); _exit(1); });
+    enter_headless_mode();
+    crawl_view.termp = coord_def(1, 1);
+    crawl_view.termsz = coord_def(80, 24);
+    crawl_view.msgp = coord_def(1, 18);
+    crawl_view.msgsz = coord_def(80, 6);
+    cgotoxy(1, 1, GOTO_CRT);
+    unwind_var<bool> no_live_screen(crawl_state.need_save, false);
+    init_mut_index();
+    init_properties();
+    init_monsters();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore_player(you);
+        scoped_monspeak_world world;
+        set<species_type> seen;
+        set<pair<bool, bool>> aptitude_variants;
+        for (uint64_t seed = 1; seed <= 128; ++seed)
+        {
+            rng::subgenerator scoped_rng(seed, 0x5eec1e5ULL);
+            you = player();
+            you.species = SP_BASE_DRACONIAN;
+            you.set_position(coord_def(20, 20));
+            you.experience_level = you.max_level = 6;
+            you.experience = exp_needed(7);
+            you.hp = you.hp_max = 100;
+            you.base_stats[STAT_STR] = you.base_stats[STAT_INT]
+                                    = you.base_stats[STAT_DEX] = 10;
+            give_basic_mutations(you.species);
+            msg::tee messages;
+            level_change(true);
+            REQUIRE(you.experience_level == 7);
+            REQUIRE(you.species != SP_BASE_DRACONIAN);
+            seen.insert(you.species);
+            const string text = messages.get_store();
+            INFO(text);
+            const string colour = species::scale_type(you.species);
+            REQUIRE(text.find(make_stringf(T_("Your scales start turning %s."),
+                                         T_(colour.c_str()))) != string::npos);
+            for (const auto& raw : species::fake_mutations(you.species, false))
+                REQUIRE(text.find(T_(raw.c_str())) != string::npos);
+            for (skill_type sk = SK_FIRST_SKILL; sk < NUM_SKILLS; ++sk)
+            {
+                const int oldapt = species_apt(sk, SP_BASE_DRACONIAN);
+                const int newapt = species_apt(sk, you.species);
+                if (oldapt == newapt)
+                    continue;
+                const bool slower = oldapt > newapt;
+                const bool much = abs(oldapt - newapt) > 1;
+                aptitude_variants.insert({slower, much});
+                const string format = slower
+                    ? (much ? T_("You learn %s much slower.") : T_("You learn %s slower."))
+                    : (much ? T_("You learn %s much quicker.") : T_("You learn %s quicker."));
+                REQUIRE(text.find(make_stringf(format.c_str(), skill_name(sk))) != string::npos);
+            }
+            if (language == lang_t::ZH)
+            {
+                REQUIRE(text.find("Your scales") == string::npos);
+                REQUIRE(text.find("slower") == string::npos);
+                REQUIRE(text.find("quicker") == string::npos);
+                REQUIRE(text.find(colour) == string::npos);
+            }
+        }
+        set<species_type> expected;
+        for (int sp = 0; sp < NUM_SPECIES; ++sp)
+        {
+            const auto species_id = static_cast<species_type>(sp);
+            if (species::is_valid(species_id) && species::is_draconian(species_id)
+                && !species::is_removed(species_id) && species_id != SP_BASE_DRACONIAN)
+            {
+                expected.insert(species_id);
+            }
+        }
+        REQUIRE(seen == expected);
+        set<pair<bool, bool>> expected_aptitude_variants;
+        for (species_type species_id : expected)
+            for (skill_type sk = SK_FIRST_SKILL; sk < NUM_SKILLS; ++sk)
+            {
+                const int oldapt = species_apt(sk, SP_BASE_DRACONIAN);
+                const int newapt = species_apt(sk, species_id);
+                if (oldapt != newapt)
+                    expected_aptitude_variants.insert({oldapt > newapt,
+                                                      abs(oldapt - newapt) > 1});
+            }
+        REQUIRE(aptitude_variants == expected_aptitude_variants);
+    }
+    _exit(0);
+}
+#endif

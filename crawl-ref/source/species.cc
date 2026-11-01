@@ -253,23 +253,23 @@ namespace species
         switch (species)
         {
             case SP_RED_DRACONIAN:
-                return "fiery red";
+                return N_("fiery red");
             case SP_WHITE_DRACONIAN:
-                return "icy white";
+                return N_("icy white");
             case SP_GREEN_DRACONIAN:
-                return "mossy green";
+                return N_("mossy green");
             case SP_YELLOW_DRACONIAN:
-                return "lurid yellow";
+                return N_("lurid yellow");
             case SP_GREY_DRACONIAN:
-                return "dull grey";
+                return N_("dull grey");
             case SP_BLACK_DRACONIAN:
-                return "glossy black";
+                return N_("glossy black");
             case SP_PURPLE_DRACONIAN:
-                return "rich purple";
+                return N_("rich purple");
             case SP_PALE_DRACONIAN:
-                return "pale cyan-grey";
+                return N_("pale cyan-grey");
             case SP_BASE_DRACONIAN:
-                return "plain brown";
+                return N_("plain brown");
             default:
                 return "";
         }
