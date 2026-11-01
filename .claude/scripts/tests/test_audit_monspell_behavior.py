@@ -956,7 +956,10 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
             "_speech_fill_target(targ_prep, target, mons, pbolt, gestured,\n"
             "                                diagnostics\n"
             "                                    ? diagnostics->target_observer"
-            " : nullptr);",
+            " : nullptr,\n"
+            "                                speech.legacy_behavior_compatibility\n"
+            "                                    && Options.language == lang_t::ZH\n"
+            "                                    ? &msg : nullptr);",
             source)
 
 
