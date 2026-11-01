@@ -1074,7 +1074,7 @@ mimic reveal plural|%s are mimics!
 %1$s攻击将%2$s从%3$s恐惧中惊醒。
 %%%%
 %1$s can %2$s water.\n
-%1$s能在%2$s中行动。\n
+%1$s能在%2$s行动。\n
 %%%%
 %1$s can travel through lava.\n
 %1$s能在岩浆中行动。\n
@@ -2540,10 +2540,10 @@ A ballistomycete grows from the ground.
 一枚真菌从地面生长出来。
 %%%%
 A beckoning whirlwind drags %s forward!
-一股召唤旋风把%s向前拖拽！
+一股招引旋风把%s向前拖拽！
 %%%%
 A beckoning whirlwind swirls around %s.
-一股召唤旋风在%s周围旋转。
+一股招引旋风在%s周围旋转。
 %%%%
 A being of your status worships no god.
 像你这样的存在不崇拜任何神祇。
@@ -2855,7 +2855,7 @@ Adjust which item?
 整理哪个物品？
 %%%%
 After Damaging Hits
-命中后效果
+造成伤害后效果
 %%%%
 aid the meek
 帮助弱者
@@ -3109,7 +3109,7 @@ Attack!
 攻击！
 %%%%
 Attacks
-攻击方式
+攻击
 %%%%
 Attempting to channel buggy spell: %s
 试图引导有问题的法术：%s
@@ -3280,7 +3280,7 @@ Boing!
 蹦！
 %%%%
 Bonus
-附伤
+附效
 %%%%
 Bonus from skill manuals is in <lightred>red</lightred>.
 技能手册加成以<lightred>红色</lightred>显示。
@@ -6882,7 +6882,7 @@ surge of power!
 涌动着双倍活力！
 %%%%
 swap to recently quivered action
-切换最近使用的快捷动作
+切换到最近选定的箭袋动作
 %%%%
 swim
 游泳
@@ -8165,7 +8165,7 @@ travel
 旅行
 %%%%
 travel through
-水
+水中
 %%%%
 trip-wire
 
@@ -8328,7 +8328,7 @@ vulnerability
 再次醒来了。
 %%%%
 walk on
-水面
+水面上
 %%%%
 wand
 魔杖
@@ -8427,7 +8427,7 @@ wield
 持握
 %%%%
 wield a weapon (<w>-</w> to unwield)
-持握一件武器（<w>-</w> 取消）
+持握一件武器（<w>-</w>卸下武器）
 %%%%
 wield weapon a, or switch to b
 持握武器 a，或切换到 b
@@ -9182,7 +9182,7 @@ You can't equip that in your current form.
 你当前形态无法装备那个。
 %%%%
 You can't evoke this right now
-你现在无法唤起这个物品
+你现在无法激活这件物品
 %%%%
 You can't fit into that!
 你穿不上那个！
@@ -14184,10 +14184,10 @@ You couldn't memorise any spells.
 你无法记忆任何法术。
 %%%%
 You have %d spell levels left.
-你有%d个法术等级。
+你还剩%d个法术等级。
 %%%%
 You had %d spell levels left.
-你曾有%d个法术等级。
+你当时还剩%d个法术等级。
 %%%%
 didn't
 没有
@@ -16395,7 +16395,7 @@ Your Spells
 \n你的闪避将%s。
 %%%%
 \nYour SH would %s.
-\n你的护盾将%s。
+\n你的格挡将%s。
 %%%%
 at
 向
@@ -17985,10 +17985,10 @@ Wearing heavy armour would reduce your attack speed with this weapon
 \n伤害评级: 
 %%%%
 You cannot wield it.
-你无法持有它。
+你无法持握它。
 %%%%
 It is too large for you to wield.
-它对你来说太大了，无法持有。
+它对你来说太大了，无法持握。
 %%%%
 It is a %s weapon.
 它是一把%s武器。
@@ -18821,7 +18821,7 @@ cloud of bats
 蝙蝠云
 %%%%
 beckoning
-招手
+招引
 %%%%
 berserk
 狂暴
@@ -18911,7 +18911,7 @@ unravelled magic
 解析魔法
 %%%%
 unravelling
-解析
+解构
 %%%%
 vexing
 恼怒
@@ -20828,7 +20828,7 @@ reduce willpower
 降低意志力
 %%%%
 increased damage when unseen
-隐身时增加伤害
+未被目标看见时增加伤害
 %%%%
 drowning damage
 溺水伤害
@@ -20885,7 +20885,7 @@ open air damage
 空袭伤害
 %%%%
 drain, daze, or confuse
-吸取、晕眩或混乱
+造成衰竭、眩晕或混乱
 %%%%
 random ugly thing damage
 随机丑东西伤害
@@ -20924,7 +20924,7 @@ Nonliving
 无生命
 %%%%
 Very small
-极小
+很小
 %%%%
 Medium
 中等
@@ -21683,7 +21683,7 @@ sleepcap
 \n\n它影响你的敏捷(%+d)。
 %%%%
 \n\nit affects your accuracy and damage with ranged weapons and melee (%+d).
-\n\n它影响你远程和近战武器的命中与伤害(%+d)。
+\n\n它影响你使用远程武器和进行近战攻击时的命中与伤害(%+d)。
 %%%%
 \n\nspell refund chance: %d%% (max %d%%)
 \n\n法术返还几率：%d%%（最大%d%%）
@@ -25914,7 +25914,7 @@ You %1$svisited %2$d bazaar
 你访问了%2$d个市集
 %%%%
 You %1$svisited the chambers of the Necropolis %2$d time
-你访问了亡灵城%2$d次
+你访问了死灵城的墓室%2$d次
 %%%%
 You %1$s%2$s %3$d ziggurat
 你%2$s了%3$d座通天塔
@@ -25935,7 +25935,7 @@ You %1$sspent %2$d %3$s at shops.\n
 你在商店消费了%2$d%3$s。\n
 %%%%
 You %1$sdonated %2$d %3$s to Zin.\n
-你向辛恩捐献了%2$d%3$s。\n
+你向辛捐献了%2$d%3$s。\n
 %%%%
 You %1$spaid %2$d %3$s to Gozag.\n
 你%1$s向哥萨戈支付了%2$d%3$s。\n
@@ -25956,7 +25956,7 @@ Note: time per level data comes from an upgraded game and may be incomplete.\n
 %8s：%d daAut
 %%%%
 Table legend:\n A = Non-vault XP\n B = Vault XP\n C = Vault XP percentage of total XP\n D = Non-vault monster count\n E = Vault monster count\n F = Vault count percentage of total count\n\n
-表格说明：\n A = 非宝库经验值\n B = 宝库经验值\n C = 宝库经验值占总经验值的百分比\n D = 非宝库怪物数量\n E = 宝库怪物数量\n F = 宝库数量占总数的百分比\n\n
+表格说明：\n A = 非宝库经验值\n B = 宝库经验值\n C = 宝库经验值占总经验值的百分比\n D = 非宝库怪物数量\n E = 宝库怪物数量\n F = 宝库怪物数量占怪物总数的百分比\n\n
 %%%%
 Table legend:\n A = Kills in this place as a percentage of kills in the entire game.\n B = Kills by you in this place as a percentage of kills by you in\n     the entire game.\n C = Kills by friends in this place as a percentage of kills by\n     friends in the entire game.\n D = Other kills in this place as a percentage of other kills in the\n     entire game.\n E = Experience gained in this place as a percentage of experience\n     gained in the entire game.\n F = Experience gained in this place divided by the number of levels of\n     this place that you have seen.\n\n
 表格说明：\n A = 此地点的击杀数占整个游戏击杀数的百分比。\n B = 此地点的由你造成的击杀数占整个游戏中你造成的击杀数的\n     百分比。\n C = 此地点的由友方造成的击杀数占整个游戏中友方造成的击杀数\n     的百分比。\n D = 此地点的其他击杀数占整个游戏中其他击杀数的\n     百分比。\n E = 此地点的经验值占整个游戏经验值的\n     百分比。\n F = 此地点的经验值除以你所探索过的\n     此地点层数。\n\n
@@ -26076,7 +26076,7 @@ Tailslap
 尾击
 %%%%
 Maw
-大口
+巨口
 %%%%
 Executioner Blades
 处刑利刃
@@ -28185,7 +28185,7 @@ It affects your dexterity (%d).
 影响你的敏捷（%d）。
 %%%%
 It affects your accuracy & damage with ranged weapons and melee (%d).
-影响你远程和近战武器的命中率与伤害（%d）。
+它影响你使用远程武器和进行近战攻击时的命中与伤害（%d）。
 %%%%
 It insulates you from electricity.
 使你能抵抗电击。
@@ -28524,7 +28524,7 @@ armoured
  奇怪的机械声音伴随着它不协调的动作。
 %%%%
  Its skin looks unnervingly wrinkled.
- 它的皮肤看起来令人不安地褶皱。
+ 它的皮肤皱得令人不安。
 %%%%
  It smells of brimstone.
  它散发着硫磺的气味。
@@ -28557,7 +28557,7 @@ remain unchanged
 保持不变
 %%%%
 wielding
-持有
+持握
 %%%%
 wearing
 穿戴
@@ -28572,7 +28572,7 @@ If you were wearing this ring:
 如果你戴着这枚戒指：
 %%%%
 If you switch to wielding this weapon in your main hand:
-如果你切换到主手持有此武器：
+如果你切换到主手持握此武器：
 %%%%
 If you switch to 
 如果你切换到
@@ -28608,7 +28608,7 @@ If you quaff this potion your AC would be %d.
 如果你饮下这瓶药水，你的护甲将变为%d。
 %%%%
 (w)ield
-(w)持有
+(w)持握
 %%%%
 (u)nwield
 (u)卸下
@@ -28623,7 +28623,7 @@ If you quaff this potion your AC would be %d.
 (t)脱下
 %%%%
 e(v)oke
-e(v)使用
+(v)使用
 %%%%
 (r)ead
 (r)阅读
@@ -28683,7 +28683,7 @@ irresistible
 不可抵抗
 %%%%
 draining
-吸取
+负能量
 %%%%
 electric
 电击
@@ -28740,7 +28740,7 @@ Your servitor
 会施放
 %%%%
 Your paragon wields 
-你的典范持有
+你的典范持握
 %%%%
 Your servitor can be imbued with this spell.\n
 你的仆从可以被赋予此法术。\n
@@ -28992,7 +28992,7 @@ none (normally
 无（通常为
 %%%%
 open
-打开的
+打开
 %%%%
 open translucent
 打开的透明
@@ -32538,7 +32538,7 @@ verb|fire
  皮革，可用于制作护甲。\n
 %%%%
  if you have enough runes
- 如果你有足够的符文
+如果你有足够的符文，
 %%%%
  incapable of using stairs
  无法使用楼梯
@@ -32589,7 +32589,7 @@ verb|fire
  药水。
 %%%%
  powers are not affected by the Invocations skill.
- 的力量不受祈神技能影响。
+能力不受祈神技能影响。
 %%%%
  radiates an aura of cold.
  散发出寒冷的光环。
@@ -32682,7 +32682,7 @@ A cloud of
 一团
 %%%%
 A stacked deck
-一副堆叠的牌组
+一副已排好顺序的牌组
 %%%%
 Additional devices of the same type 
 同类型的额外装置
@@ -32817,7 +32817,7 @@ Zin's power protects your fellow warrior from evil magic!
 \n若被击中，它很快就会死去。\n
 %%%%
 \nIt can be dug through.
-\n可以挖掘穿它。
+\n可以挖穿它。
 %%%%
 \nIt deals %s fire damage.\n
 \n它造成%s点火焰伤害。\n
@@ -37136,7 +37136,7 @@ weapon of %s
 （威力%d）
 %%%%
  + %d per 4 attacks
-每4次攻击+%d
+ + %d（每4次攻击）
 %%%%
  <lightgrey>(%s to cycle)</lightgrey>
  <lightgrey>（按%s切换）</lightgrey>
@@ -37226,7 +37226,7 @@ morgue item inscription|unknown
 %dd%d%s
 %%%%
 %dx %s%s
-%d倍%s%s
+%d次%s%s
 %%%%
 %s    (%s)    %d/%d spell slot%s
 %s    （%s）    %d/%d法术位%s
@@ -37739,7 +37739,7 @@ Touched by the power of Zot (MHP
 被佐特之力触碰（最大生命值
 %%%%
 Saved by the dreamshard amulet
-被梦境碎片项链拯救
+被梦碎项链拯救
 %%%%
 Lost the 
 在佐特之力下丢失了
@@ -37760,7 +37760,7 @@ Branded self with the
 用
 %%%%
 Activated a boundless tesseract
-激活了一个无边超立方体
+激活了一个无界超立方体
 %%%%
  the pandemonium lord
 这位万魔殿领主
@@ -37982,7 +37982,7 @@ qui(v)er
 (v)装备
 %%%%
  each
-每次
+/次
 %%%%
 Poison%s and momentary paralysis
 中毒%s与短暂麻痹
@@ -38027,7 +38027,7 @@ cover
 地面移动速度更快（隐形时）\n
 %%%%
 It will release all of its jellies when polymorphed.\n
-被变形时会释放所有史莱姆。\n
+被变形时会释放所有果冻怪。\n
 %%%%
 Despite 
 尽管
@@ -39930,7 +39930,7 @@ Describe which?
 请选择：
 %%%%
                     <white>Dungeon Overview and Level Annotations</white>\n
-                    <white>地城总览与楼层注释</white>\n
+                    <white>地牢总览与楼层注释</white>\n
 %%%%
 \nThe Realm of Zot is guarded by %s.\n
 \n佐特领域由%s守卫。\n
@@ -41994,22 +41994,22 @@ left
 离开
 %%%%
 Got out of the dungeon
-离开了地城
+离开了地牢
 %%%%
 Safely got out of the dungeon
-安全离开了地城
+安全离开了地牢
 %%%%
 Got out of the dungeon alive
-活着离开了地城
+活着离开了地牢
 %%%%
 escaped
 逃离
 %%%%
 Escaped with the Orb!
-带着魔法宝珠逃离了！
+带着佐特宝珠逃离了！
 %%%%
 Escaped with the Orb
-带着魔法宝珠逃离了
+带着佐特宝珠逃离了
 %%%%
 quit
 退出
@@ -42111,10 +42111,10 @@ bounced beam
 反弹的射线
 %%%%
 Killed themself with a bounced beam
-被反弹的射线杀死
+被自己射出后反弹的射线杀死
 %%%%
 Killed themself with a bounced %s
-被反弹的%s杀死
+被自己射出后反弹的%s杀死
 %%%%
 suicidal targeting
 自我瞄准
@@ -45246,13 +45246,13 @@ monster description|%1$s is susceptible to %2$s.\n
 %1$s易受%2$s影响。\n
 %%%%
 monster description| inflict 1d5 acid damage when struck in melee.\n
-近战攻击时会额外造成1d5点酸伤害。\n
+被近战击中时会造成1d5点酸伤害。\n
 %%%%
 monster description| cover ground more quickly when invisible.\n
 隐形时移动速度更快。\n
 %%%%
 monster description|It will release varied jellies when damaged or killed, with the number of jellies proportional to the amount of damage.\n
-受伤或死亡时会释放多种史莱姆，数量与受到的伤害成正比。\n
+受伤或死亡时会释放多种果冻怪，数量与受到的伤害成正比。\n
 %%%%
 monster description|Despite %1$s appearance, %2$s can open doors.\n
 尽管%1$s外表如此，%2$s仍能开门。\n
@@ -49513,3 +49513,217 @@ monster speech gaze|looks at %s
 %%%%
 monster speech gaze|looks around
 环顾四周
+%%%%
+Learned a level %d spell: %s
+学会了%d级法术：%s
+%%%%
+Fell from the grace of %s
+失去了%s的恩宠
+%%%%
+Was placed under penance by %s
+受到了%s的惩戒
+%%%%
+Was forgiven by %s
+得到了%s的赦免
+%%%%
+Received a gift from %s
+收到了%s的神赐
+%%%%
+ with %d turn to spare
+（距时限尚余%d回合）
+%%%%
+ with %d turns to spare
+（距时限尚余%d回合）
+%%%%
+Paralysed by %s for %.2g turns
+被%s麻痹了%.2g回合
+%%%%
+Vexed by %s for %d turns
+因%s而恼怒了%d回合
+%%%%
+Offered knowledge of %s by Vehumet.
+获得了维胡梅特传授的%s法术知识。
+%%%%
+Branded self with the %s
+给自己烙上了%s
+%%%%
+    Recover according to your rest options;\n    interruptions may stop resting early.\n    If already fully rested (including\n    your ancestor), wait up to 100 turns.\n
+    按休息选项恢复状态；\n    受到干扰时可能提前停止。\n    若已完全休息好（包括先祖），\n    则最多等待100回合。\n
+%%%%
+rest or wait
+休息或等待
+%%%%
+<h>Autofight:\n<w>Tab</w>          : attack a suitable target,\n               moving if necessary\n<w>Shift-Tab</w>, <w>p</w> : trigger quivered action;\n               automatically select\n               a target if needed\n
+<h>自动战斗：\n<w>Tab</w>          ：攻击合适的目标，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发箭袋动作；\n               必要时自动\n               选择目标\n
+%%%%
+<console><lightred>percent</lightred> : </console>talismans (<w>%</w>: equip)
+<console><lightred>percent</lightred>：</console>护符（<w>%</w>：装备）
+%%%%
+<lightred>percent</lightred> : talismans (<w>%</w>: equip)
+<lightred>percent</lightred>：护符（<w>%</w>：装备）
+%%%%
+\n<h>Targeting\n<w>Enter</w> or <w>f</w> : confirm current target\n<w>.</w> : confirm and stop at target\n<w>+</w> and <w>-</w> : cycle between targets\n
+\n<h>瞄准\n<w>Enter</w>或<w>f</w>：确认当前目标\n<w>.</w>：确认并在目标处停止\n<w>+</w>和<w>-</w>：在目标之间切换\n
+%%%%
+<h>Wizard targeting commands:</h>\n<w>Ctrl-C</w> : cycle through beam paths\n<w>D</w>: get debugging information about the monster\n<w>o</w>: give item to monster\n<w>F</w>: cycle monster friendly/good neutral/neutral/hostile\n<w>Ctrl-H</w>: heal the monster fully\n<w>m</w>: move monster or player\n<w>M</w>: cause spell miscast for monster or player\n<w>s</w>: force monster to shout or speak\n<w>S</w>: make monster a summoned monster\n<w>w</w>: calculate shortest path to any point on the map\n<w>"</w>: get debugging information about a portal\n<w>~</w>: polymorph monster to specific type\n<w>,</w>: bring down the monster to 1 hp\n<w>Ctrl-F</w>: place a mimic\n<w>Ctrl-B</w>: banish monster\n<w>Ctrl-K</w>: kill monster\n
+<h>巫师模式瞄准指令：</h>\n<w>Ctrl-C</w> : 循环切换射线路径\n<w>D</w>: 获取怪物的调试信息\n<w>o</w>: 将物品交给怪物\n<w>F</w>: 循环切换怪物态度：友好/善意中立/中立/敌对\n<w>Ctrl-H</w>: 完全治愈怪物\n<w>m</w>: 移动怪物或玩家\n<w>M</w>: 令怪物或玩家发生施法失误\n<w>s</w>: 强制怪物喊叫或说话\n<w>S</w>: 将怪物变为召唤生物\n<w>w</w>: 计算到地图任意位置的最短路径\n<w>"</w>: 获取传送门的调试信息\n<w>~</w>: 将怪物变为指定类型\n<w>,</w>: 将怪物的生命降至1\n<w>Ctrl-F</w>: 放置拟态怪\n<w>Ctrl-B</w>: 放逐怪物\n<w>Ctrl-K</w>: 杀死怪物\n
+%%%%
+    (press <w>g</w> during pickup prompts\n     to open the pickup menu)\n
+    （在逐件拾取询问中按<w>g</w>\n     可打开拾取菜单）\n
+%%%%
+... after being knocked back by %1$s
+……被%1$s击退后
+%%%%
+... awakened by %1$s
+……由%1$s唤醒
+%%%%
+... generated by %1$s
+……由%1$s产生
+%%%%
+... invoked by %1$s
+……由%1$s引发
+%%%%
+death cause terse|Zot
+佐特
+%%%%
+arc of electricity
+电弧
+%%%%
+beam of energy
+能量束
+%%%%
+beckoning whirlwind
+招引旋风
+%%%%
+buggy blast
+错误冲击
+%%%%
+burst of rock shards
+碎岩爆发
+%%%%
+concentrated momentum
+凝聚动量
+%%%%
+concussive blast
+震荡冲击
+%%%%
+condensed magic
+凝聚魔力
+%%%%
+destabilizing rupture
+失稳爆裂
+%%%%
+detonation
+引爆
+%%%%
+dizzying spores
+眩晕孢子
+%%%%
+falling rubble
+坠落碎石
+%%%%
+fiery plasma
+炽热等离子体
+%%%%
+flashing steel
+闪耀钢刃
+%%%%
+great blast of fire
+猛烈火焰冲击
+%%%%
+icy flash freeze
+冰寒急冻
+%%%%
+klown pie
+小丑派
+%%%%
+malign ofering
+邪恶献祭
+%%%%
+phantom echo
+幻影回响
+%%%%
+rebounding bolt of cold
+反弹寒冰箭
+%%%%
+rebounding bolt of fire
+反弹火焰箭
+%%%%
+rupture
+爆裂
+%%%%
+spray of metal splinters
+金属碎片喷射
+%%%%
+spray of wooden splinters
+木刺喷射
+%%%%
+a beckoning gale
+招引之风
+%%%%
+a malign offering
+邪恶献祭
+%%%%
+a resonance strike
+共鸣打击
+%%%%
+angry trees
+愤怒的树木
+%%%%
+burning poison
+燃烧的毒素
+%%%%
+divine providence
+神力
+%%%%
+frigid sleet
+严寒冰雨
+%%%%
+nerve-wracking pain
+钻心剧痛
+%%%%
+psychic fangs
+精神獠牙
+%%%%
+static electricity
+静电
+%%%%
+the air
+空气
+%%%%
+the raging water
+汹涌的水流
+%%%%
+\nWhile adjacent to it, you can %1$s%2$s it by pressing the <w>%3$s</w> key.
+\n在它旁边时，你%1$s可以按<w>%3$s</w>键%2$s它。
+%%%%
+\nWhile standing here, you can %1$s through %2$s with the <w>%3$s</w> key%4$s.
+\n站在这里时，%4$s你可以按<w>%3$s</w>键通过%2$s%1$s。
+%%%%
+\nWhile standing here, you can %1$senter %2$s with the <w>%3$s</w> key; it will vanish after you do so.
+\n站在这里时，你可以按<w>%3$s</w>键%1$s进入%2$s；进入后它就会消失。
+%%%%
+\nWhile standing here, you can enter %1$s with the <w>%2$s</w> key.
+\n站在这里时，你可以按<w>%2$s</w>键进入%1$s。
+%%%%
+\nWhile standing here, you can enter <w>%1$s</w> with the <w>%2$s</w> key.
+\n站在这里时，你可以按<w>%2$s</w>键进入<w>%1$s</w>。
+%%%%
+\nWhile standing here, you can traverse %1$s with the <w>%2$s</w> key.
+\n站在这里时，你可以按<w>%2$s</w>键通过%1$s。
+%%%%
+\nWhile standing here, you can enter Hell with the <w>%1$s</w> key.
+\n站在这里时，你可以按<w>%1$s</w>键进入地狱。
+%%%%
+\nWhile standing here, you can exit to Hell with the <w>%1$s</w> key.
+\n站在这里时，你可以按<w>%1$s</w>键离开这里，前往地狱。
+%%%%
+It makes you extremely vulnerable to %1$s.
+它使你极易受到%1$s伤害。
+%%%%
+It makes you very vulnerable to %1$s.
+它使你非常容易受到%1$s伤害。
+%%%%
+It makes you vulnerable to %1$s.
+它使你容易受到%1$s伤害。
+%%%%

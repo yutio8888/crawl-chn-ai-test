@@ -23,6 +23,7 @@
 #include <unistd.h>
 #endif
 
+#include "beam.h"
 #include "branch.h"
 #include "chardump.h"
 #include "cio.h"
@@ -1307,6 +1308,8 @@ string scorefile_entry::make_oneline(const string &ml) const
 
 string scorefile_entry::long_kill_message() const
 {
+    // Extended xlog fields and death milestones are canonical protocol text.
+    unwind_var<lang_t> language(Options.language, lang_t::EN);
     string msg = death_description(DDV_LOGVERBOSE);
     msg = make_oneline(msg);
     msg[0] = tolower_safe(msg[0]);
@@ -1316,6 +1319,7 @@ string scorefile_entry::long_kill_message() const
 
 string scorefile_entry::short_kill_message() const
 {
+    unwind_var<lang_t> language(Options.language, lang_t::EN);
     string msg = death_description(DDV_ONELINE);
     msg = make_oneline(msg);
     msg[0] = tolower_safe(msg[0]);
@@ -2304,6 +2308,41 @@ string scorefile_entry::death_place(death_desc_verbosity verbosity) const
     return place;
 }
 
+// kaux is an English save/log identity or free text. The beam accessor reads
+// the real zap definitions; the small event table is limited to the audited
+// indirect-effect producers. Unrecognized saved values remain verbatim.
+static string _death_beam_display_name(const string &cause)
+{
+    if (is_known_beam_name(cause))
+        return T_(cause.c_str());
+
+    static const char *const indirect_causes[] = {
+        N_("Freeze"),
+        N_("Lee's Rapid Deconstruction"),
+        N_("Olgreb's Toxic Radiance"),
+        N_("Shatter"),
+        N_("a beckoning gale"),
+        N_("a malign offering"),
+        N_("a resonance strike"),
+        N_("angry trees"),
+        N_("burning poison"),
+        N_("dispel undead"),
+        N_("divine providence"),
+        N_("frigid sleet"),
+        N_("nerve-wracking pain"),
+        N_("psychic fangs"),
+        N_("static electricity"),
+        N_("the air"),
+        N_("the raging water"),
+        N_("torment"),
+        N_("vampiric draining"),
+    };
+    for (const char *key : indirect_causes)
+        if (cause == key)
+            return T_(key);
+    return cause;
+}
+
 /**
  * Describes the cause of the player's death.
  *
@@ -2549,14 +2588,21 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             if (death_source_name == "you")
             {
                 needs_damage = true;
-                desc += make_stringf(T_("Killed by their own %s"),
-                         auxkilldata.substr(3).c_str());
+                const string cause = chinese
+                    ? _death_beam_display_name(auxkilldata.substr(3))
+                    : auxkilldata.substr(3);
+                desc += make_stringf(T_("Killed by their own %s"), cause.c_str());
             }
             else
             {
                 needs_called_by_monster_line = true;
-                desc += make_stringf(T_("Killed %s"),
-                          auxkilldata.c_str());
+                if (chinese)
+                {
+                    const string cause = _death_beam_display_name(auxkilldata.substr(3));
+                    desc += make_stringf(T_("Killed by %s"), cause.c_str());
+                }
+                else
+                    desc += make_stringf(T_("Killed %s"), auxkilldata.c_str());
             }
         }
         else
@@ -2889,11 +2935,12 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                               : T_("Killed by wild magic");
             }
             else if (terse)
-                desc += terse_wild_magic();
+                desc += _death_beam_display_name(terse_wild_magic());
             else
             {
-                const string cause = starts_with(auxkilldata, "by ")
-                                     ? auxkilldata.substr(3) : auxkilldata;
+                const string canonical = starts_with(auxkilldata, "by ")
+                                         ? auxkilldata.substr(3) : auxkilldata;
+                const string cause = _death_beam_display_name(canonical);
                 desc += make_stringf(T_("Killed by %s"), cause.c_str());
             }
         }
@@ -2963,10 +3010,13 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         if (chinese && terse)
             desc += T_("shot self");
         else if (chinese)
+        {
+            const string cause = _death_beam_display_name(auxkilldata);
             desc += auxkilldata.empty()
                     ? T_("Killed themself with bad targeting")
                     : make_stringf(T_("Killed themself with a badly aimed %s"),
-                                   auxkilldata.c_str());
+                                   cause.c_str());
+        }
         else if (terse)
             desc += "shot self";
         else
@@ -2986,9 +3036,10 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             desc += T_("reflected bolt");
         else if (chinese)
         {
+            const string cause = _death_beam_display_name(auxkilldata);
             desc += auxkilldata.empty() ? T_("Killed by a reflected bolt")
                                         : make_stringf(T_("Killed by a reflected %s"),
-                                                       auxkilldata.c_str());
+                                                       cause.c_str());
             if (!death_source_name.empty() && !oneline && !semiverbose)
             {
                 desc += "\n             ";
@@ -3022,9 +3073,12 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         if (chinese && terse)
             desc += T_("bounced beam");
         else if (chinese)
+        {
+            const string cause = _death_beam_display_name(auxkilldata);
             desc += auxkilldata.empty() ? T_("Killed themself with a bounced beam")
                                         : make_stringf(T_("Killed themself with a bounced %s"),
-                                                       auxkilldata.c_str());
+                                                       cause.c_str());
+        }
         else if (terse)
             desc += "bounced beam";
         else
@@ -3042,9 +3096,12 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         if (chinese && terse)
             desc += T_("suicidal targeting");
         else if (chinese)
+        {
+            const string cause = _death_beam_display_name(auxkilldata);
             desc += auxkilldata.empty() ? T_("Shot themself with a beam")
                                         : make_stringf(T_("Shot themself with %s"),
-                                                       auxkilldata.c_str());
+                                                       cause.c_str());
+        }
         else if (terse)
             desc += "suicidal targeting";
         else
@@ -3291,7 +3348,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         break;
 
     case KILLED_BY_ZOT:
-        desc += chinese ? (terse ? T_("Zot") : T_("Tarried too long and was consumed by Zot"))
+        desc += chinese ? (terse ? C_("death cause terse", "Zot") : T_("Tarried too long and was consumed by Zot"))
                         : (terse ? "Zot" : "Tarried too long and was consumed by Zot");
         break;
 
@@ -3350,7 +3407,10 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             needs_damage = true;
         }
         else if (needs_beam_cause_line)
-            desc += "/" + terse_beam_cause();
+        {
+            const string cause = terse_beam_cause();
+            desc += "/" + (chinese ? _death_beam_display_name(cause) : cause);
+        }
         else if (needs_called_by_monster_line)
             desc += chinese ? death_source_display_desc() : death_source_name;
 
@@ -3403,7 +3463,10 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                 if (!semiverbose)
                 {
                     if (chinese)
-                        desc += make_stringf(T_("... caused by %s"), T_(auxkilldata.c_str()));
+                    {
+                        const string cause = _death_beam_display_name(auxkilldata);
+                        desc += make_stringf(T_("... caused by %s"), cause.c_str());
+                    }
                     else
                         desc += auxkilldata == "damnation" ? "... with " :
                          auxkilldata == "creeping frost" ? "... by " :
@@ -3424,13 +3487,15 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             {
                 if (chinese)
                 {
-                    const char *action = death_type == KILLED_BY_COLLISION
-                                         ? T_("after being knocked back")
-                                         : auxkilldata == "by angry trees" ? T_("awakened")
-                                         : auxkilldata == "by Freeze" ? T_("generated")
-                                                                       : T_("invoked");
-                    desc += make_stringf(T_("... %s by %s"), action,
-                                         death_source_display_desc().c_str());
+                    const char *clause = death_type == KILLED_BY_COLLISION
+                        ? N_("... after being knocked back by %1$s")
+                        : auxkilldata == "by angry trees"
+                          ? N_("... awakened by %1$s")
+                        : auxkilldata == "by Freeze"
+                          ? N_("... generated by %1$s")
+                          : N_("... invoked by %1$s");
+                    const string source = death_source_display_desc();
+                    desc += make_stringf_p(T_(clause), source.c_str());
                 }
                 else
                     desc += make_stringf(T_("... %s by %s"),

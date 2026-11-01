@@ -409,7 +409,6 @@ static const char *targeting_help_wiz = N_(
     "<w>o</w>: give item to monster\n"
     "<w>F</w>: cycle monster friendly/good neutral/neutral/hostile\n"
     "<w>Ctrl-H</w>: heal the monster fully\n"
-    "<w>P</w>: apply divine blessing to monster\n"
     "<w>m</w>: move monster or player\n"
     "<w>M</w>: cause spell miscast for monster or player\n"
     "<w>s</w>: force monster to shout or speak\n"
@@ -998,13 +997,13 @@ static void _add_formatted_keyhelp(column_composer &cols)
             0, T_("<h>Rest:\n"));
 
     _add_command(cols, 0, CMD_WAIT, T_("wait a turn (also <w>s</w>, <w>Del</w>)"), 2);
-    _add_command(cols, 0, CMD_REST, T_("rest and long wait; stops when"), 2);
+    _add_command(cols, 0, CMD_REST, T_("rest or wait"), 2);
     cols.add_formatted(
             0,
-            T_("    Health or Magic become full or\n"
-               "    something is detected. If Health\n"
-               "    and Magic are already full, stops\n"
-               "    when 100 turns over (<w>numpad-5</w>)\n"),
+            T_("    Recover according to your rest options;\n"
+               "    interruptions may stop resting early.\n"
+               "    If already fully rested (including\n"
+               "    your ancestor), wait up to 100 turns.\n"),
             false);
 
     cols.add_formatted(
@@ -1025,11 +1024,11 @@ static void _add_formatted_keyhelp(column_composer &cols)
     cols.add_formatted(
             0,
             T_("<h>Autofight:\n"
-               "<w>Tab</w>          : attack nearest monster,\n"
+               "<w>Tab</w>          : attack a suitable target,\n"
                "               moving if necessary\n"
                "<w>Shift-Tab</w>, <w>p</w> : trigger quivered action;\n"
-               "               if targeted, aims at\n"
-               "               nearest monster\n"));
+               "               automatically select\n"
+               "               a target if needed\n"));
 
     cols.add_formatted(
             0,
@@ -1051,8 +1050,8 @@ static void _add_formatted_keyhelp(column_composer &cols)
                          { CMD_WEAR_JEWELLERY, CMD_REMOVE_JEWELLERY });
     _add_insert_commands(cols, 0, T_("<red>\"</red> : amulets (<w>%</w>ut on and <w>%</w>emove)"),
                          { CMD_WEAR_JEWELLERY, CMD_REMOVE_JEWELLERY });
-    _add_insert_commands(cols, 0, T_("<lightred>percent</lightred> : talismans (e<w>%</w>oke)"),
-                         { CMD_WEAR_JEWELLERY, CMD_REMOVE_JEWELLERY });
+    _add_insert_commands(cols, 0, T_("<lightred>percent</lightred> : talismans (<w>%</w>: equip)"),
+                         { CMD_EQUIP });
     _add_insert_commands(cols, 0, T_("<lightgrey>/</lightgrey> : wands (e<w>%</w>oke)"),
                          { CMD_EVOKE });
 
@@ -1187,7 +1186,8 @@ static void _add_formatted_keyhelp(column_composer &cols)
     _add_command(cols, 1, CMD_DISPLAY_INVENTORY, T_("show Inventory list"), 2);
     _add_command(cols, 1, CMD_PICKUP, T_("pick up items (also <w>g</w>)"), 2);
     cols.add_formatted(
-            1, T_("    (press twice for pick up menu)\n"),
+            1, T_("    (press <w>g</w> during pickup prompts\n"
+               "     to open the pickup menu)\n"),
             false);
 
     _add_command(cols, 1, CMD_DROP, T_("Drop an item"), 2);
@@ -1288,13 +1288,13 @@ static void _add_formatted_hints_help(column_composer &cols)
             0, T_("<h>Rest:\n"));
 
     _add_command(cols, 0, CMD_WAIT, T_("wait a turn (also <w>s</w>, <w>Del</w>)"), 2);
-    _add_command(cols, 0, CMD_REST, T_("rest and long wait; stops when"), 2);
+    _add_command(cols, 0, CMD_REST, T_("rest or wait"), 2);
     cols.add_formatted(
             0,
-            T_("    Health or Magic become full or\n"
-               "    something is detected. If Health\n"
-               "    and Magic are already full, stops\n"
-               "    when 100 turns over (<w>numpad-5</w>)\n"),
+            T_("    Recover according to your rest options;\n"
+               "    interruptions may stop resting early.\n"
+               "    If already fully rested (including\n"
+               "    your ancestor), wait up to 100 turns.\n"),
             false);
 
     cols.add_formatted(
@@ -1352,8 +1352,8 @@ static void _add_formatted_hints_help(column_composer &cols)
                          { CMD_WEAR_JEWELLERY, CMD_REMOVE_JEWELLERY });
     _add_insert_commands(cols, 1,
                          T_("<console><lightred>percent</lightred> : </console>"
-                            "talismans (e<w>%</w>oke)"),
-                         { CMD_EVOKE });
+                            "talismans (<w>%</w>: equip)"),
+                         { CMD_EQUIP });
     _add_insert_commands(cols, 1,
                          T_("<console><lightgrey>/</lightgrey> : </console>"
                             "wands (e<w>%</w>oke)"),
@@ -1399,10 +1399,9 @@ static void _add_formatted_hints_help(column_composer &cols)
     cols.add_formatted(
             1,
             T_("\n<h>Targeting\n"
-               "<w>Enter</w> or <w>.</w> or <w>Del</w> : confirm target\n"
-               "<w>+</w> and <w>-</w> : cycle between targets\n"
-               "<w>f</w> or <w>p</w> : shoot at previous target\n"
-               "         if still alive and in sight\n"),
+               "<w>Enter</w> or <w>f</w> : confirm current target\n"
+               "<w>.</w> : confirm and stop at target\n"
+               "<w>+</w> and <w>-</w> : cycle between targets\n"),
             false);
 }
 
