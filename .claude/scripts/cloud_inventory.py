@@ -37,6 +37,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+from i18n_extract import cpp_unescape
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -105,35 +107,37 @@ def parse_enum(text: str) -> list[str]:
 
 
 def parse_cloud_data(text: str) -> dict[str, dict]:
-    """Extract {enum: {terse, verbose}} from the clouds[] table by matching
-    each `// CLOUD_X,` comment with the following `{ "terse", "verbose" }`.
+    """Read literal or N_ names from each marked clouds[] table row.
 
-    `text` is the file content supplied by the caller (read from the
-    baseline Git blob, never from the worktree).
+    A marked but unparsed row is an error, not a sentinel without data.
+    This keeps new extraction markers from silently shrinking the inventory.
     """
-    out: dict[str, dict] = {}
-    marker_re = re.compile(r"//\s*(CLOUD_[A-Z0-9_]+)\s*,?")
-    entry_re = re.compile(r"\{\s*\"([^\"]*)\"\s*(?:,\s*\"([^\"]*)\")?")
-    lines = text.splitlines()
-    i = 0
-    while i < len(lines):
-        mm = marker_re.search(lines[i])
-        if mm:
-            enum = mm.group(1)
-            # find the `{ "terse"` entry within the next few lines
-            j = i + 1
-            while j < len(lines) and not lines[j].lstrip().startswith("{ \"") \
-                    and j < i + 6:
-                j += 1
-            if j < len(lines):
-                em = entry_re.search(lines[j])
-                if em:
-                    terse = em.group(1)
-                    verbose = em.group(2)
-                    out[enum] = {"terse": terse, "verbose": verbose}
-                    i = j
-                    continue
-        i += 1
+    table = re.search(r"static const cloud_data clouds\[\]\s*=\s*\{(.*?)\n\};",
+                      text, re.S)
+    if not table:
+        raise SystemExit("cannot parse clouds[] data table")
+    text = table.group(1)
+    markers = list(re.finditer(r"//\s*(CLOUD_[A-Z0-9_]+)\s*,?", text))
+    literal = r'"(?:[^"\\]|\\.)*"'
+    name = rf"(?:N_\(\s*{literal}\s*\)|{literal})"
+    entry = re.compile(rf"\{{\s*({name})\s*,\s*({name}|nullptr)\s*,")
+    out = {}
+    for index, marker in enumerate(markers):
+        enum = marker.group(1)
+        end = markers[index + 1].start() if index + 1 < len(markers) else len(text)
+        match = entry.match(text[marker.end():end].lstrip())
+        if not match or enum in out:
+            raise SystemExit(f"unparsed or duplicate cloud data row: {enum}")
+        values = []
+        for field in match.groups():
+            if field == "nullptr":
+                values.append(None)
+            else:
+                raw = re.search(r'"((?:[^"\\]|\\.)*)"', field).group(1)
+                values.append(cpp_unescape(raw))
+        out[enum] = {"terse": values[0], "verbose": values[1]}
+    if not out:
+        raise SystemExit("no cloud data rows parsed")
     return out
 
 
@@ -183,18 +187,21 @@ def grep_producers(ref: str, enum: str) -> list[str]:
     """Find code locations that create this cloud type at a git commit.
 
     The search runs `git grep -n -E <pat> <ref> -- crawl-ref/source/` on
-    the baseline commit's Git objects (with `--end-of-options` so the ref
-    can never be parsed as an option), never on the worktree files, so
+    the baseline commit's Git objects, never on the worktree files, so
     the result is independent of local checkout state. Definition-site
     hits in cloud.cc / cloud-type.h are excluded, and the repo-root path
     prefix is normalized to source-relative (the previous worktree-grep
     format) to keep producer identities stable.
     """
-    pats = [rf"place_cloud\s*\(\s*{enum}", rf"big_cloud\s*\(\s*{enum}"]
+    # git grep does not support rev-parse's --end-of-options flag. Accept
+    # only the object ID already returned by resolve_commit instead.
+    if not re.fullmatch(r"[0-9a-f]{40}", ref):
+        raise ValueError("cloud producer search requires a resolved commit SHA")
+    pats = [rf"place_cloud\s*\(\s*{enum}\b", rf"big_cloud\s*\(\s*{enum}\b"]
     hits = []
     for pat in pats:
         r = subprocess.run(
-            ["git", "grep", "-n", "-E", "-e", pat, "--end-of-options",
+            ["git", "grep", "-n", "-E", "-e", pat,
              ref, "--", "crawl-ref/source/"],
             capture_output=True, text=True, cwd=ROOT)
         if r.returncode not in (0, 1):  # 0 = matches, 1 = no matches
@@ -484,6 +491,10 @@ def main() -> int:
         "en_only_desc_keys": en_only_keys,
         "missing_t_keys": missing_names,
         "inventory": inventory,
+        "description_bodies": {
+            key: {"english": db_en.get(key), "chinese": db_zh.get(key)}
+            for key in sorted(set(db_en) | set(db_zh))
+        },
     }
     digest = hashlib.sha256(json.dumps(
         payload, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
