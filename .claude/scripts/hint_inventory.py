@@ -359,6 +359,27 @@ def extract_producers(
             add(raw, "_get_hint", call.start(), "finite-selector", selected.group(0))
         classified.add(call.start())
 
+    # The throwing and spell tutorials share a private helper, but have
+    # different repeat-action guidance. Both literal selector arms are
+    # producers; neither may be silently dropped from the body inventory.
+    target_selector = re.compile(
+        r'_get_hint\(spells\s*\?\s*"([^"\n]+)"\s*'
+        r':\s*"([^"\n]+)"\s*,\s*arg\)'
+    )
+    for selected in target_selector.finditer(text):
+        if hints_en is None:
+            raise RuntimeError(f"{HINTS_EN}: target hint keys require English TextDB")
+        en_keys = {lowercase_string(entry.raw_key) for entry in parse_db_keys(
+            hints_en.decode("utf-8", errors="strict"), HINTS_EN
+        )}
+        for raw in selected.groups():
+            if _canonical_key(raw, HINTS_CC,
+                              _line_number(text, selected.start())) not in en_keys:
+                raise RuntimeError(f"{HINTS_EN}: missing target hint key {raw!r}")
+            add(raw, "_get_hint", selected.start(), "finite-selector",
+                selected.group(0))
+        classified.add(selected.start())
+
     calls = list(_ANY_HINT_CALL_RE.finditer(text))
     unresolved = [
         f"{HINTS_CC}@{match.group(0)}"

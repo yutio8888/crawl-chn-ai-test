@@ -65,7 +65,8 @@ death random 2
 Rest between encounters, if possible in an area already explored and cleared of
 monsters. Pressing <input>$cmd[CMD_REST]</input><localtiles>, or
 <input>clicking on the 'rest' button in the command bar'</input></localtiles>
-will rest for 100 turns, or until fully healed.
+will rest to recover health and magic until restored or interrupted by an
+important event. If already fully rested, you will wait for 100 turns.
 %%%%
 death random 3
 
@@ -96,7 +97,7 @@ Walking around and exploring levels gets easier by using auto-explore
 (<input>$cmd[CMD_EXPLORE]</input>). Crawl will let you automatically move to
 and pick up interesting items.<localtiles>
 
-Autoexploration can also be started by <input>Ctrl-Leftclick</input> on the
+Autoexploration can also be started by <input>Shift-Leftclick</input> on the
 minimap.</localtiles>
 %%%%
 finished travel
@@ -583,8 +584,7 @@ letter<localtiles>, or by clicking on them</localtiles>.
 %%%%
 HINT_SHIFT_RUN
 
-Walking around takes fewer keystrokes if you press <w>Shift-direction</w> or
-<w>/ direction</w>. That will let you run until a monster comes into sight or
+Walking around takes fewer keystrokes if you press <w>Shift-direction</w>. That will let you run until a monster comes into sight or
 your character sees something interesting.
 %%%%
 HINT_MAP_VIEW
@@ -675,8 +675,8 @@ first have to get away from the danger.
 HINT_CAN_BERSERK
 
 Against particularly difficult foes, you should use your Berserk ability
-(<w>$cmd[CMD_USE_ABILITY]</w>). Killing monsters while berserking makes it
-last longer.
+(<w>$cmd[CMD_USE_ABILITY]</w>). With Trog's support, killing monsters while berserking has a
+chance to make it last longer.
 %%%%
 HINT_POSTBERSERK
 
@@ -960,23 +960,21 @@ and without the item being worn.
 %%%%
 HINT_MISCAST_CONTAMINATION_AND_MP
 
-If the spellcasting success chance is high (which can be checked by entering
-<w>$cmd[CMD_CAST_SPELL]\?</w> or <w>$cmd[CMD_DISPLAY_SPELLS]</w>) then a miscast
-merely means the spell is not working, along with a harmless side effect.
-However, for spells with a high failure rate, there's a chance of contaminating
-yourself with magical energy, plus a chance of an additional harmful side
-effect. Normally this isn't a problem, since magical contamination bleeds off
-over time, but if you're repeatedly contaminated in a short amount of time
-you'll mutate or suffer from other ill side effects.
+You can check spell failure rates by entering
+<w>$cmd[CMD_CAST_SPELL]\?</w> or <w>$cmd[CMD_DISPLAY_SPELLS]</w>.
+Every miscast contaminates you with some magical energy. Minor miscasts usually
+have no other harmful effects, but more severe miscasts can also cause damage
+or other harmful effects. The risk is greater for spells with a high failure
+rate. Magical contamination bleeds off over time, but repeated contamination
+in a short time can cause mutations or other ill effects.
 
 Note that a miscast spell will still consume the full amount of MP that a
 successfully cast spell would.
 %%%%
 HINT_GLOWING
 
-You've accumulated so much magical contamination that you're glowing! You
-usually acquire magical contamination from using some powerful magics, like
-invisibility, or from miscasting spells.
+You've accumulated so much magical contamination that you're glowing! Magical
+contamination can come from miscasting spells or certain special magical effects.
 %%%%
 HINT_CONTAMINATION_MILD
 
@@ -1021,7 +1019,9 @@ from the net.
 HINT_YOU_SILENCE
 
 While you are silenced, you cannot cast spells, read scrolls or use divine
-invocations. The same is true for any monster within the effect radius. The
+invocations. Monsters within the effect radius are also prevented from using spells,
+prayers and other abilities that require sound, but not all special abilities
+are blocked. The
 field of silence (recognizable by <tiles>the special-looking frame tiles</tiles>
 <console>different-coloured floor squares</console>) is always centered on you
 and will move along with you. The radius will gradually shrink, eventually
@@ -1129,8 +1129,9 @@ HINT_MEMORISE_SCREEN
 
 This screen shows the spells in your spell library. From here you can memorise
 spells by selecting them, as well as view spell descriptions, search for them,
-and organise them. As a conjurer, you start with five memorisable spells, and
-one already memorised: Magic Dart. (To view memorised spells, you can exit this
+and organise them. As a conjurer, you start with Magic Dart already memorised and
+three other spells in your library, which you can memorise when you meet
+their requirements. (To view memorised spells, you can exit this
 menu and select <w>I</w>.)
 %%%%
 HINT_MEMORISE
@@ -1168,6 +1169,14 @@ already targeted. You can also cycle through all hostile monsters in sight with
 <w>f</w>, <w>Enter</w> or <w>.</w> to shoot at it. If you miss, <w>$1</w> fires
 at the same target again.
 %%%%
+HINT_TARGET_MODE_THROW
+
+You'll then be taken to target mode with the nearest monster or previous target
+already targeted. You can also cycle through all hostile monsters in sight with
+<w>+</w> or <w>-</w>. Once you're aiming at the correct monster, simply hit
+<w>f</w>, <w>Enter</w> or <w>.</w> to shoot at it. To throw this item again, press <w>$1</w> to reopen
+the item menu, select the item, then select a target.
+%%%%
 HINT_WEAPON_HAS_ABILITY
 
 When wielded, some weapons (such as this one) offer certain abilities you can
@@ -1202,11 +1211,13 @@ untrained, is likely to fail.
 %%%%
 HINT_THROW_INVENTORY_ITEM
 
-To do this, press <w>$cmd[CMD_FIRE]</w> to fire, then <w>$1</w> for this item.
+To do this, press <w>$cmd[CMD_FIRE_ITEM_NO_QUIVER]</w>, then
+<w>$1</w> to select this item.
 %%%%
 HINT_THROW_GROUND_ITEM
 
-To do this, press <w>$cmd[CMD_FIRE]</w> to fire, then select this item.
+To do this, first pick up the item, then press
+<w>$cmd[CMD_FIRE_ITEM_NO_QUIVER]</w> and select it from the item menu.
 %%%%
 HINT_WEAPON_HAS_RESIST
 
@@ -1239,7 +1250,8 @@ To attack a monster, you can simply walk into it.
 # i18n note: $1 can be singular or plural
 HINT_THROWABLE
 
-$1 can be <w>$cmd[CMD_FIRE]</w>ired without the use of a launcher.
+$1 can be thrown without a launcher. Press
+<w>$cmd[CMD_FIRE_ITEM_NO_QUIVER]</w> to select this item.
 %%%%
 HINT_CANNOT_WEAR_HELMET
 
@@ -1543,7 +1555,7 @@ HINT_DESCRIBE_DANGEROUS_UNAWARE_MONSTER
 You can easily mark its square as dangerous to avoid accidentally entering into
 its field of view when using auto-explore or auto-travel. To do so, enter
 targeting mode with <w>$cmd[CMD_LOOK_AROUND]</w> and then press
-<w>$cmd[CMD_MAP_EXCLUDE_AREA]</w> when your cursor is hovering over the
+<w>$cmd[CMD_TARGET_EXCLUDE]</w> when your cursor is hovering over the
 monster's grid. Doing so will mark this grid and all surrounding ones within a
 radius of 8 as "excluded" ones that explore or travel modes won't enter.
 %%%%

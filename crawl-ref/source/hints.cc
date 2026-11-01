@@ -1752,11 +1752,12 @@ static string _hints_target_mode(bool spells = false)
     }
     else
     {
-        arg = "%f";
-        cmd = CMD_FIRE;
+        arg = "%";
+        cmd = CMD_FIRE_ITEM_NO_QUIVER;
     }
 
-    string result = _get_hint("HINT_TARGET_MODE", arg);
+    string result = _get_hint(spells ? "HINT_TARGET_MODE"
+                                     : "HINT_TARGET_MODE_THROW", arg);
     insert_commands(result, { cmd });
 
     return result;
@@ -2363,7 +2364,7 @@ void hints_observe_cell(const coord_def& gc)
     const int it = you.visible_igrd(gc);
     if (it != NON_ITEM)
     {
-        const item_def& item(env.item[it]);
+        const item_def& item = env.item[it];
 
         if (Options.feature_item_highlight != CHATTR_NORMAL
             && (is_feature('>', gc) || is_feature('<', gc)))
