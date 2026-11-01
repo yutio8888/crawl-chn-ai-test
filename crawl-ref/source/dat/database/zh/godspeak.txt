@@ -53,9 +53,9 @@ w:3
 ####################
 Xom single summon
 
-“照顾这个凡人，我的孩子！”
+“为这个凡人效劳吧，我的孩子！”
 
-“照顾这个玩具，我的孩子！”
+“为这个玩具效劳吧，我的孩子！”
 
 佐姆打开了一扇门。
 %%%%
@@ -163,7 +163,7 @@ w:30
 
 “不，我改变主意了。”
 
-佐姆把你拉回到类似地牢的宁静之中。
+佐姆把你拉回了相对宁静的地牢。
 %%%%
 Xom revert other banishment
 
@@ -171,23 +171,23 @@ Xom revert other banishment
 
 “别那样！”
 
-佐姆把你拉回到类似地牢的宁静之中。
+佐姆把你拉回了相对宁静的地牢。
 %%%%
 #  佐姆改进了附近一个敌对怪物的武器，使之附着混乱印记
 Xom chaos upgrade
 
 佐姆的力量触动了附近的一把武器。
 
-“尝尝混乱的滋味吧，凡人。”
+“尝尝混沌的滋味吧，凡人。”
 
 佐姆咯咯地欢笑。
 %%%%
 Xom noise
 
-佐姆制造了急剧的噪音！你听到@weapon_noise@
+佐姆突然弄出一声响动！你听到@weapon_noise@
 
 w:1
-“嘘！”
+“哇！”
 
 w:1
 佐姆在击鼓。
@@ -198,7 +198,7 @@ Xom blink monsters
 
 “快过来！”
 
-佐姆决定对周围的东西做一些改变。
+佐姆决定把东西稍稍挪动一下。
 %%%%
 #####################
 # 其他效果
@@ -247,9 +247,9 @@ Xom good monster polymorph
 
 “这可能会更好！”
 
-“哼，该死的……”
+“哼哼哼，哼哼哼……”
 
-佐姆的力量触动了附近的一个怪物。
+佐姆的力量触及了你周围的环境。
 
 你听到佐姆慈爱的轻笑声。
 %%%%
@@ -316,7 +316,7 @@ Xom fake destruction
 佐姆展示了毁灭性的力量。
 
 w:1
-“让一切在深渊之火中终结吧！”
+“让一切在地狱之火中终结吧！”
 %%%%
 Xom accidental homicide
 
@@ -371,7 +371,7 @@ Xom bad enchant monster
 %%%%
 Xom stealth player
 
-佐姆使你显著地安静下来。
+佐姆大张旗鼓地示意你安静。
 
 佐姆低语道：嘘！
 %%%%
@@ -389,7 +389,7 @@ Xom life saving general
 
 “嘿，事情才刚刚变得有趣了呢！”
 
-“不不不，这不是我的@_xom_plaything_@！”
+“不——！别夺走我的@_xom_plaything_@！”
 
 “不是这里，不是现在。”
 
@@ -443,7 +443,7 @@ Xom laughter
 
 佐姆被逗乐了！
 
-佐姆放荡地咯咯笑！
+佐姆肆意地咯咯大笑！
 
 佐姆窃笑着！
 
@@ -457,7 +457,7 @@ Xom laughter
 
 佐姆咯咯地笑着！
 
-佐姆关切地轻笑着！
+佐姆畅快地轻笑着！
 
 佐姆咯咯地欢笑！
 %%%%
@@ -487,7 +487,7 @@ recite_closure
 
 “辛言道。”
 
-“愿你纯洁。”
+“愿纯洁与你们所有人同在。”
 
 “以血书写；以你的死为印戳。”
 
@@ -503,7 +503,7 @@ Ignis elemental wrath
 
 “进攻，我最后的坚定仆从！”
 
-伊格尼斯哀号着，狂怒倾泻而出！
+伊格尼斯愤怒地哀号，倾泻下熊熊怒火！
 
 伊格尼斯召唤火之灵来毁灭你！
 
@@ -615,7 +615,7 @@ Kikubaaqudgha welcome
 %%%%
 Kikubaaqudgha death
 
-奇库巴库哈厉声说：你让我失望了！欢迎……死亡！
+奇库巴库哈嘶哑地说：你让我失望了！欢迎……死亡！
 %%%%
 Kikubaaqudgha death corpse undead
 
@@ -667,7 +667,7 @@ Pakellas penance
 
 帕克拉斯说：按照这个速度，我们可能不得不停止这项实验。
 
-帕克拉斯说：不要阻碍进程！
+帕克拉斯说：不要阻碍进步！
 %%%%
 Pakellas welcome
 
@@ -685,7 +685,7 @@ Pakellas welcome
 
 # 尼古拉-
 w:5
-帕克拉斯说：没有人告诉神，不要扮演神！
+帕克拉斯说：谁也别想叫神停止扮演神！
 
 w:1
 帕克拉斯说：他们说我疯了……好吧，我们让他们看看！
@@ -698,7 +698,7 @@ Pakellas death
 
 帕克拉斯说：是时候找一个新助手了……
 
-帕克拉斯说：这可能是另一种被淘汰的方法。
+帕克拉斯说：又排除了一种可能的方案。
 
 帕克拉斯说：是时候开始下一个实验了……
 %%%%
@@ -728,7 +728,7 @@ Sif Muna welcome
 %%%%
 the Shining One penance
 
-光辉者说：成为一名殉道者才有可能洗去你的罪恶！
+光辉者说：成为一名殉道者或许能洗去你的罪恶！
 %%%%
 the Shining One welcome
 
@@ -797,7 +797,7 @@ _xom_child_
 
 拙劣的
 
-奇形怪状的
+私生的
 
 丑陋的
 
@@ -877,7 +877,7 @@ Yredelemnul death corpse undead
 %%%%
 Yredelemnul death corpse nonliving
 
-你的身体化为黑色火炬的燃料。
+你的身体在喷涌的幽暗火焰中消失了。
 %%%%
 Yredelemnul death undead
 
@@ -887,7 +887,7 @@ Zin penance
 
 因为你违背律令，辛惩戒你。
 
-辛严厉地解释了“@_important_subject_@”的重要性。
+辛严厉地解释了以下内容为何重要：@_important_subject_@
 %%%%
 Zin welcome
 
@@ -936,7 +936,7 @@ w:40
 
 "再来！再来！再来！"
 
-“屠杀。他们。全部！”
+“把。他们。杀光！”
 
 w:5
 “一切都该死！”
@@ -985,7 +985,7 @@ Xom boots slot
 %%%%
 Xom cloak slot
 
-@Your_item@ 在无形的风中翻飞。
+@Your_item@在你感觉不到的风中翻飞。
 
 @Your_item@ 短暂地缠住了你的 @head@！
 
@@ -1008,7 +1008,7 @@ Xom dragon armour
 %%%%
 Xom drinkless confusion
 
-"好好摔跤，我的宠物！"
+"尽情踉跄吧，我的宠物！"
 
 佐姆的力量短暂地触动了你的身心。
 
@@ -1041,7 +1041,7 @@ w:30
 佐姆重塑了大地。
 
 w:1
-佐姆向副本的墙壁揭示了那伟大的毁灭真理！
+佐姆向地牢的墙壁揭示了那伟大的毁灭真理！
 
 %%%%
 Xom fast forward
@@ -1141,7 +1141,7 @@ Xom feature stone arch
 
 @The_feature@ 的另一侧短暂地显示出一面被 @any_glowing_colour_pattern@ 覆盖的半透明墙壁。
 
-@The_feature@ 的另一侧短暂地显示出一面被 @any_graffiti@ 覆盖的半透明墙壁。
+@The_feature@的另一侧短暂地显出一面布满涂鸦的半透明墙壁，涂鸦是这样的：@any_graffiti@
 
 %%%%
 Xom feature translucent wall
@@ -1154,7 +1154,7 @@ Xom feature translucent wall
 
 @The_feature@ 被 @any_glowing_colour_pattern@ 短暂地覆盖了。
 
-@The_feature@ 被 @any_graffiti@ 短暂地覆盖了。
+@The_feature@上短暂地布满涂鸦，涂鸦是这样的：@any_graffiti@
 
 %%%%
 Xom feature tree
@@ -1193,7 +1193,7 @@ Xom flora ring
 
 佐姆炫耀着一把绿色拇指。
 
-佐姆在这个充满死亡的副本传播着生命。
+佐姆在这个充满死亡的地牢传播着生命。
 
 佐姆煽动邻近的地板霉菌进行一场戏剧性的进化。
 
@@ -1215,7 +1215,7 @@ Xom force lance fleet
 佐姆点燃了力量烟花！
 
 w:1
-佐姆发射了整整一火车的弹幕！
+佐姆发射了整辆火箭车的齐射弹幕！
 
 w:1
 佐姆奏响了气势恢宏的管风琴和弦！
@@ -1287,7 +1287,7 @@ Xom inventory plural
 
 @your_item@ 中的一件短暂地发光了。
 
-@your_item@ 中的一件短暂地发出 @any_glowing_colour@ 光芒。
+@your_item@中的一件短暂地泛起@any_glowing_colour@光。
 
 @your_item@ 中的一件短暂地振动了。
 
@@ -1295,7 +1295,7 @@ Xom inventory plural
 
 @Your_item@ 短暂地发光。
 
-@Your_item@ 短暂地发出 @any_glowing_colour@ 光芒。
+@Your_item@短暂地泛起@any_glowing_colour@光。
 
 @Your_item@ 短暂地振动。
 
@@ -1306,7 +1306,7 @@ Xom inventory singular
 
 @Your_item@ 短暂地发光了。
 
-@Your_item@ 短暂地发出 @any_glowing_colour@ 光芒。
+@Your_item@短暂地泛起@any_glowing_colour@光。
 
 @Your_item@ 短暂地振动了。
 
@@ -1468,7 +1468,7 @@ Xom scenery cache_of_meat
 
 佐姆[给你提供了|给你拿来了]一些点心。
 
-佐姆准备了一场盛宴，原料是你在副本中留下的那条杀戮之痕。
+佐姆准备了一场盛宴，原料是你在地牢中留下的杀戮之痕。
 
 %%%%
 Xom scenery closed_door
@@ -1576,12 +1576,12 @@ Xom wave of despair
 佐姆在一瞬间复述了一个恐怖故事。
 
 w:2
-佐姆愉快地回忆起了多个副本文明的崩溃。
+佐姆愉快地回忆起了多个地牢文明的崩溃。
 
 %%%%
 acrobatic_move_name
 
-@hand@ 倒立
+@hand@倒立
 
 侧手翻
 
@@ -1626,7 +1626,7 @@ _xom_number_
 %%%%
 Xom send in the clones
 
-佐姆觉得应该有更多的你去分享给副本。
+佐姆觉得该多来几个你，分给地牢玩玩。
 
 佐姆温柔地将一面镜子砸在你的[@random_body_part_external_singular@|@random_body_part_external_plural@]上。
 

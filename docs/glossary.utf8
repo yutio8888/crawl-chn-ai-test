@@ -687,6 +687,7 @@ Held	受困	domain=status; source=EN/ZH; Scope / comment=status; source=status.t
 Hellfire Court	地狱火法庭	domain=spells; source=EN/ZH; 备注=✅
 Hellfire Mortar	地狱火迫击炮	domain=spells; source=EN/ZH; 备注=✅
 Hepliaklqana	惠普利亚卡纳	domain=gods; source=EN/ZH; 类型=音译
+Hepliaklqana the Forgotten	被遗忘者惠普利亚卡纳	domain=gods; source=EN/ZH; 类型=神祇长名；Forgotten为被动称谓，非遗忘他人的施事者; 裁决=D-C-104
 herald of the Abyss	深渊先驱	domain=monsters; source=EN/ZH; 依据 / 作用域=herald-of-the-abyss.yaml；深渊来使，不凭空加圣性；decision=D-C-095
 Hex	诅咒	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
 hex mastery	诅咒精通	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；sphinx:fakemuts；不声称是可遗传突变；decision=D-C-098

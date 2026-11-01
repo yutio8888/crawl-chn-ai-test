@@ -9,6 +9,7 @@
 #include "ability.h"
 #include "ability-type.h"
 #include "acquire.h"
+#include "act-iter.h"
 #include "art-enum.h"
 #include "artefact.h"
 #include "beam.h"
@@ -29,6 +30,8 @@
 #include "fineff.h"
 #include "files.h"
 #include "god-conduct.h"
+#include "god-companions.h"
+#include "ghost.h"
 #include "god-abil.h"
 #include "hiscores.h"
 #include "item-status-flag-type.h"
@@ -8695,5 +8698,140 @@ TEST_CASE("mechanics: Nemelex abilities render deck contents and card counts",
             else
                 CHECK(description.find("Draw a card from ") == 0);
         }
+    }
+}
+
+TEST_CASE("god details localize curse groups and apostle roles without changing identities",
+          "[zh-translation][god-details]")
+{
+    init_properties();
+    init_monsters();
+    unwind_var<vector<apostle_data>> restore_apostles(apostles);
+    apostles.clear();
+    apostles.resize(2);
+    scoped_monspeak_world world;
+    monster& apostle = apostles[0].apostle.mons;
+    // Role display uses the saved role property, independently of ghost powers.
+    apostle.type = MONS_ORC;
+    define_monster(apostle);
+    REQUIRE(apostle.alive());
+    apostle.mname = "Test Apostle";
+    item_def& weapon = apostles[0].apostle.items[MSLOT_WEAPON];
+    weapon.base_type = OBJ_WEAPONS;
+    weapon.sub_type = WPN_DAGGER;
+    weapon.quantity = 1;
+    weapon.rnd = 1;
+    const char* roles[] = { "warrior", "wizard", "priest" };
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (int value = CURSE_FIRST_CURSE; value < NUM_CURSES; ++value)
+        {
+#if TAG_MAJOR_VERSION == 34
+            if (value >= CURSE_ELEMENTS && value <= CURSE_DEVICES)
+                continue;
+#endif
+            const CrawlStoreValue curse(value);
+            const string raw = curse_name(curse);
+            const string display = curse_display_name(curse);
+            CAPTURE(raw, language);
+            CHECK_FALSE(raw.empty());
+            if (language == lang_t::ZH)
+                CHECK(display != raw);
+            else
+                CHECK(display == raw);
+            i18n_cache_clear();
+            CHECK(curse_display_name(curse) == display);
+            CHECK(curse_name(curse) == raw);
+        }
+        for (int role = 0; role < NUM_APOSTLE_TYPES; ++role)
+        {
+            apostle.props[APOSTLE_TYPE_KEY] = role;
+            const string plain = get_apostle_name(0);
+            const string titled = get_apostle_name(0, true);
+            CHECK(plain == "Test Apostle");
+            CHECK(titled == plain + ", " + T_(roles[role]));
+            if (language == lang_t::ZH)
+                CHECK(titled.find(roles[role]) == string::npos);
+            else
+                CHECK(titled == plain + ", " + roles[role]);
+            apostles[1] = apostles[0];
+            CHECK(ability_name(ABIL_BEOGH_DISMISS_APOSTLE_1)
+                  == make_stringf(T_("Dismiss %s"), titled.c_str()));
+            CHECK(ability_name(ABIL_BEOGH_DISMISS_APOSTLE_1, true)
+                  == "Dismiss Apostle");
+            const string details = apostle_short_description(0);
+            CHECK(details.find(">" + string(T_(roles[role])) + "</") != string::npos);
+            CHECK(details.find(plain) != string::npos);
+            CHECK(apostle_type_by_name(roles[role]) == role);
+            CHECK(apostle_type_names[role] == roles[role]);
+            i18n_cache_clear();
+            CHECK(get_apostle_name(0, true) == titled);
+            CHECK(apostle.props[APOSTLE_TYPE_KEY].get_int() == role);
+        }
+    }
+}
+
+TEST_CASE("Beogh challenge emits a fully localized introduction from the real producer",
+          "[zh-translation][god-details][beogh-challenge]")
+{
+    init_properties();
+    init_monsters();
+    init_spell_descs();
+    init_spell_name_cache();
+    init_mut_index();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        unwind_var<player> restore_player(you);
+        unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+        you = player();
+        you.species = SP_HUMAN;
+        you.religion = GOD_BEOGH;
+        you.raw_piety = 200;
+        you.hp = you.hp_max = 100;
+        you.experience_level = 15;
+        you.where_are_you = BRANCH_DUNGEON;
+        you.depth = 6;
+        you.props[BEOGH_CHALLENGE_PROGRESS_KEY] = 100;
+        scoped_monspeak_world world(coord_def(16, 16));
+        rng::subgenerator random_state(0xbe090001ULL, 0xbe090002ULL);
+        msgwin_temporary_mode temporary;
+        unwinder clear_messages([]() { msgwin_clear_temporary(); });
+        // The first challenge has no band; clean every newly created apostle
+        // even when a REQUIRE below exits the fixture early.
+        set<mid_t> previous_monsters;
+        for (monster_iterator mi; mi; ++mi)
+            previous_monsters.insert(mi->mid);
+        unwinder clear_apostle([&previous_monsters]()
+        {
+            for (monster_iterator mi; mi; ++mi)
+            {
+                if (previous_monsters.count(mi->mid)
+                    || !(mi->flags & MF_APOSTLE_BAND))
+                {
+                    continue;
+                }
+                env.mgrid(mi->pos()) = NON_MONSTER;
+                env.mid_cache.erase(mi->mid);
+                mi->destroy_inventory();
+                mi->reset();
+            }
+        });
+        msg::tee observed;
+        REQUIRE(maybe_generate_apostle_challenge());
+        CHECK(you.duration[DUR_BEOGH_DIVINE_CHALLENGE] == 100);
+        CHECK(you.num_total_gifts[GOD_BEOGH] == 1);
+        const string line = observed.get_store();
+        INFO(line);
+        if (language == lang_t::ZH)
+        {
+            CHECK(line.find("speaks to you") == string::npos);
+            CHECK(line.find(god_name(GOD_BEOGH)) != string::npos);
+            CHECK_FALSE(rule_mixed_cn_en(line));
+        }
+        else
+            CHECK(line.find("Beogh speaks to you: ") != string::npos);
+        CHECK(Options.language == language);
     }
 }

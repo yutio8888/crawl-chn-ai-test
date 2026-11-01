@@ -33,6 +33,7 @@
 | Pakellas | 帕克拉斯 | 音译 | — |
 | Uskayaw | 乌斯卡亚 | 音译 | — |
 | Hepliaklqana | 惠普利亚卡纳 | 音译 | — |
+| Hepliaklqana the Forgotten | 被遗忘者惠普利亚卡纳 | 神祇长名；Forgotten为被动称谓，非遗忘他人的施事者 | D-C-104 |
 | Ignis | 伊格尼斯 | 音译 | [D-A-051] |
 | Wu Jian | 无间 | 运行时短名 | — |
 | the Wu Jian Council | 无间门派 | 实体／派别长名（门派=sect） | — |

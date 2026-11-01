@@ -2244,12 +2244,12 @@ struct curse_data
 static map<curse_type, curse_data> _ashenzari_curses =
 {
     { CURSE_MELEE, {
-        "Melee Combat", "Melee",
+        N_("Melee Combat"), "Melee",
         { SK_SHORT_BLADES, SK_LONG_BLADES, SK_AXES, SK_MACES_FLAILS,
             SK_POLEARMS, SK_STAVES, SK_UNARMED_COMBAT }, 3
     } },
     { CURSE_RANGED, {
-        "Ranged Combat", "Range",
+        N_("Ranged Combat"), "Range",
         { SK_RANGED_WEAPONS, SK_THROWING },
     } },
 #if TAG_MAJOR_VERSION == 34
@@ -2398,6 +2398,11 @@ string curse_name(const CrawlStoreValue& c)
     return _ashenzari_curses[static_cast<curse_type>(c.get_int())].name;
 }
 
+string curse_display_name(const CrawlStoreValue& curse)
+{
+    return T_(curse_name(curse).c_str());
+}
+
 string curse_abbr(const CrawlStoreValue& curse)
 {
     const curse_data& c =
@@ -2422,8 +2427,7 @@ static string ashenzari_curse_knowledge_list()
     const CrawlVector& curses = you.props[CURSE_KNOWLEDGE_KEY].get_vector();
 
     return lowercase_string(comma_separated_fn(curses.begin(), curses.end(),
-                              [](const CrawlStoreValue& curse)
-                              { return string(T_(curse_name(curse).c_str())); }));
+                              curse_display_name));
 }
 
 string desc_curse_skills(const CrawlVector& curse)

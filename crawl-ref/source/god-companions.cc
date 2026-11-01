@@ -485,8 +485,8 @@ static bool _try_generate_apostle_challenge(int pow, int band_pow)
 
     // Todo: Make sure not to pick the same name as any existing apostle
 
-    string challenge_msg = " speaks to you: ";
-    challenge_msg += getSpeakString("Beogh apostle challenge");
+    const string challenge_msg = make_stringf(T_(" speaks to you: %s"),
+        getSpeakString("Beogh apostle challenge").c_str());
     simple_god_message(challenge_msg.c_str());
 
     you.duration[DUR_BEOGH_DIVINE_CHALLENGE] = 100;
@@ -698,7 +698,10 @@ string get_apostle_name(int slot, bool with_title)
     const monster& apostle = apostles[slot].apostle.mons;
     string name = apostle.name(DESC_PLAIN, true);
     if (with_title)
-        name += ", " + apostle_type_names[apostle.props[APOSTLE_TYPE_KEY].get_int()];
+    {
+        name += ", ";
+        name += T_(apostle_type_names[apostle.props[APOSTLE_TYPE_KEY].get_int()].c_str());
+    }
 
     return name;
 }
@@ -1157,7 +1160,7 @@ string apostle_short_description(int slot)
     string str = make_stringf("%s (<%s>%s</%s>)     %s\n",
         apostle.name(DESC_PLAIN, true).c_str(),
         _apostle_type_colours[atype],
-        apostle_type_names[atype].c_str(),
+        T_(apostle_type_names[atype].c_str()),
         _apostle_type_colours[atype],
         status.c_str());
 
