@@ -11,6 +11,7 @@
  */
 
 #include "AppHdr.h"
+#include "god-wrath.h"
 
 #include "hiscores.h"
 
@@ -1927,6 +1928,9 @@ static string _death_source_display_desc(const string &death_source_name)
     if (Options.language != lang_t::ZH || death_source_name.empty())
         return death_source_name;
 
+    const string wrath = god_wrath_display_name(death_source_name);
+    if (wrath != death_source_name)
+        return wrath;
     const string translated = T_(death_source_name.c_str());
     if (translated != death_source_name)
         return translated;
@@ -1969,6 +1973,11 @@ static string _death_source_display_desc(const string &death_source_name)
     return death_source_name;
 }
 
+string death_source_display_name(const string& canonical)
+{
+    return _death_source_display_desc(canonical);
+}
+
 string scorefile_entry::death_source_display_desc() const
 {
     if (Options.language == lang_t::ZH && !death_source_name_zh.empty())
@@ -1993,6 +2002,7 @@ static string _killerpath_display_desc(const string &killerpath)
     };
     static const blame_prefix prefixes[] =
     {
+        { "anointed by ",            N_("anointed by %1$s") },
         { "led by ",                 "led by %1$s" },
         { "summoned by ",            "summoned by %1$s" },
         { "woven by ",               "woven by %1$s" },
@@ -3595,7 +3605,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                 if (you.props.exists(DISABLED_BY_KEY))
                 {
                     const string disabled_source =
-                        you.props[DISABLED_BY_KEY].get_string();
+                        god_wrath_display_name(you.props[DISABLED_BY_KEY].get_string());
                     disabled_by = make_stringf_p(
                         T_(" by %1$s"),
                         disabled_source.c_str());

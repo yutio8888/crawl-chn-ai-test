@@ -4,10 +4,12 @@
 **/
 
 #include "AppHdr.h"
+#include "god-wrath.h"
 
 #include "database.h"
 #include "notes.h"
 
+#include <cstring>
 #include <iomanip>
 #include <sstream>
 #include <vector>
@@ -15,9 +17,13 @@
 #include "branch.h"
 #include "english.h"
 #include "hiscores.h"
+#include "libutil.h"
+#include "item-name.h"
+#include "potion-type.h"
 #include "item-prop.h" // gem_adj
 #include "message.h"
 #include "mutation.h"
+#include "lang-en-guard.h"
 #include "options.h"
 #include "positional_format.h"
 #include "religion.h"
@@ -195,6 +201,290 @@ static bool _is_noteworthy(const Note& note)
         }
     }
     return true;
+}
+
+// These are existing canonical Xom note shapes, not a new persistence format.
+// Parse only complete, known events. Malformed or unknown historical entries
+// remain verbatim, and rendering never rewrites Note::name/desc.
+static bool _xom_note_count(const string& text, int& value)
+{
+    return parse_int(text.c_str(), value) && value >= 0
+           && text == make_stringf("%d", value);
+}
+
+static string _xom_note_monster_display(const string& name)
+{
+    return name == "something unseen" ? T_("something unseen")
+                                      : death_source_display_name(name);
+}
+
+static string _xom_effect_note_display(const string& name)
+{
+    if (Options.language != lang_t::ZH)
+        return name;
+    if (name == "drained mp")
+        return T_("drained mp");
+    if (name == "drained mp, created monsters")
+        return T_("drained mp, created monsters");
+    const char* mutation_notes[] =
+    {
+        N_("give mutation"), N_("give mutations"),
+        N_("give good mutation"), N_("give good mutations"),
+        N_("give random mutation"), N_("give random mutations"),
+        N_("made a garden"), N_("spooky wave of despair"),
+    };
+    for (const char* key : mutation_notes)
+        if (name == key)
+            return T_(key);
+
+    const struct
+    {
+        const char* prefix;
+        const char* suffix;
+        const char* format;
+    } count_notes[] =
+    {
+        { "divine lightning + ", " bolts", N_("divine lightning + %d bolts") },
+        { "lit up ", " webs", N_("lit up %d webs") },
+        { "summons ", " friend", N_("summons %d friend") },
+        { "summons ", " friends", N_("summons %d friends") },
+        { "", "-stop teleportation journey", N_("%d-stop teleportation journey") },
+        { "", "-stop teleportation journey (dangerous)", N_("%d-stop teleportation journey (dangerous)") },
+        { "charmed ", " monster", N_("charmed %d monster") },
+        { "charmed ", " monsters", N_("charmed %d monsters") },
+        { "summons ", " living force lance", N_("summons %d living force lance") },
+        { "summons ", " living force lances", N_("summons %d living force lances") },
+        { "summons ", " hostile shadow creature", N_("summons %d hostile shadow creature") },
+        { "summons ", " hostile shadow creatures", N_("summons %d hostile shadow creatures") },
+        { "summons ", " hostile chaos creature", N_("summons %d hostile chaos creature") },
+        { "summons ", " hostile chaos creatures", N_("summons %d hostile chaos creatures") },
+        { "made a ring of doors, pushed ", " other out", N_("made a ring of doors, pushed %d other out") },
+        { "made a ring of doors, pushed ", " others out", N_("made a ring of doors, pushed %d others out") },
+        { "made a ring of doors, pulled ", " other in", N_("made a ring of doors, pulled %d other in") },
+        { "made a ring of doors, pulled ", " others in", N_("made a ring of doors, pulled %d others in") },
+    };
+    for (const auto& event : count_notes)
+    {
+        const size_t prefix = strlen(event.prefix), suffix = strlen(event.suffix);
+        if (!starts_with(name, event.prefix) || !ends_with(name, event.suffix)
+            || name.size() <= prefix + suffix)
+        {
+            continue;
+        }
+        int count;
+        if (_xom_note_count(name.substr(prefix, name.size() - prefix - suffix), count))
+            return make_stringf(T_(event.format), count);
+    }
+
+    if (starts_with(name, "cast spell '") && ends_with(name, "'"))
+    {
+        const string prefix = "cast spell '";
+        const string title = name.substr(prefix.size(), name.size() - prefix.size() - 1);
+        spell_type spell;
+        {
+            const ScopedLangEn english;
+            spell = spell_by_name(title, false);
+        }
+        if (spell == SPELL_NO_SPELL)
+            return name;
+        return make_stringf(T_("cast spell '%s'"), spell_title(spell));
+    }
+    if (starts_with(name, "potion effect (") && ends_with(name, ")"))
+    {
+        const string prefix = "potion effect (";
+        const string title = name.substr(prefix.size(), name.size() - prefix.size() - 1);
+        for (const potion_type potion : potion_types)
+        {
+            string canonical;
+            {
+                const ScopedLangEn english;
+                canonical = potion_type_name(potion);
+            }
+            if (title == canonical)
+                return make_stringf(T_("potion effect (%s)"), potion_type_name(potion));
+        }
+        return name;
+    }
+    if (starts_with(name, "god gift: "))
+    {
+        const string item = name.substr(10);
+        const string display = T_(item.c_str());
+        const string format = T_("god gift: %s");
+        // Full arbitrary item names cannot be safely reconstructed from text.
+        // Only an exact catalog hit is supported; otherwise keep the full note.
+        if (item.empty() || display == item || format == "god gift: %s")
+            return name;
+        return make_stringf(format.c_str(), display.c_str());
+    }
+    if (starts_with(name, "summons friendly "))
+    {
+        if (name.size() == 17)
+            return name;
+        const string monster = _xom_note_monster_display(name.substr(17));
+        return make_stringf(T_("summons friendly %s"), monster.c_str());
+    }
+
+    if (starts_with(name, "made a ring of doors, pulled ") && ends_with(name, " out"))
+    {
+        const string prefix = "made a ring of doors, pulled ";
+        const string separator = " in and pushed ";
+        const size_t split = name.find(separator, prefix.size());
+        int pulled, pushed;
+        if (split != string::npos
+            && _xom_note_count(name.substr(prefix.size(), split - prefix.size()), pulled)
+            && _xom_note_count(name.substr(split + separator.size(),
+                name.size() - split - separator.size() - 4), pushed))
+        {
+            return make_stringf(T_("made a ring of doors, pulled %d in and pushed %d out"),
+                                pulled, pushed);
+        }
+        return name;
+    }
+
+    if (starts_with(name, "buffed friendly "))
+    {
+        const string suffix = ends_with(name, " times") ? " times" : " time";
+        if (!ends_with(name, suffix))
+            return name;
+        const string body = name.substr(16, name.size() - 16 - suffix.size());
+        const size_t space = body.rfind(' ');
+        int count;
+        if (space == string::npos || space == 0
+            || !_xom_note_count(body.substr(space + 1), count))
+        {
+            return name;
+        }
+        const string monster = _xom_note_monster_display(body.substr(0, space));
+        return make_stringf(T_("buffed friendly %s %d times"), monster.c_str(), count);
+    }
+
+    if (starts_with(name, "made ") && ends_with(name, " speak a word of recall"))
+    {
+        const string suffix = " speak a word of recall";
+        if (name.size() <= 5 + suffix.size())
+            return name;
+        const string monster = _xom_note_monster_display(
+            name.substr(5, name.size() - 5 - suffix.size()));
+        return make_stringf(T_("made %s speak a word of recall"), monster.c_str());
+    }
+
+    if (starts_with(name, "good polymorph ") || starts_with(name, "bad polymorph "))
+    {
+        const bool good = starts_with(name, "good ");
+        const size_t start = good ? 15 : 14;
+        const size_t arrow = name.find(" -> ", start);
+        if (arrow == string::npos || arrow == start || arrow + 4 == name.size())
+            return name;
+        const string before = _xom_note_monster_display(name.substr(start, arrow - start));
+        string after_name = name.substr(arrow + 4);
+        string debug;
+        for (const char* suffix : { N_(" (upgrade)"), N_(" (downgrade)") })
+        {
+            if (ends_with(after_name, suffix))
+            {
+                after_name.resize(after_name.size() - strlen(suffix));
+                debug = T_(suffix);
+                break;
+            }
+        }
+        if (after_name.empty())
+            return name;
+        const string after = _xom_note_monster_display(after_name);
+        return make_stringf(T_("%s polymorph %s -> %s"), good ? T_("good") : T_("bad"),
+                            before.c_str(), after.c_str()) + debug;
+    }
+
+    for (const char* key : { N_("enchant monster (%s, %s)"),
+                            N_("enchant monsters (%s, %s)") })
+    {
+        const string format = key;
+        const string prefix = format.substr(0, format.find('%'));
+        if (!starts_with(name, prefix) || !ends_with(name, ")"))
+            continue;
+        const size_t comma = name.find(", ", prefix.size());
+        if (comma == string::npos)
+            return name;
+        const string polarity = name.substr(prefix.size(), comma - prefix.size());
+        if (polarity != "good" && polarity != "bad")
+            return name;
+        const string effect = name.substr(comma + 2, name.size() - comma - 3);
+        if (effect.empty())
+            return name;
+        return make_stringf(T_(key), polarity == "good" ? T_("good") : T_("bad"),
+                            C_("flag long", effect.c_str()));
+    }
+
+    for (const char* key : { N_("torment player (%d/%d hp)"),
+                            N_("torment all (%d/%d hp)") })
+    {
+        const string format = key;
+        const string prefix = format.substr(0, format.find('%'));
+        if (!starts_with(name, prefix) || !ends_with(name, " hp)"))
+            continue;
+        const size_t slash = name.find('/', prefix.size());
+        if (slash == string::npos)
+            return name;
+        int hp, max_hp;
+        if (!_xom_note_count(name.substr(prefix.size(), slash - prefix.size()), hp)
+            || !_xom_note_count(name.substr(slash + 1, name.size() - slash - 5), max_hp))
+        {
+            return name;
+        }
+        return make_stringf(T_(key), hp, max_hp);
+    }
+
+    if (starts_with(name, "summoned "))
+    {
+        istringstream input(name.substr(9));
+        int hostile, friendly;
+        string word1, kind1, plus, word2, kind2, extra;
+        if (input >> hostile >> word1 >> kind1 >> plus >> friendly >> word2 >> kind2
+            && !(input >> extra) && hostile >= 0 && friendly >= 0
+            && word1 == "hostile" && plus == "+" && word2 == "friendly"
+            && kind1 == (hostile == 1 ? "illusion" : "illusions")
+            && kind2 == (friendly == 1 ? "illusion" : "illusions"))
+        {
+            return make_stringf(T_("summoned %d hostile illusions + %d friendly illusions"),
+                                hostile, friendly);
+        }
+    }
+
+    if (starts_with(name, "scenery: "))
+    {
+        const struct { const char* suffix; const char* format; } events[] =
+        {
+            { " fountains blood", N_("%d fountains blood") },
+            { " snacks swapped", N_("%d snacks swapped") },
+            { " trees warped", N_("%d trees warped") },
+            { " doors open", N_("%d doors open") },
+            { " doors close", N_("%d doors close") },
+        };
+        vector<string> translated;
+        for (const string& part : split_string(", ", name.substr(9)))
+        {
+            bool known = false;
+            for (const auto& event : events)
+            {
+                const size_t suffix = strlen(event.suffix);
+                int count;
+                if (ends_with(part, event.suffix) && part.size() > suffix
+                    && _xom_note_count(part.substr(0, part.size() - suffix), count))
+                {
+                    translated.push_back(make_stringf(T_(event.format), count));
+                    known = true;
+                    break;
+                }
+            }
+            if (!known)
+                return name;
+        }
+        if (!translated.empty())
+        {
+            return string(T_("scenery: ")) + join_strings(
+                translated.begin(), translated.end(), C_("Xom scenery list", ", "));
+        }
+    }
+    return name;
 }
 
 // Abyss entry notes are persisted as canonical English. Recognize only the
@@ -401,27 +691,27 @@ string Note::describe(bool when, bool where, bool what) const
                    << mutation_desc(static_cast<mutation_type>(first),
                                     second == 0 ? 1 : second);
             if (!name.empty())
-                result << " [" << name << "]";
+                result << " [" << god_wrath_display_name(name) << "]";
             break;
         case NOTE_LOSE_MUTATION:
             result << T_("Lost mutation: ")
                    << mutation_desc(static_cast<mutation_type>(first),
                                     second == 3 ? 3 : second+1);
             if (!name.empty())
-                result << " [" << name << "]";
+                result << " [" << god_wrath_display_name(name) << "]";
             break;
         case NOTE_PERM_MUTATION:
             result << T_("Mutation became permanent: ")
                    << mutation_desc(static_cast<mutation_type>(first),
                                     second == 0 ? 1 : second);
             if (!name.empty())
-                result << " [" << name << "]";
+                result << " [" << god_wrath_display_name(name) << "]";
             break;
         case NOTE_GET_BANE:
             result << T_("Gained bane: ")
                    << bane_name(static_cast<bane_type>(first));
             if (!name.empty())
-                result << " [" << name << "]";
+                result << " [" << god_wrath_display_name(name) << "]";
             break;
         case NOTE_LOSE_BANE:
             result << T_("Lost bane: ")
@@ -443,7 +733,10 @@ string Note::describe(bool when, bool where, bool what) const
             result << name << T_(" was a mimic.");
             break;
         case NOTE_XOM_EFFECT:
-            result << T_("XOM: ") << name;
+        {
+            const string display = _xom_effect_note_display(name);
+            const bool gift_fallback = starts_with(name, "god gift: ") && display == name;
+            result << (gift_fallback ? "XOM: " : T_("XOM: ")) << display;
 #if defined(DEBUG_XOM) || defined(NOTE_DEBUG_XOM)
             // If debugging, also take note of piety and tension.
             result << " (piety: " << first;
@@ -452,11 +745,12 @@ string Note::describe(bool when, bool where, bool what) const
             result << ")";
 #endif
             break;
+        }
         case NOTE_PARALYSIS:
         {
             const double turns = first / 10.0;
             result << make_stringf(T_("Paralysed by %s for %.2g turns"),
-                                   name.c_str(), turns);
+                                   god_wrath_display_name(name).c_str(), turns);
         }
             break;
         case NOTE_VEXED:
@@ -512,8 +806,17 @@ string Note::describe(bool when, bool where, bool what) const
             result << T_("Fled from a divine trial");
             break;
         case NOTE_INFERNAL_MARK:
-            result << make_stringf(T_("Branded self with the %s"), name.c_str());
+        {
+            mutation_type mark;
+            {
+                const ScopedLangEn english;
+                mark = mutation_from_name(name, false);
+            }
+            const string display = mark < NUM_MUTATIONS && is_makhleb_mark(mark)
+                ? mutation_name(mark) : name;
+            result << make_stringf(T_("Branded self with the %s"), display.c_str());
             break;
+        }
         case NOTE_TESSERACT_ACTIVATED:
             result << T_("Activated a boundless tesseract");
             break;

@@ -1989,7 +1989,7 @@ static bool _wu_jian_whirlwind(coord_def old_pos, coord_def new_pos,
 
         int dmg_mult = 0;
         const int number_of_attacks = _wu_jian_number_of_attacks(dmg_mult, false);
-        mprf(T_("You spin and attack %s%s%s."),
+        mprf_p(T_("You spin and attack %1$s%2$s%3$s."),
                 mons->name(DESC_THE).c_str(),
                 number_of_attacks > 1 ? T_(" repeatedly") : "",
                 wu_jian_has_momentum(WU_JIAN_ATTACK_WHIRLWIND) ?
