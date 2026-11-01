@@ -11,7 +11,7 @@
 - 原始身份包含仍被保留的旧模板；调用已迁移不等于证明其所有历史/动态消费者死亡，未擅删。defer 保留兼容值，责任人与重入条件见具体卡。
 - 原始报告与修后独立文字复核位于 `.claude/metrics/verify/source-rereview-20261101/`；完整原始分区报告位于指南工作区 `full-source-rereview-20261101/`。下表保留所有逐身份原文/现值/理由，临时报告不是唯一证据。
 - 英文键中的 `\n` 为数据库表示；表内引文按纯文本转义。证据行号为冻结输入定位，函数名供修后定位。
-- 真实消费者回归：17用例、2876断言通过。最终代码profile、实现域审查及CI仍在准备，未在此提前宣告交付。
+- 真实消费者回归：17用例、2876断言通过。实现域独立复核完成。全范围 code profile 的编译、smoke及运行阶段通过，但静态阶段发现缺少 Buggy descriptor! 译键；补键后的绑定增量 code profile 全部通过。未变 C++ 沿用原运行证据；适用 GitHub Actions CI 待完成。
 
 ## 修复与边界
 
@@ -1765,4 +1765,3 @@
 | source:wave of devouring shadow<br>EN: wave of devouring shadow | 吞噬暗影之波 | 吞噬暗影之波 | keep | 射线显示名逐条复核；按zap_data实际对象、材料、伤害或轨迹保留含义，仅在已知名称gate内翻译；内部debug/异常标签保留生命周期。 | crawl-ref/source/zap-data.h; crawl-ref/source/beam.cc:is_known_beam_name; crawl-ref/source/hiscores.cc:_death_beam_display_name |
 | source:whirling bolas<br>EN: whirling bolas | 旋转流星索 | 旋转流星索 | keep | 射线显示名逐条复核；按zap_data实际对象、材料、伤害或轨迹保留含义，仅在已知名称gate内翻译；内部debug/异常标签保留生命周期。 | crawl-ref/source/zap-data.h; crawl-ref/source/beam.cc:is_known_beam_name; crawl-ref/source/hiscores.cc:_death_beam_display_name |
 | source:zap<br>EN: zap | 电击 | 电击 | keep | 射线显示名逐条复核；按zap_data实际对象、材料、伤害或轨迹保留含义，仅在已知名称gate内翻译；内部debug/异常标签保留生命周期。 | crawl-ref/source/zap-data.h; crawl-ref/source/beam.cc:is_known_beam_name; crawl-ref/source/hiscores.cc:_death_beam_display_name |
-
