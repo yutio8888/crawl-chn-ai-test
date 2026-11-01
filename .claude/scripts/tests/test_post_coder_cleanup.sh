@@ -2,6 +2,7 @@
 # Black-box proof that post-coder advisory temporary files never leak.
 
 set -euo pipefail
+unset ZH_VERIFY_CPP_PREPROCESS_FILES ZH_VERIFY_CPP_COMPILE_COMMANDS
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 TMP_ROOT=$(mktemp -d)
@@ -42,6 +43,17 @@ if [[ "$*" == *CPP_AST_SCAN_SKIP_DIRS* ]]; then
     printf '%s\n' "$CPP_AST_SCAN_SKIP_COMPONENTS"
     exit 0
 fi
+case "$*" in
+    *scan_varargs_string.py*|*scan_i18n_lifetime.py*|*scan_string_concat.py*)
+        if [[ "${CLEANUP_MODE:-normal}" == preprocess* ]]; then
+            printf '<%s>' "$@" >> "$SCANNER_TRACE"
+            printf '\n' >> "$SCANNER_TRACE"
+            if [[ "$CLEANUP_MODE" == preprocess_fail && "$*" == *fail-config.json* ]]; then
+                exit 2
+            fi
+        fi
+        ;;
+esac
 case "$*" in
     *scan_varargs_string.py*|*scan_i18n_lifetime.py*)
         if [[ "${CLEANUP_MODE:-normal}" == reject_excluded ]]; then
@@ -139,6 +151,85 @@ while IFS= read -r excluded; do
         || fail "changed scope $excluded exclusion (rc=$changed_scope_rc)"
     assert_clean "changed scope $excluded removes advisory temp"
 done <<< "$CPP_AST_SCAN_SKIP_COMPONENTS"
+
+# The configured TU keeps raw findings inside each scanner's existing
+# --compile-commands path. Unconfigured source/header files stay in the raw group.
+printf 'int other;\n' > "$REPO/crawl-ref/source/other.cc"
+printf 'int header;\n' > "$REPO/crawl-ref/source/sample.h"
+printf '[]\n' > "$REPO/config one.json"
+printf '[]\n' > "$REPO/config-two.json"
+printf '[]\n' > "$REPO/fail-config.json"
+SCANNER_TRACE="$REPO/scanner-trace"
+export SCANNER_TRACE
+run_preprocess() {
+    local files="$1" databases="$2" mode="${3:-preprocess}" scope="${4:-changed}"
+    local changed_files="${5:-$'crawl-ref/source/sample.cc\ncrawl-ref/source/other.cc\ncrawl-ref/source/sample.h'}"
+    : > "$SCANNER_TRACE"
+    set +e
+    (cd "$REPO" && TMPDIR="$TEMPDIR" PATH="$FAKEBIN:$PATH" \
+        ZH_VERIFY_SCOPE="$scope" CLEANUP_MODE="$mode" \
+        ZH_VERIFY_CHANGED_FILES="$changed_files" \
+        ZH_VERIFY_CPP_PREPROCESS_FILES="$files" \
+        ZH_VERIFY_CPP_COMPILE_COMMANDS="$databases" \
+        /bin/bash .claude/scripts/post-coder.sh) >/dev/null 2>&1
+    PREPROCESS_RC=$?
+    set -e
+}
+run_preprocess 'crawl-ref/source/sample.cc' $'config one.json\nconfig-two.json'
+[[ "$PREPROCESS_RC" -eq 0 ]] && pass "configured TU and raw group both succeed" \
+    || fail "configured TU routing (rc=$PREPROCESS_RC)"
+raw_calls=0
+configured_calls=0
+while IFS= read -r invocation; do
+    if [[ "$invocation" == *'<--compile-commands>'* ]]; then
+        configured_calls=$((configured_calls + 1))
+        [[ "$invocation" == *'<crawl-ref/source/sample.cc>'* \
+            && "$invocation" == *'<--compile-commands><config one.json><--compile-commands><config-two.json>'* \
+            && "$invocation" != *'other.cc'* && "$invocation" != *'sample.h'* ]] \
+            || fail "configured invocation preserves both configurations and only target TU"
+    else
+        raw_calls=$((raw_calls + 1))
+        [[ "$invocation" == *'other.cc'* && "$invocation" == *'sample.h'* \
+            && "$invocation" != *'sample.cc'* ]] \
+            || fail "raw invocation retains other source/header and excludes configured TU"
+    fi
+done < "$SCANNER_TRACE"
+[[ "$raw_calls" -eq 3 && "$configured_calls" -eq 3 ]] \
+    && pass "all three AST scanners receive both groups and the entire matrix" \
+    || fail "AST routing count (raw=$raw_calls configured=$configured_calls)"
+assert_clean "configured routing removes advisory temporary files"
+run_preprocess 'crawl-ref/source/sample.cc' 'config-two.json' preprocess changed \
+    'crawl-ref/source/sample.cc'
+[[ "$PREPROCESS_RC" -eq 0 && "$(wc -l < "$SCANNER_TRACE")" -eq 3 ]] \
+    && pass "configured-only changed scope skips the empty raw group" \
+    || fail "configured-only routing (rc=$PREPROCESS_RC)"
+run_preprocess 'crawl-ref/source/sample.cc' 'config-two.json' preprocess full
+[[ "$PREPROCESS_RC" -eq 0 && "$(wc -l < "$SCANNER_TRACE")" -eq 6 ]] \
+    && pass "full scope retains full raw checks plus configured group" \
+    || fail "full-scope routing (rc=$PREPROCESS_RC)"
+raw_roots=$(grep -c '<crawl-ref/source/>' "$SCANNER_TRACE" || true)
+[[ "$raw_roots" -eq 3 ]] && pass "all three scanners retain the original full raw root" \
+    || fail "full raw root count (got $raw_roots)"
+for pair in files_only databases_only absent_file outside_scope missing_database header_target; do
+    case "$pair" in
+        files_only) files='crawl-ref/source/sample.cc'; databases='' ;;
+        databases_only) files=''; databases='config-two.json' ;;
+        absent_file) files='crawl-ref/source/missing.cc'; databases='config-two.json' ;;
+        missing_database) files='crawl-ref/source/sample.cc'; databases='missing-config.json' ;;
+        header_target) files='crawl-ref/source/sample.h'; databases='config-two.json' ;;
+        outside_scope) files='crawl-ref/source/nested/outside.cc'; databases='config-two.json'
+            printf 'int outside;\n' > "$REPO/$files" ;;
+    esac
+    run_preprocess "$files" "$databases"
+    [[ "$PREPROCESS_RC" -eq 2 ]] && pass "$pair configuration fails closed" \
+        || fail "$pair configuration (expected 2, got $PREPROCESS_RC)"
+    [[ ! -s "$SCANNER_TRACE" ]] && pass "$pair fails before invoking scanners" \
+        || fail "$pair invoked a scanner"
+done
+run_preprocess 'crawl-ref/source/sample.cc' $'config one.json\nfail-config.json' preprocess_fail
+[[ "$PREPROCESS_RC" -eq 1 ]] && pass "failure of a requested configuration blocks aggregation" \
+    || fail "configured parse failure (expected 1, got $PREPROCESS_RC)"
+assert_clean "configured failure removes advisory temporary files"
 
 run_mode import_fail
 [[ "$MODE_RC" -eq 42 ]] && pass "skip-directory import failure propagates" \
