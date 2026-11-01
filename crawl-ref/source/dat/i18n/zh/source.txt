@@ -13497,7 +13497,7 @@ You cannot mutate%s.
 （暂时）
 %%%%
 monster equip|%1$s %2$s.
-%2$s。
+%1$s%2$s。
 %%%%
 %s appears in pursuit of the Orb! 
 %s出现，追踪宝珠而来！

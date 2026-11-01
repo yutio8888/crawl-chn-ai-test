@@ -245,19 +245,23 @@ static void _monster_headsup(const vector<monster*> &monsters,
                                                 : monsters.size() > 1 ? DESC_NOTEWORTHY
                                                                       : DESC_NOTEWORTHY_AND_WEAPON;
 
-        // Build subject+verb prefix (EN only; ZH drops this via positional params)
+        // Keep the subject in both languages; only English needs the copula.
         string subject_verb;
         if (monsters.size() == 1)
         {
-            subject_verb = uppercase_first(mon->pronoun(PRONOUN_SUBJECTIVE))
-                           + " " + conjugate_verb("are", mon->pronoun_plurality());
+            subject_verb = uppercase_first(mon->pronoun(PRONOUN_SUBJECTIVE));
+            if (Options.language != lang_t::ZH)
+                subject_verb += " " + conjugate_verb("are", mon->pronoun_plurality());
         }
         else if (mon->type == MONS_DANCING_WEAPON)
-            subject_verb = "There is";
-        else if (single.count(mon))
-            subject_verb = uppercase_first(mon->full_name(DESC_THE)) + " is";
+            subject_verb = T_("There is");
         else
-            subject_verb = uppercase_first(mon->full_name(DESC_A)) + " is";
+        {
+            subject_verb = uppercase_first(mon->full_name(
+                single.count(mon) ? DESC_THE : DESC_A));
+            if (Options.language != lang_t::ZH)
+                subject_verb += " is";
+        }
 
         string equip = get_monster_equipment_desc(mi, level, DESC_NONE);
 
