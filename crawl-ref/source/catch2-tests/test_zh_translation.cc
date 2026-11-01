@@ -7813,3 +7813,110 @@ TEST_CASE("family: custom shop fragments use shop context rather than unrelated 
         CHECK(shop.shop_suffix_name == (string(fragment) == "Timeless" ? "Tomes" : fragment));
     }
 }
+
+TEST_CASE("spell schools separate full names from compact list labels",
+          "[zh-translation][spell-school-names]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([&saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    init_spell_descs();
+    for (const auto school : spschools_type::range())
+    {
+        const string full = spelltype_long_name(school);
+        const string short_name = spelltype_short_name(school);
+        const string english = spelltype_long_name_en(school);
+        INFO(english);
+        if (language == lang_t::ZH)
+        {
+            CHECK(strwidth(full) == 6);
+            CHECK(strwidth(short_name) == 4);
+            CHECK(full == short_name + "系");
+            CHECK(full == skill_name(spell_type2skill(school)));
+        }
+        else
+            CHECK(full == english);
+        // The .des/parser path must still accept English with Chinese display.
+        CHECK(school_by_name(english) == school);
+        CHECK(school_by_name(full) == school);
+        CHECK(school_by_name(short_name) == school);
+    }
+
+    // Exercise production formatting with single- and mixed-school spells.
+    const string compact = spell_schools_string(SPELL_BLINK, true);
+    CHECK(compact == (language == lang_t::ZH ? "传送" : "Tloc"));
+    CHECK(spell_schools_string(SPELL_BLINK)
+          == (language == lang_t::ZH ? "传送系" : "Translocation"));
+    CHECK(spell_schools_string(SPELL_FIREBALL, true)
+          == (language == lang_t::ZH ? "咒法/火焰" : "Conj/Fire"));
+    CHECK(spell_schools_string(SPELL_FIREBALL)
+          == (language == lang_t::ZH ? "咒法系/火焰系" : "Conjuration/Fire"));
+    if (language == lang_t::ZH)
+    {
+        CHECK(string(T_("Fire")) == "火焰");
+        CHECK(string(T_("Ice")) == "寒冰");
+        CHECK(string(T_("Air")) == "空气");
+        CHECK(string(T_("Earth")) == "大地");
+        CHECK(string(C_("book full name", "Necromancy")) == "死灵术");
+        init_properties();
+        CHECK(string(staff_type_name(STAFF_ALCHEMY)) == "炼金术");
+        CHECK(string(staff_type_name(STAFF_NECROMANCY)) == "死灵术");
+    }
+}
+
+TEST_CASE("spell details expand defence and resistance labels in context",
+          "[zh-translation][spell-defence-labels]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    init_spell_descs();
+    init_zap_index();
+    struct defence_case
+    {
+        spell_type spell;
+        const char *en_defence;
+        const char *zh_defence;
+        const char *en_resist;
+        const char *zh_resist;
+    };
+    const defence_case cases[] = {
+        { SPELL_AIRSTRIKE, "AC", "护甲", "None", "无" },
+        { SPELL_STONE_ARROW, "AC, EV, SH", "护甲, 闪避, 盾牌格挡", "None", "无" },
+        { SPELL_FIREBALL, "AC", "护甲", "rF", "火焰抗性" },
+        { SPELL_DISCHARGE, "AC (50%)", "护甲（减伤效果为50%）", "rElec", "电击抗性" },
+        { SPELL_FREEZING_CLOUD, "None", "无", "rC", "寒冷抗性" },
+        { SPELL_POISONOUS_VAPOURS, "None", "无", "rPois", "毒素抗性" },
+        { SPELL_NOXIOUS_BOG, "None", "无", "rPois (70%)", "毒素抗性（70%）" },
+        { SPELL_GLACIATE, "AC", "护甲", "rC (50%)", "寒冷抗性（50%）" },
+        { SPELL_JINXBITE, "None", "无", "Will", "意志力" },
+        { SPELL_FULSOME_FUSILLADE, "Varies", "视情况而定", "Varies", "视情况而定" },
+        { SPELL_LRD, "AC (x3) (x1 for icy explosions)", "护甲（3次减伤判定；冰爆为1次）",
+          "None (50% rC for icy explosions)", "无（冰爆伤害的50%受寒冷抗性影响）" },
+        { SPELL_PERMAFROST_ERUPTION, "AC (main blast only)", "护甲（仅主冲击）",
+          "rC (explosion only)", "寒冷抗性（仅爆炸）" },
+        { SPELL_PLASMA_BEAM, "AC, EV", "护甲, 闪避",
+          "rF, rElec (one beam each)", "火焰抗性、电击抗性（各影响一道射线）" },
+        { SPELL_SHATTER, "AC", "护甲", "Flying, gelatinous, insubstantial", "飞行、胶质、虚体" },
+        { SPELL_BLINK, "", "", "", "" },
+    };
+    for (const auto &test : cases)
+    {
+        INFO(spell_english_name(test.spell));
+        CHECK(spell_defence_string(test.spell, false, 100)
+              == (language == lang_t::ZH ? test.zh_defence : test.en_defence));
+        CHECK(spell_resist_string(test.spell, false, 100)
+              == (language == lang_t::ZH ? test.zh_resist : test.en_resist));
+    }
+    if (language == lang_t::ZH)
+    {
+        // The shared compact HUD keys are intentionally not expanded.
+        CHECK(string(T_("AC")) == "防");
+        CHECK(string(T_("EV")) == "闪");
+        CHECK(string(T_("SH")) == "盾");
+        CHECK(spell_resist_string(SPELL_BOLT_OF_DRAINING, true, 100) == "负能量抗性");
+        CHECK(spell_resist_string(SPELL_SPIT_ACID, true, 100) == "腐蚀抗性");
+        CHECK(spell_resist_string(SPELL_STEAM_BALL, true, 100) == "蒸汽抗性");
+    }
+}

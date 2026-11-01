@@ -1074,7 +1074,7 @@ bool do_west_wind_shot()
         {
             const int dist = min((int)wind.path_taken.size() - i - 1, random_range(1, 2));
             if (monster* mon = monster_at(wind.path_taken[i]))
-                mon->knockback(you, dist, 0, "wind");
+                mon->knockback(you, dist, 0, T_("wind"));
         }
 
         do_player_ranged_attack(targ, nullptr, &prototype, true, false);

@@ -128,7 +128,7 @@ Brand Weapon With Holy Wrath ability
 Unearth Wretches ability
 
 将那些濒死的生物从奇库巴库哈的墓地带出，为各种死灵法术提供充足的食材。
-它们的数量和质量随死灵术技能的提升而提升。
+它们的数量和质量随死灵系技能的提升而提升。
 %%%%
 Brand Weapon With Pain ability
 

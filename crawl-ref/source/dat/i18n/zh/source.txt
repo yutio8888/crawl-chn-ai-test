@@ -14616,31 +14616,31 @@ curse abbreviation|Tloc
 传送
 %%%%
 Forgecraft
-锻造术
+锻造系
 %%%%
 curse abbreviation|Forge
 锻造
 %%%%
 Fire Magic
-火焰魔法
+火焰系
 %%%%
 curse abbreviation|Fire
 火焰
 %%%%
 Ice Magic
-寒冰魔法
+寒冰系
 %%%%
 curse abbreviation|Ice
 寒冰
 %%%%
 Air Magic
-空气魔法
+空气系
 %%%%
 curse abbreviation|Air
 空气
 %%%%
 Earth Magic
-大地魔法
+大地系
 %%%%
 curse abbreviation|Earth
 大地
@@ -15699,7 +15699,7 @@ air
 空气
 %%%%
 alchemy
-炼金术
+炼金系
 %%%%
 curse abbreviation|Alch
 炼金
@@ -15906,7 +15906,7 @@ morningstar
 晨星锤
 %%%%
 necromancy
-死灵术
+死灵系
 %%%%
 curse abbreviation|Necro
 死灵
@@ -19295,40 +19295,40 @@ nimble swimmer
 敏捷游泳者
 %%%%
 no air magic
-无法使用空气魔法
+无法使用空气系法术
 %%%%
 no alchemy magic
-无法使用炼金魔法
+无法使用炼金系法术
 %%%%
 no armour
 无法穿甲
 %%%%
 no conjurations magic
-无法使用咒法魔法
+无法使用咒法系法术
 %%%%
 no earth magic
-无法使用大地魔法
+无法使用大地系法术
 %%%%
 no fire magic
-无法使用火焰魔法
+无法使用火焰系法术
 %%%%
 no forgecraft magic
-无法使用锻造魔法
+无法使用锻造系法术
 %%%%
 no forms
 无法变形
 %%%%
 no hexes magic
-无法使用诅咒魔法
+无法使用诅咒系法术
 %%%%
 no ice magic
-无法使用寒冰魔法
+无法使用寒冰系法术
 %%%%
 no jewellery
 无法佩戴珠宝
 %%%%
 no necromancy magic
-无法使用死灵魔法
+无法使用死灵系法术
 %%%%
 no potion heal
 无法用药水治疗
@@ -19343,7 +19343,7 @@ no stealth
 无法潜行
 %%%%
 no summoning magic
-无法使用召唤魔法
+无法使用召唤系法术
 %%%%
 no translocations magic
 无法使用位移魔法
@@ -20123,34 +20123,34 @@ You cannot equip rings or amulets.
 你无法佩戴戒指或项链。
 %%%%
 You cannot study or cast Air magic.
-你无法学习或施放空气魔法。
+你无法学习或施放空气系法术。
 %%%%
 You cannot study or cast Alchemy magic.
-你无法学习或施放炼金魔法。
+你无法学习或施放炼金系法术。
 %%%%
 You cannot study or cast Conjurations magic.
-你无法学习或施放咒法魔法。
+你无法学习或施放咒法系法术。
 %%%%
 You cannot study or cast Earth magic.
-你无法学习或施放大地魔法。
+你无法学习或施放大地系法术。
 %%%%
 You cannot study or cast Fire magic.
-你无法学习或施放火焰魔法。
+你无法学习或施放火焰系法术。
 %%%%
 You cannot study or cast Forgecraft magic.
-你无法学习或施放锻造魔法。
+你无法学习或施放锻造系法术。
 %%%%
 You cannot study or cast Hexes magic.
-你无法学习或施放诅咒魔法。
+你无法学习或施放诅咒系法术。
 %%%%
 You cannot study or cast Ice magic.
-你无法学习或施放寒冰魔法。
+你无法学习或施放寒冰系法术。
 %%%%
 You cannot study or cast Necromancy magic.
-你无法学习或施放死灵魔法。
+你无法学习或施放死灵系法术。
 %%%%
 You cannot study or cast Summoning magic.
-你无法学习或施放召唤魔法。
+你无法学习或施放召唤系法术。
 %%%%
 You cannot study or cast Translocations magic.
 你无法学习或施放位移魔法。
@@ -25244,7 +25244,7 @@ ice wizardry
 寒冰施法辅助
 %%%%
 You can cast Ice magic more easily.
-你施放寒冰魔法更加容易。
+你施放寒冰系法术更加容易。
 %%%%
 Serpent
 蛇形
@@ -25478,7 +25478,7 @@ fire wizardry
 火焰施法辅助
 %%%%
 You can cast Fire magic much more easily.
-你施放火焰魔法容易得多。
+你施放火焰系法术容易得多。
 %%%%
 App
 肢体
@@ -26925,34 +26925,34 @@ You can no longer roll toward enemies.
 你无法再向敌人翻滚。
 %%%%
 You can no longer study or cast Air magic.
-你无法再学习或施放空气魔法。
+你无法再学习或施放空气系法术。
 %%%%
 You can no longer study or cast Alchemy magic.
-你无法再学习或施放炼金魔法。
+你无法再学习或施放炼金系法术。
 %%%%
 You can no longer study or cast Conjurations magic.
-你无法再学习或施放咒法魔法。
+你无法再学习或施放咒法系法术。
 %%%%
 You can no longer study or cast Earth magic.
-你无法再学习或施放大地魔法。
+你无法再学习或施放大地系法术。
 %%%%
 You can no longer study or cast Fire magic.
-你无法再学习或施放火焰魔法。
+你无法再学习或施放火焰系法术。
 %%%%
 You can no longer study or cast Forgecraft magic.
-你无法再学习或施放锻造魔法。
+你无法再学习或施放锻造系法术。
 %%%%
 You can no longer study or cast Hexes magic.
-你无法再学习或施放诅咒魔法。
+你无法再学习或施放诅咒系法术。
 %%%%
 You can no longer study or cast Ice magic.
-你无法再学习或施放寒冰魔法。
+你无法再学习或施放寒冰系法术。
 %%%%
 You can no longer study or cast Necromancy magic.
-你无法再学习或施放死灵魔法。
+你无法再学习或施放死灵系法术。
 %%%%
 You can no longer study or cast Summoning magic.
-你无法再学习或施放召唤魔法。
+你无法再学习或施放召唤系法术。
 %%%%
 You can no longer study or cast Translocations magic.
 你无法再学习或施放位移魔法。
@@ -26994,34 +26994,34 @@ You can once more change form.
 你可以重新变形了。
 %%%%
 You can once more study and cast Air magic.
-你可以重新学习和施放空气魔法。
+你可以重新学习和施放空气系法术。
 %%%%
 You can once more study and cast Alchemy magic.
-你可以重新学习和施放炼金魔法。
+你可以重新学习和施放炼金系法术。
 %%%%
 You can once more study and cast Conjurations magic.
-你可以重新学习和施放咒法魔法。
+你可以重新学习和施放咒法系法术。
 %%%%
 You can once more study and cast Earth magic.
-你可以重新学习和施放大地魔法。
+你可以重新学习和施放大地系法术。
 %%%%
 You can once more study and cast Fire magic.
-你可以重新学习和施放火焰魔法。
+你可以重新学习和施放火焰系法术。
 %%%%
 You can once more study and cast Forgecraft magic.
-你可以重新学习和施放锻造魔法。
+你可以重新学习和施放锻造系法术。
 %%%%
 You can once more study and cast Hexes magic.
-你可以重新学习和施放诅咒魔法。
+你可以重新学习和施放诅咒系法术。
 %%%%
 You can once more study and cast Ice magic.
-你可以重新学习和施放寒冰魔法。
+你可以重新学习和施放寒冰系法术。
 %%%%
 You can once more study and cast Necromancy magic.
-你可以重新学习和施放死灵魔法。
+你可以重新学习和施放死灵系法术。
 %%%%
 You can once more study and cast Summoning magic.
-你可以重新学习和施放召唤魔法。
+你可以重新学习和施放召唤系法术。
 %%%%
 You can once more study and cast Translocations magic.
 你可以重新学习和施放位移魔法。
@@ -28308,28 +28308,28 @@ It increases the power of your Summonings spells.
 增强你召唤系法术的威力。
 %%%%
 It increases the power of your Necromancy spells.
-增强你死灵术法术的威力。
+增强你死灵系法术的威力。
 %%%%
 It increases the power of your Translocations spells.
 增强你传送系法术的威力。
 %%%%
 It increases the power of your Fire spells.
-增强你火焰法术的威力。
+增强你火焰系法术的威力。
 %%%%
 It increases the power of your Ice spells.
-增强你寒冰法术的威力。
+增强你寒冰系法术的威力。
 %%%%
 It increases the power of your Air spells.
-增强你空气法术的威力。
+增强你空气系法术的威力。
 %%%%
 It increases the power of your Earth spells.
-增强你大地法术的威力。
+增强你大地系法术的威力。
 %%%%
 It increases the power of your Alchemy spells.
-增强你炼金术法术的威力。
+增强你炼金系法术的威力。
 %%%%
 It increases the power of your Forgecraft spells.
-增强你锻造术法术的威力。
+增强你锻造系法术的威力。
 %%%%
 It increases your evasion after moving or waiting.
 移动或等待后提高你的闪避。
@@ -28380,7 +28380,7 @@ It improves your skill with shapeshifting (+5).
 提高你的变形术技能（+5）。
 %%%%
 It restores some MP whenever you drink a potion and also enhances your alchemy spells.
-饮用任何药水时恢复部分法力，同时增强你的炼金术法术。
+饮用任何药水时恢复部分法力，同时增强你的炼金系法术。
 %%%%
 It reduces the duration of hostile enchantments and decays magical contamination more quickly.
 缩短敌对附魔的持续时间，并加快魔法污染的消退速度。
@@ -31944,13 +31944,13 @@ Whenever you deal fire damage to an enemy without rFire∞, you may briefly leav
 每当你对没有rFire∞的敌人造成火焰伤害时，都可能使其短暂暴露，令其受到更多来自非攻击来源的伤害，更难躲避非攻击类投射物，并略微降低其意志力。
 %%%%
 It increases the success rate of your Fire Magic spells.
-它提高你的火焰魔法法术的成功率。
+它提高你的火焰系法术的成功率。
 %%%%
 Whenever you deal cold damage to an enemy without rCold∞, you may briefly leave it exposed, making it take increased damage for non-attack sources, less capable of dodging non-attack projectiles, and mildly reducing its Willpower.
 每当你对没有rCold∞的敌人造成寒冷伤害时，都可能使其短暂暴露，令其受到更多来自非攻击来源的伤害，更难躲避非攻击类投射物，并略微降低其意志力。
 %%%%
 It increases the success rate of your Ice Magic spells.
-它提高你的寒冰魔法法术的成功率。
+它提高你的寒冰系法术的成功率。
 %%%%
 When knocking back an enemy, and on one in four other hits, it spawns a shooting star with power proportional to the damage dealt.
 击退敌人时会产生一颗流星；其他命中则有四分之一的几率产生流星。流星的威力与造成的伤害成正比。
@@ -31983,7 +31983,7 @@ Equipping it will reduce your piety. While worn, you gain piety at three quarter
 装备它会降低你的虔诚值。佩戴期间，你获得虔诚值的速率为正常速率的四分之三。
 %%%%
 It may create clouds of spectral mist when the wearer attacks or casts spells, and grants immunity from such clouds. Necromancy spells have a greater chance to produce spectral mist.
-穿戴者攻击或施法时，它可能产生幽灵雾气云，并使穿戴者免疫此类云雾。死灵术法术产生幽灵雾气的几率更高。
+穿戴者攻击或施法时，它可能产生幽灵雾气云，并使穿戴者免疫此类云雾。死灵系法术产生幽灵雾气的几率更高。
 %%%%
 You hear the sound of rushing water.
 你听到了流水声。
@@ -36767,7 +36767,7 @@ None (50% rC for icy explosions)
 无（冰爆伤害的50%受寒冷抗性影响）
 %%%%
 AC (x3) (x1 for icy explosions)
-护甲（x3）（冰爆为x1）
+护甲（3次减伤判定；冰爆为1次）
 %%%%
 rC (explosion only)
 寒冷抗性（仅爆炸）
@@ -36782,10 +36782,10 @@ Flying, gelatinous, insubstantial
 飞行、胶质、虚体
 %%%%
 AC (50%)
-护甲（50%）
+护甲（减伤效果为50%）
 %%%%
 AC (x3)
-护甲（x3）
+护甲（3次减伤判定）
 %%%%
 %s%s (%s)
 %s%s（%s）
@@ -48424,3 +48424,75 @@ webtiles_hud|Silenced
 %%%%
 *EXPLORE*
 *探索*
+%%%%
+spell school|Conjuration
+咒法系
+%%%%
+spell school|Hexes
+诅咒系
+%%%%
+spell school|Fire
+火焰系
+%%%%
+spell school|Ice
+寒冰系
+%%%%
+spell school|Necromancy
+死灵系
+%%%%
+spell school|Summoning
+召唤系
+%%%%
+spell school|Forgecraft
+锻造系
+%%%%
+spell school|Translocation
+传送系
+%%%%
+spell school|Alchemy
+炼金系
+%%%%
+spell school|Earth
+大地系
+%%%%
+spell school|Air
+空气系
+%%%%
+staff type|alchemy
+炼金术
+%%%%
+staff type|necromancy
+死灵术
+%%%%
+spell defence|AC
+护甲
+%%%%
+spell defence|EV
+闪避
+%%%%
+spell defence|SH
+盾牌格挡
+%%%%
+spell resistance|Will
+意志力
+%%%%
+spell resistance|rF
+火焰抗性
+%%%%
+spell resistance|rC
+寒冷抗性
+%%%%
+spell resistance|rElec
+电击抗性
+%%%%
+spell resistance|rPois
+毒素抗性
+%%%%
+spell resistance|rNeg
+负能量抗性
+%%%%
+spell resistance|rCorr
+腐蚀抗性
+%%%%
+spell resistance|rSteam
+蒸汽抗性

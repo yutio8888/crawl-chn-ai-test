@@ -75,13 +75,13 @@ holy wrath (holy) weapon ego
 %%%%
 pain (pain) weapon ego
 
-它对活着的生物造成与你的死灵术技能成比例的额外伤害。{{
+它对活着的生物造成与你的死灵系技能成比例的额外伤害。{{
     if you.god() == "Trog" then
         return "特洛格阻止你释放此效果。";
     end
 }}{{
     if you.is_useless_skill("necromancy") then
-        return "你无法学习死灵术，因此无法发挥这把武器的全部力量。";
+        return "你无法学习死灵系，因此无法发挥这把武器的全部力量。";
     end
 }}
 %%%%
@@ -159,8 +159,8 @@ corrosion resistance (rCorr) armour ego
 %%%%
 death (Death) armour ego
 
-它会增强你的死灵术法术并提高其成功率。
-施放死灵术法术时，它可能从相邻且能受此效果影响的敌人身上汲取生命力来治疗你；
+它会增强你的死灵系法术并提高其成功率。
+施放死灵系法术时，它可能从相邻且能受此效果影响的敌人身上汲取生命力来治疗你；
 触发概率和效果强度取决于法术等级。
 %%%%
 dexterity (Dex+3) armour ego
@@ -285,9 +285,9 @@ resistance (rC+ rF+) armour ego
 %%%%
 resonance (Resonance) armour ego
 
-它会提高你的锻造术法术的成功率。
+它会提高你的锻造系法术的成功率。
 当你近战攻击与自己的某个造物相邻的敌人时，
-它会按你的锻造术技能成比例地增强这次近战攻击。
+它会按你的锻造系技能成比例地增强这次近战攻击。
 %%%%
 see invisible (SInv) armour ego
 

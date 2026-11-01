@@ -5357,7 +5357,7 @@ void bolt::monster_post_hit(monster* mon, int dmg)
 
     if (origin_spell == SPELL_SIROCCO && dmg > 0)
     {
-        mon->knockback(you, 2, 0, "scorching wind");
+        mon->knockback(you, 2, 0, T_("scorching wind"));
         mon->add_ench(mon_enchant(ENCH_SWIFT, &you, 200));
         mon->speed_increment -= 5;
     }
