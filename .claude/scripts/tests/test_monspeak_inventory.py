@@ -605,7 +605,14 @@ class MonspeakInventoryTests(unittest.TestCase):
         facts = MODULE._card_facts(self.inventory)
         by_entry = {entry["key"]: entry
                     for entry in self.inventory["entries"]}
-        records = MODULE._strict_block(MODULE.RESULTS_PATH)
+        # This regression uses self.inventory's historical consumer facts.
+        # Pair it with the matching ledger, not a later full-audit ledger.
+        ledger = self.root / "historical-monspeak-ledger.md"
+        ledger.write_bytes(subprocess.check_output(
+            ["git", "-C", str(ROOT), "show",
+             "9770e911ee7d40b51a61a1717aecda148c983412:docs/monspeak-review-results.md"]
+        ))
+        records = MODULE._strict_block(ledger)
         by_key = {card["key"]: card for card in records[1:]}
         closure = ("_friendly_imp_greeting", "_cause_or_spread_",
                    "_mayhem_", "_truckle_", "_vassalage_",
