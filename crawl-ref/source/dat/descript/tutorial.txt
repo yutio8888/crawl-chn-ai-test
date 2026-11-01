@@ -141,7 +141,7 @@ tutorial1 exit
 <yellow>Staircases</yellow>
   <input>$cmd[CMD_GO_UPSTAIRS]</input>  go back to the previous level
   <input>$cmd[CMD_GO_DOWNSTAIRS]</input>  enter the next level
-  <input>$cmd[CMD_DISPLAY_MAP]></input>/<input>$cmd[CMD_DISPLAY_MAP]<<</input> travel to the nearest up/downstairs
+  <input>$cmd[CMD_DISPLAY_MAP]></input>/<input>$cmd[CMD_DISPLAY_MAP]<<</input> find the nearest down/upstairs; press <input>Enter</input> to travel there
 
 <yellow>Doors</yellow> can be opened by walking into them
   <input>$cmd[CMD_CLOSE_DOOR]</input>  close an open door
@@ -279,7 +279,8 @@ tutorial2 exit
 
 <yellow>Resting</yellow>
   <input>$cmd[CMD_WAIT]</input>  wait and rest a single turn
-  <input>$cmd[CMD_REST]</input>  wait and rest up to 100 turns
+  <input>$cmd[CMD_REST]</input>  rest to recover health and magic, until restored or interrupted
+    If already fully rested, wait for 100 turns.
 %%%%
 #######################################
 # Tutorial map 3: Items and Inventory #
@@ -625,7 +626,8 @@ tutorial4 exit
   You can cast memorised spells via <input>leftclick</input>, and read their descriptions and check your spell proficiency by <input>mouseover</input> or <input>rightclick</input></localtiles>
   <input>$cmd[CMD_QUIVER_ITEM]</input>  adjust your quiver
 
-  <input>$cmd[CMD_REST]</input>  rest up to 100 turns to regain magic points and health
+  <input>$cmd[CMD_REST]</input>  rest to recover magic points and health, until restored or interrupted
+    If already fully rested, wait for 100 turns.
   <input>$cmd[CMD_SHOUT]</input>  order allies
   <input>$cmd[CMD_UNEQUIP]</input>  take off equipment
 %%%%
@@ -704,11 +706,12 @@ tutorial5 exit
   <input>$cmd[CMD_GO_DOWNSTAIRS]</input>  pray at an altar to join a god
   <input>$cmd[CMD_USE_ABILITY]</input>  use a divine ability
   <input>$cmd[CMD_DISPLAY_RELIGION]</input>  check your religious standing<localtiles>
-  A <input>rightclick</input> on the player tile will also bring up the religion screen.</localtiles>
+  A <input>Shift-rightclick</input> on the player tile will also bring up the religion screen.</localtiles>
 
 <yellow>Resting</yellow>
   <input>$cmd[CMD_WAIT]</input>  wait and rest a single turn
-  <input>$cmd[CMD_REST]</input>  wait and rest up to 100 turns
+  <input>$cmd[CMD_REST]</input>  rest to recover health and magic, until restored or interrupted
+    If already fully rested, wait for 100 turns.
 
 <yellow>Other commands</yellow>
   <input>$cmd[CMD_DISPLAY_OVERMAP]</input> display an overview of the dungeon

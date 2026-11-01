@@ -49,7 +49,7 @@ death random 1
 %%%%
 death random 2
 
-如果可以，请在每场遭遇之间休息，最好选择已经探索过并清除了怪物的区域。按下 <input>$cmd[CMD_REST]</input><localtiles>，或<input>点击命令栏上的‘休息’按钮</input></localtiles>，会让你休息 100 回合，或直到完全恢复。
+如果可以，请在每场遭遇之间休息，最好选择已经探索过并清除了怪物的区域。按下 <input>$cmd[CMD_REST]</input><localtiles>，或<input>点击命令栏上的‘休息’按钮</input></localtiles>，会让你休息以恢复生命值和法力，直到恢复或被重要事件打断；若已充分休息，则等待 100 回合。
 %%%%
 death random 3
 
@@ -68,7 +68,7 @@ finished explored
 
 使用自动探索（<input>$cmd[CMD_EXPLORE]</input>）能更轻松地四处移动和探索楼层。Crawl 会让你自动移动到感兴趣的物品处并将其拾起。<localtiles>
 
-也可以在小地图上<input>按住 Ctrl 并单击鼠标左键</input>来启动自动探索。</localtiles>
+也可以在小地图上<input>按住 Shift 并单击鼠标左键</input>来启动自动探索。</localtiles>
 %%%%
 finished travel
 
@@ -126,7 +126,7 @@ HINT_AUTO_EXPLORE
 %%%%
 HINT_CAN_BERSERK
 
-面对特别难对付的敌人时，你应该按 <w>$cmd[CMD_USE_ABILITY]</w> 使用狂暴能力。狂暴期间击杀怪物会使狂暴持续得更久。
+面对特别难对付的敌人时，你应该按 <w>$cmd[CMD_USE_ABILITY]</w> 使用狂暴能力。在特洛格的支持下，狂暴期间击杀怪物有机会延长狂暴。
 %%%%
 HINT_CAUGHT_IN_NET
 
@@ -242,7 +242,7 @@ HINT_GAINED_SPELLCASTING
 %%%%
 HINT_GLOWING
 
-你积累了太多魔法污染，身体已经开始发光！魔法污染通常来自隐形等强力魔法，或来自施法失误。
+你积累了太多魔法污染，身体已经开始发光！魔法污染可能来自施法失误或某些特殊魔法效果。
 %%%%
 HINT_GOD_DISPLEASED
 
@@ -309,9 +309,8 @@ HINT_MISCAST_ARMOUR
 %%%%
 HINT_MISCAST_CONTAMINATION_AND_MP
 
-如果施法成功率很高（可通过按 <w>$cmd[CMD_CAST_SPELL]\?</w> 或
-<w>$cmd[CMD_DISPLAY_SPELLS]</w> 查看），那么施法失误只会使法术未能生效，并伴随一个无害的副作用。
-但失败率较高的法术在施法失误时，可能使你受到魔法能量污染，并可能额外产生一个有害副作用。通常这并不是问题，因为魔法污染会随时间消退；但如果你在短时间内反复受到污染，就会发生变异或遭受其他有害影响。
+你可以按 <w>$cmd[CMD_CAST_SPELL]\?</w> 或 <w>$cmd[CMD_DISPLAY_SPELLS]</w> 查看法术失败率。
+每次施法失误都会积累一定的魔法污染。轻微的失误通常没有其他有害效果，严重的失误则可能额外造成伤害或其他不良后果；失败率较高的法术风险也更大。魔法污染会随时间消退，但短时间内反复积累污染可能导致变异或其他有害影响。
 
 请注意，施法失误仍会消耗与成功施放该法术时相同的全部法力。
 %%%%
@@ -585,7 +584,7 @@ HINT_SEEN_ZERO_EXP_MON
 %%%%
 HINT_SHIFT_RUN
 
-按 <w>Shift键+方向键</w> 或 <w>/ 再按方向键</w>，走动时就能少按几次键。这样会让你沿一个方向奔跑，直到看见怪物或角色发现有趣的事物。
+按 <w>Shift键+方向键</w>，走动时就能少按几次键。这样会让你沿一个方向奔跑，直到看见怪物或角色发现有趣的事物。
 %%%%
 HINT_SKILL_RAISE
 
@@ -636,7 +635,7 @@ HINT_YOU_RESIST
 %%%%
 HINT_YOU_SILENCE
 
-处于沉默状态时，你无法施法、阅读卷轴或祈求神力。作用半径内的怪物同样受到限制。沉默场可以通过<tiles>特殊样式的边框地块</tiles><console>颜色不同的地面格</console>辨认；它始终以你为中心并随你移动。其半径会逐渐缩小，最终只影响你一人，然后彻底消失。
+处于沉默状态时，你无法施法、阅读卷轴或祈求神力。作用半径内的怪物需要发声的法术、祈祷等能力也会受阻，但并非所有特殊能力都会被封禁。沉默场可以通过<tiles>特殊样式的边框地块</tiles><console>颜色不同的地面格</console>辨认；它始终以你为中心并随你移动。其半径会逐渐缩小，最终只影响你一人，然后彻底消失。
 %%%%
 death random 4
 
@@ -827,7 +826,7 @@ HINT_SKILL_DESCRIPTIONS
 %%%%
 HINT_MEMORISE_SCREEN
 
-此界面显示你的法术库中的法术。你可以在此选择法术进行记忆，也可以查看法术描述、搜索和整理法术。作为咒法师，你开始时有五个可记忆的法术，以及一个已经记忆的法术：魔法飞弹。（要查看已记忆的法术，可以退出此菜单并按 <w>I</w>。）
+此界面显示你的法术库中的法术。你可以在此选择法术进行记忆，也可以查看法术描述、搜索和整理法术。作为咒法师，你开始时已经记忆了魔法飞弹，法术库中还另有三道法术，可在满足条件后记忆。（要查看已记忆的法术，可以退出此菜单并按 <w>I</w>。）
 %%%%
 HINT_MEMORISE
 
@@ -847,6 +846,10 @@ HINT_TARGET_MODE
 
 随后你会进入瞄准模式，最近的怪物或上一个目标已被自动锁定。你也可以用 <w>+</w> 或 <w>-</w> 在视野内所有敌对怪物之间循环切换。瞄准正确的怪物后，只需按 <w>f</w>、<w>回车</w> 或 <w>.</w> 即可向它发射。如果未命中，按 <w>$1</w> 可再次向同一目标发射。
 %%%%
+HINT_TARGET_MODE_THROW
+
+随后你会进入瞄准模式，最近的怪物或上一个目标已被自动锁定。你也可以用 <w>+</w> 或 <w>-</w> 在视野内所有敌对怪物之间循环切换。瞄准正确的怪物后，只需按 <w>f</w>、<w>回车</w> 或 <w>.</w> 即可向它发射。若要再次投掷此物品，按 <w>$1</w> 重新打开物品菜单，选择此物品，再选择目标。
+%%%%
 HINT_ACTIVATE_ABILITY_ITEM_EQUIPPED
 
 要这样做，先用 <w>$cmd[CMD_USE_ABILITY]</w> 进入能力菜单，再选择对应的能力。注意，这种激活尝试很可能失败，尤其是在缺乏训练时。
@@ -865,11 +868,11 @@ HINT_ACTIVATE_ABILITY_JEWELLERY_NOT_WORN
 %%%%
 HINT_THROW_INVENTORY_ITEM
 
-要这样做，先按 <w>$cmd[CMD_FIRE]</w> 发射，再按 <w>$1</w> 选择此物品。
+要这样做，先按 <w>$cmd[CMD_FIRE_ITEM_NO_QUIVER]</w>，再按 <w>$1</w> 选择此物品。
 %%%%
 HINT_THROW_GROUND_ITEM
 
-要这样做，先按 <w>$cmd[CMD_FIRE]</w> 发射，再选择此物品。
+要这样做，先拾取此物品，再按 <w>$cmd[CMD_FIRE_ITEM_NO_QUIVER]</w> 并在物品菜单中选择它。
 %%%%
 HINT_WEAPON_HAS_RESIST
 
@@ -889,7 +892,7 @@ HINT_ATTACK_WITH_MELEE_WEAPON
 %%%%
 HINT_THROWABLE
 
-$1可以直接用 <w>$cmd[CMD_FIRE]</w> 投掷，无需发射器。
+$1无需发射器即可投掷。可按 <w>$cmd[CMD_FIRE_ITEM_NO_QUIVER]</w> 选择它。
 %%%%
 HINT_CANNOT_WEAR_HELMET
 
@@ -1042,7 +1045,7 @@ HINT_DESCRIBE_FRIENDLY_MONSTER
 %%%%
 HINT_DESCRIBE_DANGEROUS_UNAWARE_MONSTER
 
-你可以将它所在的格子标记为危险，以免在使用自动探索或自动旅行时意外进入它的视野。要这样做，先按 <w>$cmd[CMD_LOOK_AROUND]</w> 进入瞄准模式，将光标移到怪物所在的格子上，再按 <w>$cmd[CMD_MAP_EXCLUDE_AREA]</w>。这样会将该格及周围半径为 8 的所有格子标记为“禁区”，探索或旅行模式都不会进入这些格子。
+你可以将它所在的格子标记为危险，以免在使用自动探索或自动旅行时意外进入它的视野。要这样做，先按 <w>$cmd[CMD_LOOK_AROUND]</w> 进入瞄准模式，将光标移到怪物所在的格子上，再按 <w>$cmd[CMD_TARGET_EXCLUDE]</w>。这样会将该格及周围半径为 8 的所有格子标记为“禁区”，探索或旅行模式都不会进入这些格子。
 %%%%
 HINT_RUN_AWAY
 

@@ -290,6 +290,23 @@ class HintInventoryTests(unittest.TestCase):
                 with self.assertRaises(RuntimeError):
                     MODULE.extract_producers(mutated_cc, mutated_en)
 
+    def test_throw_and_spell_target_selector_requires_both_bodies(self):
+        cc = (ROOT / MODULE.HINTS_CC).read_bytes()
+        en = (ROOT / MODULE.HINTS_EN).read_bytes()
+        keys, facts = MODULE.extract_producers(cc, en)
+        for key in ("hint_target_mode", "hint_target_mode_throw"):
+            self.assertIn(key, keys)
+            self.assertEqual("finite-selector", facts[key][0]["kind"])
+        mutations = (
+            (cc.replace(b'"HINT_TARGET_MODE_THROW"', b'dynamic_key'), en),
+            (cc, en.replace(b'HINT_TARGET_MODE_THROW', b'REMOVED_TARGET_HINT')),
+            (cc.replace(b'_get_hint(spells ?', b'_get_hint(unknown_selector ?'), en),
+        )
+        for mutated_cc, mutated_en in mutations:
+            with self.subTest(cc=mutated_cc != cc, en=mutated_en != en):
+                with self.assertRaises(RuntimeError):
+                    MODULE.extract_producers(mutated_cc, mutated_en)
+
     def test_lifecycle_sources_are_exact_and_fail_closed(self):
         mutations = (
             (
