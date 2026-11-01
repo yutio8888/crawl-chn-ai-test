@@ -128,20 +128,8 @@ intelligence. They are filled with hatred for anything that can hold a form.
 %%%%
 Donald
 
-{{
-    local descript = "An adventurer just like you, trying to find the Orb."
-
-    if you.race() ~= "Merfolk" and you.race() ~= "Octopode" then
-        descript = descript .. " Unlike you, and d"
-    else
-        descript = descript .. " D"
-    end
-
-    descript = descript .. "espite his hatred of it, he takes to water " ..
-                           "like a fowl."
-
-    return descript
-}}
+An adventurer just like you, trying to find the Orb. Despite his hatred of water,
+he takes to it like a fowl.
 %%%%
 Dowan
 
@@ -1337,8 +1325,8 @@ Its scales are sooty from years of magical pyrotechnics.
 %%%%
 draconian shifter
 
-A draconian master of the warp, who can translocate both itself and anyone else
-to any place, either on this world or outside of it.
+A draconian master of the warp, who can shift itself and other creatures around
+the battlefield and prevent its enemies from translocating.
 %%%%
 draconian stormcaller
 

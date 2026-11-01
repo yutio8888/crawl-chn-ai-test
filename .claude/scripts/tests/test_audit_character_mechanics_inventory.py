@@ -198,6 +198,31 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "unsupported final skill-title"):
             MODULE.skill_title_context('result = translate_somehow(result);')
 
+    def test_shared_special_title_table_keeps_conditions_and_fails_closed(self):
+        source = '''enum special_title_type { ST_FIRST, ST_SECOND, NUM_SPECIAL_TITLES, };
+        static const char* special_title_templates[] = {
+            NC_("skill title", "First"), NC_("skill title", "Second"),
+        };
+        static string _render_skill_title(string result, species_type species)
+        { result = C_("skill title", result.c_str()); return result; }
+        '''
+        body = 'if (rank == 5) return special_title_templates[ST_SECOND];'
+        self.assertEqual('if (rank == 5) return "Second";',
+                         MODULE.expand_special_title_references(source, body))
+        renderer = MODULE.skill_title_renderer(source,
+            'return _render_skill_title(result, species);')
+        self.assertEqual("skill title", MODULE.skill_title_context(renderer))
+        for changed in (
+            source.replace('ST_SECOND,', 'ST_FIRST,', 1),
+            source.replace('NC_("skill title", "Second"),', ''),
+            source.replace('NC_("skill title", "Second")', 'N_("Second")'),
+        ):
+            with self.assertRaises(RuntimeError):
+                MODULE.expand_special_title_references(changed, body)
+        with self.assertRaises(RuntimeError):
+            MODULE.expand_special_title_references(source,
+                'return special_title_templates[ST_UNKNOWN];')
+
     def test_enum_parser_keeps_explicit_expressions_and_excludes_aliases(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "status.h"

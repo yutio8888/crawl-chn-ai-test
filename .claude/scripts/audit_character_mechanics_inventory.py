@@ -731,13 +731,52 @@ def skill_title_context(body):
     raise RuntimeError("unsupported final skill-title translation producer")
 
 
+def skill_title_renderer(source, selector):
+    if re.search(r"\breturn\s+_render_skill_title\(result,\s*species\)\s*;", selector):
+        return exact_function_body(source, r"\bstring\s+_render_skill_title")
+    return selector
+
+
+def expand_special_title_references(source, body):
+    """Resolve the shared literal table while retaining selector conditions."""
+    if "special_title_templates[" not in body:
+        return body
+    enum = re.search(r"\benum\s+special_title_type\s*\{([^{}]*)\}",
+                     _strip_cpp_comments(source), re.S)
+    if not enum:
+        raise RuntimeError("missing special-title enum")
+    identities = [part.strip() for part in enum.group(1).split(",") if part.strip()]
+    if not identities or identities.pop() != "NUM_SPECIAL_TITLES":
+        raise RuntimeError("unsupported special-title enum sentinel")
+    if (len(set(identities)) != len(identities)
+            or any(not re.fullmatch(r"ST_[A-Z0-9_]+", key) for key in identities)):
+        raise RuntimeError("unsupported special-title enum values")
+    raw_values = ordered_initializer_rows(source,
+        r"\bstatic\s+const\s+char\s*\*\s*special_title_templates\s*\[\s*\]")
+    if len(raw_values) != len(identities):
+        raise RuntimeError("special-title enum/table mismatch")
+    values = {}
+    for identity, raw in zip(identities, raw_values):
+        if not re.fullmatch(r'NC_\(\s*"skill title"\s*,\s*"(?:[^"\\]|\\.)*"\s*\)', raw):
+            raise RuntimeError("unsupported special-title context or initializer")
+        values[identity] = cpp_strings(raw)[1]
+
+    def replace(match):
+        key = match.group(1).strip()
+        if key not in values:
+            raise RuntimeError(f"unsupported special-title reference: {key}")
+        return json.dumps(values[key], ensure_ascii=False)
+
+    return re.sub(r"\bspecial_title_templates\s*\[([^\]]*)\]", replace, body)
+
+
 def skill_rows(db, descriptions):
     en_desc, zh_desc = descriptions
     identities = concrete_enum_identities(SKILL_TYPE, "SK_")
     identities = identities[:identities.index("SK_BLANK_LINE")]
     source = active_source(SKILL_CODE)
     title_body = exact_function_body(source, r"\bstring\s+skill_title_by_rank")
-    title_context = skill_title_context(title_body)
+    title_context = skill_title_context(skill_title_renderer(source, title_body))
     table_rows = ordered_initializer_rows(
         source,
         r"\bstatic\s+const\s+char\s*\*\s*skill_titles"
@@ -788,9 +827,10 @@ def skill_rows(db, descriptions):
             "source_file": relative(SKILL_CODE),
         }
         branch = title_branches.get(identity, "")
+        resolved_branch = expand_special_title_references(source, branch)
         row["conditional_titles"] = [
             translation(db, value, title_context) for value in dict.fromkeys(re.findall(
-                r'\bresult\s*=\s*"((?:[^"\\]|\\.)*)"\s*;', branch
+                r'\bresult\s*=\s*"((?:[^"\\]|\\.)*)"\s*;', resolved_branch
             ))
         ]
         row["title_override_producer"] = normalize_producer_fragment(branch)
@@ -806,11 +846,13 @@ def shared_skill_title_rows(db):
     conduct = exact_function_body(source, r"\bstring\s+special_conduct_title")
     weights = exact_function_body(source, r"\bstring\s+_stk_weight")
     title = exact_function_body(source, r"\bstring\s+skill_title_by_rank")
-    title_context = skill_title_context(title)
+    renderer = skill_title_renderer(source, title)
+    title_context = skill_title_context(renderer)
     # The entire producer is bound as well as its finite literal results.
     # Species names and god titles remain owned by their respective domains.
     conduct_titles = list(dict.fromkeys(re.findall(
-        r'\breturn\s+"((?:[^"\\]|\\.)*)"\s*;', conduct
+        r'\breturn\s+"((?:[^"\\]|\\.)*)"\s*;',
+        expand_special_title_references(source, conduct)
     )))
     weight_titles = list(dict.fromkeys(re.findall(
         r'\breturn\s+"((?:[^"\\]|\\.)*)"\s*;', weights
@@ -837,6 +879,7 @@ def shared_skill_title_rows(db):
               for value in weight_titles),
         ],
         "producer_fragment": normalize_producer_fragment(title),
+        "render_producer_fragment": normalize_producer_fragment(renderer),
         "weight_producer_fragment": normalize_producer_fragment(weights),
         "source_file": relative(SKILL_CODE),
     }]

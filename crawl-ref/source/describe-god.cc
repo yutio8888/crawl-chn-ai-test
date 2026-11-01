@@ -26,6 +26,7 @@
 #include "items.h"
 #include "item-name.h"
 #include "libutil.h"
+#include "lang-en-guard.h"
 #include "menu.h"
 #include "message.h"
 #include "options.h"
@@ -248,18 +249,9 @@ static const char *divine_title[][8] =
 };
 COMPILE_CHECK(ARRAYSZ(divine_title) == NUM_GODS);
 
-string god_title(god_type which_god, species_type which_species, int piety)
+static string _render_god_title(const char* key, species_type which_species)
 {
-    string title;
-    if (player_under_penance(which_god))
-        title = C_("god title", divine_title[which_god][0]);
-    else if (which_god == GOD_USKAYAW)
-        title = C_("god title", divine_title[which_god][_invocations_level()]);
-    else if (which_god == GOD_GOZAG)
-        title = C_("god title", divine_title[which_god][_gold_level()]);
-    else
-        title = C_("god title", divine_title[which_god][_piety_level(piety)]);
-
+    const string title = C_("god title", key);
     const map<string, string> replacements =
     {
         { "Adj", species::name(which_species, species::SPNAME_ADJ) },
@@ -277,6 +269,39 @@ string god_title(god_type which_god, species_type which_species, int piety)
     };
 
     return replace_keys(title, replacements);
+}
+
+string god_title(god_type which_god, species_type which_species, int piety)
+{
+    const char* title;
+    if (player_under_penance(which_god))
+        title = divine_title[which_god][0];
+    else if (which_god == GOD_USKAYAW)
+        title = divine_title[which_god][_invocations_level()];
+    else if (which_god == GOD_GOZAG)
+        title = divine_title[which_god][_gold_level()];
+    else
+        title = divine_title[which_god][_piety_level(piety)];
+
+    return _render_god_title(title, which_species);
+}
+
+vector<pair<string, string>> god_title_translation_pairs(species_type species)
+{
+    vector<pair<string, string>> titles;
+    // Render the finite table directly, never selecting a title from the live
+    // player's piety, penance, gold, skill, or conduct state.
+    for (const auto& god : divine_title)
+        for (const char* key : god)
+        {
+            string english;
+            {
+                ScopedLangEn protocol_language;
+                english = _render_god_title(key, species);
+            }
+            titles.emplace_back(english, _render_god_title(key, species));
+        }
+    return titles;
 }
 
 static string _describe_item_curse(const item_def& item)

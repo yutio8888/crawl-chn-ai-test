@@ -34362,7 +34362,7 @@ draconian scorcher
 龙人灼烧者
 %%%%
 draconian shifter
-龙人变形者
+龙人移位者
 %%%%
 draconian stormcaller
 龙人风暴召唤者
@@ -49198,3 +49198,6 @@ god title|Lightning Rod
 %%%%
 buggy miscellaneous item
 有问题的杂项物品
+%%%%
+\nIt deals %s damage when destroyed.\n
+\n它被摧毁时会造成%s点伤害。\n

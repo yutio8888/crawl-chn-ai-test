@@ -7282,7 +7282,7 @@ void _unmarshallMonsterInfo(reader &th, monster_info& mi)
             mi.i_ghost.title = "";
         else
 #endif
-            unmarshallString(th);
+            mi.i_ghost.title = unmarshallString(th);
     }
 #if TAG_MAJOR_VERSION == 34
     if ((mons_is_ghost_demon(mi.type)
