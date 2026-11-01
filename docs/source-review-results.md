@@ -5,9 +5,9 @@
 ## 边界与证据
 
 - 冻结基线：`90d7b59904b013a657ee1a17652c374ec339a1d3`；父清单摘要：`918bf90376cfa45af2a5b254ce38e9b6117fdd4101b6ae7270e41bbabcce387e`。
-- 当前术语摘要：`8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`；当前 SourceDB 文件摘要：`58e8707b294cfc2ceb8bccde016cbaade4be6364178812ccf9214607289a1a2e`。
-- 三个互斥主分区共1528身份；连同完整模板、145个射线名、19个事件名及两条关联消息，去重后本批1725身份；逐卡集合双向相等，重复0。
-- 终态计数：keep=1555, adjust=169, defer terminology=1。
+- 当前术语摘要：`8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`；当前 SourceDB 文件摘要：`57473a922680ad22cefdec794dac4acc6b6a38ab8f087229743a2c65222f06be`。
+- 三个互斥主分区共1528身份；连同完整模板、145个射线名、19个事件名及两条关联消息，去重后本批1726身份；逐卡集合双向相等，重复0。
+- 终态计数：keep=1555, adjust=170, defer terminology=1。
 - 原始身份包含仍被保留的旧模板；调用已迁移不等于证明其所有历史/动态消费者死亡，未擅删。defer 保留兼容值，责任人与重入条件见具体卡。
 - 原始报告与修后独立文字复核位于 `.claude/metrics/verify/source-rereview-20261101/`；完整原始分区报告位于指南工作区 `full-source-rereview-20261101/`。下表保留所有逐身份原文/现值/理由，临时报告不是唯一证据。
 - 英文键中的 `\n` 为数据库表示；表内引文按纯文本转义。证据行号为冻结输入定位，函数名供修后定位。
@@ -1632,6 +1632,7 @@
 | source:bomblet<br>EN: bomblet | 爆弹 | 爆弹 | keep | 射线显示名逐条复核；按zap_data实际对象、材料、伤害或轨迹保留含义，仅在已知名称gate内翻译；内部debug/异常标签保留生命周期。 | crawl-ref/source/zap-data.h; crawl-ref/source/beam.cc:is_known_beam_name; crawl-ref/source/hiscores.cc:_death_beam_display_name |
 | source:branded self with the %s<br>EN: Branded self with the %s | （基线无键） | 给自己烙上了%s | adjust | 完整笔记模板修后逐句复核，恢复动作、主体、对象及实际等级/时长，参数和原始Note字段保留。 | crawl-ref/source/notes.cc:Note::describe |
 | source:buggy blast<br>EN: buggy blast | （基线无键） | 错误冲击 | adjust | 射线显示名逐条复核；按zap_data实际对象、材料、伤害或轨迹保留含义，仅在已知名称gate内翻译；内部debug/异常标签保留生命周期。 | crawl-ref/source/zap-data.h; crawl-ref/source/beam.cc:is_known_beam_name; crawl-ref/source/hiscores.cc:_death_beam_display_name |
+| source:buggy descriptor!<br>EN: Buggy descriptor! | （基线无键） | 描述出错！ | adjust | 符号型神器属性描述的异常fallback提示；保留描述出错含义，不虚构任何属性效果。 | crawl-ref/source/describe.cc:_randart_propnames |
 | source:burning poison<br>EN: burning poison | （基线无键） | 燃烧的毒素 | adjust | 间接事件名称逐条复核；保留实际作用或来源，原始aux及日志身份不变；Freeze为有限历史兼容selector，未知旧值不套用任意SourceDB译名。 | spl-damage.cc:2384 |
 | source:burst of rock shards<br>EN: burst of rock shards | （基线无键） | 碎岩爆发 | adjust | 射线显示名逐条复核；按zap_data实际对象、材料、伤害或轨迹保留含义，仅在已知名称gate内翻译；内部debug/异常标签保留生命周期。 | crawl-ref/source/zap-data.h; crawl-ref/source/beam.cc:is_known_beam_name; crawl-ref/source/hiscores.cc:_death_beam_display_name |
 | source:concentrated momentum<br>EN: concentrated momentum | （基线无键） | 凝聚动量 | adjust | 射线显示名逐条复核；按zap_data实际对象、材料、伤害或轨迹保留含义，仅在已知名称gate内翻译；内部debug/异常标签保留生命周期。 | crawl-ref/source/zap-data.h; crawl-ref/source/beam.cc:is_known_beam_name; crawl-ref/source/hiscores.cc:_death_beam_display_name |

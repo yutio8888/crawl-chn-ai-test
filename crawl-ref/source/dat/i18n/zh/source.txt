@@ -49727,3 +49727,6 @@ It makes you very vulnerable to %1$s.
 It makes you vulnerable to %1$s.
 它使你容易受到%1$s伤害。
 %%%%
+Buggy descriptor!
+描述出错！
+%%%%
