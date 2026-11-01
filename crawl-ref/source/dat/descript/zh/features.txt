@@ -48,7 +48,7 @@ An opulent altar of Gozag
 %%%%
 A hazy altar of Hepliaklqana
 
-遗忘者惠普利亚卡纳的祭坛，被笼罩在薄雾中，难以清晰辨认。
+被遗忘者惠普利亚卡纳的祭坛，被笼罩在薄雾中，难以清晰辨认。
 有些东西似曾相识，但很难说清原因。
 %%%%
 A candlelit altar of Ignis

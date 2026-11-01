@@ -363,7 +363,7 @@ You've transgressed heavily! Be penitent!
 你犯下了严重的罪过！忏悔吧！
 %%%%
 You are under penance.
-你正处于苦修中。
+你正受到神祇惩戒。
 %%%%
 You should show more discipline.
 你应当更加严守戒律。
@@ -399,7 +399,7 @@ A rising star in the eyes of %s.
 %s原谅追随者的弃离；但那些后来信仰邪恶之神的人将受到惩罚。（%s是邪恶之神。）
 %%%%
 %s forgives followers for abandonment; however, those who later take up the worship of an evil or chaotic god will be scourged. (%s are evil, and %s are chaotic.)
-%s原谅追随者的弃离；但那些后来信仰邪恶或混乱之神的人将被鞭笞。（%s是邪恶的，%s是混乱的。）
+%s原谅追随者的弃离；但那些后来信仰邪恶或混沌之神的人将被鞭笞。（%s是邪恶的，%s是混沌的。）
 %%%%
 %s does not appreciate abandonment, and will call down fearful punishments on disloyal followers!
 %s不欣赏弃离行为，并将对不忠的追随者降下可怕的惩罚！
@@ -453,7 +453,7 @@ summon a divine warrior
 召唤神圣战士
 %%%%
 The Shining One will bless your weapon with holy wrath... once.
-光辉者将为你的武器加持神圣之怒……一次。
+光辉者将为你的武器加持神圣惩戒……一次。
 %%%%
 The Shining One is no longer ready to bless your weapon.
 光辉者尚未准备好再次祝福你的武器。
@@ -480,7 +480,7 @@ Kikubaaqudgha protects you from unholy torment.
 奇库巴库哈保护你免受不洁折磨。
 %%%%
 invoke the sign of ruin
-唤起毁灭之印
+唤起毁灭印记
 %%%%
 Kikubaaqudgha will grant you forbidden knowledge or bloody your weapon with pain... once.
 奇库巴库哈将赐予你禁忌知识或为你的武器加持痛苦……一次。
@@ -576,13 +576,13 @@ unleash Makhleb's destructive might
 释放马科列布的毁灭之力
 %%%%
 summon an infernal servant of Makhleb
-召唤马科列布的炼狱仆从
+召唤马科列布的地狱仆从
 %%%%
 Makhleb will allow you to brand your body with an infernal mark... once.
-马科列布将允许你在身体上烙印炼狱印记……一次。
+马科列布将允许你在身体上烙印地狱印记……一次。
 %%%%
 Makhleb will no longer allow you to brand your body with an infernal mark.
-马科列布不再允许你在身体上烙印炼狱印记。
+马科列布不再允许你在身体上烙印地狱印记。
 %%%%
 call upon Sif Muna for magical energy
 呼唤西芙·穆娜获取魔力
@@ -657,7 +657,7 @@ provide healing for yourself
 为自己提供治疗
 %%%%
 call upon Elyvilon for divine vigour
-呼唤艾莉维隆赐予神圣活力
+呼唤艾利维隆赐予神圣活力
 %%%%
 Lugonu protects you from the effects of unwielding distortion weapons.
 卢格努保护你免受卸下扭曲武器的影响。
@@ -678,7 +678,7 @@ corrupt the fabric of space
 腐蚀空间结构
 %%%%
 gate yourself to the Abyss
-打开通往深渊之门
+将自己传送到深渊
 %%%%
 Lugonu will corrupt your weapon with distortion... once.
 卢格努将用扭曲腐蚀你的武器……一次。
@@ -687,7 +687,7 @@ Lugonu is no longer ready to corrupt your weapon.
 卢格努尚未准备好腐蚀你的武器。
 %%%%
 smite your foes
-惩戒你的敌人
+惩击你的敌人
 %%%%
 recall your apostles
 召回你的使徒
@@ -753,7 +753,7 @@ encircle yourself with summoned briar patches
 用召唤的荆棘丛围绕自己
 %%%%
 grow a ballistomycete
-培育掷弹菌
+培育孢子炮菌
 %%%%
 transform dungeon walls and trees into plant allies
 将地下城的墙壁和树木转化为植物盟友
@@ -831,10 +831,10 @@ Ashenzari no longer reveals the structure of the nearby dungeon.
 艾申扎利不再揭示附近地下城的结构。
 %%%%
 Dithmenos quiets all noise in your surroundings.
-迪斯姆诺消除了你周围的所有噪音。
+迪斯姆诺减弱你周围的所有声响。
 %%%%
 Dithmenos no longer quiets all noise in your surroundings.
-迪斯姆诺不再消除你周围的所有噪音。
+迪斯姆诺不再减弱你周围的所有声响。
 %%%%
 Your shadow now sometimes tangibly mimics your actions.
 你的影子现在有时会实体化模仿你的动作。
@@ -849,7 +849,7 @@ mislead enemies by swapping places with your shadow
 与影子交换位置以误导敌人
 %%%%
 unleash an enemy's spells as if they were a marionette
-将敌人的法术像玩偶一样释放
+如操纵傀儡一般，操纵敌人施放其法术
 %%%%
 surround yourself with impenetrable night
 用无法穿透的夜幕包围自己
@@ -963,19 +963,19 @@ remember your ancestor's identity
 回忆起你先祖的身份
 %%%%
 swap creatures with your ancestor
-与你的先祖交换位置
+使你或其他生物与你的先祖交换位置
 %%%%
 heal and protect your ancestor
 治疗并保护你的先祖
 %%%%
 You now drain nearby creatures when transferring your ancestor.
-你现在在转移先祖时会吸取附近的生物。
+现在你在转移先祖时会汲取附近生物的能量，使其衰弱。
 %%%%
 You no longer drain nearby creatures when transferring your ancestor.
-你不再在转移先祖时吸取附近的生物。
+转移先祖时，你不再汲取附近生物的能量来使其衰弱。
 %%%%
 You drain nearby creatures when transferring your ancestor.
-你在转移先祖时会吸取附近的生物。
+你在转移先祖时会汲取附近生物的能量，使其衰弱。
 %%%%
 perform damaging attacks by moving towards foes
 通过向敌人移动来施展伤害性攻击
@@ -3849,7 +3849,7 @@ disjunct
 移位
 %%%%
  dislikes it when %s.
-讨厌当%s。
+讨厌%s。
 %%%%
 Dismiss
 遣散
@@ -4051,7 +4051,7 @@ Esc - 退出
  逃脱了！
 %%%%
  especially likes it when %s.
-特别喜欢当%s。
+特别喜欢%s。
 %%%%
  EV, Slay +
  闪避，杀戮+
@@ -4535,7 +4535,7 @@ HP:
 生命:
 %%%%
 HP: %d    AC: %d    Damage:%d (w/weapon)\n
-生命：%d    防御：%d    伤害：%d（含武器）\n
+生命：%d    护甲：%d    伤害：%d（含武器）\n
 %%%%
 HPRegen
 回血
@@ -5135,7 +5135,7 @@ mist
 雾
 %%%%
  likes it when %s.
-喜欢当%s。
+喜欢%s。
 %%%%
  links your audience in an emotional bond!
  用情感纽带将观众连结在一起！
@@ -5378,7 +5378,7 @@ most pleased with you
 对你相当满意
 %%%%
 mostly
-大部分
+在很大程度上
 %%%%
 Motes of dream dust float from an unseen source.
 梦尘的微粒从看不见的来源飘来。
@@ -6836,7 +6836,7 @@ strike
  剥夺了你的元素防护。
 %%%%
  strongly dislikes it when %s.
-非常讨厌当%s。
+非常讨厌%s。
 %%%%
  struggles against the net.
  在网中挣扎。
@@ -15474,7 +15474,7 @@ Inferno
 地狱之火
 %%%%
 You radiate a%s aura of righteousness, making those within it easier to hit.\n
-你散发出%s正义光环，其中的敌人更容易被击中。\n
+你散发出%s正义光环，其中的生物更容易被击中。\n
 %%%%
 %s%s protects you from negative energy.
 %s%s保护你免受负能量伤害。
@@ -15492,7 +15492,7 @@ Broad axe (flame)
 阔刃斧（火焰）
 %%%%
 Binding melee attacks
-束缚近战攻击
+近战攻击可施加束缚
 %%%%
 Tower shield (reflect)
 塔盾（反射）
@@ -15522,7 +15522,7 @@ Permafrost Eruption
 永冻爆发
 %%%%
 Dagger (drain)
-匕首（吸取）
+匕首（汲取）
 %%%%
 Confuse
 混乱
@@ -15540,10 +15540,10 @@ using evil magic or items
 使用邪恶魔法或物品
 %%%%
 using chaotic magic or items
-使用混乱魔法或物品
+使用混沌魔法或物品
 %%%%
 mutating or transforming yourself or others
-变异或变形自己或他人
+使自己或他人变异或变形
 %%%%
 using holy magic or items
 使用神圣魔法或物品
@@ -15594,7 +15594,7 @@ you destroy nonliving beings
 你摧毁非生物体
 %%%%
 you kill unclean or chaotic beings
-你杀死不洁或混乱生物
+你杀死不洁或混沌生物
 %%%%
 you kill the undead
 你杀死亡灵
@@ -33585,10 +33585,10 @@ Orcs sometimes recognise you as one of them.\n
 兽人有时认出你是他们的一员。\n
 %%%%
 %s%s protects you from harm by chaos.\n
-%s%s保护你免受混沌伤害。\n
+%s%s保护你免受混沌带来的危害。\n
 %%%%
 %s%s protects you from hellish harm.\n
-%s%s保护你免受地狱伤害。\n
+%s%s保护你免受地狱侵扰。\n
 %%%%
 %s prevents you from sneaking up on the defenceless.\n
 %s阻止你偷袭毫无防备的敌人。\n
@@ -33603,7 +33603,7 @@ Your life and magic regeneration are%s increased.\n
 你的生命和法力恢复速度%s加快。\n
 %%%%
 %s%s slows your movement.\n
-%s%s减缓移动。\n
+%s%s减缓你的移动速度。\n
 %%%%
 %s boosts your attributes. (+%d)\n
 %s提升你的属性。(+%d)\n
@@ -36095,7 +36095,7 @@ error calling __echo (%s)
 调用 __echo 出错（%s）
 %%%%
 Jiyva will unlock the Slime Pits vault.\n
-吉瓦将解锁史莱姆坑的地牢。\n
+吉瓦将解开史莱姆之坑的宝库封锁。\n
 %%%%
 Mipmap Setup: Failed to load OpenGL version.
 Mipmap 设置：无法加载 OpenGL 版本。
@@ -48937,3 +48937,19 @@ You can sustain at most %s martyred shades summoned by this spell.\n
 %%%%
 %s shaped Serpent of Hell
 变成%s模样的地狱巨蛇
+
+# Ashenzari skill-group display name
+%%%%
+Melee Combat
+近战
+%%%%
+
+# Ashenzari skill-group display name
+%%%%
+Ranged Combat
+远程战斗
+%%%%
+# Beogh apostle challenge complete display wrapper
+ speaks to you: %s
+对你说：%s
+%%%%

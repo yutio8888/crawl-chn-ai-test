@@ -167,6 +167,7 @@ bool ashenzari_shatter_item();
 string desc_curse_skills(const CrawlVector& curse);
 string curse_abbr(const CrawlStoreValue& curse);
 string curse_name(const CrawlStoreValue& curse);
+string curse_display_name(const CrawlStoreValue& curse);
 const vector<skill_type>& curse_skills(const CrawlStoreValue& curse);
 
 bool can_convert_to_beogh();

@@ -290,7 +290,7 @@ static string _describe_item_curse(const item_def& item)
         return T_("None");
 
     return comma_separated_fn(curses.begin(), curses.end(),
-            curse_name, ", ", ", ");
+            curse_display_name, ", ", ", ");
 }
 
 static string _describe_ash_skill_boost()

@@ -4551,6 +4551,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-098 | B0-4 shared catalog keys and registration (#147) | 叛教者／束缚对齐共享键；134项登记、6项 catalog 待修 | active |
 | D-C-102 | Ability and mutation semantic names | 资质欠佳／持久衰竭；献祭爱；先祖生涯 | active |
 | D-C-103 | Four Hell world-name dependencies | 欣嫩谷／悲叹河／塔尔塔罗斯／迪斯；文学精确例外 | active |
+| D-C-104 | Hepliaklqana the Forgotten | 被遗忘者惠普利亚卡纳；长名、正文与祭坛共用被动称谓 | active |
 | D-C-101 | Spell school display names | 全称统一为系；法术列表两字简称；闪避说明消歧 | active |
 | D-C-100 | GENDER_NEUTRAL singular pronouns | 他 / 他的 / 他自己 / 他；移除 ZH 中性先祖 neuter 映射 | active |
 
@@ -4565,3 +4566,12 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 - `art-data.txt` 与 TextDB 的当前英文身份统一为 `amulet of Tranquillity`（双 l），中文仍沿用 D-C-095 的“宁静项链”。
 - `amulet of Tranquility` 仅作为旧拼写兼容项保留；不把已更正的上游 lookup key 翻译成中文，也不把本次拼写修正当成另一件神器。
 - 其余新界面词与技能、变形名复用当前术语；随机饰品外观中的 `corded` 译为“缠绳”，与 Ashenzari 的装备绑定状态分开。
+
+### D-C-104 — Hepliaklqana the Forgotten 的被动称谓
+
+- **Type**: C — Contextual semantic correction
+- **Status**: active
+- **Date**: 2026-11-01
+- **Choice**: `Hepliaklqana the Forgotten → 被遗忘者惠普利亚卡纳`。神祇长名、主正文与祭坛说明同步；短名惠普利亚卡纳保持。
+- **Rationale**: `the Forgotten` 指被遗忘者，原“遗忘者”容易成为遗忘他人的主体。主正文中的愿意铭记祖辈并与最伟大祖辈并肩战斗者是信徒，不能将并肩者误接为神。英文证据为 `dat/database/godname.txt:Hepliaklqana lastname`、`dat/descript/gods.txt:Hepliaklqana`、`dat/descript/features.txt:A hazy altar of Hepliaklqana`。
+- **Scope**: 仅此神的明确英文长称及直接回指；不将随机姓名中的同形 `the Forgotten`、记忆主题的一般词或拉丁称号 `Damnatio Memoriae` 一并重命名。后者本轮保留为非必改风格建议。
