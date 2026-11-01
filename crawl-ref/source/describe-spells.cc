@@ -606,9 +606,9 @@ string spell_effect_string(spell_type spell, const monster_info *mon_owner,
     else if (spell == SPELL_ELECTROLUNGE)
         mult = "+";
     const char* suffix = spell == SPELL_LRD ? "*"
-                       : spell == SPELL_PYRE_ARROW || spell == SPELL_STICKY_FLAME ? "/turn"
+                       : spell == SPELL_PYRE_ARROW || spell == SPELL_STICKY_FLAME ? N_("/turn")
                        : "";
-    return make_stringf(T_("(%s%dd%d%s)"), mult.c_str(), dam.num, dam.size, suffix);
+    return make_stringf(T_("(%s%dd%d%s)"), mult.c_str(), dam.num, dam.size, T_(suffix));
 }
 
 /**

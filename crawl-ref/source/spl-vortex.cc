@@ -130,9 +130,9 @@ spret cast_polar_vortex(int powc, bool fail, bool no_prompt)
 
     fail_check();
 
-    mprf(T_("A great freezing vortex %s."),
-         (you.airborne() || get_form()->forbids_flight()) ?
-         "appears around you" : "appears and lifts you up");
+    mpr((you.airborne() || get_form()->forbids_flight())
+        ? T_("A great freezing vortex appears around you.")
+        : T_("A great freezing vortex appears and lifts you up."));
 
     if (you.fishtail)
         merfolk_stop_swimming();
