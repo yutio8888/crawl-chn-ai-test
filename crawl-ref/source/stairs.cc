@@ -76,7 +76,7 @@ static string _annotation_exclusion_warning(level_id next_level_id)
 
     if (is_exclude_root(you.pos())
              && feat_is_travelable_stair(env.grid(you.pos()))
-             && !strstr(get_exclusion_desc(you.pos()).c_str(), "cloud"))
+             && !is_cloud_exclusion(get_exclusion_desc(you.pos())))
     {
         return T_("This staircase is marked as excluded!");
     }

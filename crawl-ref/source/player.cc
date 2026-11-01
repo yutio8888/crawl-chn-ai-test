@@ -2724,7 +2724,15 @@ int get_exp_progress()
     const int next    = exp_needed(you.experience_level + 1);
     if (next == current)
         return 0;
-    return (you.experience - current) * 100 / (next - current);
+    // Experience is awarded before level-up messages finish. The HUD can be
+    // refreshed while XL still refers to the old level; keep its percentage
+    // bounded during that interval (and avoid unsigned subtraction below 0).
+    if (you.experience <= static_cast<unsigned int>(current))
+        return 0;
+    if (you.experience >= static_cast<unsigned int>(next))
+        return 100;
+    return static_cast<uint64_t>(you.experience - current) * 100
+           / (next - current);
 }
 
 static void _recharge_xp_evokers(int exp)

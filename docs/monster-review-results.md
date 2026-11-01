@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`90a9e990243dbcc3657ff2b491abee689d0af2df04213540bde08fdda751baa2`
-- 清单 SHA-256：`3a99949e1e93bbfa078cc6c4504fc3fef23d07ce2f7e2dbf1758c070153e9240`
+- 清单 SHA-256：`ba16ffbb25e61074e9ac714a3a25133a36c66b08a0da7a3efb3c5b8f1ad30fd6`
 - 身份总数：813（现行 689；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -191,7 +191,7 @@
 | `monster:MONS_BALLISTOMYCETE_SPORE` | current; exposure=ordinary; name=ballistomycete spore→孢子炮菌孢子; genus=MONS_FUNGUS; species=MONS_BALLISTOMYCETE_SPORE; data=crawl-ref/source/dat/mons/ballistomycete-spore.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_BALLISTOMYCETE` | current; exposure=ordinary; name=ballistomycete→孢子炮菌; genus=MONS_FUNGUS; species=MONS_BALLISTOMYCETE; data=crawl-ref/source/dat/mons/ballistomycete.yaml; desc=EN/ZH | keep |
 | `monster:MONS_HYPERACTIVE_BALLISTOMYCETE` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
-| `monster:MONS_GOBLIN` | current; exposure=ordinary; name=goblin→地精; genus=MONS_GOBLIN; species=MONS_GOBLIN; data=crawl-ref/source/dat/mons/goblin.yaml; desc=EN/ZH | keep |
+| `monster:MONS_GOBLIN` | current; exposure=ordinary; name=goblin→地精; genus=MONS_GOBLIN; species=MONS_GOBLIN; data=crawl-ref/source/dat/mons/goblin.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_HOBGOBLIN` | current; exposure=ordinary; name=hobgoblin→大地精; genus=MONS_GOBLIN; species=MONS_HOBGOBLIN; data=crawl-ref/source/dat/mons/hobgoblin.yaml; desc=EN/ZH | keep |
 | `monster:MONS_GNOLL` | current; exposure=ordinary; name=gnoll→豺狼人; genus=MONS_GNOLL; species=MONS_GNOLL; data=crawl-ref/source/dat/mons/gnoll.yaml; desc=EN/ZH | keep |
 | `monster:MONS_GNOLL_BOUDA` | current; exposure=ordinary; name=gnoll bouda→豺狼人布达; genus=MONS_GNOLL; species=MONS_GNOLL; data=crawl-ref/source/dat/mons/gnoll-bouda.yaml; desc=EN/ZH | keep |

@@ -159,11 +159,11 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
                      left: x + 10 + "px"});
         if (slot == -2)
         {
-            $tooltip.html("<span>Left click: minimize</span><br />"
-                          + "<span>Right click: open settings</span>");
+            $tooltip.html("<span>左键：最小化</span><br />"
+                          + "<span>右键：打开设置</span>");
         }
         else if (slot == -1 && game.get_input_mode() == enums.mouse_mode.COMMAND)
-            $tooltip.html("<span>Left click: show main menu</span>");
+            $tooltip.html("<span>左键：打开主菜单</span>");
         else
         {
             var item = filtered_inv[slot];
@@ -172,10 +172,9 @@ function ($, comm, client, cr, enums, options, player, icons, gui, main,
             if (game.get_input_mode() == enums.mouse_mode.COMMAND)
             {
                 if (item.action_verb)
-                    $tooltip.append("<br /><span>Left click: "
-                                    + item.action_verb.toLowerCase()
-                                    + "</span>");
-                $tooltip.append("<br /><span>Right click: describe</span>");
+                    $tooltip.append("<br />").append($("<span>").text(
+                        "左键：" + item.action_verb));
+                $tooltip.append("<br /><span>右键：查看描述</span>");
             }
         }
         $tooltip.show();

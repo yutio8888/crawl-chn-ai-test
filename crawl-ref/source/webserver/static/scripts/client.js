@@ -734,11 +734,6 @@ function (exports, $, key_conversion, chat, comm) {
         show_dialog(dialog);
     }
 
-    function possessive(name)
-    {
-        return name + "'" + (name.slice(-1) === "s" ? "" : "s");
-    }
-
     function exit_reason_message(reason, watched_name)
     {
         if (watched_name)
@@ -751,18 +746,17 @@ function (exports, $, key_conversion, chat, comm) {
             case "dead":
                 return null;
             case "cancel":
-                return watched_name + " quit before creating a character.";
+                return watched_name + " 在创建角色前退出了。";
             case "saved":
-                return watched_name + " stopped playing (saved).";
+                return watched_name + " 已保存并退出游戏。";
             case "crash":
-                return possessive(watched_name) + " game crashed.";
+                return watched_name + " 的游戏崩溃了。";
             case "error":
-                return possessive(watched_name)
-                       + " game was terminated due to an error.";
+                return watched_name + " 的游戏因错误而终止。";
             case "disconnect":
-                return watched_name + " has been disconnected.";
+                return watched_name + " 已断开连接。";
             default:
-                return possessive(watched_name) + " game ended unexpectedly."
+                return watched_name + " 的游戏意外结束了。"
                        + (reason != "unknown" ? " (" + reason + ")" : "");
             }
         }
@@ -778,16 +772,30 @@ function (exports, $, key_conversion, chat, comm) {
             case "cancel":
                 return null;
             case "crash":
-                return "Unfortunately your game crashed.";
+                return "你的游戏崩溃了。";
             case "error":
-                return "Unfortunately your game terminated due to an error.";
+                return "你的游戏因错误而终止。";
             case "disconnect":
-                return "You have been disconnected.";
+                return "你已断开连接。";
             default:
-                return "Unfortunately your game ended unexpectedly."
+                return "你的游戏意外结束了。"
                        + (reason != "unknown" ? " (" + reason + ")" : "");
             }
         }
+    }
+
+    function game_exit_message(message)
+    {
+        // Translate known server diagnostics at the display boundary. Preserve
+        // unknown diagnostics verbatim so administrators can investigate them.
+        const messages = {
+            "Error while starting the Crawl process!\nSomething has gone very wrong; please let a server admin know.":
+                "启动 Crawl 进程时发生错误！\n请联系服务器管理员。",
+            "Error while trying to terminate a stale process.\nPlease contact an administrator.":
+                "终止残留进程时发生错误。\n请联系服务器管理员。",
+        };
+        return Object.prototype.hasOwnProperty.call(messages, message)
+            ? messages[message] : message;
     }
 
     function show_exit_dialog(reason, message, dump, watched_name)
@@ -799,7 +807,7 @@ function (exports, $, key_conversion, chat, comm) {
             $("#exit_game_reason").hide();
 
         if (message)
-            $("#exit_game_message").text(message.replace(/\s+$/, "")).show();
+            $("#exit_game_message").text(game_exit_message(message.replace(/\s+$/, ""))).show();
         else
             $("#exit_game_message").hide();
 
@@ -808,11 +816,11 @@ function (exports, $, key_conversion, chat, comm) {
             var a = $("<a>").attr("target", "_blank")
                             .attr("href", dump + ".txt");
             if (reason === "saved")
-                a.text("Character dump");
+                a.text("角色档案");
             else if (reason === "crash")
-                a.text("Crash log");
+                a.text("崩溃日志");
             else
-                a.text("Morgue file");
+                a.text("角色记录");
             $("#exit_game_dump").html(a).show();
         }
         else
@@ -1819,13 +1827,13 @@ function (exports, $, key_conversion, chat, comm) {
         else
         {
             set_layer("crt");
-            $("#crt").html("Sadly, your browser does not support WebSockets. <br><br>");
-            $("#crt").append("The following browsers can be used to run WebTiles: ");
-            $("#crt").append("<ul><li>Chrome 6 and greater</li>" +
-                             "<li>Firefox 4 and 5, after enabling the " +
-                             "network.websocket.override-security-block setting in " +
-                             "about:config</li><li>Opera 11, after " +
-                             " enabling WebSockets in opera:config#Enable%20WebSockets" +
+            $("#crt").html("你的浏览器不支持 WebSocket。<br><br>");
+            $("#crt").append("以下浏览器可以运行 WebTiles：");
+            $("#crt").append("<ul><li>Chrome 6 及更新版本</li>" +
+                             "<li>Firefox 4 或 5，需在 " +
+                             "about:config 中启用 network.websocket.override-security-block 设置" +
+                             "</li><li>Opera 11，需在 " +
+                             "opera:config#Enable%20WebSockets 中启用 WebSocket</li>" +
                              "<li>Safari 5</li></ul>");
         }
     });

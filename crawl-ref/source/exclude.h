@@ -15,6 +15,8 @@ void deferred_exclude_update();
 bool is_exclude_root(const coord_def &p);
 int get_exclusion_radius(const coord_def &p);
 string get_exclusion_desc(const coord_def &p);
+bool is_cloud_exclusion(const string &description);
+class level_id;
 void cycle_exclude_radius(const coord_def &p);
 void del_exclude(const coord_def &p);
 void set_exclude(const coord_def &p, int radius = LOS_RADIUS,
@@ -75,7 +77,7 @@ public:
 
     bool is_excluded(const coord_def &p) const;
     bool is_exclude_root(const coord_def &p) const;
-    string get_exclusion_desc();
+    string get_exclusion_desc(level_id level, bool display = false) const;
 
     size_t size()  const;
     bool   empty() const;

@@ -802,10 +802,13 @@ void desc_randart_props(const item_def &item, vector<string> &lines)
         }
         else if (prop == ARTP_STEALTH)
         {
-            lines.push_back(make_stringf_p(T_("%1$sIt makes you %2$s%3$s stealthy."),
-                     _padded_artp_name(ARTP_STEALTH, stval).c_str(),
-                     (stval < -1 || stval > 1) ? T_("much ") : "",
-                     (stval < 0) ? T_("less") : T_("more")));
+            const string description = stval < -1
+                ? T_("%sIt makes you much less stealthy.")
+                : stval < 0 ? T_("%sIt makes you less stealthy.")
+                : stval > 1 ? T_("%sIt makes you much more stealthy.")
+                            : T_("%sIt makes you more stealthy.");
+            lines.push_back(make_stringf(description.c_str(),
+                     _padded_artp_name(ARTP_STEALTH, stval).c_str()));
             continue;
         }
 

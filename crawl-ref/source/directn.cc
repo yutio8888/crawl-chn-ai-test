@@ -3410,9 +3410,17 @@ static string _describe_monster_weapon(const monster_info& mi)
 
     if (name1 == name2 && weap && !name1.empty())
     {
-        item_def dup = *weap;
-        ++dup.quantity;
-        name1 = dup.name(DESC_A, false, false, true, true);
+        if (Options.language == lang_t::ZH)
+        {
+            name1 = make_stringf(C_("dual wield", "a pair of %s"),
+                weap->name(DESC_PLAIN, false, false, true).c_str());
+        }
+        else
+        {
+            item_def dup = *weap;
+            ++dup.quantity;
+            name1 = dup.name(DESC_A, false, false, true, true);
+        }
         name2.clear();
     }
 
