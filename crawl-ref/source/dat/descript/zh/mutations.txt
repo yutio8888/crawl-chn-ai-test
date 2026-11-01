@@ -681,7 +681,7 @@ inability to use devices mutation
 
 你无法使用魔法设备。
 其中包括魔杖和大多数需要通过<input>$cmd[CMD_EVOKE]</input>激活的物品，
-但不包括触及武器、护符和金字塔雕像。这也使得法杖在近战时的威力大大降低。
+但不包括可延伸攻击的武器、护符和通天塔雕像。这也使得法杖在近战时的威力大大降低。
 %%%%
 hated by all mutation
 
@@ -944,7 +944,9 @@ contamination susceptible mutation
 %%%%
 devouring maw mutation
 
-一个贪婪的嘴在你身上形成，使你能够吞噬尸体来迅速恢复生命值。
+当你在近战中杀死可食用的敌人时（即敌对、非召唤的活物或植物怪物），
+巨口便会将其吞食，在短时间内大幅提升你的生命恢复速度。
+敌人越强大，此效果的持续时间就越长。
 %%%%
 dilettante bane
 
@@ -1035,7 +1037,8 @@ heatstroke bane
 %%%%
 hex mastery mutation
 
-你天生擅长诅咒魔法，提高诅咒法术的成功率。
+你的诅咒系法术更易施放，施法失败的概率及后果严重程度都会降低，
+且敌人在抵抗你的所有效果时，意志力都会降低。
 %%%%
 hive swarm mutation
 
