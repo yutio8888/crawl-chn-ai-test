@@ -28,12 +28,26 @@ BASELINE = "89b97ae826e1a065b9cdc9b1b715883c7eaa4d3d"
 PRODUCTION_BASELINE = "4420998ec0ed812e4d183c1bb62ea514792d1b96"
 
 
-def exact_artifact(oid: str, directory: str) -> dict:
-    # The standalone C++ Phase 0 dump starts in the C locale. Match its
-    # non-ASCII casing as well as its serialization, then restore the caller.
+def exact_artifact(oid: str, directory: str, *, utf8: bool = False) -> dict:
+    # Historical dump fixtures retain C-locale casing. Current integration
+    # explicitly requests the initialized game's UTF-8 character locale.
     previous = locale.setlocale(locale.LC_CTYPE)
     try:
-        locale.setlocale(locale.LC_CTYPE, "C")
+        if utf8:
+            locale.setlocale(locale.LC_CTYPE, "")
+            if locale.setlocale(locale.LC_CTYPE) in ("C", "POSIX"):
+                # Match ensure_utf8_ctype() in crawl-ref/source/syscalls.cc.
+                for name in ("C.UTF-8", "UTF-8", "en_US.UTF-8"):
+                    try:
+                        locale.setlocale(locale.LC_CTYPE, name)
+                    except locale.Error:
+                        continue
+                    if locale.nl_langinfo(locale.CODESET).lower() == "utf-8":
+                        break
+                else:
+                    raise RuntimeError("no supported UTF-8 character locale")
+        else:
+            locale.setlocale(locale.LC_CTYPE, "C")
         return _exact_artifact(oid, directory)
     finally:
         locale.setlocale(locale.LC_CTYPE, previous)
@@ -197,6 +211,30 @@ class MiscnameInventoryTests(unittest.TestCase):
         keys = {entry["canonical_key"] for entry in artifact["entries"]}
         self.assertIn("default 'Å'", keys)
         self.assertNotIn("default 'å'", keys)
+
+    def test_current_dump_uses_utf8_keys_and_restores_locale(self):
+        original = locale.setlocale(locale.LC_ALL)
+        try:
+            locale.setlocale(locale.LC_CTYPE, "C")
+            before = locale.setlocale(locale.LC_ALL)
+            baseline = MODULE._strict_block(
+                ROOT / "docs/miscname-review-results.md"
+            )[0]["baseline"]
+            # Force the same C/POSIX startup repair exercised by the C++ dump.
+            with mock.patch.dict(os.environ, {"LC_ALL": "C"}):
+                artifact = exact_artifact(baseline, "database/zh/", utf8=True)
+                self.assertEqual(before, locale.setlocale(locale.LC_ALL))
+                keys = {entry["canonical_key"] for entry in artifact["entries"]}
+                self.assertIn("default 'å'", keys)
+                self.assertNotIn("default 'Å'", keys)
+                # An actual failed exact-Git read must restore locale too.
+                with self.assertRaisesRegex(
+                    MODULE.hardened.shared.InventoryError, "exact Git OID"
+                ):
+                    exact_artifact("0" * 40, "database/zh/", utf8=True)
+                self.assertEqual(before, locale.setlocale(locale.LC_ALL))
+        finally:
+            locale.setlocale(locale.LC_ALL, original)
 
     def test_consumer_and_missing_hints_lookup_are_bound(self):
         facts = self.inventory["scope"]["consumer_facts"]
@@ -383,16 +421,16 @@ class MiscnameInventoryTests(unittest.TestCase):
                              "ledger glossary authority has no matching Git snapshot")
         self.assertEqual(metadata["glossary_sha256"],
                          MODULE._sha256(ledger_glossary))
-        english = exact_artifact(candidate, "database/")
-        localized = exact_artifact(candidate, "database/zh/")
+        english = exact_artifact(candidate, "database/", utf8=True)
+        localized = exact_artifact(candidate, "database/zh/", utf8=True)
         baseline_en = self.root / "production-baseline-en.json"
         baseline_zh = self.root / "production-baseline-zh.json"
         candidate_en = self.root / "production-candidate-en.json"
         candidate_zh = self.root / "production-candidate-zh.json"
         baseline_en.write_bytes(production_dump_bytes(
-            exact_artifact(baseline, "database/")))
+            exact_artifact(baseline, "database/", utf8=True)))
         baseline_zh.write_bytes(production_dump_bytes(
-            exact_artifact(baseline, "database/zh/")))
+            exact_artifact(baseline, "database/zh/", utf8=True)))
         candidate_en.write_bytes(production_dump_bytes(english))
         candidate_zh.write_bytes(production_dump_bytes(localized))
         # Preserve the historical C++ dump serialization regression separately
