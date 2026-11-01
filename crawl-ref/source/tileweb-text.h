@@ -2,6 +2,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 class WebTextArea
 {
@@ -14,6 +15,7 @@ public:
     void clear();
 
     void put_character(char32_t chr, int fg, int bg, int x, int y);
+    void put_string(const char32_t *str, int fg, int bg, int &x, int &y);
 
     void send(bool force = false);
 
@@ -26,9 +28,16 @@ protected:
     char32_t *m_old_cbuf;
     uint8_t *m_old_abuf;
 
+    // Zero-width suffixes belong to the preceding spacing glyph.
+    std::vector<string> m_combining;
+    std::vector<string> m_old_combining;
+
     string m_client_side_name;
 
     bool m_dirty;
+
+    // Render one terminal row and update its last-sent snapshot.
+    string render_line(int y, bool &dirty);
 
     virtual void on_resize();
 };

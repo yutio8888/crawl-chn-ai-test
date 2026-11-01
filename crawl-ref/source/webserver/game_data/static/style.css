@@ -77,6 +77,11 @@ canvas {
     color: var(--color-6); /* brown */
 }
 
+#stats_doom_ui, #stats_contam_ui {
+    float: right;
+    white-space: nowrap;
+}
+
 .degenerated_stat {
     color: var(--color-14); /* yellow */
 }
@@ -599,6 +604,14 @@ canvas {
 
 .menu_txt:not(.menu_crt_shrink) {
     width: 80ch;
+}
+
+/* CRT text uses terminal cells. Fallback CJK fonts need not have glyphs
+   exactly twice as wide as the configured monospace font. */
+.webtiles-wide {
+    display: inline-block;
+    width: 2ch;
+    text-align: center;
 }
 
 .progress-bar {
