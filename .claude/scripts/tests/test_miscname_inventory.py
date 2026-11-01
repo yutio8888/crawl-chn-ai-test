@@ -16,7 +16,7 @@ from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[3]
-# Immutable terminology snapshot used by the checked-in historical ledgers.
+# Historical terminology authority fallback for unchanged ledger domains.
 GLOSSARY_REF = "518f33d1c98cf35f13d43fffdc1a463b676d1c11"
 SCRIPT = ROOT / ".claude/scripts/miscname_inventory.py"
 sys.path.insert(0, str(SCRIPT.parent))
@@ -339,7 +339,7 @@ class MiscnameInventoryTests(unittest.TestCase):
             MODULE._pair_candidate(en, zh)
 
     def test_repository_ledger_binds_exact_clean_candidate_sources(self):
-        """Exercise current candidate source/ledger binding with historical terms.
+        """Bind current candidate sources to the ledger's baseline and authority.
 
         This integration test needs a clean committed candidate. Local unbound
         changed-scope verification still runs the fixture regressions but reports
@@ -360,6 +360,29 @@ class MiscnameInventoryTests(unittest.TestCase):
         candidate = subprocess.check_output(
             ["git", "-C", str(ROOT), "rev-parse", "HEAD"], text=True
         ).strip()
+        ledger_path = ROOT / "docs/miscname-review-results.md"
+        ledger = MODULE.hardened._candidate_regular_blob(
+            candidate,
+            MODULE.hardened._repo_relative_git_path(ledger_path, "review results"),
+            "review results",
+        )
+        metadata = MODULE._strict_block_from_text(ledger.decode("utf-8"))[0]
+        baseline = metadata["baseline"]
+        # Resolve only real Git authority snapshots. An unrelated glossary
+        # update need not rebind this domain, but its declared digest must match
+        # the candidate, ledger baseline, or established historical authority.
+        ledger_glossary = None
+        for authority_ref in dict.fromkeys((candidate, baseline, GLOSSARY_REF)):
+            snapshot = MODULE._read_glossary(
+                ROOT / "docs/glossary.md", authority_ref
+            )
+            if MODULE._sha256(snapshot) == metadata["glossary_sha256"]:
+                ledger_glossary = snapshot
+                break
+        self.assertIsNotNone(ledger_glossary,
+                             "ledger glossary authority has no matching Git snapshot")
+        self.assertEqual(metadata["glossary_sha256"],
+                         MODULE._sha256(ledger_glossary))
         english = exact_artifact(candidate, "database/")
         localized = exact_artifact(candidate, "database/zh/")
         baseline_en = self.root / "production-baseline-en.json"
@@ -367,37 +390,37 @@ class MiscnameInventoryTests(unittest.TestCase):
         candidate_en = self.root / "production-candidate-en.json"
         candidate_zh = self.root / "production-candidate-zh.json"
         baseline_en.write_bytes(production_dump_bytes(
-            exact_artifact(PRODUCTION_BASELINE, "database/")))
+            exact_artifact(baseline, "database/")))
         baseline_zh.write_bytes(production_dump_bytes(
-            exact_artifact(PRODUCTION_BASELINE, "database/zh/")))
+            exact_artifact(baseline, "database/zh/")))
         candidate_en.write_bytes(production_dump_bytes(english))
         candidate_zh.write_bytes(production_dump_bytes(localized))
+        # Preserve the historical C++ dump serialization regression separately
+        # from the baseline inputs declared by the current ledger.
         self.assertEqual(
             "6473113d16d472d8ba8ecb508fd1456ff920fe80b58acda19668af1151a94bf6",
-            MODULE._sha256(baseline_en.read_bytes()),
+            MODULE._sha256(production_dump_bytes(
+                exact_artifact(PRODUCTION_BASELINE, "database/"))),
         )
         self.assertEqual(
             "1fc4ec2f86d68b1c845b0784b9bdde7d267f9314b95d2ab1b83a4e251105ed9a",
-            MODULE._sha256(baseline_zh.read_bytes()),
+            MODULE._sha256(production_dump_bytes(
+                exact_artifact(PRODUCTION_BASELINE, "database/zh/"))),
         )
         output = Path("/tmp") / (
             f"miscname-exact-candidate-{os.getpid()}-{id(self)}.json"
         )
         self.addCleanup(lambda: output.unlink(missing_ok=True))
-        # This test covers current candidate source/ledger binding. Keep only
-        # the terminology input at the ledger's historical revision; actual
-        # glossary changes are checked by terminology-specific verification.
-        historical_glossary = subprocess.check_output(
-            ["git", "-C", str(ROOT), "show", f"{GLOSSARY_REF}:docs/glossary.md"]
-        )
+        # Inject the exact declared authority; source/dump/candidate checks
+        # below still exercise the production path against the current HEAD.
         with mock.patch.object(MODULE, "_read_glossary",
-                               return_value=historical_glossary) as glossary:
+                               return_value=ledger_glossary) as glossary:
             self.assertEqual(0, MODULE.main([
-                "--baseline-ref", PRODUCTION_BASELINE,
+                "--baseline-ref", baseline,
                 "--english-dump", str(baseline_en),
                 "--localized-dump", str(baseline_zh),
                 "--glossary", str(ROOT / "docs/glossary.md"),
-                "--review-results", str(ROOT / "docs/miscname-review-results.md"),
+                "--review-results", str(ledger_path),
                 "--candidate-ref", candidate,
                 "--candidate-english-dump", str(candidate_en),
                 "--candidate-localized-dump", str(candidate_zh),
