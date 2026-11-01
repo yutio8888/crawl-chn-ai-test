@@ -3,7 +3,7 @@
   "candidate_lookup": {
     "en": {
       "cross_domain_hits": [],
-      "hit_count": 270,
+      "hit_count": 272,
       "hits": [
         {
           "attempts": [
@@ -1549,6 +1549,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "shadow creatures strange machine cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "shadow shot cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
@@ -1811,6 +1820,15 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "summon illusion cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "summon illusion strange machine cast",
           "effective_source": "database/monspell.txt",
           "source": "database/monspell.txt"
         },
@@ -2393,7 +2411,7 @@
         }
       ],
       "source_counts": {
-        "database/monspell.txt": 270
+        "database/monspell.txt": 272
       },
       "symbol_match_key_count": 0,
       "symbol_matches": []
@@ -2407,7 +2425,7 @@
     "source_parity_proven": true,
     "zh": {
       "cross_domain_hits": [],
-      "hit_count": 270,
+      "hit_count": 272,
       "hits": [
         {
           "attempts": [
@@ -2460,7 +2478,7 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "antimagic gaze goji cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -2631,7 +2649,7 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "bolt of antimagic roaming sludgefish cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -2694,7 +2712,7 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "brain bite telencephalon cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -2730,7 +2748,7 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "call down lightning telencephalon cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -2793,7 +2811,7 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "cleansing flame cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -3297,7 +3315,7 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "harpoon shot mongrel wurm cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -3378,7 +3396,7 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "hurl sludge roaming sludgefish cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -3522,7 +3540,7 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "malign gateway herald of the abyss cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -3621,7 +3639,7 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "murky legion scrapshell chimera cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -3774,7 +3792,7 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "phase shift abyssal acolyte cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -3900,7 +3918,7 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "rusted inspector cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -3909,7 +3927,7 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "scorch mongrel wurm cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -3953,6 +3971,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "shadow creatures strange machine cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "shadow shot cast",
           "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
@@ -3987,7 +4014,7 @@
             "silent_prefixed"
           ],
           "canonical_key": "silent bolt of antimagic roaming sludgefish cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -4019,7 +4046,7 @@
             "silent_prefixed"
           ],
           "canonical_key": "silent murky legion scrapshell chimera cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -4027,7 +4054,7 @@
             "silent_prefixed"
           ],
           "canonical_key": "silent rusted inspector cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -4223,6 +4250,15 @@
             "normal",
             "silent_unprefixed_fallback"
           ],
+          "canonical_key": "summon illusion strange machine cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
           "canonical_key": "summon mortal champion fravashi cast",
           "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
@@ -4260,7 +4296,7 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "thorn hunter cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -4305,7 +4341,7 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "touch of paradox abyssal acolyte cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -4530,7 +4566,7 @@
             "unseen"
           ],
           "canonical_key": "unseen touch of paradox abyssal acolyte cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -4711,7 +4747,7 @@
             "silent_unprefixed_fallback"
           ],
           "canonical_key": "warp space herald of the abyss cast",
-          "effective_source": "database/monspell.txt",
+          "effective_source": "database/zh/monspell.txt",
           "source": "database/monspell.txt"
         },
         {
@@ -4797,31 +4833,31 @@
         }
       ],
       "source_counts": {
-        "database/monspell.txt": 270
+        "database/monspell.txt": 272
       },
       "symbol_match_key_count": 0,
       "symbol_matches": []
     }
   },
   "coverage": {
-    "canonical_structured_variant_metadata_complete": 341,
-    "canonical_structured_variant_metadata_units": 341,
+    "canonical_structured_variant_metadata_complete": 343,
+    "canonical_structured_variant_metadata_units": 343,
     "catalog_coverage_complete": true,
-    "effective_runtime_behavior_occurrences": 72,
+    "effective_runtime_behavior_occurrences": 80,
     "en_zh_behavior_analysis_conclusive": true,
     "en_zh_behavior_parity_proven": true,
     "fail_closed_behavior_roots": 0,
     "legacy_behavior_metadata_covered_occurrences": 0,
-    "per_language_structured_variant_verification_complete": 682,
-    "per_language_structured_variant_verification_units": 682,
+    "per_language_structured_variant_verification_complete": 686,
+    "per_language_structured_variant_verification_units": 686,
     "remaining_legacy_behavior_occurrences": 0,
     "unanalysable_occurrences": 0
   },
   "domain": "monspell",
   "inputs": {
     "candidate_anchor": {
-      "artifact_sha256": "c7a5b4db5ebbd1aa628db2c3294fa053de1baf71ca54e30e65be3b44b0ff551e",
-      "sha256": "68868c5064bab75d43366f47a4613506db78d0d5e44874f3ccf31da9c5da030f"
+      "artifact_sha256": "09d65a4cf4f69871b25aeef766eb4f3b25c92a9f8db51172e6bb4a7dc0545eff",
+      "sha256": "40c15681bb294a278b0858eeda4af18b91a48417074531e920547f8fc2c3dff8"
     },
     "candidate_artifact": {
       "completeness": "closed_world_upper_bound",
@@ -4836,21 +4872,21 @@
         "spells": 522
       },
       "schema_version": 1,
-      "sha256": "c7a5b4db5ebbd1aa628db2c3294fa053de1baf71ca54e30e65be3b44b0ff551e"
+      "sha256": "09d65a4cf4f69871b25aeef766eb4f3b25c92a9f8db51172e6bb4a7dc0545eff"
     },
     "english_artifact": {
-      "sha256": "93cb7af78e8e4150821e6ba12c407ccbfab011a6a20e4c3083d4ba42ff22d80e"
+      "sha256": "d36b542c8006ab889486b7bd232fcb961a1f87cb1e5dd675b6ac36204b1fff35"
     },
     "inventory": {
-      "semantic_fingerprint": "d2647788a4d73dbe7dfe809048d7dff4cddc044798a93efae1513af7d6749119",
-      "sha256": "c2b3d3a385812f90c01b3e7b44fba7388c6b60945680f6bd341d6bce02245428"
+      "semantic_fingerprint": "11d35ab7d18b48c84d542f445b0987a244664574f7895b93d98cec30d1c1a1d4",
+      "sha256": "0843c5e1af8e258b8ae314f0ef62ec3c61a2473b3b7c3436fff0610f705f8630"
     },
     "localized_artifact": {
       "language": "zh",
-      "sha256": "636f1715ab0d84b92c67577431d66ac522f40f0f79ca3eefd49b06de9ef3c9d3"
+      "sha256": "152fb1e00cf756d4cda61528af522ba492029834de350ba8bd62cb82e327b3e5"
     },
     "overlay_manifest": {
-      "sha256": "a24509a100e016a9343b5bd3a247355c579a5ff88b1fa94b7e4811f4f2155469"
+      "sha256": "22cc062f730d823233f0c70383c96ff717e5bf2d9d904871f31973e982266adf"
     }
   },
   "languages": {
@@ -4867,9 +4903,11 @@
         "magical cast targeted",
         "malign offering priest cast",
         "mennas cast",
+        "shadow creatures strange machine cast",
         "sheza's dance cast",
         "silent blizzard demon cast",
         "smiting jeremiah cast",
+        "summon illusion strange machine cast",
         "ushabti cast targeted",
         "vv cast",
         "wizard cast",
@@ -4878,7 +4916,7 @@
       "effective_source_counts": {
         "english_fallback": 0,
         "missing": 0,
-        "selected_language": 270
+        "selected_language": 272
       },
       "occurrences": [
         {
@@ -5186,6 +5224,38 @@
           }
         },
         {
+          "behavior": "VISUAL_APPLICABILITY",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.shadow_creatures_strange_machine_cast.visual.v1"
+          },
+          "language": "en",
+          "legacy_effect": "legacy unseen applicability rejects the candidate",
+          "phase": "STRUCTURED_METADATA",
+          "recursive_provenance": [],
+          "requested_root": "shadow creatures strange machine cast",
+          "top_locator": {
+            "canonical_key": "shadow creatures strange machine cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
+          "behavior": "VISUAL_CHANNEL",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.shadow_creatures_strange_machine_cast.visual.v1"
+          },
+          "language": "en",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "STRUCTURED_METADATA",
+          "recursive_provenance": [],
+          "requested_root": "shadow creatures strange machine cast",
+          "top_locator": {
+            "canonical_key": "shadow creatures strange machine cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
           "behavior": "GESTURE",
           "catalog_coverage": {
             "covered": true,
@@ -5247,6 +5317,38 @@
           "top_locator": {
             "canonical_key": "smiting jeremiah cast",
             "variant_ordinal": 2
+          }
+        },
+        {
+          "behavior": "VISUAL_APPLICABILITY",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.summon_illusion_strange_machine_cast.visual.v1"
+          },
+          "language": "en",
+          "legacy_effect": "legacy unseen applicability rejects the candidate",
+          "phase": "STRUCTURED_METADATA",
+          "recursive_provenance": [],
+          "requested_root": "summon illusion strange machine cast",
+          "top_locator": {
+            "canonical_key": "summon illusion strange machine cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
+          "behavior": "VISUAL_CHANNEL",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.summon_illusion_strange_machine_cast.visual.v1"
+          },
+          "language": "en",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "STRUCTURED_METADATA",
+          "recursive_provenance": [],
+          "requested_root": "summon illusion strange machine cast",
+          "top_locator": {
+            "canonical_key": "summon illusion strange machine cast",
+            "variant_ordinal": 0
           }
         },
         {
@@ -5482,14 +5584,18 @@
           "cantrip gastronok cast",
           "hellfire mortar wiglaf cast",
           "mennas cast",
+          "shadow creatures strange machine cast",
           "smiting jeremiah cast",
+          "summon illusion strange machine cast",
           "vv cast"
         ],
         "VISUAL_CHANNEL": [
           "cantrip gastronok cast",
           "hellfire mortar wiglaf cast",
           "mennas cast",
+          "shadow creatures strange machine cast",
           "smiting jeremiah cast",
+          "summon illusion strange machine cast",
           "vv cast"
         ]
       },
@@ -7100,6 +7206,13 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "shadow creatures strange machine cast",
+          "stable_id": "mon.cast.shadow_creatures_strange_machine_cast.visual.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "shadow shot cast",
           "stable_id": "mon.cast.shadow_shot.fires.v1",
           "variant_ordinal": 0
@@ -7369,6 +7482,13 @@
           "requested_root": "summon illusion cast",
           "stable_id": "mon.cast.mara_summon.shimmers.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "summon illusion strange machine cast",
+          "stable_id": "mon.cast.summon_illusion_strange_machine_cast.visual.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -7896,18 +8016,20 @@
         "magical cast targeted",
         "malign offering priest cast",
         "mennas cast",
+        "shadow creatures strange machine cast",
         "sheza's dance cast",
         "silent blizzard demon cast",
         "smiting jeremiah cast",
+        "summon illusion strange machine cast",
         "ushabti cast targeted",
         "vv cast",
         "wizard cast",
         "wizard cast targeted"
       ],
       "effective_source_counts": {
-        "english_fallback": 19,
+        "english_fallback": 0,
         "missing": 0,
-        "selected_language": 251
+        "selected_language": 272
       },
       "occurrences": [
         {
@@ -8215,6 +8337,38 @@
           }
         },
         {
+          "behavior": "VISUAL_APPLICABILITY",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.shadow_creatures_strange_machine_cast.visual.v1"
+          },
+          "language": "zh",
+          "legacy_effect": "legacy unseen applicability rejects the candidate",
+          "phase": "STRUCTURED_METADATA",
+          "recursive_provenance": [],
+          "requested_root": "shadow creatures strange machine cast",
+          "top_locator": {
+            "canonical_key": "shadow creatures strange machine cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
+          "behavior": "VISUAL_CHANNEL",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.shadow_creatures_strange_machine_cast.visual.v1"
+          },
+          "language": "zh",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "STRUCTURED_METADATA",
+          "recursive_provenance": [],
+          "requested_root": "shadow creatures strange machine cast",
+          "top_locator": {
+            "canonical_key": "shadow creatures strange machine cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
           "behavior": "GESTURE",
           "catalog_coverage": {
             "covered": true,
@@ -8276,6 +8430,38 @@
           "top_locator": {
             "canonical_key": "smiting jeremiah cast",
             "variant_ordinal": 2
+          }
+        },
+        {
+          "behavior": "VISUAL_APPLICABILITY",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.summon_illusion_strange_machine_cast.visual.v1"
+          },
+          "language": "zh",
+          "legacy_effect": "legacy unseen applicability rejects the candidate",
+          "phase": "STRUCTURED_METADATA",
+          "recursive_provenance": [],
+          "requested_root": "summon illusion strange machine cast",
+          "top_locator": {
+            "canonical_key": "summon illusion strange machine cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
+          "behavior": "VISUAL_CHANNEL",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.summon_illusion_strange_machine_cast.visual.v1"
+          },
+          "language": "zh",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "STRUCTURED_METADATA",
+          "recursive_provenance": [],
+          "requested_root": "summon illusion strange machine cast",
+          "top_locator": {
+            "canonical_key": "summon illusion strange machine cast",
+            "variant_ordinal": 0
           }
         },
         {
@@ -8511,14 +8697,18 @@
           "cantrip gastronok cast",
           "hellfire mortar wiglaf cast",
           "mennas cast",
+          "shadow creatures strange machine cast",
           "smiting jeremiah cast",
+          "summon illusion strange machine cast",
           "vv cast"
         ],
         "VISUAL_CHANNEL": [
           "cantrip gastronok cast",
           "hellfire mortar wiglaf cast",
           "mennas cast",
+          "shadow creatures strange machine cast",
           "smiting jeremiah cast",
+          "summon illusion strange machine cast",
           "vv cast"
         ]
       },
@@ -10129,6 +10319,13 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "shadow creatures strange machine cast",
+          "stable_id": "mon.cast.shadow_creatures_strange_machine_cast.visual.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "shadow shot cast",
           "stable_id": "mon.cast.shadow_shot.fires.v1",
           "variant_ordinal": 0
@@ -10398,6 +10595,13 @@
           "requested_root": "summon illusion cast",
           "stable_id": "mon.cast.mara_summon.shimmers.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "summon illusion strange machine cast",
+          "stable_id": "mon.cast.summon_illusion_strange_machine_cast.visual.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -10932,9 +11136,11 @@
         "magical cast targeted",
         "malign offering priest cast",
         "mennas cast",
+        "shadow creatures strange machine cast",
         "sheza's dance cast",
         "silent blizzard demon cast",
         "smiting jeremiah cast",
+        "summon illusion strange machine cast",
         "ushabti cast targeted",
         "vv cast",
         "wizard cast",
@@ -10943,7 +11149,7 @@
       "effective_source_counts": {
         "english_fallback": 0,
         "missing": 0,
-        "selected_language": 270
+        "selected_language": 272
       },
       "occurrences": [
         {
@@ -11251,6 +11457,38 @@
           }
         },
         {
+          "behavior": "VISUAL_CHANNEL",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.shadow_creatures_strange_machine_cast.visual.v1"
+          },
+          "language": "en",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "POST_MATERIALIZATION",
+          "recursive_provenance": [],
+          "requested_root": "shadow creatures strange machine cast",
+          "top_locator": {
+            "canonical_key": "shadow creatures strange machine cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
+          "behavior": "VISUAL_APPLICABILITY",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.shadow_creatures_strange_machine_cast.visual.v1"
+          },
+          "language": "en",
+          "legacy_effect": "legacy unseen applicability rejects the candidate",
+          "phase": "PRE_BINDING",
+          "recursive_provenance": [],
+          "requested_root": "shadow creatures strange machine cast",
+          "top_locator": {
+            "canonical_key": "shadow creatures strange machine cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
           "behavior": "GESTURE",
           "catalog_coverage": {
             "covered": true,
@@ -11312,6 +11550,38 @@
           "top_locator": {
             "canonical_key": "smiting jeremiah cast",
             "variant_ordinal": 2
+          }
+        },
+        {
+          "behavior": "VISUAL_CHANNEL",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.summon_illusion_strange_machine_cast.visual.v1"
+          },
+          "language": "en",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "POST_MATERIALIZATION",
+          "recursive_provenance": [],
+          "requested_root": "summon illusion strange machine cast",
+          "top_locator": {
+            "canonical_key": "summon illusion strange machine cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
+          "behavior": "VISUAL_APPLICABILITY",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.summon_illusion_strange_machine_cast.visual.v1"
+          },
+          "language": "en",
+          "legacy_effect": "legacy unseen applicability rejects the candidate",
+          "phase": "PRE_BINDING",
+          "recursive_provenance": [],
+          "requested_root": "summon illusion strange machine cast",
+          "top_locator": {
+            "canonical_key": "summon illusion strange machine cast",
+            "variant_ordinal": 0
           }
         },
         {
@@ -11566,14 +11836,18 @@
           "cantrip gastronok cast",
           "hellfire mortar wiglaf cast",
           "mennas cast",
+          "shadow creatures strange machine cast",
           "smiting jeremiah cast",
+          "summon illusion strange machine cast",
           "vv cast"
         ],
         "VISUAL_CHANNEL": [
           "cantrip gastronok cast",
           "hellfire mortar wiglaf cast",
           "mennas cast",
+          "shadow creatures strange machine cast",
           "smiting jeremiah cast",
+          "summon illusion strange machine cast",
           "vv cast"
         ]
       },
@@ -11590,18 +11864,20 @@
         "magical cast targeted",
         "malign offering priest cast",
         "mennas cast",
+        "shadow creatures strange machine cast",
         "sheza's dance cast",
         "silent blizzard demon cast",
         "smiting jeremiah cast",
+        "summon illusion strange machine cast",
         "ushabti cast targeted",
         "vv cast",
         "wizard cast",
         "wizard cast targeted"
       ],
       "effective_source_counts": {
-        "english_fallback": 19,
+        "english_fallback": 0,
         "missing": 0,
-        "selected_language": 251
+        "selected_language": 272
       },
       "occurrences": [
         {
@@ -11877,6 +12153,38 @@
           }
         },
         {
+          "behavior": "VISUAL_CHANNEL",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.shadow_creatures_strange_machine_cast.visual.v1"
+          },
+          "language": "zh",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "POST_MATERIALIZATION",
+          "recursive_provenance": [],
+          "requested_root": "shadow creatures strange machine cast",
+          "top_locator": {
+            "canonical_key": "shadow creatures strange machine cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
+          "behavior": "VISUAL_APPLICABILITY",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.shadow_creatures_strange_machine_cast.visual.v1"
+          },
+          "language": "zh",
+          "legacy_effect": "legacy unseen applicability rejects the candidate",
+          "phase": "PRE_BINDING",
+          "recursive_provenance": [],
+          "requested_root": "shadow creatures strange machine cast",
+          "top_locator": {
+            "canonical_key": "shadow creatures strange machine cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
           "behavior": "GESTURE",
           "catalog_coverage": {
             "covered": true,
@@ -11938,6 +12246,38 @@
           "top_locator": {
             "canonical_key": "smiting jeremiah cast",
             "variant_ordinal": 2
+          }
+        },
+        {
+          "behavior": "VISUAL_CHANNEL",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.summon_illusion_strange_machine_cast.visual.v1"
+          },
+          "language": "zh",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "POST_MATERIALIZATION",
+          "recursive_provenance": [],
+          "requested_root": "summon illusion strange machine cast",
+          "top_locator": {
+            "canonical_key": "summon illusion strange machine cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
+          "behavior": "VISUAL_APPLICABILITY",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.summon_illusion_strange_machine_cast.visual.v1"
+          },
+          "language": "zh",
+          "legacy_effect": "legacy unseen applicability rejects the candidate",
+          "phase": "PRE_BINDING",
+          "recursive_provenance": [],
+          "requested_root": "summon illusion strange machine cast",
+          "top_locator": {
+            "canonical_key": "summon illusion strange machine cast",
+            "variant_ordinal": 0
           }
         },
         {
@@ -12190,14 +12530,18 @@
           "cantrip gastronok cast",
           "hellfire mortar wiglaf cast",
           "mennas cast",
+          "shadow creatures strange machine cast",
           "smiting jeremiah cast",
+          "summon illusion strange machine cast",
           "vv cast"
         ],
         "VISUAL_CHANNEL": [
           "cantrip gastronok cast",
           "hellfire mortar wiglaf cast",
           "mennas cast",
+          "shadow creatures strange machine cast",
           "smiting jeremiah cast",
+          "summon illusion strange machine cast",
           "vv cast"
         ]
       },
@@ -12212,8 +12556,8 @@
       "en",
       "zh"
     ],
-    "inventory_reachable_root_count": 270,
-    "inventory_root_count": 281,
+    "inventory_reachable_root_count": 272,
+    "inventory_root_count": 283,
     "inventory_roots_contained_in_english_artifact": true,
     "inventory_roots_contained_in_zh_effective_merge": true,
     "inventory_unreachable_root_count": 11,
@@ -12231,7 +12575,7 @@
       "unseen chilling breath cast"
     ],
     "reachability_kind": "SOUND_UPPER_BOUND_NOT_EXACT",
-    "requested_root_count": 270,
+    "requested_root_count": 272,
     "requested_root_source": "union of canonical candidate lookup hits in EN and ZH effective nonempty SpeakDB",
     "runtime_reachability_proven": true,
     "runtime_roots": [
@@ -12406,6 +12750,7 @@
       "seal doors cast",
       "searing breath cast",
       "seismic stomp cast",
+      "shadow creatures strange machine cast",
       "shadow shot cast",
       "sheza's dance cast",
       "silent berserker rage rupert cast",
@@ -12437,6 +12782,7 @@
       "stunning burst cast",
       "summon eyeballs dissolution cast",
       "summon illusion cast",
+      "summon illusion strange machine cast",
       "summon mortal champion fravashi cast",
       "summon water elementals elemental wellspring cast",
       "sun moth cast",

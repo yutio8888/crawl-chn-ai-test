@@ -363,9 +363,9 @@ class MessageOverlayTests(unittest.TestCase):
         self.assertEqual(SIDECAR.read_text(encoding="utf-8"),
                          MODULE.render_sidecar(validated))
         inventory_keys = {entry["key"] for entry in INVENTORY["entries"]}
-        self.assertEqual(262, len(validated["entries"]))
+        self.assertEqual(264, len(validated["entries"]))
         # Audited upstream 43d89d912d adds 19 whole-key legacy roots; the
-        # existing 262-key catalog keeps its IDs and full variant assertions.
+        # catalog adds two strange-machine VISUAL roots with explicit metadata.
         new_uncovered = {
             'antimagic gaze goji cast',
             'bolt of antimagic roaming sludgefish cast',
@@ -391,7 +391,7 @@ class MessageOverlayTests(unittest.TestCase):
         self.assertEqual(inventory_keys, catalog_keys | new_uncovered)
         self.assertFalse(catalog_keys & new_uncovered)
         self.assertEqual(
-            355,
+            357,
             sum(len(entry["variants"]) for entry in validated["entries"]))
         self.assertEqual(
             35,
@@ -399,12 +399,12 @@ class MessageOverlayTests(unittest.TestCase):
                 for entry in validated["entries"]
                 for variant in entry["variants"]))
         self.assertEqual(
-            {"CANDIDATE": 250, "CLOSURE_ONLY": 2, "LEGACY_ONLY": 10},
+            {"CANDIDATE": 252, "CLOSURE_ONLY": 2, "LEGACY_ONLY": 10},
             {mode: sum(entry["mode"] == mode
                        for entry in validated["entries"])
              for mode in ("CANDIDATE", "CLOSURE_ONLY", "LEGACY_ONLY")})
         self.assertEqual(
-            {"CANDIDATE": 341, "CLOSURE_ONLY": 2, "LEGACY_ONLY": 12},
+            {"CANDIDATE": 343, "CLOSURE_ONLY": 2, "LEGACY_ONLY": 12},
             {mode: sum(len(entry["variants"])
                        for entry in validated["entries"]
                        if entry["mode"] == mode)
@@ -611,7 +611,7 @@ class MessageOverlayTests(unittest.TestCase):
         self.assertEqual(
             inventory_keys - new_uncovered - set(legacy_keys) - set(closure_keys),
             set(candidates))
-        self.assertEqual(250, len(candidates))
+        self.assertEqual(252, len(candidates))
         self.assertEqual(
             legacy_keys,
             [entry["canonical_key"] for entry in validated["entries"]

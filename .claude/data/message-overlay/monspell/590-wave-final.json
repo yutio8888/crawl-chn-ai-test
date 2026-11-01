@@ -68,6 +68,128 @@
     {
       "canonical_key": "unseen symbol of torment cast", "canonical_fingerprint": "fnv1a64:025551f2b598c944", "selection_graph_fingerprint": "fnv1a64:fdf7a7370732a4c3", "mode": "CANDIDATE",
       "variants": [{ "stable_id": "mon.cast.unseen_symbol_of_torment.calls_powers_darkness.v1", "tombstone": false, "variant_ordinal": 0, "upstream_variant_fingerprint": "ff1de43c07c80fece32c5892f5eed725452211cbf061f536550fbe38043a07ad", "upstream_weight": 10, "english_snapshot": "@The_something@ calls on the powers of darkness!", "frame": "INVOCATION", "binding": { "resolves_target": false }, "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false }, "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"], "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [{ "language": "en", "relation": "NONE", "pattern": "${actor} calls on the powers of darkness!" }, { "language": "zh", "relation": "NONE", "pattern": "${actor}召来黑暗之力！" }] }], "materialization_cases": [], "recursive_dependency_fingerprints": {} }]
+    },
+    {
+      "canonical_key": "shadow creatures strange machine cast",
+      "canonical_fingerprint": "fnv1a64:0cd2dafe3af913e7",
+      "selection_graph_fingerprint": "fnv1a64:7b495c421828dc96",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.shadow_creatures_strange_machine_cast.visual.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_weight": 10,
+          "upstream_variant_fingerprint": "7719fdc3f5a8f8e9e7be04770c382a78c5c178e5e89a5ac72863f0e1b1567bb8",
+          "english_snapshot": "VISUAL:Shadows flit across @the_monster@'s surface and appear to come alive.",
+          "frame": "DIRECT_EFFECT",
+          "binding": {
+            "resolves_target": false
+          },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": true
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            {
+              "name": "actor_lower",
+              "type": "actor_ref_lower"
+            }
+          ],
+          "required_arguments": [
+            "actor_lower"
+          ],
+          "line_metadata": [
+            {
+              "sensory": "VISUAL",
+              "channel": null,
+              "behavior": {
+                "implies_gesture": false,
+                "audible": false
+              },
+              "templates": [
+                {
+                  "language": "en",
+                  "relation": "NONE",
+                  "pattern": "Shadows flit across ${actor_lower}'s surface and appear to come alive."
+                },
+                {
+                  "language": "zh",
+                  "relation": "NONE",
+                  "pattern": "阴影掠过${actor_lower}的表面，仿佛活了过来。"
+                }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "summon illusion strange machine cast",
+      "canonical_fingerprint": "fnv1a64:c522aa43f2278780",
+      "selection_graph_fingerprint": "fnv1a64:0f8478021d1dd811",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.summon_illusion_strange_machine_cast.visual.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_weight": 10,
+          "upstream_variant_fingerprint": "dd1683411cdc415a102fda3cced8e461a2f25c12b926874484157ab25624b89c",
+          "english_snapshot": "VISUAL:The shadows dancing upon @the_monster@ coalesce into cruel familiarity.",
+          "frame": "DIRECT_EFFECT",
+          "binding": {
+            "resolves_target": false
+          },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": true
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            {
+              "name": "actor_lower",
+              "type": "actor_ref_lower"
+            }
+          ],
+          "required_arguments": [
+            "actor_lower"
+          ],
+          "line_metadata": [
+            {
+              "sensory": "VISUAL",
+              "channel": null,
+              "behavior": {
+                "implies_gesture": false,
+                "audible": false
+              },
+              "templates": [
+                {
+                  "language": "en",
+                  "relation": "NONE",
+                  "pattern": "The shadows dancing upon ${actor_lower} coalesce into cruel familiarity."
+                },
+                {
+                  "language": "zh",
+                  "relation": "NONE",
+                  "pattern": "在${actor_lower}上舞动的阴影凝成了残酷而熟悉的形象。"
+                }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
     }
   ],
   "tombstones": []

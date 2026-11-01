@@ -912,25 +912,25 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
         report = json.loads(TRACKED_REPORT.read_text(encoding="utf-8"))
         self.assertEqual(
             report["coverage"]["canonical_structured_variant_metadata_units"],
-            341)
+            343)
         self.assertEqual(
             report["coverage"][
                 "canonical_structured_variant_metadata_complete"],
-            341)
+            343)
         self.assertEqual(
             report["coverage"][
                 "per_language_structured_variant_verification_units"],
-            682)
+            686)
         self.assertEqual(
             report["coverage"][
                 "per_language_structured_variant_verification_complete"],
-            682)
+            686)
         self.assertEqual(
             report["coverage"]["remaining_legacy_behavior_occurrences"],
             0)
         self.assertEqual(
             report["coverage"]["canonical_structured_variant_metadata_units"],
-            355 - 12 - 2)
+            357 - 12 - 2)
         # Upstream 43d89d912d Goji stays legacy. Literal-only conditional
         # branches are now exhaustively analyzed; absent ZH falls back to EN.
         self.assertEqual(report["coverage"]["unanalysable_occurrences"], 0)
