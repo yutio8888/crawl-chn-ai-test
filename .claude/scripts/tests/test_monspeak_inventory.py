@@ -28,6 +28,8 @@ assert SCAN_SPEC and SCAN_SPEC.loader
 SCAN = importlib.util.module_from_spec(SCAN_SPEC)
 SCAN_SPEC.loader.exec_module(SCAN)
 BASELINE = "b3ad4425053c2175284d32441d67218df97035b0"
+# Immutable terminology snapshot used by the checked-in historical ledgers.
+GLOSSARY_REF = "96814e0e7995b70241c936df79c2ab04168c8092"
 
 
 def _git_plumbing(arguments: list, input_text: str | None = None) -> str:
@@ -239,7 +241,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         cls.zh_path.write_text(json.dumps(cls.zh, ensure_ascii=False),
                                encoding="utf-8")
         cls.inventory = MODULE.build_inventory(
-            BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md"
+            BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md",
+            glossary_ref=GLOSSARY_REF,
         )
 
     @classmethod
