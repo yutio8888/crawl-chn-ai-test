@@ -20,6 +20,7 @@
 #include "god-abil.h"
 #include "item-prop.h"
 #include "message.h"
+#include "lang-en-guard.h"
 #include "mgen-data.h"
 #include "mon-death.h"
 #include "mon-place.h"
@@ -109,9 +110,11 @@ spret cast_iood(actor *caster, int pow, bolt *beam, float vx, float vy,
                                                                       : KC_OTHER;
     mon->props[IOOD_POW].get_short() = pow;
     mon->flags &= ~MF_JUST_SUMMONED;
-    mon->props[IOOD_CASTER].get_string() = caster->as_monster()
-        ? caster->name(DESC_A, true)
-        : (caster->is_player()) ? "you" : "";
+    {
+        ScopedLangEn canonical_language;
+        mon->props[IOOD_CASTER].get_string() = caster->as_monster()
+            ? caster->name(DESC_A, true) : caster->is_player() ? "you" : "";
+    }
     mon->summoner = caster->mid;
 
     if (caster->is_player() || caster->type == MONS_PLAYER_GHOST
@@ -346,7 +349,7 @@ static void _iood_common_beam_setup(monster& orb, const coord_def& pos, bolt& be
 
 static void _iood_hit_setup(monster& orb, bolt& beam)
 {
-    beam.name = T_("orb of destruction");
+    beam.name = N_("orb of destruction");
     beam.flavour = BEAM_DESTRUCTION;
     beam.colour = WHITE;
     beam.glyph = dchar_glyph(DCHAR_FIRED_BURST);
@@ -358,7 +361,7 @@ static void _iood_hit_setup(monster& orb, bolt& beam)
     beam.damage = iood_damage(pow, dist);
 
     if (dist < 3)
-        beam.name = make_stringf(T_("wavering %s"), beam.name.c_str());
+        beam.name = make_stringf("wavering %s", beam.name.c_str());
     if (dist < 2)
         beam.hit_verb = T_("weakly hits");
     beam.ex_size = 1;
@@ -397,8 +400,10 @@ static void _annihilation_explode_setup(monster& globe, bolt& beam)
         beam.hit_verb = T_("feebly blasts");
 
     beam.glyph = dchar_glyph(DCHAR_FIRED_BURST);
-    beam.name = make_stringf(T_("annihilating %s"),
-                             beam.get_short_name().c_str());
+    {
+        ScopedLangEn canonical_language;
+        beam.name = make_stringf("annihilating %s", beam.get_short_name().c_str());
+    }
 }
 
 static bool _iood_hit(monster& mon, const coord_def &pos, bool big_boom = false)
@@ -656,7 +661,7 @@ move_again:
                 {
                     if (shield && shield_reflects(*shield))
                     {
-                        mprf(T_("%s blocks %s with %s %s... and reflects it back!"),
+                        mprf_p(T_("%1$s blocks %2$s with %3$s %4$s... and reflects it back!"),
                              victim->name(DESC_THE, true).c_str(),
                              mon.name(DESC_THE, true).c_str(),
                              victim->pronoun(PRONOUN_POSSESSIVE).c_str(),

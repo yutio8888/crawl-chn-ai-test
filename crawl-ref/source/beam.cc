@@ -344,6 +344,29 @@ struct zap_info
 
 // Read canonical names directly; displaying an old death must not construct a
 // zap (which computes damage/to-hit and can consume gameplay randomness).
+// Complete names produced by the two slow-orb setups. No arbitrary prefix
+// parsing: unknown historical beam identities remain unchanged.
+string orb_beam_name_display(const string& canonical)
+{
+    static const char* const names[] = {
+        NC_("orb beam name", "orb of destruction"),
+        NC_("orb beam name", "wavering orb of destruction"),
+        NC_("orb beam name", "annihilating fire"),
+        NC_("orb beam name", "annihilating cold"),
+        NC_("orb beam name", "annihilating electricity"),
+        NC_("orb beam name", "annihilating negative energy"),
+        NC_("orb beam name", "annihilating magma"),
+        NC_("orb beam name", "annihilating ice"),
+        NC_("orb beam name", "annihilating devastation"),
+        NC_("orb beam name", "annihilating acid"),
+        NC_("orb beam name", "annihilating fragments")
+    };
+    for (const char* name : names)
+        if (canonical == name)
+            return C_("orb beam name", name);
+    return canonical;
+}
+
 bool is_known_beam_name(const string &name)
 {
     if (name.empty())
@@ -4254,6 +4277,12 @@ static pie_effect _random_pie_effect(const actor &defender)
 // use the translated spell title instead of the English zap name.
 static string _beam_display_name(const bolt &beam)
 {
+    if (beam.origin_spell == SPELL_IOOD
+        || beam.origin_spell == SPELL_UNLEASH_DESTRUCTION
+           && starts_with(beam.name, "annihilating "))
+    {
+        return orb_beam_name_display(beam.name);
+    }
     if (Options.language == lang_t::ZH && beam.origin_spell != SPELL_NO_SPELL)
         return spell_title(beam.origin_spell);
     return T_(beam.name.c_str());

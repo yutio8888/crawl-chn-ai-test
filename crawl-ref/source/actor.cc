@@ -1052,8 +1052,8 @@ void actor::collide(coord_def newpos, const actor *agent, int damage)
         }
         else
         {
-            mprf(T_("%s violently %s moving%s"),
-                 name(DESC_THE).c_str(), verb_for_display(N_("stop")).c_str(),
+            mprf(T_("%s violently stops moving%s"),
+                 name(DESC_THE).c_str(),
                  attack_strength_punctuation(dam).c_str());
         }
 
@@ -1188,14 +1188,15 @@ bool actor::stumble_away_from(coord_def targ, string src)
         return false;
     }
 
+    const string source_display = T_(src.c_str());
     if (is_player() && !src.empty())
     {
         mprf(T_("%s sends you backwards."),
-             uppercase_first(src).c_str());
+             uppercase_first(source_display).c_str());
     }
     else if (you.can_see(*this) && !src.empty())
         mprf(T_("%s is knocked back by %s."),
-             name(DESC_THE).c_str(), src.c_str());
+             name(DESC_THE).c_str(), source_display.c_str());
 
     move_to(newpos);
 

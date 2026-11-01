@@ -397,7 +397,7 @@ static void _apply_post_zap_effect(spell_type spell, coord_def target)
         break;
     case SPELL_BOMBARD:
         if (coinflip())
-            you.stumble_away_from(target, "the blast");
+            you.stumble_away_from(target, N_("the blast"));
         break;
     default:
         break;

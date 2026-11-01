@@ -14,6 +14,11 @@
 #include "english.h"
 #include "env.h"
 #include "format.h"
+#include "fineff.h"
+#include "fprop.h"
+#include "mon-project.h"
+#include "shout.h"
+#include "tags.h"
 #include "ghost.h"
 #include "fight.h"
 #include "hiscores.h"
@@ -30,6 +35,7 @@
 #include "items.h"
 #include "losglobal.h"
 #include "message.h"
+#include "mon-cast.h"
 #include "mon-death.h"
 #include "mon-info.h"
 #include "mon-place.h"
@@ -1720,4 +1726,464 @@ TEST_CASE("combat rereview: actual hydra decapitation preserves claw and blade s
         if (language == lang_t::ZH)
             CHECK(output.find(actions[kind][index]) == string::npos);
     }
+}
+
+TEST_CASE("monster rereview: real gold theft writes canonical marked note and roundtrips both languages",
+          "[zh-translation][monster-rereview][gold-theft]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    unwind_var<vector<Note>> saved_notes(note_list);
+    const bool was_active = notes_are_active();
+    activate_notes(true);
+    unwinder restore_active([&] { activate_notes(was_active); });
+    note_list.clear();
+    monster* thief = world.place(MONS_MAURICE, coord_def(20, 21));
+    const int index = get_mitm_slot();
+    REQUIRE(index != NON_ITEM);
+    unwind_var<item_def> saved_gold(env.item[index]);
+    item_def& gold = env.item[index];
+    gold.base_type = OBJ_GOLD;
+    gold.sub_type = 0;
+    gold.quantity = 1;
+    gold.set_holding_monster(*thief);
+    thief->inv[MSLOT_GOLD] = index;
+    you.gold = 10; // every original amount roll steals exactly these ten
+    you.attribute[ATTR_GOLD_FOUND] = 10;
+    const string output = observe_message([&] { thief->steal_item_from_player(); });
+    CHECK(you.gold == 0);
+    CHECK(gold.quantity == 11);
+    REQUIRE(note_list.size() == 1);
+    const Note& note = note_list.back();
+    CHECK(note.name == "Maurice stole 10 gold");
+    CHECK(note.desc == "gold theft");
+    CHECK(note.first == 10);
+    vector<unsigned char> bytes;
+    writer writer_out(&bytes);
+    note.save(writer_out);
+    reader input(bytes);
+    input.setMinorVersion(TAG_MINOR_VERSION);
+    Note loaded;
+    loaded.load(input);
+    for (lang_t display_language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        unwind_var<lang_t> lang(Options.language, display_language);
+        const string display = loaded.describe(false, false, true);
+        if (display_language == lang_t::ZH)
+        {
+            CHECK(display == make_stringf_p(T_("%1$s stole %2$d gold"),
+                death_source_display_name("Maurice").c_str(), 10));
+        }
+        else CHECK(display == loaded.name);
+        CHECK(loaded.name == "Maurice stole 10 gold");
+        vector<unsigned char> after;
+        writer output_after(&after);
+        loaded.save(output_after);
+        CHECK(after == bytes);
+    }
+    // Same text without the producer marker is a historical/Lua snapshot.
+    const Note unmarked(NOTE_MESSAGE, 10, 0, note.name);
+    CHECK(unmarked.describe(false, false, true) == note.name);
+    const Note wrong_count(NOTE_MESSAGE, 9, 0, note.name, "gold theft");
+    CHECK(wrong_count.describe(false, false, true) == note.name);
+}
+
+TEST_CASE("monster rereview: real item theft describes stolen quantity and keeps unknown saved names English",
+          "[zh-translation][monster-rereview][item-theft]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    for (int quantity : {1, 10})
+    {
+        issue10_world world;
+        unwind_var<vector<Note>> saved_notes(note_list);
+        const bool was_active = notes_are_active();
+        activate_notes(true);
+        unwinder restore_active([&] { activate_notes(was_active); });
+        note_list.clear();
+        monster* thief = world.place(MONS_MAURICE, coord_def(20, 21));
+        item_def& inventory = you.inv[0];
+        inventory.base_type = OBJ_MISSILES;
+        inventory.sub_type = MI_STONE;
+        inventory.quantity = quantity;
+        inventory.link = 0;
+        inventory.pos = ITEM_IN_INVENTORY;
+        inventory.flags = ISFLAG_IDENTIFIED;
+        const int index = get_mitm_slot(10);
+        REQUIRE(index != NON_ITEM);
+        unwind_var<item_def> saved_item(env.item[index]);
+        item_def* stolen = nullptr;
+        string output;
+        {
+            rng::subgenerator random(1, 0x4e5448454654ULL);
+            output = observe_message([&] { stolen = thief->take_item(0, MSLOT_MISSILE, true); });
+        }
+        REQUIRE(stolen == &env.item[index]);
+        const int amount = stolen->quantity;
+        REQUIRE(amount >= 1);
+        REQUIRE(amount <= quantity);
+        CHECK((inventory.defined() ? inventory.quantity : 0) == quantity - amount);
+        if (amount < quantity)
+        {
+            CHECK(output.find(make_stringf(T_("%s steals %s from you!"),
+                thief->name(DESC_THE).c_str(), stolen->name(DESC_A).c_str())) != string::npos);
+        }
+        REQUIRE(note_list.size() == 1);
+        string expected;
+        { ScopedLangEn en; expected = "Maurice stole " + stolen->name(DESC_A); }
+        const Note note = note_list.back();
+        CHECK(note.name == expected);
+        CHECK(note.desc == "item theft");
+        vector<unsigned char> bytes;
+        writer output_before(&bytes);
+        note.save(output_before);
+        reader input(bytes);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        Note loaded;
+        loaded.load(input);
+        CHECK(loaded.name == expected);
+        const Note unknown(NOTE_MESSAGE, 0, 0,
+            "Maurice stole an unknown saved artefact", "item theft");
+        CHECK(unknown.describe(false, false, true) == unknown.name);
+        const Note empty(NOTE_MESSAGE, 0, 0, "Maurice stole ", "item theft");
+        CHECK(empty.describe(false, false, true) == empty.name);
+        vector<unsigned char> after;
+        writer output_after(&after);
+        loaded.describe(false, false, true);
+        loaded.save(output_after);
+        CHECK(after == bytes);
+    }
+}
+
+TEST_CASE("monster rereview: actual vex stores canonical cause and note across language changes",
+          "[zh-translation][monster-rereview][vex-protocol]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    unwind_var<vector<Note>> saved_notes(note_list);
+    const bool was_active = notes_are_active();
+    activate_notes(true);
+    unwinder restore_active([&] { activate_notes(was_active); });
+    note_list.clear();
+    const bool divine_cause = GENERATE(false, true);
+    monster* caster = divine_cause ? nullptr
+        : world.place(MONS_ORC_WIZARD, coord_def(20, 21));
+    string expected = "Trog's wrath";
+    if (caster)
+    {
+        ScopedLangEn en;
+        expected = caster->name(DESC_A);
+    }
+    const string message = observe_message([&]
+    {
+        REQUIRE(you.vex(caster, 3, divine_cause ? "Trog's wrath" : ""));
+    });
+    CHECK(you.props[DISABLED_BY_KEY].get_string() == expected);
+    REQUIRE(note_list.size() == 1);
+    CHECK(note_list.back().type == NOTE_VEXED);
+    CHECK(note_list.back().name == expected);
+    const Note note = note_list.back();
+    vector<unsigned char> bytes;
+    writer output(&bytes);
+    note.save(output);
+    reader input(bytes);
+    input.setMinorVersion(TAG_MINOR_VERSION);
+    Note loaded;
+    loaded.load(input);
+    for (lang_t display_language : {lang_t::EN, lang_t::ZH})
+    {
+        unwind_var<lang_t> lang(Options.language, display_language);
+        CHECK(loaded.describe(false, false, true) == make_stringf(
+            T_("Vexed by %s for %d turns"), death_source_display_name(expected).c_str(), 3));
+        if (display_language == lang_t::ZH)
+            CHECK(death_source_display_name(expected) != expected);
+        CHECK(loaded.name == expected);
+        CHECK(you.props[DISABLED_BY_KEY].get_string() == expected);
+    }
+}
+
+TEST_CASE("monster rereview: real yell places wild adverb before Chinese action and keeps fugue",
+          "[zh-translation][monster-rereview][shout]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    for (bool berserk : {false, true})
+    for (bool fugue : {false, true})
+    {
+        you.duration[DUR_BERSERK] = berserk ? 10 : 0;
+        you.duration[DUR_FUGUE] = fugue ? 10 : 0;
+        const string verb = you.shout_verb(false);
+        const string suffix = fugue ? T_(", and the damned howl along") : "";
+        const string expected = make_stringf_p(berserk ? T_("You %1$s wildly%2$s!")
+                                                       : T_("You %1$s for attention%2$s!"),
+                                               verb.c_str(), suffix.c_str());
+        const string output = observe_message([&] { yell(); });
+        CHECK(output.find(expected) != string::npos);
+        if (language == lang_t::ZH) CHECK(output.find("wildly") == string::npos);
+    }
+}
+
+TEST_CASE("monster rereview: soul-bound naming and four item binding displays use separate contexts",
+          "[zh-translation][monster-rereview][bound-context]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    struct item_kind { object_class_type base; int subtype; };
+    const item_kind kinds[] = {{OBJ_WEAPONS, WPN_DAGGER}, {OBJ_ARMOUR, ARM_ROBE},
+                              {OBJ_JEWELLERY, RING_FIRE}, {OBJ_STAVES, STAFF_FIRE}};
+    for (const auto& kind : kinds)
+    {
+        item_def item;
+        item.base_type = kind.base;
+        item.sub_type = kind.subtype;
+        item.quantity = 1;
+        item.flags = ISFLAG_CURSED | ISFLAG_IDENTIFIED;
+        const string display = item.name(DESC_PLAIN);
+        CHECK(display.find(T_("bound ")) != string::npos);
+        CHECK(display.find('\n') == string::npos);
+        CHECK(item.cursed());
+    }
+    monster_info soul(MONS_BOUND_SOUL);
+    soul.base_type = MONS_ORC;
+    const string display = soul.common_name(DESC_PLAIN);
+    CHECK(display.find(C_("bound soul name", "bound ")) != string::npos);
+    CHECK(display.find('\n') == string::npos);
+    if (language == lang_t::ZH)
+        CHECK(string(C_("bound soul name", "bound ")) != T_("bound "));
+}
+
+TEST_CASE("monster rereview: actual delayed discharge translates raw source at firing",
+          "[zh-translation][monster-rereview][discharge]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    no_notes suppress_notes;
+    monster* source = world.place(MONS_SHOCK_SERPENT, coord_def(20, 21));
+    you.hp = you.hp_max = 1000;
+    for (const char* raw_source : {"electric aura", "shield"})
+    for (int power : {3, 6})
+    {
+        const int before = you.hp;
+        schedule_shock_discharge_fineff(source, you, source->pos(), power, raw_source);
+        i18n_cache_clear();
+        const string output = observe_message([&] { fire_final_effects(); });
+        const int damage = before - you.hp;
+        CHECK(output.find(make_stringf_p(T_("%1$s %2$s discharges%3$s, shocking %4$s%5$s"),
+            source->name(DESC_ITS).c_str(), C_("shock discharge source", raw_source),
+            power < 4 ? "" : T_(" violently"), you.name(DESC_THE).c_str(),
+            attack_strength_punctuation(damage).c_str())) != string::npos);
+        if (language == lang_t::ZH)
+        {
+            CHECK(output.find(raw_source) == string::npos);
+            CHECK(output.find("violently") == string::npos);
+        }
+    }
+}
+
+TEST_CASE("monster rereview: actual slow orb keeps canonical caster property through serialization",
+          "[zh-translation][monster-rereview][orb-caster]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    no_notes suppress_notes;
+    init_zap_index();
+    monster* caster = world.place(MONS_ORC_WIZARD, coord_def(20, 21));
+    string canonical;
+    { ScopedLangEn en; canonical = caster->name(DESC_A, true); }
+    REQUIRE(cast_iood(caster, 50, nullptr, 1, 0, MHITNOT, false, false) == spret::success);
+    monster* orb = nullptr;
+    for (monster_iterator mi; mi; ++mi)
+        if (mi->type == MONS_ORB_OF_DESTRUCTION && mi->summoner == caster->mid)
+        {
+            orb = *mi;
+            world.monsters.push_back(orb);
+        }
+    REQUIRE(orb);
+    CHECK(orb->props[IOOD_CASTER].get_string() == canonical);
+    vector<unsigned char> bytes;
+    writer output(&bytes);
+    marshallMonster(output, *orb);
+    reader input(bytes);
+    input.setMinorVersion(TAG_MINOR_VERSION);
+    monster loaded;
+    unmarshallMonster(input, loaded);
+    CHECK(loaded.props[IOOD_CASTER].get_string() == canonical);
+}
+
+TEST_CASE("monster rereview: finite canonical orb names render at actual beam and score sinks",
+          "[zh-translation][monster-rereview][orb-display]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster* source = world.place(MONS_ORC_WIZARD, coord_def(20, 21));
+    const char* names[] = {"orb of destruction", "wavering orb of destruction",
+        "annihilating fire", "annihilating cold", "annihilating electricity",
+        "annihilating negative energy", "annihilating magma", "annihilating ice",
+        "annihilating devastation", "annihilating acid", "annihilating fragments"};
+    unwind_var<int> sanctuary_time(env.sanctuary_time, 1);
+    unwind_var<coord_def> sanctuary_pos(env.sanctuary_pos, source->pos());
+    const auto old_props = env.pgrid(source->pos());
+    unwinder restore_props([&] { env.pgrid(source->pos()) = old_props; });
+    env.pgrid(source->pos()) |= FPROP_SANCTUARY_1;
+    for (const char* canonical : names)
+    {
+        // These are the bounded canonical setup outputs. This case exercises
+        // final sinks, not the private random annihilation setup itself.
+        bolt beam;
+        beam.name = canonical;
+        beam.aux_source = canonical;
+        beam.origin_spell = starts_with(canonical, "annihilating ")
+            ? SPELL_UNLEASH_DESTRUCTION : SPELL_IOOD;
+        beam.flavour = BEAM_FIRE;
+        beam.target = source->pos();
+        beam.use_target_as_pos = true;
+        const string display = C_("orb beam name", canonical);
+        const string output = observe_message([&] { CHECK(beam.explode(false)); });
+        CHECK(output.find(display) != string::npos);
+        CHECK(beam.name == canonical);
+        CHECK(beam.aux_source == canonical);
+        scorefile_entry score(1, source->mid, KILLED_BY_BEAM, beam.aux_source.c_str(), true);
+        score.init(1600000000);
+        const string raw = score.raw_string();
+        CHECK(score.get_fields().str_field("kaux") == canonical);
+        CHECK(score.death_description(scorefile_entry::DDV_VERBOSE).find(display) != string::npos);
+        CHECK(score.raw_string() == raw);
+    }
+    CHECK(orb_beam_name_display("annihilating unknown substance") == "annihilating unknown substance");
+}
+
+TEST_CASE("monster rereview: actual Waterstrike translates grounded and airborne motion",
+          "[zh-translation][monster-rereview][waterstrike]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const bool airborne = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    no_notes suppress_notes;
+    init_zap_index();
+    you.hp = you.hp_max = 1000;
+    you.duration[DUR_FLIGHT] = airborne ? 10 : 0;
+    REQUIRE(you.airborne() == airborne);
+    monster* caster = world.place(MONS_ORC_WIZARD, coord_def(20, 21));
+    caster->target = you.pos();
+    const int before = you.hp;
+    const string output = observe_message([&]
+    {
+        mons_cast(caster, bolt(), SPELL_WATERSTRIKE, MON_SPELL_MAGICAL, false);
+    });
+    CHECK(output.find(make_stringf(T_("The water %s and strikes %s%s"),
+        airborne ? T_("rises up") : T_("swirls"), you.name(DESC_THE).c_str(),
+        attack_strength_punctuation(before - you.hp).c_str())) != string::npos);
+    if (language == lang_t::ZH)
+    {
+        CHECK(output.find("rises up") == string::npos);
+        CHECK(output.find("swirls") == string::npos);
+    }
+}
+
+TEST_CASE("monster rereview: real thrown-creature score parses canonical cause and translates final sinks",
+          "[zh-translation][monster-rereview][thrown-creature]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster* thrower = world.place(MONS_ORC_WIZARD, coord_def(20, 21));
+    // Exercise the real legacy parser and score sinks using the exact producer
+    // shape. The private throw-site selection/movement producer is source-audited.
+    const char* canonical = "Hit by an orc thrown by orc wizard";
+    scorefile_entry score(1, thrower->mid, KILLED_BY_BEAM, canonical, true);
+    score.init(1600000000);
+    const string raw = score.raw_string();
+    CHECK(score.get_fields().str_field("kaux") == canonical);
+    const string target = death_source_display_name("orc");
+    const string output = score.death_description(scorefile_entry::DDV_VERBOSE);
+    if (language == lang_t::ZH)
+    {
+        CHECK(output.find(make_stringf_p(T_("Hit by %1$s thrown by %2$s"),
+            target.c_str(), death_source_display_name("an orc wizard").c_str())) != string::npos);
+    }
+    else
+        CHECK(output.find(canonical) != string::npos);
+    CHECK(score.death_description(scorefile_entry::DDV_LOGVERBOSE).find(target) != string::npos);
+    CHECK(score.raw_string() == raw);
+}
+
+TEST_CASE("monster rereview: actual dream dust covers strengths, plural endings and monster targets",
+          "[zh-translation][monster-rereview][dream-dust]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const bool player_target = GENERATE(false, true);
+    const int branch = GENERATE(0, 1, 2, 3, 4, 5);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    no_notes suppress_notes;
+    init_zap_index();
+    const int count[] = {1, 2, 6, 6, 6, 6};
+    const int lower[] = {0, 0, 0, 25, 75, 125};
+    const int upper[] = {25, 25, 25, 75, 125, 151};
+    monster* sheep = world.place(MONS_DREAM_SHEEP, coord_def(20, 21));
+    for (int i = 1; i < count[branch]; ++i)
+        world.place(MONS_DREAM_SHEEP, coord_def(21 + i, 21));
+    actor* target = &you;
+    if (!player_target)
+    {
+        monster* victim = world.place(MONS_ORC, coord_def(21, 20));
+        sheep->foe = victim->mindex();
+        target = victim;
+    }
+    sheep->target = target->pos();
+    unsigned int seed = 0;
+    int power = 0;
+    // Pick a deterministic fixture seed for each existing strength branch.
+    // The real spell below makes its own unchanged draw and emits the message.
+    for (; seed < 256; ++seed)
+    {
+        rng::subgenerator random(seed, 0x4e445245414dULL);
+        power = random2(count[branch] * 25) + 1;
+        if (power >= lower[branch] && power < upper[branch])
+            break;
+    }
+    REQUIRE(seed < 256);
+    if (power < 25)
+        power = 0;
+    const string target_name = target->name(DESC_THE);
+    string output;
+    {
+        rng::subgenerator random(seed, 0x4e445245414dULL);
+        output = observe_message([&]
+        {
+            mons_cast(sheep, bolt(), SPELL_DREAM_DUST, MON_SPELL_MAGICAL, false);
+        });
+    }
+    string expected;
+    if (!player_target)
+    {
+        const char* pluralize = count[branch] == 1 ? "s" : "";
+        expected = power
+            ? make_stringf_p(T_("As the sheep sparkle%1$s and sway%2$s, %3$s falls asleep."),
+                             pluralize, pluralize, target_name.c_str())
+            : make_stringf_p(T_("The dream sheep attempt%1$s to lull %2$s to sleep."),
+                             pluralize, target_name.c_str());
+    }
+    else if (power >= 125)
+        expected = T_("You are overwhelmed by glittering dream dust!");
+    else if (power >= 75)
+        expected = T_("The dream sheep are wreathed in dream dust.");
+    else if (power)
+        expected = T_("The dream sheep shake their wool and sparkle.");
+    else
+        expected = make_stringf(T_("The dream sheep ruffle%s wool and motes of "
+                                   "dream dust sparkle, to no effect."),
+                               count[branch] == 1 ? T_("s its") : T_(" their"));
+    CAPTURE(count[branch], power, output);
+    CHECK(output.find(expected) != string::npos);
+    if (!player_target)
+        CHECK(output.find(target_name) != string::npos);
 }

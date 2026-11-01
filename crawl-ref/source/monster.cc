@@ -45,6 +45,7 @@
 #include "item-status-flag-type.h"
 #include "items.h"
 #include "libutil.h"
+#include "lang-en-guard.h"
 #include "positional_format.h"
 #include "makeitem.h"
 #include "map-knowledge.h"
@@ -5602,7 +5603,7 @@ void monster::finalise_movement(const actor* to_blame)
             if (you.can_see(*this))
             {
                 mprf(T_("%s dives back into the %s!"), name(DESC_THE).c_str(),
-                                                   feat_type_name(env.grid(pos())));
+                                                   feature_description(env.grid(pos()), "", DESC_PLAIN).c_str());
             }
             del_ench(ENCH_AQUATIC_LAND);
         }
@@ -6086,7 +6087,7 @@ void monster::react_to_damage(const actor *oppressor, int damage,
             // so need to cast off its constness
             schedule_shock_discharge_fineff(this,
                                             const_cast<actor&>(*oppressor),
-                                            pos(), pow, "electric aura");
+                                            pos(), pow, NC_("shock discharge source", "electric aura"));
         }
     }
 
@@ -6501,10 +6502,13 @@ void monster::steal_item_from_player()
              stolen_amount,
              stolen_amount != 1 ? "s" : "");
 
-        const string what = make_stringf(T_("%s stole %d gold"),
-                                        uppercase_first(name(DESC_A)).c_str(),
-                                        stolen_amount);
-        take_note(Note(NOTE_MESSAGE, 0, 0, what), true);
+        string what;
+        {
+            ScopedLangEn canonical_language;
+            what = make_stringf("%s stole %d gold", uppercase_first(name(DESC_A)).c_str(),
+                                stolen_amount);
+        }
+        take_note(Note(NOTE_MESSAGE, stolen_amount, 0, what, "gold theft"), true);
 
         you.attribute[ATTR_GOLD_FOUND] -= stolen_amount;
 
@@ -6563,25 +6567,26 @@ item_def* monster::take_item(int steal_what, mon_inv_type mslot,
     // If the item was stolen, randomize quantity
     if (is_stolen)
     {
-        const int stolen_amount = 1 + random2(new_item.quantity);
-        if (stolen_amount < new_item.quantity)
+        const int original_amount = new_item.quantity;
+        const int stolen_amount = 1 + random2(original_amount);
+        new_item.quantity = stolen_amount;
+        if (stolen_amount < original_amount)
         {
-            mprf(T_("%s steals %d of %s!"),
-                 name(DESC_THE).c_str(),
-                 stolen_amount,
-                 new_item.name(DESC_YOUR).c_str());
+            mprf(T_("%s steals %s from you!"),
+                 name(DESC_THE).c_str(), new_item.name(DESC_A).c_str());
         }
         else
         {
-            mprf(T_("%s steals %s!"),
-                 name(DESC_THE).c_str(),
+            mprf(T_("%s steals %s!"), name(DESC_THE).c_str(),
                  new_item.name(DESC_YOUR).c_str());
         }
-        const string what = make_stringf(T_("%s stole %s"),
-                                        uppercase_first(name(DESC_A)).c_str(),
-                                        new_item.name(DESC_A).c_str());
-        take_note(Note(NOTE_MESSAGE, 0, 0, what), true);
-        new_item.quantity = stolen_amount;
+        string what;
+        {
+            ScopedLangEn canonical_language;
+            what = make_stringf("%s stole %s", uppercase_first(name(DESC_A)).c_str(),
+                                new_item.name(DESC_A).c_str());
+        }
+        take_note(Note(NOTE_MESSAGE, 0, 0, what, "item theft"), true);
     }
 
     // Drop the item already in the slot (including the shield
