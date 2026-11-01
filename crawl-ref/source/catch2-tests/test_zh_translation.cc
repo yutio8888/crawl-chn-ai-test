@@ -15,6 +15,7 @@
 #include "beam.h"
 #include "branch.h"
 #include "clua.h"
+#include "cloud.h"
 #include "dlua.h"
 #include "database.h"
 #include "decks.h"
@@ -9927,4 +9928,219 @@ TEST_CASE("monsters rereview: canonical ghost snapshots localize known titles wi
                 }
             }
         }
+}
+
+
+namespace
+{
+string first_world_des_lua_block(const char* relative_path)
+{
+    std::ifstream input(datafile_path(relative_path));
+    REQUIRE(input.good());
+    std::ostringstream contents;
+    contents << input.rdbuf();
+    const string text = contents.str();
+    const size_t start = text.find("{{");
+    REQUIRE(start != string::npos);
+    const size_t finish = text.find("}}", start + 2);
+    REQUIRE(finish != string::npos);
+    return text.substr(start + 2, finish - start - 2);
+}
+}
+
+TEST_CASE("world rereview: cloud descriptions use canonical reachable keys",
+          "[zh-translation][world-rereview][cloud-descriptions]")
+{
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (cloud_type type : {CLOUD_GOLD_DUST, CLOUD_FAINT_FROST})
+        {
+            const string raw = cloud_type_name_en(type);
+            const string key = raw + " cloud";
+            const string body = getLongDescription(key);
+            CAPTURE(language, raw, key, body);
+            REQUIRE_FALSE(body.empty());
+            CHECK(get_cloud_desc(type, false).find(body) != string::npos);
+            CHECK(get_cloud_desc(type, true).find(body) != string::npos);
+            CHECK(cloud_name_to_type(raw) == type);
+            i18n_cache_clear();
+            CHECK(cloud_type_name_en(type) == raw);
+            CHECK(getLongDescription(key) == body);
+            if (language == lang_t::ZH)
+            {
+                CHECK(contains_non_ascii(body));
+                CHECK_FALSE(rule_mixed_cn_en(body));
+            }
+        }
+        CHECK(cloud_type_name_en(CLOUD_FAINT_FROST) == "faint frost");
+        CHECK(Options.language == language);
+    }
+}
+
+TEST_CASE("world rereview: Ash vision runs real vault callback with complete finite messages",
+          "[zh-translation][world-rereview][ash-vision]")
+{
+    init_dungeon_lua();
+    const string callback = first_world_des_lua_block(
+        "des/altar/ashenzari_visionary.des");
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        // Load the real .des callback. Only terminal display and dungeon
+        // dependencies are stubbed; translation and note fallback stay real.
+        const string script = R"lua(
+local previous = { speaks=crawl.god_speaks, note=crawl.take_note,
+                   terrain=dgn.terrain_changed, replicas=iter.replica_iterator }
+local old_callback = callback.grunt_ashenzari_visionary_reveal
+local ok, err = pcall(function()
+)lua" + callback + R"lua(
+    local spoken, notes, changes = {}, {}, 0
+    crawl.god_speaks = function(god, text)
+        assert(god == "Ashenzari", "localized god protocol identity")
+        spoken[#spoken+1] = text
+    end
+    crawl.take_note = function(text) notes[#notes+1] = text end
+    iter.replica_iterator = function(name, count)
+        assert(name == "revealing_wall" and count == 1)
+        local used = false
+        return function()
+            if not used then used=true; return {x=21,y=22} end
+        end
+    end
+    dgn.terrain_changed = function(x, y, feature, preserve)
+        assert(x == 21 and y == 22 and feature == "clear_stone_wall"
+               and preserve == false, "terrain protocol changed")
+        changes = changes + 1
+    end
+    local names = {"Swamp", "Shoals", "Spider Nest", "Snake Pit"}
+    local cases = {{}}
+    for i, first in ipairs(names) do
+        cases[#cases+1] = {first} -- defensive single-branch callback case
+        for j=i,#names do cases[#cases+1] = {first,names[j]} end
+    end
+    for _, branches in ipairs(cases) do
+        spoken, notes, changes = {}, {}, 0
+        local original = table.concat(branches, "|")
+        local data = {branches=branches}
+        callback.grunt_ashenzari_visionary_reveal(data)
+        assert(data.trig == true and changes == 1)
+        assert(table.concat(data.branches, "|") == original,
+               "display rewrote canonical branch identity")
+        assert(#spoken == 2)
+        assert(spoken[1] == crawl.t_("Ashenzari says: See what I see, mortal..."))
+        local key, expected
+        if #branches == 0 then
+            key = "You have a sudden vision!"
+            expected = crawl.t_(key)
+            assert(#notes == 0)
+        elseif #branches == 1 then
+            key = "You have a sudden vision of the %s!"
+            expected = string.format(crawl.t_(key), crawl.t_(branches[1]))
+            assert(#notes == 1 and notes[1] == util.i18n_format_or_english(
+                "Saw a vision of the %s.", branches[1]))
+        else
+            key = "You have a sudden vision of the %s and the %s!"
+            expected = string.format(crawl.t_(key), crawl.t_(branches[1]),
+                                     crawl.t_(branches[2]))
+            assert(#notes == 1 and notes[1] == util.i18n_format_or_english(
+                "Saw a vision of the %s and the %s.", branches[1], branches[2]))
+        end
+        assert(spoken[2] == expected, table.concat(spoken, " | "))
+        if crawl.language() == "zh" then assert(crawl.t_(key) ~= key) end
+        callback.grunt_ashenzari_visionary_reveal(data)
+        assert(#spoken == 2 and changes == 1, "repeat trigger fired")
+    end
+    spoken, notes, changes = {}, {}, 0
+    callback.grunt_ashenzari_visionary_reveal({branches={"Fixture Unknown Branch"}})
+    assert(notes[1] == "Saw a vision of the Fixture Unknown Branch.",
+           "incomplete note parameters did not fall back wholly to English")
+end)
+callback.grunt_ashenzari_visionary_reveal = old_callback
+crawl.god_speaks, crawl.take_note = previous.speaks, previous.note
+dgn.terrain_changed, iter.replica_iterator = previous.terrain, previous.replicas
+assert(ok, err)
+)lua";
+        const int result = dlua.execstring(script.c_str(), "Ash vision real callback regression");
+        INFO(dlua.error);
+        REQUIRE(result == 0);
+    }
+}
+
+TEST_CASE("world rereview: Trog wizard runs real vault callback for every cell state",
+          "[zh-translation][world-rereview][trog-wizard]")
+{
+    init_dungeon_lua();
+    const string callback = first_world_des_lua_block("des/altar/trog_wizard.des");
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string script = R"lua(
+local previous = { speaks=crawl.god_speaks, turns=you.turns, sees=you.see_cell,
+                   markers=dgn.find_marker_positions_by_prop,
+                   cloud=dgn.place_cloud, monster=dgn.mons_at }
+local old_callback = callback.trog_wizard_convert_wizard
+local ok, err = pcall(function()
+)lua" + callback + R"lua(
+    local spoken, clouds, turn = {}, 0, 0
+    local monster, visible, marker_exists
+    crawl.god_speaks = function(god, text)
+        assert(god == "Trog", "localized god protocol identity")
+        spoken[#spoken+1] = text
+    end
+    you.turns = function() return turn end
+    you.see_cell = function(x,y) assert(x==21 and y==22); return visible end
+    dgn.find_marker_positions_by_prop = function(key, value)
+        assert(key == "replica_name" and value == "trog_wizard")
+        if marker_exists then return {{xy=function() return 21,22 end}} end
+        return {}
+    end
+    dgn.place_cloud = function(x,y,kind,duration)
+        assert(x==21 and y==22 and kind=="flame" and duration==15,
+               "cloud protocol or behavior changed")
+        clouds = clouds + 1
+    end
+    dgn.mons_at = function(x,y) assert(x==21 and y==22); return monster end
+    local keys = {
+        "Flames erupt from the bowels of the wizard! Trog roars with satisfaction!",
+        "Flames erupt from the wizard's cell! Trog roars with frustration!",
+        "Flames erupt from the wizard's empty cell! Trog roars with frustration!"
+    }
+    for state=1,3 do
+        spoken, clouds, turn = {}, 0, 0
+        monster = state==1 and {base_name="wizard"}
+                  or state==2 and {base_name="orc"} or nil
+        visible, marker_exists = true, true
+        local data = {tc=0, turns=0}
+        for i=1,4 do turn=i; callback.trog_wizard_convert_wizard(data) end
+        assert(#spoken==0 and clouds==0 and data.tc==4)
+        turn=5
+        callback.trog_wizard_convert_wizard(data)
+        assert(#spoken==1 and clouds==1 and data.triggered==true)
+        assert(spoken[1] == crawl.t_(keys[state]), spoken[1])
+        if monster then assert(monster.base_name == (state==1 and "wizard" or "orc")) end
+        if crawl.language()=="zh" then assert(crawl.t_(keys[state]) ~= keys[state]) end
+        turn=6
+        callback.trog_wizard_convert_wizard(data)
+        assert(#spoken==1 and clouds==1, "repeat trigger fired")
+    end
+    spoken, clouds, turn = {}, 0, 10
+    visible, marker_exists = false, true
+    local unseen = {tc=5, turns=10}
+    callback.trog_wizard_convert_wizard(unseen)
+    assert(#spoken==0 and clouds==0 and not unseen.triggered)
+    visible, marker_exists = true, false
+    callback.trog_wizard_convert_wizard({tc=5, turns=10})
+    assert(#spoken==0 and clouds==0)
+end)
+callback.trog_wizard_convert_wizard = old_callback
+crawl.god_speaks, you.turns, you.see_cell = previous.speaks, previous.turns, previous.sees
+dgn.find_marker_positions_by_prop = previous.markers
+dgn.place_cloud, dgn.mons_at = previous.cloud, previous.monster
+assert(ok, err)
+)lua";
+        const int result = dlua.execstring(script.c_str(), "Trog wizard real callback regression");
+        INFO(dlua.error);
+        REQUIRE(result == 0);
+    }
 }

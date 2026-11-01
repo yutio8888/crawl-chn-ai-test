@@ -5710,25 +5710,22 @@ static void _tag_read_you_dungeon(reader &th)
 #endif
 
     typedef pair<string_set::iterator, bool> ssipair;
+    ssipair (string_set::*insert_string)(const string &) = &string_set::insert;
     unmarshall_container(th, you.uniq_map_tags,
-                         (ssipair (string_set::*)(const string &))
-                         &string_set::insert,
+                         insert_string,
                          unmarshallString);
     unmarshall_container(th, you.uniq_map_names,
-                         (ssipair (string_set::*)(const string &))
-                         &string_set::insert,
+                         insert_string,
                          unmarshallString);
 #if TAG_MAJOR_VERSION == 34
     if (th.getMinorVersion() >= TAG_MINOR_ABYSS_UNIQUE_VAULTS)
     {
 #endif
     unmarshall_container(th, you.uniq_map_tags_abyss,
-                         (ssipair (string_set::*)(const string &))
-                         &string_set::insert,
+                         insert_string,
                          unmarshallString);
     unmarshall_container(th, you.uniq_map_names_abyss,
-                         (ssipair (string_set::*)(const string &))
-                         &string_set::insert,
+                         insert_string,
                          unmarshallString);
 #if TAG_MAJOR_VERSION == 34
     }

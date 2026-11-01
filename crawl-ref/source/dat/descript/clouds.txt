@@ -165,8 +165,8 @@ creatures caught within, although it is ultimately harmless.
 %%%%
 golden dust cloud
 
-A cloud of shimmering golden dust. While within it, followers of the Council
-gain tremendous strength in combat.
+A cloud of shimmering golden dust. It accompanies the Council's Heavenly Storm,
+which grants the Council's followers tremendous strength in combat.
 %%%%
 smouldering embers cloud
 
@@ -222,7 +222,7 @@ convert it into a small projectile and launch it at a nearby enemy.
 The cloud will be displaced to a nearby tile if any other entity steps into it,
 or if there are no valid targets in range when you step into it.
 %%%%
-frost cloud
+faint frost cloud
 
 A cloud of tiny floating ice crystals, glittering in the dungeon air.
 Atmospheric, but harmless.

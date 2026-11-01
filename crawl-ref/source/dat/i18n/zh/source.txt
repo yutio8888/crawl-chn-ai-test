@@ -192,7 +192,7 @@ strange rock wall
 奇怪的岩壁
 %%%%
 statue of a hideous four-limbed creature
-四足可憎生物的雕像
+长着四肢的可憎生物雕像
 %%%%
 spawn point
 出生点
@@ -14784,10 +14784,10 @@ programming rift
 程序裂缝
 %%%%
 escape hatch in the floor
-逃生舱口
+地板上的逃生口
 %%%%
 escape hatch in the ceiling
-逃生舱口
+天花板上的逃生口
 %%%%
 staircase leading out of the dungeon
 通往地牢外的阶梯
@@ -22919,7 +22919,7 @@ endless expanse of salt
 无尽盐原
 %%%%
 exit through the horrors of the Abyss
-深渊恐怖出口
+经由恐怖的深渊离开的出口
 %%%%
 explore horizon
 探索边界
@@ -23012,7 +23012,7 @@ glowing golden altar of the Shining One
 光辉者的金色辉光祭坛
 %%%%
 glowing silver altar of Zin
-辛的银色祭坛
+辛的辉光银祭坛
 %%%%
 granite statue
 花岗岩雕像
@@ -23138,10 +23138,10 @@ sealed door
 封印门
 %%%%
 sealed passage leading down
-向下通往的封印通道
+被封印的下行通道
 %%%%
 sealed passage leading up
-向上通往的封印通道
+被封印的上行通道
 %%%%
 sealed translucent door
 封印的半透明门
@@ -23246,7 +23246,7 @@ purified mutation catalyst
 净化诱变催化器
 %%%%
 staircase to the Lair
-通往巢穴的楼梯
+通往兽巢的楼梯
 %%%%
 staircase to the Orcish Mines
 通往兽人矿坑的楼梯
@@ -38640,7 +38640,7 @@ magical condensation
 魔法凝结
 %%%%
 mutagenic fog
-致变雾气
+诱变雾气
 %%%%
 purple smoke
 紫烟
@@ -44439,7 +44439,7 @@ You hear the {distance} {noisemaker} {prefix}.
 你听到{distance}{noisemaker}中传来{prefix}。
 %%%%
 <red>Going directly to Necropolis without placing an entry vault is buggy. Placing a Depths / Crypt Necropolis.</red>
-<red>未放置入口地图就直接前往死灵城会导致错误。现正放置一个位于深层区 / 墓穴的死灵城。</red>
+<red>未放置入口地图就直接前往死灵城会导致错误。现正放置一个位于深处 / 墓穴的死灵城。</red>
 %%%%
 Hurry and find it before the portal is buried!
 赶快在传送门被掩埋前找到它！
@@ -44565,7 +44565,7 @@ The shadows inhabiting this place fade forever.
 盘踞此地的暗影永远消散了。
 %%%%
 A lost soul coalesces out of thin air!
-一个迷失的灵魂凭空凝聚成形！
+一个迷失之魂凭空凝聚成形！
 %%%%
 Zonguldrok's gravestone
 宗古德洛克的墓碑
@@ -49199,6 +49199,81 @@ god title|Lightning Rod
 buggy miscellaneous item
 有问题的杂项物品
 %%%%
+The air here is shimmering with an eerie glow.
+此处的空气闪烁着诡异的光芒。
+%%%%
+You sense a powerful magical presence. It is not pleased.
+你察觉到一个强大的魔法存在。它很不高兴。
+%%%%
+Searing heat pours from the floors and walls of this place.
+灼人的热浪从此处的地板和墙壁中涌出。
+%%%%
+Shadowy figures dance across your vision.
+朦胧的身影在你的视野中起舞。
+%%%%
+With a honk a tiny klown kar falls from above, and Killer Klowns tumble out!
+伴着一声喇叭鸣响，一辆小小的小丑车从天而降，杀手小丑纷纷从中翻滚而出！
+%%%%
+A basket of snakes falls from above!
+一只装着蛇的篮子从上方掉了下来！
+%%%%
+Care to risk it all for some fabulous prizes, mortal?
+凡人，想为丰厚的奖赏赌上一切吗？
+%%%%
+Through this portal lies a prize... or peril!
+穿过这道传送门，等着你的或许是奖赏……或许是危险！
+%%%%
+The prize could be yours... at the risk of your life!
+奖赏可能归你所有……代价是拿性命冒险！
+%%%%
+Care for a little wager, mortal?
+凡人，想小赌一把吗？
+%%%%
+hobgoblin draugr
+大地精尸鬼
+%%%%
+titan simulacrum
+泰坦拟像
+%%%%
+sphinx marauder zombie
+斯芬克斯掠袭者丧尸
+%%%%
+human zombie
+人类丧尸
+%%%%
+ugly thing draugr
+丑陋之物尸鬼
+%%%%
+spectral ugly thing
+幻影丑陋之物
+%%%%
+north
+北方
+%%%%
+east
+东方
+%%%%
+south
+南方
+%%%%
+west
+西方
+%%%%
+You have a sudden vision!
+你突然看到了异象！
+%%%%
+You have a sudden vision of the %s!
+你突然看到了%s的异象！
+%%%%
+You have a sudden vision of the %s and the %s!
+你突然看到了%s与%s的异象！
+%%%%
+Flames erupt from the wizard's cell! Trog roars with frustration!
+巫师的牢房中突然腾起烈焰！特洛格懊恼地咆哮起来！
+%%%%
+Flames erupt from the wizard's empty cell! Trog roars with frustration!
+巫师空空的牢房中突然腾起烈焰！特洛格懊恼地咆哮起来！
+%%%%
 \nIt deals %s damage when destroyed.\n
 \n它被摧毁时会造成%s点伤害。\n
 %%%%
@@ -49207,3 +49282,207 @@ randbook subject|%1$s%2$s of %3$s
 %%%%
 artefact divine esteem|of %1$s %2$s
 %1$s%2$s
+%%%%
+skill title|Flawless
+完美无瑕
+%%%%
+skill title|True Ascetic
+真正的苦行者
+%%%%
+skill title|Incurious
+不好奇的猫
+%%%%
+skill title|Ruthless
+冷酷无情
+%%%%
+skill title|Miser
+守财奴
+%%%%
+skill title|Chaos Fanatic
+混沌狂热者
+%%%%
+skill title|Keeper of the Flame
+火焰守护者
+%%%%
+skill title|Pinnacle of Evolution
+进化巅峰
+%%%%
+skill title|Hell Knight
+地狱骑士
+%%%%
+skill title|Death Knight
+死亡骑士
+%%%%
+skill title|Pharaoh
+法老
+%%%%
+skill title|Crusher
+粉碎者
+%%%%
+skill title|Kraken
+海怪
+%%%%
+skill title|Yokozuna
+横纲
+%%%%
+skill title|Weightless Champion
+无重量冠军
+%%%%
+skill title|Herculean
+大力神
+%%%%
+skill title|Blademaster
+剑圣
+%%%%
+skill title|Swordfish
+剑鱼
+%%%%
+skill title|Iron Troll
+铁巨魔
+%%%%
+skill title|Iron Golem
+铁魔像
+%%%%
+skill title|Defender
+防御者
+%%%%
+skill title|Polterguardian
+骚灵护卫
+%%%%
+skill title|Master Archer
+弓术大师
+%%%%
+skill title|Undying Armoury
+不灭军械库
+%%%%
+skill title|Wishgranter
+遂愿者
+%%%%
+skill title|Cogmind
+齿轮心智
+%%%%
+skill title|Ascendant
+升华者
+%%%%
+skill title|Wallbreaker
+破墙者
+%%%%
+skill title|Faerie Dragon
+仙灵龙
+%%%%
+skill title|Siren
+塞壬
+%%%%
+skill title|Necromech
+死灵机甲
+%%%%
+skill title|Petite Mort
+小死
+%%%%
+skill title|Corpseflower
+尸花
+%%%%
+skill title|Brimstone Smiter
+硫磺击打者
+%%%%
+skill title|Titancaster
+巨神施法者
+%%%%
+skill title|Frogwright
+蛙匠
+%%%%
+skill title|Demonologist
+恶魔学者
+%%%%
+skill title|Hellbinder
+地狱缚者
+%%%%
+skill title|Teletunneler
+传送隧道者
+%%%%
+skill title|Spatial Maelstrom
+空间乱流
+%%%%
+skill title|Swamp Dragon
+沼泽龙
+%%%%
+skill title|Fire Dragon
+火龙
+%%%%
+skill title|Highly Combustible
+高度可燃
+%%%%
+skill title|Molten
+熔融者
+%%%%
+skill title|Smokeless Flame
+无烟之火
+%%%%
+skill title|Fire Storm
+火焰风暴
+%%%%
+skill title|Ice Dragon
+冰龙
+%%%%
+skill title|Marid
+马里德
+%%%%
+skill title|Polar Vortex
+极地漩涡
+%%%%
+skill title|Storm Dragon
+风暴龙
+%%%%
+skill title|Twister
+旋风
+%%%%
+skill title|Iron Dragon
+铁龙
+%%%%
+skill title|Thief of Divinity
+神性窃贼
+%%%%
+skill title|Royal Mummy
+皇家木乃伊
+%%%%
+skill title|Forbidden One
+禁忌者
+%%%%
+skill title|Blood Saint
+血之圣徒
+%%%%
+skill title|Necrodancer
+死灵舞者
+%%%%
+skill title|Pearl Dragon
+珍珠龙
+%%%%
+skill title|Rockslime
+岩石黏泥
+%%%%
+skill title|Black Lotus
+黑莲花
+%%%%
+skill title|Nightshade
+夜影
+%%%%
+skill title|Cobgoblin
+地精妖
+%%%%
+skill title|Laughing Skull
+笑颅骨
+%%%%
+skill title|Danse Macabre
+死亡之舞
+%%%%
+skill title|Abyssopelagic
+深渊远洋者
+%%%%
+skill title|Leviathan
+利维坦
+%%%%
+skill title|God-Hated
+神憎者
+%%%%
+skill title|Trooper
+士兵

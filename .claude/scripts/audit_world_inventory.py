@@ -68,6 +68,12 @@ ZH_BRANCHES = SRC / "dat/descript/zh/branches.txt"
 EN_FEATURES = SRC / "dat/descript/features.txt"
 ZH_FEATURES = SRC / "dat/descript/zh/features.txt"
 DES_ROOT = SRC / "dat/des"
+VAULT_HELPERS = SRC / "dat/dlua/vault.lua"
+FEATURE_RENAME_HELPERS = {
+    "vault_granite_statue_setup": "granite_statue",
+    "vault_metal_statue_setup": "metal_statue",
+    "decorative_floor": "decorative_floor",
+}
 ZH_SOURCE_DIR = SRC / "dat/i18n/zh"
 GLOSSARY = ROOT / "docs/glossary.md"
 TRUSTED_CONTROL_INPUTS = (
@@ -1288,12 +1294,72 @@ def _des_lua_view(text):
     return "".join(output)
 
 
-def scan_des_file(path, source_exact, exclusions=None, feature_desc_exact=None):
+def _finite_feature_names(text, tokens, start, end, call_offset):
+    """Resolve the two bounded local-value forms used by feature helpers.
+
+    Unknown assignments remain unsupported, rather than treating a known
+    literal in an otherwise dynamic expression as the complete value set.
+    """
+    selected = [token[:2] for token in tokens[start:end]]
+    if not selected or selected[0][0] != "IDENT":
+        return None
+    variable = selected[0][1]
+    names = list(re.finditer(r"(?m)^\s*NAME:\s*.*$", text[:call_offset]))
+    scope_start = names[-1].end() if names else 0
+    scope = _des_lua_view(text[scope_start:call_offset])
+    scope = re.sub(r"(?m)^\s*:\s?", "", scope)
+    assignments = re.findall(r"(?m)^\s*(?:local\s+)?"
+                             + re.escape(variable) + r"\s*=\s*(.*)$", scope)
+    variable_uses = sum(token[:2] == ("IDENT", variable)
+                        for token in _lua_tokens(scope))
+    if selected == [("IDENT", variable)]:
+        if variable_uses != len(assignments):
+            return None
+        values = []
+        for rhs in assignments:
+            rhs_tokens = list(_lua_tokens(rhs))
+            record = _expression_record(rhs, rhs_tokens, 0, len(rhs_tokens))
+            if record["static_english"] is None:
+                return None
+            values.append(record["static_english"])
+        return sorted(set(values)) if values else None
+    # table[random_index] .. literal, where the index visits exactly the local
+    # dense literal table. No assumptions about arbitrary array/index code.
+    if (len(selected) != 7 or selected[1][0] != "["
+            or selected[2][0] != "IDENT" or selected[3][0] != "]"
+            or selected[4:6] != [(".", "."), (".", ".")]
+            or selected[6][0] != "STRING" or len(assignments) != 1
+            or variable_uses != 2):
+        return None
+    table_match = re.search(r"\blocal\s+" + re.escape(variable)
+                            + r"\s*=\s*(\{[^{}]*\})", scope)
+    if table_match is None:
+        return None
+    table_tokens = list(_lua_tokens(table_match.group(1)))
+    if any(token[0] not in {"{", "}", ",", "STRING"} for token in table_tokens):
+        return None
+    selector = re.escape(selected[2][1])
+    if sum(token[:2] == ("IDENT", selected[2][1])
+           for token in _lua_tokens(scope)) != 1:
+        return None
+    if not re.search(r"\blocal\s+" + selector
+                     + r"\s*=\s*crawl\.random2\(\s*#\s*"
+                     + re.escape(variable) + r"\s*\)\s*\+\s*1\s*(?:\n|$)", scope):
+        return None
+    return sorted({token[1] + selected[6][1] for token in table_tokens
+                   if token[0] == "STRING"}) or None
+
+
+def scan_des_file(path, source_exact, exclusions=None, feature_desc_exact=None,
+                  feature_helpers_only=False):
     """Extract player-facing slots from one .des using the shared Lua lexer."""
     text = audit_snapshot().text(
         path, allow_external_unbound=True
     )
-    tokens = list(_lua_tokens(_des_lua_view(text)))
+    feature_tokens = list(_lua_tokens(
+        text if feature_helpers_only else _des_lua_view(text)
+    ))
+    tokens = [] if feature_helpers_only else feature_tokens
     candidates = []
     exclusions = exclusions if exclusions is not None else []
     contexts = _producer_contexts(tokens)
@@ -1662,29 +1728,65 @@ def scan_des_file(path, source_exact, exclusions=None, feature_desc_exact=None):
                     },
                 ))
 
-    # Feature renames: only the second argument is display; first is protocol.
+    # Feature renames and the finite forwarding helpers in vault.lua.
+    # Glyphs and base terrain remain protocol; only the display argument is
+    # looked up. Function definitions are not callsites.
+    tokens = feature_tokens
+    forwarded_helpers = set()
+    helper_body_starts = {}
     for index, token in enumerate(tokens):
-        if token[:2] != ("IDENT", "set_feature_name"):
+        if token[0] != "IDENT" or token[1] not in {
+                "set_feature_name", *FEATURE_RENAME_HELPERS}:
+            continue
+        if index and tokens[index - 1][:2] == ("IDENT", "function"):
+            if feature_helpers_only and token[1] in FEATURE_RENAME_HELPERS:
+                closing = _matching_token(tokens, index + 1)
+                parameters = [part[:2] for part in tokens[index + 2:closing]]
+                if parameters != [("IDENT", "e"), (",", ","),
+                                  ("IDENT", "glyph"), (",", ","),
+                                  ("IDENT", "type")]:
+                    raise ValueError(f"changed feature helper signature: {token[1]}")
+                helper_body_starts[token[1]] = closing + 1
             continue
         opening = index + 1
         if opening >= len(tokens) or tokens[opening][0] != "(":
             continue
         closing = _matching_token(tokens, opening)
-        depth = 0
-        comma = None
-        for pos in range(opening + 1, closing):
-            if tokens[pos][0] in {"(", "{", "["}:
-                depth += 1
-            elif tokens[pos][0] in {")", "}", "]"}:
-                depth -= 1
-            elif tokens[pos][0] == "," and depth == 0:
-                comma = pos
-                break
-        if comma is None:
-            continue
-        record = _expression_record(text, tokens, comma + 1, closing)
+        arguments = _top_level_args(tokens, opening, closing)
+        helper = token[1] in FEATURE_RENAME_HELPERS
+        argument = 2 if helper else 1
+        if len(arguments) != argument + 1:
+            raise ValueError(f"unsupported {token[1]} argument count")
+        start, end = arguments[argument]
+        record = _expression_record(text, tokens, start, end)
+        if feature_helpers_only and not helper:
+            anchor = _anchor_at(text, token[2])
+            owner = anchor.removeprefix("function:")
+            if owner in FEATURE_RENAME_HELPERS:
+                base_start, base_end = arguments[0]
+                base = _expression_record(text, tokens, base_start, base_end)
+                if ([part[:2] for part in tokens[start:end]] != [("IDENT", "type")]
+                        or base["static_english"] != FEATURE_RENAME_HELPERS[owner]):
+                    raise ValueError(f"changed feature helper contract: {owner}")
+                # This deliberately bounded helper contract permits only the
+                # existing read-only colour/tile comparison before forwarding.
+                # Reject shadowing, assignments (including multiple assignment)
+                # and new uses rather than trusting a possibly replaced value.
+                for use in range(helper_body_starts[owner], start):
+                    if tokens[use][:2] != ("IDENT", "type"):
+                        continue
+                    comparison = [part[:2] for part in tokens[use - 1:use + 4]]
+                    if comparison != [("IDENT", "if"), ("IDENT", "type"),
+                                      ("=", "="), ("=", "="),
+                                      ("IDENT", "name")]:
+                        raise ValueError(f"changed feature helper binding: {owner}")
+                # Bound below by every concrete helper call, not a free text
+                # value named 'type'.
+                forwarded_helpers.add(owner)
+                continue
         record.update({
-            "sink_kind": "feature_rename",
+            "sink_kind": ("feature_rename_helper:" + token[1]
+                          if helper else "feature_rename"),
             "channel": "feature_description",
             "trigger": "feature_observation",
             "persistence": True,
@@ -1692,7 +1794,24 @@ def scan_des_file(path, source_exact, exclusions=None, feature_desc_exact=None):
             "offset": token[2],
             "line": _line_number(text, token[2]),
         })
+        if helper:
+            record["helper_definition"] = relative(VAULT_HELPERS)
+            record["base_feature"] = FEATURE_RENAME_HELPERS[token[1]]
+        if record["static_english"] is None:
+            values = _finite_feature_names(text, tokens, start, end, token[2])
+            if values:
+                record["finite_display_values"] = [
+                    _source_lookup({"static_english": value,
+                                    "literal_fragments": [value],
+                                    "dynamic_parameters": [],
+                                    "expression": value}, source_exact)
+                    for value in values
+                ]
+            else:
+                record["unsupported"] = "dynamic feature rename requires producer closure"
         candidates.append(_source_lookup(record, source_exact))
+    if feature_helpers_only and forwarded_helpers != set(FEATURE_RENAME_HELPERS):
+        raise ValueError("missing or changed feature rename helper forwarder")
 
     rel = relative(path)
     ordinals = Counter()
@@ -1826,8 +1945,50 @@ def des_rows():
             "evidence": {"file": relative(path)},
         })
     universe, unknown = des_producer_universe(files)
+    rows.extend(scan_des_file(VAULT_HELPERS, source_exact,
+                              feature_helpers_only=True))
+    files.append(VAULT_HELPERS)
     return (family_rows + rows, files, excluded, excluded_slots,
             universe, unknown)
+
+
+def description_rows(family, english, chinese):
+    """Enumerate physical bodies, including variants absent from enum names.
+
+    Retention in TextDB does not prove that a particular terrain variant is
+    generated. Reachability and compatibility remain review decisions.
+    """
+    en_keys = {key.lower(): key for key in english["raw"]}
+    zh_keys = {key.lower(): key for key in chinese["raw"]}
+    rows = []
+    for key in sorted(set(en_keys) | set(zh_keys)):
+        en = english["raw"].get(en_keys.get(key))
+        zh = chinese["raw"].get(zh_keys.get(key))
+        rows.append({
+            "identity": f"world_description:{family}:{key}",
+            "category": "world_description",
+            "lifecycle": "retained_textdb",
+            "name": en_keys.get(key) or zh_keys[key],
+            "static_english": en,
+            "current_chinese": zh,
+            "english_description": en,
+            "chinese_description": zh,
+            "lookup_identity": {
+                "canonical_key": key,
+                "english_key": en_keys.get(key),
+                "chinese_key": zh_keys.get(key),
+                "translation_owner": False,
+            },
+            "sink_kind": "TextDB description",
+            "channel": "description",
+            "trigger": "lookup by retained English key; reachability reviewed separately",
+            "late_translation_consumer": "database.cc:getLongDescription",
+            "tokens": {"english": _tokensets(en or ""),
+                       "chinese": _tokensets(zh or "")},
+            "evidence": {"file": f"crawl-ref/source/dat/descript/{family}.txt",
+                         "zh_file": f"crawl-ref/source/dat/descript/zh/{family}.txt"},
+        })
+    return rows
 
 
 def inventory_violations(rows, branch_proof, feature_proof,
@@ -1871,8 +2032,9 @@ def inventory_violations(rows, branch_proof, feature_proof,
             and not row["current_chinese_name"]
         ),
         "missing_descriptions": sorted(
-            row["identity"] for row in branches + features
-            if row["lifecycle"] == "current"
+            row["identity"] for row in rows
+            if row["category"] in ("branch", "feature", "world_description")
+            and row["lifecycle"] in ("current", "retained_textdb")
             and row.get("english_description") is not None
             and not row.get("chinese_description")
         ),
@@ -1893,15 +2055,19 @@ def inventory_violations(rows, branch_proof, feature_proof,
         },
         "missing_exact_source_keys": sorted(
             row["identity"] for row in display
-            if row.get("static_english") and not row["source_exact_match"]
-            and not row.get("protocol_deferral")
+            if ((row.get("static_english") and not row["source_exact_match"]
+                 and not row.get("protocol_deferral"))
+                or any(not leaf["source_exact_match"]
+                       for leaf in row.get("finite_display_values", [])))
         ),
         "unresolved_or_unsupported_display_slots": sorted(
             row["identity"] for row in display
             if row.get("unsupported")
         ),
         "placeholder_macro_markup_drift": sorted(
-            row["identity"] for row in display if row.get("token_drift")
+            row["identity"] for row in display
+            if row.get("token_drift") or any(leaf.get("token_drift")
+                for leaf in row.get("finite_display_values", []))
         ),
         "protocol_display_boundary_issues": sorted(
             row["identity"] for row in display
@@ -2358,7 +2524,7 @@ def review_artifact_summary(payload, decisions):
 def world_history_lines():
     """Render the frozen superseded-boundary and membership evidence."""
     lines = [
-        "## Inventory 审计历史与最终边界",
+        "## Inventory 历史边界（已由当前清单替代）",
         "",
         *(f"- {entry}" for entry in WORLD_INVENTORY_HISTORY),
         "",
@@ -2435,21 +2601,21 @@ def implementation_and_defer_history_lines(
             + ", ".join(missing_inventory_defer_ids)
         )
     use_frozen_defer_history = not missing_inventory_defer_ids
-    if use_frozen_defer_history:
-        actual_deferred = {
-            identity for identity, decision in decisions.items()
-            if terminal_conclusion_kind(decision.get("conclusion", ""))
-            in {"defer implementation", "defer terminology"}
-        }
-        if actual_deferred != expected_deferred:
-            missing = sorted(expected_deferred - actual_deferred)
-            unexpected = sorted(actual_deferred - expected_deferred)
-            raise ValueError(
-                "world defer history differs from terminal decisions: "
-                f"missing={missing}, unexpected={unexpected}"
-            )
+    # Preserve the historical grouping, but derive retained deferrals from
+    # current reviewed cards: a later full audit may resolve an old deferral
+    # or discover one in a newly inventoried producer.
+    actual_deferred = {
+        identity for identity, decision in decisions.items()
+        if terminal_conclusion_kind(decision.get("conclusion", ""))
+        in {"defer implementation", "defer terminology"}
+    }
 
     lines = [
+        "### 历史实现与验证记录（不代表当前候选验证）",
+        "",
+        "以下记录仅对应所列历史批次；重新生成当前清单不会复用其运行通过结论。"
+        "当前批次边界和验证状态见 translation-full-rereview-plan.md 与对应验证日志。",
+        "",
         *(f"- {evidence}" for evidence in WORLD_IMPLEMENTATION_EVIDENCE),
         "",
         "## 仍保留的 defer（按权威边界分组）",
@@ -2457,10 +2623,24 @@ def implementation_and_defer_history_lines(
     ]
     if use_frozen_defer_history:
         for heading, identities in WORLD_DEFER_GROUPS:
+            identities = tuple(
+                identity for identity in identities
+                if identity in actual_deferred
+            )
+            if not identities:
+                continue
             lines.extend([
                 f"### {heading}（{len(identities)}）",
                 "",
                 *(f"- `{identity}`" for identity in identities),
+                "",
+            ])
+        new_deferrals = sorted(actual_deferred - expected_deferred)
+        if new_deferrals:
+            lines.extend([
+                f"### 后续审查明确延期（{len(new_deferrals)}）",
+                "",
+                *(f"- `{identity}`" for identity in new_deferrals),
                 "",
             ])
     else:
@@ -2918,7 +3098,9 @@ def build_inventory():
     features, feature_proof, en_features, zh_features = feature_rows()
     (des, des_files, excluded_files, excluded_slots,
      producer_universe, unknown_producers) = des_rows()
-    rows = branches + features + des
+    descriptions = (description_rows("branches", en_branches, zh_branches)
+                    + description_rows("features", en_features, zh_features))
+    rows = branches + features + des + descriptions
     inputs = [
         BRANCH_ENUM, BRANCH_DATA, BRANCH_CC, FEATURE_ENUM, FEATURE_DATA,
         EN_BRANCHES, ZH_BRANCHES, EN_FEATURES, ZH_FEATURES, GLOSSARY,
@@ -2968,6 +3150,8 @@ def build_inventory():
             "included": [
                 "active branch enum and branches[] display producers",
                 "active feature enum and feat_defs[] display producers",
+                "complete EN/ZH branches and features TextDB key union, including "
+                "dynamic variants, aliases, overlays and retained orphan bodies",
                 "all sorted dat/des/portals/*.des families including zero-slot families",
                 "single sorted production dat/des/**/*.des display-producer walk",
                 "direct crawl display sinks, timed portal fields, trove toll_desc, "

@@ -87,6 +87,38 @@ while IFS= read -r path; do
     esac
 done <<< "${ZH_VERIFY_CHANGED_FILES:-}"
 
+# Explicit per-TU preprocessing is opt-in: all requested configurations must
+# strictly preprocess/parse the named files; other changed files keep raw checks.
+PREPROCESS_CPP=()
+CPP_CONFIG_ARGS=()
+while IFS= read -r path; do
+    [[ -n "$path" ]] || continue
+    case "$path" in
+        crawl-ref/source/*.cc) ;;
+        *) echo "ERROR: preprocessing target must be a core source .cc: $path" >&2; exit 2 ;;
+    esac
+    [[ -f "$path" ]] || { echo "ERROR: missing preprocessing target: $path" >&2; exit 2; }
+    if [[ "$SCOPE" == changed ]]; then
+        found=0
+        for changed in ${CHANGED_CPP+"${CHANGED_CPP[@]}"}; do
+            [[ "$changed" == "$path" ]] && found=1
+        done
+        [[ "$found" -eq 1 ]] || { echo "ERROR: preprocessing target is outside changed scope: $path" >&2; exit 2; }
+    fi
+    PREPROCESS_CPP+=("$path")
+done <<< "${ZH_VERIFY_CPP_PREPROCESS_FILES:-}"
+while IFS= read -r database; do
+    [[ -n "$database" ]] || continue
+    [[ -f "$database" ]] || { echo "ERROR: missing compilation database: $database" >&2; exit 2; }
+    CPP_CONFIG_ARGS+=(--compile-commands "$database")
+done <<< "${ZH_VERIFY_CPP_COMPILE_COMMANDS:-}"
+if { [[ "${#PREPROCESS_CPP[@]}" -eq 0 ]] && [[ "${#CPP_CONFIG_ARGS[@]}" -gt 0 ]]; } \
+    || { [[ "${#PREPROCESS_CPP[@]}" -gt 0 ]] && [[ "${#CPP_CONFIG_ARGS[@]}" -eq 0 ]]; }; then
+    echo "ERROR: CPP_PREPROCESS_FILES and CPP_COMPILE_COMMANDS must be supplied together" >&2
+    exit 2
+fi
+SCANNER_CONFIG_ARGS=()
+
 build_scanner_args() {
     local scanner="$1"
     SCANNER_ARGS=()
@@ -142,7 +174,7 @@ run_scoped_scanner() {
     fi
     build_scanner_args "$scanner"
     args=("${SCANNER_ARGS[@]}")
-    run_check "$title" "$blocking" "$@" "${args[@]}"
+    run_check "$title" "$blocking" "$@" "${args[@]}" ${SCANNER_CONFIG_ARGS+"${SCANNER_CONFIG_ARGS[@]}"}
 }
 
 run_concat_advisory() {
@@ -164,7 +196,7 @@ run_concat_advisory() {
     # Findings are advisory, but discovery/parser/read failures are not.
     set +e
     python3 "$SCRIPT_DIR/scan_string_concat.py" "${args[@]}" \
-        --skip-low --format json > "$scan_json"
+        ${SCANNER_CONFIG_ARGS+"${SCANNER_CONFIG_ARGS[@]}"} --skip-low --format json > "$scan_json"
     local scanner_status=$?
     set -e
     echo "--- String concatenation blind spots (baseline diff) ---"
@@ -196,6 +228,46 @@ run_concat_advisory() {
     fi
     echo ""
     release_temp "$scan_json"
+}
+
+
+run_cpp_ast_group() {
+    run_scoped_scanner "std::string in variadic args (Issue #42 UB, tree-sitter AST)" \
+        blocking varargs python3 "$SCRIPT_DIR/scan_varargs_string.py" \
+        --format text --require-parser
+    run_scoped_scanner "Persistent borrowed T_()/C_() lifetime (tree-sitter + lexical)" \
+        blocking lifetime python3 "$SCRIPT_DIR/scan_i18n_lifetime.py" \
+        --format text --require-parser
+    run_concat_advisory
+}
+
+run_cpp_ast_scanners() {
+    local original_scope="$SCOPE" path configured
+    local original_changed=(${CHANGED_CPP+"${CHANGED_CPP[@]}"})
+    if [[ "$SCOPE" == changed && "${#PREPROCESS_CPP[@]}" -gt 0 ]]; then
+        CHANGED_CPP=()
+        for path in ${original_changed+"${original_changed[@]}"}; do
+            configured=0
+            for target in "${PREPROCESS_CPP[@]}"; do
+                [[ "$target" == "$path" ]] && configured=1
+            done
+            [[ "$configured" -eq 1 ]] || CHANGED_CPP+=("$path")
+        done
+    fi
+    SCANNER_CONFIG_ARGS=()
+    run_cpp_ast_group
+    if [[ "${#PREPROCESS_CPP[@]}" -gt 0 ]]; then
+        echo "--- Explicit preprocessed C++ targets (every configuration required) ---"
+        printf 'Target: %s\n' "${PREPROCESS_CPP[@]}"
+        printf 'Configuration argument: %s\n' "${CPP_CONFIG_ARGS[@]}"
+        SCOPE=changed
+        CHANGED_CPP=("${PREPROCESS_CPP[@]}")
+        SCANNER_CONFIG_ARGS=("${CPP_CONFIG_ARGS[@]}")
+        run_cpp_ast_group
+    fi
+    SCOPE="$original_scope"
+    CHANGED_CPP=(${original_changed+"${original_changed[@]}"})
+    SCANNER_CONFIG_ARGS=()
 }
 
 {
@@ -270,15 +342,9 @@ run_concat_advisory() {
     run_check "Changed exact-key terminology (current glossary)" blocking \
         python3 "$SCRIPT_DIR/check_glossary_terms.py" \
         --base "${GLOSSARY_DIFF_BASE:-HEAD}"
-    run_scoped_scanner "std::string in variadic args (Issue #42 UB, tree-sitter AST)" \
-        blocking varargs python3 "$SCRIPT_DIR/scan_varargs_string.py" \
-        --format text --require-parser
-    run_scoped_scanner "Persistent borrowed T_()/C_() lifetime (tree-sitter + lexical)" \
-        blocking lifetime python3 "$SCRIPT_DIR/scan_i18n_lifetime.py" \
-        --format text --require-parser
+    run_cpp_ast_scanners
     run_check "Font atlas generation safety (Issue #54)" blocking \
         python3 "$SCRIPT_DIR/check_font_atlas_generation.py"
-    run_concat_advisory
 
     # ---- Full runtime test hook (plan v2 §5.3) ----
     # Triggered by: bash post-coder.sh --full
