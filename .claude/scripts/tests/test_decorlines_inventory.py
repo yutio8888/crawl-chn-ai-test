@@ -16,6 +16,8 @@ from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[3]
+# Immutable terminology snapshot used by the checked-in historical ledgers.
+GLOSSARY_REF = "518f33d1c98cf35f13d43fffdc1a463b676d1c11"
 SCRIPT = ROOT / ".claude/scripts/decorlines_inventory.py"
 sys.path.insert(0, str(SCRIPT.parent))
 SPEC = importlib.util.spec_from_file_location("decorlines_inventory", SCRIPT)
@@ -210,7 +212,7 @@ class DecorlinesInventoryTests(unittest.TestCase):
                                encoding="utf-8")
         cls.inventory = MODULE.build_inventory(
             BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md",
-            glossary_ref=BASELINE,
+            glossary_ref=GLOSSARY_REF,
         )
 
     @classmethod
@@ -284,12 +286,12 @@ class DecorlinesInventoryTests(unittest.TestCase):
                        "token_facts", "variant_count"}
         self.assertEqual(legacy_keys, set(self.inventory["dumps"]["english"]))
         self.assertEqual(legacy_keys, set(self.inventory["dumps"]["localized"]))
-        # Freeze all fixture inputs, including the glossary, at BASELINE.
+        # Freeze the glossary alongside the baseline source inputs.
         # Unrelated current terminology changes must not alter this schema
         # snapshot. The production ledger-bound hash is separately checked
         # by the CLI candidate audit against docs/decorlines-review-results.md.
         self.assertEqual(
-            "12e45ca20d3ca45960186041be4325b699439f72ed517637a44704751c0bff09",
+            "d4f96f775107a9e592636311616f03a89e3f4e9341de62c2245fc188398ae28e",
             self.inventory["inventory_sha256"],
         )
 

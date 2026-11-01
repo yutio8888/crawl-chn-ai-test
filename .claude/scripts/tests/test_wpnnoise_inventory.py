@@ -17,6 +17,8 @@ from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[3]
+# Immutable terminology snapshot used by the checked-in historical ledgers.
+GLOSSARY_REF = "518f33d1c98cf35f13d43fffdc1a463b676d1c11"
 SCRIPT = ROOT / ".claude/scripts/wpnnoise_inventory.py"
 sys.path.insert(0, str(SCRIPT.parent))
 SPEC = importlib.util.spec_from_file_location("wpnnoise_inventory", SCRIPT)
@@ -206,7 +208,8 @@ class WpnnoiseInventoryTests(unittest.TestCase):
             json.dumps(cls.zh_artifact, ensure_ascii=False), encoding="utf-8"
         )
         cls.inventory = MODULE.build_inventory(
-            BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md"
+            BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md",
+            glossary_ref=GLOSSARY_REF,
         )
         # The exact approved candidate (pinned immutable OID): EN is
         # byte-identical to the baseline; ZH is 731/731 with the reviewed
@@ -274,7 +277,8 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         second_en.write_bytes(self.en_path.read_bytes())
         second_zh.write_bytes(self.zh_path.read_bytes())
         rebuilt = MODULE.build_inventory(
-            BASELINE, second_en, second_zh, ROOT / "docs/glossary.md"
+            BASELINE, second_en, second_zh, ROOT / "docs/glossary.md",
+            glossary_ref=GLOSSARY_REF,
         )
         self.assertEqual(first["inventory_sha256"], rebuilt["inventory_sha256"])
         # Fixture-bound digest: the docs-frozen digest 6b3e4d18... is bound to
@@ -517,7 +521,8 @@ class WpnnoiseInventoryTests(unittest.TestCase):
             MODULE.shared, "_derive_scoped_dump", side_effect=fake_derive
         ):
             return MODULE.build_inventory(
-                BASELINE, en_path, zh_path, ROOT / "docs/glossary.md"
+                BASELINE, en_path, zh_path, ROOT / "docs/glossary.md",
+                glossary_ref=GLOSSARY_REF,
             )
 
     # ── malicious refs, paths, types ─────────────────────────────────────
