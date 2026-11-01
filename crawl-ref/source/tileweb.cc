@@ -1277,6 +1277,12 @@ void TilesFramework::_send_player(bool force_full)
         }
     }
     _update_string(force_full, c.place, short_name, "place");
+    // Keep the original place value for protocol consumers. The display name
+    // uses the existing branch translation, without English articles in ZH.
+    const string place_display_name = Options.language == lang_t::ZH
+        ? place.short_name() : short_name;
+    _update_string(force_full, c.place_display_name, place_display_name,
+                   "place_display_name");
     _update_int(force_full, c.depth, brdepth[place.branch] > 1 ? you.depth : 0, "depth");
 
     if (m_origin.equals(-1, -1))

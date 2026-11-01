@@ -285,9 +285,8 @@ int list_spells(bool toggle_with_I, bool transient, bool viewing,
     const string real_action = viewing ? T_("describe") : (action.empty() ? T_("cast") : action);
 
     SpellMenu spell_menu;
-    const string titlestring = make_stringf("%-25.25s",
-            make_stringf(T_("Your spells (%s)"),
-                         real_action.c_str()).c_str());
+    const string titlestring = chop_string(
+        make_stringf(T_("Your spells (%s)"), real_action.c_str()), 25);
 
     {
         // Build column headers aligned with data columns.

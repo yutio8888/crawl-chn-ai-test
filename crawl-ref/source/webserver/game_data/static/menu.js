@@ -31,21 +31,22 @@ function ($, comm, client, ui, enums, cr, util, options, scroller) {
         if (!options.get("tile_menu_icons")
             || options.get("tile_display_mode") !== "tiles"
             || !(menu.tag === "ability" || menu.tag === "spell"))
-            return 0;
-        return 32 + 2; // menu <ol> has a 2px margin
+            return 2;
+        return 32 + 2; // item border + padding, with a 32px icon
     }
 
     function set_item_contents(item, elem)
     {
-        elem.html(util.formatted_string_to_html(item_text(item)));
+        elem.html(util.formatted_string_to_html(item_text(item), true));
         elem.css('min-height', '0.5em');
         var col = item_colour(item);
         elem.removeClass();
         elem.addClass("level" + item.level);
         elem.addClass("fg" + col);
 
-        if (item.level < 2)
-            elem.css("padding-left", menu_title_indent()+"px");
+        // A list heading already has the item's 1px border. Titles do not.
+        elem.css("padding-left",
+                 (item.level < 2 ? menu_title_indent() - 1 : 1) + "px");
 
         if (item_selectable(item))
         {
@@ -661,7 +662,7 @@ function ($, comm, client, ui, enums, cr, util, options, scroller) {
     function update_title()
     {
         var title = menu.elem.find(".menu_title")
-        title.html(util.formatted_string_to_html(menu.title.text));
+        title.html(util.formatted_string_to_html(menu.title.text, true));
         title.css("padding-left", menu_title_indent()+"px");
     }
 
@@ -804,7 +805,7 @@ function ($, comm, client, ui, enums, cr, util, options, scroller) {
             shown_more = shown_more.replace(/XXX/, scroll_percent);
 
             var more = menu.elem.find(".menu_more");
-            more.html(util.formatted_string_to_html(shown_more));
+            more.html(util.formatted_string_to_html(shown_more, true));
             more.css("padding-left", menu_title_indent()+"px");
             more[0].classList.toggle("hidden", shown_more.length === 0);
         }

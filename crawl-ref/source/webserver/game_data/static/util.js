@@ -29,7 +29,27 @@ function () {
         return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
-    function formatted_string_to_html(str)
+    // Apply terminal-cell widths to already escaped/colour-formatted HTML.
+    // Leave tags/entities intact and keep nonspacing marks with their base.
+    // These are the wide CJK/fullwidth ranges used by Crawl's wcwidth;
+    // U+303F and the combining marks U+302A-302F/U+3099-309A are excluded.
+    const wide_glyph = new RegExp(
+        "<[^>]*>|&[^;]*;|[\\u1100-\\u115f\\u2329\\u232a"
+        + "\\u2e80-\\u3029\\u3030-\\u303e\\u3040-\\u3098\\u309b-\\ua4cf"
+        + "\\uac00-\\ud7a3\\uf900-\\ufaff\\ufe10-\\ufe19\\ufe30-\\ufe6f"
+        + "\\uff01-\\uff60\\uffe0-\\uffe6\\u{20000}-\\u{2fffd}"
+        + "\\u{30000}-\\u{3fffd}][\\p{Mn}\\p{Me}]*", "gu");
+
+    function terminal_cell_html(html)
+    {
+        return html.replace(wide_glyph, function (glyph) {
+            if (glyph[0] === "<" || glyph[0] === "&")
+                return glyph;
+            return '<span class="webtiles-wide">' + glyph + '</span>';
+        });
+    }
+
+    function formatted_string_to_html(str, fixed_width)
     {
         // this is a bit weird because the crawl binary never closes color
         // tags in auto-generated format_string text (which is a valid color
@@ -119,7 +139,7 @@ function () {
         if (bg_open)
             filtered += "</span>";
         // TODO: eliminate empty spans?
-        return filtered;
+        return fixed_width ? terminal_cell_html(filtered) : filtered;
     }
 
     function init_canvas(element, w, h) {
@@ -165,6 +185,7 @@ function () {
 
     return {
         formatted_string_to_html: formatted_string_to_html,
+        terminal_cell_html: terminal_cell_html,
         init_canvas: init_canvas,
         make_key: make_key
     };

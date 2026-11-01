@@ -12,7 +12,7 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
             // convert double linebreaks into paragraph markers
             .split("\n\n")
             .map(function (s) {
-                return "<pre>" + util.formatted_string_to_html(s) + "</pre>";
+                return "<pre>" + util.formatted_string_to_html(s, true) + "</pre>";
             })
             .filter(function (s) { return s !== "<pre></pre>"; })
             .join("")
@@ -374,7 +374,7 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
         if (desc.info_table.length !== "")
         {
             desc.powers += "<div class=tbl>"
-                            + util.formatted_string_to_html(desc.info_table)
+                            + util.formatted_string_to_html(desc.info_table, true)
                             + "</div>";
         }
         $panes.eq(1).html(desc.powers);
@@ -384,7 +384,7 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
         if (use_extra_pane)
         {
             $panes.eq(3).html("<div class=tbl>"
-                                + util.formatted_string_to_html(desc.extra)
+                                + util.formatted_string_to_html(desc.extra, true)
                                 + "</div>");
         }
 
@@ -761,9 +761,10 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
             });
         }
         $popup.attr("data-tag", desc.tag);
-        $body.html(body_html);
+        // Highlight matching must run before wide-glyph spans split the text.
+        $body.html(util.terminal_cell_html(body_html));
         if (desc.more)
-            $popup.children(".more").html(util.formatted_string_to_html(desc.more));
+            $popup.children(".more").html(util.formatted_string_to_html(desc.more, true));
         else
             $popup.children(".more").remove();
 
@@ -772,7 +773,7 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
         // preformatting + nested spans did mess this up when I tried to use
         // a template span here)
         if (desc.title)
-            $popup.children(".header").html(util.formatted_string_to_html(desc.title));
+            $popup.children(".header").html(util.formatted_string_to_html(desc.title, true));
         else
             $popup.children(".header").remove();
 
@@ -802,12 +803,12 @@ function ($, comm, client, ui, enums, cr, util, scroller, main, gui, player, opt
         if (msg.text !== undefined)
         {
             var $body = $(s.contentElement);
-            $body.html(util.formatted_string_to_html(msg.text));
+            $body.html(util.formatted_string_to_html(msg.text, true));
             var ss = $popup.find(".body").eq(0).data("scroller");
             ss.recalculateImmediate();
         }
         if (msg.title !== undefined)
-            $popup.children(".header").html(util.formatted_string_to_html(msg.title));
+            $popup.children(".header").html(util.formatted_string_to_html(msg.title, true));
         if (msg.scroll !== undefined && (!msg.from_webtiles || client.is_watching()))
         {
             scroller_from_server = true;

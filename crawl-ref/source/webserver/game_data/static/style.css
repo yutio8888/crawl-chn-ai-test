@@ -606,7 +606,7 @@ canvas {
     width: 80ch;
 }
 
-/* CRT text uses terminal cells. Fallback CJK fonts need not have glyphs
+/* Preformatted text uses terminal cells. Fallback CJK fonts need not have glyphs
    exactly twice as wide as the configured monospace font. */
 .webtiles-wide {
     display: inline-block;

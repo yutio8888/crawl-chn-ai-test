@@ -501,7 +501,7 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
         if (player.time_delta)
             $("#stats_time").append(" (" + (player.time_delta / 10.0).toFixed(1) + ")");
 
-        var place_desc = player.place;
+        var place_desc = player.place_display_name || player.place;
         if (player.depth) place_desc += ":" + player.depth;
         $("#stats_place").text(place_desc);
 
@@ -648,7 +648,7 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
                 unarmed_attack: "",
                 pos: {x: 0, y: 0},
                 wizard: 0, explore: 0,
-                depth: 0, place: "",
+                depth: 0, place: "", place_display_name: "",
                 contam: 0,
                 noise: 0,
                 adjusted_noise: 0
