@@ -1,6 +1,6 @@
 # Standalone Guide Review Plan
 
-- Inventory digest: `8bbfbb6c5dd8ca88766c20289246a75620f4c5f6fd5309819816dc50d8c9ec81`
+- Inventory digest: `9196637875ea8ed42c5862ce9397413317c27b541fbf5f23591aed1a6f9a59ea`
 - Glossary SHA-256: `8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`
 - Frozen identities: 79
 

@@ -1442,9 +1442,10 @@ spell_slot ^= <regex>:<list of spell letters>
 
 gear_slot ^= <regex>:<inventory letters>
         (Ordered list option, one value per line)
-        Uses the same interface as spell_slot, except that overwrite mode
-        is on by default; overwrite mode can be disabled with a - in the
-        list of letters.
+        Uses the same interface as spell_slot, but matches equipment names
+        in the current interface language; protocol tags remain English.
+        Overwrite mode is enabled by default; adding - to the letter list
+        disables it.
 
 consumable_shortcut += <item name>:<inventory letter>
         (Ordered list option, one value per line)
@@ -1895,9 +1896,9 @@ food_snacking_frequency = 40
         percent chance. As one would expect, 100% means always, 0% means never,
         and the default 40% means two-fifths of the time. The configured
         frequency is divided by 4 (rounding down) only when all these
-        conditions hold: hostile enemies are in sight, the frequency is not
-        100%, you are confused, you do not worship Xom, and you are not in a
-        Ziggurat.
+        conditions hold: a known nearby monster is considered dangerous, the
+        frequency is not 100%, you are confused, you do not worship Xom, and you
+        are not in a Ziggurat.
 
 fountain_line_frequency = 40
         Controls the frequency of producing flavour messages when walking on
