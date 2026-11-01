@@ -108,8 +108,8 @@ the Dance card
 The card depicts an extravagantly-dressed, masked figure dancing alone in a
 vast room.
 
-Drawing this card will summon a dancing weapon. Its quality, brand, and
-friendliness are all affected by card power.
+Drawing this card will summon a friendly dancing weapon. Its quality and brand
+are affected by card power.
 %%%%
 the Swarm card
 

@@ -714,21 +714,21 @@ static const char* _jewellery_base_ability_description(int subtype)
     {
 #if TAG_MAJOR_VERSION == 34
     case RING_SUSTAIN_ATTRIBUTES:
-        return "It sustains your strength, intelligence and dexterity.";
+        return T_("It sustains your strength, intelligence and dexterity.");
     case RING_TELEPORTATION:
-        return "It may teleport you next to monsters.";
+        return T_("It may teleport you next to monsters.");
     case RING_TELEPORT_CONTROL:
-        return "It can be evoked for teleport control.";
+        return T_("It can be evoked for teleport control.");
     case AMU_THE_GOURMAND:
-        return "It allows you to eat raw meat even when not hungry.";
+        return T_("It allows you to eat raw meat even when not hungry.");
     case AMU_HARM:
-        return "It increases damage dealt and taken.";
+        return T_("It increases damage dealt and taken.");
     case AMU_CONSERVATION:
-        return "It protects your inventory from destruction.";
+        return T_("It protects your inventory from destruction.");
     case AMU_CONTROLLED_FLIGHT:
-        return "It allows you to control your flight when levitating.";
+        return T_("It allows you to control your flight when levitating.");
     case AMU_INACCURACY:
-        return "It reduces the accuracy of all your attacks.";
+        return T_("It reduces the accuracy of all your attacks.");
 #endif
     case AMU_GUARDIAN_SPIRIT:
         return T_("It causes incoming damage to be divided between your reserves of health and magic.");
@@ -2174,14 +2174,18 @@ static string _equipment_property_change_description(const item_def &item,
 
     if (fail_change != 0)
     {
-        description += T_("\nYour spell failure would ");
-        description += (fail_change > 0) ? T_("worsen") : T_("improve");
         if (visible_fail_change == 0)
-            description += T_(" trivially.");
+        {
+            description += fail_change > 0
+                ? T_("\nYour spell failure would worsen trivially.")
+                : T_("\nYour spell failure would improve trivially.");
+        }
         else
         {
-            description += make_stringf(T_(" by up to %d%% (press '!' for details)."),
-                                    abs(visible_fail_change)).c_str();
+            description += make_stringf(fail_change > 0
+                ? T_("\nYour spell failure would worsen by up to %d%% (press '!' for details).")
+                : T_("\nYour spell failure would improve by up to %d%% (press '!' for details)."),
+                abs(visible_fail_change));
         }
     }
 
@@ -3309,8 +3313,18 @@ string get_item_description(const item_def &item,
                     description << "\n\n" + _describe_lignify_ac();
                 else if (item.sub_type == POT_CANCELLATION)
                 {
-                    description << "\n\n" << T_("If you drink this now, you will no longer be ") <<
-                        describe_player_cancellation() << ".";
+                    const string effects = describe_player_cancellation();
+                    if (!effects.empty())
+                    {
+                        description << "\n\n" << make_stringf(
+                            T_("If you drink this now, you will no longer be %s."),
+                            effects.c_str());
+                    }
+                    if (you.magic_contamination > 0)
+                    {
+                        description << "\n\n" << T_(
+                            "Drinking this will reduce your magical contamination.");
+                    }
                 }
             }
             description << "\n\n" << describe_item_rarity(item);
@@ -5405,7 +5419,7 @@ static void _get_spell_description(const spell_type spell,
             {
                 description += make_stringf(T_("\nIf you are struck by this,"
                                             " you will no longer be %s.\n"),
-                                            describe_player_cancellation(true).c_str());
+                                            describe_player_cancellation().c_str());
             }
             else
                 description += T_("\nYou currently have no enchantments that could be"

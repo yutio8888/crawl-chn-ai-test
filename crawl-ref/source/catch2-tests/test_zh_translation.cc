@@ -86,6 +86,7 @@
 #include "species-type.h"
 #include "spl-util.h"
 #include "spl-cast.h"
+#include "spl-goditem.h"
 #include "spell-type.h"
 #include "state.h"
 #include "stringutil.h"
@@ -5592,7 +5593,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(ego_title_for_display("draining (drain) weapon ego").find(C_("weapon brand full name", "draining")) != string::npos);
     REQUIRE(ego_title_for_display("invisibility (+Inv) armour ego").find(
                 C_("armour ego full name", "invisibility")) != string::npos);
-    REQUIRE(ego_title_for_display("poisoned (poison) missile ego").find(T_("poisoned")) != string::npos);
+    REQUIRE(ego_title_for_display("poisoned (poison) missile ego").find(
+                C_("missile brand", "poisoned")) != string::npos);
     {
         EnTranslationFixture english;
         check();
@@ -9061,3 +9063,258 @@ TEST_CASE("species display: actual draconian maturation translates every colour 
     _exit(0);
 }
 #endif
+
+
+TEST_CASE("items rereview: equipment previews render complete failure sentences",
+          "[zh-translation][items-rereview][failure-preview]")
+{
+    init_properties();
+    init_mut_index();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> live_game(crawl_state.need_save, true);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 100;
+        you.experience_level = 20;
+        you.equipment.update();
+        scoped_monspeak_world world;
+        REQUIRE(add_spell_to_memory(SPELL_MAGIC_DART));
+        item_def ring;
+        ring.base_type = OBJ_JEWELLERY;
+        ring.sub_type = RING_INTELLIGENCE;
+        ring.quantity = 1;
+        ring.flags = ISFLAG_IDENTIFIED;
+        bool covered[2][2] = {};
+        // Use one known spell and real stat previews. Vary intelligence until
+        // both raw-only and visibly rounded changes occur in both directions.
+        for (int intelligence = 4; intelligence <= 70; ++intelligence)
+        {
+            you.base_stats[STAT_INT] = intelligence;
+            for (int sign : {-1, 1})
+            {
+                ring.plus = sign;
+                const int current = raw_spell_fail(SPELL_MAGIC_DART);
+                const player_stats next = you.preview_stats_with_specific_item(100, ring);
+                const int after = next.fail[0];
+                if (current == after)
+                    continue;
+                const bool worse = after > current;
+                const int visible = abs(failure_rate_to_int(after)
+                                        - failure_rate_to_int(current));
+                if (covered[worse][visible != 0])
+                    continue;
+                const char* key = visible == 0
+                    ? (worse ? "\nYour spell failure would worsen trivially."
+                             : "\nYour spell failure would improve trivially.")
+                    : (worse ? "\nYour spell failure would worsen by up to %d%% (press '!' for details)."
+                             : "\nYour spell failure would improve by up to %d%% (press '!' for details).");
+                const string expected = visible == 0
+                    ? string(T_(key)) : make_stringf(T_(key), visible);
+                const string description = get_item_description(ring);
+                CAPTURE(language, intelligence, sign, current, after, description);
+                CHECK(description.find(expected) != string::npos);
+                if (language == lang_t::ZH)
+                {
+                    CHECK(string(T_(key)) != key);
+                    CHECK(description.find("Your spell failure would") == string::npos);
+                }
+                CHECK(you.base_stats[STAT_INT] == intelligence);
+                CHECK(you.equipment.get_slot_items(SLOT_ALL_EQUIPMENT).empty());
+                covered[worse][visible != 0] = true;
+            }
+        }
+        for (const auto& direction : covered)
+            for (bool visible : direction)
+                CHECK(visible);
+    }
+}
+
+TEST_CASE("items rereview: cancellation distinguishes ending effects from contamination reduction",
+          "[zh-translation][items-rereview][cancellation]")
+{
+    init_properties();
+    init_mut_index();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 100;
+        you.equipment.update();
+        scoped_monspeak_world world;
+        item_def potion;
+        potion.base_type = OBJ_POTIONS;
+        potion.sub_type = POT_CANCELLATION;
+        potion.quantity = 1;
+        potion.flags = ISFLAG_IDENTIFIED;
+        for (bool contaminated : {false, true})
+            for (int status_count : {0, 1, 2, 3})
+            {
+                const bool enchanted = status_count > 0;
+                you.magic_contamination = contaminated ? 5000 : 0;
+                you.duration[DUR_MIGHT] = enchanted ? 100 : 0;
+                you.duration[DUR_BRILLIANCE] = status_count > 1 ? 100 : 0;
+                you.duration[DUR_AGILITY] = status_count > 2 ? 100 : 0;
+                const string effects = describe_player_cancellation();
+                CHECK(effects.empty() == !enchanted);
+                if (enchanted)
+                {
+                    you.duration[DUR_MIGHT] = 1;
+                    CHECK(describe_player_cancellation() == effects);
+                    you.duration[DUR_MIGHT] = 100;
+                }
+                if (status_count > 1)
+                    CHECK(effects.find(T_(" or ")) != string::npos);
+                if (status_count > 2)
+                    CHECK(effects.find(T_(", ")) != string::npos);
+                // This is also the production quicksilver-bolt list: adding
+                // contamination must never add a spurious removable status.
+                you.magic_contamination = 0;
+                CHECK(describe_player_cancellation() == effects);
+                you.magic_contamination = contaminated ? 5000 : 0;
+                const string description = get_item_description(potion);
+                const char* key = "If you drink this now, you will no longer be %s.";
+                const string ending = make_stringf(T_(key), effects.c_str());
+                const string reduction = T_("Drinking this will reduce your magical contamination.");
+                CAPTURE(language, contaminated, status_count, description);
+                CHECK((description.find(ending) != string::npos) == enchanted);
+                CHECK((description.find(reduction) != string::npos) == contaminated);
+                CHECK(description.find("as magically contaminated") == string::npos);
+                CHECK(you.magic_contamination == (contaminated ? 5000 : 0));
+                CHECK(you.duration[DUR_MIGHT] == (enchanted ? 100 : 0));
+                if (language == lang_t::ZH)
+                {
+                    CHECK(string(T_(key)) != key);
+                    CHECK(reduction != "Drinking this will reduce your magical contamination.");
+                    CHECK(description.find("If you drink this now") == string::npos);
+                    CHECK(effects.find(" or ") == string::npos);
+                    CHECK(effects.find(", ") == string::npos);
+                }
+            }
+    }
+}
+
+TEST_CASE("items rereview: missile prefixes and compatibility display preserve English lookup identities",
+          "[zh-translation][items-rereview][item-identities]")
+{
+    init_properties();
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.equipment.update();
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        item_def dart;
+        dart.base_type = OBJ_MISSILES;
+        dart.sub_type = MI_DART;
+        dart.brand = SPMSL_POISONED;
+        dart.quantity = 1;
+        dart.flags = ISFLAG_IDENTIFIED;
+        const string prefix = C_("missile brand", "poisoned");
+        CHECK(dart.name(DESC_PLAIN).find(prefix) != string::npos);
+        CHECK(string(special_missile_type_name_en(SPMSL_POISONED, MBN_NAME)) == "poisoned");
+        CHECK(string(missile_brand_name(dart, MBN_BRAND)) == T_("poison"));
+        CHECK(missile_ego_from_name("poisoned (poison)") == SPMSL_POISONED);
+        vector<special_missile_type> partial;
+        CHECK(missile_ego_from_name("poisoned", &partial) == SPMSL_POISONED);
+        REQUIRE(partial.size() == 1);
+        CHECK(partial.front() == SPMSL_POISONED);
+        if (language == lang_t::ZH)
+        {
+            CHECK(prefix != "poisoned");
+            CHECK(prefix != T_("poisoned"));
+        }
+        item_def looked_up;
+        REQUIRE(get_item_by_exact_name(looked_up, "box of beasts"));
+        CHECK(looked_up.is_type(OBJ_MISCELLANY, MISC_BOX_OF_BEASTS));
+        CHECK(looked_up.name(DESC_DBNAME) == "box of beasts");
+        CHECK(Options.language == language);
+        const string box_query = "^" + string(T_("box of beasts")) + "$";
+        const auto box_names = item_name_list_for_zh_regex(box_query);
+        CHECK(find(box_names.begin(), box_names.end(), "box of beasts")
+              != box_names.end());
+        const auto box_help = lookup_help_matching_keys(LOOKUP_HELP_ITEM, box_query);
+        CHECK(find(box_help.begin(), box_help.end(), "box of beasts")
+              != box_help.end());
+        i18n_cache_clear();
+        const auto box_after_clear = item_name_list_for_zh_regex(box_query);
+        CHECK(find(box_after_clear.begin(), box_after_clear.end(), "box of beasts")
+              != box_after_clear.end());
+        item_def rod;
+        rod.base_type = OBJ_MISCELLANY;
+        rod.sub_type = MISC_LIGHTNING_ROD;
+        rod.quantity = 1;
+        rod.flags = ISFLAG_IDENTIFIED;
+        CHECK(rod.name(DESC_DBNAME) == "lightning rod");
+        CHECK(god_title(GOD_QAZLAL, SP_HUMAN, piety_breakpoint(0))
+              == (language == lang_t::ZH ? "避雷针" : "Lightning Rod"));
+        if (language == lang_t::ZH)
+            CHECK(rod.name(DESC_PLAIN).find("雷击杖") != string::npos);
+#if TAG_MAJOR_VERSION == 34
+        const pair<int, const char*> removed[] = {
+            {MISC_DECK_OF_ESCAPE, "removed deck"},
+            {MISC_CRYSTAL_BALL_OF_ENERGY, "removed crystal ball"},
+            {MISC_BUGGY_EBONY_CASKET, "removed ebony casket"},
+            {MISC_FAN_OF_GALES, "removed fan of gales"},
+            {MISC_LAMP_OF_FIRE, "removed lamp of fire"},
+            {MISC_BUGGY_LANTERN_OF_SHADOWS, "removed lantern of shadows"},
+            {MISC_BOTTLED_EFREET, "empty flask"},
+            {MISC_RUNE_OF_ZOT, "obsolete rune of zot"},
+            {MISC_STONE_OF_TREMORS, "removed stone of tremors"},
+            {MISC_XOMS_CHESSBOARD, "removed chess piece"},
+        };
+        for (const auto& entry : removed)
+        {
+            item_def item;
+            item.base_type = OBJ_MISCELLANY;
+            item.sub_type = entry.first;
+            item.quantity = 1;
+            item.flags = ISFLAG_IDENTIFIED;
+            CAPTURE(language, entry.second);
+            CHECK(item.name(DESC_DBNAME) == entry.second);
+            CHECK(item.name(DESC_PLAIN) == T_(entry.second));
+            const auto names = item_name_list_for_zh_regex(
+                "^" + string(T_(entry.second)) + "$");
+            CHECK(find(names.begin(), names.end(), entry.second) != names.end());
+            if (language == lang_t::ZH)
+                CHECK(string(T_(entry.second)) != entry.second);
+        }
+        const pair<int, const char*> jewels[] = {
+            {RING_SUSTAIN_ATTRIBUTES, "It sustains your strength, intelligence and dexterity."},
+            {RING_TELEPORTATION, "It may teleport you next to monsters."},
+            {RING_TELEPORT_CONTROL, "It can be evoked for teleport control."},
+            {AMU_THE_GOURMAND, "It allows you to eat raw meat even when not hungry."},
+            {AMU_HARM, "It increases damage dealt and taken."},
+            {AMU_CONSERVATION, "It protects your inventory from destruction."},
+            {AMU_CONTROLLED_FLIGHT, "It allows you to control your flight when levitating."},
+            {AMU_INACCURACY, "It reduces the accuracy of all your attacks."},
+        };
+        rng::subgenerator fixed_rng(0x1ee, 0x1ee);
+        for (const auto& entry : jewels)
+        {
+            item_def item;
+            item.base_type = OBJ_JEWELLERY;
+            item.sub_type = entry.first;
+            item.quantity = 1;
+            REQUIRE(make_item_randart(item, true));
+            item.flags |= ISFLAG_IDENTIFIED;
+            const string description = get_item_description(item);
+            CAPTURE(language, entry.second, description);
+            CHECK(description.find(T_(entry.second)) != string::npos);
+            if (language == lang_t::ZH)
+            {
+                CHECK(string(T_(entry.second)) != entry.second);
+                CHECK(description.find(entry.second) == string::npos);
+            }
+        }
+#endif
+    }
+}

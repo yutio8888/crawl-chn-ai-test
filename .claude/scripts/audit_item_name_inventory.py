@@ -789,12 +789,15 @@ def build_inventory():
     add(rows, "staff", current(staff, "OBJ_STAVES"), db,
         lambda en, zh, _: f"{zh}法杖" if zh else None)
 
-    misc = switch_literals(item_name, "misc_type_name")
+    misc = switch_literals(item_name, "_misc_type_name_en")
+    if not re.search(r'return\s+T_\(_misc_type_name_en\(type\)\)',
+                     function_body(item_name, "misc_type_name")):
+        raise RuntimeError("miscellany display translation consumer changed")
     for identity, value in enums["misc_item_type"]:
         if identity.startswith("MISC_DECK_OF_") and identity not in misc:
             misc[identity] = {
                 "key": "removed deck", "en": "removed deck",
-                "runtime_lookup": False,
+                "runtime_lookup": True,
             }
     add(rows, "miscellany", current(misc, "OBJ_MISCELLANY"), db)
     talisman = switch_literals(item_prop, "talisman_type_name")
@@ -1334,6 +1337,7 @@ def unrand_rows(db, source_db, base_db, base_source_db, review_base):
         # Issue #147: 13 new upstream definitions, Prune and Tranquillity
         # renames, plus the three surviving pre-trunk reviewed name changes.
         "amulet of the air", "amulet of tranquillity", "arcane splint mail",
+        "armour of talos",  # Full item rereview: approved source-name repair.
         'athame "fimbulwinter"', "bone scales", "coolibah bardiche",
         "fire dragon occultist's scales", "forgewarden's cuirass",
         "ghost crab claws", 'giant spiked club "carina at dusk"',
@@ -2598,6 +2602,7 @@ def _parse_review_jsonl_rows(review_input):
 
 V3_REVIEW_ARTIFACT_BEGIN = "<!-- BEGIN ITEM REVIEW ARTIFACT v3 -->"
 V3_REVIEW_ARTIFACT_END = "<!-- END ITEM REVIEW ARTIFACT v3 -->"
+V3_SEMANTIC_REVIEW_APPENDIX = "\n## Full-content semantic review\n"
 V3_CARD_FIELDS = {"identity", "decision", "source_dependencies"}
 V3_DECISION_FIELD_SET = set(V3_DECISION_FIELDS)
 V3_DEPENDENCY_FIELDS = {
@@ -2883,6 +2888,23 @@ def parse_review_header_v3(review_input):
     return result
 
 
+def split_review_appendix(text):
+    """Separate human review prose without relaxing canonical card checks.
+
+    This appendix is not machine approval of semantic coverage. The full
+    document still goes through the strict schema/header/JSONL readers.
+    """
+    count = text.count(V3_SEMANTIC_REVIEW_APPENDIX)
+    if count > 1:
+        raise RuntimeError("duplicate item semantic review appendix")
+    if not count:
+        return text, ""
+    canonical, marker, appendix = text.partition(V3_SEMANTIC_REVIEW_APPENDIX)
+    if not canonical.endswith("```\n") or not appendix.strip():
+        raise RuntimeError("item semantic review appendix must follow the cards")
+    return canonical, marker + appendix
+
+
 def review_violations_v3(inventory_rows, review_rows, inventory, header,
                          review_input=None):
     validate_v3_decision_cards(inventory_rows)
@@ -2938,7 +2960,7 @@ def review_violations_v3(inventory_rows, review_rows, inventory, header,
     }
     if review_input is not None:
         violations["artifact_mismatch"] = (
-            [] if review_input.text == render_review_results_v3(
+            [] if split_review_appendix(review_input.text)[0] == render_review_results_v3(
                 inventory,
                 review_rows,
                 glossary_overlay=header.get("glossary_sha256"),
@@ -3665,9 +3687,11 @@ def verify_quality_m1_bundle(path, expected_files):
 
 
 def write_review_results_v3(path, inventory, rows):
+    appendix = split_review_appendix(path.read_text(encoding="utf-8"))[1] \
+        if path.exists() else ""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
-        render_review_results_v3(inventory, rows),
+        render_review_results_v3(inventory, rows) + appendix,
         encoding="utf-8",
     )
 
