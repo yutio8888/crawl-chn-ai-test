@@ -3431,8 +3431,8 @@ void level_change(bool skip_attribute_increase)
                     init_player_doll();
 #endif
                     mprf(MSGCH_INTRINSIC_GAIN,
-                         "Your scales start taking on %s colour.",
-                         article_a(species::scale_type(you.species)).c_str());
+                         T_("Your scales start turning %s."),
+                         T_(species::scale_type(you.species)));
 
                     // Produce messages about skill increases/decreases. We
                     // restore one skill level at a time so that at most the
@@ -3443,10 +3443,14 @@ void level_change(bool skip_attribute_increase)
                         const int newapt = species_apt(sk, you.species);
                         if (oldapt != newapt)
                         {
-                            mprf_p(MSGCH_INTRINSIC_GAIN, T_("You learn %s %s%s."),
-                                 skill_name(sk),
-                                 abs(oldapt - newapt) > 1 ? "much " : "",
-                                 oldapt > newapt ? "slower" : "quicker");
+                            const bool much = abs(oldapt - newapt) > 1;
+                            const string message = oldapt > newapt
+                                ? (much ? T_("You learn %s much slower.")
+                                        : T_("You learn %s slower."))
+                                : (much ? T_("You learn %s much quicker.")
+                                        : T_("You learn %s quicker."));
+                            mprf(MSGCH_INTRINSIC_GAIN, message.c_str(),
+                                 skill_name(sk));
                         }
 
                         you.skills[sk] = saved_skills[sk];
@@ -3460,7 +3464,7 @@ void level_change(bool skip_attribute_increase)
 
                     // Tell the player about their new species
                     for (auto &mut : species::fake_mutations(you.species, false))
-                        mprf(T_("%s"), mut.c_str());
+                        mprf("%s", T_(mut.c_str()));
 
                     gain_draconian_breath_uses(2);
 

@@ -91,7 +91,7 @@ They can use scrolls to enchant even some artefacts.
 Mummy
 
 Compelled to walk by an ancient curse, Mummies have innate faith and are adept
-at Necromancy, but learn other skills very slowly. They cannot drink potions.
+at Necromancy, but learn most other skills very slowly. They cannot drink potions.
 %%%%
 Naga
 

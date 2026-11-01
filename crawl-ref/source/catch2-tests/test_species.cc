@@ -5,6 +5,7 @@
 #include "jobs.h"
 #include "newgame-def.h"
 #include "species.h"
+#include "tag-version.h"
 #include "test_zh_fixture.h"
 
 static string _serialize_prefs(const newgame_def& prefs)
@@ -71,6 +72,27 @@ TEST_CASE( "Random draconian species are derived draconians", "[single-file]" ) 
         REQUIRE( species::is_draconian(species) );
         REQUIRE( species != SP_BASE_DRACONIAN );
     }
+}
+
+TEST_CASE("Species fake mutation forms retain matching positions",
+          "[species][zh-translation][species-rereview]")
+{
+    for (int i = 0; i < NUM_SPECIES; ++i)
+    {
+        const auto sp = static_cast<species_type>(i);
+        if (!species::is_valid(sp))
+            continue;
+        INFO(species::name(sp, species::SPNAME_PLAIN, true));
+        CHECK(species::fake_mutations(sp, false).size()
+              == species::fake_mutations(sp, true).size());
+    }
+#if TAG_MAJOR_VERSION == 34
+    // The second compatibility description deliberately has no short name.
+    const auto& short_names = species::fake_mutations(SP_MOTTLED_DRACONIAN, true);
+    REQUIRE(short_names.size() == 2);
+    CHECK(short_names[0] == "breathe sticky flame splash");
+    CHECK(short_names[1].empty());
+#endif
 }
 
 TEST_CASE("Legacy Chinese species aliases do not require i18n",

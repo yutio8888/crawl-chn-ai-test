@@ -24364,9 +24364,6 @@ You have reached level %d, the maximum you can reach!
 You have reached level %d!
 你已达到%d级！
 %%%%
-You learn %s %s%s.
-你学会了%s %s%s。
-%%%%
 As your demonic ancestry asserts itself, you feel your body warp and mutate.
 当你的恶魔血统发挥作用时，你感到身体扭曲变异。
 %%%%
@@ -36937,9 +36934,6 @@ You can wear up to %s rings at the same time.
 You have no room to wall jump there; %s is in the way.
 那里没有空间进行蹬墙跳；%s挡住了。
 %%%%
-Your %s. (AC +%d)
-你的%s。（AC +%d）
-%%%%
 Your skill with %s, %s, and %s is reduced.
 你对%1$s、%2$s和%3$s的掌握被削弱了。
 %%%%
@@ -47401,7 +47395,7 @@ Orcish Mummy
 %%%%
 
 Nagorc
-娜迦兽人
+纳迦兽人
 %%%%
 
 Big Orc
@@ -48953,3 +48947,170 @@ Ranged Combat
  speaks to you: %s
 对你说：%s
 %%%%
+Calf
+牛犊
+%%%%
+Chick
+雏鸟
+%%%%
+Child
+孩童
+%%%%
+Fry
+幼体
+%%%%
+Kitten
+幼猫
+%%%%
+Larva
+幼虫
+%%%%
+Pup
+幼崽
+%%%%
+Tadpole
+蝌蚪
+%%%%
+A pair of ivory tusks grows out from your maw, and flowers begin to bloom upon you.
+一对象牙质的獠牙从你的大口中长出，你的身上也开始开花。
+%%%%
+A small pair of spectral tusks begins to grow in your mouth.
+一对小小的幽灵獠牙开始从你口中长出。
+%%%%
+A small pair of tusks begins to pierce through your wrappings.
+一对小小的獠牙开始刺穿你的裹尸布。
+%%%%
+A small pair of tusks begins to sprout from your jawbone.
+一对小小的獠牙开始从你的颌骨上长出。
+%%%%
+You feel a divine power chisel tusks from your teeth and sculpt your ears to a sharp point.
+你感到一股神力将你的牙齿凿成獠牙，又将你的耳朵雕成尖形。
+%%%%
+Your beak becomes more hooked, and the plumage around your ears grows tufted.
+你的喙变得更加钩曲，耳边的羽毛也长成了簇。
+%%%%
+Your beak grows more hooked, and small fins emerge from the sides of your head.
+你的喙变得更加钩曲，头部两侧也长出了小鳍。
+%%%%
+Your mandibles take on a glossy white sheen, and your antennae grow pointier.
+你的大颚泛起亮白的光泽，触角也变得更尖了。
+%%%%
+Your teeth buggily grow more tusk-like, and your ears buggily lengthen.
+你的牙齿出了故障，变得更像獠牙，耳朵也出了故障，变长了。
+%%%%
+Your teeth grow more tusk-like, and your ears lengthen.
+你的牙齿变得更像獠牙，耳朵也变长了。
+%%%%
+Your teeth grow more tusk-like, and your tympanum bulges.
+你的牙齿变得更像獠牙，鼓膜也鼓胀起来。
+%%%%
+You are resistant to damage.
+你能抵御伤害。
+%%%%
+You can heal yourself by infusing magical energy.
+你能通过注入魔法能量来治疗自己。
+%%%%
+breathe sticky flame splash
+黏着火焰溅射吐息
+%%%%
+You can spit globs of burning liquid.
+你能喷吐一团团燃烧的液体。
+%%%%
+You can ignite nearby creatures when you spit burning liquid.
+你喷吐燃烧液体时能点燃附近的生物。
+%%%%
+You can breathe arcing electricity.
+你能喷吐电弧。
+%%%%
+You can breathe blasts of noxious fumes.
+你能喷吐阵阵毒烟。
+%%%%
+You can breathe torrents of mud.
+你能喷吐汹涌的泥浆。
+%%%%
+mud-swimmer
+泥中游者
+%%%%
+You are unimpeded by mud.
+泥浆不会阻碍你的行动。
+%%%%
+You can breathe blasts of scalding, opaque steam.
+你能喷吐阵阵滚烫且不透光的蒸汽。
+%%%%
+You can breathe blasts of antimagic.
+你能喷吐阵阵反魔法能量。
+%%%%
+You can breathe blasts of explosive embers.
+你能喷吐阵阵会爆炸的余烬。
+%%%%
+You can breathe waves of cold which freeze foes solid.
+你能喷吐寒潮，将敌人冻成冰块。
+%%%%
+You can breathe corrosive fumes.
+你能喷吐腐蚀性烟气。
+%%%%
+permanent stasis
+永久停滞
+%%%%
+You cannot be hasted, slowed, berserked, paralysed or teleported.
+你不会进入加速、减速、狂暴或麻痹状态，也无法被传送。
+%%%%
+dig shafts and tunnels
+挖掘竖井与隧道
+%%%%
+You can dig through walls and to a lower floor.
+你能挖穿墙壁，也能向下挖到较低楼层。
+%%%%
+almost no armour
+几乎无法穿戴护甲
+%%%%
+You cannot wear most types of armour.
+你无法穿戴大多数类型的护甲。
+%%%%
+fiery red
+火红色
+%%%%
+icy white
+冰白色
+%%%%
+mossy green
+苔绿色
+%%%%
+lurid yellow
+刺眼的黄色
+%%%%
+dull grey
+暗灰色
+%%%%
+glossy black
+油亮的黑色
+%%%%
+rich purple
+浓紫色
+%%%%
+pale cyan-grey
+浅青灰色
+%%%%
+plain brown
+普通的棕色
+%%%%
+Your serpentine skin is tough. (AC +%d)
+你的蛇皮坚韧。（AC +%d）
+%%%%
+Your %s scales are hard. (AC +%d)
+你的鳞片呈%s，质地坚硬。（AC +%d）
+%%%%
+Your scales start turning %s.
+你的鳞片开始变为%s。
+%%%%
+You learn %s slower.
+你学习%s的速度变慢了。
+%%%%
+You learn %s much slower.
+你学习%s的速度大幅变慢了。
+%%%%
+You learn %s quicker.
+你学习%s的速度变快了。
+%%%%
+You learn %s much quicker.
+你学习%s的速度大幅变快了。

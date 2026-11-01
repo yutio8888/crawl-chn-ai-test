@@ -398,7 +398,10 @@ static string _badmut(string desc, bool terse=false)
 static pair<string, string> _annotate_form_based(pair<string, string> desc, bool suppressed)
 {
     if (suppressed)
-        return {_suppressedmut(desc.first, true), _suppressedmut(desc.second, false)};
+    {
+        return {desc.first.empty() ? "" : _suppressedmut(desc.first, true),
+                _suppressedmut(desc.second, false)};
+    }
     return {_innatemut(desc.first, true), _innatemut(desc.second, false)};
 }
 
@@ -795,15 +798,16 @@ static vector<pair<string, string>> _get_fakemuts()
     vector<string> long_fakemut = species::fake_mutations(you.species, false);
     for (size_t i = 0; i < long_fakemut.size(); ++i)
     {
+        const string description = T_(long_fakemut[i].c_str());
         if (species::is_draconian(you.species))
         {
-            result.push_back(_annotate_form_based({short_fakemut[i], long_fakemut[i]},
+            result.push_back(_annotate_form_based({short_fakemut[i], description},
                                 form_changes_anatomy() && you.form != transformation::dragon));
         }
         else
         {
             result.push_back({_innatemut(short_fakemut[i], true),
-                              _innatemut(long_fakemut[i], false)});
+                              _innatemut(description, false)});
         }
     }
 
@@ -811,14 +815,10 @@ static vector<pair<string, string>> _get_fakemuts()
     {
         const int ac = you.racial_ac(false) / 100;
 
-        // XX generalize this code somehow?
-        const string scale_clause = string(species::scale_type(you.species))
-                  + " scales are hard";
-
-        string ac_str = make_stringf(T_("Your %s. (AC +%d)"), you.species == SP_NAGA
-                                        ? "serpentine skin is tough"
-                                        : scale_clause.c_str(),
-                                        ac);
+        const string ac_str = you.species == SP_NAGA
+            ? make_stringf(T_("Your serpentine skin is tough. (AC +%d)"), ac)
+            : make_stringf(T_("Your %s scales are hard. (AC +%d)"),
+                           T_(species::scale_type(you.species)), ac);
         result.push_back(_annotate_form_based({"AC +" + to_string(ac), ac_str},
                             (form_changes_anatomy() || form_changes_substance())
                                 && !(species::is_draconian(you.species)
@@ -955,7 +955,17 @@ static vector<string> _get_mutation_and_bane_descs(bool terse)
         if (!mut.empty() && mut != "--transformation--")
         {
             if (terse)
-                result.push_back(T_(mut.c_str()));
+            {
+                // Suppression punctuation is display decoration, not part of
+                // the catalog key. Keep the original fakemut identity intact.
+                if (mut.size() > 2 && mut.front() == '(' && mut.back() == ')')
+                {
+                    const string key = mut.substr(1, mut.size() - 2);
+                    result.push_back("(" + string(T_(key.c_str())) + ")");
+                }
+                else
+                    result.push_back(T_(mut.c_str()));
+            }
             else
                 result.push_back(mut);
         }

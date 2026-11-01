@@ -264,12 +264,12 @@ def mutations(mut_def):
     return make_list(', '.join(out))
 
 def fake_mutations_long(fmut_def):
-    return make_list(', '.join(quote(m.get('long'))
-                                    for m in fmut_def if m.get('long')))
+    return make_list(', '.join(quote(m.get('long', '')) for m in fmut_def))
 
 def fake_mutations_short(fmut_def):
-    return make_list(', '.join(quote(m.get('short'))
-                                    for m in fmut_def if m.get('short')))
+    # The display code pairs short and long entries by index. Keep empty
+    # slots for descriptions that only provide one form.
+    return make_list(', '.join(quote(m.get('short', '')) for m in fmut_def))
 
 def aptitudes(apts):
     for apt, val in apts.items():
