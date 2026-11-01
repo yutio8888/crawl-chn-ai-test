@@ -159,7 +159,7 @@
 ## 2026-11-01 全量语义复审
 
 本节为当前全量结果；上文保留历史审核记录，不将历史终态自动视为本次语义批准。
-冻结基线 `eb9c51dc0f045dca9fd9cd2240c5812434c0ae87`，原清单 `da68f752999b4a266bba4a2388257da5e1b2509e73cea496700c46d3136cbd1a`，原报告文件摘要 `44f6a62a05c4a76e9dca0560b315abfac55e43289c774166649c286b6337f7c1`，最终术语 `02dced6890bd280bb3d38992968a740c167f8a10c33e9edf0bf0b9eb71c5a96c`。
+冻结基线 `eb9c51dc0f045dca9fd9cd2240c5812434c0ae87`，原清单 `da68f752999b4a266bba4a2388257da5e1b2509e73cea496700c46d3136cbd1a`，原报告文件摘要 `44f6a62a05c4a76e9dca0560b315abfac55e43289c774166649c286b6337f7c1`，最终术语 `8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`。
 47枚举与43正文身份均逐项审读；保留兼容/孤儿正文的延期责任。正文键 frost cloud→faint frost cloud 明确迁移，文本不变，旧键不保留，当前实际查找可以命中。
 | 当前身份 | 冻结身份 | 英文名称／全文 | 中文名称／全文 | 终态 | 理由与处理 | 证据与延期重入 |
 |---|---|---|---|---|---|---|
@@ -254,6 +254,6 @@
 | cloud_description:white fluffiness cloud | cloud_description:white fluffiness cloud | <br>A white, fluffy cloud. Not actually solid enough to use as a pillow, and yet<br>still oddly peaceful. | <br>一团白色蓬松的云。实际上用作枕头还不够结实，但也出奇地平和。 | keep | 白色蓬松云、不能当枕头且安宁的幽默完整。 | crawl-ref/source/dat/descript/clouds.txt:156；crawl-ref/source/dat/descript/zh/clouds.txt:143 |
 | cloud_description:wisps of flame cloud | cloud_description:wisps of flame cloud | <br>A trail of sparks and wisps of flame. Atmospheric, but harmless. | <br>一道火花和缕缕火焰。营造氛围的，但无害。 | keep | 火花与缕缕火焰构成尾迹、氛围而无害完整。 | crawl-ref/source/dat/descript/clouds.txt:176；crawl-ref/source/dat/descript/zh/clouds.txt:156 |
 
-覆盖：{"closed_cloud_findings": 10, "conclusions": {"adjust": 25, "defer terminology": 4, "keep": 61}, "current_count": 90, "extra": [], "glossary_sha256": "02dced6890bd280bb3d38992968a740c167f8a10c33e9edf0bf0b9eb71c5a96c", "identity_migration": {"cloud_description:frost cloud": "cloud_description:faint frost cloud"}, "missing": [], "reviewed_count": 90}
+覆盖：{"closed_cloud_findings": 10, "conclusions": {"adjust": 25, "defer terminology": 4, "keep": 61}, "current_count": 90, "extra": [], "glossary_sha256": "8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf", "identity_migration": {"cloud_description:frost cloud": "cloud_description:faint frost cloud"}, "missing": [], "reviewed_count": 90}
 
 运行与合并状态由当前批次验证记录提供，本节不预先宣称运行通过。
