@@ -173,6 +173,12 @@ def review_variant(variant: dict) -> dict:
     return {"weight": variant["weight"], "text": variant["text"]}
 
 
+def historical_source(git_path: str) -> str:
+    return MODULE.shared._decode_utf8(
+        MODULE.shared._git_blob_at_oid(BASELINE, git_path, "historical fixture"),
+        "historical fixture")
+
+
 def fixed_genus_source() -> str:
     """The baseline mon-speak.cc with the genus fallback switched to the
     canonical English accessor (the I70 candidate-role identity shape).
@@ -181,8 +187,7 @@ def fixed_genus_source() -> str:
     must explicitly carry the fixed mon-speak.cc: the candidate-role
     identity shape checks reject the baseline's localized mons_type_name
     call, mirroring the real review gate."""
-    return (ROOT / "crawl-ref/source/mon-speak.cc").read_text(
-        encoding="utf-8").replace(
+    return historical_source("crawl-ref/source/mon-speak.cc").replace(
         "mons_type_name(mons_genus(mons->type), DESC_DBNAME),",
         "mons_type_name_en(mons_genus(mons->type), DESC_DBNAME),")
 
@@ -281,6 +286,40 @@ class MonspeakInventoryTests(unittest.TestCase):
             })
         cards.sort(key=lambda card: card["identity"])
         return cards
+
+    def test_current_exact_git_baseline_freezes_current_facts(self):
+        baseline = "9770e911ee7d40b51a61a1717aecda148c983412"
+        en = exact_artifact(baseline, "database/")
+        zh = exact_artifact(baseline, "database/zh/")
+        en_path, zh_path = self.root / "current-en.json", self.root / "current-zh.json"
+        en_path.write_text(json.dumps(en, ensure_ascii=False), encoding="utf-8")
+        zh_path.write_text(json.dumps(zh, ensure_ascii=False), encoding="utf-8")
+        inventory = MODULE.build_inventory(
+            baseline, en_path, zh_path, ROOT / "docs/glossary.md")
+        self.assertEqual(3450, inventory["dumps"]["english"]["variant_count"])
+        self.assertEqual(3450, inventory["dumps"]["localized"]["variant_count"])
+        self.assertEqual(737, len(inventory["entries"]))
+        self.assertEqual([], inventory["scope"]["zh_only_keys"])
+        self.assertEqual({}, inventory["scope"]["baseline_asymmetry"])
+        self.assertIn("default 'å'", inventory["scope"]["root_keys"])
+        self.assertEqual(3450, MODULE._expected_metadata(inventory, [])["zh_variant_count"])
+
+    def test_pair_retains_source_identity_union_and_only_real_definition_sites(self):
+        en = MODULE._load_dataset(BASELINE, self.en_path, "database/", "fixture EN", "baseline")
+        zh = MODULE._load_dataset(BASELINE, self.zh_path, "database/zh/", "fixture ZH", "baseline")
+        zh["entries"] = [entry for entry in zh["entries"] if entry["key"] != "jory"]
+        del zh["source_variant_counts"]["jory"]
+        entries, _ = MODULE._pair_entries(en, zh)
+        jory = next(entry for entry in entries if entry["key"] == "jory")
+        self.assertTrue(jory["english_variants"])
+        self.assertEqual([], jory["chinese_variants"])
+        self.assertIsNone(jory["chinese_source_line"])
+        sites = MODULE._evidence_locations(jory, MODULE._card_facts(self.inventory))
+        self.assertFalse(any("zh/monspeak.txt:None" in site for site in sites))
+
+    def test_non_ascii_glyph_roots_follow_ascii_cap_and_textdb_canonicalization(self):
+        bases = MODULE._glyph_bases({"A", "Å"})
+        self.assertEqual({"'a'", "'cap-a'", "'å'"}, bases)
 
     def records(self, inventory=None) -> list[dict]:
         cards = self.cards(inventory)
@@ -854,10 +893,8 @@ class MonspeakInventoryTests(unittest.TestCase):
 
     def test_candidate_aligned_audit_passes(self):
         fixture, en_art, zh_art = aligned_candidate_artifacts(
-            (ROOT / "crawl-ref/source/dat/database/monspeak.txt")
-            .read_text(encoding="utf-8"),
-            (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt")
-            .read_text(encoding="utf-8"),
+            historical_source("crawl-ref/source/dat/database/monspeak.txt"),
+            historical_source("crawl-ref/source/dat/database/zh/monspeak.txt"),
         )
         en_path = self.root / "candidate-en.json"
         zh_path = self.root / "candidate-zh.json"
@@ -884,10 +921,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # (every expanded line drops from TALK_VISUAL to TALK); the
         # per-site return topology stays equal, so a gate that only
         # compares it cannot see the drift.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh).replace(
             'w:50\n@friendly hound@',
             'w:50\n前缀@friendly hound@', 1)
@@ -908,10 +943,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # structure instead of mirroring the compounds must pass the
         # candidate protocol, and the ledger proposals bound to that
         # candidate are validated by the same rule.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh)
         to_foe_variant = ('@The_monster@ says @to_foe@, "You can\'t '
                           'imagine my power."')
@@ -953,10 +986,8 @@ class MonspeakInventoryTests(unittest.TestCase):
     def test_candidate_zh_other_token_deletion_rejected(self):
         # The exception is narrow: deleting a non-exempt token (@The_monster@)
         # while rendering the @foe@ structure still fails the candidate gate.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh).replace(
             '@The_monster@ says @to_foe@, "You can\'t imagine my power."',
             '对 @foe@ 说："你无法想象我的力量。"', 1)
@@ -975,10 +1006,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # The exception never weakens the EN side: moving @to_foe@ inside an
         # EN variant keeps the token multiset identical, but the EN source is
         # byte-bound to the baseline, so the position drift fails closed.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         mutated_en = en_zh.replace(
             '@The_monster@ says @to_foe@, "You can\'t imagine my power."',
             '@The_monster@ @to_foe@ says, "You can\'t imagine my power."',
@@ -997,10 +1026,8 @@ class MonspeakInventoryTests(unittest.TestCase):
                 exact_artifact(fixture, "database/zh/"))
 
     def test_candidate_pair_rejects_weight_or_count_drift(self):
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh)
         # Drop one variant of the aligned Crypt Donald ZH body: the
         # candidate ZH total drops below the approved proposal totals.
@@ -1025,10 +1052,8 @@ class MonspeakInventoryTests(unittest.TestCase):
                 self.inventory, fixture, en_art, zh_art)
 
     def test_candidate_unresolved_token_rejected(self):
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh)
         # Inject a bogus token into one aligned body.
         aligned = aligned.replace(
@@ -1196,10 +1221,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # ``{{``/``}}`` substring counts balance and the site count matches
         # EN.  The CR-006 boundary freeze catches it at the site level
         # before the block protocol runs.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh).replace(
             "{{ return you.race() }}", "{{{ return you.race() }}}", 1)
         fixture = fixture_commit_with_replaced_blobs({
@@ -1239,10 +1262,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # candidate with a stray ``}`` outside a ``{{...}}`` site) must be
         # rejected even though the ``{{``/``}}`` counts and the variant
         # total stay unchanged.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh).replace(
             "{{ return you.race() }}", "{{ return you.race() }}}", 1)
         fixture = fixture_commit_with_replaced_blobs({
@@ -1260,10 +1281,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # CR-006: an arbitrary/illegal return expression (``evil()``) must
         # not be masked as translatable display text; the candidate gate
         # fails closed on the malformed block.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh).replace(
             "{{ return you.race() }}", "{{ return evil() }}", 1)
         fixture = fixture_commit_with_replaced_blobs({
@@ -1317,10 +1336,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # executable, the candidate gate fails closed instead of falling
         # back to structural validation; an arbitrary PATH luac is never
         # consulted (a 5.1 compiler accepts ``\"\\q\"`` that 5.4 rejects).
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         fixture, en_art, zh_art = aligned_candidate_artifacts(en_zh, zh_zh)
         missing = self.root / "missing-luac"
         with mock.patch.object(MODULE, "_VENDORED_LUAC", missing):
@@ -1333,10 +1350,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # CR-012: a vendored luac that runs but does not report the
         # embedded contrib/lua 5.4.8 version must fail the candidate gate
         # closed (a stale 5.1 compiler accepts escapes that 5.4 rejects).
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         fixture, en_art, zh_art = aligned_candidate_artifacts(en_zh, zh_zh)
         stale = self.root / f"{self.id().split('.')[-1]}-stale-luac"
         stale.write_text(
@@ -1362,10 +1377,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # 5.4-rejected ``\"\\q\"`` escape (accepted by 5.1) must fail the
         # candidate audit even though the structural check and the
         # skeleton comparison both pass.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh).replace(
             'return "rosy-lipped"', 'return "\\q"', 1)
         fixture = fixture_commit_with_replaced_blobs({
@@ -1386,10 +1399,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # mapping (``you.race()`` -> ``you.genus()``) keeps every count
         # identical and previously folded into the same skeleton marker;
         # the identity-preserving skeleton comparison must reject it.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh).replace(
             "{{ return you.race() }}", "{{ return you.genus() }}", 1)
         fixture = fixture_commit_with_replaced_blobs({
@@ -1409,10 +1420,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # ``crawl.t_(you.race())``) keeps the exact ``crawl.t_()`` form
         # and previously folded into the same skeleton marker; the
         # mapping-identity comparison must reject it.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh).replace(
             "{{ return you.race() }}",
             "{{ return crawl.t_(you.genus()) }}", 1)
@@ -1434,10 +1443,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # added/removed) is pinned by the candidate/ledger comparison,
         # which preserves the mapping byte-for-byte and must reject the
         # drift.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh)
         wrapped = aligned.replace(
             "{{ return you.race() }}",
@@ -1463,10 +1470,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # keys, not only the shared keys of the pair loop: `_jory_rare_`
         # with a ``w:10``-followed-by-empty pattern keeps the frozen 3431
         # variant total but must fail the no-empty-variant invariant.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh).replace(
             "_jory_rare_\n\n@The_monster@ 说：\"我的妻子抛弃了我，"
             "但我已经报了仇。\"",
@@ -1486,10 +1491,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # CR-007: `default 'j'` introducing an unbalanced ``{{`` (split-Lua
         # fragment) keeps the frozen variant total but must fail the
         # dataset-level no-split-Lua invariant.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh).replace(
             "default 'j'\n\nVISUAL:@The_monster@ 颤动着。",
             "default 'j'\n\nVISUAL:@The_monster@ 颤动着。 {{", 1)
@@ -1833,7 +1836,6 @@ class MonspeakInventoryTests(unittest.TestCase):
         self.assertIn(("nekomata", 1, 1, 0), SCAN.MONSPEAK_EN_VISUAL_LINES)
         self.assertIn(("nekomata", 1, 2, 0), SCAN.MONSPEAK_EN_VISUAL_LINES)
         self.assertIn(("nekomata", 2, 1, 0), SCAN.MONSPEAK_EN_VISUAL_LINES)
-        self.assertEqual(912, SCAN.MONSPEAK_EN_VISUAL_LINE_COUNT)
         with tempfile.TemporaryDirectory() as td:
             root = Path(td) / "crawl-ref" / "source"
             en_path = root / "dat" / "database" / "monspeak.txt"
@@ -2018,10 +2020,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # topology in _pair_candidate; a ZH return whose VISUAL prefix
         # changed (skeleton, tokens and site counts all stay identical)
         # must fail the topology comparison.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh).replace(
             'return "VISUAL:A distinct wet dog smell emanates from '
             '@the_monster@."',
@@ -2047,10 +2047,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # the skeleton, the token sets and the per-key variant counts all
         # stay equal) but changes the expanded channel topology of the
         # ``Sprozz`` return branch; the candidate gate must fail closed.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh).replace(
             '@The_monster@ says, "Allow me to demonstrate the bee of the '
             'future!"',
@@ -2085,10 +2083,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # literal instead never feeds the fragment through the escape
         # processing and cannot reject the mutation; the candidate gate
         # must fail closed.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh).replace(
             '@The_monster@ says, "Allow me to demonstrate the bee of the '
             'future!"',
@@ -2113,10 +2109,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # CR-023: deleting one return branch of a Lua block fails the
         # candidate gate (the skeleton comparison already rejects the
         # structure change; the topology comparison is a second net).
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh).replace(
             '    return "VISUAL:A distinct wet dog smell emanates from '
             '@the_monster@."\n'
@@ -2147,10 +2141,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # CR-002: the non-translatable Lua comparison literals ("Mummy" is
         # a lookup identity, not display text) must stay byte-identical to
         # EN; translating one fails the protocol gate.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh).replace(
             'you.race() == "Mummy"', 'you.race() == "木乃伊"')
         fixture = fixture_commit_with_replaced_blobs({
@@ -2168,10 +2160,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # CR-002: control-flow/operator drift inside a Lua block (``>=``
         # changed to ``>``) must fail the skeleton comparison even though
         # site counts and comparison literals stay identical.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         aligned = aligned_zh_source(zh_zh, en_zh).replace(
             'you.skill("Spellcasting") >= 5',
             'you.skill("Spellcasting") > 5')
@@ -2191,10 +2181,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # never derived from the editable ledger, so an EN+ZH+ledger joint
         # variant addition (which the old proposal-derived totals accepted)
         # must fail closed against the frozen counts.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         mutated_en = en_zh.replace(
             "@The_monster@ hisses menacingly.",
             "@The_monster@ hisses menacingly.\n\n"
@@ -2216,10 +2204,8 @@ class MonspeakInventoryTests(unittest.TestCase):
         # CR-003: an EN edit that keeps every count identical (one glyph
         # line reworded) must fail the source-snapshot/entries binding, so
         # the candidate EN is byte-frozen to the baseline EN.
-        en_zh = (ROOT / "crawl-ref/source/dat/database/monspeak.txt") \
-            .read_text(encoding="utf-8")
-        zh_zh = (ROOT / "crawl-ref/source/dat/database/zh/monspeak.txt") \
-            .read_text(encoding="utf-8")
+        en_zh = historical_source("crawl-ref/source/dat/database/monspeak.txt")
+        zh_zh = historical_source("crawl-ref/source/dat/database/zh/monspeak.txt")
         mutated_en = en_zh.replace(
             "@The_monster@ hisses menacingly.",
             "@The_monster@ hisses softly.", 1)

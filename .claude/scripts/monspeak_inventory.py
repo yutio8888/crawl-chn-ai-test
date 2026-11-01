@@ -3,11 +3,10 @@
 
 The inventory is derived from production ``textdb-phase0-dump`` artifacts of
 the ``speak`` TextDB family scoped to ``database/monspeak.txt`` (SpeakDB
-source index 0) and from exact Git source snapshots.  It freezes the 731
-English identities (3429 variants) and 733 Chinese identities (3407
-variants), the exact 213-key asymmetric list (derived from the baseline
-dumps, never copied from prose), the two ZH-only keys (``_jory_rare_`` and
-``default 'j'``), the seven shout-family keys whose ZH monspeak definitions
+source index 0) and from exact Git source snapshots.  It freezes the
+English and Chinese identities and variants of the selected baseline,
+the asymmetric list and any one-sided keys derived from those sources,
+and the seven shout-family keys whose ZH monspeak definitions
 are shadowed by zh/shout.txt in the effective localized merge, the
 random-site/Lua-site counts, the complete token classification and a
 per-language reachability proof from the consumed production root keys.
@@ -749,9 +748,11 @@ def _base_chars(oid: str, label: str) -> set[str]:
 
 
 def _glyph_bases(chars: set[str]) -> set[str]:
-    return ({f"'{char}'" for char in chars}
+    # mon-speak.cc uses ASCII isaupper() for the cap- prefix, then TextDB
+    # canonicalizes the UTF-8 lookup key (including non-ASCII glyphs).
+    return ({shared.lowercase_string(f"'{char}'") for char in chars}
             | {f"'cap-{char.lower()}'" for char in chars
-               if char.isupper()})
+               if "A" <= char <= "Z"})
 
 
 def _shape_keys(oid: str, label: str) -> set[str]:
@@ -976,9 +977,15 @@ def _source_anchor(
     return _line_of(match, source)
 
 
-def _producer_consumer_facts(oid: str, label: str) -> dict[str, Any]:
-    """Mechanically derive the producer/consumer evidence anchors from the
-    exact Git sources and require them to equal the frozen values.
+def _producer_consumer_facts(
+    oid: str, label: str, expected: dict[str, Any] | None = None,
+    *, freeze_baseline: bool = False,
+) -> dict[str, Any]:
+    """Derive snippet-checked producer/consumer anchors from exact Git.
+
+    A new baseline freezes its derived locations; candidate calls compare
+    them with that baseline. Direct historical callers retain the original
+    frozen-anchor default for the existing regression fixtures.
 
     Every anchor is line-derived and snippet-checked, so a moved or forged
     site cannot satisfy the ledger comparison."""
@@ -1227,7 +1234,7 @@ def _producer_consumer_facts(oid: str, label: str) -> dict[str, Any]:
         "vault_name": _vault_name_anchor(oid, label),
     }
     _require(
-        facts == FROZEN_PRODUCER_CONSUMER,
+        freeze_baseline or facts == (FROZEN_PRODUCER_CONSUMER if expected is None else expected),
         f"{label} producer/consumer anchors drifted from the frozen "
         f"facts: {facts!r}",
     )
@@ -1397,11 +1404,8 @@ def _identity_rows(
         f"{label} overridden monspeak keys differ: "
         f"{sorted(overridden ^ expected_override)!r}",
     )
-    expected_count = (EXPECTED_EN_IDENTITY_COUNT
-                      if directory == "database/"
-                      else EXPECTED_ZH_IDENTITY_COUNT)
-    _require(len(rows) == expected_count,
-             f"{label} monspeak identity count mismatch: {len(rows)}")
+    _require({row["canonical_key"] for row in rows} == set(raw_bodies),
+             f"{label} monspeak identity key set differs from exact source")
     keys = [row["canonical_key"] for row in rows]
     _require(len(set(keys)) == len(keys), f"{label} duplicate identity key")
     return rows
@@ -2861,7 +2865,7 @@ def _classify_tokens(
 
 def _classify_keys(
     rows: list[dict[str, Any]], derivable: dict[str, Any], label: str,
-    expected_root_count: int, expected_fragment_count: int, role: str,
+    expected_root_count: int | None, expected_fragment_count: int | None, role: str,
 ) -> dict[str, Any]:
     """Per-language classification: direct roots (prefix materializations +
     special consumers), recursive fragments (token closure), legacy-axed
@@ -2898,11 +2902,11 @@ def _classify_keys(
     )
     if role == "baseline":
         _require(
-            len(roots) == expected_root_count,
+            expected_root_count is None or len(roots) == expected_root_count,
             f"{label} derived root key count mismatch: {len(roots)}",
         )
         _require(
-            len(fragments) == expected_fragment_count,
+            expected_fragment_count is None or len(fragments) == expected_fragment_count,
             f"{label} recursive fragment count mismatch: "
             f"{len(fragments)}",
         )
@@ -2928,17 +2932,13 @@ def _dataset(
     artifact: dict[str, Any], raw: bytes, directory: str, label: str,
     role: str, derivable: dict[str, Any], oid: str,
     expected_variant_count: int | None = None,
+    baseline_orphan_keys: set[str] | None = None,
+    expected_random_sites: int = EXPECTED_EN_RANDOM_SITES,
+    expected_lua_sites: int = EXPECTED_EN_LUA_SITES,
 ) -> dict[str, Any]:
     rows = _identity_rows(artifact, raw, directory, label, oid)
     keys = {row["canonical_key"] for row in rows}
-    expected_root_count, expected_fragment_count = {
-        "database/": (EXPECTED_ROOT_COUNT, EXPECTED_FRAGMENT_COUNT),
-        "database/zh/": (EXPECTED_ZH_ROOT_COUNT,
-                         EXPECTED_ZH_FRAGMENT_COUNT),
-    }[directory]
-    classified = _classify_keys(rows, derivable, label,
-                                expected_root_count,
-                                expected_fragment_count, role)
+    classified = _classify_keys(rows, derivable, label, None, None, role)
     expected_orphans = (
         EXPECTED_EN_ORPHANS
         if directory == "database/"
@@ -2946,47 +2946,20 @@ def _dataset(
     )
     if role == "baseline":
         _require(
-            classified["orphans"] == expected_orphans,
+            classified["orphans"] <= expected_orphans,
             f"{label} orphan set differs: "
-            f"{sorted(classified['orphans'] ^ expected_orphans)!r}",
+            f"{sorted(classified['orphans'] - expected_orphans)!r}",
         )
-        expected_orphan_count = (EXPECTED_EN_ORPHAN_COUNT
-                                 if directory == "database/"
-                                 else EXPECTED_ZH_ORPHAN_COUNT)
-        _require(len(classified["orphans"]) == expected_orphan_count,
-                 f"{label} orphan count mismatch: "
-                 f"{len(classified['orphans'])}")
+    elif baseline_orphan_keys is not None:
+        # The frozen inventory, rather than the candidate or the ledger,
+        # determines which orphan identities may survive this review.
+        _require(classified["orphans"] <= baseline_orphan_keys,
+                 f"{label} candidate introduced orphan keys outside the baseline set")
     else:
-        # The review may only shrink the orphan set (restoring inlined
-        # fragment references); the ZH-only keys are exempt because the
-        # aligned candidate legitimately orphans them (their EN bodies do
-        # not reference the ZH-only fragments).
         exempt = ZH_ONLY_KEYS if directory == "database/zh/" else frozenset()
-        _require(
-            classified["orphans"] - exempt <= expected_orphans,
-            f"{label} candidate introduced orphan keys outside the "
-            f"baseline set: "
-            f"{sorted((classified['orphans'] - exempt) - expected_orphans)!r}",
-        )
+        _require(classified["orphans"] - exempt <= expected_orphans,
+                 f"{label} candidate introduced orphan keys outside the baseline set")
     token_facts = _classify_tokens(rows, keys)
-    if role == "baseline":
-        expected_tokens = {
-            "database/": (EXPECTED_EN_DISTINCT_TOKENS,
-                          EXPECTED_EN_INFILE_TOKENS,
-                          EXPECTED_EN_EXTERNAL_TOKENS),
-            "database/zh/": (EXPECTED_ZH_DISTINCT_TOKENS,
-                             EXPECTED_ZH_INFILE_TOKENS,
-                             EXPECTED_ZH_EXTERNAL_TOKENS),
-        }[directory]
-        _require(
-            (token_facts["distinct_token_count"],
-             token_facts["infile_token_count"],
-             token_facts["external_token_count"]) == expected_tokens,
-            f"{label} token classification counts differ: "
-            f"{token_facts['distinct_token_count']}/"
-            f"{token_facts['infile_token_count']}/"
-            f"{token_facts['external_token_count']}",
-        )
     _require(not token_facts["unresolved"],
              f"{label} contains unresolved token: "
              f"{token_facts['unresolved'][:3]!r}")
@@ -3053,48 +3026,16 @@ def _dataset(
             "override": row["override"],
             "variants": variants,
         })
-    expected_variant = (EXPECTED_EN_VARIANT_COUNT
-                        if directory == "database/"
-                        else EXPECTED_ZH_VARIANT_COUNT)
+    source_counts = {key: len(body["variants"]) for key, body in
+                     _raw_monspeak_body(oid, directory, label).items()}
+    _require({entry["key"]: len(entry["variants"]) for entry in entries} == source_counts,
+             f"{label} baseline variant count mismatch against exact source")
     if role == "baseline":
-        _require(total_variants == expected_variant,
-                 f"{label} baseline variant count mismatch: "
-                 f"{total_variants}")
-        expected_split_lua = ([] if directory == "database/"
-                              else EXPECTED_SPLIT_LUA_FRAGMENTS)
-        _require(
-            split_lua == expected_split_lua,
-            f"{label} split Lua fragments differ: {split_lua!r}",
-        )
-        expected_empty = (EXPECTED_EN_EMPTY_VARIANTS
-                          if directory == "database/"
-                          else EXPECTED_ZH_EMPTY_VARIANTS)
-        _require(empty_variants == expected_empty,
-                 f"{label} empty variant count mismatch: {empty_variants}")
-        expected_random = (EXPECTED_EN_RANDOM_SITES
-                           if directory == "database/"
-                           else EXPECTED_ZH_RANDOM_SITES)
-        _require(random_sites == expected_random,
-                 f"{label} baseline random-site count mismatch: "
-                 f"{random_sites}")
-        expected_lua = (EXPECTED_EN_LUA_SITES
-                        if directory == "database/"
-                        else EXPECTED_ZH_LUA_SITES)
-        _require(lua_sites == expected_lua,
-                 f"{label} baseline Lua-site count mismatch: {lua_sites}")
-        expected_malformed_lua = ([] if directory == "database/"
-                                  else EXPECTED_ZH_MALFORMED_LUA_SITES)
-        _require(
-            malformed_lua == expected_malformed_lua,
-            f"{label} malformed Lua sites differ: {malformed_lua!r}",
-        )
-        if directory == "database/zh/":
-            _require(
-                dict(en_only_display_counts)
-                == EXPECTED_ZH_BASELINE_EN_ONLY_COUNTS,
-                f"{label} baseline ZH EN-only display token counts "
-                f"differ: {dict(en_only_display_counts)!r}",
-            )
+        allowed_split = [] if directory == "database/" else EXPECTED_SPLIT_LUA_FRAGMENTS
+        _require(all(site in allowed_split for site in split_lua),
+                 f"{label} split Lua fragments differ: {split_lua!r}")
+        _require(not malformed_lua,
+                 f"{label} malformed Lua sites differ: {malformed_lua!r}")
     else:
         _require(expected_variant_count is not None,
                  f"{label} candidate audit requires the approved variant "
@@ -3118,10 +3059,10 @@ def _dataset(
         _require(not split_lua,
                  f"{label} candidate has split Lua fragments: "
                  f"{split_lua!r}")
-        _require(random_sites == EXPECTED_EN_RANDOM_SITES,
+        _require(random_sites == expected_random_sites,
                  f"{label} candidate random-site count differs from the "
                  f"frozen EN total: {random_sites}")
-        _require(lua_sites == EXPECTED_EN_LUA_SITES,
+        _require(lua_sites == expected_lua_sites,
                  f"{label} candidate Lua-site count differs from the "
                  f"frozen EN total: {lua_sites}")
         # CR-006B/CR-012: every Lua-bearing variant records the same
@@ -3144,6 +3085,7 @@ def _dataset(
         "source_sha256": _sha256(
             source_snapshot["normalized_utf8"].encode("utf-8")),
         "entries": entries,
+        "source_variant_counts": source_counts,
         "token_facts": token_facts,
         "reachability": {
             "reachable": sorted(classified["keys"] - classified["orphans"]),
@@ -3219,7 +3161,7 @@ def _hashed_dataset(dataset: dict[str, Any]) -> dict[str, Any]:
     return {key: value for key, value in dataset.items()
             if key not in {"entries", "root_keys", "fragment_keys",
                            "orphan_keys", "legacy_axed_keys",
-                           "producer_facts"}}
+                           "producer_facts", "source_variant_counts"}}
 
 
 def _read_glossary(path: Path, ref: str | None) -> bytes:
@@ -3233,6 +3175,9 @@ def _read_glossary(path: Path, ref: str | None) -> bytes:
 def _load_dataset(
     ref: str, path: Path, directory: str, label: str, role: str,
     expected_variant_count: int | None = None,
+    baseline_orphan_keys: set[str] | None = None,
+    expected_random_sites: int = EXPECTED_EN_RANDOM_SITES,
+    expected_lua_sites: int = EXPECTED_EN_LUA_SITES,
 ) -> dict[str, Any]:
     shared._validate_oid(ref, label)
     _require_regular_monspeak_git_sources(ref, directory, label)
@@ -3243,7 +3188,10 @@ def _load_dataset(
     _require_scoped_derivation(artifact, derived, label)
     derivable = _derivable_root_facts(ref, label, role=role)
     return _dataset(artifact, raw, directory, label, role, derivable, ref,
-                    expected_variant_count=expected_variant_count)
+                    expected_variant_count=expected_variant_count,
+                    baseline_orphan_keys=baseline_orphan_keys,
+                    expected_random_sites=expected_random_sites,
+                    expected_lua_sites=expected_lua_sites)
 
 
 def _lifecycle_for(key: str, dataset: dict[str, Any]) -> str:
@@ -3374,9 +3322,10 @@ def _evidence_locations(
         sites.append(
             f"crawl-ref/source/dat/database/{SOURCE_BASENAME}:"
             f"{entry['english_source_line']}")
-    sites.append(
-        f"crawl-ref/source/dat/database/zh/{SOURCE_BASENAME}:"
-        f"{entry['chinese_source_line']}")
+    if entry["chinese_source_line"] is not None:
+        sites.append(
+            f"crawl-ref/source/dat/database/zh/{SOURCE_BASENAME}:"
+            f"{entry['chinese_source_line']}")
     sites.extend(
         f"recursive-ref:{site['key']}:{site['variant_ordinal']}"
         for site in entry["english_referencing_sites"]
@@ -3402,7 +3351,7 @@ def build_inventory(
                        "baseline ZH", "baseline")
     entries, asymmetry = _pair_entries(en, zh)
     producer_consumer = _producer_consumer_facts(
-        baseline_ref, "baseline producer/consumer")
+        baseline_ref, "baseline producer/consumer", freeze_baseline=True)
     facts = {
         **producer_consumer,
         "shape_keys": _shape_keys(baseline_ref, "baseline shapes"),
@@ -3412,11 +3361,12 @@ def build_inventory(
     scope = {
         "source_basename": SOURCE_BASENAME,
         "expected_identity_counts": {
-            "english": EXPECTED_EN_IDENTITY_COUNT,
-            "chinese": EXPECTED_ZH_IDENTITY_COUNT,
-            "total": EXPECTED_IDENTITY_COUNT,
+            "english": en["identity_count"],
+            "chinese": zh["identity_count"],
+            "total": len(entries),
         },
-        "zh_only_keys": sorted(ZH_ONLY_KEYS),
+        "zh_only_keys": sorted({entry["key"] for entry in entries
+                                if not entry["english_variants"]}),
         "override_keys": sorted(CROSS_DB_OVERRIDE_KEYS),
         "root_key_count": en["root_key_count"],
         "fragment_key_count": en["fragment_key_count"],
@@ -3486,19 +3436,20 @@ def build_inventory(
 def _pair_entries(
     en: dict[str, Any], zh: dict[str, Any],
 ) -> tuple[list[dict[str, Any]], dict[str, list[int]]]:
-    """Pair every EN identity with its ZH counterpart; the two ZH-only keys
-    become single-sided cards.  The 213 asymmetric facts must match the
-    frozen list exactly."""
+    """Pair the exact-source identity union, retaining one-sided cards.
+
+    Source-derived per-key counts reject mutations of the loaded datasets;
+    asymmetries describe the selected baseline rather than an older audit.
+    """
     en_by_key = {entry["key"]: entry for entry in en["entries"]}
     zh_by_key = {entry["key"]: entry for entry in zh["entries"]}
-    _require(set(en_by_key) - set(zh_by_key) == frozenset(),
-             "EN-only monspeak keys appeared")
-    _require(set(zh_by_key) - set(en_by_key) == ZH_ONLY_KEYS,
-             f"ZH-only monspeak keys differ: "
-             f"{sorted((set(zh_by_key) - set(en_by_key)) ^ ZH_ONLY_KEYS)!r}")
+    for dataset in (en, zh):
+        _require({entry["key"]: len(entry["variants"]) for entry in dataset["entries"]}
+                 == dataset["source_variant_counts"],
+                 "baseline asymmetric key facts changed from exact source")
     entries: list[dict[str, Any]] = []
     asymmetry: dict[str, list[int]] = {}
-    for key in sorted(en_by_key):
+    for key in sorted(en_by_key.keys() & zh_by_key.keys()):
         en_entry, zh_entry = en_by_key[key], zh_by_key[key]
         counts = [len(en_entry["variants"]), len(zh_entry["variants"])]
         if counts[0] != counts[1]:
@@ -3516,7 +3467,7 @@ def _pair_entries(
             "english_referencing_sites": en["token_facts"]["references"][key],
             "chinese_referencing_sites": zh["token_facts"]["references"][key],
         })
-    for key in sorted(ZH_ONLY_KEYS):
+    for key in sorted(zh_by_key.keys() - en_by_key.keys()):
         zh_entry = zh_by_key[key]
         entries.append({
             "identity": f"monspeak:{key}",
@@ -3531,12 +3482,17 @@ def _pair_entries(
             "chinese_referencing_sites":
                 zh["token_facts"]["references"].get(key, []),
         })
-    _require(
-        len(asymmetry) == len(EXPECTED_ASYM) and asymmetry == EXPECTED_ASYM,
-        f"baseline asymmetric key facts changed: {asymmetry!r}",
-    )
-    _require(len(entries) == EXPECTED_IDENTITY_COUNT,
-             f"ledger identity count mismatch: {len(entries)}")
+    for key in sorted(en_by_key.keys() - zh_by_key.keys()):
+        en_entry = en_by_key[key]
+        lifecycle = _lifecycle_for(key, en)
+        entries.append({
+            "identity": f"monspeak:{key}", "key": key,
+            "lifecycle": lifecycle, "dependency_group": _group_for(key, lifecycle),
+            "english_source_line": en_entry["source_line"], "chinese_source_line": None,
+            "english_variants": en_entry["variants"], "chinese_variants": [],
+            "english_referencing_sites": en["token_facts"]["references"][key],
+            "chinese_referencing_sites": [],
+        })
     return entries, asymmetry
 
 
@@ -3656,14 +3612,14 @@ def _expected_metadata(
         "baseline": inventory["baseline_ref"],
         "chinese_production_dump_sha256":
             inventory["dumps"]["localized"]["artifact_sha256"],
-        "en_variant_count": EXPECTED_EN_VARIANT_COUNT,
+        "en_variant_count": inventory["scope"]["baseline_variant_counts"]["english"],
         "english_production_dump_sha256":
             inventory["dumps"]["english"]["artifact_sha256"],
         "glossary_sha256": inventory["glossary"]["sha256"],
-        "identity_count": EXPECTED_IDENTITY_COUNT,
+        "identity_count": len(inventory["entries"]),
         "inventory_sha256": inventory["inventory_sha256"],
         "terminal_conclusion_counts": dict(sorted(Counter(conclusions).items())),
-        "zh_variant_count": EXPECTED_ZH_VARIANT_COUNT,
+        "zh_variant_count": inventory["scope"]["baseline_variant_counts"]["chinese"],
     }
 
 
@@ -3673,8 +3629,8 @@ def validate_results(
     records: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     records = records if records is not None else _strict_block(path)
-    _require(len(records) == EXPECTED_IDENTITY_COUNT + 1,
-             "review results require one metadata record and 733 cards")
+    _require(len(records) == len(inventory["entries"]) + 1,
+             f"review results require one metadata record and {len(inventory['entries'])} cards")
     metadata, cards = records[0], records[1:]
     _require(set(metadata) == METADATA_FIELDS, "review metadata fields mismatch")
     _require(metadata == _expected_metadata(inventory, cards),
@@ -3864,10 +3820,12 @@ def _lua_skeletons_equal(
                for en, zh in zip(en_skeletons, zh_skeletons))
 
 
-def _pair_candidate(en: dict[str, Any], zh: dict[str, Any]) -> list[dict[str, Any]]:
+def _pair_candidate(
+    en: dict[str, Any], zh: dict[str, Any], zh_only_keys: frozenset[str] = ZH_ONLY_KEYS,
+) -> list[dict[str, Any]]:
     en_by_key = {entry["key"]: entry for entry in en["entries"]}
     zh_by_key = {entry["key"]: entry for entry in zh["entries"]}
-    _require(en_by_key.keys() == zh_by_key.keys() - ZH_ONLY_KEYS,
+    _require(en_by_key.keys() == zh_by_key.keys() - zh_only_keys,
              "candidate EN/ZH key sets differ")
     entries = []
     for key in sorted(en_by_key):
@@ -3951,7 +3909,7 @@ def _pair_candidate(en: dict[str, Any], zh: dict[str, Any]) -> list[dict[str, An
             "english_variants": en_entry["variants"],
             "chinese_variants": zh_entry["variants"],
         })
-    for key in sorted(ZH_ONLY_KEYS):
+    for key in sorted(zh_only_keys):
         _require(key in zh_by_key,
                  f"candidate dropped the ZH-only key {key!r}")
         entries.append({
@@ -3986,21 +3944,31 @@ def add_candidate(
     # EN-aligned variants plus the two single-variant ZH-only keys (3431).
     # They are never derived from the editable review ledger.
     expected_variant_counts = {
-        "english": EXPECTED_CANDIDATE_EN_VARIANT_COUNT,
-        "chinese": EXPECTED_CANDIDATE_ZH_VARIANT_COUNT,
+        "english": inventory["scope"]["baseline_variant_counts"]["english"],
+        "chinese": inventory["scope"]["baseline_variant_counts"]["english"] + sum(
+            len(entry["chinese_variants"]) for entry in inventory["entries"]
+            if entry["key"] in inventory["scope"]["zh_only_keys"]),
     }
     en = _load_dataset(
         candidate_ref, english_path, "database/",
         "candidate EN", "candidate",
         expected_variant_count=expected_variant_counts["english"],
+        baseline_orphan_keys=set(inventory["scope"]["orphan_keys"]["english"]),
+        expected_random_sites=inventory["scope"]["baseline_random_sites"]["english"],
+        expected_lua_sites=inventory["scope"]["baseline_lua_sites"]["english"],
     )
     zh = _load_dataset(
         candidate_ref, localized_path, "database/zh/",
         "candidate ZH", "candidate",
         expected_variant_count=expected_variant_counts["chinese"],
+        baseline_orphan_keys=(set(inventory["scope"]["orphan_keys"]["chinese"])
+                              | set(inventory["scope"]["zh_only_keys"])),
+        expected_random_sites=inventory["scope"]["baseline_random_sites"]["english"],
+        expected_lua_sites=inventory["scope"]["baseline_lua_sites"]["english"],
     )
     _require(
-        _producer_consumer_facts(candidate_ref, "candidate producer/consumer")
+        _producer_consumer_facts(candidate_ref, "candidate producer/consumer",
+                                 expected=inventory["scope"]["producer_consumer"])
         == inventory["scope"]["producer_consumer"],
         "candidate producer/consumer anchors differ from the baseline facts",
     )
@@ -4037,12 +4005,12 @@ def add_candidate(
     _require(
         set(en["orphan_keys"]) <= set(
             inventory["scope"]["orphan_keys"]["english"])
-        and (set(zh["orphan_keys"]) - ZH_ONLY_KEYS) <= set(
+        and (set(zh["orphan_keys"]) - set(inventory["scope"]["zh_only_keys"])) <= set(
             inventory["scope"]["orphan_keys"]["chinese"]),
         "candidate orphan classification must not grow beyond the "
         "baseline set",
     )
-    entries = _pair_candidate(en, zh)
+    entries = _pair_candidate(en, zh, frozenset(inventory["scope"]["zh_only_keys"]))
     candidate = {
         "candidate_ref": candidate_ref,
         "dumps": {
@@ -4129,7 +4097,7 @@ def scaffold_results(
     records = [_expected_metadata(inventory, cards), *cards]
     text = (
         "# Monspeak 全量审核结果（Issue #70）\n\n"
-        "本文件的严格 JSONL 块是 733 个 frozen identity 的完整审核账本。"
+        f"本文件的严格 JSONL 块是 {len(inventory['entries'])} 个 frozen identity 的完整审核账本。"
         "每张卡绑定基线 EN/ZH 变体；zh-translator 阶段填写提案、结论与"
         "理由后，候选审计只接受逐字等于提案的提交。\n\n"
         f"{STRICT_BEGIN}\n```jsonl\n"

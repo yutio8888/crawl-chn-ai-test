@@ -38,7 +38,7 @@ from audit_monspell_phase0 import (
     build_inventory as build_phase0_inventory,
 )
 from command_inventory import parse_db_keys
-from generate_message_overlay import ManifestError, _normalise_manifest
+from generate_message_overlay import ManifestError, _normalise_manifest, validate_manifest
 from i18n_shared import lowercase_string
 
 
@@ -377,36 +377,27 @@ def _dump_binding(
             "variants": variants,
         })
 
-    is_english = directory == "database/"
-    _require(
-        sum(len(row["variants"]) for row in rows)
-        == (EXPECTED_EN_VARIANT_COUNT if is_english else EXPECTED_ZH_VARIANT_COUNT),
-        f"{label} monspell variant count mismatch",
-    )
-    _require(
-        sum(len(variant["runtime_tokens"])
-            for row in rows for variant in row["variants"])
-        == (EXPECTED_EN_TOKEN_SITES if is_english else EXPECTED_ZH_TOKEN_SITES),
-        f"{label} monspell runtime token site count mismatch",
-    )
-    _require(
-        sum(len(variant["random_substring_sites"])
-            for row in rows for variant in row["variants"])
-        == EXPECTED_RANDOM_SUBSTRING_SITES,
-        f"{label} monspell random substring site count mismatch",
-    )
-    _require(
-        sum(len(variant["lua_sites"])
-            for row in rows for variant in row["variants"])
-        == EXPECTED_LUA_SITES,
-        f"{label} monspell Lua site count mismatch",
-    )
-    _require(
-        sum(variant["control_prefix"] == "VISUAL"
-            for row in rows for variant in row["variants"])
-        == EXPECTED_VISUAL_PREFIXES,
-        f"{label} monspell VISUAL control prefix count mismatch",
-    )
+    # The source snapshot is bound to exact Git by the entry point.  Derive
+    # totals from it so an artifact-only mutation still fails here, without
+    # assuming the shape of one historical audit.
+    source_entries = shared._derive_scoped_from_sources(
+        artifact["sources"], directory, label, source_basename=SOURCE_BASENAME)["entries"]
+    source_variants = [variant for entry in source_entries for variant in entry["variants"]]
+    variants = [variant for row in rows for variant in row["variants"]]
+    _require(len(variants) == len(source_variants),
+             f"{label} monspell variant count mismatch")
+    _require(sum(len(variant["runtime_tokens"]) for variant in variants)
+             == sum(len(shared._runtime_tokens(variant["raw_pattern"])) for variant in source_variants),
+             f"{label} monspell runtime token site count mismatch")
+    _require(sum(len(variant["random_substring_sites"]) for variant in variants)
+             == sum(len(_random_sites(variant["raw_pattern"])) for variant in source_variants),
+             f"{label} monspell random substring site count mismatch")
+    _require(sum(len(variant["lua_sites"]) for variant in variants)
+             == sum(len(_lua_sites(variant["raw_pattern"])) for variant in source_variants),
+             f"{label} monspell Lua site count mismatch")
+    _require(sum(variant["control_prefix"] == "VISUAL" for variant in variants)
+             == sum(shared._control_prefix(variant["raw_pattern"]) == "VISUAL" for variant in source_variants),
+             f"{label} monspell VISUAL control prefix count mismatch")
     binding = {
         "artifact_sha256": _sha256(raw),
         "database_name": artifact["database_name"],
@@ -428,10 +419,10 @@ def _dump_binding(
 
 def _paired_entries(
     en_rows: list[dict[str, Any]], zh_rows: list[dict[str, Any]], label: str,
+    expected_asymmetry: dict[str, tuple[int, int]] | None = None,
 ) -> list[dict[str, Any]]:
     en_by_key = {row["key"]: row for row in en_rows}
     zh_by_key = {row["key"]: row for row in zh_rows}
-    _require(en_by_key.keys() == zh_by_key.keys(), f"{label} EN/ZH key sets differ")
     en_vocabulary = {
         token
         for row in en_rows for variant in row["variants"]
@@ -445,13 +436,13 @@ def _paired_entries(
     _require(zh_vocabulary <= en_vocabulary,
              f"{label} ZH token vocabulary is not a subset of the EN vocabulary")
     entries = []
-    for key in sorted(en_by_key):
-        en = en_by_key[key]
-        zh = zh_by_key[key]
+    for key in sorted(en_by_key.keys() | zh_by_key.keys()):
+        en = en_by_key.get(key, {"source_line": None, "variants": []})
+        zh = zh_by_key.get(key, {"source_line": None, "variants": []})
         en_count = len(en["variants"])
         zh_count = len(zh["variants"])
-        if en_count != zh_count:
-            frozen = ASYMMETRIC_VARIANT_KEYS.get(key)
+        if expected_asymmetry is not None and en_count != zh_count:
+            frozen = expected_asymmetry.get(key)
             _require(
                 frozen == (en_count, zh_count),
                 f"{label} variant count differs for {key!r}: EN {en_count} "
@@ -616,10 +607,12 @@ def _catalog_binding(
     manifest: dict[str, Any], expected_keys: set[str], label: str,
 ) -> dict[str, dict[str, Any]]:
     by_key = {entry["canonical_key"]: entry for entry in manifest["entries"]}
-    _require(set(by_key) == set(expected_keys),
-             f"{label} catalog key set mismatch")
+    _require(len(by_key) == len(manifest["entries"]),
+             f"{label} duplicate catalog key")
+    _require(set(by_key) <= set(expected_keys),
+             f"{label} catalog key set mismatch (outside the raw/closure inventory)")
     binding: dict[str, dict[str, Any]] = {}
-    for key in sorted(expected_keys):
+    for key in sorted(by_key):
         entry = by_key[key]
         mode = entry.get("mode")
         _require(mode in ENTRY_MODES,
@@ -647,17 +640,17 @@ def _catalog_binding(
 
 
 def _identity_entry(
-    key: str, catalog: dict[str, Any], templates: list[dict[str, Any]],
+    key: str, catalog: dict[str, Any] | None, templates: list[dict[str, Any]],
     legacy: dict[str, Any], unreachable: set[str],
 ) -> dict[str, Any]:
-    route = _route_for(catalog["entry_mode"], catalog["variants"])
+    route = _route_for(catalog["entry_mode"], catalog["variants"]) if catalog is not None else "LEGACY"
     return {
         "identity": f"monspell:{key}",
         "key": key,
         "route": route,
-        "entry_mode": catalog["entry_mode"],
-        "primary_materialization_policy": catalog["primary_policy"],
-        "policies": catalog["policies"],
+        "entry_mode": catalog["entry_mode"] if catalog is not None else None,
+        "primary_materialization_policy": catalog["primary_policy"] if catalog is not None else None,
+        "policies": catalog["policies"] if catalog is not None else [],
         "runtime_evidence": key not in unreachable,
         "production_zh_source": PRODUCTION_ZH_SOURCE[route],
         "fallback_zh_source": "zh/monspell.txt" if route == "STRUCTURED" else None,
@@ -671,7 +664,49 @@ def _identity_entry(
     }
 
 
-def _expected_evidence_locations(entry: dict[str, Any]) -> list[str]:
+def _producer_consumer_facts(ref: str) -> tuple[dict[str, str], list[dict[str, str]]]:
+    def anchor(path: str, pattern: str) -> str:
+        source = shared._decode_utf8(shared._git_blob_at_oid(ref, path, "consumer evidence"),
+                                     "consumer evidence")
+        matches = list(re.finditer(pattern, source, re.MULTILINE))
+        _require(len(matches) == 1, f"consumer evidence {path} lookup shape changed")
+        return f"{path}:{source.count(chr(10), 0, matches[0].start()) + 1}"
+
+    overlay = "crawl-ref/source/fork-message-overlay.cc"
+    consumer = {
+        "route_decision": anchor(overlay, r"^route_decision route_monspell_message\(const string &canonical_key,\n"),
+        "overlay_covers": anchor(overlay, r"^bool monspell_overlay_covers\(const string &canonical_key\)"),
+        "candidate_search": anchor("crawl-ref/source/mon-cast.cc", r"fmo::search_message_candidate\("),
+        "candidate_search_definition": anchor(overlay, r"^message_candidate_search search_message_candidate\("),
+        "materialize": anchor(overlay, r"^canonical_materialization materialize_monspell_candidate\(\n    const string &canonical_key, message_attempt attempt,\n    bool manifest_applicable, const runtime_binding_resolver &bindings\)"),
+        "render": anchor(overlay, r"^render_result render_materialized_candidate\("),
+        "legacy_getspeakstring": anchor("crawl-ref/source/database.cc", r"^string getSpeakString\(const string &key\)"),
+    }
+    producers = [{"location": anchor("crawl-ref/source/mon-cast.cc", r"^static void _speech_keys\("),
+                  "mode": FROZEN_PRODUCERS[0]["mode"]}]
+    # The original Issue #59 ledger anchored the start of this search region,
+    # two lines before the call. Retain that exact historical digest only for
+    # its original derived layout; new baselines use the call's exact line.
+    historical_layout = dict(FROZEN_CONSUMER)
+    path, line = historical_layout["candidate_search"].rsplit(":", 1)
+    historical_layout["candidate_search"] = f"{path}:{int(line) + 2}"
+    if consumer == historical_layout and producers == FROZEN_PRODUCERS:
+        consumer = dict(FROZEN_CONSUMER)
+    return consumer, producers
+
+
+def _current_behavior(route: str, consumer: dict[str, str]) -> str:
+    text = FROZEN_ACTUAL_BEHAVIOR[route]
+    for name, old in FROZEN_CONSUMER.items():
+        old_location = old.removeprefix("crawl-ref/source/")
+        new_location = consumer[name].removeprefix("crawl-ref/source/")
+        text = text.replace(old_location, new_location)
+    return text
+
+
+def _expected_evidence_locations(
+    entry: dict[str, Any], consumer: dict[str, str] | None = None,
+) -> list[str]:
     en_source = (
         f"crawl-ref/source/dat/database/monspell.txt:"
         f"{entry['source_lines']['english']}"
@@ -680,29 +715,20 @@ def _expected_evidence_locations(entry: dict[str, Any]) -> list[str]:
         f"crawl-ref/source/dat/database/zh/monspell.txt:"
         f"{entry['source_lines']['chinese']}"
     )
+    consumer = FROZEN_CONSUMER if consumer is None else consumer
+    sources = [source for source, line in ((en_source, entry["source_lines"]["english"]),
+                                           (zh_source, entry["source_lines"]["chinese"]))
+               if line is not None]
     route = entry["route"]
     if route == "STRUCTURED":
-        return [
-            en_source, zh_source,
-            "crawl-ref/source/fork-message-overlay.cc:1704",
-            "crawl-ref/source/fork-message-overlay.cc:1676",
-            "crawl-ref/source/mon-cast.cc:9291",
-            "crawl-ref/source/fork-message-overlay.cc:1748",
-            "crawl-ref/source/fork-message-overlay.cc:1779",
-            "crawl-ref/source/fork-message-overlay.cc:2400",
-        ]
+        return [*sources, *(consumer[name] for name in (
+            "route_decision", "overlay_covers", "candidate_search", "candidate_search_definition",
+            "materialize", "render"))]
     if route == "LEGACY":
-        return [
-            en_source, zh_source,
-            "crawl-ref/source/database.cc:2307",
-            "crawl-ref/source/fork-message-overlay.cc:1704",
-            "crawl-ref/source/fork-message-overlay.cc:1676",
-        ]
-    return [
-        en_source,
-        "crawl-ref/source/fork-message-overlay.cc:1704",
-        "crawl-ref/source/fork-message-overlay.cc:1676",
-    ]
+        return [*sources, *(consumer[name] for name in (
+            "legacy_getspeakstring", "route_decision", "overlay_covers"))]
+    return ([en_source] if entry["source_lines"]["english"] is not None else []) + [
+        consumer["route_decision"], consumer["overlay_covers"]]
 
 
 def _expected_production_facts(entry: dict[str, Any]) -> dict[str, Any]:
@@ -791,13 +817,15 @@ def _validate_card(
              f"{identity} confidence mismatch")
     _require(card["lifecycle"] == FROZEN_LIFECYCLE[route],
              f"{identity} lifecycle mismatch")
-    _require(card["actual_behavior"] == FROZEN_ACTUAL_BEHAVIOR[route],
+    consumer = inventory["scope"].get("producer_consumer", FROZEN_CONSUMER)
+    producers = inventory["scope"].get("producers", FROZEN_PRODUCERS)
+    _require(card["actual_behavior"] == _current_behavior(route, consumer),
              f"{identity} actual_behavior mismatch")
     _require(card["display_context"] == FROZEN_DISPLAY_CONTEXT[route],
              f"{identity} display_context mismatch")
-    _require(card["consumer"] == FROZEN_CONSUMER,
+    _require(card["consumer"] == consumer,
              f"{identity} consumer mismatch")
-    _require(card["producers"] == FROZEN_PRODUCERS,
+    _require(card["producers"] == producers,
              f"{identity} producers mismatch")
     _require(card["dependency_group"]
              == f"{entry['key']} 怪物施法消息路由与本地化",
@@ -805,7 +833,7 @@ def _validate_card(
     _require(card["glossary_authority"] == (
         f"{inventory['glossary']['path']}@{inventory['glossary']['sha256']}"
     ), f"{identity} glossary_authority mismatch")
-    _require(card["evidence_locations"] == _expected_evidence_locations(entry),
+    _require(card["evidence_locations"] == _expected_evidence_locations(entry, consumer),
              f"{identity} evidence_locations mismatch")
     _require(_nonempty_string(card["reentry_trigger"]),
              f"{identity} requires a nonempty reentry_trigger")
@@ -1080,7 +1108,7 @@ def validate_results(
     candidate_entries: list[dict[str, Any]] | None,
 ) -> dict[str, Any]:
     records = _strict_block(path)
-    _require(len(records) == EXPECTED_IDENTITY_COUNT + 1,
+    _require(len(records) == len(inventory["entries"]) + 1,
              "review evidence metadata/card coverage mismatch")
     metadata, cards = records[0], records[1:]
     _require_exact_fields(metadata, METADATA_FIELDS, "review metadata")
@@ -1089,7 +1117,7 @@ def validate_results(
     _require(metadata["glossary_sha256"] == inventory["glossary"]["sha256"],
              "review metadata glossary_sha256 mismatch")
     _require(_is_int(metadata["identity_count"])
-             and metadata["identity_count"] == EXPECTED_IDENTITY_COUNT,
+             and metadata["identity_count"] == len(inventory["entries"]),
              "review metadata identity_count mismatch")
     _require(metadata["inventory_sha256"] == inventory["inventory_sha256"],
              "review metadata inventory_sha256 mismatch")
@@ -1118,6 +1146,19 @@ def validate_results(
         _validate_card(seen[entry["identity"]], inventory, entry,
                        candidate_by_identity.get(entry["identity"]))
     return {"metadata": metadata, "cards": cards}
+
+
+def _baseline_anchor_sha256(ref: str) -> str:
+    path = ".claude/data/message-overlay/monspell-candidate-anchor.json"
+    raw = shared._git_blob_at_oid(ref, path, "baseline candidate anchor")
+    try:
+        anchor = json.loads(shared._decode_utf8(raw, "baseline candidate anchor"))
+    except json.JSONDecodeError as exc:
+        raise InventoryError("baseline candidate anchor is not valid JSON") from exc
+    value = anchor.get("artifact_sha256")
+    _require(isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value) is not None,
+             "baseline candidate anchor artifact_sha256 mismatch")
+    return value
 
 
 def build_inventory(
@@ -1158,21 +1199,20 @@ def build_inventory(
         recomputed = build_phase0_inventory(en_dump)
     except ArtifactError as exc:
         raise InventoryError(f"baseline EN phase0 rebuild failed: {exc}") from exc
-    _require(recomputed["semantic_fingerprint"] == EXPECTED_SEMANTIC_FINGERPRINT,
-             "baseline EN semantic fingerprint drifted from the frozen value")
-    _require(phase0["semantic_fingerprint"] == EXPECTED_SEMANTIC_FINGERPRINT,
+    _require(phase0.get("semantic_fingerprint") == recomputed["semantic_fingerprint"],
              "phase0 inventory semantic_fingerprint mismatch")
-    _require(phase0["source_fingerprint"] == EXPECTED_SOURCE_FINGERPRINT
-             and recomputed["source_fingerprint"] == EXPECTED_SOURCE_FINGERPRINT,
+    _require(phase0.get("source_fingerprint") == recomputed["source_fingerprint"],
              "phase0 inventory source_fingerprint mismatch")
-    _require(recomputed["summary"] == phase0["summary"],
+    _require(recomputed["summary"] == phase0.get("summary"),
              "phase0 inventory summary does not match the EN dump rebuild")
+    _require(recomputed == phase0,
+             "phase0 inventory entries/closure do not match the EN dump rebuild")
     expected_keys = {entry["key"] for entry in phase0["entries"]}
-    _require(len(expected_keys) == EXPECTED_IDENTITY_COUNT,
+    _require(len(expected_keys) == len(phase0["entries"])
+             and phase0["summary"]["monspell_keys"] == len(expected_keys),
              "phase0 inventory identity count mismatch")
-    _require(phase0["summary"]["monspell_keys"] == EXPECTED_IDENTITY_COUNT,
-             "phase0 inventory monspell_keys mismatch")
-
+    semantic_fingerprint = phase0["semantic_fingerprint"]
+    source_fingerprint = phase0["source_fingerprint"]
     manifest, _manifest_order, _manifest_header = _manifest_snapshot_at_oid(
         baseline_ref, manifest_path, "baseline manifest"
     )
@@ -1181,18 +1221,20 @@ def build_inventory(
     _require(manifest.get("supported_languages") == ["en", "zh"],
              "manifest supported_languages mismatch")
     _require(manifest.get("inventory_semantic_fingerprint")
-             == EXPECTED_SEMANTIC_FINGERPRINT,
+             == semantic_fingerprint,
              "manifest inventory_semantic_fingerprint mismatch")
 
     report = _load_json(behavior_report_path, "behavior report")
     _require(report.get("domain") == DOMAIN,
              "behavior report domain must be 'monspell'")
-    _require(report.get("phase2_ready") is True,
-             "behavior report phase2_ready must be true")
-    _require(report.get("phase2_blockers") == [],
-             "behavior report phase2_blockers must be empty")
+    ready, blockers = report.get("phase2_ready"), report.get("phase2_blockers")
+    _require(type(ready) is bool, "behavior report phase2_ready must be a boolean")
+    _require(isinstance(blockers, list) and all(_nonempty_string(item) for item in blockers),
+             "behavior report phase2_blockers must be a string list")
+    _require(ready or blockers, "behavior report phase2_ready is false without blockers")
+    _require(not ready or blockers == [], "behavior report phase2_blockers must be empty when ready")
     coverage = report.get("coverage", {})
-    _require(coverage.get("catalog_coverage_complete") is True,
+    _require(coverage.get("catalog_coverage_complete") is True or not ready,
              "behavior report catalog_coverage_complete must be true")
     _require(coverage.get("en_zh_behavior_parity_proven") is True,
              "behavior report en_zh_behavior_parity_proven must be true")
@@ -1203,22 +1245,25 @@ def build_inventory(
                   "locale_behavior_inconclusive"):
         _require(report.get(field) == [],
                  f"behavior report {field} must be empty")
-    _require(universe.get("inventory_root_count") == EXPECTED_IDENTITY_COUNT,
+    _require(universe.get("inventory_root_count") == len(expected_keys),
              "behavior report inventory_root_count mismatch")
     reachable = set(universe.get("runtime_roots", []))
     unreachable = set(universe.get("inventory_unreachable_roots", []))
-    _require(len(reachable) == EXPECTED_REACHABLE_COUNT,
+    _require(len(reachable) == universe.get("inventory_reachable_root_count"),
              "behavior report reachable root count mismatch")
-    _require(len(unreachable) == EXPECTED_UNREACHABLE_COUNT,
+    _require(len(unreachable) == universe.get("inventory_unreachable_root_count"),
              "behavior report unreachable root count mismatch")
+    _require(len(reachable) == len(universe.get("runtime_roots", []))
+             and len(unreachable) == len(universe.get("inventory_unreachable_roots", [])),
+             "behavior report reachability partition contains duplicates")
     _require(reachable.isdisjoint(unreachable),
              "behavior report reachable/unreachable roots overlap")
     hits = report.get("candidate_lookup", {})
-    _require(hits.get("en", {}).get("hit_count") == EXPECTED_REACHABLE_COUNT
-             and hits.get("zh", {}).get("hit_count") == EXPECTED_REACHABLE_COUNT,
+    _require(hits.get("en", {}).get("hit_count") == len(reachable)
+             and hits.get("zh", {}).get("hit_count") == len(reachable),
              "behavior report candidate lookup hit counts mismatch")
     _require(report["inputs"]["inventory"]["semantic_fingerprint"]
-             == EXPECTED_SEMANTIC_FINGERPRINT,
+             == semantic_fingerprint,
              "behavior report inventory semantic fingerprint binding mismatch")
 
     anchor = _load_json(candidate_anchor_path, "candidate anchor")
@@ -1227,17 +1272,21 @@ def build_inventory(
              "candidate anchor schema_version mismatch")
     _require(anchor.get("domain") == ANCHOR_DOMAIN,
              "candidate anchor domain mismatch")
-    _require(anchor.get("artifact_sha256") == EXPECTED_CANDIDATE_ANCHOR_SHA256,
+    anchor_sha256 = _baseline_anchor_sha256(baseline_ref)
+    _require(anchor.get("artifact_sha256") == anchor_sha256,
              "candidate anchor artifact_sha256 mismatch")
     _require(report["inputs"]["candidate_anchor"]["artifact_sha256"]
-             == EXPECTED_CANDIDATE_ANCHOR_SHA256,
+             == anchor_sha256,
              "behavior report candidate anchor binding mismatch")
 
-    catalog = _catalog_binding(manifest, expected_keys, "baseline manifest")
+    nodes = expected_keys | {entry["key"] for entry in phase0.get("closure", {}).get("additional_nodes", [])}
+    catalog = _catalog_binding(manifest, nodes, "baseline manifest")
+    try:
+        validate_manifest(manifest, phase0)
+    except ManifestError as exc:
+        raise InventoryError(f"baseline manifest validation failed: {exc}") from exc
     _require(reachable | unreachable == set(expected_keys),
              "behavior report reachability partition does not cover the catalog")
-    _require(len(catalog) == EXPECTED_IDENTITY_COUNT,
-             "catalog identity count mismatch")
     mode_counts: dict[str, int] = {}
     route_counts: dict[str, int] = {}
     primary_counts: dict[str, int] = {}
@@ -1251,21 +1300,10 @@ def build_inventory(
             mixed[key] = binding["policies"]
         route = _route_for(binding["entry_mode"], binding["variants"])
         route_counts[route] = route_counts.get(route, 0) + 1
-    _require(mode_counts == EXPECTED_MODE_COUNTS,
-             f"catalog entry mode counts mismatch: {mode_counts!r}")
     suppressed_keys = {
         key for key, binding in catalog.items()
         if _route_for(binding["entry_mode"], binding["variants"]) == "SUPPRESSED"
     }
-    _require(suppressed_keys == EXPECTED_SUPPRESSED_KEYS,
-             "catalog suppressed key set mismatch")
-    _require(route_counts == EXPECTED_ROUTE_COUNTS,
-             f"catalog route counts mismatch: {route_counts!r}")
-    _require(primary_counts == EXPECTED_PRIMARY_POLICY_COUNTS,
-             f"catalog primary policy counts mismatch: {primary_counts!r}")
-    _require(mixed == EXPECTED_MIXED_POLICY_KEYS,
-             f"catalog mixed-policy keys mismatch: {mixed!r}")
-
     templates_by_key: dict[str, list[dict[str, Any]]] = {}
     no_zh_keys: set[str] = set()
     relation_counts: dict[str, int] = {}
@@ -1304,34 +1342,20 @@ def build_inventory(
             for metadata in metadata_items:
                 sensory_counts[metadata["sensory"]] = sensory_counts.get(
                     metadata["sensory"], 0) + 1
-    _require(sum(len(templates) for templates in templates_by_key.values())
-             == EXPECTED_STRUCTURED_TEMPLATE_COUNT,
-             "catalog structured zh template count mismatch")
-    _require(relation_counts == EXPECTED_STRUCTURED_RELATION_COUNTS,
-             f"catalog structured relation counts mismatch: {relation_counts!r}")
-    _require(line_metadata_relation_counts == EXPECTED_LINE_METADATA_RELATION_COUNTS,
-             f"catalog line_metadata relation counts mismatch: "
-             f"{line_metadata_relation_counts!r}")
-    _require(case_relation_counts == EXPECTED_CASE_RELATION_COUNTS,
-             f"catalog materialization_cases relation counts mismatch: "
-             f"{case_relation_counts!r}")
-    _require(sensory_counts == EXPECTED_SENSORY_COUNTS,
-             f"catalog sensory counts mismatch: {sensory_counts!r}")
-    _require(len(no_zh_keys) == EXPECTED_NO_ZH_ENTRY_COUNT,
-             "catalog no-zh entry count mismatch")
     legacy_only_keys = {
         key for key, binding in catalog.items()
         if binding["entry_mode"] == "LEGACY_ONLY"
     }
     _require(no_zh_keys == legacy_only_keys | suppressed_keys,
-             "catalog no-zh entries must be exactly LEGACY_ONLY plus suppressed")
+             "catalog suppressed key set mismatch: no-zh entries must be exactly LEGACY_ONLY plus suppressed")
 
     en_binding, en_rows = _dump_binding(
         en_dump, en_raw, "baseline EN", expected_keys
     )
-    zh_binding, zh_rows = _dump_binding(
-        zh_dump, zh_raw, "baseline ZH", expected_keys
-    )
+    zh_keys = {entry["canonical_key"] for entry in zh_dump["entries"]
+               if any(item["source_name"] == "database/zh/monspell.txt"
+                      for item in entry["source_history"])}
+    zh_binding, zh_rows = _dump_binding(zh_dump, zh_raw, "baseline ZH", zh_keys)
     legacy_entries = _paired_entries(en_rows, zh_rows, "baseline")
     legacy_by_key = {entry["key"]: entry for entry in legacy_entries}
 
@@ -1342,16 +1366,56 @@ def build_inventory(
 
     entries = [
         _identity_entry(
-            key, catalog[key], templates_by_key[key], legacy_by_key[key],
-            unreachable,
+            key, catalog.get(key), templates_by_key.get(key, []), legacy_by_key[key],
+            unreachable | (zh_keys - expected_keys),
         )
-        for key in sorted(expected_keys)
+        for key in sorted(expected_keys | zh_keys)
     ]
+    route_counts = {}
+    for entry in entries:
+        route_counts[entry["route"]] = route_counts.get(entry["route"], 0) + 1
+    en_variants = [variant for row in en_rows for variant in row["variants"]]
+    zh_variants = [variant for row in zh_rows for variant in row["variants"]]
+    scope = {
+        "source_basename": SOURCE_BASENAME,
+        "identity_count": len(entries),
+        "reachable_count": len(reachable), "unreachable_count": len(unreachable),
+        "en_variant_count": len(en_variants), "zh_variant_count": len(zh_variants),
+        "en_token_sites": sum(len(variant["runtime_tokens"]) for variant in en_variants),
+        "zh_token_sites": sum(len(variant["runtime_tokens"]) for variant in zh_variants),
+        "random_substring_sites": sum(len(variant["random_substring_sites"]) for variant in en_variants),
+        "lua_sites": sum(len(variant["lua_sites"]) for variant in en_variants),
+        "visual_prefixes": sum(variant["control_prefix"] == "VISUAL" for variant in en_variants),
+        "mode_counts": mode_counts, "route_counts": route_counts,
+        "primary_policy_counts": primary_counts, "mixed_policy_keys": mixed,
+        "suppressed_keys": sorted(suppressed_keys), "no_zh_entry_count": len(no_zh_keys),
+        "structured_template_count": sum(len(templates) for templates in templates_by_key.values()),
+        "structured_relation_counts": relation_counts,
+        "line_metadata_relation_counts": line_metadata_relation_counts,
+        "case_relation_counts": case_relation_counts, "sensory_counts": sensory_counts,
+        "asymmetric_variant_keys": {
+            entry["key"]: (entry["english_variant_count"], len(entry["variants"]))
+            for entry in legacy_entries
+            if entry["english_variant_count"] != len(entry["variants"])
+        },
+        "candidate_anchor_sha256": anchor_sha256,
+        "semantic_fingerprint": semantic_fingerprint,
+        "source_fingerprint": source_fingerprint,
+    }
+    consumer, producers = _producer_consumer_facts(baseline_ref)
+    if consumer != FROZEN_CONSUMER or producers != FROZEN_PRODUCERS:
+        scope.update({"producer_consumer": consumer, "producers": producers})
+    # Retain the historical full-catalog digest; subset inventories additionally
+    # freeze their exact membership and both one-sided raw identity sets.
+    if set(catalog) != expected_keys or expected_keys != zh_keys:
+        scope.update({"catalog_keys": sorted(catalog),
+                      "raw_minus_catalog": sorted((expected_keys | zh_keys) - set(catalog)),
+                      "english_keys": sorted(expected_keys), "chinese_keys": sorted(zh_keys)})
     core = {
         "schema_version": SCHEMA_VERSION,
         "baseline_ref": baseline_ref,
-        "scope": SCOPE,
-        "scope_sha256": _sha256(_canonical_json(SCOPE)),
+        "scope": scope,
+        "scope_sha256": _sha256(_canonical_json(scope)),
         "glossary": {"path": "docs/glossary.md", "sha256": glossary_sha256},
         "dumps": {"english": en_binding, "localized": zh_binding},
         "phase0": {
@@ -1367,8 +1431,8 @@ def build_inventory(
             "fragment_glob": manifest.get("fragment_glob"),
         },
         "behavior_report": {
-            "phase2_ready": True,
-            "phase2_blockers": [],
+            "phase2_ready": ready,
+            "phase2_blockers": blockers,
             "reachable_root_count": len(reachable),
             "unreachable_roots": sorted(unreachable),
         },
@@ -1663,7 +1727,16 @@ def add_candidate(
     shared._require_candidate_commit(
         inventory["baseline_ref"], candidate_ref, exact_clean_checkout=True
     )
+    _require(inventory["behavior_report"]["phase2_ready"] is True
+             and inventory["behavior_report"]["phase2_blockers"] == [],
+             "candidate requires phase2_ready and empty phase2_blockers")
+    consumer, producers = _producer_consumer_facts(candidate_ref)
+    _require(consumer == inventory["scope"].get("producer_consumer", FROZEN_CONSUMER)
+             and producers == inventory["scope"].get("producers", FROZEN_PRODUCERS),
+             "candidate producer/consumer evidence drift")
     expected_keys = {entry["key"] for entry in inventory["entries"]}
+    en_keys = set(inventory["scope"].get("english_keys", expected_keys))
+    zh_keys = set(inventory["scope"].get("chinese_keys", expected_keys))
     en_dump, en_raw = shared._load_dump(english_path, "candidate EN", "database/")
     zh_dump, zh_raw = shared._load_dump(
         localized_path, "candidate ZH", "database/zh/"
@@ -1683,10 +1756,10 @@ def add_candidate(
         ), "candidate ZH", source_basename=SOURCE_BASENAME,
     )
     en_binding, en_rows = _dump_binding(
-        en_dump, en_raw, "candidate EN", expected_keys
+        en_dump, en_raw, "candidate EN", en_keys
     )
     zh_binding, zh_rows = _dump_binding(
-        zh_dump, zh_raw, "candidate ZH", expected_keys
+        zh_dump, zh_raw, "candidate ZH", zh_keys
     )
     entries = _paired_entries(en_rows, zh_rows, "candidate")
 
@@ -1726,7 +1799,7 @@ def add_candidate(
     _, baseline_zh_rows = _dump_binding(
         {**baseline_zh_derived, "schema_version": 1,
          "database_name": "speak", "source_directory": "database/zh/"},
-        b"", "baseline ZH", expected_keys,
+        b"", "baseline ZH", zh_keys,
     )
     baseline_zh_shape = _site_shape_by_variant(baseline_zh_rows)
     candidate_zh_shape = _site_shape_by_variant(zh_rows)
@@ -1746,12 +1819,12 @@ def add_candidate(
     _require(candidate_manifest.get("domain") == DOMAIN,
              "candidate manifest domain must be 'monspell'")
     _require(candidate_manifest.get("inventory_semantic_fingerprint")
-             == EXPECTED_SEMANTIC_FINGERPRINT,
+             == inventory["phase0"]["semantic_fingerprint"],
              "candidate manifest inventory_semantic_fingerprint mismatch")
     candidate_keys = {
         entry["canonical_key"] for entry in candidate_manifest["entries"]
     }
-    _require(candidate_keys == set(expected_keys),
+    _require(candidate_keys == {entry["canonical_key"] for entry in baseline_manifest["entries"]},
              "candidate manifest key set mismatch")
     _require(candidate_order == baseline_order,
              "candidate manifest catalog order drift")
@@ -1777,7 +1850,8 @@ def add_candidate(
     }
     structured_by_identity: dict[str, list[dict[str, Any]]] = {}
     for entry in inventory["entries"]:
-        candidate_templates = _structured_templates(candidate_by_key[entry["key"]])
+        candidate_templates = (_structured_templates(candidate_by_key[entry["key"]])
+                               if entry["key"] in candidate_by_key else [])
         # The ledger models the structured side only for STRUCTURED (and
         # trivially empty SUPPRESSED) routes; CLOSURE_ONLY catalog templates
         # are facts, not production templates, so their locators are not

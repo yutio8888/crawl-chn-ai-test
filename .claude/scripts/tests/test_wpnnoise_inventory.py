@@ -85,18 +85,18 @@ def metadata_for(inventory: dict, counts: dict[str, int] | None = None) -> dict:
         "baseline": inventory["baseline_ref"],
         "chinese_production_dump_sha256":
             inventory["dumps"]["localized"]["artifact_sha256"],
-        "en_lua_site_count": MODULE.EXPECTED_EN_LUA_SITES,
-        "en_random_site_count": MODULE.EXPECTED_EN_RANDOM_SITES,
-        "en_variant_count": MODULE.EXPECTED_EN_VARIANT_COUNT,
+        "en_lua_site_count": inventory["scope"]["expected_en_lua_sites"],
+        "en_random_site_count": inventory["scope"]["expected_en_random_sites"],
+        "en_variant_count": inventory["scope"]["expected_en_variant_count"],
         "english_production_dump_sha256":
             inventory["dumps"]["english"]["artifact_sha256"],
         "glossary_sha256": inventory["glossary"]["sha256"],
         "identity_count": len(inventory["entries"]),
         "inventory_sha256": inventory["inventory_sha256"],
         "terminal_conclusion_counts": dict(sorted(counts.items())),
-        "zh_lua_site_count": MODULE.EXPECTED_ZH_LUA_SITES,
-        "zh_random_site_count": MODULE.EXPECTED_ZH_RANDOM_SITES,
-        "zh_variant_count": MODULE.EXPECTED_ZH_VARIANT_COUNT,
+        "zh_lua_site_count": inventory["scope"]["expected_zh_lua_sites"],
+        "zh_random_site_count": inventory["scope"]["expected_zh_random_sites"],
+        "zh_variant_count": inventory["scope"]["expected_zh_variant_count"],
     }
 
 
@@ -269,6 +269,43 @@ class WpnnoiseInventoryTests(unittest.TestCase):
         )
         self.assertEqual("speak", dump["database_name"])
         self.assertTrue(raw)
+
+    def test_current_exact_git_baseline_freezes_current_facts(self):
+        ref = "9770e911ee7d40b51a61a1717aecda148c983412"
+        en = exact_artifact(ref, "database/")
+        zh = exact_artifact(ref, "database/zh/")
+        en_path, zh_path = self.root / "current-en.json", self.root / "current-zh.json"
+        en_path.write_text(json.dumps(en, ensure_ascii=False), encoding="utf-8")
+        zh_path.write_text(json.dumps(zh, ensure_ascii=False), encoding="utf-8")
+        inventory = MODULE.build_inventory(ref, en_path, zh_path, ROOT / "docs/glossary.md")
+        self.assertEqual(69, len(inventory["entries"]))
+        self.assertEqual(742, inventory["scope"]["expected_en_variant_count"])
+        self.assertEqual(742, inventory["scope"]["expected_zh_variant_count"])
+        self.assertEqual({}, inventory["scope"]["asymmetric_variant_keys"])
+        scales = [entry for entry in inventory["entries"] if entry["key"] in MODULE.SCALES_ROOTS]
+        self.assertEqual(4, len(scales))
+        self.assertTrue(all(entry["route"] == "SCALES" and entry["lifecycle"] == "direct-production-root"
+                            for entry in scales))
+        cards = [card_for(inventory, entry) for entry in inventory["entries"]]
+        records = [metadata_for(inventory), *cards]
+        evidence = MODULE.validate_results(self.root / "current-review.md", inventory,
+                                           None, records=records)
+        self.assertEqual(69, len(evidence["cards"]))
+
+    def test_current_scales_consumer_shape_is_checked(self):
+        ref = "9770e911ee7d40b51a61a1717aecda148c983412"
+        source = MODULE._candidate_regular_blob(ref, "crawl-ref/source/art-func.h", "fixture")
+        with mock.patch.object(MODULE, "_candidate_regular_blob", return_value=source.replace(
+                b'getSpeakString("fire dragon occultist scales greeting")',
+                b'getSpeakString("unknown scales greeting")')):
+            with self.assertRaisesRegex(MODULE.InventoryError, "unsupported scales consumer"):
+                MODULE._scales_consumer_roots(ref, "negative")
+
+    def test_unknown_runtime_token_is_rejected(self):
+        artifact = copy.deepcopy(self.en_artifact)
+        entry = next(entry for entry in artifact["entries"] if entry["canonical_key"] == "weapon_noise")
+        entry["variants"][0]["raw_pattern"] += "@unknown_audit_token@"
+        self.bind_rejected(artifact, "database/", "unresolved runtime tokens")
 
     def test_exact_git_inventory_binds_frozen_shape_and_is_deterministic(self):
         first = self.inventory

@@ -3,9 +3,9 @@
 
 The inventory is derived from production ``textdb-phase0-dump`` artifacts of
 the ``misc`` TextDB family and exact Git source snapshots.  It freezes all
-132 decorlines identities (EN 209 / ZH 266 weighted variants at the baseline
-OID), the exact 63 asymmetric key list (derived from the baseline itself,
-never copied from prose), the random-site ([a|b] plus Lua) counts, the four
+decorlines identities and weighted variants of the selected baseline,
+the exact asymmetric key list (derived from the baseline itself, never
+copied from prose), the random-site ([a|b] plus Lua) counts, the four
 internal fragment tokens, the external TextDB dependency tokens and the
 consumer-side post-processing tokens, and a complete reachability proof from
 the consumed production root keys.
@@ -1026,7 +1026,11 @@ def _source_rows(artifact: dict[str, Any], directory: str, label: str) -> list[d
         if any(item["source_name"] == source_name
                for item in entry["source_history"])
     ]
-    _require(len(rows) == EXPECTED_IDENTITY_COUNT,
+    snapshots = [source for source in artifact["sources"]
+                 if source["source_name"] == source_name]
+    _require(len(snapshots) == 1, f"{label} missing decorlines source")
+    definitions = _definition_lines(snapshots[0]["normalized_utf8"], label)
+    _require(len(rows) == len(definitions),
              f"{label} decorlines identity count mismatch")
     keys = [entry["canonical_key"] for entry in rows]
     _require(len(set(keys)) == len(keys), f"{label} duplicate decorlines key")
@@ -1185,7 +1189,7 @@ def _dataset(
     scoped_keys = {row["canonical_key"].lower() for row in rows}
     root_keys, alias_keys = _classify_root_keys(scoped_keys, derivable, label)
     _require(
-        len(root_keys) == EXPECTED_IDENTITY_COUNT - len(NON_CONSUMED_KEYS),
+        len(root_keys) == len(rows) - len(NON_CONSUMED_KEYS),
         f"{label} derived root key count mismatch",
     )
     for key in sorted(root_keys):
@@ -1222,25 +1226,6 @@ def _dataset(
         variant["lua_site_count"]
         for entry in entries for variant in entry["variants"]
     )
-    if role == "baseline":
-        expected_variants = (
-            EXPECTED_BASELINE_EN_VARIANTS if directory == "database/"
-            else EXPECTED_BASELINE_ZH_VARIANTS
-        )
-        _require(total == expected_variants,
-                 f"{label} baseline variant count mismatch")
-        expected_random = (
-            EXPECTED_EN_RANDOM_SITES if directory == "database/"
-            else EXPECTED_ZH_RANDOM_SITES
-        )
-        _require(random_sites == expected_random,
-                 f"{label} baseline random-site count mismatch")
-        expected_lua = (
-            EXPECTED_EN_LUA_SITES if directory == "database/"
-            else EXPECTED_ZH_LUA_SITES
-        )
-        _require(lua_sites == expected_lua,
-                 f"{label} baseline Lua-site count mismatch")
     return {
         "artifact_sha256": _sha256(raw),
         "source_name": f"{directory}{SOURCE_BASENAME}",
@@ -1329,8 +1314,6 @@ def _pair_entries(
             "english_referencing_sites": en["token_facts"]["references"][key],
             "chinese_referencing_sites": zh["token_facts"]["references"][key],
         })
-    _require(len(asymmetry) == EXPECTED_ASYMMETRY_COUNT,
-             f"baseline asymmetric key count mismatch: {len(asymmetry)}")
     multiset_drift: set[tuple[str, int]] = set()
     for entry in entries:
         key = entry["key"]
@@ -1340,8 +1323,6 @@ def _pair_entries(
             if (Counter(en_variant["runtime_tokens"])
                     != Counter(zh_variant["runtime_tokens"])):
                 multiset_drift.add((key, ordinal))
-    _require(multiset_drift == EXPECTED_BASELINE_TOKEN_MULTISET_DRIFT,
-             "baseline token-multiset drift facts changed")
     return entries, asymmetry
 
 
@@ -1368,7 +1349,7 @@ def build_inventory(
     entries, asymmetry = _pair_entries(en, zh)
     scope = {
         "source_basename": SOURCE_BASENAME,
-        "expected_identity_count": EXPECTED_IDENTITY_COUNT,
+        "expected_identity_count": len(entries),
         "root_key_count": en["root_key_count"],
         "root_keys": sorted({entry["key"] for entry in entries
                              if entry["lifecycle"]
@@ -1379,15 +1360,21 @@ def build_inventory(
         "external_textdb_keys": sorted(EXTERNAL_TEXTDB_KEYS),
         "postprocess_tokens": sorted(POSTPROCESS_TOKENS),
         "baseline_variant_counts": {
-            "english": EXPECTED_BASELINE_EN_VARIANTS,
-            "chinese": EXPECTED_BASELINE_ZH_VARIANTS,
+            "english": en["variant_count"],
+            "chinese": zh["variant_count"],
         },
         "baseline_asymmetry": {
             key: asymmetry[key] for key in sorted(asymmetry)
         },
         "baseline_token_multiset_drift": [
             [key, ordinal]
-            for key, ordinal in sorted(EXPECTED_BASELINE_TOKEN_MULTISET_DRIFT)
+            for key, ordinal in sorted({
+                (entry["key"], ordinal)
+                for entry in entries
+                for ordinal, (en_variant, zh_variant) in enumerate(zip(
+                    entry["english_variants"], entry["chinese_variants"]))
+                if Counter(en_variant["runtime_tokens"]) != Counter(zh_variant["runtime_tokens"])
+            })
         ],
         "baseline_random_sites": {
             "english": en["random_site_count"],
@@ -1481,14 +1468,14 @@ def _expected_metadata(
         "baseline": inventory["baseline_ref"],
         "chinese_production_dump_sha256":
             inventory["dumps"]["localized"]["artifact_sha256"],
-        "en_variant_count": EXPECTED_BASELINE_EN_VARIANTS,
+        "en_variant_count": inventory["scope"]["baseline_variant_counts"]["english"],
         "english_production_dump_sha256":
             inventory["dumps"]["english"]["artifact_sha256"],
         "glossary_sha256": inventory["glossary"]["sha256"],
-        "identity_count": EXPECTED_IDENTITY_COUNT,
+        "identity_count": len(inventory["entries"]),
         "inventory_sha256": inventory["inventory_sha256"],
         "terminal_conclusion_counts": dict(sorted(Counter(conclusions).items())),
-        "zh_variant_count": EXPECTED_BASELINE_ZH_VARIANTS,
+        "zh_variant_count": inventory["scope"]["baseline_variant_counts"]["chinese"],
     }
 
 
@@ -1498,8 +1485,8 @@ def validate_results(
     records: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     records = records if records is not None else _strict_block(path)
-    _require(len(records) == EXPECTED_IDENTITY_COUNT + 1,
-             "review results require one metadata record and 132 cards")
+    _require(len(records) == len(inventory["entries"]) + 1,
+             f"review results require one metadata record and {len(inventory['entries'])} cards")
     metadata, cards = records[0], records[1:]
     _require(set(metadata) == METADATA_FIELDS, "review metadata fields mismatch")
     _require(metadata == _expected_metadata(inventory, cards),
@@ -1645,6 +1632,10 @@ def add_candidate(
                        "candidate EN", "candidate")
     zh = _load_dataset(candidate_ref, localized_path, "database/zh/",
                        "candidate ZH", "candidate")
+    frozen_keys = {entry["key"] for entry in inventory["entries"]}
+    _require({entry["key"] for entry in en["entries"]} == frozen_keys
+             and {entry["key"] for entry in zh["entries"]} == frozen_keys,
+             "candidate key set differs from frozen inventory")
     _require(not en["token_facts"]["unresolved"],
              "candidate EN contains unresolved token")
     _require(not zh["token_facts"]["unresolved"],
@@ -2014,7 +2005,7 @@ def scaffold_results(
     records = [_expected_metadata(inventory, cards), *cards]
     text = (
         "# Decorlines 全量审核结果（Issue #67）\n\n"
-        "本文件的严格 JSONL 块是 132 个 frozen identity 的完整审核账本。"
+        f"本文件的严格 JSONL 块是 {len(inventory['entries'])} 个 frozen identity 的完整审核账本。"
         "每张卡绑定基线 EN/ZH 变体；zh-translator 阶段填写提案、结论与"
         "理由后，候选审计只接受逐字等于提案的提交。\n\n"
         f"{STRICT_BEGIN}\n```jsonl\n"

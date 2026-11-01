@@ -155,7 +155,7 @@ def dump_source(language: str) -> str:
         blocks.append("%%%%")
         blocks.append(key)
         blocks.append("")
-        blocks.extend(patterns_by_key[key])
+        blocks.append("\n\n".join(patterns_by_key[key]))
         blocks.append("")
     return "\n".join(blocks) + "\n"
 
@@ -539,7 +539,14 @@ class MonspellInventoryTests(unittest.TestCase):
             "EXPECTED_SEMANTIC_FINGERPRINT": self.phase0["semantic_fingerprint"],
             "EXPECTED_SOURCE_FINGERPRINT": self.phase0["source_fingerprint"],
         }
-        with mock.patch.multiple(MODULE, **overrides):
+        # Synthetic manifests intentionally use readable fake fingerprints and
+        # minimal slot metadata. Full generator validation is covered by the
+        # unpatched exact-Git production regression and the current fixtures.
+        with mock.patch.multiple(MODULE, **overrides), \
+                mock.patch.object(MODULE, "validate_manifest", side_effect=lambda manifest, phase0: manifest), \
+                mock.patch.object(MODULE, "_baseline_anchor_sha256", return_value=self.anchor["artifact_sha256"]), \
+                mock.patch.object(MODULE, "_producer_consumer_facts", return_value=(
+                    MODULE.FROZEN_CONSUMER, MODULE.FROZEN_PRODUCERS)):
             yield
 
     def write(self, name: str, value: dict) -> Path:
@@ -688,16 +695,17 @@ class MonspellInventoryTests(unittest.TestCase):
             "production_zh_source": entry["production_zh_source"],
             "fallback_zh_source": entry["fallback_zh_source"],
             "lifecycle": MODULE.FROZEN_LIFECYCLE[route],
-            "actual_behavior": MODULE.FROZEN_ACTUAL_BEHAVIOR[route],
+            "actual_behavior": MODULE._current_behavior(route, self.inventory["scope"].get("producer_consumer", MODULE.FROZEN_CONSUMER)),
             "display_context": MODULE.FROZEN_DISPLAY_CONTEXT[route],
-            "consumer": copy.deepcopy(MODULE.FROZEN_CONSUMER),
-            "producers": copy.deepcopy(MODULE.FROZEN_PRODUCERS),
+            "consumer": copy.deepcopy(self.inventory["scope"].get("producer_consumer", MODULE.FROZEN_CONSUMER)),
+            "producers": copy.deepcopy(self.inventory["scope"].get("producers", MODULE.FROZEN_PRODUCERS)),
             "dependency_group": f"{entry['key']} 怪物施法消息路由与本地化",
             "glossary_authority": (
                 f"{self.inventory['glossary']['path']}@"
                 f"{self.inventory['glossary']['sha256']}"
             ),
-            "evidence_locations": MODULE._expected_evidence_locations(entry),
+            "evidence_locations": MODULE._expected_evidence_locations(
+                entry, self.inventory["scope"].get("producer_consumer", MODULE.FROZEN_CONSUMER)),
             "production_facts": MODULE._expected_production_facts(entry),
             "current_english": [v["english"] for v in entry["legacy_variants"]],
             "current_chinese": [v["chinese"] for v in entry["legacy_variants"]],
@@ -776,6 +784,138 @@ class MonspellInventoryTests(unittest.TestCase):
         self.inventory = self.build()
 
     # ------------------------------------------------------------- build
+
+    def current_production_inventory(self):
+        ref = "b4e7b1c9cdf9046368365bed476fae8a74a3026e"
+        en, zh = exact_artifact(ref, "en"), exact_artifact(ref, "zh")
+        inputs = {}
+        for name in ("monspell-phase0-inventory.json", "monspell-behavior-report.json",
+                     "monspell-candidate-anchor.json"):
+            raw = MODULE.shared._git_blob_at_oid(
+                ref, ".claude/data/message-overlay/" + name, "current fixture")
+            inputs[name] = self.write("current-" + name, json.loads(raw))
+        en_path, zh_path = self.write("current-production-en.json", en), self.write("current-production-zh.json", zh)
+        manifest_path = ROOT / ".claude/data/message-overlay/monspell.json"
+        inventory = MODULE.build_inventory(
+            ref, en_path, zh_path, inputs["monspell-phase0-inventory.json"], manifest_path,
+            inputs["monspell-behavior-report.json"], inputs["monspell-candidate-anchor.json"], self.glossary)
+        return inventory, en, zh, en_path, zh_path, manifest_path
+
+    def test_current_production_end_to_end_freezes_raw_and_consumer_boundary(self):
+        inventory, *_ = self.current_production_inventory()
+        self.assertEqual(283, len(inventory["entries"]))
+        self.assertEqual(264, len(inventory["scope"]["catalog_keys"]))
+        self.assertEqual(19, len(inventory["scope"]["raw_minus_catalog"]))
+        self.assertEqual({"STRUCTURED": 247, "LEGACY": 31, "SUPPRESSED": 5},
+                         inventory["scope"]["route_counts"])
+        self.assertEqual("crawl-ref/source/mon-cast.cc:9509",
+                         inventory["scope"]["producer_consumer"]["candidate_search"])
+        self.assertEqual("crawl-ref/source/mon-cast.cc:8978",
+                         inventory["scope"]["producers"][0]["location"])
+        self.inventory = inventory
+        evidence = MODULE.validate_results(self.write_results(self.ledger()), inventory, None)
+        self.assertEqual(283, len(evidence["cards"]))
+
+    def test_current_uncatalogued_candidate_binding_and_protocol_rejection(self):
+        inventory, en, zh, en_path, zh_path, manifest = self.current_production_inventory()
+        self.inventory = inventory
+        review = self.write_results(self.ledger())
+        ref = inventory["baseline_ref"]
+        # Isolate the data/proposal binding. Existing commit-gate tests cover
+        # the exact-clean descendant requirement, so this fixture reuses ref.
+        with mock.patch.object(MODULE.shared, "_require_candidate_commit"):
+            candidate = MODULE.add_candidate(inventory, ref, en_path, zh_path, manifest, review)
+        self.assertEqual(283, len(candidate))
+        MODULE.validate_results(review, inventory, candidate)
+        key = inventory["scope"]["raw_minus_catalog"][0]
+        mutated = copy.deepcopy(zh)
+        row = next(entry for entry in mutated["entries"] if entry["canonical_key"] == key)
+        old = row["variants"][0]["raw_pattern"]
+        source = next(source for source in mutated["sources"]
+                      if source["source_name"] == "database/zh/monspell.txt")
+        text = source["normalized_utf8"]
+        key_line = MODULE._definition_lines(text, "candidate fixture")[key]
+        start = sum(len(line) for line in text.splitlines(keepends=True)[:key_line])
+        position = text.find(old, start)
+        self.assertGreaterEqual(position, start)
+        source["normalized_utf8"] = text[:position] + old + "@target@" + text[position + len(old):]
+        derived_zh = MODULE.shared._derive_scoped_from_sources(
+            mutated["sources"], "database/zh/", "candidate mutation", source_basename="monspell.txt")
+        by_key = {entry["canonical_key"]: entry for entry in derived_zh["entries"]}
+        mutated["entries"] = [by_key.get(entry["canonical_key"], entry) for entry in mutated["entries"]]
+        bad_path = self.write("current-uncatalogued-token-drift.json", mutated)
+        with mock.patch.object(MODULE.shared, "_require_candidate_commit"), \
+                mock.patch.object(MODULE.shared, "_derive_scoped_dump", side_effect=[
+                    self.derived(en), derived_zh, self.derived(en), self.derived(zh)]):
+            with self.assertRaisesRegex(MODULE.InventoryError, "candidate ZH token drift"):
+                MODULE.add_candidate(inventory, ref, en_path, bad_path, manifest, review)
+
+    def test_current_raw_namespace_and_valid_catalog_subset(self):
+        ref = "9770e911ee7d40b51a61a1717aecda148c983412"
+        en, zh = exact_artifact(ref, "en"), exact_artifact(ref, "zh")
+        phase0 = build_phase0_inventory(en)
+        keys = {entry["key"] for entry in phase0["entries"]}
+        self.assertEqual(283, len(keys))
+        self.assertEqual(393, phase0["summary"]["variants"])
+        manifest, _, _ = MODULE._manifest_snapshot_at_oid(
+            ref, ROOT / ".claude/data/message-overlay/monspell.json", "current fixture")
+        # Rebind only fixture metadata to the independently rebuilt raw corpus;
+        # no manifest/anchor/generated asset is written by this test.
+        manifest["inventory_semantic_fingerprint"] = phase0["semantic_fingerprint"]
+        MODULE.validate_manifest(manifest, phase0)
+        catalog = MODULE._catalog_binding(manifest, keys, "current fixture")
+        self.assertEqual(262, len(catalog))
+        self.assertEqual(21, len(keys - catalog.keys()))
+        _, en_rows = MODULE._dump_binding(en, b"fixture EN", "current EN", keys)
+        _, zh_rows = MODULE._dump_binding(zh, b"fixture ZH", "current ZH", keys)
+        raw = MODULE._paired_entries(en_rows, zh_rows, "current")
+        self.assertEqual(keys, {entry["key"] for entry in raw})
+        for key in ("shadow creatures strange machine cast", "summon illusion strange machine cast"):
+            legacy = next(entry for entry in raw if entry["key"] == key)
+            entry = MODULE._identity_entry(key, catalog.get(key), [], legacy, set())
+            self.assertEqual("LEGACY", entry["route"])
+            self.assertIsNone(entry["entry_mode"])
+            self.assertEqual([], entry["structured_templates"])
+            self.assertEqual("zh/monspell.txt", entry["production_zh_source"])
+        bad = copy.deepcopy(manifest)
+        bad["entries"][0]["canonical_fingerprint"] = "fnv1a64:0000000000000000"
+        with self.assertRaises(MODULE.ManifestError):
+            MODULE.validate_manifest(bad, phase0)
+
+    def test_catalog_subset_rejects_duplicates_and_out_of_scope_keys(self):
+        manifest = self.candidate_manifest(alpha_zh=None)
+        duplicated = copy.deepcopy(manifest)
+        duplicated["entries"].append(copy.deepcopy(duplicated["entries"][0]))
+        with self.assertRaisesRegex(MODULE.InventoryError, "duplicate catalog key"):
+            MODULE._catalog_binding(duplicated, set(KEYS), "negative")
+        manifest["entries"][0]["canonical_key"] = "unknown audit cast"
+        with self.assertRaisesRegex(MODULE.InventoryError, "catalog key set mismatch"):
+            MODULE._catalog_binding(manifest, set(KEYS), "negative")
+
+    def test_baseline_freezes_real_blockers_and_candidate_fails_closed(self):
+        report = copy.deepcopy(self.report)
+        report["phase2_ready"] = False
+        report["phase2_blockers"] = ["2 reachable behavior occurrences still use the legacy parser"]
+        report["coverage"]["catalog_coverage_complete"] = False
+        inventory = self.build(report=report)
+        self.assertFalse(inventory["behavior_report"]["phase2_ready"])
+        self.assertEqual(report["phase2_blockers"], inventory["behavior_report"]["phase2_blockers"])
+        with mock.patch.object(MODULE.shared, "_require_candidate_commit"):
+            with self.assertRaisesRegex(MODULE.InventoryError, "candidate requires phase2_ready"):
+                MODULE.add_candidate(inventory, CANDIDATE, self.root / "missing-en.json",
+                                     self.root / "missing-zh.json", self.manifest_path,
+                                     self.root / "review.md")
+
+    def test_raw_pairing_preserves_one_sided_identity(self):
+        keys = set(KEYS)
+        _, en_rows = MODULE._dump_binding(self.en_dump, b"EN", "EN", keys)
+        _, zh_rows = MODULE._dump_binding(self.zh_dump, b"ZH", "ZH", keys)
+        zh_rows = [row for row in zh_rows if row["key"] != "alpha strike cast"]
+        paired = MODULE._paired_entries(en_rows, zh_rows, "one-sided")
+        self.assertEqual(keys, {entry["key"] for entry in paired})
+        alpha = next(entry for entry in paired if entry["key"] == "alpha strike cast")
+        self.assertEqual(2, alpha["english_variant_count"])
+        self.assertIsNone(alpha["chinese_source_line"])
 
     def test_build_binds_catalog_phase0_and_legacy(self):
         first = self.inventory
@@ -881,7 +1021,7 @@ class MonspellInventoryTests(unittest.TestCase):
                          rebuilt_alpha["structured_templates"])
 
     def test_consistency_assertions_fail_closed(self):
-        # 1. catalog key set must equal phase0 keys
+        # 1. A catalog subset uses the real uncatalogued LEGACY fallback.
         manifest_dir = self.make_manifest_dir("manifest-drift")
         header, fragments = fixture_manifest(self.phase0["semantic_fingerprint"])
         fragments["monspell/000-a.json"]["entries"] = [
@@ -897,9 +1037,16 @@ class MonspellInventoryTests(unittest.TestCase):
             (manifest_dir / name).write_text(
                 json.dumps(fragment, ensure_ascii=False), encoding="utf-8")
         drift_baseline = commit_manifest_dir(manifest_dir)
-        self.assert_rejected("catalog key set mismatch",
-                             manifest_path=manifest_dir / "monspell.json",
-                             baseline_ref=drift_baseline)
+        subset = self.build(manifest_path=manifest_dir / "monspell.json",
+                            baseline_ref=drift_baseline)
+        fallback = next(entry for entry in subset["entries"]
+                        if entry["key"] == "alpha strike cast")
+        self.assertEqual("LEGACY", fallback["route"])
+        self.assertIsNone(fallback["entry_mode"])
+        self.assertIsNone(fallback["primary_materialization_policy"])
+        self.assertEqual([], fallback["structured_templates"])
+        self.assertEqual(["alpha strike cast"], subset["scope"]["raw_minus_catalog"])
+        self.assertEqual(len(KEYS), len(subset["entries"]))
 
         # 2. phase2 readiness
         report = copy.deepcopy(self.report)
@@ -1037,7 +1184,8 @@ class MonspellInventoryTests(unittest.TestCase):
         })
         with self.patched():
             with self.assertRaisesRegex(MODULE.InventoryError, "variant count differs"):
-                MODULE._paired_entries(en_rows, zh_rows, "fixture")
+                MODULE._paired_entries(en_rows, zh_rows, "fixture",
+                                       expected_asymmetry=MODULE.ASYMMETRIC_VARIANT_KEYS)
 
         # weight drift on a paired ordinal
         zh = copy.deepcopy(self.zh_dump)

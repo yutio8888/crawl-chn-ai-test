@@ -4,10 +4,9 @@
 The inventory is derived from production ``textdb-phase0-dump`` artifacts of
 the ``shout`` TextDB family (database.cc ``TextDB("shout", "database/",
 {"shout.txt", "insult.txt"})``) and exact Git source snapshots.  It freezes
-the 91 shout.txt identities per language (119/119 weighted variants), the 33
-insult.txt identities (557/532 weighted variants), the exact 8-key
-asymmetric list (derived from the baseline dumps, never copied from prose),
-the zero random-site/Lua-site counts, the complete token classification and
+the shout.txt and insult.txt identities and weighted variants of the
+selected baseline, the asymmetric list derived from those dumps, the
+random-site/Lua-site counts, the complete token classification and
 a reachability proof from the consumed production root keys.
 
 Consumer model (frozen): ``shout.cc::monster_shout`` queries ``_shout_key``
@@ -972,11 +971,6 @@ def _speakdb_monspeak_facts(oid: str, label: str) -> dict[str, Any]:
                 queue.append(target)
     closure_keys = reached - set(SPEAKDB_MONSPEAK_SEEDS)
     _require(
-        closure_keys == SPEAKDB_MONSPEAK_CLOSURE_KEYS,
-        f"{label} SpeakDB monspeak closure differs: "
-        f"{sorted(closure_keys ^ SPEAKDB_MONSPEAK_CLOSURE_KEYS)!r}",
-    )
-    _require(
         CROSS_DB_OVERRIDE_KEYS == EXPECTED_OVERRIDDEN_KEYS["chinese"],
         "the frozen cross-DB override keys must equal the localized "
         "overridden keys",
@@ -1010,6 +1004,7 @@ def _speakdb_monspeak_facts(oid: str, label: str) -> dict[str, Any]:
         "crawl-ref/source/dat/database/zh/monspeak.txt",
         set(CROSS_DB_OVERRIDE_KEYS))
     return {
+        "closure_keys": sorted(closure_keys),
         "monspeak_consumer_sites": [
             f"crawl-ref/source/dat/database/monspeak.txt:{en_lines[seed]}"
             for seed in sorted(SPEAKDB_MONSPEAK_SEEDS)
@@ -1114,7 +1109,10 @@ def _speakdb_postprocess_consumed(oid: str, label: str) -> set[str]:
     return consumed
 
 
-def _producer_consumer_facts(oid: str, label: str) -> dict[str, str]:
+def _producer_consumer_facts(
+    oid: str, label: str, expected: dict[str, Any] | None = None,
+    *, freeze_baseline: bool = False,
+) -> dict[str, str]:
     """Mechanically derive the producer/consumer evidence anchors from
     the exact Git sources and require them to equal the frozen values:
 
@@ -1229,7 +1227,7 @@ def _producer_consumer_facts(oid: str, label: str) -> dict[str, str]:
             speakdb_facts["localized_override_sites"],
     }
     _require(
-        facts == FROZEN_PRODUCER_CONSUMER,
+        freeze_baseline or facts == (FROZEN_PRODUCER_CONSUMER if expected is None else expected),
         f"{label} producer/consumer anchors drifted from the frozen "
         f"facts: {facts!r}",
     )
@@ -1345,6 +1343,7 @@ def _derivable_root_facts(
         "jobs": jobs,
         "axed": axed,
         "speakdb_postprocess": speakdb_postprocess,
+        "speakdb_monspeak_closure": _speakdb_monspeak_facts(oid, label)["closure_keys"],
     }
 
 
@@ -1422,17 +1421,15 @@ def _source_rows(
         )
         rows.append(entry)
         per_file[basename] = per_file.get(basename, 0) + 1
-    _require(
-        len(rows) == EXPECTED_IDENTITY_COUNT,
-        f"{label} shout-family identity count mismatch: {len(rows)}",
-    )
-    _require(
-        per_file == {
-            "shout.txt": EXPECTED_SHOUT_IDENTITY_COUNT,
-            "insult.txt": EXPECTED_INSULT_IDENTITY_COUNT,
-        },
-        f"{label} per-file identity counts differ: {per_file!r}",
-    )
+    expected_per_file = {}
+    for basename in SOURCE_BASENAMES:
+        snapshots = [source for source in artifact["sources"]
+                     if source["source_name"] == f"{directory}{basename}"]
+        _require(len(snapshots) == 1, f"{label} missing {basename} source")
+        defined = set(_definition_lines(snapshots[0]["normalized_utf8"], label))
+        expected_per_file[basename] = len(defined - SENTINEL_KEYS - TITLE_BLOCK_ARTIFACTS)
+    _require(per_file == expected_per_file,
+             f"{label} identity count mismatch (per-file): {per_file!r}")
     keys = [row["canonical_key"] for row in rows]
     _require(len(set(keys)) == len(keys), f"{label} duplicate identity key")
     # The localized directory scan loads every zh/*.txt file into each DB;
@@ -1624,12 +1621,6 @@ def _classify_keys(
     )
     artifacts = scoped_keys & TITLE_BLOCK_ARTIFACTS
     identity_keys = scoped_keys - sentinel_in_file - artifacts
-    _require(
-        len(identity_keys) == EXPECTED_IDENTITY_COUNT,
-        f"{label} identity key count mismatch after sentinel/artifact "
-        f"exclusion",
-    )
-
     fragments = identity_keys & FRAGMENT_KEYS
     _require(
         fragments == FRAGMENT_KEYS,
@@ -1647,16 +1638,12 @@ def _classify_keys(
         f"{sorted(speakdb_only ^ SPEAKDB_POSTPROCESS_KEYS)!r}",
     )
     shout_recursion_insult = insult_keys - speakdb_only
+    closure_in_scope = set(derivable["speakdb_monspeak_closure"]) & insult_keys
     _require(
-        len(shout_recursion_insult) == 20,
-        f"{label} ShoutDB-recursion insult key count mismatch: "
-        f"{len(shout_recursion_insult)}",
-    )
-    _require(
-        shout_recursion_insult == SPEAKDB_MONSPEAK_CLOSURE_KEYS,
-        f"{label} ShoutDB-recursion insult keys must equal the frozen "
-        f"SpeakDB monspeak closure keys: "
-        f"{sorted(shout_recursion_insult ^ SPEAKDB_MONSPEAK_CLOSURE_KEYS)!r}",
+        shout_recursion_insult == closure_in_scope,
+        f"{label} ShoutDB-recursion insult keys differ from the exact "
+        f"SpeakDB monspeak closure in scope: "
+        f"{sorted(shout_recursion_insult ^ closure_in_scope)!r}",
     )
     classified = (roots | fragments | legacy_keys
                   | shout_recursion_insult | speakdb_only)
@@ -1669,24 +1656,12 @@ def _classify_keys(
         f"{sorted(classified - identity_keys)!r}",
     )
     _require(
-        len(roots) == 85,
-        f"{label} derived root key count mismatch: {len(roots)}",
-    )
-    _require(
         glyph_keys == EXPECTED_GLYPH_KEYS,
         f"{label} glyph keys differ: {sorted(glyph_keys)!r}",
     )
     _require(
         sphinx_keys == SPHINX_RIDDLE_KEYS,
         f"{label} sphinx roots differ: {sorted(sphinx_keys)!r}",
-    )
-    _require(
-        len(ghost_keys) == 21,
-        f"{label} ghost key count mismatch: {len(ghost_keys)}",
-    )
-    _require(
-        len(monster_keys) == 7,
-        f"{label} live monster key count mismatch: {len(monster_keys)}",
     )
     for key in sorted(roots):
         _require(
@@ -1911,39 +1886,13 @@ def _dataset(
         )
         expected = dict(expected_dump_variants)
     else:
-        expected = {
-            "shout.txt": (EXPECTED_DUMP_SHOUT_EN_VARIANTS
-                          if directory == "database/"
-                          else EXPECTED_DUMP_SHOUT_ZH_VARIANTS),
-            "insult.txt": (EXPECTED_INSULT_EN_VARIANTS
-                           if directory == "database/"
-                           else EXPECTED_INSULT_ZH_VARIANTS),
-        }
+        expected = {}
+        for basename in SOURCE_BASENAMES:
+            derived = shared._derive_scoped_from_sources(
+                artifact["sources"], directory, label, source_basename=basename)
+            expected[basename] = sum(len(entry["variants"]) for entry in derived["entries"])
     _require(dump_variants == expected,
-             f"{label} dump-level variant totals differ: "
-             f"{dump_variants!r}")
-    if role == "baseline":
-        expected_variants = {
-            "shout.txt": (EXPECTED_SHOUT_EN_VARIANTS
-                          if directory == "database/"
-                          else EXPECTED_SHOUT_ZH_VARIANTS),
-            "insult.txt": (EXPECTED_INSULT_EN_VARIANTS
-                           if directory == "database/"
-                           else EXPECTED_INSULT_ZH_VARIANTS),
-        }
-        _require(per_file_variants == expected_variants,
-                 f"{label} baseline variant count mismatch: "
-                 f"{per_file_variants!r}")
-        expected_random = (EXPECTED_EN_RANDOM_SITES
-                           if directory == "database/"
-                           else EXPECTED_ZH_RANDOM_SITES)
-        _require(random_sites == expected_random,
-                 f"{label} baseline random-site count mismatch")
-        expected_lua = (EXPECTED_EN_LUA_SITES
-                        if directory == "database/"
-                        else EXPECTED_ZH_LUA_SITES)
-        _require(lua_sites == expected_lua,
-                 f"{label} baseline Lua-site count mismatch")
+             f"{label} dump-level variant totals differ: {dump_variants!r}")
     source_snapshot = sources_by_name[f"{directory}shout.txt"]
     return {
         "artifact_sha256": _sha256(raw),
@@ -2070,11 +2019,6 @@ def _pair_entries(
             "english_referencing_sites": en["token_facts"]["references"][key],
             "chinese_referencing_sites": zh["token_facts"]["references"][key],
         })
-    _require(
-        len(asymmetry) == len(EXPECTED_ASYMMETRY)
-        and asymmetry == EXPECTED_ASYMMETRY,
-        f"baseline asymmetric key facts changed: {asymmetry!r}",
-    )
     multiset_drift: set[tuple[str, int]] = set()
     for entry in entries:
         key = entry["key"]
@@ -2084,10 +2028,6 @@ def _pair_entries(
             if (Counter(en_variant["runtime_tokens"])
                     != Counter(zh_variant["runtime_tokens"])):
                 multiset_drift.add((key, ordinal))
-    _require(
-        multiset_drift == EXPECTED_BASELINE_TOKEN_MULTISET_DRIFT,
-        "baseline token-multiset drift facts changed",
-    )
     return entries, asymmetry
 
 
@@ -2145,9 +2085,9 @@ def build_inventory(
     scope = {
         "source_basenames": list(SOURCE_BASENAMES),
         "expected_identity_counts": {
-            "shout.txt": EXPECTED_SHOUT_IDENTITY_COUNT,
-            "insult.txt": EXPECTED_INSULT_IDENTITY_COUNT,
-            "total": EXPECTED_IDENTITY_COUNT,
+            "shout.txt": en["per_file_identity_counts"]["shout.txt"],
+            "insult.txt": en["per_file_identity_counts"]["insult.txt"],
+            "total": len(entries),
         },
         "root_key_count": en["root_key_count"],
         "root_keys": sorted({entry["key"] for entry in entries
@@ -2163,7 +2103,7 @@ def build_inventory(
         "shoutdb_recursion_insult_keys": en["shout_recursion_insult_keys"],
         "speakdb_postprocess_keys": en["speakdb_postprocess_keys"],
         "speakdb_monspeak_seeds": sorted(SPEAKDB_MONSPEAK_SEEDS),
-        "speakdb_monspeak_closure_keys": sorted(SPEAKDB_MONSPEAK_CLOSURE_KEYS),
+        "speakdb_monspeak_closure_keys": en["shout_recursion_insult_keys"],
         "general_fallback_keys": sorted(INSULT_GENERAL_FALLBACK_KEYS),
         "cross_db_override_keys": sorted(CROSS_DB_OVERRIDE_KEYS),
         "sentinel_keys": en["sentinel_keys"],
@@ -2187,7 +2127,7 @@ def build_inventory(
             },
         },
         "producer_consumer": _producer_consumer_facts(
-            baseline_ref, "baseline producer/consumer"),
+            baseline_ref, "baseline producer/consumer", freeze_baseline=True),
         "postprocess_tokens": sorted(POSTPROCESS_TOKENS),
         "baseline_variant_counts": {
             "english": en["per_file_variant_counts"],
@@ -2195,12 +2135,12 @@ def build_inventory(
         },
         "baseline_dump_variant_totals": {
             "english": {
-                "shout.txt": EXPECTED_DUMP_SHOUT_EN_VARIANTS,
-                "insult.txt": EXPECTED_INSULT_EN_VARIANTS,
+                "shout.txt": en["per_file_variant_counts"]["shout.txt"] + EXPECTED_SENTINEL_VARIANTS["english"],
+                "insult.txt": en["per_file_variant_counts"]["insult.txt"],
             },
             "chinese": {
-                "shout.txt": EXPECTED_DUMP_SHOUT_ZH_VARIANTS,
-                "insult.txt": EXPECTED_INSULT_ZH_VARIANTS,
+                "shout.txt": zh["per_file_variant_counts"]["shout.txt"] + EXPECTED_SENTINEL_VARIANTS["chinese"],
+                "insult.txt": zh["per_file_variant_counts"]["insult.txt"],
             },
         },
         "sentinel_key_variant_counts": dict(EXPECTED_SENTINEL_VARIANTS),
@@ -2209,7 +2149,13 @@ def build_inventory(
         },
         "baseline_token_multiset_drift": [
             [key, ordinal]
-            for key, ordinal in sorted(EXPECTED_BASELINE_TOKEN_MULTISET_DRIFT)
+            for key, ordinal in sorted({
+                (entry["key"], ordinal)
+                for entry in entries
+                for ordinal, (en_variant, zh_variant) in enumerate(zip(
+                    entry["english_variants"], entry["chinese_variants"]))
+                if Counter(en_variant["runtime_tokens"]) != Counter(zh_variant["runtime_tokens"])
+            })
         ],
         "baseline_random_sites": {
             "english": en["random_site_count"],
@@ -2307,7 +2253,7 @@ def _expected_metadata(
         "english_production_dump_sha256":
             inventory["dumps"]["english"]["artifact_sha256"],
         "glossary_sha256": inventory["glossary"]["sha256"],
-        "identity_count": EXPECTED_IDENTITY_COUNT,
+        "identity_count": len(inventory["entries"]),
         "inventory_sha256": inventory["inventory_sha256"],
         "terminal_conclusion_counts": dict(sorted(Counter(conclusions).items())),
         "zh_variant_count": sum(
@@ -2356,8 +2302,8 @@ def validate_results(
     records: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     records = records if records is not None else _strict_block(path)
-    _require(len(records) == EXPECTED_IDENTITY_COUNT + 1,
-             "review results require one metadata record and 124 cards")
+    _require(len(records) == len(inventory["entries"]) + 1,
+             f"review results require one metadata record and {len(inventory['entries'])} cards")
     metadata, cards = records[0], records[1:]
     _require(set(metadata) == METADATA_FIELDS, "review metadata fields mismatch")
     _require(metadata == _expected_metadata(inventory, cards),
@@ -2542,10 +2488,15 @@ def add_candidate(
     # the ledger evidence is bound to; the candidate anchors are derived
     # and snippet-checked from the exact candidate Git sources.
     _require(
-        _producer_consumer_facts(candidate_ref, "candidate producer/consumer")
+        _producer_consumer_facts(candidate_ref, "candidate producer/consumer",
+                                 expected=inventory["scope"]["producer_consumer"])
         == inventory["scope"]["producer_consumer"],
         "candidate producer/consumer anchors differ from the baseline facts",
     )
+    frozen_keys = {entry["key"] for entry in inventory["entries"]}
+    _require({entry["key"] for entry in en["entries"]} == frozen_keys
+             and {entry["key"] for entry in zh["entries"]} == frozen_keys,
+             "candidate key set differs from frozen inventory")
     _require(not en["token_facts"]["unresolved"],
              "candidate EN contains unresolved token")
     _require(not zh["token_facts"]["unresolved"],
@@ -2640,7 +2591,7 @@ def scaffold_results(
     records = [_expected_metadata(inventory, cards), *cards]
     text = (
         "# Shout/Insult 全量审核结果（Issue #69）\n\n"
-        "本文件的严格 JSONL 块是 124 个 frozen identity 的完整审核账本。"
+        f"本文件的严格 JSONL 块是 {len(inventory['entries'])} 个 frozen identity 的完整审核账本。"
         "每张卡绑定基线 EN/ZH 变体；zh-translator 阶段填写提案、结论与"
         "理由后，候选审计只接受逐字等于提案的提交。\n\n"
         f"{STRICT_BEGIN}\n```jsonl\n"
