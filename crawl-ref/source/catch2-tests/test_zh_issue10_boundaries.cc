@@ -8,10 +8,12 @@
 #include "clua.h"
 #include "database.h"
 #include "describe.h"
+#include "directn.h"
 #include "dungeon.h"
 #include "english.h"
 #include "env.h"
 #include "format.h"
+#include "ghost.h"
 #include "i18n.h"
 #include "item-prop.h"
 #include "item-status-flag-type.h"
@@ -28,10 +30,12 @@
 #include "mutation.h"
 #include "options.h"
 #include "player.h"
+#include "player-notices.h"
 #include "positional_format.h"
 #include "player-equip.h"
 #include "random.h"
 #include "ranged-attack.h"
+#include "religion-enum.h"
 #include "spl-monench.h"
 #include "spl-cast.h"
 #include "spl-selfench.h"
@@ -1011,6 +1015,89 @@ TEST_CASE("trunk sync jademantle crystal lists use language-specific separators"
                    : "Your earthen, fiery and airy crystals are infused with energy.");
             INFO(actual);
             CHECK(actual == expected);
+        }
+    }
+}
+
+TEST_CASE("monster encounter equipment retains its subject across locales",
+          "[zh-translation][monster-equipment-subject]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    // One monster, distinct monsters, grouped monsters, grouped dancing
+    // weapons, a female unique, and a singular neutral-gender character.
+    const int scenario = GENERATE(0, 1, 2, 3, 4, 5);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    const int first_slot = get_mitm_slot();
+    REQUIRE(first_slot != NON_ITEM);
+    unwind_var<item_def> restore_first(env.item[first_slot]);
+    item_def &first_weapon = env.item[first_slot];
+    first_weapon.base_type = OBJ_WEAPONS;
+    first_weapon.sub_type = WPN_DAGGER;
+    first_weapon.quantity = 1;
+    first_weapon.brand = SPWPN_DISTORTION;
+    const int second_slot = get_mitm_slot();
+    REQUIRE(second_slot != NON_ITEM);
+    REQUIRE(second_slot != first_slot);
+    unwind_var<item_def> restore_second(env.item[second_slot]);
+    env.item[second_slot] = first_weapon;
+    env.item[second_slot].sub_type = scenario == 3 ? WPN_DAGGER : WPN_SPEAR;
+
+    const monster_type type = scenario == 3 ? MONS_DANCING_WEAPON
+                              : scenario == 4 ? MONS_JESSICA : MONS_ORC;
+    monster *first = world.place(type, coord_def(20, 21));
+    first->inv[MSLOT_WEAPON] = first_slot;
+    first->flags |= MF_WAS_IN_VIEW;
+    if (scenario == 5)
+        first->props[MON_GENDER_KEY] = GENDER_NEUTRAL;
+    vector<monster *> announced = {first};
+    if (scenario >= 1 && scenario <= 3)
+    {
+        monster *second = world.place(scenario == 1 ? MONS_HOBGOBLIN : type,
+                                      coord_def(21, 20));
+        second->inv[MSLOT_WEAPON] = second_slot;
+        second->flags |= MF_WAS_IN_VIEW;
+        announced.push_back(second);
+    }
+    if (scenario == 3)
+    {
+        for (monster *mon : announced)
+        {
+            ghost_demon ghost;
+            ghost.init_dancing_weapon(*mon->mslot_item(MSLOT_WEAPON), 100);
+            mon->set_ghost(ghost);
+            mon->ghost_demon_init();
+        }
+    }
+
+    vector<monster *> no_new_monsters;
+    const string emitted = observe_message([&] {
+        notice_new_monsters(no_new_monsters, announced);
+    });
+    CAPTURE(language, scenario, emitted);
+    for (monster *mon : announced)
+    {
+        const bool single = announced.size() == 1;
+        const auto level = scenario == 3 ? DESC_WEAPON
+                           : single ? DESC_NOTEWORTHY_AND_WEAPON : DESC_NOTEWORTHY;
+        const string equipment = get_monster_equipment_desc(monster_info(mon),
+                                                            level, DESC_NONE);
+        REQUIRE_FALSE(equipment.empty());
+        string subject = single ? mon->pronoun(PRONOUN_SUBJECTIVE)
+                         : scenario == 3 ? T_("There is")
+                         : mon->full_name(scenario == 1 ? DESC_THE : DESC_A);
+        if (language == lang_t::EN)
+        {
+            subject = uppercase_first(subject);
+            if (scenario != 3)
+                subject += scenario == 5 ? " are" : " is";
+            CHECK(emitted.find(subject + " " + equipment + ".") != string::npos);
+        }
+        else
+        {
+            CHECK(emitted.find(subject + equipment + "。") != string::npos);
+            CHECK(emitted.find(" is ") == string::npos);
+            CHECK(emitted.find(" are ") == string::npos);
         }
     }
 }
