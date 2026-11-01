@@ -2364,7 +2364,7 @@ void hints_observe_cell(const coord_def& gc)
     const int it = you.visible_igrd(gc);
     if (it != NON_ITEM)
     {
-        const item_def& item(env.item[it]);
+        const item_def& item = env.item[it];
 
         if (Options.feature_item_highlight != CHATTR_NORMAL
             && (is_feature('>', gc) || is_feature('<', gc)))
