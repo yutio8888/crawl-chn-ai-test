@@ -142,8 +142,14 @@ static void _moveto_maybe_repel_stairs()
 
         if (slide_feature_over(you.pos()))
         {
-            mprf(T_("%s slips away as you move towards %s!"), stair_str.c_str(),
-                 prep.c_str());
+            const char* key = prep == "onto"
+                ? N_("%s slips away as you move onto it!")
+                : prep == "under" ? N_("%s slips away as you move under it!")
+                : prep == "over" ? N_("%s slips away as you move over it!")
+                : prep == "inside" ? N_("%s slips away as you move inside it!")
+                : prep == "into" ? N_("%s slips away as you move into it!")
+                : N_("%s slips away as you move beside it!");
+            mprf(T_(key), stair_str.c_str());
 
             if (player_in_a_dangerous_place() && one_chance_in(5))
                 xom_is_stimulated(25);
@@ -3798,27 +3804,27 @@ static void _display_movement_speed()
     const bool swift  = you.duration[DUR_SWIFTNESS] > 0;
     const bool antiswift = you.duration[DUR_ANTISWIFT] > 0;
 
-    _display_char_status(move_cost, T_("Your %s speed is %s%s%s"),
+    _display_char_status(move_cost, C_("movement speed", "Your %s speed is %s%s%s"),
           // order is important for these:
           (swim)    ? T_("swimming") :
           (water)   ? T_("wading") :
           (fly)     ? T_("flying")
                     : T_("moving"),
 
-          (swift) ? T_("wind-assisted") :
-          (antiswift) ? T_("wind-hindered") : "",
+          (swift) ? C_("movement speed", "wind-assisted") :
+          (antiswift) ? C_("movement speed", "wind-hindered") : "",
 
-          (swift) ? ((move_cost >= 10) ? T_(", but still")
-                                       : T_("and")) :
-          (antiswift) ? ((move_cost <= 10) ? T_(", but still")
-                                           : T_("and"))
+          (swift) ? ((move_cost >= 10) ? C_("movement speed", ", but still")
+                                       : C_("movement speed", "and")) :
+          (antiswift) ? ((move_cost <= 10) ? C_("movement speed", ", but still")
+                                           : C_("movement speed", "and"))
                       : "",
 
-          (move_cost <   8) ? T_("very fast") :
-          (move_cost <  10) ? T_("fast") :
-          (move_cost == 10) ? T_("average") :
-          (move_cost <  13) ? T_("slow")
-                            : T_("very slow"));
+          (move_cost <   8) ? C_("movement speed", "very fast") :
+          (move_cost <  10) ? C_("movement speed", "fast") :
+          (move_cost == 10) ? C_("movement speed", "average") :
+          (move_cost <  13) ? C_("movement speed", "slow")
+                            : C_("movement speed", "very slow"));
 }
 
 static void _display_tohit()
@@ -3870,7 +3876,7 @@ static void _display_attack_delay(const item_def *offhand)
     mprf(T_("Your attack delay is about %.1f%s%s."),
          delay / 10,
          at_min_delay ?
-            " (and cannot be improved with additional weapon skill)" : "",
+            T_(" (and cannot be improved with additional weapon skill)") : "",
          penalty_msg.c_str());
 }
 
@@ -5568,7 +5574,7 @@ bool invis_allowed(bool quiet, string *fail_reason, bool include_temp)
 
     if (you.backlit(true, false))
     {
-        msg = "Your body glows too brightly to become invisible.";
+        msg = T_("Your body glows too brightly to become invisible.");
         success = false;
     }
     else if (you.haloed() && you.halo_radius() != -1)
@@ -5576,35 +5582,39 @@ bool invis_allowed(bool quiet, string *fail_reason, bool include_temp)
         vector<string> sources;
 
         if (include_temp && you.unrand_equipped(UNRAND_EOS))
-            sources.push_back("weapon");
+            sources.push_back(T_("weapon"));
 
         if (include_temp && you.unrand_equipped(UNRAND_VAINGLORY))
-            sources.push_back("crown");
+            sources.push_back(T_("crown"));
 
         if (include_temp && you.wearing_ego(OBJ_ARMOUR, SPARM_LIGHT))
-            sources.push_back("armour");
+            sources.push_back(T_("armour"));
 
         if (include_temp && you.props.exists(WU_JIAN_HEAVENLY_STORM_KEY)
             || you.religion == GOD_SHINING_ONE) // non-temp
         {
-            sources.push_back("divine halo");
+            sources.push_back(T_("divine halo"));
         }
 
         if (sources.empty())
             success = true;
         else
         {
+            const string source_list = comma_separated_line(
+                sources.begin(), sources.end(),
+                C_("invisibility sources", " and "),
+                C_("invisibility sources", ", "));
             msg = sources.size() == 1
                   ? make_stringf(T_("Your %s glows too brightly for you to become invisible."),
-                                 comma_separated_line(sources.begin(), sources.end()).c_str())
+                                 source_list.c_str())
                   : make_stringf(T_("Your %s glow too brightly for you to become invisible."),
-                                 comma_separated_line(sources.begin(), sources.end()).c_str());
+                                 source_list.c_str());
             success = false;
         }
     }
     else if (you.backlit(true, include_temp))
     {
-        msg = "You are backlit; invisibility will do you no good right now";
+        msg = T_("You are backlit; invisibility will do you no good right now");
         if (quiet)
             success = false;
         else if (!quiet && !yesno((msg + T_("; use anyway?")).c_str(), false, 'n'))
@@ -7787,16 +7797,23 @@ int player::hurt(const actor *agent, int amount, beam_type flavour,
  * Checks to see whether the player can be dislodged by physical effects.
  * This only accounts for the "mountain boots" unrand, not being stationary, etc.
  *
- * @param event A message to be printed if the player cannot be dislodged.
- *               If empty, nothing will be printed.
+ * @param event Canonical English event phrase, translated only when displayed.
+ *              If empty and puller is null, nothing will be printed.
+ * @param puller Optional actor for a dynamic pull message; consumed immediately.
  * @return Whether the player can be moved.
  */
-bool player::resists_dislodge(string event) const
+bool player::resists_dislodge(string event, const actor* puller) const
 {
     if (!you.unrand_equipped(UNRAND_MOUNTAIN_BOOTS))
         return false;
-    if (!event.empty())
-        mprf(T_("Your boots prevent you from %s."), event.c_str());
+    if (puller)
+    {
+        mprf(T_("Your boots prevent you from being pulled by %s."),
+             puller->name(DESC_THE).c_str());
+    }
+    else if (!event.empty())
+        mprf(T_("Your boots prevent you from %s."),
+             C_("dislodge event", event.c_str()));
     return true;
 }
 
@@ -7836,7 +7853,7 @@ void player::splash_with_acid(actor* evildoer)
     const int post_res_dam = resist_adjust_damage(&you, BEAM_ACID, dam);
 
     mprf(T_("You are splashed with acid%s%s"),
-         post_res_dam > 0 ? "" : " but take no damage",
+         post_res_dam > 0 ? "" : T_(" but take no damage"),
          attack_strength_punctuation(post_res_dam).c_str());
     if (post_res_dam > 0)
     {
@@ -8619,7 +8636,7 @@ bool player::do_shaft()
         return false;
 
     if (!shaftable()
-        || resists_dislodge("falling into an unexpected shaft"))
+        || resists_dislodge(NC_("dislodge event", "falling into an unexpected shaft")))
     {
         return false;
     }
@@ -8810,14 +8827,14 @@ bool player::attempt_escape()
     escape_attempts += 1;
 
     const string object
-        = constricted_type == CONSTRICT_ROOTS      ? T_("the roots'")
-          : constricted_type == CONSTRICT_BVC      ? T_("the zombie hands'")
-          : constricted_type == CONSTRICT_ENTANGLE ? T_("the vines'")
-          : you.aware_of(*themonst) ? themonst->name(DESC_ITS, true) : T_("something's");
+        = constricted_type == CONSTRICT_ROOTS      ? C_("constrictor possessive", "the roots'")
+          : constricted_type == CONSTRICT_BVC      ? C_("constrictor possessive", "the zombie hands'")
+          : constricted_type == CONSTRICT_ENTANGLE ? C_("constrictor possessive", "the vines'")
+          : you.aware_of(*themonst) ? themonst->name(DESC_ITS, true) : C_("constrictor possessive", "something's");
 
     if (x_chance_in_y(_constriction_escape_chance(escape_attempts), 100))
     {
-        mprf(T_("You break free of %s."), object.c_str());
+        mprf(C_("constriction escape", "You break free of %s grasp."), object.c_str());
 
         // Stun the monster we struggled again and prevent the player from being
         // constricted for several turns (so that they are guaranteed to be able
@@ -8984,7 +9001,7 @@ bool player::floodify(const actor* attacker, int dur, const char* substance)
     props[WATER_HOLDER_KEY].get_int() = attacker->mid;
     props[WATER_HOLDER_NAME_KEY] = attacker->name(DESC_A, true);
 
-    mprf(MSGCH_WARN, T_("%s floods into your lungs!"), substance);
+    mprf(MSGCH_WARN, T_("%s floods into your lungs!"), C_("flood substance", substance));
 
     return true;
 }
@@ -9491,7 +9508,7 @@ void player_close_door(coord_def doorpos)
     // TODO: if only one thing moved, use that item's name
     // TODO: handle des-derived strings.  (Better yet, find a way to not have
     // format strings in des...)
-    const char *items_msg = items_moved ? ", pushing everything out of the way"
+    const string items_msg = items_moved ? T_(", pushing everything out of the way")
                                         : "";
 
     const int skill = 8 + you.skill_rdiv(SK_STEALTH, 4, 3);
@@ -9506,7 +9523,7 @@ void player_close_door(coord_def doorpos)
                 mprf(berserk_close.c_str(), adj, noun);
             }
             else
-                mprf(T_("You slam the %s%s shut%s!"), adj, noun, items_msg);
+                mprf(T_("You slam the %s%s shut%s!"), adj, noun, items_msg.c_str());
         }
         else
         {
@@ -9521,7 +9538,7 @@ void player_close_door(coord_def doorpos)
             else
             {
                 mprf(MSGCH_SOUND, T_("You slam the %s%s shut with a bang%s!"),
-                                  adj, noun, items_msg);
+                                  adj, noun, items_msg.c_str());
             }
 
             noisy(15, you.pos());
@@ -9534,7 +9551,7 @@ void player_close_door(coord_def doorpos)
         else
         {
             mprf(MSGCH_SOUND, T_("As you close the %s%s%s, it creaks loudly!"),
-                              adj, noun, items_msg);
+                              adj, noun, items_msg.c_str());
         }
 
         noisy(10, you.pos());
@@ -9547,7 +9564,7 @@ void player_close_door(coord_def doorpos)
                 mprf(door_airborne.c_str(), adj, noun);
             else
                 mprf(T_("You reach down and close the %s%s%s."),
-                     adj, noun, items_msg);
+                     adj, noun, items_msg.c_str());
         }
         else
         {
@@ -9555,7 +9572,7 @@ void player_close_door(coord_def doorpos)
                 mprf(door_close_verb.c_str(), adj, noun);
             else
                 mprf(T_("You close the %s%s%s."),
-                     adj, noun, items_msg);
+                     adj, noun, items_msg.c_str());
         }
     }
 

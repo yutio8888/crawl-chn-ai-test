@@ -677,7 +677,7 @@ bool fill_status_info(int status, status_info& inf)
         inf.short_text  = "flooded lungs";
         inf.long_text   = make_stringf(T_("Your lungs are flooded with %s and you "
                                        "cannot breathe."),
-                                       you.props[WATER_HOLD_SUBSTANCE_KEY].get_string().c_str());
+                                       C_("flood substance", you.props[WATER_HOLD_SUBSTANCE_KEY].get_string().c_str()));
         break;
 
     case STATUS_DRAINED:

@@ -218,7 +218,11 @@ public:
     virtual bool corrode(const actor* source = nullptr,
                          const char* corrosion_msg = "the acid",
                          int amount = 4) = 0;
-    virtual bool resists_dislodge(string /*event*/ = "") const { return false; };
+    virtual bool resists_dislodge(string /*event*/ = "",
+                                  const actor* /*puller*/ = nullptr) const
+    {
+        return false;
+    }
 
     virtual bool can_hibernate(bool holi_only = false,
                                bool intrinsic_only = false) const;

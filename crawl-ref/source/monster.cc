@@ -5943,7 +5943,7 @@ bool monster::floodify(const actor* attacker, int duration, const char* substanc
         // something that can be called lungs.
         const bool has_lungs = get_mon_shape(*this) < MON_SHAPE_INSECT;
         mprf(T_("%s floods into %s %s!"),
-                substance, name(DESC_ITS).c_str(),
+                C_("flood substance", substance), name(DESC_ITS).c_str(),
                 has_lungs ? (T_("lungs")) : (T_("airways")));
     }
 

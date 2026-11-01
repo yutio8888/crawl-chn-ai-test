@@ -391,7 +391,7 @@ void polar_vortex_damage(actor *caster, int dur)
                 if (victim->alive()
                     && !leda
                     && dur > 0
-                    && !victim->resists_dislodge("being moved by the vortex"))
+                    && !victim->resists_dislodge(NC_("dislodge event", "being moved by the vortex")))
                 {
                     move_dest[victim->mid] = victim->pos();
                 }

@@ -770,7 +770,7 @@ public:
         if (species::is_draconian(you.species))
         {
             return make_stringf(T_("a fearsome %s!"),
-                          mons_class_name(get_equivalent_mons()));
+                          T_(mons_class_name(get_equivalent_mons())));
         }
         else
             return description;
@@ -2358,7 +2358,7 @@ static void _enter_form(int dur, transformation which_trans, bool using_talisman
     if (you.hp <= 0)
     {
         ouch(0, KILLED_BY_FRAILTY, MID_NOBODY,
-             make_stringf(T_("gaining the %s transformation"),
+             make_stringf("gaining the %s transformation",
                           transform_name(which_trans)).c_str());
     }
 }
@@ -2559,9 +2559,9 @@ void untransform(bool skip_move, bool scale_hp, bool preserve_equipment,
     {
         for (item_def* item : forced_remove)
         {
-            // T_() handles language-dependent curse fragments
-            const char* shatter = item->cursed() ? T_(", shattering the curse!") : "";
-            mprf(T_("%s falls away%s!"), item->name(DESC_YOUR).c_str(), shatter);
+            mprf(item->cursed()
+                 ? T_("%s falls away, breaking its binding!")
+                 : T_("%s falls away!"), item->name(DESC_YOUR).c_str());
 
             unequip_item(*item, false);
         }
@@ -2594,7 +2594,7 @@ void untransform(bool skip_move, bool scale_hp, bool preserve_equipment,
     if (you.hp <= 0)
     {
         ouch(0, KILLED_BY_FRAILTY, MID_NOBODY,
-             make_stringf(T_("losing the %s form"),
+             make_stringf("losing the %s form",
                           transform_name(old_form)).c_str());
     }
 

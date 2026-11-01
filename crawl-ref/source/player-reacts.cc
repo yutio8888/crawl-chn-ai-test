@@ -669,17 +669,16 @@ static void _handle_recitation(int step)
 
     if (step == 0)
     {
-        ostringstream speech;
-        speech << zin_recite_text(you.attribute[ATTR_RECITE_SEED],
-                                  you.attribute[ATTR_RECITE_TYPE], -1);
-        speech << '.';
+        const string title = zin_recite_text(you.attribute[ATTR_RECITE_SEED],
+                                             you.attribute[ATTR_RECITE_TYPE], -1);
+        string speech = make_stringf(T_("You finish reciting %s."), title.c_str());
         if (one_chance_in(27))
         {
             const string closure = getSpeakString("recite_closure");
             if (!closure.empty())
-                speech << ' ' << closure;
+                speech += " " + closure;
         }
-        mprf(MSGCH_DURATION, T_("You finish reciting %s"), speech.str().c_str());
+        mprf(MSGCH_DURATION, "%s", speech.c_str());
         you.set_duration(DUR_RECITE_COOLDOWN, 1 + random2(10) + random2(30));
     }
 }
@@ -938,7 +937,7 @@ static void _decrement_durations()
         else if (_decrement_a_duration(DUR_FLOODED, delay))
         {
             mprf(MSGCH_RECOVERY, T_("You finish coughing all the %s out of your lungs."),
-                 you.props[WATER_HOLD_SUBSTANCE_KEY].get_string().c_str());
+                 C_("flood substance", you.props[WATER_HOLD_SUBSTANCE_KEY].get_string().c_str()));
             you.duration[DUR_FLOODED_IMMUNITY] = you.time_taken + 1;
         }
         else

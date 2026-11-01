@@ -3055,7 +3055,7 @@ As expected.
 果然如此。
 %%%%
 As the last of your armour is driven back to you, your cacophony ends.
-随着最后一件护甲回到你身边，你的嘈杂声结束了。
+随着最后一件护甲被击退回你身边，你的嘈杂声结束了。
 %%%%
 As you %s the %s, it %s.
 当你%s%s时，它%s。
@@ -5213,7 +5213,7 @@ magic
 魔法
 %%%%
  magic is enhanced!
-的魔力增强了！
+魔力增强了！
 %%%%
  magic is no longer disrupted.
 魔力不再被扰乱。
@@ -5633,7 +5633,7 @@ Pain
 痛苦
 %%%%
 Pain shudders through your %s!
-痛苦在你的%s中颤抖！
+一阵痛楚传遍你的%s！
 %%%%
 Pain wracks your body!
 痛苦穿过了你的身体！
@@ -7069,13 +7069,13 @@ The %s throb as they attune themselves to your body.
 %s搏动着与你的身体完成调谐。
 %%%%
 The %s throb as they attune themselves to your uninjured body.
-%s搏动着与你的身体完成调谐。
+%s搏动着，与你未受伤的身体完成调谐。
 %%%%
 The %s throbs as it attunes itself to your body.
 %s搏动着与你的身体完成调谐。
 %%%%
 The %s throbs as it attunes itself to your uninjured body.
-%s搏动着与你的身体完成调谐。
+%s搏动着，与你未受伤的身体完成调谐。
 %%%%
 The %s%s flies open with a bang!
 %s%s砰地一声飞开了！
@@ -7234,7 +7234,7 @@ The dungeon shakes, a horrible noise fills the air, and a portal to some otherwo
 地牢震动着，可怕的噪音充满了空气，通往异界的传送门被打开了！
 %%%%
 The dungeon's light returns to normal.
-地下城的光线恢复了正常。
+地牢的光线恢复了正常。
 %%%%
 The dying Royal Jelly spits out %s more jellies.
 垂死的果冻王又吐出了%s只果冻。
@@ -7354,7 +7354,7 @@ The heat melts your icy armour.
 热量融化了你的冰甲。
 %%%%
 The heat overwhelms you.
-高温压倒了你的防御。
+高温使你不堪重负。
 %%%%
 The heavenly storm settles.
 天界的风暴平息了。
@@ -8178,7 +8178,7 @@ Trog doesn't allow you to cast spells!
 特洛格不允许你施放法术！
 %%%%
 Trog suppresses %s necromantic effect.
-特洛格抑制了%s的死灵效果。
+特洛格抑制了%s死灵效果。
 %%%%
 Trying to dig through that would dissolve your mandibles.
 试图挖穿那个会溶解你的大颚。
@@ -9356,10 +9356,10 @@ You can't wear amulets.
 你无法佩戴项链。
 %%%%
 You can't wear any headgear with your large antennae!
-你的大触角让你无法穿戴任何头盔！
+你的大触角让你无法穿戴任何头部装备！
 %%%%
 You can't wear any headgear with your large horns!
-你的大角让你无法穿戴任何头盔！
+你的大角让你无法穿戴任何头部装备！
 %%%%
 You can't wear any rings.
 你无法佩戴任何戒指。
@@ -9377,7 +9377,7 @@ You can't wear that with your reptilian head.
 你的爬虫类头部无法穿戴那个。
 %%%%
 You can't wear that with your sharp stinger!
-你的尖刺让你无法穿戴那个！
+你锋利的毒刺让你无法穿戴那个！
 %%%%
 You can't wear that.
 你无法穿戴那个。
@@ -9446,7 +9446,7 @@ You cannot evoke magical items.
 你无法激活魔法物品。
 %%%%
 You cannot heal while in death's door.
-你在死之门中无法治疗。
+你在死亡之门状态下无法恢复生命。
 %%%%
 You cannot imprison law-abiding creatures!
 你无法囚禁守法的生物！
@@ -9866,7 +9866,7 @@ You feel %sprotected from %s.
 你感到%s能抵御%s。
 %%%%
 You feel %sweakened.
-你感觉%s被削弱了。
+你感觉%s虚弱了。
 %%%%
 You feel a %ssurge of divine interest.
 你感到%s一股神圣的关注。
@@ -10127,7 +10127,7 @@ You feel rather ponderous.
 你感到相当笨重。
 %%%%
 You feel ready to rampage towards enemies.
-你感到准备好向敌人发起猛攻了。
+你感到已准备好向敌人发起冲锋。
 %%%%
 You feel ready to tumble and roll out of harm's way.
 你感到准备好翻滚躲避危险。
@@ -10277,7 +10277,7 @@ You feel very mighty all of a sudden.
 你突然感觉自己非常强壮。
 %%%%
 You feel woody for a moment.
-你短暂地感到木讷。
+你一度感觉身体像木头一样。
 %%%%
 You feel your anger nearly subside.
 你感到你的愤怒几乎消退了。
@@ -10463,7 +10463,7 @@ You have no %s!
 你已经没有%s了！
 %%%%
 You have no ailments to cure.
-你没有任何需要治疗的异常状态。
+你没有任何需要治疗的伤病。
 %%%%
 You have no ancestor to preserve!
 你没有需要保护先祖！
@@ -10709,7 +10709,7 @@ You need to enable at least one skill for training.
 你需要至少启用一个技能进行训练。
 %%%%
 You no longer feel able to rampage towards enemies.
-你不再感到能够向敌人发起猛攻。
+你感到自己不再能向敌人发起冲锋。
 %%%%
 You no longer feel resistant to poison.
 你不再感到对毒素有抵抗力。
@@ -10811,10 +10811,10 @@ You rattle the tambourine.
 你摇响了铃鼓。
 %%%%
 You reach down and close the %s%s%s.
-你伸手关上了%s%s%s。
+你向下伸手关上了%s%s%s。
 %%%%
 You reach down and open the %s%s.
-你伸手打开了%s%s。
+你向下伸手打开了%s%s。
 %%%%
 You reach into the sack...
 你把手伸进了袋子里……
@@ -10976,7 +10976,7 @@ You sink your fangs into %s and drink %s %s.
 你把獠牙插入%s，畅饮了%s%s。
 %%%%
 You slam the %s%s shut%s!
-你%s把%s关上了%s！
+你猛地关上了%s%s%s！
 %%%%
 You slide down the stairs, covered in regenerating slime.
 你滑下楼梯，被再生的软泥覆盖了。
@@ -11173,7 +11173,7 @@ Your blow resonates through %s.
 你的打击在%s体内激起了共鸣。
 %%%%
 You'd need another %s to do that!
-你需要另一种%s才能做到！
+你得再有一只%s才能做到！
 %%%%
 You'll get an extra life in %d.%02d levels' worth of XP.
 你将在%d.%02d级的经验值后获得额外生命。
@@ -11443,7 +11443,7 @@ Your demonic guardian avoids your attack.
 你的恶魔守卫躲过了你的攻击。
 %%%%
 Your demonic touch would destroy those.
-你的恶魔触手会摧毁它们。
+你的恶魔之触会摧毁它们。
 %%%%
 Your destruction surges wildly!
 你的毁灭之力猛烈涌动！
@@ -11479,7 +11479,7 @@ Your existing bee falls apart.
 你的现有蜜蜂散架了。
 %%%%
 Your facial features are unmistakably orcish.
-你的面部特征无疑就是兽人。
+你的面部特征明显像兽人。
 %%%%
 Your facial features look somewhat orcish.
 你的面部特征看起来有点像兽人。
@@ -11533,7 +11533,7 @@ Your icy armour cracks and falls away as you move.
 你的冰甲在你移动时碎裂并脱落。
 %%%%
 Your icy armour dissipates!
-你的冰霜防御消散了！
+你的冰甲消散了！
 %%%%
 Your icy armour evaporates.
 你的冰甲蒸发了。
@@ -11969,7 +11969,7 @@ Rev*
 暖机*
 %%%%
 Regen Will++
-强再生意志
+再生 意志++
 %%%%
 -Regen
 禁再生
@@ -18138,7 +18138,7 @@ You are covered in even more %sliquid fire!
 你被%s液态火焰覆盖得更严重了！
 %%%%
 You are covered in %sliquid fire! Move or burn!
-你被%s液态火焰覆盖了！移动或被烧！
+你被%s液态火焰覆盖了！快移动，否则会被灼烧！
 %%%%
 You feel very buoyant.
 你感觉非常有浮力。
@@ -18333,7 +18333,7 @@ You feel briefly confused.
 你感到短暂的困惑。
 %%%%
 Your divine stamina protects you from confusion!
-你的神圣耐力保护你免受困惑！
+你的神圣耐力保护你免受混乱影响！
 %%%%
 You feel %s sick.
 你感觉%s不适。
@@ -24327,10 +24327,10 @@ Plunk!
 扑通！
 %%%%
 Really go berserk while wielding %s?
-你真的要在持有%s的情况下狂暴吗？
+你真的要在持握%s的情况下狂暴吗？
 %%%%
 Your spell capacity is full; you lost the previous spell.
-你的法术容量已满，你失去了使用了之前的法术。
+你的法术容量已满；你失去了之前的法术。
 %%%%
 wisps of flame dance over your body
 火焰之缕在你身上舞动
@@ -24357,7 +24357,7 @@ Welcome back to level %d!
 欢迎回到第%d级！
 %%%%
 You have reached level %d, the maximum you can reach!
-你已达到%d级，你将达到的最高等级！
+你已达到%d级，这是你能达到的最高等级！
 %%%%
 You have reached level %d!
 你已达到%d级！
@@ -24414,7 +24414,7 @@ You feel your energy subside.
 你感觉精力减退了。
 %%%%
 You can't survive in this terrain! You fly over the %s, but the process is draining.
-你无法在这地形上生存！你飞到了%s上方，但这个过程在消耗你的精力。
+你无法在这种地形上生存！你飞到了%s上方，但这个过程会汲取你的生命。
 %%%%
 buggy terrain
 有问题的地形
@@ -25884,10 +25884,10 @@ You cannot mock death while in death's door.
 在生死之门中你无法嘲弄死亡。
 %%%%
 gaining the %s transformation
-获得了%s变形
+变为“%s”形态
 %%%%
 losing the %s form
-失去了%s形态
+失去“%s”形态
 %%%%
 You %1$svisited %2$d branch
 你访问了%2$d个分支
@@ -26308,7 +26308,7 @@ Your binding sigils disappear.
 你的束缚符文消失了。
 %%%%
 Your body momentarily shudders from a surge of wild energies until Zin's power calms it.
-你的身体因狂野能量的涌动而短暂颤抖，但辛恩之力使其平息了下来。
+你的身体因狂野能量的涌动而短暂颤抖，但辛的力量使其平息了下来。
 %%%%
 Your body shudders with the violent release of wild energies!
 你的身体因狂野能量的猛烈释放而剧烈颤抖！
@@ -36192,7 +36192,7 @@ Are you sure you want to %s onto a binding sigil?
 你确定要%s束缚符文吗？
 %%%%
 You might %s onto a binding sigil, are you sure?
-你可能会%s束缚印记，确定吗？
+你可能会%s束缚符文，确定吗？
 %%%%
 Are you sure you want to %s into a toxic bog?
 你确定要%s毒沼吗？
@@ -36210,10 +36210,10 @@ artefacts
 神器
 %%%%
 You slam the %s%s shut with a bang%s!
-你用%s%s猛地关上门，砰的一声%s！
+你砰地一声猛关上了%s%s%s！
 %%%%
 As you close the %s%s%s, it creaks loudly!
-当你关上%s%s%s时，它发出了响亮的吱嘎声！
+你关上了%s%s%s，门发出刺耳的吱嘎声！
 %%%%
 %s drains %s %s.
 %s吸取了%s%s。
@@ -37008,7 +37008,7 @@ finished random %d
 完成 随机%d
 %%%%
 gaining the %s mutation
-获得%s突变
+获得%s变异
 %%%%
 give %smutation%s
 给予%s突变%s
@@ -37029,7 +37029,7 @@ lit up %d webs
 点燃了%d张蛛网
 %%%%
 losing the %s mutation
-失去%s突变
+失去%s变异
 %%%%
 made a garden
 创造了一个花园
@@ -40108,7 +40108,7 @@ Rndm
 随机
 %%%%
 status| (but backlit and visible)
-（背面发光且可见）
+（但因发光而显形）
 %%%%
 status| Gem (*)
 宝石(*)
@@ -43477,7 +43477,7 @@ discovered their monstrous ancestry!
 发现了他们怪物般的血统！
 %%%%
 A magic seal in the Gauntlet prevents long-range teleports.
-手套关卡中的魔法封印阻止了远距离传送。
+试炼场中的魔法封印阻止了远距离传送。
 %%%%
 This %s%s is marked as excluded! Open it anyway?
 这个%s%s被标记为已排除！要打开它吗？
@@ -49802,4 +49802,265 @@ A bound item is preventing you from removing %s.
 %%%%
 melee action|hit
 击打
+%%%%
+dislodge event|being knocked back
+被击退
+%%%%
+dislodge event|being pulled
+被拉走
+%%%%
+dislodge event|falling
+坠落
+%%%%
+dislodge event|being dragged
+被拖走
+%%%%
+dislodge event|being lured by song
+被歌声引走
+%%%%
+dislodge event|falling into an unexpected shaft
+落入意想不到的竖井
+%%%%
+dislodge event|being moved by the vortex
+被漩涡带走
+%%%%
+Zin recitation book|Abominations
+《憎恶》
+%%%%
+Zin recitation book|Ablutions
+《净身礼》
+%%%%
+Zin recitation book|Apostates
+《叛教者》
+%%%%
+Zin recitation book|Anathema
+《诅罚》
+%%%%
+Zin recitation book|Bugginess
+《程序错误》
+%%%%
+hold
+拿着
+%%%%
+%s is forcibly removed from your body, breaking its binding!
+%s被强行从你身上卸下，挣脱了束缚！
+%%%%
+%s is forcibly removed from your body!
+%s被强行从你身上卸下！
+%%%%
+%s falls off, breaking its binding!
+%s掉落下来，挣脱了束缚！
+%%%%
+%s falls off!
+%s掉落了！
+%%%%
+You feel the corruptions in your body subside completely.
+你感到体内的变异侵蚀完全消退了。
+%%%%
+You feel the corruptions in your body subside somewhat.
+你感到体内的变异侵蚀有所减轻。
+%%%%
+You quiver from the blow and a flood of jellies pours out from you!
+你因重击而战栗，大量水母从你体内涌出！
+%%%%
+You quiver from the blow and a jelly pops out!
+你因重击而战栗，一只水母冒了出来！
+%%%%
+You quiver from the blast and a flood of jellies pours out from you!
+你因冲击而战栗，大量水母从你体内涌出！
+%%%%
+You quiver from the blast and a jelly pops out!
+你因冲击而战栗，一只水母冒了出来！
+%%%%
+Your wings won't fit in that.
+那件装备容不下你的翅膀。
+%%%%
+Your wings, even vestigial as they are, won't fit in that.
+即使你的翅膀已经退化，那件装备也容不下它们。
+%%%%
+Your %s feel oddly empty.
+你的%s感觉异常空荡。
+%%%%
+Your %s feels oddly empty.
+你的%s感觉异常空荡。
+%%%%
+That put a bit of spring back into your slither.
+这让你的滑行恢复了几分轻快。
+%%%%
+That put a bit of spring back into your step.
+这让你的步伐恢复了几分轻快。
+%%%%
+You feel a strange surge of divine interest.
+你感到一股奇异的神圣关注涌来。
+%%%%
+You feel a surge of divine interest.
+你感到一股神圣关注涌来。
+%%%%
+You finish reciting %s.
+你完成了对%s的吟诵。
+%%%%
+%s slips away as you move onto it!
+当你移到%s上时，它滑开了！
+%%%%
+%s slips away as you move under it!
+当你移到%s下方时，它滑开了！
+%%%%
+%s slips away as you move over it!
+当你移过%s上方时，它滑开了！
+%%%%
+%s slips away as you move inside it!
+当你移入%s内部时，它滑开了！
+%%%%
+%s slips away as you move into it!
+当你移入%s时，它滑开了！
+%%%%
+%s slips away as you move beside it!
+当你移到%s旁边时，它滑开了！
+%%%%
+movement speed|Your %s speed is %s%s%s
+你的%s速度%s%s%s
+%%%%
+movement speed|wind-assisted
+受到风力辅助
+%%%%
+movement speed|wind-hindered
+受到风力阻碍
+%%%%
+movement speed|, but still
+，但仍
+%%%%
+movement speed|and
+，且
+%%%%
+movement speed|very fast
+很快
+%%%%
+movement speed|fast
+较快
+%%%%
+movement speed|average
+正常
+%%%%
+movement speed|slow
+较慢
+%%%%
+movement speed|very slow
+很慢
+%%%%
+ (and cannot be improved with additional weapon skill)
+（且无法通过进一步提升武器技能来缩短）
+%%%%
+Your body glows too brightly to become invisible.
+你的身体光芒太强，无法隐形。
+%%%%
+crown
+冠冕
+%%%%
+divine halo
+神圣光环
+%%%%
+invisibility sources| and 
+和
+%%%%
+invisibility sources|, 
+、
+%%%%
+You are backlit; invisibility will do you no good right now
+你正因发光而显形，此时隐形对你毫无帮助
+%%%%
+Your boots prevent you from being pulled by %s.
+你的靴子使你不会被%s拉走。
+%%%%
+ but take no damage
+，但没有受到伤害
+%%%%
+constrictor possessive|the roots'
+树根的
+%%%%
+constrictor possessive|the zombie hands'
+尸手的
+%%%%
+constrictor possessive|the vines'
+藤蔓的
+%%%%
+constrictor possessive|something's
+某物的
+%%%%
+constriction escape|You break free of %s grasp.
+你挣脱了%s束缚。
+%%%%
+, pushing everything out of the way
+，把挡路的东西全推开
+%%%%
+fungus spores|curing
+治疗性的
+%%%%
+fungus spores|healing
+愈伤的
+%%%%
+fungus spores|quickening
+加速的
+%%%%
+fungus spores|strenghtening
+强化力量的
+%%%%
+fungus spores|amplifying
+增幅魔法的
+%%%%
+fungus spores|enlightening
+启迪的
+%%%%
+fungus spores|invisible
+隐形的
+%%%%
+fungus spores|magical
+充满魔力的
+%%%%
+fungus spores|infuriating
+激怒生物的
+%%%%
+fungus spores|bolstering
+增强抗性的
+%%%%
+fungus spores|insubstantial
+虚幻的
+%%%%
+You hear a series of splatters.
+你听到接连几阵溅落声。
+%%%%
+You hear a splatter.
+你听到一阵溅落声。
+%%%%
+Zin releases %1$s from %2$s prison.
+辛将%1$s从%2$s囚牢中释放出来。
+%%%%
+Zin dismisses the silver walls, but there is nothing inside them.
+辛撤去了银色的墙壁，但里面空无一物。
+%%%%
+%s falls away, breaking its binding!
+%s脱落了，挣脱了束缚！
+%%%%
+%s falls away!
+%s脱落了！
+%%%%
+rebranding a weapon of distortion
+给扭曲武器重新赋予铭印
+%%%%
+unwielding a weapon of distortion
+放下扭曲武器
+%%%%
+Cast into level %d of the Abyss (%s)
+被放逐到深渊第%d层（%s）
+%%%%
+ appreciates %s for killing a heretic priest.
+赞许%s杀死异端牧师的行为。
+%%%%
+ appreciates %s for killing an apostate.
+赞许%s杀死叛教者的行为。
+%%%%
+flood substance|water
+水
+%%%%
+flood substance|ooze
+软泥
 %%%%

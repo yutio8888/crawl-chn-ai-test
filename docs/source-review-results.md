@@ -5,13 +5,13 @@
 ## 边界与证据
 
 - 冻结基线：`90d7b59904b013a657ee1a17652c374ec339a1d3`；父清单摘要：`918bf90376cfa45af2a5b254ce38e9b6117fdd4101b6ae7270e41bbabcce387e`。
-- 当前术语摘要：`8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`；当前 SourceDB 文件摘要：`cf33bf37bdefac9a2215217614db63977c81fd2cd5f786d4c9dea5d1ccc53254`。
+- 当前术语摘要：`8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`；动作批 SourceDB 文件摘要：`cf33bf37bdefac9a2215217614db63977c81fd2cd5f786d4c9dea5d1ccc53254`。
 - 三个互斥主分区共1528身份；连同完整模板、145个射线名、19个事件名及两条关联消息，去重后前一批1726身份；逐卡集合双向相等，重复0。
-- 全部已落卡终态计数：keep=6772, adjust=254, defer terminology=2, defer implementation=2。
+- 动作批已落卡终态计数：keep=6772, adjust=254, defer terminology=2, defer implementation=2。
 - 原始身份包含仍被保留的旧模板；调用已迁移不等于证明其所有历史/动态消费者死亡，未擅删。defer 保留兼容值，责任人与重入条件见具体卡。
 - 原始报告与修后独立文字复核位于 `.claude/metrics/verify/source-rereview-20261101/`；完整原始分区报告位于指南工作区 `full-source-rereview-20261101/`。下表保留所有逐身份原文/现值/理由，临时报告不是唯一证据。
 - 英文键中的 `\n` 为数据库表示；表内引文按纯文本转义。证据行号为冻结输入定位，函数名供修后定位。
-- 真实消费者回归：17用例、2876断言通过。实现域独立复核完成。全范围 code profile 的编译、smoke及运行阶段通过，但静态阶段发现缺少 Buggy descriptor! 译键；补键后的绑定增量 code profile 全部通过。未变 C++ 沿用原运行证据；适用 GitHub Actions CI 待完成。
+- 真实消费者回归：17用例、2876断言通过。实现域独立复核完成。全范围 code profile 的编译、smoke及运行阶段通过，但静态阶段发现缺少 Buggy descriptor! 译键；补键后的绑定增量 code profile 全部通过。未变 C++ 沿用原运行证据；适用 GitHub Actions CI已通过，随PR #224合入。
 
 ## 修复与边界
 
@@ -28,7 +28,7 @@
 - 冻结主清单、各分区清单与初审/复核/代码报告位于 `.claude/metrics/verify/actions-rereview-20261101/`。保留旧键、兼容指令和不可达诊断的明确延期条件。
 - 修正物品复数s、铭印/铭刻、失去飞行风险、隐形观察者关系，以及导航火焰/射击混淆、紧急飞行经验流失、混乱楼梯方向和完整移动确认。独立复核追加修正杂项自动拾取显示名与两个意外换行。
 - 前批正文所称物品另批现已推进至本节；各批原独立证据仍保留，未覆盖领域继续审读。
-- 当前真实消费者回归18用例/566断言通过；首次测试编译使用不存在常量的失败已保留，修后成功。整批绑定code profile与远程CI尚待完成，不提前宣称合入。
+- 当前真实消费者回归18用例/566断言通过；首次测试编译使用不存在常量的失败已保留，修后成功。整批主profile发现travel解析缺口后，修复与绑定增量profile通过；独立代码复核及远程CI均通过，随PR #225合入。
 
 ## 已有领域证据的精确复用
 
@@ -7106,3 +7106,990 @@
 | source:zot round!<br>EN: ZOT ROUND! | 佐特回合！ | 佐特回合！ | keep | keep; 事件完整句'ZOT ROUND!'与中文'佐特回合！'的动作、主客、数字及说话口吻对应；参数不由外层模板替代审查。；复用条件：原英文/实际lookup身份、物理中文、生命周期与生产依赖已逐项对应；相关术语与裁决等价。行为分组 world_display；术语分组 current_exact_glossary。 | docs/world-review-results.md # des_display:crawl-ref/source/dat/des/sprint/arena_sprint.des:function:thing_do_arena:crawl.mpr:4 |
 | source:zot statue<br>EN: zot statue | 佐特雕像 | 佐特雕像 | keep | keep; 仅名称可比较：zot statue → 佐特雕像准确描述该地形；冻结源文无独立正文，未把双无正文判为漏译。；复用条件：原英文/实际lookup身份、物理中文、生命周期与生产依赖已逐项对应；相关术语与裁决等价。行为分组 world_display；术语分组 current_exact_glossary。 | docs/world-review-results.md # feature:DNGN_ZOT_STATUE |
 | source:zot trap<br>EN: Zot trap | 佐特陷阱 | 佐特陷阱 | keep | adjust; petrified写成陷入深渊，丢失石化并新增另一种效果。 W12已修复。；复用条件：原英文/实际lookup身份、物理中文、生命周期与生产依赖已逐项对应；相关术语与裁决等价。行为分组 world_display；术语分组 current_exact_glossary。 | docs/world-review-results.md # feature:DNGN_TRAP_ZOT |
+
+## 玩家动作与状态续批
+
+- 新冻结主集合881个身份（清单摘要 `669ce0879b744b025fdefea29034484fa392ec5261cf45ec579376511edba14f`），逐项审前原文、译文及全部调用证据保留；881唯一身份与冻结集合双向相等。旧7030卡原译值逐项相等，复用其已审语义；本批变动的共享显示行为在下列相关卡补记。
+- 另列87个完整句/显示上下文依赖，均未计入881主集合。当前账本总计7998张唯一卡；终态keep=7572, adjust=419, defer terminology=5, defer implementation=2。父清单成员增加881，新增依赖不虚增父清单进度。
+- 当前SourceDB SHA-256 `7c8c5f264597a36bd4eb292b9dbb0f39ce15413fc3573615f217f3ef7fc85be5`；术语SHA-256 `8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`。
+- 迁移后的旧拼接键保留，不能据此推断历史/动态消费者已消失。三条TAG34旧形态/种族术语保留明确责任人与恢复玩法时重审条件；原18条实施延期已实现并重入为adjust。
+- 存档/计分保留规范英文：四类衰弱原因、扭曲武器放逐原因和water/ooze属性仅在已知最终显示处翻译；Abyss Note使用既有desc规范标记，未加序列化例外，无标记同文及旧快照保持原样。
+- 逐项主审、实现链、动作前后值与验证日志位于 `.claude/metrics/verify/player-actions-rereview-20261101/`。修后独立语言复核878 keep、3条TAG34生命周期暂缓，881身份双向覆盖且101接口完整核对。真实消费者回归6例206断言通过（两项装备fixture初始化失败已修并重跑），代码域逐文件复核已完成；最终匹配code profile与远程CI尚待完成，本记录不提前声明已合入。
+
+### player-actions
+
+| Identity / English source | 审前中文 | 当前中文 | 终态 | 逐项理由 | 证据 |
+|---|---|---|---|---|---|
+| source: (%d -&gt; %d)<br>EN:  (%d -&gt; %d) |  （%d -&gt; %d） |  （%d -&gt; %d） | keep | 中毒预计生命变化箭头与前后两数保留 | crawl-ref/source/status.cc:1368 |
+| source: (and is slowed by your %s)<br>EN:  (and is slowed by your %s) | （并且被你的%s拖累） | （并且被你的%s拖累） | keep | 攻击延迟受盾牌/护甲拖慢括注完整，具体部位参数由消费者给定 | crawl-ref/source/player.cc:3865 |
+| source: (expiring)<br>EN:  (expiring) | （即将消失） | （即将消失） | keep | 到期后缀在状态说明及剥离逻辑双方同译，短期效果含义准确 | crawl-ref/source/spl-goditem.cc:377; crawl-ref/source/spl-goditem.cc:397; crawl-ref/source/status.cc:173; crawl-ref/source/status.cc:1200 |
+| source: absorbs the residual spatial distortion as you rebrand your weapon.<br>EN:  absorbs the residual spatial distortion as you rebrand your weapon. | 在你重新铭印武器时吸收了残余的空间扭曲。 | 在你重新铭印武器时吸收了残余的空间扭曲。 | keep | 神名接吸收空间扭曲和重新铭印武器两事实完整 | crawl-ref/source/player-equip.cc:2913 |
+| source: absorbs the residual spatial distortion as you unwield your weapon.<br>EN:  absorbs the residual spatial distortion as you unwield your weapon. | 在你卸下武器时吸收了残余的空间扭曲。 | 在你卸下武器时吸收了残余的空间扭曲。 | keep | 神名接卸下武器后吸收残留空间扭曲，时序正确 | crawl-ref/source/player-equip.cc:2915 |
+| source: and can act again<br>EN:  and can act again | 并可以再次行动 | 并可以再次行动 | keep | 解除石化后再行动的并列分句正确，仍瘫痪时不出现 | crawl-ref/source/player-reacts.cc:206 |
+| source: appreciates <br>EN:  appreciates  | 对你的 | 对你的 | adjust | 比欧弗赞许的是杀死玩家的兽人；现前缀“对你的”再接killer的所有格，把玩家误作被赞许者；修复：完整神祇赞许分句以killer的普通显示名作对象；两分支不再把玩家误当赞许对象。 | crawl-ref/source/ouch.cc:1280; crawl-ref/source/ouch.cc:1285; crawl-ref/source/ouch.cc::_god_death_messages |
+| source: appreciates the memories.<br>EN:  appreciates the memories. | 很欣赏这些记忆。 | 很欣赏这些记忆。 | keep | 先祖之神减免惩戒时欣赏经验药水的记忆，客体准确 | crawl-ref/source/potion.cc:548 |
+| source: at present<br>EN:  at present | （暂时） | （暂时） | keep | 不能变异的暂时限定准确，不会改变永久免疫的另一分支 | crawl-ref/source/potion.cc:695 |
+| source: becomes insubstantial!<br>EN:  becomes insubstantial! |  化为了虚体！ |  化为了虚体！ | keep | 怪物受迷雾药水化为虚体，主体由simple_monster_message提供 | crawl-ref/source/potion.cc:1195 |
+| source: cannot move out of your way!<br>EN:  cannot move out of your way! | 无法从你的路上移开！ | 无法从你的路上移开！ | keep | 怪物不能让路的否定完整 | crawl-ref/source/player.cc:685 |
+| source: cannot move out of your way! (use ctrl+direction or * direction to deconstruct it instead.)<br>EN:  cannot move out of your way! (Use ctrl+direction or * direction to deconstruct it instead.) | 无法从你的路上移开！（使用Ctrl+方向键或*方向键来将其拆解。） | 无法从你的路上移开！（使用Ctrl+方向键或*方向键来将其拆解。） | keep | 不能让路且可拆解时的Ctrl/星号方向替代动作与真实键完整 | crawl-ref/source/player.cc:681 |
+| source: cleanses your potion of mutation!<br>EN:  cleanses your potion of mutation! | 净化了你的变异药水！ | 净化了你的变异药水！ | keep | 辛净化变异药水的主体与药水类别正确 | crawl-ref/source/potion.cc:811 |
+| source: ev, slay +<br>EN:  EV, Slay + |  闪避，杀戮+ |  闪避，杀戮+ | keep | 千变恩宠动态数值的闪避和杀戮加成两项保留 | crawl-ref/source/mutation.cc:2819 |
+| source: gem (*)<br>EN:  Gem (*) |  宝石（*） |  宝石（*） | keep | 宝石计时停用但未破碎时的星号灯标记保留 | crawl-ref/source/status.cc:1236 |
+| source: gurgles merrily.<br>EN:  gurgles merrily. | 愉快地汩汩作响。 | 愉快地汩汩作响。 | keep | 吉瓦愉快的汩汩声风味完整 | crawl-ref/source/timed-effects.cc:202 |
+| source: health and magic<br>EN:  health and magic | 生命和法力 | 生命和法力 | keep | 双再生恢复生命和法力的并列范围准确 | crawl-ref/source/player-reacts.cc:1199 |
+| source: is %s!<br>EN:  is %s! | %s！ | %s！ | keep | 无法换位的被困状态由held_status提供，后接感叹号无虚构属性 | crawl-ref/source/player.cc:661 |
+| source: is being constricted!<br>EN:  is being constricted! | 正被缠绕着！ | 正被缠绕着！ | keep | 受缠绕阻挡换位的进行态完整 | crawl-ref/source/player.cc:669 |
+| source: is enlightened!<br>EN:  is enlightened! | 被启迪了！ | 被启迪了！ | keep | 怪物受启迪药水对应飞行/强意志状态，消息不误写永久能力 | crawl-ref/source/potion.cc:1171 |
+| source: is healed!<br>EN:  is healed! | 被治愈了！ | 被治愈了！ | keep | 治疗/治伤药水的怪物被治疗消息准确，不虚构全满 | crawl-ref/source/potion.cc:1158; crawl-ref/source/potion.cc:1163 |
+| source: is touched by paradox!<br>EN:  is touched by paradox! | 被悖论所触碰！ | 被悖论所触碰！ | keep | 悖论之触怪物状态的来源和被动受触方向正确 | crawl-ref/source/mon-cast.cc:1725; crawl-ref/source/mutation.cc:3759 |
+| source: killing of a heretic priest.<br>EN:  killing of a heretic priest. | 杀死异端祭司的行为表示赞许。 | 杀死异端祭司的行为表示赞许。 | keep | 异端祭司死亡后缀词义正确；完整句需随前缀消除对你的误指 | crawl-ref/source/ouch.cc:1281 |
+| source: killing of an apostate.<br>EN:  killing of an apostate. | 杀死叛教者的行为表示赞许。 | 杀死叛教者的行为表示赞许。 | keep | 叛教者死亡后缀词义正确；完整句需随前缀消除对你的误指 | crawl-ref/source/ouch.cc:1286 |
+| source: magic<br>EN:  magic | 法力 | 法力 | keep | 单独法力再生的限定正确 | crawl-ref/source/player-reacts.cc:1200 |
+| source: magic is enhanced!<br>EN:  magic is enhanced! | 的魔力增强了！ | 魔力增强了！ | adjust | 怪物增强魔法使用simple_monster_message(...,true)，助手已加所有格的，当前片段再加的导致重复；已按本行当前值修正措辞。 | crawl-ref/source/potion.cc:1153 |
+| source: more<br>EN:  more | 更加 | 更加 | keep | 仙馔持续时间已有时用更加，保留再度振奋的程度 | crawl-ref/source/potion.cc:440 |
+| source: of <br>EN:  of  | ，信仰 | ，信仰 | keep | 角色/界面神名连接表示信仰，现有三个显示场景可完整接神名 | crawl-ref/source/output.cc:1785; crawl-ref/source/player.cc:6143; crawl-ref/source/player.cc:6145; crawl-ref/source/tileweb.cc:1162 |
+| source: poisoned<br>EN:  poisoned | 中毒 | 中毒 | keep | 中毒标签接严重程度和生命变化数值，状态词正确 | crawl-ref/source/status.cc:1367 |
+| source: prematurely<br>EN:  prematurely | 过早地 | 过早地 | keep | 墙壁过早消失的副词由完整模板置于动词前，实际语序正确 | crawl-ref/source/timed-effects.cc:726 |
+| source: prevents a mutation which would have shattered %s.<br>EN:  prevents a mutation which would have shattered %s. |  阻止了一次本会将%s击碎的突变。 |  阻止了一次本会将%s击碎的突变。 | keep | 束缚装备保护阻止会击碎物品的变异，条件与对象保留 | crawl-ref/source/mutation.cc:1589 |
+| source: prevents your banishment from the arena!<br>EN:  prevents your banishment from the Arena! | 阻止你被逐出竞技场！ | 阻止你被逐出竞技场！ | keep | 奥卡瓦鲁阻止从竞技场放逐，否定目的地正确 | crawl-ref/source/player.cc:6345 |
+| source: protects you from harm!<br>EN:  protects you from harm! | 保护你免受伤害！ | 保护你免受伤害！ | keep | 致死伤害神祇庇护消息准确，未声称永久免伤 | crawl-ref/source/ouch.cc:1440 |
+| source: protects you from inadvertent hurry.<br>EN:  protects you from inadvertent hurry. | 保护你免于无意中加速。 | 保护你免于无意中加速。 | keep | 切布理亚多在云/加速入口阻止无意加速，共享语义一致 | crawl-ref/source/cloud.cc:2356; crawl-ref/source/player-act.cc:664; crawl-ref/source/player.cc:5439 |
+| source: protects your body from mutation!<br>EN:  protects your body from mutation! | 保护你的身体免于变异！ | 保护你的身体免于变异！ | keep | 辛阻止身体变异的因果完整 | crawl-ref/source/mutation.cc:1916 |
+| source: protects your body from unnatural transformation!<br>EN:  protects your body from unnatural transformation! | 保护你的身体免遭异常变形！ | 保护你的身体免遭异常变形！ | keep | 抵御异常变形的消息在黏液化和形态入口共享，未泛化为所有动作 | crawl-ref/source/melee-attack.cc:4658; crawl-ref/source/transform.cc:2391 |
+| source: refuses to let the abyss claim you during a challenge!<br>EN:  refuses to let the Abyss claim you during a challenge! | 不允许深渊在挑战期间将你吞噬！ | 不允许深渊在挑战期间将你吞噬！ | keep | 比欧弗挑战期间阻止深渊夺走玩家，条件完整 | crawl-ref/source/player.cc:6352 |
+| source: resists.<br>EN:  resists. | 抵抗了。 | 抵抗了。 | keep | 怪物实际抵抗元素/石化等结果的通用短句准确，非免疫断言 | crawl-ref/source/beam.cc:1516; crawl-ref/source/beam.cc:1550; crawl-ref/source/beam.cc:1571; crawl-ref/source/beam.cc:1690; crawl-ref/source/beam.cc:1727; crawl-ref/source/ouch.cc:991; crawl-ref/source/ranged-attack.cc:605; crawl-ref/source/spl-monench.cc:64 |
+| source: says: divide and consume!<br>EN:  says: Divide and consume! | 说道：分裂并吞噬！ | 说道：分裂并吞噬！ | keep | 吉瓦分裂与吞噬命令完整 | crawl-ref/source/timed-effects.cc:210 |
+| source: seems less interested in you.<br>EN:  seems less interested in you. | 似乎对你不再那么感兴趣了。 | 似乎对你不再那么感兴趣了。 | keep | 卸下信仰项链后神祇兴趣降低的保留语气准确 | crawl-ref/source/player-equip.cc:2579 |
+| source: terribly<br>EN:  terribly | 极其 | 极其 | keep | 液火高于基础伤害时极其程度接令你痛苦模板，语序完整 | crawl-ref/source/player.cc:5213 |
+| source: use anyway?<br>EN:  Use anyway? |  仍然使用？ |  仍然使用？ | keep | 已有无效原因之后仍使用的确认准确 | crawl-ref/source/potion.cc:512 |
+| source:!tele!<br>EN: !Tele! | 敌传送！ | 敌传送！ | keep | 敌传送灯简写结合正文说明要传送至敌方，未混作自己施法 | crawl-ref/source/status.cc:997 |
+| source:%1$s loses %2$s in your eye.<br>EN: %1$s loses %2$s in your eye. | %1$s沉醉于你的目光，忘却了%2$s。 | %1$s沉醉于你的目光，忘却了%2$s。 | keep | 单眼魅惑失神消息以目光表达并保留反身代词，槽位位置格式正确 | crawl-ref/source/transform.cc:2935 |
+| source:%1$s loses %2$s in your eyes.<br>EN: %1$s loses %2$s in your eyes. | %1$s沉醉于你的目光，忘却了%2$s。 | %1$s沉醉于你的目光，忘却了%2$s。 | keep | 双眼魅惑失神消息以目光表达并保留反身代词，槽位位置格式正确 | crawl-ref/source/transform.cc:2936 |
+| source:%1$s shimmers and splits apart.<br>EN: %1$s shimmers and splits apart. | %1$s闪烁着分裂开来。 | %1$s闪烁着分裂开来。 | keep | 闪烁并分裂的先后伴随效果准确 | crawl-ref/source/timed-effects.cc:365 |
+| source:%d rings<br>EN: %d rings | %d枚戒指 | %d枚戒指 | keep | 实际手臂数转戒指数量，量词与%d正确 | crawl-ref/source/mutation.cc:843 |
+| source:%s (%d).<br>EN: %s (%d). | <br>%s（%d）。 | <br>%s（%d）。 | keep | 巫师诊断附数值及标点准确；物理前导空行由TextDB去掉，不误判转义换行 | crawl-ref/source/player.cc:3783 |
+| source:%s (up to %d damage)<br>EN: %s (up to %d damage) | %s（最高%d伤害） | %s（最高%d伤害） | keep | 污染危害最高伤害括注保留上限限定与数值 | crawl-ref/source/player.cc:4695 |
+| source:%s begins to drip with poison!<br>EN: %s begins to drip with poison! | %s开始滴落毒液！ | %s开始滴落毒液！ | keep | 毒液武器开始滴毒的动作准确 | crawl-ref/source/player-equip.cc:1975 |
+| source:%s begins to ooze corrosive slime!<br>EN: %s begins to ooze corrosive slime! | %s开始渗出腐蚀性黏液！ | %s开始渗出腐蚀性黏液！ | keep | 酸性武器开始渗出腐蚀黏液准确 | crawl-ref/source/player-equip.cc:2055 |
+| source:%s billows from you!<br>EN: %s billows from you! | %s从你身上翻涌而出！ | %s从你身上翻涌而出！ | keep | 汽化时真实云种名称与翻涌而出方向准确 | crawl-ref/source/transform.cc:3284 |
+| source:%s bursts into flame!<br>EN: %s bursts into flame! | %s燃起了火焰！ | %s燃起了火焰！ | keep | 火焰武器开始燃烧准确 | crawl-ref/source/player-equip.cc:1928 |
+| source:%s corrodes you!<br>EN: %s corrodes you! | %s腐蚀了你！ | %s腐蚀了你！ | keep | 腐蚀来源先翻译后进入受害者句，方向正确 | crawl-ref/source/player.cc:7807 |
+| source:%s crawls out from under your cloak.<br>EN: %s crawls out from under your cloak. | %s从你的斗篷下窜了出来。 | %s从你的斗篷下窜了出来。 | keep | 斗篷生成怪物由斗篷下出现，运动动词可用不需强制润色 | crawl-ref/source/ouch.cc:695 |
+| source:%s crumbles into nothing.<br>EN: %s crumbles into nothing. | %s碎裂并消失了。 | %s碎裂并消失了。 | keep | 召唤装备解除后碎裂消失，结果准确 | crawl-ref/source/player-equip.cc:1717 |
+| source:%s crumbles to dust!<br>EN: %s crumbles to dust! | %s化为尘土！ | %s化为尘土！ | keep | 脆弱神器解除后化尘，结果准确 | crawl-ref/source/player-equip.cc:1897 |
+| source:%s emerges from the mists of memory!<br>EN: %s emerges from the mists of memory! | %s从记忆之雾中浮现！ | %s从记忆之雾中浮现！ | keep | 先祖从记忆迷雾显形的风味与所属名参数完整 | crawl-ref/source/player-reacts.cc:696 |
+| source:%s enhances the healing effect.<br>EN: %s enhances the healing effect. | %s增强了治疗效果。 | %s增强了治疗效果。 | keep | 克里娅鳞甲增强治疗效果，未承诺治满 | crawl-ref/source/player.cc:9168 |
+| source:%s enhances the restoration.<br>EN: %s enhances the restoration. | %s增强了魔力恢复。 | %s增强了魔力恢复。 | keep | 魔力药水恢复语境下把restoration明确为魔力恢复，范围正确 | crawl-ref/source/potion.cc:623 |
+| source:%s evaporate!<br>EN: %s evaporate! | %s蒸发了！ | %s蒸发了！ | keep | 变形导致迷雾药水全数蒸发，中文无英语复数问题 | crawl-ref/source/transform.cc:2539 |
+| source:%s falls away%s!<br>EN: %s falls away%s! | %s%s掉落了下来！ | %s%s掉落了下来！ | adjust | 有束缚片段时现模板先插入带逗号感叹号的碎咒分句再接掉落，形成病句；应完整掉落及打破束缚模板；修复：强制卸下/掉落按bound与unbound选择完整句；新英文同表述binding，装备内部cursed标识不改；旧片段保留兼容。 | crawl-ref/source/transform.cc:2564; crawl-ref/source/mutation.cc::_maybe_remove_equipment; crawl-ref/source/transform.cc::untransform |
+| source:%s feels dull in your %s.<br>EN: %s feels dull in your %s. | %s在你的%s中感到迟钝。 | %s在你的%s中感到迟钝。 | keep | 勇气武器低生命时变钝的拟人表达可理解；显得迟钝是可选自然度建议 | crawl-ref/source/player-equip.cc:2070 |
+| source:%s finishes recrystalising.<br>EN: %s finishes recrystalising. | %s重新结晶完毕。 | %s重新结晶完毕。 | keep | 水晶复生完成重新结晶，结果与完成态准确 | crawl-ref/source/transform.cc:2986 |
+| source:%s floods into your lungs!<br>EN: %s floods into your lungs! | %s涌入了你的肺部！ | %s涌入了你的肺部！ | keep | 水淹肺部的介质名槽位完整，后续核介质生产者翻译边界；修复：water/ooze规范英文由所有新producer写入WATER_HOLD_SUBSTANCE_KEY；灌肺、怪物气道、咳出/排出及status长说明各在最终显示槽以flood substance上下文翻译；water使用介质水，不复用地形深水。旧已本地化存档值不改写。 | crawl-ref/source/player.cc:8987; crawl-ref/source/melee-attack.cc::do_ooze_flood/mons_apply_attack_flavour; crawl-ref/source/player.cc::player::floodify; crawl-ref/source/monster.cc::monster::floodify; crawl-ref/source/player-reacts.cc::_decrement_durations; crawl-ref/source/mon-ench.cc::monster::remove_enchantment_effect; crawl-ref/source/status.cc::fill_status_info |
+| source:%s gleams with a vicious edge.<br>EN: %s gleams with a vicious edge. | %s闪烁着凶残的锋芒。 | %s闪烁着凶残的锋芒。 | keep | 碎裂铭印武器锋芒凶险的风味完整 | crawl-ref/source/player-equip.cc:2078 |
+| source:%s glows dimly in your hand.<br>EN: %s glows dimly in your hand. | %s在你手中散发出微弱的光芒。 | %s在你手中散发出微弱的光芒。 | keep | 死亡形态压制神圣武器时黯淡光芒完整 | crawl-ref/source/transform.cc:2135 |
+| source:%s goes dull.<br>EN: %s goes dull. | %s变得迟钝。 | %s变得迟钝。 | keep | 卸下碎裂武器后失去锋芒的变钝表达可理解 | crawl-ref/source/player-equip.cc:2235 |
+| source:%s goes still.<br>EN: %s goes still. | %s静止了下来。 | %s静止了下来。 | keep | 守护武器不再嗡鸣而静止的对照准确 | crawl-ref/source/player-equip.cc:2179 |
+| source:%s hold on you weakens, but your attempt to escape fails.<br>EN: %s hold on you weakens, but your attempt to escape fails. | %s束缚减弱了，但你逃脱的尝试失败了。 | %s束缚减弱了，但你逃脱的尝试失败了。 | keep | 缠绕握持减弱但逃脱失败，结果和转折均完整，所有格来源不重复；修复：根、尸手、藤蔓、未知来源采用同一所有格合同，怪物DESC_ITS仍带所有格；成功完整表达挣脱束缚，失败仍保留减弱但未逃脱。 | crawl-ref/source/player.cc:8837; crawl-ref/source/player.cc::player::attempt_escape |
+| source:%s hums with potential!<br>EN: %s hums with potential! | %s嗡嗡作响，充满潜力！ | %s嗡嗡作响，充满潜力！ | keep | 守护武器蕴含力量并嗡鸣的风味完整 | crawl-ref/source/player-equip.cc:1979 |
+| source:%s is briefly mesmerised by your gaze.<br>EN: %s is briefly mesmerised by your gaze. | %s被你的凝视短暂迷住了。 | %s被你的凝视短暂迷住了。 | keep | 眼神短暂迷住怪物，不误作永久友好 | crawl-ref/source/transform.cc:2943 |
+| source:%s is briefly surrounded by a scintillating aura of random colours.<br>EN: %s is briefly surrounded by a scintillating aura of random colours. | %s被一阵闪烁的随机色彩光环短暂环绕。 | %s被一阵闪烁的随机色彩光环短暂环绕。 | keep | 混沌武器短暂随机彩色光环完整 | crawl-ref/source/player-equip.cc:2018 |
+| source:%s is briefly surrounded by shifting shadows.<br>EN: %s is briefly surrounded by shifting shadows. | %s被变幻的阴影短暂包围。 | %s被变幻的阴影短暂包围。 | keep | 收割武器短暂变幻暗影完整 | crawl-ref/source/player-equip.cc:2036 |
+| source:%s is dragged alongside you!<br>EN: %s is dragged alongside you! | %s被你拖着走！ | %s被你拖着走！ | keep | 友军被拖到玩家身边的伴随移动方向准确 | crawl-ref/source/player.cc:851 |
+| source:%s is forcibly removed from your body%s!<br>EN: %s is forcibly removed from your body%s! | %s从你的身体中被强制移除%s！ | %s从你的身体中被强制移除%s！ | adjust | 装备被变异强制移除时绑定后缀为raw英文且按旧诅咒表述；应完整模板按当前绑定机制翻译；修复：强制卸下/掉落按bound与unbound选择完整句；新英文同表述binding，装备内部cursed标识不改；旧片段保留兼容。 | crawl-ref/source/mutation.cc:1459; crawl-ref/source/mutation.cc::_maybe_remove_equipment; crawl-ref/source/transform.cc::untransform |
+| source:%s is lifted from you.<br>EN: %s is lifted from you. | %s从你身上被解除了。 | %s从你身上被解除了。 | keep | 指定灾祸从玩家身上解除，主体关系正确 | crawl-ref/source/mutation.cc:3677 |
+| source:%s quivers in your %s.<br>EN: %s quivers in your %s. | %s在你的%s中颤抖。 | %s在你的%s中颤抖。 | keep | 斥责武器在玩家手部颤抖，手部名槽位保留 | crawl-ref/source/player-equip.cc:2063 |
+| source:%s radiates an overwhelming force.<br>EN: %s radiates an overwhelming force. | %s散发出压倒性的力量。 | %s散发出压倒性的力量。 | keep | 震荡武器散发强大力量，程度和主体完整 | crawl-ref/source/player-equip.cc:2082 |
+| source:%s right now would cause you to %s!<br>EN: %s right now would cause you to %s! | 现在%s会导致你%s！ | 现在%s会导致你%s！ | keep | 取消/施加变形会烧伤或溺水的完整语义保留，两动态槽都走T_ | crawl-ref/source/transform.cc:1958 |
+| source:%s right now would shatter %s!<br>EN: %s right now would shatter %s! | 现在%s会粉碎%s！ | 现在%s会粉碎%s！ | keep | 取消/施加变形会粉碎指定装备，受影响物品完整 | crawl-ref/source/transform.cc:1986 |
+| source:%s sits dull and lifeless in your grasp.<br>EN: %s sits dull and lifeless in your grasp. | %s在你手中暗淡无光，毫无生气。 | %s在你手中暗淡无光，毫无生气。 | keep | 神圣/污秽武器与相斥角色属性时黯淡失活风味准确 | crawl-ref/source/player-equip.cc:1941; crawl-ref/source/player-equip.cc:1954 |
+| source:%s slips away as you move towards %s!<br>EN: %s slips away as you move towards %s! | %s在你移向%s时滑开了！ | %s在你移向%s时滑开了！ | adjust | feat_preposition返回onto/under/over等原始英文，当前作为目的地名插入导致中文漏译和错误句法；须按动作位置完整句显示；修复：feat_preposition仍是规范英文；onto/under/over/inside/into/beside六种方向各选完整显示句。 | crawl-ref/source/player.cc:145; crawl-ref/source/player.cc::_moveto_maybe_repel_stairs; crawl-ref/source/terrain.cc::feat_preposition |
+| source:%s softly glows with a divine radiance!<br>EN: %s softly glows with a divine radiance! | %s散发出柔和的神圣光辉！ | %s散发出柔和的神圣光辉！ | keep | 神圣武器恢复柔和光芒完整 | crawl-ref/source/player-equip.cc:1946; crawl-ref/source/transform.cc:2140 |
+| source:%s spike launcher falls apart as %s %s too distant to maintain it.<br>EN: %s spike launcher falls apart as %s %s too distant to maintain it. | %s尖刺发射器散架了，因为%s%s太远，无法维持它。 | %s尖刺发射器散架了，因为%s%s太远，无法维持它。 | keep | 尖刺发射器因施术者距离过远消散，verb&#124;grow实际离得所以完整组合无误 | crawl-ref/source/timed-effects.cc:1213 |
+| source:%s spike launcher falls apart.<br>EN: %s spike launcher falls apart. | %s尖刺发射器散架了。 | %s尖刺发射器散架了。 | keep | 尖刺发射器归属与消散消息完整 | crawl-ref/source/timed-effects.cc:1262 |
+| source:%s stops crackling.<br>EN: %s stops crackling. | %s停止了噼啪作响。 | %s停止了噼啪作响。 | keep | 电击武器停止噼啪声准确 | crawl-ref/source/player-equip.cc:2169 |
+| source:%s stops dripping with poison.<br>EN: %s stops dripping with poison. | %s停止了滴落毒液。 | %s停止了滴落毒液。 | keep | 毒液武器停止滴毒准确 | crawl-ref/source/player-equip.cc:2174 |
+| source:%s stops flaming.<br>EN: %s stops flaming. | %s停止了燃烧。 | %s停止了燃烧。 | keep | 火焰武器停止燃烧准确 | crawl-ref/source/player-equip.cc:2149 |
+| source:%s stops glowing.<br>EN: %s stops glowing. | %s停止了发光。 | %s停止了发光。 | keep | 多种铭印/神器停止发光的通用语义正确，未丢限定条件 | crawl-ref/source/art-func.h:1663; crawl-ref/source/player-equip.cc:2154; crawl-ref/source/player-equip.cc:2159; crawl-ref/source/player-equip.cc:2164 |
+| source:%s stops oozing corrosive slime.<br>EN: %s stops oozing corrosive slime. | %s停止了渗出腐蚀性黏液。 | %s停止了渗出腐蚀性黏液。 | keep | 酸性武器停止渗出腐蚀黏液，解除动作准确 | crawl-ref/source/player-equip.cc:2216 |
+| source:%s stops quivering.<br>EN: %s stops quivering. | %s停止了颤抖。 | %s停止了颤抖。 | keep | 斥责武器停止颤抖，与启用风味对应 | crawl-ref/source/player-equip.cc:2221 |
+| source:%s stops radiating force.<br>EN: %s stops radiating force. | %s停止了散发力量。 | %s停止了散发力量。 | keep | 震荡武器停止散发力量，主体正确 | crawl-ref/source/player-equip.cc:2240 |
+| source:%s surges with power!<br>EN: %s surges with power! | %s力量涌动！ | %s力量涌动！ | keep | 水晶实体力量涌动后攻击，主体名与增强风味完整 | crawl-ref/source/transform.cc:3109 |
+| source:%s torments you.<br>EN: %s torments you. | %s折磨着你。 | %s折磨着你。 | keep | 灾祸开始折磨玩家的通用叙述完整，不误作折磨法术数值承诺 | crawl-ref/source/mutation.cc:3660 |
+| source:%s%s falls off!<br>EN: %s%s falls off! | %s%s掉落了下来！ | %s%s掉落了下来！ | adjust | 变异使装备掉落时raw英文碎咒后缀插入物品与谓语之间；同强制移除分支须完整句并依当前束缚机制表述；修复：强制卸下/掉落按bound与unbound选择完整句；新英文同表述binding，装备内部cursed标识不改；旧片段保留兼容。 | crawl-ref/source/mutation.cc:1465; crawl-ref/source/mutation.cc::_maybe_remove_equipment; crawl-ref/source/transform.cc::untransform |
+| source:%s%s swings open!<br>EN: %s%s swings open! | %s%s猛然打开！ | %s%s猛然打开！ | keep | 狂暴静音开门的大小形容与门类均已由get_door_description翻译，动作完整 | crawl-ref/source/player.cc:9338 |
+| source:%s, a level %d %s %s<br>EN: %s, a level %d %s %s | %s，第%d级%s %s | %s，第%d级%s %s | keep | 角色名、经验等级、种族与背景四槽顺序完整，种族背景来自显示名 | crawl-ref/source/player.cc:6138 |
+| source:%s.<br>EN: %s. | <br>%s。 | <br>%s。 | keep | 一般角色状态句尾标点完整，物理前导空行由加载器去掉 | crawl-ref/source/player.cc:3785 |
+| source:%sing a weapon of distortion<br>EN: %sing a weapon of distortion | %s扭曲武器 | %s扭曲武器 | adjust | 扭曲武器放逐原因模板接raw rebrand/unwield而形成混语，且结果进入banished_by存档/score；须先保留规范英文原因，再在已知显示边界翻译；修复：扭曲武器放逐原因保持规范英文进入banisher、milestone与Abyss Note；仅desc=abyss entry的已知两种原因及无原因Note在最终describe显示翻译。未知、畸形、缺翻译整句英文回退；无标记同文快照不变。 | crawl-ref/source/player-equip.cc:2928; crawl-ref/source/player-equip.cc::unwield_distortion; crawl-ref/source/player.cc::player::banish; crawl-ref/source/abyss.cc::banished; crawl-ref/source/notes.cc::_abyss_entry_note_display; crawl-ref/source/notes.cc::Note::describe |
+| source:%sway<br>EN: %sway | %s | %s | keep | 门道可被中文门/大门自然指代，无需机械翻出way后缀 | crawl-ref/source/player.cc:9441 |
+| source:(press &lt;w&gt;%2$c&lt;/w&gt; in the &lt;w&gt;%1$s&lt;/w&gt; ability menu to create your gizmo)<br>EN: (Press &lt;w&gt;%2$c&lt;/w&gt; in the &lt;w&gt;%1$s&lt;/w&gt; ability menu to create your gizmo) | （在&lt;w&gt;%1$s&lt;/w&gt;能力菜单上按&lt;w&gt;%2$c&lt;/w&gt;来创造你的小装置） | （在&lt;w&gt;%1$s&lt;/w&gt;能力菜单上按&lt;w&gt;%2$c&lt;/w&gt;来创造你的小装置） | keep | 发明装置说明明确能力菜单内按特定快捷键，两真实键和位置参数保留 | crawl-ref/source/player.cc:3546 |
+| source:(you can now cast %s.)<br>EN: (You can now cast %s.) | （你现在可以施放%s了。） | （你现在可以施放%s了。） | keep | 回忆法术后可施放的括注准确，法术名经spell_title显示 | crawl-ref/source/player.cc:3298 |
+| source:* * * low hitpoint warning * * *<br>EN: * * * LOW HITPOINT WARNING * * * | * * * 低生命警告 * * * | * * * 低生命警告 * * * | keep | 低生命警告强调与生命资源准确 | crawl-ref/source/player.cc:4250 |
+| source:* * * low magic warning * * *<br>EN: * * * LOW MAGIC WARNING * * * | * * * 低魔力警告 * * * | * * * 低魔力警告 * * * | keep | 低魔力警告强调与魔力资源准确 | crawl-ref/source/player.cc:4237 |
+| source:, but still<br>EN: , but still | ，但仍然 | ，但仍然 | keep | 顺风或逆风但结果速度相反时仍然的转折准确 | crawl-ref/source/player.cc:3811; crawl-ref/source/player.cc:3813 |
+| source:, shattering the curse!<br>EN: , shattering the curse! | ，诅咒被粉碎了！ | ，诅咒被粉碎了！ | adjust | 当前变形强制卸下的是Ash已束缚装备，旧碎咒片段与完整模板拼接有错；迁移完整束缚句，旧键留兼容；修复：强制卸下/掉落按bound与unbound选择完整句；新英文同表述binding，装备内部cursed标识不改；旧片段保留兼容。 | crawl-ref/source/transform.cc:2563; crawl-ref/source/mutation.cc::_maybe_remove_equipment; crawl-ref/source/transform.cc::untransform |
+| source:, since you lack skill for your form<br>EN: , since you lack skill for your form | ，因为你驾驭该形态的技能不足 | ，因为你驾驭该形态的技能不足 | keep | 当前形态技能不足造成降生命的因果完整 | crawl-ref/source/mutation.cc:693 |
+| source:-clouds<br>EN: -Clouds | 无云 | 无云 | keep | 静风阻止云的短灯标记可辨认 | crawl-ref/source/status.cc:860 |
+| source:-gclaw<br>EN: -GClaw | 禁墓爪 | 禁墓爪 | keep | 墓爪零次数时禁用短灯标记正确 | crawl-ref/source/status.cc:934 |
+| source:-potion<br>EN: -Potion | -药水 | -药水 | keep | 不能饮药的减号短灯明确配合正文，不强制改为禁药风格 | crawl-ref/source/status.cc:368 |
+| source:-regen<br>EN: -Regen | 禁再生 | 禁再生 | keep | 附近怪物抑制再生的禁用标记准确 | crawl-ref/source/status.cc:1347 |
+| source:-scroll<br>EN: -Scroll | 禁卷轴 | 禁卷轴 | keep | 不能阅读卷轴的禁用标记准确 | crawl-ref/source/status.cc:893 |
+| source:. you resist.<br>EN: . You resist. | 。你抵抗了这次伤害。 | 。你抵抗了这次伤害。 | keep | 液火伤害被抗性削减后的抵抗说明准确，不承诺免伤 | crawl-ref/source/player.cc:5214 |
+| source:...and don't expect to remain unnoticed.<br>EN: ...and don't expect to remain unnoticed. | ……而且别指望不被发现。 | ……而且别指望不被发现。 | keep | 入水会暴露隐形轮廓的警告完整 | crawl-ref/source/player.cc:787 |
+| source:...but don't expect to remain undetected.<br>EN: ...but don't expect to remain undetected. | ……但别指望不被发现。 | ……但别指望不被发现。 | keep | 鱼尾入水仍会被察觉，转折否定正确 | crawl-ref/source/transform.cc:2674 |
+| source:; use anyway?<br>EN: ; use anyway? | ；仍然使用吗？ | ；仍然使用吗？ | adjust | 仍使用的后缀自身正确，但背光原因由raw英文msg拼接，需同完整确认入口修复；修复：四类发光来源逐一在显示端翻译；局部列表context避免既有共享连接词的前导换行，实际andc/comma位置正确。身体/背光失败原因也按完整显示句翻译。 | crawl-ref/source/player.cc:5610; crawl-ref/source/player.cc::invis_allowed; crawl-ref/source/stringutil.h::comma_separated_line |
+| source:&lt;darkgrey&gt;()&lt;/darkgrey&gt;: suppressed.&#92;n<br>EN: &lt;darkgrey&gt;()&lt;/darkgrey&gt;: Suppressed.&#92;n | &lt;darkgrey&gt;()&lt;/darkgrey&gt;：被抑制。&#92;n | &lt;darkgrey&gt;()&lt;/darkgrey&gt;：被抑制。&#92;n | keep | 受抑制变异的括号图例和颜色标签/换行保留 | crawl-ref/source/mutation.cc:1062 |
+| source:&lt;darkgrey&gt;[%s]&lt;/darkgrey&gt; xl %d<br>EN: &lt;darkgrey&gt;[%s]&lt;/darkgrey&gt; XL %d | &lt;darkgrey&gt;[%s]&lt;/darkgrey&gt; 等级 %d | &lt;darkgrey&gt;[%s]&lt;/darkgrey&gt; 等级 %d | keep | 未来变异描述与经验等级阈值和暗灰标记完整 | crawl-ref/source/mutation.cc:1182 |
+| source:&lt;lightmagenta&gt;%s [%.1f]&lt;/lightmagenta&gt;<br>EN: &lt;lightmagenta&gt;%s [%.1f]&lt;/lightmagenta&gt; | &lt;lightmagenta&gt;%s [%.1f]&lt;/lightmagenta&gt; | &lt;lightmagenta&gt;%s [%.1f]&lt;/lightmagenta&gt; | keep | 灾祸剩余等级数保留一位小数及显示标签 | crawl-ref/source/mutation.cc:1198 |
+| source:&lt;magenta&gt;[]&lt;/magenta&gt;: transient mutations.&#92;n<br>EN: &lt;magenta&gt;[]&lt;/magenta&gt;: Transient mutations.&#92;n | &lt;magenta&gt;[]&lt;/magenta&gt;: 临时变异。&#92;n | &lt;magenta&gt;[]&lt;/magenta&gt;: 临时变异。&#92;n | keep | 临时变异方括号图例与换行完整 | crawl-ref/source/mutation.cc:1064 |
+| source:a demonic guardian appears!<br>EN: A demonic guardian appears! | 一个恶魔守护者出现了！ | 一个恶魔守护者出现了！ | keep | 恶魔守护者出现的存在性消息完整，不许诺具体种类 | crawl-ref/source/mutation.cc:3379 |
+| source:a fearsome %s!<br>EN: a fearsome %s! | 一只可怕的%s！ | 一只可怕的%s！ | adjust | 龙人变龙描述的%s直接mons_class_name原英文，外层T_无法翻译格式化整句；应在名称显示槽翻译；修复：龙人变龙显示在最终mons_class_name槽翻译，monster_type及行为不变。 | crawl-ref/source/transform.cc:772; crawl-ref/source/transform.cc::FormDragon::get_description |
+| source:a flood of memories rushes over you.<br>EN: A flood of memories rushes over you. | 一阵记忆的洪流席卷了你。 | 一阵记忆的洪流席卷了你。 | keep | 经验药水带来记忆洪流的意象完整 | crawl-ref/source/potion.cc:564 |
+| source:a living statue of rough stone.<br>EN: a living statue of rough stone. | 一尊粗糙的活石像。 | 一尊粗糙的活石像。 | keep | 石像形态的活体与粗石质地均保留 | crawl-ref/source/transform.cc:708 |
+| source:a magic seal in the gauntlet prevents long-range teleports.<br>EN: A magic seal in the Gauntlet prevents long-range teleports. | 手套关卡中的魔法封印阻止了远距离传送。 | 试炼场中的魔法封印阻止了远距离传送。 | adjust | Gauntlet是固定分支试炼场，现手套关卡误译；长距传送限制保持；已按本行当前值修正措辞。 | crawl-ref/source/player.cc:7580 |
+| source:a mane of stinging tendrils grows from your head.<br>EN: A mane of stinging tendrils grows from your head. | 一丛刺人的触须从你头上长了出来。 | 一丛刺人的触须从你头上长了出来。 | keep | 海葵形态头部长出刺人触须的一簇形态保留 | crawl-ref/source/transform.cc:1273 |
+| source:a mantle of jade grows out of you.<br>EN: A mantle of jade grows out of you. | 一件玉衣从你体内长了出来。 | 一件玉衣从你体内长了出来。 | keep | 玉衣形态由身体长出玉质外衣，主体与来源完整 | crawl-ref/source/transform.cc:1453 |
+| source:a miniature sun coalesces next to you.<br>EN: A miniature sun coalesces next to you. | 一颗微型太阳在你身旁凝聚成形。 | 一颗微型太阳在你身旁凝聚成形。 | keep | 太阳余烬初生以微型太阳作英文明确比喻，非实体名称误译 | crawl-ref/source/transform.cc:2875 |
+| source:a searing pain shoots up your %s!<br>EN: A searing pain shoots up your %s! | 一阵灼痛直冲你的%s！ | 一阵灼痛直冲你的%s！ | keep | 痛楚沿手臂直冲而上，身体部位槽位正确 | crawl-ref/source/player-equip.cc:2011 |
+| source:a sentinel's mark forms upon you.<br>EN: A sentinel's mark forms upon you. | 一个哨兵印记在你身上形成。 | 一个哨兵印记在你身上形成。 | keep | 哨兵印记形成在玩家身上，状态来源完整 | crawl-ref/source/player.cc:8854 |
+| source:a shaft opens beneath you!<br>EN: A shaft opens beneath you! | 你身下出现了一个竖井！ | 你身下出现了一个竖井！ | keep | 自挖竖井从玩家脚下打开，位置完整 | crawl-ref/source/player.cc:8705 |
+| source:a shower of butterflies erupts from you!<br>EN: A shower of butterflies erupts from you! | 一群蝴蝶从你体内爆发出来！ | 一群蝴蝶从你体内爆发出来！ | keep | 佐姆受伤蝴蝶爆发的方向与复数群体完整 | crawl-ref/source/ouch.cc:824 |
+| source:a voice whispers, "%s"<br>EN: A voice whispers, "%s" | 一个声音低语道：“%s” | 一个声音低语道：“%s” | keep | 神器SpeakDB低语和法术对白均以完整引语模板显示，语义和引号完整 | crawl-ref/source/art-func.h:1155; crawl-ref/source/art-func.h:1793; crawl-ref/source/art-func.h:1805; crawl-ref/source/player-equip.cc:2304; crawl-ref/source/spl-cast.cc:905 |
+| source:an electric eel<br>EN: an electric eel | 一条电鳗 | 一条电鳗 | keep | 电鳗手臂单数形态描述的一条量词正确 | crawl-ref/source/transform.cc:1324 |
+| source:an external divine aura illuminates you.<br>EN: An external divine aura illuminates you. | 一个外部的神圣光环照亮了你。 | 一个外部的神圣光环照亮了你。 | keep | 外来神圣光环照亮玩家，与自己光环相区别 | crawl-ref/source/player.cc:3916 |
+| source:an unnatural silence engulfs you.<br>EN: An unnatural silence engulfs you. | 一阵不自然的沉默吞没了你。 | 一阵不自然的沉默吞没了你。 | keep | 非自然沉默包围玩家，延续/初次分支区分明确 | crawl-ref/source/beam.cc:4165; crawl-ref/source/player.cc:5273 |
+| source:and<br>EN: and | 且 | 且 | keep | 顺风和最终速度同向时的且连接正确 | crawl-ref/source/player.cc:3812; crawl-ref/source/player.cc:3814 |
+| source:angry insects swarm out of your body to defend their hive!<br>EN: Angry insects swarm out of your body to defend their hive! | 愤怒的昆虫从你体内蜂拥而出保卫蜂巢！ | 愤怒的昆虫从你体内蜂拥而出保卫蜂巢！ | keep | 蜂巢形态护体昆虫从身体涌出守卫蜂巢，动机与方向完整 | crawl-ref/source/ouch.cc:961 |
+| source:are you sure you want to %s into %s while you are losing your buoyancy?<br>EN: Are you sure you want to %s into %s while you are losing your buoyancy? | 你确定要%s%s吗？你的浮力正在消失。 | 你确定要%s%s吗？你的浮力正在消失。 | keep | 浮力下降时进入危险地形的确定动作确认完整，translated_move_phrase提供进入义 | crawl-ref/source/player.cc:445 |
+| source:are you sure you want to %s into %s while your transformation is expiring?<br>EN: Are you sure you want to %s into %s while your transformation is expiring? | 你确定要%s%s吗？你的变形即将结束。 | 你确定要%s%s吗？你的变形即将结束。 | keep | 形态将结束时进入危险地形的确认完整，不改作已结束 | crawl-ref/source/player.cc:450 |
+| source:are you sure you want to %s into a toxic bog?<br>EN: Are you sure you want to %s into a toxic bog? | 你确定要%s毒沼吗？ | 你确定要%s毒沼吗？ | keep | 进入毒沼的确定动作确认完整，实际进入动词由movement短语接口给出 | crawl-ref/source/player.cc:494 |
+| source:are you sure you want to %s onto a binding sigil?<br>EN: Are you sure you want to %s onto a binding sigil? | 你确定要%s束缚符文吗？ | 你确定要%s束缚符文吗？ | keep | 登上束缚符文的确定动作确认完整，与已审词组接口衔接 | crawl-ref/source/player.cc:375 |
+| source:are you sure you want to %s over %s while you are losing your buoyancy?<br>EN: Are you sure you want to %s over %s while you are losing your buoyancy? | 你确定要%s%s上方吗？你的浮力正在消失。 | 你确定要%s%s上方吗？你的浮力正在消失。 | keep | 浮力下降仍越过地形上方的确认完整，空中路径限定保留 | crawl-ref/source/player.cc:443 |
+| source:are you sure you want to %s over %s while your transformation is expiring?<br>EN: Are you sure you want to %s over %s while your transformation is expiring? | 你确定要%s%s上方吗？你的变形即将结束。 | 你确定要%s%s上方吗？你的变形即将结束。 | keep | 形态将结束仍越过地形上方的确认完整 | crawl-ref/source/player.cc:448 |
+| source:artefacts<br>EN: artefacts | 神器 | 神器 | keep | 多件阻传装备全为神器时类别正确 | crawl-ref/source/player.cc:7615 |
+| source:as expected.<br>EN: As expected. | 果然如此。 | 果然如此。 | keep | 巫师拒绝死亡后的果然如此风味准确 | crawl-ref/source/ouch.cc:1587 |
+| source:as the last of your armour is driven back to you, your cacophony ends.<br>EN: As the last of your armour is driven back to you, your cacophony ends. | 随着最后一件护甲回到你身边，你的嘈杂声结束了。 | 随着最后一件护甲被击退回你身边，你的嘈杂声结束了。 | adjust | 最后护甲被击退回玩家才结束嘈杂，现译只说回到身边丢被击退；应保留driven back；已按本行当前值修正措辞。 | crawl-ref/source/player-reacts.cc:1063 |
+| source:as you close the %s%s%s, it creaks loudly!<br>EN: As you close the %s%s%s, it creaks loudly! | 当你关上%s%s%s时，它发出了响亮的吱嘎声！ | 你关上了%s%s%s，门发出刺耳的吱嘎声！ | adjust | 关门吱嘎完整模板还接未翻译items_msg且把额外推物动作夹在门名后；须同步完整推物/关门句；修复：门大小、门型保持原显示参数；推开挡路物品片段在显示端翻译，普通/飞行/猛烈/有声/吱嘎完整语序同步；自定义des格式路径不变。 | crawl-ref/source/player.cc:9536; crawl-ref/source/player.cc::player_close_door; crawl-ref/source/terrain.cc::get_door_description |
+| source:as you open the %s%s, it creaks loudly!<br>EN: As you open the %s%s, it creaks loudly! | 当你打开%s%s时，它发出响亮的吱嘎声！ | 当你打开%s%s时，它发出响亮的吱嘎声！ | keep | 开门吱嘎的大小/门类默认槽位已翻译，动作声响完整；自定义marker另列边界 | crawl-ref/source/player.cc:9362 |
+| source:as your demonic ancestry asserts itself, you feel your body warp and mutate.<br>EN: As your demonic ancestry asserts itself, you feel your body warp and mutate. | 当你的恶魔血统发挥作用时，你感到身体扭曲变异。 | 当你的恶魔血统发挥作用时，你感到身体扭曲变异。 | keep | 恶魔血统显现造成身体扭曲变异的因果完整 | crawl-ref/source/player.cc:3498 |
+| source:aug<br>EN: Aug | 增强 | 增强 | keep | 增幅变异短灯增强可辨认，与等级色彩无冲突 | crawl-ref/source/status.cc:477 |
+| source:average<br>EN: average | 平均 | 平均 | adjust | 移动速度10的等级是一般/正常，并非数学平均；当前你的移动速度为平均不准确；修复：局部movement speed context覆盖完整四槽及风力/连词/五速度档；普通、顺风、逆风组合完整，average仅此速度语境改正常，原移动耗时不改。 | crawl-ref/source/player.cc:3819; crawl-ref/source/player.cc::_display_movement_speed |
+| source:bane of %s<br>EN: Bane of %s | %s之灾 | %s之灾 | keep | 灾祸名用%s之灾符合当前术语，嵌入short_name经T_ | crawl-ref/source/mutation.cc:3504 |
+| source:barbed spikes embed themselves in your body.<br>EN: Barbed spikes embed themselves in your body. | 带刺的尖刺嵌入了你的身体。 | 带刺的尖刺嵌入了你的身体。 | keep | 倒刺扎入身体的作用方向完整，带刺的尖刺可选精简不属事实错 | crawl-ref/source/player.cc:5357 |
+| source:bearserk<br>EN: Bearserk | 熊怒 | 熊怒 | keep | 熊灵触发狂暴的熊怒短灯保留熊/狂暴组合意象 | crawl-ref/source/status.cc:357 |
+| source:becoming undead will pull you out of death's doorway! transform anyway?<br>EN: Becoming undead will pull you out of death's doorway! Transform anyway? | 化为亡灵将使你脱离死亡之门状态！仍要变形吗？ | 化为亡灵将使你脱离死亡之门状态！仍要变形吗？ | keep | 死亡之门期间成为亡灵会失去该状态，条件与继续确认完整 | crawl-ref/source/transform.cc:2096 |
+| source:bezotted<br>EN: bezotted | 佐特逼近 | 佐特逼近 | keep | 佐特逼近短状态与完整正文一致 | crawl-ref/source/status.cc:1252 |
+| source:blades grow out of your body!<br>EN: Blades grow out of your body! | 利刃从你身上长出来了！ | 利刃从你身上长出来了！ | keep | 利刃形态身体长出利刃的变化完整 | crawl-ref/source/transform.cc:659 |
+| source:breath<br>EN: Breath | 吐息 | 吐息 | keep | 龙人吐息状态灯与次数详情对应 | crawl-ref/source/status.cc:280 |
+| source:bribe<br>EN: Bribe | 贿赂 | 贿赂 | keep | 贿赂状态短灯准确 | crawl-ref/source/status.cc:767 |
+| source:bribing [%s]<br>EN: bribing [%s] | 贿赂中[%s] | 贿赂中[%s] | keep | 贿赂中各分支列表保留%s及进行状态，实际分支名称另核共享生产者 | crawl-ref/source/status.cc:769 |
+| source:buggy terrain<br>EN: buggy terrain | 有问题的地形 | 有问题的地形 | keep | 不合法地形兜底诊断明确标示有问题，不冒称正常地形 | crawl-ref/source/player.cc:5690 |
+| source:burn<br>EN: burn | 灼烧 | 灼烧 | keep | 灼烧在近战/远程火焰与变形危险槽均可作同义动作，verb_for_display保留中英变化 | crawl-ref/source/attack.cc:1196; crawl-ref/source/melee-attack.cc:3574; crawl-ref/source/melee-attack.cc:4511; crawl-ref/source/ranged-attack.cc:656; crawl-ref/source/transform.cc:1957; crawl-ref/source/transform.cc:2079 |
+| source:but there is nothing inside them<br>EN: but there is nothing inside them | 但里面什么也没有 | 但里面什么也没有 | keep | 银墙为空时补没有内含对象，否定正确 | crawl-ref/source/timed-effects.cc:734 |
+| source:cannot jump into a shaft in your current form.<br>EN: Cannot jump into a shaft in your current form. | 当前形态下无法跳入竖井。 | 当前形态下无法跳入竖井。 | keep | 改变身体形态不能自挖竖井的限制准确 | crawl-ref/source/player.cc:8649; crawl-ref/source/player.cc:8651 |
+| source:cannot jump into a shaft on this floor.<br>EN: Cannot jump into a shaft on this floor. | 此楼层无法跳入竖井。 | 此楼层无法跳入竖井。 | keep | 此楼层不允许竖井的限制准确 | crawl-ref/source/player.cc:8681; crawl-ref/source/player.cc:8683 |
+| source:cannot jump into a shaft on this terrain.<br>EN: Cannot jump into a shaft on this terrain. | 此地形上无法跳入竖井。 | 此地形上无法跳入竖井。 | keep | 当前地形不允许竖井的限制准确 | crawl-ref/source/player.cc:8690; crawl-ref/source/player.cc:8692 |
+| source:cannot jump into a shaft while unable to move.<br>EN: Cannot jump into a shaft while unable to move. | 无法移动时无法跳入竖井。 | 无法移动时无法跳入竖井。 | keep | 不能移动时不能自挖竖井的条件准确 | crawl-ref/source/player.cc:8670; crawl-ref/source/player.cc:8672 |
+| source:careful! %s<br>EN: Careful! %s | 小心！%s | 小心！%s | keep | 危险持续效果到期时小心前缀保留，expmsg已翻译 | crawl-ref/source/player-reacts.cc:171 |
+| source:carefully extract<br>EN: carefully extract | 小心地拔出 | 小心地拔出 | keep | 从身体移除倒刺时小心拔出的动作准确 | crawl-ref/source/player-reacts.cc:1008 |
+| source:cloud<br>EN: Cloud | 云雾 | 云雾 | keep | 所在云雾的通用灯标记准确，不虚构具体类别 | crawl-ref/source/status.cc:813 |
+| source:confirm quaff<br>EN: Confirm quaff | 确认饮用 | 确认饮用 | keep | 隐形药水目标确认标题饮用准确 | crawl-ref/source/potion.cc:517 |
+| source:constr<br>EN: Constr | 束缚 | 束缚 | keep | Constriction状态缩略用当前术语束缚，与已审正文一致 | crawl-ref/source/status.cc:541 |
+| source:corr (%d)<br>EN: Corr (%d) | 腐蚀（%d） | 腐蚀（%d） | keep | 腐蚀灯的实际负数惩罚保留整数槽 | crawl-ref/source/status.cc:342 |
+| source:corroded (%d)<br>EN: corroded (%d) | 腐蚀（%d） | 腐蚀（%d） | keep | 腐蚀详细短状态保留同一负数惩罚 | crawl-ref/source/status.cc:345 |
+| source:crippled<br>EN: Crippled | 残废 | 残废 | keep | 属性归零的残废短灯可辨认，对应详情逐个列属性 | crawl-ref/source/status.cc:262 |
+| source:dangerous cloud<br>EN: dangerous cloud | 危险云雾 | 危险云雾 | keep | 多种危险云的通用范围正确，不错误选一种名称 | crawl-ref/source/player.cc:204 |
+| source:death has come for you....<br>EN: Death has come for you.... | 死亡降临了…… | 死亡降临了…… | keep | 死亡之灾召来收割者的死亡降临意象成立，不误判为某个专名Death | crawl-ref/source/timed-effects.cc:315 |
+| source:deep<br>EN: deep | 深 | 深 | keep | 深水步入/跌入的深浅修饰准确 | crawl-ref/source/player.cc:774; crawl-ref/source/player.cc:779 |
+| source:dense mycelia sprout from your %1$s and %2$s.<br>EN: Dense mycelia sprout from your %1$s and %2$s. | 密集的菌丝从你的%1$s和%2$s中萌发出来。 | 密集的菌丝从你的%1$s和%2$s中萌发出来。 | keep | 孢子形态菌丝由手臂和脚两部位萌发，两个位置参数完整 | crawl-ref/source/transform.cc:1376 |
+| source:die?<br>EN: Die? | 死？ | 死？ | keep | 测试或巫师死亡确认简短问句准确 | crawl-ref/source/ouch.cc:1585 |
+| source:dismisses<br>EN: dismisses | 消散 | 消散 | adjust | 辛解除囚牢的动作不能译成不及物消散；完整句还把释放对象置于囚牢之前并错用辛恩，应迁移两分支完整句；修复：辛释放囚徒与撤去空银墙两完整分支分开；对象、所有格、空牢条件保持，旧碎片留兼容。 | crawl-ref/source/timed-effects.cc:730; crawl-ref/source/timed-effects.cc::_drop_tomb |
+| source:do you really want to %s into the zot trap?<br>EN: Do you really want to %s into the Zot trap? | 你确定要%s佐特陷阱吗？ | 你确定要%s佐特陷阱吗？ | keep | 佐特陷阱确认由translated_move_phrase提供进入动作，位置关系完整 | crawl-ref/source/player.cc:269 |
+| source:dog<br>EN: Dog | 犬灵 | 犬灵 | keep | 犬灵短灯指代犬灵附身效果，保留已审法术实体词根 | crawl-ref/source/status.cc:880 |
+| source:don't expect to remain unnoticed in the water.<br>EN: Don't expect to remain unnoticed in the water. | 在水中别指望不被发现。 | 在水中别指望不被发现。 | keep | 水中隐形仍可被发现的否定提醒完整 | crawl-ref/source/player.cc:789 |
+| source:doom falls upon you...<br>EN: Doom falls upon you... | 厄运降临在你身上…… | 厄运降临在你身上…… | keep | 死亡之灾降临的事件叙述完整，不错误限定某种伤害 | crawl-ref/source/player.cc:8465 |
+| source:drown<br>EN: drown | 溺亡 | 溺亡 | keep | 深水变形会溺亡，怪物致死动作同义；与burn分支对应 | crawl-ref/source/melee-attack.cc:4548; crawl-ref/source/transform.cc:1957; crawl-ref/source/transform.cc:2078 |
+| source:duel<br>EN: Duel | 决斗 | 决斗 | keep | 决斗状态短灯与效果对应 | crawl-ref/source/status.cc:869 |
+| source:eel <br>EN: Eel  | 鳗鱼 | 鳗鱼 | keep | 鳗鱼手臂组合前缀保留生物种类，与hand_transform_parts显示名连贯 | crawl-ref/source/transform.cc:1359 |
+| source:electric eels<br>EN: electric eels | 电鳗 | 电鳗 | keep | 多个电鳗手臂复数在中文无需英语词尾，物种正确 | crawl-ref/source/transform.cc:1324 |
+| source:electricity coursing through you<br>EN: electricity coursing through you | 电流流经你的身体 | 电流流经你的身体 | keep | 静态电击来源描述保留电流贯穿身体的感觉 | crawl-ref/source/player.cc:3265 |
+| source:enkindled (%d)<br>EN: Enkindled (%d) | 点燃（%d） | 点燃（%d） | keep | 点燃状态包含剩余次数，不误写具体时长 | crawl-ref/source/status.cc:1045 |
+| source:escape!<br>EN: Escape! | 逃离！ | 逃离！ | keep | 脱离困境机会的紧急灯标记保留感叹语气 | crawl-ref/source/status.cc:967 |
+| source:expiring: <br>EN: Expiring:  | <br>即将到期： | <br>即将到期： | keep | 持续效果即将到期的正文前缀准确，前导物理空行会被DB加载器剥除 | crawl-ref/source/status.cc:177 |
+| source:extra life!<br>EN: Extra life! | 额外生命！ | 额外生命！ | keep | 猫族额外生命提示保留获得额外生命而非治疗 | crawl-ref/source/player.cc:3089 |
+| source:extract magic from the potions you drink<br>EN: extract magic from the potions you drink | 从你饮用的药水中提取法力 | 从你饮用的药水中提取法力 | keep | 从饮药中提取魔力的动作与来源完整 | crawl-ref/source/player-reacts.cc:1205 |
+| source:extremely <br>EN: extremely  | 极度 | 极度 | keep | 汲取虚弱及其他强度词的极端程度准确，无英文空格要求 | crawl-ref/source/ouch.cc:540; crawl-ref/source/player.cc:4996 |
+| source:fast+slow<br>EN: Fast+Slow | 速+缓 | 速+缓 | keep | 同时急速迟缓的双灯标记保留并列 | crawl-ref/source/status.cc:1380 |
+| source:fire+<br>EN: Fire+ | 火焰+ | 火焰+ | keep | 液火中强度标记保留加号，不承诺数值加成 | crawl-ref/source/status.cc:654 |
+| source:fire++<br>EN: Fire++ | 强火焰 | 强火焰 | keep | 更强液火标记可辨识，强火焰对应高强度而非火抗；db_key仍规范Fire++ | crawl-ref/source/status.cc:649 |
+| source:flay (%d)<br>EN: Flay (%d) | 剥皮（%d） | 剥皮（%d） | keep | 剥皮状态保留括号内数值 | crawl-ref/source/status.cc:349 |
+| source:form melding&#124;all equipment<br>EN: form melding&#124;All Equipment | 全部装备 | 全部装备 | keep | 形态融合全部装备标签完整，不只包含护甲 | crawl-ref/source/transform.cc:138 |
+| source:form melding&#124;all weapons and armour<br>EN: form melding&#124;All Weapons and Armour | 全部武器和护甲 | 全部武器和护甲 | keep | 形态融合范围明确全部武器与护甲，与其他装备可用性区分 | crawl-ref/source/transform.cc:140 |
+| source:from %s prison<br>EN: from %s prison | 从%s囚牢中 | 从%s囚牢中 | adjust | 囚牢来源片段字面准确，但整体应随辛释放/消除两完整分支修复语序，不能机械接在对象之后；修复：辛释放囚徒与撤去空银墙两完整分支分开；对象、所有格、空牢条件保持，旧碎片留兼容。 | crawl-ref/source/timed-effects.cc:732; crawl-ref/source/timed-effects.cc::_drop_tomb |
+| source:fugue (%s%u%s)<br>EN: Fugue (%s%u%s) | 赋格（%s%u%s） | 赋格（%s%u%s） | keep | 赋格状态数字与颜色前后槽完整 | crawl-ref/source/status.cc:606 |
+| source:gained at a future xl.<br>EN: Gained at a future XL. | 将在未来的经验等级获得。 | 将在未来的经验等级获得。 | keep | 变异将在更高经验等级获得的未来时点准确 | crawl-ref/source/mutation.cc:1068 |
+| source:gaining the %s mutation<br>EN: gaining the %s mutation | 获得%s突变 | 获得%s变异 | adjust | 变异致衰弱死亡原因的中文内容准确，但producer将本地化原因传ouch并进入score/xlog，须先保存规范英文再在显示边界翻译；修复：变异与形态死亡producer使用规范英文名称/原因进入ouch与score/xlog；death_description仅显示时按四种已知格式解析，变异用mutation上下文，形态按真实Form::wiz_name映射显示短名；未知历史原因内容保留。 | crawl-ref/source/mutation.cc:2162; crawl-ref/source/mutation.cc::mutate/delete_single_mutation_level/mutation_name_en; crawl-ref/source/transform.cc::_enter_form/untransform; crawl-ref/source/hiscores.cc::_frailty_cause_display; crawl-ref/source/hiscores.cc::scorefile_entry::death_description |
+| source:gaining the %s transformation<br>EN: gaining the %s transformation | 获得了%s变形 | 变为“%s”形态 | adjust | 获得形态导致死亡的原因完整，但producer将本地化原因写入score/xlog；规范原因与显示应分离；修复：变异与形态死亡producer使用规范英文名称/原因进入ouch与score/xlog；death_description仅显示时按四种已知格式解析，变异用mutation上下文，形态按真实Form::wiz_name映射显示短名；未知历史原因内容保留。 | crawl-ref/source/transform.cc:2361; crawl-ref/source/mutation.cc::mutate/delete_single_mutation_level/mutation_name_en; crawl-ref/source/transform.cc::_enter_form/untransform; crawl-ref/source/hiscores.cc::_frailty_cause_display; crawl-ref/source/hiscores.cc::scorefile_entry::death_description |
+| source:gem (%d)<br>EN: Gem (%d) | 宝石（%d） | 宝石（%d） | keep | 宝石剩余计时状态保持数字 | crawl-ref/source/status.cc:1242 |
+| source:glowing<br>EN: glowing | 发光 | 发光 | keep | 发光状态及死亡发光风味共享含义准确 | crawl-ref/source/mon-death.cc:1641; crawl-ref/source/status.cc:421 |
+| source:glows with a cold blue light!<br>EN: glows with a cold blue light! | 闪烁着寒冷的蓝光！ | 闪烁着寒冷的蓝光！ | keep | 冰冻武器冷蓝光风味完整，主体由已翻译物品名提供 | crawl-ref/source/player-equip.cc:1935 |
+| source:gozag's golden gift will leave your new mouth with nothing to eat.<br>EN: Gozag's golden gift will leave your new mouth with nothing to eat. | 哥萨戈的金色礼物会让你的新嘴无食可吃。 | 哥萨戈的金色礼物会让你的新嘴无食可吃。 | keep | 哥萨戈把尸体转金导致新嘴无食，暗示吞噬形态的机制正确 | crawl-ref/source/transform.cc:2187 |
+| source:hand transform parts&#124;front %1$s<br>EN: hand transform parts&#124;front %1$s | 前%1$s | 前%1$s | keep | 手部描述前部修饰与多肢实际选择相符 | crawl-ref/source/transform.cc:1827 |
+| source:hand transform parts&#124;main %1$s<br>EN: hand transform parts&#124;main %1$s | 主%1$s | 主%1$s | keep | 手部描述主部修饰与备用手/触手区分完整 | crawl-ref/source/transform.cc:1831 |
+| source:hands action&#124;your %s are covered in slime.<br>EN: hands action&#124;Your %s are covered in slime. | 你的%s覆满了黏液。 | 你的%s覆满了黏液。 | keep | 手部黏液覆盖的复数语法在中文自然，部位参数保留 | crawl-ref/source/player.cc:9650 |
+| source:hands action&#124;your %s are glowing red.<br>EN: hands action&#124;Your %s are glowing red. | 你的%s正发出红光。 | 你的%s正发出红光。 | keep | 手部正在发出红光与开始发光分支区分 | crawl-ref/source/player.cc:9649 |
+| source:hands action&#124;your %s begin to glow brighter.<br>EN: hands action&#124;Your %s begin to glow brighter. | 你的%s开始发出更亮的光芒。 | 你的%s开始发出更亮的光芒。 | keep | 手部光芒变亮的增强含义完整 | crawl-ref/source/player.cc:9652 |
+| source:hands action&#124;your %s begin to glow red.<br>EN: hands action&#124;Your %s begin to glow red. | 你的%s开始发出红光。 | 你的%s开始发出红光。 | keep | 手部开始发出红光的起始动作完整 | crawl-ref/source/player.cc:9651 |
+| source:hands action&#124;your %s burn!<br>EN: hands action&#124;Your %s burn! | 你的%s一阵灼痛！ | 你的%s一阵灼痛！ | keep | 手部灼痛的身体感觉准确 | crawl-ref/source/player.cc:9646 |
+| source:hands action&#124;your %s get new energy.<br>EN: hands action&#124;Your %s get new energy. | 你的%s焕发出新的活力。 | 你的%s焕发出新的活力。 | keep | 手部重新获得活力的复原含义完整 | crawl-ref/source/player.cc:9643 |
+| source:hands action&#124;your %s look sharp.<br>EN: hands action&#124;Your %s look sharp. | 你的%s看起来很锋利。 | 你的%s看起来很锋利。 | keep | 手部看起来锋利的风味完整 | crawl-ref/source/player.cc:9648 |
+| source:hands action&#124;your %s slow down.<br>EN: hands action&#124;Your %s slow down. | 你的%s慢了下来。 | 你的%s慢了下来。 | keep | 手部慢下来与加速状态终止一致 | crawl-ref/source/player.cc:9645 |
+| source:hands action&#124;your %s stop glowing.<br>EN: hands action&#124;Your %s stop glowing. | 你的%s不再发光了。 | 你的%s不再发光了。 | keep | 手部停止发光的终止状态完整 | crawl-ref/source/player.cc:9644 |
+| source:hands action&#124;your %s tingle!<br>EN: hands action&#124;Your %s tingle! | 你的%s一阵发麻！ | 你的%s一阵发麻！ | keep | 手部发麻的感觉准确，未误作数值伤害 | crawl-ref/source/player.cc:9647 |
+| source:heavenly (%d)<br>EN: Heavenly (%d) | 天赐（%d） | 天赐（%d） | keep | 天赐状态的剩余次数保留，与神授瞬时增益对应 | crawl-ref/source/status.cc:596 |
+| source:heavily <br>EN: heavily  | 颇为 | 颇为 | keep | 汲取造成颇为虚弱的程度词与更高档位保持顺序 | crawl-ref/source/ouch.cc:544 |
+| source:held<br>EN: held | 被束缚 | 被束缚 | keep | 被网/网状物束缚的状态短灯准确 | crawl-ref/source/status.cc:438; crawl-ref/source/status.cc:440 |
+| source:horr (%d)<br>EN: Horr (%d) | 恐惧（%d） | 恐惧（%d） | keep | 恐惧状态显示负面程度数字，未丢惩罚大小 | crawl-ref/source/status.cc:785 |
+| source:hover solemnly before<br>EN: hover solemnly before | 庄严地盘旋在 | 庄严地盘旋在 | keep | 祈祷悬停动作片段本身成立，当前已知动作走完整祭坛句，不以此片段声称完整语序 | crawl-ref/source/transform.cc:564 |
+| source:hp: %d/%d mp: %d/%d<br>EN: HP: %d/%d MP: %d/%d | 生命：%d/%d 法力：%d/%d | 生命：%d/%d 法力：%d/%d | keep | 生命法力当前/上限四个数值完整 | crawl-ref/source/ouch.cc:473; crawl-ref/source/player.cc:3115 |
+| source:icy daggers piercing you<br>EN: icy daggers piercing you | 冰冷的匕首刺穿你 | 冰冷的匕首刺穿你 | keep | 冰刺攻击的冰冷匕首穿刺感觉完整 | crawl-ref/source/player.cc:3270 |
+| source:indom (%d)<br>EN: Indom (%d) | 刚毅（%d） | 刚毅（%d） | keep | 刚毅短灯保持当前名及次数 | crawl-ref/source/status.cc:1101 |
+| source:indomitable (%d)<br>EN: indomitable (%d) | 刚毅（%d） | 刚毅（%d） | keep | 刚毅详细短状态与短灯统一 | crawl-ref/source/status.cc:1105 |
+| source:innate abilities, weirdness &amp; mutations<br>EN: Innate Abilities, Weirdness &amp; Mutations | 先天能力、怪异特征与变异 | 先天能力、怪异特征与变异 | keep | 先天能力、怪异特征与变异三个类别均保留 | crawl-ref/source/mutation.cc:1014; crawl-ref/source/mutation.cc:1099 |
+| source:intense <br>EN: intense  | 炽烈的 | 炽烈的 | keep | 液火强度高时炽烈形容不误指永久属性 | crawl-ref/source/player.cc:5179 |
+| source:invis<br>EN: Invis | 隐形 | 隐形 | keep | 隐形短灯明确对应不可见状态 | crawl-ref/source/status.cc:1476 |
+| source:invisibility blocker&#124;!!!quad damage!!!<br>EN: invisibility blocker&#124;!!!QUAD DAMAGE!!! | ！！！四倍伤害！！！ | ！！！四倍伤害！！！ | keep | 四倍伤害妨碍完全隐形时强调形式及倍数完整 | crawl-ref/source/potion.cc:478 |
+| source:invisibility blocker&#124;corona<br>EN: invisibility blocker&#124;corona | 光晕 | 光晕 | keep | 光晕阻止完全隐形的原因准确 | crawl-ref/source/potion.cc:474 |
+| source:invisibility blocker&#124;form<br>EN: invisibility blocker&#124;form | 形态 | 形态 | keep | 形态自身发光阻止完全隐形，未误说所有形态都阻止 | crawl-ref/source/potion.cc:480 |
+| source:invisibility blocker&#124;halo<br>EN: invisibility blocker&#124;halo | 光环 | 光环 | keep | 光环阻止完全隐形的原因与光晕区分 | crawl-ref/source/potion.cc:470 |
+| source:invisibility blocker&#124;liquid flames<br>EN: invisibility blocker&#124;liquid flames | 液体火焰 | 液体火焰 | keep | 液体火焰发光阻止完全隐形，与持续液火一致 | crawl-ref/source/potion.cc:476 |
+| source:invisibility blocker&#124;magical contamination<br>EN: invisibility blocker&#124;magical contamination | 魔法污染 | 魔法污染 | keep | 魔法污染发光阻止完全隐形的来源完整 | crawl-ref/source/potion.cc:472 |
+| source:is covered in frost.<br>EN: is covered in frost. | 被寒霜覆盖。 | 被寒霜覆盖。 | keep | 冰冻远程武器覆霜风味完整，物品主体外部提供 | crawl-ref/source/player-equip.cc:1934 |
+| source:it gets dark.<br>EN: It gets dark. | 周围变暗了。 | 周围变暗了。 | keep | 卸去明暗效果时环境变暗的叙述准确 | crawl-ref/source/player-equip.cc:2400 |
+| source:it would be unwise to walk in here.<br>EN: It would be unwise to walk in here. | 走进这里是不明智的。 | 走进这里是不明智的。 | keep | 危险地形拒绝步入的警告准确 | crawl-ref/source/player.cc:652 |
+| source:jade crystal shrouded your upper body.<br>EN: Jade crystal shrouded your upper body. | 玉晶当时笼罩着你的上半身。 | 玉晶当时笼罩着你的上半身。 | keep | 玉衣形态过去描述保留上半身与过去时 | crawl-ref/source/transform.cc:1444 |
+| source:jade crystal shrouds your upper body.<br>EN: Jade crystal shrouds your upper body. | 玉晶笼罩着你的上半身。 | 玉晶笼罩着你的上半身。 | keep | 玉衣形态当前描述保留上半身，不误称全身 | crawl-ref/source/transform.cc:1445 |
+| source:lash (%u)<br>EN: Lash (%u) | 鞭击（%u） | 鞭击（%u） | keep | 天威鞭击短灯保持次数和能力词根 | crawl-ref/source/status.cc:584 |
+| source:leaving this form will destroy all of your potions of mist! transform anyway?<br>EN: Leaving this form will destroy all of your potions of mist! Transform anyway? | 离开此形态将摧毁你所有的雾药水！仍然变形吗？ | 离开此形态将摧毁你所有的雾药水！仍然变形吗？ | keep | 离开雾形态会销毁全部雾药水的数量范围与二次确认完整 | crawl-ref/source/transform.cc:2112 |
+| source:less effective<br>EN: less effective | 效果减弱 | 效果减弱 | keep | 变异效率轻度降低与更高惩罚档位区分 | crawl-ref/source/mutation.cc:733 |
+| source:lethally<br>EN: lethally | 致命 | 致命 | keep | 中毒预期致命程度词与毒状态组合成立 | crawl-ref/source/status.cc:1363 |
+| source:lit torch<br>EN: lit torch | 点燃的火炬 | 点燃的火炬 | keep | 点燃火炬的形态/效果短状态准确 | crawl-ref/source/status.cc:323 |
+| source:long-range teleportation is disallowed in dungeon sprint.<br>EN: Long-range teleportation is disallowed in Dungeon Sprint. | 地牢冲刺中不允许进行长距离传送。 | 地牢冲刺中不允许进行长距离传送。 | keep | 地牢冲刺禁止长距传送，模式范围明确 | crawl-ref/source/player.cc:7577 |
+| source:losing the %s form<br>EN: losing the %s form | 失去了%s形态 | 失去“%s”形态 | adjust | 失去形态导致死亡的中文原因准确，但本地化原因写入score/xlog；需规范原因和显示分离；修复：变异与形态死亡producer使用规范英文名称/原因进入ouch与score/xlog；death_description仅显示时按四种已知格式解析，变异用mutation上下文，形态按真实Form::wiz_name映射显示短名；未知历史原因内容保留。 | crawl-ref/source/transform.cc:2597; crawl-ref/source/mutation.cc::mutate/delete_single_mutation_level/mutation_name_en; crawl-ref/source/transform.cc::_enter_form/untransform; crawl-ref/source/hiscores.cc::_frailty_cause_display; crawl-ref/source/hiscores.cc::scorefile_entry::death_description |
+| source:losing the %s mutation<br>EN: losing the %s mutation | 失去%s突变 | 失去%s变异 | adjust | 失去变异导致死亡的中文原因准确，但本地化原因写入score/xlog；需规范原因和显示分离；修复：变异与形态死亡producer使用规范英文名称/原因进入ouch与score/xlog；death_description仅显示时按四种已知格式解析，变异用mutation上下文，形态按真实Form::wiz_name映射显示短名；未知历史原因内容保留。 | crawl-ref/source/mutation.cc:2325; crawl-ref/source/mutation.cc::mutate/delete_single_mutation_level/mutation_name_en; crawl-ref/source/transform.cc::_enter_form/untransform; crawl-ref/source/hiscores.cc::_frailty_cause_display; crawl-ref/source/hiscores.cc::scorefile_entry::death_description |
+| source:lost %s<br>EN: lost %s | 丧失%s | 丧失%s | keep | 属性归零用丧失接具体属性显示名，详细多属性分支保持一致 | crawl-ref/source/status.cc:265 |
+| source:magic flows through your body to no effect.<br>EN: Magic flows through your body to no effect. | 魔法毫无效果地流过你的身体。 | 魔法毫无效果地流过你的身体。 | keep | 魔法流过却没有效果，明确未恢复而非有害效果 | crawl-ref/source/potion.cc:618 |
+| source:magic surges through you.<br>EN: Magic surges through you. | 魔法在你体内奔涌。 | 魔法在你体内奔涌。 | keep | 魔法在体内奔涌的恢复风味完整 | crawl-ref/source/potion.cc:629 |
+| source:makhleb calls their payment due...<br>EN: Makhleb calls their payment due... | 马科列布索要了应付的代价…… | 马科列布索要了应付的代价…… | keep | 马科列布索取到期代价的风味保持神名与交换含义 | crawl-ref/source/transform.cc:1069 |
+| source:memories (%d)<br>EN: Memories (%d) | 记忆（%d） | 记忆（%d） | keep | 记忆状态保留次数，与相同计数属性的其他状态可区分 | crawl-ref/source/status.cc:1039 |
+| source:mesmerised<br>EN: mesmerised | 被迷住 | 被迷住 | keep | 被迷住的短状态准确，不误指友好关系 | crawl-ref/source/status.cc:397 |
+| source:mightier<br>EN: mightier | 力量更加强大了 | 力量更加强大了 | keep | 原已强力时更加强大，比较增强含义完整，外层突然感觉句可组合 | crawl-ref/source/potion.cc:282 |
+| source:mildly<br>EN: mildly | 轻度 | 轻度 | keep | 中毒轻度程度与中重致命档位区分 | crawl-ref/source/status.cc:1366 |
+| source:missing<br>EN: Missing | 缺失 | 缺失 | keep | 离失状态短灯缺失能指示该状态，详情另释 | crawl-ref/source/status.cc:1162 |
+| source:monsters! monsters everywhere! you have to get out of here!<br>EN: Monsters! Monsters everywhere! You have to get out of here! | 怪物！到处都是怪物！你必须离开这里！ | 怪物！到处都是怪物！你必须离开这里！ | keep | 恐慌提示重复怪物与必须逃离的急迫语气完整 | crawl-ref/source/player-reacts.cc:388 |
+| source:more barbed spikes embed themselves in your body.<br>EN: More barbed spikes embed themselves in your body. | 更多带刺的尖刺嵌入了你的身体。 | 更多带刺的尖刺嵌入了你的身体。 | keep | 更多倒刺嵌入身体的追加效果完整，带刺尖刺虽冗余但无语义缺损 | crawl-ref/source/player.cc:5363 |
+| source:moving<br>EN: moving | 移动 | 移动 | keep | 默认移动速度类别与游泳涉水飞行相区分 | crawl-ref/source/player.cc:3806 |
+| source:moving in this stuff is going to be slow.<br>EN: Moving in this stuff is going to be slow. | 在这种东西里移动会很慢。 | 在这种东西里移动会很慢。 | keep | 难行地形移动更慢的提示完整 | crawl-ref/source/player.cc:785 |
+| source:much less effective<br>EN: much less effective | 效果大幅减弱 | 效果大幅减弱 | keep | 变异效率大幅减弱保持与较低档惩罚的差别 | crawl-ref/source/mutation.cc:732 |
+| source:mutagenic energies flood into your body!<br>EN: Mutagenic energies flood into your body! | 变异能量涌入你的身体！ | 变异能量涌入你的身体！ | keep | 变异能量涌入身体的武器效果风味完整 | crawl-ref/source/player-equip.cc:1888 |
+| source:no description found<br>EN: No description found | 未找到描述 | 未找到描述 | keep | 缺少说明时明确未找到描述，不伪造状态效果 | crawl-ref/source/status.cc:1197 |
+| source:no space for %s to move out of your way! (try telling them to retreat with &lt;w&gt;%sr&lt;/w&gt; instead.)<br>EN: No space for %s to move out of your way! (Try telling them to retreat with &lt;w&gt;%sr&lt;/w&gt; instead.) | 没有空间让%s从你的路上移开！（试试按&lt;w&gt;%sr&lt;/w&gt;让他们撤退） | 没有空间让%s从你的路上移开！（试试按&lt;w&gt;%sr&lt;/w&gt;让他们撤退） | keep | 友军无空间让路的原因及重绑后的撤退指令完整，代词使用通用复数自然 | crawl-ref/source/player.cc:723 |
+| source:no striking features<br>EN: no striking features | 无明显特征 | 无明显特征 | keep | 没有明显先天特征的空集合说明准确 | crawl-ref/source/mutation.cc:992 |
+| source:no temporary mutations found; clearing.<br>EN: No temporary mutations found; clearing. | 未发现临时变异，正在清除。 | 未发现临时变异，正在清除。 | keep | 临时变异数量不一致时清理的诊断准确，未误说移除所有永久变异 | crawl-ref/source/mutation.cc:2552 |
+| source:now linked to your health, your magic stops regenerating.<br>EN: Now linked to your health, your magic stops regenerating. | 与你的生命链接后，你的法力停止了再生。 | 与你的生命链接后，你的法力停止了再生。 | keep | 法力与生命链接后停止再生的因果与资源明确 | crawl-ref/source/player-equip.cc:2262 |
+| source:orb?<br>EN: Orb? | 宝珠？ | 宝珠？ | keep | 不确定宝珠状态保留问号，不强行扩大短灯全称 | crawl-ref/source/status.cc:843 |
+| source:ostracised<br>EN: Ostracised | 被排斥 | 被排斥 | keep | 被排斥状态的被动方向正确 | crawl-ref/source/status.cc:1063 |
+| source:ouch! that really hurt!<br>EN: Ouch! That really hurt! | 哎哟！那真的很疼！ | 哎哟！那真的很疼！ | keep | 较大受伤后的痛感和惊叹语气完整 | crawl-ref/source/ouch.cc:1460 |
+| source:pact<br>EN: Pact | 契约 | 契约 | keep | 死亡契约短灯沿用契约词根，不混同神祇信仰 | crawl-ref/source/status.cc:954 |
+| source:pain shudders through your %s!<br>EN: Pain shudders through your %s! | 痛苦在你的%s中颤抖！ | 一阵痛楚传遍你的%s！ | adjust | 痛感传遍手臂，现痛苦在部位中颤抖把感觉动词硬套到抽象主体；改一阵痛楚传遍你的%s；已按本行当前值修正措辞。 | crawl-ref/source/player-equip.cc:2006 |
+| source:peek<br>EN: Peek | 窥视 | 窥视 | keep | 窥视短灯与状态机制一致 | crawl-ref/source/status.cc:407 |
+| source:peeking<br>EN: peeking | 窥视中 | 窥视中 | keep | 窥视进行态与短灯同词根 | crawl-ref/source/status.cc:409 |
+| source:phobia (-%d)<br>EN: Phobia (-%d) | 恐惧症（-%d） | 恐惧症（-%d） | keep | 恐惧症累积负面档位保留负号和数值 | crawl-ref/source/status.cc:636 |
+| source:plunk!<br>EN: Plunk! | 扑通！ | 扑通！ | keep | 体型较大入水的扑通拟声准确 | crawl-ref/source/player.cc:751 |
+| source:pois<br>EN: Pois | 中毒 | 中毒 | keep | 中毒短灯简明，无英语缩略残留 | crawl-ref/source/status.cc:1360 |
+| source:preparing a fortress blast.<br>EN: Preparing a Fortress Blast. | 正在准备堡垒爆破。 | 正在准备堡垒爆破。 | keep | 堡垒爆破准备阶段与已经触发区分 | crawl-ref/source/status.cc:991 |
+| source:producing %s<br>EN: producing %s | 正在产生%s | 正在产生%s | keep | 雾鬃正在产生的云名由cloud_type_name翻译，主谓和云类别完整 | crawl-ref/source/status.cc:1154 |
+| source:put travel exclusion on door? (y/n)<br>EN: Put travel exclusion on door? (Y/n) | 在门上设置旅行禁区？(Y/n) | 在门上设置旅行禁区？(Y/n) | keep | 在门上放旅行禁区的确认明确默认Y/n | crawl-ref/source/player.cc:9287 |
+| source:quite<br>EN: quite | 较重 | 较重 | keep | 中毒程度较重与轻度/严重/致命分档一致 | crawl-ref/source/status.cc:1365 |
+| source:ray<br>EN: Ray | 射线 | 射线 | keep | 灼热射线通道灯用射线加加号表达阶段，未承诺伤害数量 | crawl-ref/source/status.cc:1522 |
+| source:really %s into a trap?<br>EN: Really %s into a trap? | 真的要%s陷阱吗？ | 真的要%s陷阱吗？ | keep | 普通陷阱确认入口动作来自enter_area译法，完整到达关系 | crawl-ref/source/player.cc:287 |
+| source:really %s into a travel-excluded area?<br>EN: Really %s into a travel-excluded area? | 确定要%s旅行禁区吗？ | 确定要%s旅行禁区吗？ | keep | 进入旅行禁区的确认完整，保留禁区类别 | crawl-ref/source/player.cc:566 |
+| source:really %s into that %s?<br>EN: Really %s into that %s? | 确定要%s那边的%s吗？ | 确定要%s那边的%s吗？ | keep | 危险云或陷阱确认保留该处对象及已翻译进入动作 | crawl-ref/source/player.cc:210; crawl-ref/source/player.cc:309 |
+| source:really %s onto that %s?<br>EN: Really %s onto that %s? | 确定要%s那个%s吗？ | 确定要%s那个%s吗？ | keep | 踩上陷阱确认由onto_surface提供踩上动作，不误用进入云的介词 | crawl-ref/source/player.cc:307 |
+| source:really become a tree while standing in a cloud of %s?<br>EN: Really become a tree while standing in a cloud of %s? | 真的要在%s的云雾中变成一棵树吗？ | 真的要在%s的云雾中变成一棵树吗？ | keep | 树化身在危险云中变形的确认保留云名和原位置风险 | crawl-ref/source/potion.cc:765 |
+| source:really drink that potion of mutation while resistant to mutation?<br>EN: Really drink that potion of mutation while resistant to mutation? | 你拥有变异抗性，真的要喝下那瓶变异药水吗？ | 你拥有变异抗性，真的要喝下那瓶变异药水吗？ | keep | 变异抗性条件下饮用变异药水的确认完整 | crawl-ref/source/potion.cc:844 |
+| source:really go berserk while wielding %s?<br>EN: Really go berserk while wielding %s? | 你真的要在持有%s的情况下狂暴吗？ | 你真的要在持握%s的情况下狂暴吗？ | adjust | 狂暴确认的wielding应统一持握，当前持有未准确限定手持武器；已按本行当前值修正措辞。 | crawl-ref/source/player.cc:1350 |
+| source:regen (%d)<br>EN: Regen (%d) | 再生（%d） | 再生（%d） | keep | 再生状态保持当前再生强度整数 | crawl-ref/source/status.cc:505 |
+| source:regen will++<br>EN: Regen Will++ | 强再生意志 | 再生 意志++ | adjust | Trog之手同时提供再生与Will++，强再生意志把增强程度错接再生且吞并双属性，应再生 意志++；已按本行当前值修正措辞。 | crawl-ref/source/status.cc:1338 |
+| source:regenerate%s more quickly<br>EN: regenerate%s more quickly | 更快地再生%s | 更快地再生%s | keep | 加快生命/法力再生的片段含义完整，外层中文模板有意省略仅英语使用的第二词尾槽，不会漏出raw词尾 | crawl-ref/source/player-reacts.cc:1202 |
+| source:releases<br>EN: releases | 释放 | 释放 | adjust | 释放动词准确，但完整辛释放囚牢句须随dismisses组消除错误语序；修复：辛释放囚徒与撤去空银墙两完整分支分开；对象、所有格、空牢条件保持，旧碎片留兼容。 | crawl-ref/source/timed-effects.cc:730; crawl-ref/source/timed-effects.cc::_drop_tomb |
+| source:rev*<br>EN: Rev* | 暖机* | 暖机* | keep | 暖机完成状态星号与前一阶段加号可区分 | crawl-ref/source/status.cc:1325 |
+| source:rev+<br>EN: Rev+ | 暖机+ | 暖机+ | keep | 暖机增强阶段加号保留，不误作数值强度 | crawl-ref/source/status.cc:1317 |
+| source:rf0<br>EN: rF0 | 无火抗 | 无火抗 | keep | 火焰抗性降为零时无火抗，未误写火焰易伤 | crawl-ref/source/status.cc:910 |
+| source:rip and tear<br>EN: rip and tear | 狂暴地撕扯 | 狂暴地撕扯 | keep | 狂暴拔出倒刺时撕扯的暴烈动作准确 | crawl-ref/source/player-reacts.cc:1008 |
+| source:sadly, you cannot mutate.<br>EN: Sadly, you cannot mutate. | 遗憾的是，你无法发生变异。 | 遗憾的是，你无法发生变异。 | keep | 无法发生变异时遗憾语气完整 | crawl-ref/source/mutation.cc:2350 |
+| source:salvo (%d)<br>EN: Salvo (%d) | 齐射（%d） | 齐射（%d） | keep | 齐射状态两种大小写键同一规范身份，次数保留 | crawl-ref/source/status.cc:1111; crawl-ref/source/status.cc:1112 |
+| source:seriously<br>EN: seriously | 严重 | 严重 | keep | 中毒严重档位高于较重而低于致命 | crawl-ref/source/status.cc:1364 |
+| source:shallow<br>EN: shallow | 浅 | 浅 | keep | 涉水深浅分支浅与水结合自然 | crawl-ref/source/player.cc:774; crawl-ref/source/player.cc:779 |
+| source:sharp quills grow all over your body.<br>EN: Sharp quills grow all over your body. | 锋利的刺从你全身长了出来。 | 锋利的刺从你全身长了出来。 | keep | 全身长出尖刺的形态消息完整 | crawl-ref/source/transform.cc:1013 |
+| source:shield (%d)<br>EN: Shield (%d) | 护盾（%d） | 护盾（%d） | keep | 护盾状态保持当前护盾大小整数 | crawl-ref/source/status.cc:329 |
+| source:shield and armour<br>EN: shield and armour | 盾牌和护甲 | 盾牌和护甲 | keep | 盾牌与护甲共同拖慢攻击时并列范围完整 | crawl-ref/source/player.cc:3866 |
+| source:shroud<br>EN: Shroud | 护罩 | 护罩 | keep | 护罩短灯与效果词根一致 | crawl-ref/source/status.cc:1054 |
+| source:sil<br>EN: Sil | 沉默 | 沉默 | keep | 沉默短灯在状态和输出位置同义，未将寂静区域误作无声行动 | crawl-ref/source/output.cc:899; crawl-ref/source/status.cc:565; crawl-ref/source/status.cc:574 |
+| source:slay +%d<br>EN: Slay +%d | 杀戮+%d | 杀戮+%d | keep | 杀戮增益保留正号和数值 | crawl-ref/source/status.cc:613 |
+| source:slightly less effective<br>EN: slightly less effective | 效果略有减弱 | 效果略有减弱 | keep | 变异效果略减与更严重惩罚档位保持区分 | crawl-ref/source/mutation.cc:734 |
+| source:slowed movement<br>EN: slowed movement | 移动减缓 | 移动减缓 | keep | 移动减缓详细短状态不等同所有动作迟缓 | crawl-ref/source/status.cc:461 |
+| source:slowm<br>EN: SlowM | 缓行 | 缓行 | keep | 缓行短灯表达仅移动速度减缓 | crawl-ref/source/status.cc:459 |
+| source:something is blocking the %s!<br>EN: Something is blocking the %s! | 有东西挡住了%s！ | 有东西挡住了%s！ | keep | 门被东西挡住，门/门道参数来自翻译显示词 | crawl-ref/source/player.cc:9459 |
+| source:something is stuck in the %s.<br>EN: Something is stuck in the %s. | 有东西卡住了%s。 | 有东西卡住了%s。 | keep | 门中卡有东西的状态完整 | crawl-ref/source/player.cc:9473 |
+| source:something's<br>EN: something's | 某个东西的 | 某个东西的 | keep | 未知来源所有格不暴露隐藏怪物，所有格在中文完整 | crawl-ref/source/attack.cc:348; crawl-ref/source/monster.cc:2134; crawl-ref/source/player.cc:8816 |
+| source:space warps around you for a moment!<br>EN: Space warps around you for a moment! | 空间在你周围扭曲了一瞬间！ | 空间在你周围扭曲了一瞬间！ | keep | 装备扭曲武器引发空间短暂扭曲，时长风味准确 | crawl-ref/source/player-equip.cc:2051 |
+| source:space warps into you!<br>EN: Space warps into you! | 空间向你扭曲！ | 空间向你扭曲！ | keep | 卸去扭曲武器的空间向玩家收缩冲击，方向完整 | crawl-ref/source/player-equip.cc:2934 |
+| source:splash!<br>EN: Splash! | 哗啦！ | 哗啦！ | keep | 小型入水哗啦拟声与更重扑通分支可辨 | crawl-ref/source/player.cc:749 |
+| source:status crystals&#124;&lt;%1$s&gt;cr&lt;%2$s&gt;ys&lt;%3$s&gt;ta&lt;%4$s&gt;ls<br>EN: status crystals&#124;&lt;%1$s&gt;Cr&lt;%2$s&gt;ys&lt;%3$s&gt;ta&lt;%4$s&gt;ls | &lt;%1$s&gt;元&lt;%2$s&gt;素&lt;%3$s&gt;晶&lt;%4$s&gt;体 | &lt;%1$s&gt;元&lt;%2$s&gt;素&lt;%3$s&gt;晶&lt;%4$s&gt;体 | keep | 四元素晶体的四个颜色位置参数及显示名完整 | crawl-ref/source/status.cc:1125 |
+| source:status&#124; (but backlit and visible)<br>EN: status&#124; (but backlit and visible) | （背面发光且可见） | （但因发光而显形） | adjust | backlit是发光显形而非背面发光，且but转折丢失；应但因发光而显形；已按本行当前值修正措辞。 | crawl-ref/source/status.cc:1485 |
+| source:stone %s<br>EN: Stone %s | 石质%s | 石质%s | keep | 石质肢体名称材质前缀与翻译部位组合自然 | crawl-ref/source/transform.cc:726 |
+| source:storm %s<br>EN: Storm %s | 风暴%s | 风暴%s | keep | 风暴肢体名称形态前缀完整 | crawl-ref/source/transform.cc:999 |
+| source:studying <br>EN: studying  | 学习中： | 学习中： | keep | 技能手册学习中的状态前缀与已翻译技能列表自然 | crawl-ref/source/status.cc:520 |
+| source:swimming<br>EN: swimming | 游泳 | 游泳 | keep | 游泳移动速度类别与涉水飞行区分 | crawl-ref/source/player.cc:3803 |
+| source:teleport<br>EN: teleport | 传送 | 传送 | keep | 禁止传送原因模板中的传送动作准确，与blink闪现区分 | crawl-ref/source/player.cc:7630 |
+| source:tesseract<br>EN: Tesseract | 超立方体 | 超立方体 | keep | 无界超立方体短灯采用超立方体可辨识 | crawl-ref/source/status.cc:1086 |
+| source:that felt uncannily ineffective.<br>EN: That felt uncannily ineffective. | 那感觉出奇地无效。 | 那感觉出奇地无效。 | keep | 满生命治疗效果无效的异常感准确 | crawl-ref/source/potion.cc:147 |
+| source:that is much too large for your head.<br>EN: That is much too large for your head. | 那对你的头来说太大了。 | 那对你的头来说太大了。 | keep | 头盔尺寸过大以头部为参照，穿戴限制完整 | crawl-ref/source/player-equip.cc:140 |
+| source:that is too %s for you to equip!<br>EN: That is too %s for you to equip! | 那对你来说太%s了，无法装备！ | 那对你来说太%s了，无法装备！ | adjust | 装备尺寸错误的large/small参数为raw英文，完整中文模板仍漏译；应两完整句或翻译显示参数；修复：装备尺寸large/small仅在错误显示参数翻译，不改装备尺寸判定。 | crawl-ref/source/player-equip.cc:536; crawl-ref/source/player-equip.cc::can_equip_item |
+| source:that isn't an equippable item.<br>EN: That isn't an equippable item. | 那不是可装备的物品。 | 那不是可装备的物品。 | keep | 不是可装备物品的类别限制准确 | crawl-ref/source/player-equip.cc:478 |
+| source:that put a bit of spring back into your %s.<br>EN: That put a bit of spring back into your %s. | 那让你的%s恢复了一些弹性。 | 那让你的%s恢复了一些弹性。 | adjust | 卸下沉重装备恢复轻快步伐，现弹性字面化且slither/step英文参数漏出；应按步行/滑行两完整句；修复：沉重护甲卸下按滑行/步伐选择完整轻快句，不再raw英文或弹性直译。 | crawl-ref/source/player-equip.cc:2485; crawl-ref/source/player-equip.cc::_unequip_armour_effect |
+| source:that seemed uncannily ineffective.<br>EN: That seemed uncannily ineffective. | 那似乎出奇地无效。 | 那似乎出奇地无效。 | keep | 治伤药水效果无效的异常感与felt分支相近成立 | crawl-ref/source/potion.cc:207 |
+| source:that's too large for you to wield.<br>EN: That's too large for you to wield. | 那对你来说太大了，无法持握。 | 那对你来说太大了，无法持握。 | keep | 武器过大无法持握，部位动作准确 | crawl-ref/source/player-equip.cc:570 |
+| source:the<br>EN: the |  |  | keep | 英文定冠词在中文为空是有意语法映射，两个显示消费者均不需机械补该 | crawl-ref/source/potion.cc:485; crawl-ref/source/terrain.cc:2752 |
+| source:the %s cannot attune itself to your exhausted body.<br>EN: The %s cannot attune itself to your exhausted body. | %s无法与你力竭的身体调谐。 | %s无法与你力竭的身体调谐。 | keep | 缺法力时装备不能调谐的力竭身体条件完整 | crawl-ref/source/player-equip.cc:2684 |
+| source:the %s cannot attune itself to your injured body.<br>EN: The %s cannot attune itself to your injured body. | %s无法与你受伤的身体调谐。 | %s无法与你受伤的身体调谐。 | keep | 缺生命时装备不能调谐的受伤身体条件完整 | crawl-ref/source/player-equip.cc:2673 |
+| source:the %s cannot attune themselves to your exhausted body.<br>EN: The %s cannot attune themselves to your exhausted body. | %s无法与你力竭的身体调谐。 | %s无法与你力竭的身体调谐。 | keep | 多个装备因法力不足不能调谐，中文不需英语复数尾 | crawl-ref/source/player-equip.cc:2680 |
+| source:the %s cannot attune themselves to your injured body.<br>EN: The %s cannot attune themselves to your injured body. | %s无法与你受伤的身体调谐。 | %s无法与你受伤的身体调谐。 | keep | 多个装备因受伤不能调谐，原因和范围完整 | crawl-ref/source/player-equip.cc:2669 |
+| source:the %s feel cold and inert.<br>EN: The %s feel cold and inert. | %s摸起来冰冷且迟钝。 | %s摸起来冰冷且迟钝。 | keep | 装备冰冷且迟钝表示未活化的触感，未虚构属性降低 | crawl-ref/source/player-equip.cc:2618; crawl-ref/source/player-equip.cc:2628 |
+| source:the %s feels cold and inert.<br>EN: The %s feels cold and inert. | %s摸起来冰冷且迟钝。 | %s摸起来冰冷且迟钝。 | keep | 单件装备冰冷且迟钝的未活化风味与复数一致 | crawl-ref/source/player-equip.cc:2620; crawl-ref/source/player-equip.cc:2630 |
+| source:the %s throb as they attune themselves to your body.<br>EN: The %s throb as they attune themselves to your body. | %s搏动着与你的身体完成调谐。 | %s搏动着与你的身体完成调谐。 | keep | 多件装备调谐成功的搏动与完成动作完整 | crawl-ref/source/player-equip.cc:2654 |
+| source:the %s throb as they attune themselves to your uninjured body.<br>EN: The %s throb as they attune themselves to your uninjured body. | %s搏动着与你的身体完成调谐。 | %s搏动着，与你未受伤的身体完成调谐。 | adjust | 再生生命装备须身体未受伤才能调谐，当前译文丢失uninjured条件，应补未受伤的身体；已按本行当前值修正措辞。 | crawl-ref/source/player-equip.cc:2643 |
+| source:the %s throbs as it attunes itself to your body.<br>EN: The %s throbs as it attunes itself to your body. | %s搏动着与你的身体完成调谐。 | %s搏动着与你的身体完成调谐。 | keep | 单件装备调谐成功的搏动与完成动作完整 | crawl-ref/source/player-equip.cc:2658 |
+| source:the %s throbs as it attunes itself to your uninjured body.<br>EN: The %s throbs as it attunes itself to your uninjured body. | %s搏动着与你的身体完成调谐。 | %s搏动着，与你未受伤的身体完成调谐。 | adjust | 再生生命装备单数调谐消息同样漏未受伤条件，须与复数同步；已按本行当前值修正措辞。 | crawl-ref/source/player-equip.cc:2647 |
+| source:the %s%s flies open with a bang!<br>EN: The %s%s flies open with a bang! | %s%s砰地一声飞开了！ | %s%s砰地一声飞开了！ | keep | 门猛烈打开有砰声，尺寸/门型两槽完整 | crawl-ref/source/player.cc:9351 |
+| source:the acid dripping from the walls corrodes you.<br>EN: The acid dripping from the walls corrodes you. | 从墙上滴下的酸液腐蚀了你。 | 从墙上滴下的酸液腐蚀了你。 | keep | 墙上滴酸造成腐蚀的来源与效果完整 | crawl-ref/source/player.cc:994 |
+| source:the bite of steel piercing you<br>EN: the bite of steel piercing you | 钢铁刺穿你时的痛楚 | 钢铁刺穿你时的痛楚 | keep | 钢铁贯穿身体的痛感完整，不误作生物咬击 | crawl-ref/source/player.cc:3267 |
+| source:the bolas passes through you!<br>EN: The bolas passes through you! | 流星索穿过了你！ | 流星索穿过了你！ | keep | 虚体使流星索穿过身体，不能命中的方向正确 | crawl-ref/source/ouch.cc:328 |
+| source:the buzzing within you returns to its normal rhythm.<br>EN: The buzzing within you returns to its normal rhythm. | 你体内的嗡嗡声恢复了正常的节奏。 | 你体内的嗡嗡声恢复了正常的节奏。 | keep | 体内嗡鸣恢复正常节奏，强化效果结束的风味完整 | crawl-ref/source/player-reacts.cc:1098 |
+| source:the chill of winter seizing you<br>EN: the chill of winter seizing you | 凛冬的寒意攫住你 | 凛冬的寒意攫住你 | keep | 冬寒攫住身体的冰冻法术风味完整 | crawl-ref/source/player.cc:3264 |
+| source:the cold chills you terribly!<br>EN: The cold chills you terribly! | 寒冷严重地冻伤了你！ | 寒冷严重地冻伤了你！ | keep | 冰冷易伤加剧寒伤的严重程度保留 | crawl-ref/source/ouch.cc:170 |
+| source:the cold chills your senses.<br>EN: The cold chills your senses. | 寒冷冻结了你的感官。 | 寒冷冻结了你的感官。 | keep | 寒冷损伤感官的效果风味完整 | crawl-ref/source/ouch.cc:411 |
+| source:the curse of the prune grips you.<br>EN: The curse of the Prune grips you. | 梅干长柄刀的诅咒攫住了你。 | 梅干长柄刀的诅咒攫住了你。 | keep | 梅干长柄刀的诅咒作用于玩家，未误作装备束缚 | crawl-ref/source/player.cc:115 |
+| source:the dungeon's light returns to normal.<br>EN: The dungeon's light returns to normal. | 地下城的光线恢复了正常。 | 地牢的光线恢复了正常。 | adjust | 地牢照明恢复正常，Dungeon应统一地牢，现地下城与当前核心命名不一致；已按本行当前值修正措辞。 | crawl-ref/source/player-equip.cc:2540 |
+| source:the electricity makes your body seize.<br>EN: The electricity makes your body seize. | 电流使你的身体僵住了。 | 电流使你的身体僵住了。 | keep | 电流使身体僵住的电震效果完整 | crawl-ref/source/ouch.cc:432 |
+| source:the fire burns you terribly!<br>EN: The fire burns you terribly! | 火焰严重地灼伤了你！ | 火焰严重地灼伤了你！ | keep | 火易伤使火焰灼伤更重，严重程度完整 | crawl-ref/source/ouch.cc:156 |
+| source:the flames are extinguished!<br>EN: The flames are extinguished! | 火焰熄灭了！ | 火焰熄灭了！ | keep | 火焰被扑灭的终止动作完整 | crawl-ref/source/ouch.cc:440 |
+| source:the frozen ramparts melt away.<br>EN: The frozen ramparts melt away. | 冰冻的壁垒融化了。 | 冰冻的壁垒融化了。 | keep | 冰冻壁垒融化的消退行为准确，与法术词根对应 | crawl-ref/source/player.cc:5560 |
+| source:the haze of the repulsion field disappears.<br>EN: The haze of the repulsion field disappears. | 排斥力场的薄雾消失了。 | 排斥力场的薄雾消失了。 | keep | 偏斥力场薄雾消失的防护终止风味完整 | crawl-ref/source/player-equip.cc:2536 |
+| source:the healing is enhanced.<br>EN: The healing is enhanced. | 治疗效果增强了。 | 治疗效果增强了。 | keep | 治疗加成增强效果，未承诺满血 | crawl-ref/source/player.cc:9174 |
+| source:the heat melts your icy armour.<br>EN: The heat melts your icy armour. | 热量融化了你的冰甲。 | 热量融化了你的冰甲。 | keep | 高热融化冰甲，与对应持续防护消失一致 | crawl-ref/source/player-reacts.cc:277 |
+| source:the heat overwhelms you.<br>EN: The heat overwhelms you. | 高温压倒了你的防御。 | 高温使你不堪重负。 | adjust | 高温实际触发热衰灾祸减速，英文未提防御；现压倒你的防御引入错误防御机制，应改高温使你不堪重负；已按本行当前值修正措辞。 | crawl-ref/source/ouch.cc:393 |
+| source:the ice freezes you terribly!<br>EN: The ice freezes you terribly! | 寒冰严重地冻结了你！ | 寒冰严重地冻结了你！ | keep | 冰冷易伤使冰伤更重，严重冻结的措辞保留感觉而非石化承诺 | crawl-ref/source/ouch.cc:255 |
+| source:the impact of arcane energy battering you<br>EN: the impact of arcane energy battering you | 奥术能量冲击着你 | 奥术能量冲击着你 | keep | 魔法飞弹奥术能量撞击身体的风味完整 | crawl-ref/source/player.cc:3266 |
+| source:the lava burns you terribly!<br>EN: The lava burns you terribly! | 熔岩严重地灼伤了你！ | 熔岩严重地灼伤了你！ | keep | 熔岩易伤导致更重灼伤，来源与程度正确 | crawl-ref/source/ouch.cc:267 |
+| source:the liquid fire burns you%s%s<br>EN: The liquid fire burns you%s%s | 液体火焰灼烧着你，令你%s痛苦%s | 液体火焰灼烧着你，令你%s痛苦%s | keep | 液火灼烧完整句保留两尾槽：极其程度和抵抗/感叹分支，中文能完整组合 | crawl-ref/source/player.cc:5212 |
+| source:the liquid fire falls away from your body.<br>EN: The liquid fire falls away from your body. | 液体火焰从你的身体上脱落了。 | 液体火焰从你的身体上脱落了。 | keep | 液火从身上脱落的解除动作完整 | crawl-ref/source/potion.cc:922 |
+| source:the liquid flame finally runs out.<br>EN: The liquid flame finally runs out. | 液体火焰终于耗尽了。 | 液体火焰终于耗尽了。 | keep | 液火燃料耗尽的结束消息准确 | crawl-ref/source/player.cc:5228 |
+| source:the mark on you glows brighter.<br>EN: The mark on you glows brighter. | 你身上的印记变得更亮了。 | 你身上的印记变得更亮了。 | keep | 哨兵印记增强表现为变亮，保留渐变而非新印记 | crawl-ref/source/player.cc:8849 |
+| source:the portal closes; %s is severed.<br>EN: The portal closes; %s is severed. | 传送门关闭了；%s被切断了。 | 传送门关闭了；%s被切断了。 | keep | 恶性传送门关闭时触手被切断，两事实及主体槽完整 | crawl-ref/source/timed-effects.cc:816 |
+| source:the potion decomposes into %s within you.<br>EN: The potion decomposes into %s within you. | 药水在你体内分解成了%s。 | 药水在你体内分解成了%s。 | keep | 雾鬃药水在体内化为对应已翻译云雾类型，因果完整 | crawl-ref/source/transform.cc:3231 |
+| source:the power to cast %s surges from within.<br>EN: The power to cast %s surges from within. | 施放%s的力量从内心涌出。 | 施放%s的力量从内心涌出。 | keep | 获得施法力量由内而外涌出的感觉完整，法术名走显示名 | crawl-ref/source/player.cc:3245 |
+| source:the roots around you sink back into the ground.<br>EN: The roots around you sink back into the ground. | 你周围的根蔓缩回了地面。 | 你周围的根蔓缩回了地面。 | keep | 根蔓退回地下的束缚消退方向完整 | crawl-ref/source/player-reacts.cc:524 |
+| source:the roots'<br>EN: the roots' | 树根 | 树根 | adjust | 根蔓来源片段没有所有格标记，旧完整逃脱/失败模板因此缺的；应统一名词主体与完整束缚句接口；修复：根、尸手、藤蔓、未知来源采用同一所有格合同，怪物DESC_ITS仍带所有格；成功完整表达挣脱束缚，失败仍保留减弱但未逃脱。 | crawl-ref/source/player.cc:8813; crawl-ref/source/player.cc::player::attempt_escape |
+| source:the runic seal fades away.<br>EN: The runic seal fades away. | 符文封印消散了。 | 符文封印消散了。 | keep | 单个符文封印消退的动作完整 | crawl-ref/source/timed-effects.cc:1005 |
+| source:the runic seals fade away.<br>EN: The runic seals fade away. | 符文封印消散了。 | 符文封印消散了。 | keep | 多个符文封印消退中文无需英语数区分，范围未缩为一处 | crawl-ref/source/timed-effects.cc:1003 |
+| source:the silver walls,<br>EN: the silver walls, | 银色的墙壁 | 银色的墙壁 | keep | 银墙名词本身准确，完整辛解除囚牢分支另修语序与逗号，不将片段当整句通过 | crawl-ref/source/timed-effects.cc:731 |
+| source:the spike launcher falls apart.<br>EN: The spike launcher falls apart. | 尖刺发射器散架了。 | 尖刺发射器散架了。 | keep | 尖刺发射器散架的终止动作完整 | crawl-ref/source/timed-effects.cc:1210 |
+| source:the spiked barbs fall from your body.<br>EN: The spiked barbs fall from your body. | 尖锐的倒刺从你的身体上脱落了。 | 尖锐的倒刺从你的身体上脱落了。 | keep | 取消效果使倒刺脱落，保留从身体上脱落的方向 | crawl-ref/source/potion.cc:933 |
+| source:the steam scalds you terribly!<br>EN: The steam scalds you terribly! | 蒸汽严重地烫伤了你！ | 蒸汽严重地烫伤了你！ | keep | 蒸汽易伤增加烫伤的严重程度完整 | crawl-ref/source/ouch.cc:145 |
+| source:the sting of sand against your skin<br>EN: the sting of sand against your skin | 沙粒刺痛你的皮肤 | 沙粒刺痛你的皮肤 | keep | 沙爆击中皮肤的刺痛感觉完整 | crawl-ref/source/player.cc:3268 |
+| source:the taste of poison filling your lungs<br>EN: the taste of poison filling your lungs | 毒气充满你的肺部 | 毒气充满你的肺部 | keep | 有毒蒸气充满肺部的中毒感觉完整 | crawl-ref/source/player.cc:3269 |
+| source:the vines retreat back into %s.<br>EN: The vines retreat back into %s. | 藤蔓缩回了%s。 | 藤蔓缩回了%s。 | keep | 藤甲藤蔓收回已翻译物品名，起止方向准确 | crawl-ref/source/player-equip.cc:2230 |
+| source:the vines'<br>EN: the vines' | 藤蔓 | 藤蔓 | adjust | 藤蔓来源片段缺所有格时旧逃脱句不完整，随名词主体/束缚句接口统一；修复：根、尸手、藤蔓、未知来源采用同一所有格合同，怪物DESC_ITS仍带所有格；成功完整表达挣脱束缚，失败仍保留减弱但未逃脱。 | crawl-ref/source/player.cc:8815; crawl-ref/source/player.cc::player::attempt_escape |
+| source:the wailing of tortured souls fills the air!<br>EN: The wailing of tortured souls fills the air! | 受折磨灵魂的哀嚎充满了空气！ | 受折磨灵魂的哀嚎充满了空气！ | keep | 受折磨灵魂哀嚎充斥周围的风味完整 | crawl-ref/source/player-reacts.cc:1286 |
+| source:the walls disappear%s!<br>EN: The walls disappear%s! | 墙壁%s消失了！ | 墙壁%s消失了！ | keep | 墙壁消失的提前后缀置于动词前自然，普通/提前两分支俱全 | crawl-ref/source/timed-effects.cc:726 |
+| source:the winds around you start to calm down.<br>EN: The winds around you start to calm down. | 你周围的风开始平息了。 | 你周围的风开始平息了。 | keep | 风暴周围风力开始减弱，与立即结束区分 | crawl-ref/source/player-reacts.cc:864 |
+| source:the zombie hands constricting you return to the earth.<br>EN: The zombie hands constricting you return to the earth. | 束缚你的僵尸之手缩回了土中。 | 束缚你的僵尸之手缩回了土中。 | keep | 僵尸之手退回土中，保留此前束缚玩家的关系 | crawl-ref/source/player-reacts.cc:526 |
+| source:the zombie hands'<br>EN: the zombie hands' | 尸手 | 尸手 | adjust | 尸手来源片段与根/藤同属所有格拼接缺口，随完整束缚句修复；修复：根、尸手、藤蔓、未知来源采用同一所有格合同，怪物DESC_ITS仍带所有格；成功完整表达挣脱束缚，失败仍保留减弱但未逃脱。 | crawl-ref/source/player.cc:8814; crawl-ref/source/player.cc::player::attempt_escape |
+| source:there is a creature in the %s!<br>EN: There is a creature in the %s! | 有生物在%s里！ | 有生物在%s里！ | keep | 门道内有生物阻挡，位置和存在性完整 | crawl-ref/source/player.cc:9465 |
+| source:there is a stubborn creature in the %s!<br>EN: There is a stubborn creature in the %s! | 有个倔强的生物在%s里！ | 有个倔强的生物在%s里！ | keep | 倔强生物不让路的区别完整 | crawl-ref/source/player.cc:9481 |
+| source:there is nothing to cancel.<br>EN: There is nothing to cancel. | 没有什么需要取消的。 | 没有什么需要取消的。 | keep | 取消药水无可取消状态时说明准确 | crawl-ref/source/potion.cc:402 |
+| source:there's no one nearby to share it with.<br>EN: There's no one nearby to share it with. | 附近没有可以分享的对象。 | 附近没有可以分享的对象。 | keep | 共享药水附近无分享对象的目标限制完整 | crawl-ref/source/potion.cc:878 |
+| source:this %s%s is marked as excluded! open it anyway?<br>EN: This %s%s is marked as excluded! Open it anyway? | 这个%s%s被标记为已排除！要打开它吗？ | 这个%s%s被标记为已排除！要打开它吗？ | keep | 门的旅行排除标记与仍要打开的确认完整，大小门型两槽保留 | crawl-ref/source/player.cc:9302 |
+| source:this helmet is too large for your head.<br>EN: This helmet is too large for your head. | 这个头盔对你的头来说太大了。 | 这个头盔对你的头来说太大了。 | keep | 硬头盔过大的头部尺寸限制准确 | crawl-ref/source/player-equip.cc:551 |
+| source:this helmet is too small for your head.<br>EN: This helmet is too small for your head. | 这个头盔对你的头来说太小了。 | 这个头盔对你的头来说太小了。 | keep | 硬头盔过小的头部尺寸限制准确 | crawl-ref/source/player-equip.cc:549 |
+| source:this transformation would significantly lower your maximum hit points. transform anyway?<br>EN: This transformation would significantly lower your maximum hit points. Transform anyway? | 此变形会显著降低你的最大生命值。仍然变形吗？ | 此变形会显著降低你的最大生命值。仍然变形吗？ | keep | 变形显著降低最大生命的风险和仍要变形确认完整 | crawl-ref/source/transform.cc:2085 |
+| source:those are too big for your %s.<br>EN: Those are too big for your %s. | 那对你的%s来说太大了。 | 那对你的%s来说太大了。 | keep | 手套/靴子对真实手脚过大的尺寸限制及部位参数准确 | crawl-ref/source/player-equip.cc:162; crawl-ref/source/player-equip.cc:180 |
+| source:those are too small for your %s.<br>EN: Those are too small for your %s. | 那对你的%s来说太小了。 | 那对你的%s来说太小了。 | keep | 手套/靴子对真实手脚过小的限制准确 | crawl-ref/source/player-equip.cc:164; crawl-ref/source/player-equip.cc:182 |
+| source:those can't fit on your %s.<br>EN: Those can't fit on your %s. | 那戴不上你的%s。 | 那戴不上你的%s。 | keep | 手套无法戴上当前手部的穿戴限制完整 | crawl-ref/source/player-equip.cc:166 |
+| source:those can't fit over your huge %s.<br>EN: Those can't fit over your huge %s. | 那套不进你的巨大%s。 | 那套不进你的巨大%s。 | keep | 巨大手部无法套进手套的大小方向正确 | crawl-ref/source/player-equip.cc:168 |
+| source:torch<br>EN: Torch | 火炬 | 火炬 | keep | 火炬形态短灯在两分支同义，不误称点燃动作 | crawl-ref/source/status.cc:306; crawl-ref/source/status.cc:320 |
+| source:torch (%d)<br>EN: Torch (%d) | 火炬（%d） | 火炬（%d） | keep | 火炬剩余燃料次数保留 | crawl-ref/source/status.cc:316 |
+| source:transforming<br>EN: Transforming | 变形 | 变形 | keep | 主动变形动作与解除变形相区分 | crawl-ref/source/transform.cc:1955; crawl-ref/source/transform.cc:1985 |
+| source:transforming right now would cause you to %s!<br>EN: Transforming right now would cause you to %s! | 现在变形会导致你%s！ | 现在变形会导致你%s！ | keep | 立即变形造成溺亡或烧死，两已翻译危险动作均可组合 | crawl-ref/source/transform.cc:2076 |
+| source:trickster (+%d ac)<br>EN: trickster (+%d AC) | 欺诈者（AC +%d） | 欺诈者（AC +%d） | keep | 欺诈者护甲增益保留AC与正号数值 | crawl-ref/source/status.cc:1011 |
+| source:trog doesn't allow you to cast spells!<br>EN: Trog doesn't allow you to cast spells! | 特洛格不允许你施放法术！ | 特洛格不允许你施放法术！ | keep | 特洛格禁止施法的信仰约束完整 | crawl-ref/source/potion.cc:308 |
+| source:trog suppresses %s necromantic effect.<br>EN: Trog suppresses %s necromantic effect. | 特洛格抑制了%s的死灵效果。 | 特洛格抑制了%s死灵效果。 | adjust | 传入apostrophise(item_name)已带的，外层再加的重复；模板应去额外所有格且死灵效果含义保留；已按本行当前值修正措辞。 | crawl-ref/source/player-equip.cc:1999 |
+| source:unable to drink<br>EN: unable to drink | 无法饮用药水 | 无法饮用药水 | keep | 无法饮用药水的状态不误说无法使用其他物品 | crawl-ref/source/status.cc:370 |
+| source:untransforming<br>EN: Untransforming | 解除变形 | 解除变形 | keep | 解除变形动作完整，不同于取消尚未施行的指令 | crawl-ref/source/transform.cc:1955; crawl-ref/source/transform.cc:1985 |
+| source:vapourise (%s)<br>EN: vapourise (%s) | 汽化（%s） | 汽化（%s） | keep | 汽化状态所产云的短名由cloud_type_name翻译，括号结构完整 | crawl-ref/source/status.cc:1153 |
+| source:verb&#124;grow<br>EN: verb&#124;grow | 离得 | 离得 | keep | 生长动词在离维护者太远语境为离得，完整尖刺发射器句成立 | crawl-ref/source/timed-effects.cc:1217 |
+| source:very <br>EN: very  | 非常 | 非常 | keep | 程度非常用于当前状态量级，词义准确 | crawl-ref/source/player.cc:5001 |
+| source:very fast<br>EN: very fast | 非常快 | 非常快 | keep | 最快档移动速度非常快，与快/一般分档一致 | crawl-ref/source/player.cc:3817 |
+| source:very heavily <br>EN: very heavily  | 非常 | 非常 | keep | 汲取虚弱非常程度位于颇为与极度之间，层级不倒置 | crawl-ref/source/ouch.cc:542 |
+| source:very mighty<br>EN: very mighty | 力量无比强大 | 力量无比强大 | keep | 强力药水初次生效的强大感觉完整 | crawl-ref/source/potion.cc:282 |
+| source:very slow<br>EN: very slow | 极慢 | 极慢 | keep | 最慢档速度极慢，与慢/一般保持差别 | crawl-ref/source/output.cc:3607; crawl-ref/source/player.cc:3821 |
+| source:vessel of slaughter (+%d%% damage done)<br>EN: vessel of slaughter (+%d%% damage done) | 杀戮之器（伤害+%d%%） | 杀戮之器（伤害+%d%%） | keep | 杀戮之器伤害增幅百分数完整，不误说受伤增加 | crawl-ref/source/transform.cc:1078 |
+| source:vines begin sprouting from %s.<br>EN: Vines begin sprouting from %s. | 藤蔓从%s开始生长。 | 藤蔓从%s开始生长。 | keep | 藤蔓从藤甲开始长出的来源完整 | crawl-ref/source/player-equip.cc:2074 |
+| source:wading<br>EN: wading | 涉水 | 涉水 | keep | 涉水移动方式与游泳区分 | crawl-ref/source/player.cc:3804 |
+| source:wave<br>EN: Wave | 波 | 波 | keep | 波浪通道状态短灯加号保持阶段 | crawl-ref/source/status.cc:1516 |
+| source:wearing %s %s preventing teleportation<br>EN: wearing %s %s preventing teleportation | 穿着%s件防止传送的%s | 穿着%s件防止传送的%s | keep | 穿戴多个禁传送物品的数量词由number_in_words显示翻译，物品类别和阻止传送含义完整 | crawl-ref/source/player.cc:7613 |
+| source:welcome back to level %d!<br>EN: Welcome back to level %d! | 欢迎回到第%d级！ | 欢迎回到第%d级！ | keep | 经验等级恢复的欢迎回到原等级完整 | crawl-ref/source/player.cc:3346 |
+| source:wielding %s<br>EN: wielding %s | 持握着%s | 持握着%s | keep | 禁传送原因中正在持握指定武器，手持动作明确 | crawl-ref/source/player.cc:7603 |
+| source:wind-assisted<br>EN: wind-assisted | 被风辅助 | 被风辅助 | keep | 顺风加速的风助条件保留，和速度结果通过并列/仍然片段连接 | crawl-ref/source/player.cc:3808 |
+| source:wind-hindered<br>EN: wind-hindered | 被风阻碍 | 被风阻碍 | keep | 逆风阻碍的条件保留，快慢结果由实际move_cost决定 | crawl-ref/source/player.cc:3809 |
+| source:winding<br>EN: Winding | 上弦 | 上弦 | keep | 上弦中的进度点保留，未误作已发射 | crawl-ref/source/status.cc:1533 |
+| source:wisps of flame dancing upon you<br>EN: wisps of flame dancing upon you | 火苗在你身上跳动 | 火苗在你身上跳动 | keep | 狐火火苗在身体上跳动的火焰风味完整 | crawl-ref/source/player.cc:3263 |
+| source:wreathed by umbra<br>EN: wreathed by umbra | 被暗影环绕 | 被暗影环绕 | keep | 暗影环绕状态准确，与光环及隐形不同 | crawl-ref/source/status.cc:429 |
+| source:you %s<br>EN: You %s | 你%s | 你%s | keep | 恼怒特殊消息前缀接已翻译反抗控制句，未存在任意raw参数漏译 | crawl-ref/source/player.cc:7981 |
+| source:you %s the barbed spikes from your body.<br>EN: You %s the barbed spikes from your body. | 你%s了身上的倒刺。 | 你%s了身上的倒刺。 | keep | 拔倒刺完整句与小心拔出/狂暴撕扯两动作可组合 | crawl-ref/source/player-reacts.cc:1007 |
+| source:you already have all the faith you need.<br>EN: You already have all the faith you need. | 你已拥有所需的全部信仰。 | 你已拥有所需的全部信仰。 | keep | 已拥有足够信仰时没有进一步效益的提示完整 | crawl-ref/source/player-equip.cc:2759 |
+| source:you are %s<br>EN: You are %s | 你是%s | 你是%s | keep | 形态当前描述接已翻译完整形态表述，主语与现在时正确 | crawl-ref/source/transform.cc:242 |
+| source:you are amphibious.<br>EN: You are amphibious. | 你是两栖的。 | 你是两栖的。 | keep | 两栖能力提示完整，不承诺深水行走或飞行 | crawl-ref/source/mutation.cc:676; crawl-ref/source/mutation.cc:833 |
+| source:you are as fast as you can get.<br>EN: You are as fast as you can get. | 你已经快到极限了。 | 你已经快到极限了。 | keep | 急速状态不能更快的封顶提示完整 | crawl-ref/source/player.cc:5451 |
+| source:you are as slow as you can get.<br>EN: You are as slow as you can get. | 你已经慢到极限了。 | 你已经慢到极限了。 | keep | 迟缓状态不能更慢的封顶提示完整 | crawl-ref/source/player.cc:5302 |
+| source:you are being constricted by %s.<br>EN: You are being constricted by %s. | 你正在被%s缠绕。 | 你正在被%s缠绕。 | keep | 被指定怪物缠绕的被动关系完整，怪物名经显示名翻译 | crawl-ref/source/player.cc:9056 |
+| source:you are blinded for longer.<br>EN: You are blinded for longer. | 你被致盲的时间更长了。 | 你被致盲的时间更长了。 | keep | 重复致盲延长时长而非新强度，比较含义正确 | crawl-ref/source/player.cc:5389 |
+| source:you are blinded!<br>EN: You are blinded! | 你被致盲了！ | 你被致盲了！ | keep | 首次致盲提示完整 | crawl-ref/source/player.cc:5391 |
+| source:you are constricting <br>EN: You are constricting  | 你正在缠绕 | 你正在缠绕 | keep | 玩家正在缠绕后接目标显示列表，主动关系完整 | crawl-ref/source/player.cc:9078 |
+| source:you are covered in %sliquid fire! move or burn!<br>EN: You are covered in %sliquid fire! Move or burn! | 你被%s液态火焰覆盖了！移动或被烧！ | 你被%s液态火焰覆盖了！快移动，否则会被灼烧！ | adjust | 液火警告Move or burn是立刻移动否则遭灼烧的选择，现移动或被烧生硬；改快移动，否则会被灼烧；已按本行当前值修正措辞。 | crawl-ref/source/player.cc:5188 |
+| source:you are covered in even more %sliquid fire!<br>EN: You are covered in even more %sliquid fire! | 你被%s液态火焰覆盖得更严重了！ | 你被%s液态火焰覆盖得更严重了！ | keep | 更多液火覆盖身体表示量增加，强度修饰槽仍保留 | crawl-ref/source/player.cc:5183 |
+| source:you are flying.<br>EN: You are flying. | 你正在飞行。 | 你正在飞行。 | keep | 当前飞行能力描述准确，不强行承诺永久飞行 | crawl-ref/source/mutation.cc:673 |
+| source:you are illuminated by a divine aura.<br>EN: You are illuminated by a divine aura. | 你被一个神圣光环照亮。 | 你被一个神圣光环照亮。 | keep | 普通范围神圣光环照亮玩家的关系完整 | crawl-ref/source/player.cc:3911 |
+| source:you are illuminated by a large divine aura.<br>EN: You are illuminated by a large divine aura. | 你被一个大型神圣光环照亮。 | 你被一个大型神圣光环照亮。 | keep | 较大神圣光环的范围修饰保留 | crawl-ref/source/player.cc:3909 |
+| source:you are illuminated by a small divine aura.<br>EN: You are illuminated by a small divine aura. | 你被一个小型神圣光环照亮。 | 你被一个小型神圣光环照亮。 | keep | 较小神圣光环的范围修饰保留 | crawl-ref/source/player.cc:3913 |
+| source:you are lethally poisoned!<br>EN: You are lethally poisoned! | 你的中毒已达到致命程度！ | 你的中毒已达到致命程度！ | keep | 致命中毒的严重程度明确，未误说已经死亡 | crawl-ref/source/player.cc:4872 |
+| source:you are more poisoned.<br>EN: You are more poisoned. | 你的中毒加重了。 | 你的中毒加重了。 | keep | 已有中毒进一步加重，比较变化准确 | crawl-ref/source/player.cc:4876 |
+| source:you are no longer poisoned.<br>EN: You are no longer poisoned. | 你不再中毒了。 | 你不再中毒了。 | keep | 各治疗/变形路径结束中毒的恢复消息同义 | crawl-ref/source/player.cc:5032; crawl-ref/source/spl-damage.cc:2388; crawl-ref/source/transform.cc:2282 |
+| source:you are outlined in light.<br>EN: You are outlined in light. | 你被光芒勾勒出轮廓。 | 你被光芒勾勒出轮廓。 | keep | 光芒勾勒玩家轮廓而使其显形，视觉效果完整 | crawl-ref/source/player.cc:8302 |
+| source:you are overflowing with transmutational energy.<br>EN: You are overflowing with transmutational energy. | 你充满了变形能量。 | 你充满了变形能量。 | keep | 变形能量满溢的形态描述完整 | crawl-ref/source/transform.cc:623 |
+| source:you are overwhelmed with despair!<br>EN: You are overwhelmed with despair! | 你被沮丧感淹没了！ | 你被沮丧感淹没了！ | keep | 绝望压倒玩家的恼怒效果风味完整，未硬改成其他状态 | crawl-ref/source/player.cc:7983 |
+| source:you are poisoned.<br>EN: You are poisoned. | 你中毒了。 | 你中毒了。 | keep | 首次中毒的提示准确 | crawl-ref/source/player.cc:4877 |
+| source:you are protected from being hasted by cheibriados.<br>EN: You are protected from being hasted by Cheibriados. | 切依布利亚多斯保护你不受加速效果影响。 | 切依布利亚多斯保护你不受加速效果影响。 | keep | 切依布利亚多斯防止加速的神祇主体与限制完整 | crawl-ref/source/potion.cc:245 |
+| source:you are rather mundane.<br>EN: You are rather mundane. | 你相当平凡。 | 你相当平凡。 | keep | 无特殊能力或变异时平凡的说明准确 | crawl-ref/source/mutation.cc:1209 |
+| source:you are rather mundane.&#92;n<br>EN: You are rather mundane.&#92;n | 你相当平凡。&#92;n | 你相当平凡。&#92;n | keep | 无特殊能力的平凡说明与含换行键文本一致，保留冻结键身份 | crawl-ref/source/mutation.cc:1021 |
+| source:you are ready to perform a blood rite again.<br>EN: You are ready to perform a blood rite again. | 你准备好再次执行血之仪式了。 | 你准备好再次执行血之仪式了。 | keep | 血之仪式冷却结束可以再次施行，准备状态完整 | crawl-ref/source/player-reacts.cc:1082 |
+| source:you are slowing down.<br>EN: You are slowing down. | 你正在减速。 | 你正在减速。 | keep | 正在减速的过程提示准确，与立即禁止移动区分 | crawl-ref/source/player.cc:7947 |
+| source:you are small and have problems with some larger weapons.<br>EN: You are small and have problems with some larger weapons. | 你的体型较小，使用一些大型武器会有困难。 | 你的体型较小，使用一些大型武器会有困难。 | keep | 小体型不能顺利使用部分大武器，保留some范围 | crawl-ref/source/mutation.cc:870 |
+| source:you are splashed with acid%s%s<br>EN: You are splashed with acid%s%s | 你被酸液溅到了%s%s | 你被酸液溅到了%s%s | adjust | 酸液完全被抵抗时附加raw but take no damage，中文模板仍漏英文；需完整无伤/受伤显示分支；修复：酸液完全抵抗的无伤片段在最终消息槽翻译，实际伤害及抵抗计算不改。 | crawl-ref/source/player.cc:7838; crawl-ref/source/player.cc::player::splash_with_acid |
+| source:you are starting to lose your buoyancy.<br>EN: You are starting to lose your buoyancy. | 你开始失去浮力了。 | 你开始失去浮力了。 | keep | 飞行浮力将尽的提前警告完整 | crawl-ref/source/player-reacts.cc:893 |
+| source:you are stuck in your current form!<br>EN: You are stuck in your current form! | 你被困在当前形态中了！ | 你被困在当前形态中了！ | keep | 当前形态锁定不能改变，限制准确 | crawl-ref/source/transform.cc:2040 |
+| source:you are surrounded by a repulsion field.<br>EN: You are surrounded by a repulsion field. | 你被排斥力场包围。 | 你被排斥力场包围。 | keep | 偏斥力场包围玩家的防护风味完整 | crawl-ref/source/player-equip.cc:2396 |
+| source:you are too large for most types of armour.<br>EN: You are too large for most types of armour. | 你的体型过大，大多数护甲都不合身。 | 你的体型过大，大多数护甲都不合身。 | keep | 体型过大不适配多数护甲，保留多数而非全部 | crawl-ref/source/mutation.cc:874 |
+| source:you are too small for most types of armour.<br>EN: You are too small for most types of armour. | 你的体型过小，大多数护甲都不合身。 | 你的体型过小，大多数护甲都不合身。 | keep | 体型过小不适配多数护甲，大小方向正确 | crawl-ref/source/mutation.cc:864 |
+| source:you are undead, granting you many immunities and vulnerabilities.<br>EN: You are undead, granting you many immunities and vulnerabilities. | 你是亡灵，拥有许多免疫能力与弱点。 | 你是亡灵，拥有许多免疫能力与弱点。 | keep | 亡灵有多种免疫与弱点，利弊两面完整 | crawl-ref/source/mutation.cc:907 |
+| source:you are very small and have problems with some larger weapons.<br>EN: You are very small and have problems with some larger weapons. | 你的体型非常小，使用一些大型武器会有困难。 | 你的体型非常小，使用一些大型武器会有困难。 | keep | 极小体型与普通小体型不同，武器限制仍是部分 | crawl-ref/source/mutation.cc:866 |
+| source:you bathe in the mists of the mutagenic serum and feel extremely strange.<br>EN: You bathe in the mists of the mutagenic serum and feel extremely strange. | 你沐浴在诱变血清的雾气中，感觉极其古怪。 | 你沐浴在诱变血清的雾气中，感觉极其古怪。 | keep | 沐浴诱变血清雾感到古怪，来源与强烈感觉完整 | crawl-ref/source/mutation.cc:2361 |
+| source:you become %1$stransparent, but the glow from %2$s %3$s prevents you from becoming completely invisible.<br>EN: You become %1$stransparent, but the glow from %2$s %3$s prevents you from becoming completely invisible. | 你变得%1$s透明了，但%2$s%3$s的光芒使你无法完全隐形。 | 你变得%1$s透明了，但%2$s%3$s的光芒使你无法完全隐形。 | keep | 隐形受发光阻止的完整位置模板保留更多强度、所有关系及多原因列表 | crawl-ref/source/potion.cc:482 |
+| source:you become transparent for a moment.<br>EN: You become transparent for a moment. | 你短暂变得透明。 | 你短暂变得透明。 | keep | 短暂变透明的无效装备风味与实际获得持续隐形区分 | crawl-ref/source/player-equip.cc:2336 |
+| source:you become very slightly more insubstantial.<br>EN: You become very slightly more insubstantial. | 你的虚体变得略微更加虚无了。 | 你的虚体变得略微更加虚无了。 | keep | 已有虚体时略微更虚无的比较和小幅程度完整 | crawl-ref/source/potion.cc:913 |
+| source:you body stops petrifying.<br>EN: You body stops petrifying. | 你的身体停止了石化。 | 你的身体停止了石化。 | keep | 身体停止石化的恢复动作准确，英文You body语病不影响现中文 | crawl-ref/source/potion.cc:927 |
+| source:you break free of %s.<br>EN: You break free of %s. | 你挣脱了%s掌控。 | 你挣脱了%s掌控。 | adjust | 逃脱模板混用已带的怪物所有格与不带的根藤尸手名，出现树根掌控等缺口；应统一名词主体并使用完整束缚句；修复：根、尸手、藤蔓、未知来源采用同一所有格合同，怪物DESC_ITS仍带所有格；成功完整表达挣脱束缚，失败仍保留减弱但未逃脱。 | crawl-ref/source/player.cc:8820; crawl-ref/source/player.cc::player::attempt_escape |
+| source:you break open the mutation catalyst, and crackling magic pours forth!<br>EN: You break open the mutation catalyst, and crackling magic pours forth! | 你打破了诱变催化器，噼啪作响的魔力从中涌出！ | 你打破了诱变催化器，噼啪作响的魔力从中涌出！ | keep | 打破诱变催化器释放噼啪魔力，动作与来源完整 | crawl-ref/source/mutation.cc:2356 |
+| source:you briefly feel rather strange.<br>EN: You briefly feel rather strange. | 你短暂地感到相当奇怪。 | 你短暂地感到相当奇怪。 | keep | 短暂颇为古怪的有限变异效果感受完整 | crawl-ref/source/mutation.cc:2471 |
+| source:you briefly feel strange.<br>EN: You briefly feel strange. | 你短暂地感到奇怪。 | 你短暂地感到奇怪。 | keep | 短暂古怪感保留暂时限定 | crawl-ref/source/mutation.cc:1908 |
+| source:you can act again.<br>EN: You can act again. | 你可以再次行动了。 | 你可以再次行动了。 | keep | 瘫痪等效果结束后恢复行动的消息完整 | crawl-ref/source/player-reacts.cc:260 |
+| source:you can breathe a blast of fire, cold, and poison.<br>EN: You can breathe a blast of fire, cold, and poison. | 你可以喷出火焰、寒冷和毒素的冲击。 | 你可以喷出火焰、寒冷和毒素的冲击。 | keep | 黄金龙息包含火焰寒冷毒素三种成分，喷吐动作完整 | crawl-ref/source/mutation.cc:665 |
+| source:you can no longer %s %s!<br>EN: You can no longer %s %s! | 你不能再%s%s了！ | 你不能再%s%s了！ | adjust | 缺手后不能再穿戴/抓握的wear/hold仍raw英文参数，需在显示槽本地化或完整分句；修复：缺手失去装备时wear/hold在显示槽翻译，完整物品名和不能再使用含义保留。 | crawl-ref/source/mutation.cc:1451; crawl-ref/source/mutation.cc::_maybe_remove_equipment |
+| source:you can see so much more now....<br>EN: You can see so much more now.... | 你现在能看到更远的地方了…… | 你现在能看到更远的地方了…… | keep | 黄金龙形态扩展视野，现能看到更远符合当前效果 | crawl-ref/source/transform.cc:2203 |
+| source:you can walk on water until reaching land.<br>EN: You can walk on water until reaching land. | 你可以在水面行走直到到达陆地。 | 你可以在水面行走直到到达陆地。 | keep | 水面行走仅维持至上岸，期限完整 | crawl-ref/source/mutation.cc:777 |
+| source:you can walk on water.<br>EN: You can walk on water. | 你可以在水面行走。 | 你可以在水面行走。 | keep | 水面行走能力完整，不误说水下呼吸 | crawl-ref/source/mutation.cc:776 |
+| source:you can wear up to %s rings at the same time.<br>EN: You can wear up to %s rings at the same time. | 你可以同时佩戴最多%s枚戒指。 | 你可以同时佩戴最多%s枚戒指。 | keep | 可戴戒指数由实际手臂数经number_in_words翻译，最多与同时两限制完整 | crawl-ref/source/mutation.cc:844 |
+| source:you can't equip that in your current form.<br>EN: You can't equip that in your current form. | 你当前形态无法装备那个。 | 你当前形态无法装备那个。 | keep | 当前形态不允许装备该物品，状态限定准确 | crawl-ref/source/player-equip.cc:507 |
+| source:you can't fit into that!<br>EN: You can't fit into that! | 你穿不上那个！ | 你穿不上那个！ | keep | 无法穿上该装备，身体尺寸限制完整 | crawl-ref/source/player-equip.cc:201 |
+| source:you can't fit that over your antennae.<br>EN: You can't fit that over your antennae. | 你的触角让你无法戴上那个。 | 你的触角让你无法戴上那个。 | keep | 触角阻挡头盔穿戴，部位正确 | crawl-ref/source/player-equip.cc:559 |
+| source:you can't fit that over your beak.<br>EN: You can't fit that over your beak. | 你的喙让你无法戴上那个。 | 你的喙让你无法戴上那个。 | keep | 喙阻挡头盔穿戴，部位正确 | crawl-ref/source/player-equip.cc:561 |
+| source:you can't fit that over your horns.<br>EN: You can't fit that over your horns. | 你的角让你无法戴上那个。 | 你的角让你无法戴上那个。 | keep | 角阻挡头盔穿戴，部位正确 | crawl-ref/source/player-equip.cc:557 |
+| source:you can't haunt something so large.<br>EN: You can't haunt something so large. | 你无法附着在如此巨大的东西上。 | 你无法附着在如此巨大的东西上。 | keep | 幽灵附着过大装备受限，haunt是附着装备而非骚扰怪物 | crawl-ref/source/player-equip.cc:119 |
+| source:you can't hold anything in your paws.<br>EN: You can't hold anything in your paws. | 你的爪子无法抓握任何东西。 | 你的爪子无法抓握任何东西。 | keep | 爪子不能抓握物品，不能误说没有爪子 | crawl-ref/source/player-equip.cc:104 |
+| source:you can't survive in this terrain! you fly over the %s, but the process is draining.<br>EN: You can't survive in this terrain! You fly over the %s, but the process is draining. | 你无法在这地形上生存！你飞到了%s上方，但这个过程在消耗你的精力。 | 你无法在这种地形上生存！你飞到了%s上方，但这个过程会汲取你的生命。 | adjust | 紧急飞行会持续drain_player扣最大生命，消耗精力淡化机制；应说明汲取生命并保持危险地形原因；已按本行当前值修正措辞。 | crawl-ref/source/player.cc:5687 |
+| source:you can't wear amulets.<br>EN: You can't wear amulets. | 你无法佩戴项链。 | 你无法佩戴项链。 | keep | 不能佩戴项链的装备类别限制准确 | crawl-ref/source/player-equip.cc:241 |
+| source:you can't wear any headgear with your large antennae!<br>EN: You can't wear any headgear with your large antennae! | 你的大触角让你无法穿戴任何头盔！ | 你的大触角让你无法穿戴任何头部装备！ | adjust | 大触角阻挡全部headgear含帽子，现任何头盔范围偏窄，应头部装备；已按本行当前值修正措辞。 | crawl-ref/source/player-equip.cc:146 |
+| source:you can't wear any headgear with your large horns!<br>EN: You can't wear any headgear with your large horns! | 你的大角让你无法穿戴任何头盔！ | 你的大角让你无法穿戴任何头部装备！ | adjust | 大角阻挡全部headgear含帽子，需与触角分支统一头部装备；已按本行当前值修正措辞。 | crawl-ref/source/player-equip.cc:144 |
+| source:you can't wear any rings.<br>EN: You can't wear any rings. | 你无法佩戴任何戒指。 | 你无法佩戴任何戒指。 | keep | 不能佩戴任何戒指，数量范围准确 | crawl-ref/source/player-equip.cc:221 |
+| source:you can't wear armour!<br>EN: You can't wear armour! | 你无法穿戴护甲！ | 你无法穿戴护甲！ | keep | 不能穿戴护甲的类别限制完整 | crawl-ref/source/player-equip.cc:127 |
+| source:you can't wear boots.<br>EN: You can't wear boots. | 你无法穿靴子。 | 你无法穿靴子。 | keep | 不能穿靴子的装备槽限制完整 | crawl-ref/source/player-equip.cc:184 |
+| source:you can't wear that with your reptilian head.<br>EN: You can't wear that with your reptilian head. | 你的爬虫类头部无法穿戴那个。 | 你的爬虫类头部无法穿戴那个。 | keep | 爬虫类头部阻挡特定头盔，原因完整 | crawl-ref/source/player-equip.cc:553 |
+| source:you can't wear that with your sharp stinger!<br>EN: You can't wear that with your sharp stinger! | 你的尖刺让你无法穿戴那个！ | 你锋利的毒刺让你无法穿戴那个！ | adjust | sharp stinger为当前毒刺变异，现尖刺混同其他刺，应锋利毒刺并保留穿戴限制；已按本行当前值修正措辞。 | crawl-ref/source/player-equip.cc:214 |
+| source:you can't wear that.<br>EN: You can't wear that. | 你无法穿戴那个。 | 你无法穿戴那个。 | keep | 无法穿戴该物品的通用否定完整 | crawl-ref/source/player-equip.cc:212 |
+| source:you can't wield any weapon.<br>EN: You can't wield any weapon. | 你无法持握任何武器。 | 你无法持握任何武器。 | keep | 不能持握任何武器，动作与范围完整 | crawl-ref/source/player-equip.cc:88 |
+| source:you cannot %s because you are %s.<br>EN: you cannot %s because you are %s. | 你无法%s，因为你%s。 | 你无法%s，因为你%s。 | keep | 不能传送/闪现的原因完整模板接已翻译原因列表，原始键大小写规范合并正常 | crawl-ref/source/player.cc:7629 |
+| source:you cannot be healed by potions.<br>EN: You cannot be healed by potions. | 你无法被药水治疗。 | 你无法被药水治疗。 | keep | 永久无法被药水治疗的限制与暂时分支区分 | crawl-ref/source/potion.cc:177 |
+| source:you cannot cast spells.<br>EN: You cannot cast spells. | 你无法施放法术。 | 你无法施放法术。 | keep | 不能施放法术的禁法能力描述完整 | crawl-ref/source/mutation.cc:698 |
+| source:you cannot currently be healed by potions.<br>EN: You cannot currently be healed by potions. | 你目前无法被药水治疗。 | 你目前无法被药水治疗。 | keep | 暂时无法被药水治疗保留目前限定 | crawl-ref/source/potion.cc:179 |
+| source:you cannot enter the water in your current form.<br>EN: You cannot enter the water in your current form. | 你当前形态下无法进入水中。 | 你当前形态下无法进入水中。 | keep | 当前形态不能入水，限制范围明确 | crawl-ref/source/player.cc:344 |
+| source:you cannot fall asleep in your current state!<br>EN: You cannot fall asleep in your current state! | 你当前状态下无法入睡！ | 你当前状态下无法入睡！ | keep | 当前状态不允许入睡，保留状态限定 | crawl-ref/source/player.cc:8551 |
+| source:you cannot fit into any form of body armour or wear helmets.<br>EN: You cannot fit into any form of body armour or wear helmets. | 你无法穿戴任何形式的身体护甲或头盔。 | 你无法穿戴任何形式的身体护甲或头盔。 | keep | 身体不能容纳任何身体护甲或头盔，两类别俱全 | crawl-ref/source/mutation.cc:884 |
+| source:you cannot heal while in death's door.<br>EN: You cannot heal while in death's door. | 你在死之门中无法治疗。 | 你在死亡之门状态下无法恢复生命。 | adjust | Death's Door现行法术已裁决死亡之门，死之门漏字；应在死亡之门状态下无法恢复生命；已按本行当前值修正措辞。 | crawl-ref/source/potion.cc:110; crawl-ref/source/potion.cc:186 |
+| source:you cannot jump into a shaft while %s.<br>EN: You cannot jump into a shaft while %s. | 你在%s时无法跳入竖井。 | 你在%s时无法跳入竖井。 | keep | 被束缚时不能跳竖井，held_status已提供中文原因 | crawl-ref/source/player.cc:8659; crawl-ref/source/player.cc:8663 |
+| source:you cannot mutate%s.<br>EN: You cannot mutate%s. | 你无法变异%s。 | 你无法变异%s。 | keep | 不能变异模板的暂时限定后缀已中文，否定完整 | crawl-ref/source/potion.cc:693 |
+| source:you close the %s%s%s.<br>EN: You close the %s%s%s. | 你关上了%s%s%s。 | 你关上了%s%s%s。 | keep | 关门时大小门型及额外描述三槽保留；修复：门大小、门型保持原显示参数；推开挡路物品片段在显示端翻译，普通/飞行/猛烈/有声/吱嘎完整语序同步；自定义des格式路径不变。 | crawl-ref/source/player.cc:9557; crawl-ref/source/player.cc::player_close_door; crawl-ref/source/terrain.cc::get_door_description |
+| source:you condense into your normal self.<br>EN: You condense into your normal self. | 你凝聚回了正常的形态。 | 你凝聚回了正常的形态。 | keep | 雾形态凝聚回正常自身，方向准确 | crawl-ref/source/transform.cc:937 |
+| source:you condense the dungeon air into a potion of mist.<br>EN: You condense the dungeon air into a potion of mist. | 你将地牢中的空气凝聚成一瓶雾药水。 | 你将地牢中的空气凝聚成一瓶雾药水。 | keep | 将地牢空气凝成雾药水，材料与产物准确 | crawl-ref/source/transform.cc:3199 |
+| source:you consume the remnants of %s's existence in flames.<br>EN: You consume the remnants of %s's existence in flames. | 你在火焰中吞噬了%s存在的残余。 | 你在火焰中吞噬了%s存在的残余。 | keep | 火中吞噬目标存在残余的风味完整，目标显示名不附带多余所有格 | crawl-ref/source/player.cc:9909 |
+| source:you dive into the water, extinguishing the flames!<br>EN: You dive into the water, extinguishing the flames! | 你浸入水中，火焰熄灭了！ | 你浸入水中，火焰熄灭了！ | keep | 浸入水中扑灭液火，动作与结果完整 | crawl-ref/source/player.cc:5204 |
+| source:you don't have a head.<br>EN: You don't have a head. | 你没有头。 | 你没有头。 | keep | 无头导致不能戴头盔，部位准确 | crawl-ref/source/player-equip.cc:138 |
+| source:you don't have any feet!<br>EN: You don't have any feet! | 你没有脚！ | 你没有脚！ | keep | 无脚导致不能穿靴子，部位准确 | crawl-ref/source/player-equip.cc:178 |
+| source:you don't have any shoulders.<br>EN: You don't have any shoulders. | 你没有肩膀。 | 你没有肩膀。 | keep | 无肩导致不能穿披风，部位准确 | crawl-ref/source/player-equip.cc:210 |
+| source:you don't have hands.<br>EN: You don't have hands. | 你没有手。 | 你没有手。 | keep | 无手导致不能戴手套，部位准确 | crawl-ref/source/player-equip.cc:160 |
+| source:you drift gracefully down.<br>EN: You drift gracefully down. | 你优雅地飘落下来。 | 你优雅地飘落下来。 | keep | 飞行结束优雅飘落的风味完整 | crawl-ref/source/player.cc:5723 |
+| source:you emerge from the shadows.<br>EN: You emerge from the shadows. | 你从阴影中显现出来了。 | 你从阴影中显现出来了。 | keep | 暗影形态结束重新显现，动作正确 | crawl-ref/source/transform.cc:979 |
+| source:you emit a cloud of colourful smoke!<br>EN: You emit a cloud of colourful smoke! | 你散发出一团五彩的烟雾！ | 你散发出一团五彩的烟雾！ | keep | 受伤释放彩烟的颜色与云雾效果完整 | crawl-ref/source/ouch.cc:879 |
+| source:you expend health (3 hp) to strengthen your wands.<br>EN: You expend health (3 HP) to strengthen your wands. | 你消耗生命（3点）来增强你的魔杖。 | 你消耗生命（3点）来增强你的魔杖。 | keep | 以三点生命强化魔杖，资源单位和数值完整 | crawl-ref/source/mutation.cc:2823 |
+| source:you extract magical energy from the potion.<br>EN: You extract magical energy from the potion. | 你从药水中提取了法力。 | 你从药水中提取了法力。 | keep | 化学效果从药水提取法力，资源名准确 | crawl-ref/source/potion.cc:1053 |
+| source:you fade completely from view now that you are no longer glowing from magical contamination.<br>EN: You fade completely from view now that you are no longer glowing from magical contamination. | 你完全从视野中消失了，因为你不再因魔法污染而发光。 | 你完全从视野中消失了，因为你不再因魔法污染而发光。 | keep | 魔法污染发光终止使玩家完全隐形，因果与完全程度完整 | crawl-ref/source/player.cc:4755 |
+| source:you fade further into invisibility.<br>EN: You fade further into invisibility. | 你进一步隐入了无形。 | 你进一步隐入了无形。 | keep | 已有隐形时进一步隐去，比较变化完整 | crawl-ref/source/mon-cast.cc:1189; crawl-ref/source/potion.cc:493 |
+| source:you fade into invisibility!<br>EN: You fade into invisibility! | 你隐入了无形！ | 你隐入了无形！ | keep | 首次隐形时从视线消失，状态正确 | crawl-ref/source/mon-cast.cc:1188; crawl-ref/source/potion.cc:492 |
+| source:you fall asleep.<br>EN: You fall asleep. | 你睡着了。 | 你睡着了。 | keep | 成功入睡的状态变化完整 | crawl-ref/source/player.cc:8560 |
+| source:you feel %s all of a sudden.<br>EN: You feel %s all of a sudden. | 你突然感到%s。 | 你突然感到%s。 | keep | 强力药水突然感到强大，两初次/再次片段均中文 | crawl-ref/source/potion.cc:283 |
+| source:you feel %s sick.<br>EN: You feel %s sick. | 你感觉%s不适。 | 你感觉%s不适。 | keep | 中毒每次伤害感到不同程度不适，程度槽准确 | crawl-ref/source/player.cc:5009 |
+| source:you feel %s.<br>EN: You feel %s. | 你感觉%s了。 | 你感觉%s了。 | keep | 属性变化感觉句共享已翻译stat_desc及_stat_mut_desc，不出现raw属性形容 | crawl-ref/source/mutation.cc:2042; crawl-ref/source/mutation.cc:2247; crawl-ref/source/player-stats.cc:188; crawl-ref/source/player-stats.cc:211 |
+| source:you feel %sattractive to monsters.<br>EN: You feel %sattractive to monsters. | 你感到对怪物%s有吸引力了。 | 你感到对怪物%s有吸引力了。 | keep | 吸引药水效果及再次使用的更强程度，怪物为被吸引方关系正确 | crawl-ref/source/potion.cc:352 |
+| source:you feel %sclever all of a sudden.<br>EN: You feel %sclever all of a sudden. | 你突然感到%s聪明了。 | 你突然感到%s聪明了。 | keep | 聪慧药水初次/续用由state intensity的更加组成，突发聪明感与持续brilliance一致。 | crawl-ref/source/potion.cc:325; crawl-ref/source/dat/i18n/zh/source.txt:46451 |
+| source:you feel %sweakened.<br>EN: You feel %sweakened. | 你感觉%s被削弱了。 | 你感觉%s虚弱了。 | adjust | 汲取按最大HP损失插入极度/非常/颇为；现句变成极度被削弱，程度词和被动结构搭配生硬，改用你感觉%s虚弱了。；已按本行当前值修正措辞。 | crawl-ref/source/ouch.cc:548; crawl-ref/source/ouch.cc:496; crawl-ref/source/dat/i18n/zh/source.txt:35936 |
+| source:you feel a %ssurge of divine interest.<br>EN: You feel a %ssurge of divine interest. | 你感到%s一股神圣的关注。 | 你感到%s一股神圣的关注。 | adjust | 信仰项链无神祇分支直接插入strange ，产生你感到strange 一股神圣的关注；需先本地化显示参数并使奇异修饰一股关注。；修复：信仰项链有神/无神两完整句分别保留神圣关注与奇异限定，不再raw strange。 | crawl-ref/source/player-equip.cc:2768; crawl-ref/source/player-equip.cc:2750; crawl-ref/source/player-equip.cc::_equip_jewellery_effect |
+| source:you feel a baleful cunning.<br>EN: You feel a baleful cunning. | 你感到一种邪恶的狡黠。 | 你感到一种邪恶的狡黠。 | keep | 持握devious铭印时的邪恶狡黠风味准确，与卸下后的guileless相反。 | crawl-ref/source/player-equip.cc:2086 |
+| source:you feel a bond with %s.<br>EN: You feel a bond with %s. | 你感到与%s的连接。 | 你感到与%s的连接。 | keep | 灵体铭印持握时与该武器建立联系；物品名作为连接对象准确。 | crawl-ref/source/player-equip.cc:2059 |
+| source:you feel a build-up of mutagenic energy.<br>EN: You feel a build-up of mutagenic energy. | 你感到变异能量的积聚。 | 你感到变异能量的积聚。 | keep | 污染神器装备时积聚诱变能量；译文保留能量积聚，未承诺立刻发生突变。 | crawl-ref/source/player-equip.cc:1791 |
+| source:you feel a deeper understanding of alchemy.<br>EN: You feel a deeper understanding of alchemy. | 你对炼金术有了更深的理解。 | 你对炼金术有了更深的理解。 | keep | 化学项链装备时对炼金的理解加深，未误称炼金技能直接升级。 | crawl-ref/source/player-equip.cc:2792 |
+| source:you feel a genetic drift.<br>EN: You feel a genetic drift. | 你感到基因漂移。 | 你感到基因漂移。 | keep | 隐藏潜能/缺陷达到经验阈值时出现基因漂移，良性与恶性共用的中性译文适合两分支。 | crawl-ref/source/timed-effects.cc:233 |
+| source:you feel a malign power afflict you.<br>EN: You feel a malign power afflict you. | 你感到一股邪恶的力量折磨着你。 | 你感到一股邪恶的力量折磨着你。 | keep | 灾祸神器装备时邪恶力量使玩家受苦；译文保留风味，未把普通afflict误限定为机制Torment。 | crawl-ref/source/player-equip.cc:1796 |
+| source:you feel a mild discomfort.<br>EN: You feel a mild discomfort. | 你感到轻微的不适。 | 你感到轻微的不适。 | keep | 无生命亡灵饮用狂暴效果的轻度不适消息，程度与拒绝生效的路径一致。 | crawl-ref/source/potion.cc:655 |
+| source:you feel a power fail to suppress your magic.<br>EN: You feel a power fail to suppress your magic. | 你感到一股力量未能压制你的魔法。 | 你感到一股力量未能压制你的魔法。 | keep | HP施法者装备反魔法武器时压制魔法失败，否定关系保留。 | crawl-ref/source/player-equip.cc:2042 |
+| source:you feel a shielding aura gather around you.<br>EN: You feel a shielding aura gather around you. | 你感到一层护盾光环在你周围聚集。 | 你感到一层护盾光环在你周围聚集。 | keep | 反射项链聚集防御光环；译文保持包围玩家与护盾的风味。 | crawl-ref/source/player-equip.cc:2705 |
+| source:you feel a surge of fear.<br>EN: You feel a surge of fear. | 你感到一阵恐惧。 | 你感到一阵恐惧。 | keep | 吸血铭印持握时恐惧涌现，未误解成被敌方施加恐惧状态。 | crawl-ref/source/player-equip.cc:1991 |
+| source:you feel a surge of inspiration! you are finally ready to craft a unique gizmo!<br>EN: You feel a surge of inspiration! You are finally ready to craft a unique gizmo! | 你感到一阵灵感迸发！你终于准备好制造一件独一无二的小装置了！ | 你感到一阵灵感迸发！你终于准备好制造一件独一无二的小装置了！ | keep | Coglin在制造等级达到时获得灵感并准备制造独特gizmo，两句和终于的进程均保留。 | crawl-ref/source/player.cc:3545 |
+| source:you feel a surge of self-confidence.<br>EN: You feel a surge of self-confidence. | 你感到一阵自信。 | 你感到一阵自信。 | keep | 孤绝突变使信仰项链转成自信风味；译文保留自信涌现。 | crawl-ref/source/player-equip.cc:2754 |
+| source:you feel a twist of horror at the sight of this foe.<br>EN: You feel a twist of horror at the sight of this foe. | 看到这个敌人，你感到一阵恐惧。 | 看到这个敌人，你感到一阵恐惧。 | keep | horror低档因一个敌人产生恐惧，单个敌人与视觉触发完整。 | crawl-ref/source/player-reacts.cc:392 |
+| source:you feel a wild power.<br>EN: You feel a wild power. | 你感到一股狂野的力量。 | 你感到一股狂野的力量。 | keep | wildshape项链装备引发狂野力量，译文不添加固定变形后果。 | crawl-ref/source/player-equip.cc:2787 |
+| source:you feel as though your troubles will go away faster.<br>EN: You feel as though your troubles will go away faster. | 你感到麻烦会更快消散。 | 你感到麻烦会更快消散。 | keep | dissipation项链使烦扰更快消退的含蓄描述完整。 | crawl-ref/source/player-equip.cc:2796 |
+| source:you feel briefly confused.<br>EN: You feel briefly confused. | 你感到短暂的困惑。 | 你感到短暂的困惑。 | keep | 清醒抵挡实际混乱时短暂感到困惑后返回false；译文适合未真正取得状态的感觉。 | crawl-ref/source/player.cc:4801 |
+| source:you feel briefly invigorated.<br>EN: You feel briefly invigorated. | 你短暂地感到精力充沛。 | 你短暂地感到精力充沛。 | keep | 神食无法混乱的不可达回退分支短暂精力充沛，保留briefly并未承诺治疗持续。 | crawl-ref/source/potion.cc:448 |
+| source:you feel extraordinarily conspicuous.<br>EN: You feel extraordinarily conspicuous. | 你感觉异常引人注目。 | 你感觉异常引人注目。 | keep | 隐形者被冠状光照亮时异常显眼的感觉完整。 | crawl-ref/source/player.cc:8305 |
+| source:you feel extremely strange.<br>EN: You feel extremely strange. | 你感到极度怪异。 | 你感到极度怪异。 | keep | 变异药水增删突变前的强烈怪异感，程度与句义完整。 | crawl-ref/source/potion.cc:813 |
+| source:you feel guileless.<br>EN: You feel guileless. | 你感到天真无邪。 | 你感到天真无邪。 | keep | 卸下devious后失去狡诈而天真无邪，和获得时的邪恶狡黠对应。 | crawl-ref/source/player-equip.cc:2244 |
+| source:you feel hot and cold all over.<br>EN: You feel hot and cold all over. | 你感到全身忽冷忽热。 | 你感到全身忽冷忽热。 | keep | 卸下抗性护甲后冷热交替的全身感受完整。 | crawl-ref/source/player-equip.cc:2509 |
+| source:you feel invigorated by spreading misfortune.<br>EN: You feel invigorated by spreading misfortune. | 你因散布不幸而感到鼓舞。 | 你因散布不幸而感到鼓舞。 | keep | trickster散布不幸产生增益时的鼓舞感准确，未误称直接恢复生命。 | crawl-ref/source/player.cc:9852 |
+| source:you feel less attractive to monsters.<br>EN: You feel less attractive to monsters. | 你感觉对怪物的吸引力减弱了。 | 你感觉对怪物的吸引力减弱了。 | keep | 吸引怪物持续时间结束后吸引力减弱，保留怪物这一对象。 | crawl-ref/source/player-reacts.cc:245 |
+| source:you feel less batty.<br>EN: You feel less batty. | 你感觉不那么像蝙蝠了。 | 你感觉不那么像蝙蝠了。 | keep | 蝙蝠形态结束时不再那么像蝙蝠，物种风味而非泛化为混乱。 | crawl-ref/source/transform.cc:873 |
+| source:you feel less perceptive.<br>EN: You feel less perceptive. | 你感到感知力减弱了。 | 你感到感知力减弱了。 | keep | 卸下看破隐形护甲且确实失去能力时感知力减弱，比较方向正确。 | crawl-ref/source/player-equip.cc:2464 |
+| source:you feel less pious.<br>EN: You feel less pious. | 你感到自己的虔诚值降低了。 | 你感到自己的虔诚值降低了。 | keep | 移除信仰项链与类似神器均损失三分之一虔诚值，虔诚值降低符合实际数值变化。 | crawl-ref/source/art-func.h:1974; crawl-ref/source/player-equip.cc:2583 |
+| source:you feel less porcine.<br>EN: You feel less porcine. | 你感觉不那么像猪了。 | 你感觉不那么像猪了。 | keep | 猪形态结束时不再那么像猪，porcine与蝙蝠消息区别保留。 | crawl-ref/source/transform.cc:883 |
+| source:you feel less protected from negative energy.<br>EN: You feel less protected from negative energy. | 你感到对负能量的抵抗力减弱了。 | 你感到对负能量的抵抗力减弱了。 | keep | 卸下正能量护甲后负能量抵抗力减弱，能量极性和变化方向正确。 | crawl-ref/source/player-equip.cc:2513 |
+| source:you feel less protected.<br>EN: You feel less protected. | 你感到保护减弱了。 | 你感到保护减弱了。 | keep | 卸下防护护甲的保护减弱，未混入抗性或生命值。 | crawl-ref/source/player-equip.cc:2500 |
+| source:you feel less resistant to cold.<br>EN: You feel less resistant to cold. | 你感到对寒冷的抵抗力减弱了。 | 你感到对寒冷的抵抗力减弱了。 | keep | 卸下抗寒护甲导致寒冷抵抗力减弱，cold与fire未串。 | crawl-ref/source/player-equip.cc:2453 |
+| source:you feel less resistant to fire.<br>EN: You feel less resistant to fire. | 你感到对火焰的抵抗力减弱了。 | 你感到对火焰的抵抗力减弱了。 | keep | 卸下抗火护甲导致火焰抵抗力减弱，方向与对象准确。 | crawl-ref/source/player-equip.cc:2449 |
+| source:you feel less shadowy.<br>EN: You feel less shadowy. | 你感觉不那么阴暗了。 | 你感觉不那么阴暗了。 | defer terminology | TAG34旧暗影形态结束但仍隐形时使用；保留现译，当前正常玩法已无该形态，恢复时再审其暗影身体而非心理阴暗含义。；保留现值。责任：zh-translator；重入：Review the same preserved identity if its removed form/species returns to normal gameplay, using restored behavior and then-current terminology. | crawl-ref/source/transform.cc:978; crawl-ref/source/transform.cc:963; crawl-ref/source/transform.cc:1585 |
+| source:you feel less stealthy.<br>EN: You feel less stealthy. | 你感到不再那么隐秘。 | 你感到不再那么隐秘。 | keep | 卸下潜行护甲后更不隐秘，与隐秘获得消息方向相反。 | crawl-ref/source/player-equip.cc:2505 |
+| source:you feel less wooden.<br>EN: You feel less wooden. | 你感觉不那么像木头了。 | 你感觉不那么像木头了。 | keep | 树形态结束时木质身体减少的比喻准确；木头明确指材质。 | crawl-ref/source/transform.cc:912 |
+| source:you feel magic leave you.<br>EN: You feel magic leave you. | 你感到法力离你而去。 | 你感到法力离你而去。 | keep | 反魔法武器压低法力上限时法力离去的感受准确，与HP施法例外区分。 | crawl-ref/source/player-equip.cc:2046 |
+| source:you feel magic leave your %s.<br>EN: You feel magic leave your %s. | 你感到法力离开了你的%s。 | 你感到法力离开了你的%s。 | keep | 卸下infusion护甲后法力离开手部，身体部位参数由本地化hand_name提供。 | crawl-ref/source/player-equip.cc:2551 |
+| source:you feel magic pooling in your %s.<br>EN: You feel magic pooling in your %s. | 你感到法力在你的%s中汇聚。 | 你感到法力在你的%s中汇聚。 | keep | 装备infusion且有法力或HP施法时法力汇聚于手部，汇聚和位置保留。 | crawl-ref/source/player-equip.cc:2412 |
+| source:you feel magic returning to you.<br>EN: You feel magic returning to you. | 你感到法力回到你身上。 | 你感到法力回到你身上。 | keep | 卸下反魔法武器恢复法力上限时法力回归，变化方向正确。 | crawl-ref/source/player-equip.cc:2201 |
+| source:you feel magically purified.<br>EN: You feel magically purified. | 你感觉被魔法净化了。 | 你感觉被魔法净化了。 | keep | 取消增益并降低污染的净化药水消息，译文保留魔法净化而非误称只清除负面状态。 | crawl-ref/source/potion.cc:412 |
+| source:you feel more buoyant.<br>EN: You feel more buoyant. | 你感觉更加有浮力。 | 你感觉更加有浮力。 | keep | 已非站立但未取飞行持续效果时更有浮力，more的比较保留；可润色更觉轻盈，属建议。 | crawl-ref/source/player.cc:5676 |
+| source:you feel more experienced!<br>EN: You feel more experienced! | 你感觉更有经验了！ | 你感觉更有经验了！ | keep | 经验药水在等级未封顶时提高等级，更有经验的消息对应实际升级。 | crawl-ref/source/potion.cc:558 |
+| source:you feel more protected from negative energy.<br>EN: You feel more protected from negative energy. | 你感到对负能量更有抵抗力。 | 你感到对负能量更有抵抗力。 | keep | 装备正能量护甲增加负能量防护，防护对象和比较级完整。 | crawl-ref/source/player-equip.cc:2377 |
+| source:you feel much better.<br>EN: You feel much better. | 你感觉好多了。 | 你感觉好多了。 | keep | 治疗伤口成功增加HP后感觉好多了，不把治疗说成完全恢复。 | crawl-ref/source/potion.cc:218 |
+| source:you feel nauseous.<br>EN: You feel nauseous. | 你感到恶心。 | 你感到恶心。 | keep | 死亡之门中治疗/治疗伤口两路径均恶心而不恢复HP，感觉与适用场景相符。 | crawl-ref/source/potion.cc:136; crawl-ref/source/potion.cc:202 |
+| source:you feel no more acrobatic than usual.<br>EN: You feel no more acrobatic than usual. | 你感到和往常一样灵活。 | 你感到和往常一样灵活。 | keep | 天狗已有杂技收益时项链不再增加灵活性，和往常一样保留无额外增益。 | crawl-ref/source/player-equip.cc:2777 |
+| source:you feel perceptive.<br>EN: You feel perceptive. | 你感到感知力增强了。 | 你感到感知力增强了。 | keep | 看破隐形护甲的感知增强风味恰当，未承诺其他通用感知机制。 | crawl-ref/source/player-equip.cc:2330 |
+| source:you feel power surging in your lungs.<br>EN: You feel power surging in your lungs. | 你感到力量在肺中涌起。 | 你感到力量在肺中涌起。 | keep | 龙人/巨龙吐息经验充能完成后肺中力量涌起，器官与再次使用的风味一致。 | crawl-ref/source/player.cc:2860 |
+| source:you feel powerful.<br>EN: You feel powerful. | 你感到强大。 | 你感到强大。 | keep | 哈娜弯刀、神器与普通大法师护甲在有施法技能时共用强大感觉，三处语义均成立。 | crawl-ref/source/art-func.h:1936; crawl-ref/source/player-equip.cc:1808; crawl-ref/source/player-equip.cc:2384 |
+| source:you feel protected.<br>EN: You feel protected. | 你感到被保护了。 | 你感到被保护了。 | keep | 防护护甲与抗性药水共用受保护感，译文不限定防护类别，适合两者。 | crawl-ref/source/player-equip.cc:2364; crawl-ref/source/potion.cc:713 |
+| source:you feel rather light.<br>EN: You feel rather light. | 你感到相当轻盈。 | 你感到相当轻盈。 | keep | 已经飞行时装备飞行物品觉得轻盈，rather的程度保留。 | crawl-ref/source/player-equip.cc:1558 |
+| source:you feel rather ponderous.<br>EN: You feel rather ponderous. | 你感到相当笨重。 | 你感到相当笨重。 | keep | 装备沉重护甲产生相当笨重感，和速度代价的方向相符。 | crawl-ref/source/player-equip.cc:2352 |
+| source:you feel ready to drown foes again.<br>EN: You feel ready to drown foes again. | 你感觉准备好再次淹溺敌人。 | 你感觉准备好再次淹溺敌人。 | keep | 水墓经验冷却消失后再次准备淹溺敌人，再次与敌人对象完整。 | crawl-ref/source/player.cc:2911 |
+| source:you feel ready to make another noisy attack.<br>EN: You feel ready to make another noisy attack. | 你感觉准备好再次制造嘈杂攻击。 | 你感觉准备好再次制造嘈杂攻击。 | keep | 嘈杂攻击经验冷却消失后可再次攻击，noisy没有误译为声音攻击类型。 | crawl-ref/source/player.cc:2875 |
+| source:you feel ready to rampage towards enemies.<br>EN: You feel ready to rampage towards enemies. | 你感到准备好向敌人发起猛攻了。 | 你感到已准备好向敌人发起冲锋。 | adjust | rampage为装备冲锋机制，现译猛攻遗漏向敌移动的核心词根，应统一为向敌人发起冲锋。；已按本行当前值修正措辞。 | crawl-ref/source/player-equip.cc:1801; crawl-ref/source/player-equip.cc:2406 |
+| source:you feel ready to scatter into a bat swarm again.<br>EN: You feel ready to scatter into a bat swarm again. | 你感觉准备好再次散成蝙蝠群。 | 你感觉准备好再次散成蝙蝠群。 | keep | 吸血鬼默认形态经验冷却消失后可再次散成蝙蝠群，散群和再次均保留。 | crawl-ref/source/player.cc:2893 |
+| source:you feel ready to tumble and roll out of harm's way.<br>EN: You feel ready to tumble and roll out of harm's way. | 你感到准备好翻滚躲避危险。 | 你感到准备好翻滚躲避危险。 | keep | 杂技项链装备后准备翻滚避险，动作与避害目的完整。 | crawl-ref/source/player-equip.cc:2779 |
+| source:you feel resistant to extremes of temperature.<br>EN: You feel resistant to extremes of temperature. | 你感到对极端温度有抵抗力。 | 你感到对极端温度有抵抗力。 | keep | 抗性护甲提供抗火/抗寒的极端温度抵抗，译文未误泛化所有抗性。 | crawl-ref/source/player-equip.cc:2373 |
+| source:you feel resistant to fire.<br>EN: You feel resistant to fire. | 你感到对火焰有抵抗力。 | 你感到对火焰有抵抗力。 | keep | 装备抗火护甲的火焰抵抗准确，与卸下时减弱对应。 | crawl-ref/source/player-equip.cc:2317 |
+| source:you feel resistant to poison.<br>EN: You feel resistant to poison. | 你感到对毒素有抵抗力。 | 你感到对毒素有抵抗力。 | keep | 非毒免疫者装备抗毒护甲感到抗毒，毒素这一防护对象准确。 | crawl-ref/source/player-equip.cc:2326 |
+| source:you feel sick.<br>EN: You feel sick. | 你感到不适。 | 你感到不适。 | keep | sicken实际增加疾病持续时间时产生不适感，表达身体不舒服而非其他状态。 | crawl-ref/source/player.cc:8197 |
+| source:you feel spirits watching over you.<br>EN: You feel spirits watching over you. | 你感到有灵体在守护着你。 | 你感到有灵体在守护着你。 | keep | 精神护盾生效时灵体守护玩家，译文不错误限定单一灵体。 | crawl-ref/source/player-equip.cc:2272 |
+| source:you feel strangely alone.<br>EN: You feel strangely alone. | 你莫名感到孤独。 | 你莫名感到孤独。 | keep | 失去精神护盾后的莫名孤独与灵体守护相反，strangely的语气保留。 | crawl-ref/source/player-equip.cc:2523 |
+| source:you feel strangely lacking in power.<br>EN: You feel strangely lacking in power. | 你感到奇怪地缺乏力量。 | 你感到奇怪地缺乏力量。 | keep | 无施法技能装备大法师神器/哈娜弯刀时缺乏力量的奇怪感觉，两个消费者均成立。 | crawl-ref/source/art-func.h:1934; crawl-ref/source/player-equip.cc:1806 |
+| source:you feel strangely numb.<br>EN: You feel strangely numb. | 你奇怪地感到麻木。 | 你奇怪地感到麻木。 | keep | 卸下大法师神器或护甲的麻木感，和强大感觉消退对应。 | crawl-ref/source/player-equip.cc:1869; crawl-ref/source/player-equip.cc:2517 |
+| source:you feel strangely stable.<br>EN: You feel strangely stable. | 你感到异常的稳定。 | 你感到异常的稳定。 | keep | 驱散传送、取消待传送与树形态扎根均终止传送，稳定感觉适合三处。 | crawl-ref/source/spl-goditem.cc:434; crawl-ref/source/spl-transloc.cc:981; crawl-ref/source/transform.cc:2156 |
+| source:you feel strangely weak.<br>EN: You feel strangely weak. | 你感到出奇地缺乏力量。 | 你感到出奇地缺乏力量。 | keep | 无施法技能装备大法师护甲时异常无力，译文没有误写成数值力量下降。 | crawl-ref/source/player-equip.cc:2382 |
+| source:you feel that your aim is more steady.<br>EN: You feel that your aim is more steady. | 你感到瞄准更加稳定。 | 你感到瞄准更加稳定。 | keep | 投掷护甲使瞄准更稳，比较级和瞄准对象准确。 | crawl-ref/source/player-equip.cc:2392 |
+| source:you feel the corruptions in your body subside %s.<br>EN: You feel the corruptions in your body subside %s. | 你感觉体内的腐败%s减弱了。 | 你感觉体内的腐败%s减弱了。 | adjust | 临时变异清除2至3项时传入completely/somewhat原始英文，且完全减弱不能表示完全消退；须在显示端翻译程度并重组消退句。；修复：暂时变异清除按完全/部分两完整句保留差别，不把完全减弱当完全消退。 | crawl-ref/source/mutation.cc:3248; crawl-ref/source/mutation.cc:3240; crawl-ref/source/mutation.cc::temp_mutation_wanes |
+| source:you feel the doom around you dissipate.<br>EN: You feel the doom around you dissipate. | 你感觉周围的厄运消散了。 | 你感觉周围的厄运消散了。 | keep | 厄运计数归零时周围厄运消散，结束语义完整。 | crawl-ref/source/player.cc:2927 |
+| source:you feel the dreadful sensation subside.<br>EN: You feel the dreadful sensation subside. | 你感到那可怕的感觉消退了。 | 你感到那可怕的感觉消退了。 | keep | 卸下吸血武器时可怕感觉消退，与装备恐惧消息配对。 | crawl-ref/source/player-equip.cc:2189 |
+| source:you feel the fragility will last longer.<br>EN: You feel the fragility will last longer. | 你感觉脆弱将持续更久。 | 你感觉脆弱将持续更久。 | keep | 已有玻璃脆弱效果续时会持续更久，保留续时而非进一步降低防御的含义。 | crawl-ref/source/player.cc:8968 |
+| source:you feel the ground shudder.<br>EN: You feel the ground shudder. | 你感到大地在颤抖。 | 你感到大地在颤抖。 | keep | 恶性通道在沉默中结束时感受地面震动，与听觉分支有别。 | crawl-ref/source/timed-effects.cc:741 |
+| source:you feel the presence of a powerless spirit.<br>EN: You feel the presence of a powerless spirit. | 你感到一个无力之灵的存在。 | 你感到一个无力之灵的存在。 | keep | 已有法力护盾或HP施法时感知无力灵体，保留存在却无力量的对比。 | crawl-ref/source/player-equip.cc:2269 |
+| source:you feel the silence will last longer.<br>EN: You feel the silence will last longer. | 你感觉沉默将持续更久。 | 你感觉沉默将持续更久。 | keep | 已有沉默效果续时将持续更久，术语沉默正确。 | crawl-ref/source/player.cc:5271 |
+| source:you feel the slowness will last longer.<br>EN: You feel the slowness will last longer. | 你感觉减速将持续更久。 | 你感觉减速将持续更久。 | keep | 已有减速续时而非额外变慢，中文持续更久准确。 | crawl-ref/source/player.cc:5308 |
+| source:you feel the speed will last longer.<br>EN: You feel the speed will last longer. | 你感觉加速将持续更久。 | 你感觉加速将持续更久。 | keep | 加速未达上限时续时，中文加速持续更久对应实际条件。 | crawl-ref/source/player.cc:5453 |
+| source:you feel the spell weakness will last longer.<br>EN: You feel the spell weakness will last longer. | 你感觉法术削弱将持续更久。 | 你感觉法术削弱将持续更久。 | keep | 已有削弱法术效果续时，中文明确对象是法术而非近战。 | crawl-ref/source/player.cc:8918 |
+| source:you feel the weakness will last longer.<br>EN: You feel the weakness will last longer. | 你感觉虚弱将持续更久。 | 你感觉虚弱将持续更久。 | keep | 已有虚弱效果续时，中文持续更久未误作严重程度增长。 | crawl-ref/source/player.cc:8908 |
+| source:you feel tipsy.<br>EN: You feel tipsy. | 你感到微醺。 | 你感到微醺。 | keep | 共饮药水施加vertigo前的微醺感，tipsy语气和效果风味一致。 | crawl-ref/source/potion.cc:884 |
+| source:you feel very buoyant.<br>EN: You feel very buoyant. | 你感觉非常有浮力。 | 你感觉非常有浮力。 | keep | 站立者开始飞行时很有浮力，与582比较档区别保留；非常有浮力可润色为身轻欲飘，非必修。 | crawl-ref/source/player.cc:5674 |
+| source:you feel very meek.<br>EN: You feel very meek. | 你感到非常温顺。 | 你感到非常温顺。 | keep | 卸下勇武武器使玩家虚弱时的温顺感，保留meek的反威武风味。 | crawl-ref/source/player-equip.cc:2225 |
+| source:you feel woody for a moment.<br>EN: You feel woody for a moment. | 你短暂地感到木讷。 | 你一度感觉身体像木头一样。 | adjust | 树化失败分支woody指木质化感受，木讷误成言行迟钝，建议你一度感觉身体像木头一样。；已按本行当前值修正措辞。 | crawl-ref/source/potion.cc:782 |
+| source:you feel your attacks become weak and feeble.<br>EN: You feel your attacks become weak and feeble. | 你感觉你的攻击变得虚弱无力。 | 你感觉你的攻击变得虚弱无力。 | keep | weaken初次施加时攻击虚弱无力，明确是攻击而非泛称力量属性。 | crawl-ref/source/player.cc:8906 |
+| source:you feel your defenses recover.<br>EN: You feel your defenses recover. | 你感觉你的防御恢复了。 | 你感觉你的防御恢复了。 | keep | 美杜莎防御冷却在满HP时解除，恢复防御的消息准确。 | crawl-ref/source/player-reacts.cc:1104 |
+| source:you feel your energy subside.<br>EN: You feel your energy subside. | 你感觉精力减退了。 | 你感觉精力减退了。 | keep | 能量引导结束时精力消退，与MP恢复终止相符。 | crawl-ref/source/player.cc:5546 |
+| source:you feel your energy waning.<br>EN: You feel your energy waning. | 你感觉精力减退了。 | 你感觉精力减退了。 | keep | 神食恢复结束时精力减退，waning没有误译为受伤。 | crawl-ref/source/player.cc:5529 |
+| source:you feel your existence waver again.<br>EN: You feel your existence waver again. | 你感到自己的存在再次动摇。 | 你感到自己的存在再次动摇。 | keep | trickster护甲增益清空后存在再次动摇，again和恢复不稳定状态保留。 | crawl-ref/source/player-reacts.cc:743 |
+| source:you feel your magical contamination recede slightly.<br>EN: You feel your magical contamination recede slightly. | 你感觉魔法能量污染略微减轻了。 | 你感觉魔法能量污染略微减轻了。 | keep | 净化后仍有污染时略微减轻，未误写成完全清除。 | crawl-ref/source/potion.cc:417 |
+| source:you feel your power drawn to a protective spirit.<br>EN: You feel your power drawn to a protective spirit. | 你感到你的力量被引向一个保护之灵。 | 你感到你的力量被引向一个保护之灵。 | keep | 精神护盾把法力引向保护之灵，力量转向与保护对象完整。 | crawl-ref/source/player-equip.cc:2257 |
+| source:you feel your scales toughen.<br>EN: You feel your scales toughen. | 你感觉鳞片变得更加坚韧。 | 你感觉鳞片变得更加坚韧。 | keep | 龙人每三级鳞片更坚韧，鳞片与比较强化完整。 | crawl-ref/source/player.cc:3573 |
+| source:you feel your skin toughen.<br>EN: You feel your skin toughen. | 你感觉皮肤变得更加坚韧。 | 你感觉皮肤变得更加坚韧。 | keep | 娜迦每三级皮肤更坚韧，与龙人鳞片区别保留。 | crawl-ref/source/player.cc:3400 |
+| source:you feel your spells become weak and feeble.<br>EN: You feel your spells become weak and feeble. | 你感觉你的法术变得虚弱无力。 | 你感觉你的法术变得虚弱无力。 | keep | diminish初次施加使法术虚弱，攻击/法术双消息未串对象。 | crawl-ref/source/player.cc:8916 |
+| source:you feel your strength ebbing away.<br>EN: You feel your strength ebbing away. | 你感觉力量在流失。 | 你感觉力量在流失。 | keep | drain_magic消耗MP时力量流失的感觉沿用英文风味，未增称力量属性被扣。 | crawl-ref/source/player.cc:8941 |
+| source:you feel your vitality returning.<br>EN: You feel your vitality returning. | 你感觉生命力恢复了。 | 你感觉生命力恢复了。 | keep | 经验消除全部临时HP汲取后生命力回归，vitality与最大HP恢复一致。 | crawl-ref/source/player.cc:2836 |
+| source:you feel yourself come back to life.<br>EN: You feel yourself come back to life. | 你感到自己重新活过来了。 | 你感到自己重新活过来了。 | keep | 死亡形态结束时重返生者感觉，非真正死亡后复活的独立机制。 | crawl-ref/source/transform.cc:859 |
+| source:you feel yourself slowing down.<br>EN: You feel yourself slowing down. | 你感觉自己变慢了。 | 你感觉自己变慢了。 | keep | 初次减速与加速结束共用变慢感觉，中文相对速度下降适合两处。 | crawl-ref/source/player.cc:5306; crawl-ref/source/player.cc:5483 |
+| source:you feel yourself speed up.<br>EN: You feel yourself speed up. | 你感觉自己加速了。 | 你感觉自己加速了。 | keep | 减速结束后相对提速，译文感觉自己加速未承诺获得Haste状态。 | crawl-ref/source/player.cc:5341 |
+| source:you feel yourself speeding up.<br>EN: You feel yourself speeding up. | 你感觉自己加速了。 | 你感觉自己加速了。 | keep | 初次获得Haste时自身速度上升，中文变化方向准确。 | crawl-ref/source/player.cc:5449 |
+| source:you feel%s invigorated.<br>EN: You feel%s invigorated. | 你感到%s精力充沛。 | 你感到%s精力充沛。 | keep | 神食初次/续用通过更加组成精力充沛，已核查参数为空或T_( more)，组句自然。 | crawl-ref/source/potion.cc:441 |
+| source:you fell into %s water.<br>EN: You fell into %s water. | 你掉入了%s水。 | 你掉入了%s水。 | keep | 非主动步行落入浅/深水，参数浅或深已译，落入与踏入区别保留。 | crawl-ref/source/player.cc:778 |
+| source:you fell into the poisonous swamp.<br>EN: You fell into the poisonous swamp. | 你掉入了有毒的沼泽。 | 你掉入了有毒的沼泽。 | keep | 非主动落入有毒沼泽，毒性和落入动作完整。 | crawl-ref/source/player.cc:767 |
+| source:you finish coughing all the %s out of your lungs.<br>EN: You finish coughing all the %s out of your lungs. | 你终于把肺里的%s都咳出来了。 | 你终于把肺里的%s都咳出来了。 | adjust | 肺灌满恢复时物质来自props，默认water未经翻译而ooze调用端先译后存；句子本身准确，需canonical状态值与显示翻译分离。；修复：water/ooze规范英文由所有新producer写入WATER_HOLD_SUBSTANCE_KEY；灌肺、怪物气道、咳出/排出及status长说明各在最终显示槽以flood substance上下文翻译；water使用介质水，不复用地形深水。旧已本地化存档值不改写。 | crawl-ref/source/player-reacts.cc:940; crawl-ref/source/player.cc:8974; crawl-ref/source/player.h:870; crawl-ref/source/melee-attack.cc:588; crawl-ref/source/melee-attack.cc:4493; crawl-ref/source/melee-attack.cc::do_ooze_flood/mons_apply_attack_flavour; crawl-ref/source/player.cc::player::floodify; crawl-ref/source/monster.cc::monster::floodify; crawl-ref/source/player-reacts.cc::_decrement_durations; crawl-ref/source/mon-ench.cc::monster::remove_enchantment_effect; crawl-ref/source/status.cc::fill_status_info |
+| source:you finish reciting %s<br>EN: You finish reciting %s | 你完成了%s的吟诵 | 你完成了%s的吟诵 | adjust | 结束吟诵时书名来自未译的zin_recite_text(-1)，且随机闭幕词被包进%s的吟诵；应仅把本地化经文章节作为宾语，闭幕词另置完成句之后。；修复：辛经文标题只包含译后书名及章:节，完整完成句之后才追加独立SpeakDB闭幕词；随机条件、经文seed和查询身份不改。 | crawl-ref/source/player-reacts.cc:682; crawl-ref/source/god-abil.cc:586; crawl-ref/source/god-abil.cc:604; crawl-ref/source/player-reacts.cc:669; crawl-ref/source/god-abil.cc::zin_recite_text; crawl-ref/source/player-reacts.cc::_handle_recitation |
+| source:you fly gracefully into the air.<br>EN: You fly gracefully into the air. | 你轻盈地飞到了空中。 | 你轻盈地飞到了空中。 | keep | 天狗飞行离地的轻盈优雅感保留。 | crawl-ref/source/player.cc:5660 |
+| source:you fly into the air.<br>EN: You fly into the air. | 你飞到了空中。 | 你飞到了空中。 | keep | 普通飞行离地动作完整，未附加天狗特有优雅。 | crawl-ref/source/player.cc:5662 |
+| source:you focus on the pain.<br>EN: You focus on the pain. | 你专注于疼痛。 | 你专注于疼痛。 | keep | 受痛苦激发的恢复MP/强效/敏捷三个分支均专注疼痛，译文适合全部消费者。 | crawl-ref/source/ouch.cc:853; crawl-ref/source/ouch.cc:862; crawl-ref/source/ouch.cc:866 |
+| source:you glow brighter.<br>EN: You glow brighter. | 你发光更亮了。 | 你发光更亮了。 | keep | 已有冠状光时光芒更亮，bright比较方向正确；可润色你身上的光更亮了。 | crawl-ref/source/player.cc:8300 |
+| source:you grip the centipede bauble in your %s and it winds around your %s and fuses with it.<br>EN: You grip the centipede bauble in your %s and it winds around your %s and fuses with it. | 你用%s握住蜈蚣球，它缠上你的%s并与之融合。 | 你用%s握住蜈蚣球，它缠上你的%s并与之融合。 | keep | 蜈蚣球由手握持后绕臂融合，手/臂两个位置参数与蜈蚣球术语完整。 | crawl-ref/source/player-equip.cc:1919 |
+| source:you had %1$s for your %2$s.<br>EN: You had %1$s for your %2$s. | 你的%2$s曾是%1$s。 | 你的%2$s曾是%1$s。 | keep | 过去电鳗形态说明以身体部位为主语，电鳗为替代物；过去时和参数角色正确。 | crawl-ref/source/transform.cc:1322; crawl-ref/source/transform.cc:1813; crawl-ref/source/dat/i18n/zh/source.txt:39528 |
+| source:you had a mane of long, stinging tendrils on your head.<br>EN: You had a mane of long, stinging tendrils on your head. | 你的头上当时有一丛长长的刺人触须。 | 你的头上当时有一丛长长的刺人触须。 | keep | 过去触须头鬃说明保留头部、长、刺人和过去时。 | crawl-ref/source/transform.cc:1283 |
+| source:you had blades growing out of your body.<br>EN: You had blades growing out of your body. | 你的身上当时长着利刃。 | 你的身上当时长着利刃。 | keep | 过去利刃形态说明保留从身体长出利刃及过去时。 | crawl-ref/source/transform.cc:650 |
+| source:you have %1$s for your %2$s.<br>EN: You have %1$s for your %2$s. | 你的%2$s是%1$s。 | 你的%2$s是%1$s。 | keep | 当前电鳗形态说明用身体部位是电鳗重组，替代关系准确。 | crawl-ref/source/transform.cc:1323; crawl-ref/source/transform.cc:1813 |
+| source:you have %d usable tentacles for constriction.<br>EN: You have %d usable tentacles for constriction. | 你有%d条可用的触须进行缠绕。 | 你有%d条可用的触须进行缠绕。 | keep | 可用缠绕触须数量来自usable_tentacles，整数和用途完整。 | crawl-ref/source/player.cc:9044 |
+| source:you have a feeling of inadequacy.<br>EN: You have a feeling of inadequacy. | 你有一种无能的感觉。 | 你有一种无能的感觉。 | keep | 无死灵技能持握痛苦铭印的不足感，未误报技能数值被扣。 | crawl-ref/source/player-equip.cc:2003 |
+| source:you have a mane of long, stinging tendrils on your head.<br>EN: You have a mane of long, stinging tendrils on your head. | 你的头上有一丛长长的刺人触须。 | 你的头上有一丛长长的刺人触须。 | keep | 当前触须头鬃说明保留头部、长和刺人，与过去式卡一致。 | crawl-ref/source/transform.cc:1284 |
+| source:you have been tormented as much as possible.<br>EN: You have been tormented as much as possible. | 你已经受到了最大程度的折磨。 | 你已经受到了最大程度的折磨。 | keep | 无兼容灾祸候选时达到最大受折磨程度，中文没有将tormented泛词误称又触发Torment伤害。 | crawl-ref/source/mutation.cc:3648 |
+| source:you have blades growing out of your body.<br>EN: You have blades growing out of your body. | 你的身上长着利刃。 | 你的身上长着利刃。 | keep | 当前利刃身体说明和过去式对应，利刃从身体长出准确。 | crawl-ref/source/transform.cc:651 |
+| source:you have no ailments to cure.<br>EN: You have no ailments to cure. | 你没有任何需要治疗的异常状态。 | 你没有任何需要治疗的伤病。 | adjust | 治疗药水的ailments同时涉及HP伤病与混乱/中毒，异常状态把范围缩窄；建议你没有任何需要治疗的伤病。；已按本行当前值修正措辞。 | crawl-ref/source/potion.cc:116; crawl-ref/source/potion.cc:93 |
+| source:you have no feet!<br>EN: You have no feet! | 你没有脚！ | 你没有脚！ | keep | 无脚突变拒穿靴子时没有脚准确，未混为脚太大。 | crawl-ref/source/player-equip.cc:190 |
+| source:you have no magic to restore.<br>EN: You have no magic to restore. | 你没有可恢复的法力。 | 你没有可恢复的法力。 | keep | HP施法或最大MP为零时无可恢复法力，资源术语准确。 | crawl-ref/source/potion.cc:600 |
+| source:you have reached level %d!<br>EN: You have reached level %d! | 你已达到%d级！ | 你已达到%d级！ | keep | 普通升级显示新等级，数字位置与已达到的完成态完整。 | crawl-ref/source/player.cc:3365 |
+| source:you have reached level %d, the maximum you can reach!<br>EN: You have reached level %d, the maximum you can reach! | 你已达到%d级，你将达到的最高等级！ | 你已达到%d级，这是你能达到的最高等级！ | adjust | 已达角色等级上限时maximum you can reach译成你将达到的最高等级，误成未来；应为你能达到的最高等级。；已按本行当前值修正措辞。 | crawl-ref/source/player.cc:3361 |
+| source:you have reached level 27, the maximum!<br>EN: You have reached level 27, the maximum! | 你已达到27级，最高等级！ | 你已达到27级，最高等级！ | keep | 通用最高等级27明确，数字和最高等级完整。 | crawl-ref/source/player.cc:3359 |
+| source:you have sacrificed the ability to change form!<br>EN: You have sacrificed the ability to change form! | 你已经牺牲了变形能力！ | 你已经牺牲了变形能力！ | keep | 牺牲形态突变使主动变形被禁止，中文保留已经牺牲能力的原因。 | crawl-ref/source/transform.cc:2027 |
+| source:you have sharp claws.<br>EN: You have sharp claws. | 你有锋利的爪子。 | 你有锋利的爪子。 | keep | 猫科爪子变异覆写为有锋利爪子，保留sharp且不虚构额外等级。 | crawl-ref/source/mutation.cc:2832 |
+| source:you have tentacles for arms and can constrict up to %s enemies at once.<br>EN: You have tentacles for arms and can constrict up to %s enemies at once. | 你的手臂是触手，最多可以同时缠绕%s个敌人。 | 你的手臂是触手，最多可以同时缠绕%s个敌人。 | keep | 章鱼触手替代手臂并限定同时缠绕敌人数；number_in_words在ZH分支生成中文数词，数量没有英文泄漏。 | crawl-ref/source/mutation.cc:2828; crawl-ref/source/english.cc:494 |
+| source:you hear %1$s splatter%2$s.<br>EN: You hear %1$s splatter%2$s. | 你听到了%1$s溅落的声音%2$s。 | 你听到了%1$s溅落的声音%2$s。 | adjust | 吉瓦分裂水母时数量参数a/a series of及s均英文，现句混语且尾部s残留；需本地化一阵/接连几阵并消去纯词尾。；修复：溅落声按一次/接连多次选完整句，不再a/a series of和复数s拼接。 | crawl-ref/source/timed-effects.cc:205; crawl-ref/source/timed-effects.cc:170; crawl-ref/source/timed-effects.cc::_jiyva_effects |
+| source:you hear a deep rumble.<br>EN: You hear a deep rumble. | 你听到了一阵低沉的隆隆声。 | 你听到了一阵低沉的隆隆声。 | keep | 未沉默时恶性通道结束的低沉隆隆声，和沉默震动消息区分。 | crawl-ref/source/timed-effects.cc:739 |
+| source:you hear the crackle of electricity.<br>EN: You hear the crackle of electricity. | 你听到了电流的噼啪声。 | 你听到了电流的噼啪声。 | keep | 弧光剑、怪物电击武器、玩家电击铭印的三条可听电流路径均噼啪声，译文适合全部。 | crawl-ref/source/art-func.h:986; crawl-ref/source/monster.cc:760; crawl-ref/source/player-equip.cc:1968 |
+| source:you inwardly fear your resemblance to a lawn ornament.<br>EN: You inwardly fear your resemblance to a lawn ornament. | 你在内心深处担心自己看起来像个草坪装饰品。 | 你在内心深处担心自己看起来像个草坪装饰品。 | defer terminology | TAG34Deep Dwarf变雕像的草坪装饰笑话保留；旧种族兼容分支无正常现行玩法，恢复时再审。；保留现值。责任：zh-translator；重入：Review the same preserved identity if its removed form/species returns to normal gameplay, using restored behavior and then-current terminology. | crawl-ref/source/transform.cc:697; crawl-ref/source/transform.cc:695 |
+| source:you lack an exoframe to install that in.<br>EN: You lack an exoframe to install that in. | 你缺少可以安装它的外部框架。 | 你缺少可以安装它的外部框架。 | keep | 非Coglin无法装备gizmo因没有可安装外部框架，原因与安装位置完整。 | crawl-ref/source/player-equip.cc:250 |
+| source:you learn %s much quicker.<br>EN: You learn %s much quicker. | 你学习%s的速度大幅变快了。 | 你学习%s的速度大幅变快了。 | keep | 龙人转色适性改善超过一级时学习速度大幅变快，技能名由skill_name显示译文提供。 | crawl-ref/source/player.cc:3450; crawl-ref/source/skills.cc:2107 |
+| source:you learn %s much slower.<br>EN: You learn %s much slower. | 你学习%s的速度大幅变慢了。 | 你学习%s的速度大幅变慢了。 | keep | 龙人转色适性下降超过一级时学习速度大幅变慢，方向与程度准确。 | crawl-ref/source/player.cc:3448; crawl-ref/source/skills.cc:2107 |
+| source:you learn %s quicker.<br>EN: You learn %s quicker. | 你学习%s的速度变快了。 | 你学习%s的速度变快了。 | keep | 龙人转色适性小幅改善时学习更快，和大幅改善档区别保留。 | crawl-ref/source/player.cc:3451; crawl-ref/source/skills.cc:2107 |
+| source:you learn %s slower.<br>EN: You learn %s slower. | 你学习%s的速度变慢了。 | 你学习%s的速度变慢了。 | keep | 龙人转色适性小幅下降时学习更慢，和大幅下降档区别保留。 | crawl-ref/source/player.cc:3449; crawl-ref/source/skills.cc:2107 |
+| source:you might %s into %s while you are losing your buoyancy, are you sure?<br>EN: You might %s into %s while you are losing your buoyancy, are you sure? | 你可能会%s%s，而你的浮力正在消退，确定吗？ | 你可能会%s%s，而你的浮力正在消退，确定吗？ | keep | 可能进入危险地形且飞行将消退，enter_area参数含进入补语；不确定性、危险和浮力条件齐全。 | crawl-ref/source/player.cc:446; crawl-ref/source/movement-i18n.h:51 |
+| source:you might %s into %s while your transformation is expiring, are you sure?<br>EN: You might %s into %s while your transformation is expiring, are you sure? | 你可能会%s%s，而你的变形即将结束，确定吗？ | 你可能会%s%s，而你的变形即将结束，确定吗？ | keep | 可能进入地形且变形即将结束，参数含进入补语；可能与到期条件保留。 | crawl-ref/source/player.cc:451; crawl-ref/source/movement-i18n.h:51 |
+| source:you might %s into a %s, are you sure?<br>EN: You might %s into a %s, are you sure? | 你可能会%s%s，确定吗？ | 你可能会%s%s，确定吗？ | keep | 可能进入某云团，cloud of组句和enter_area参数已有译文；不确定性与确认意图完整。 | crawl-ref/source/player.cc:211; crawl-ref/source/movement-i18n.h:51 |
+| source:you might %s into a toxic bog, are you sure?<br>EN: You might %s into a toxic bog, are you sure? | 你可能会%s剧毒沼泽，确定吗？ | 你可能会%s剧毒沼泽，确定吗？ | keep | 可能进入剧毒沼泽，进入补语由移动上下文给出，毒性与可能性正确。 | crawl-ref/source/player.cc:495; crawl-ref/source/movement-i18n.h:51 |
+| source:you might %s into a trap, are you sure?<br>EN: You might %s into a trap, are you sure? | 你可能会%s陷阱，确定吗？ | 你可能会%s陷阱，确定吗？ | keep | 多种危险陷阱时不命名具体种类，中文保留可能进入陷阱与确认。 | crawl-ref/source/player.cc:288; crawl-ref/source/movement-i18n.h:51 |
+| source:you might %s into a travel-excluded area, are you sure?<br>EN: You might %s into a travel-excluded area, are you sure? | 你可能会%s旅行禁区，确定要继续吗？ | 你可能会%s旅行禁区，确定要继续吗？ | keep | 可能进入旅行禁区，旅行禁区符合glossary解释性限定，未声称不能手动进入。 | crawl-ref/source/player.cc:567; crawl-ref/source/movement-i18n.h:51 |
+| source:you might %s into a zot trap, are you sure?<br>EN: You might %s into a Zot trap, are you sure? | 你可能会%s佐特陷阱，确定吗？ | 你可能会%s佐特陷阱，确定吗？ | keep | 佐特陷阱分支保留佐特专名、可能性与确认意图。 | crawl-ref/source/player.cc:270; crawl-ref/source/movement-i18n.h:51 |
+| source:you might %s into that %s, are you sure?<br>EN: You might %s into that %s, are you sure? | 你可能会%s那个%s，确定吗？ | 你可能会%s那个%s，确定吗？ | keep | 单种进入型陷阱使用enter_area补语，那个与可能性均保留。 | crawl-ref/source/player.cc:310; crawl-ref/source/movement-i18n.h:51 |
+| source:you might %s onto a binding sigil, are you sure?<br>EN: You might %s onto a binding sigil, are you sure? | 你可能会%s束缚印记，确定吗？ | 你可能会%s束缚符文，确定吗？ | adjust | 同一binding sigil通常显示束缚符文，此可能性分支却用束缚印记，需对齐束缚符文避免一机制两名。；已按本行当前值修正措辞。 | crawl-ref/source/player.cc:376; crawl-ref/source/dat/i18n/zh/source.txt:24065; crawl-ref/source/dat/i18n/zh/source.txt:42987 |
+| source:you might %s onto that %s, are you sure?<br>EN: You might %s onto that %s, are you sure? | 你可能会%s那个%s，确定吗？ | 你可能会%s那个%s，确定吗？ | keep | 警报/压力板等表面型陷阱用onto_surface参数，组句保留移动到其上方/表面的关系。 | crawl-ref/source/player.cc:308; crawl-ref/source/movement-i18n.h:51 |
+| source:you might %s over %s while you are losing your buoyancy, are you sure?<br>EN: You might %s over %s while you are losing your buoyancy, are you sure? | 你可能会%s%s上方，而你的浮力正在消退，确定吗？ | 你可能会%s%s上方，而你的浮力正在消退，确定吗？ | keep | over_terrain移动参数以走到/飞到等接地形上方，可能性和浮力消退条件保留。 | crawl-ref/source/player.cc:444; crawl-ref/source/dat/i18n/zh/source.txt:42879 |
+| source:you might %s over %s while your transformation is expiring, are you sure?<br>EN: You might %s over %s while your transformation is expiring, are you sure? | 你可能会%s%s上方，而你的变形即将结束，确定吗？ | 你可能会%s%s上方，而你的变形即将结束，确定吗？ | keep | over_terrain参数与地形上方组成，可能性和变形即将结束条件保留。 | crawl-ref/source/player.cc:449; crawl-ref/source/dat/i18n/zh/source.txt:42879 |
+| source:you must return to life before you may mutate.<br>EN: You must return to life before you may mutate. | 你必须重返生者之列才能发生变异。 | 你必须重返生者之列才能发生变异。 | keep | 死亡形态中使用诱变催化器要求重返生者才能变异，前置条件完整。 | crawl-ref/source/mutation.cc:2344 |
+| source:you need the rest of your tentacles for walking.<br>EN: You need the rest of your tentacles for walking. | 你需要其他触手来行走。 | 你需要其他触手来行走。 | keep | 少手章鱼需剩余触手行走，保留用途且未说还能把这些触手用于盾牌。 | crawl-ref/source/player-equip.cc:96 |
+| source:you no longer feel able to launch a frenzied charge at your enemies.<br>EN: You no longer feel able to launch a frenzied charge at your enemies. | 你不再感觉能够向敌人狂暴冲锋了。 | 你不再感觉能够向敌人狂暴冲锋了。 | keep | 失去冲锋护甲后不再能向敌人狂猛冲锋，charge和失去能力的方向完整。 | crawl-ref/source/player-equip.cc:2546 |
+| source:you no longer feel able to rampage towards enemies.<br>EN: You no longer feel able to rampage towards enemies. | 你不再感到能够向敌人发起猛攻。 | 你感到自己不再能向敌人发起冲锋。 | adjust | 失去神器rampage后猛攻与当前冲锋机制不一致，应为你不再感到能够向敌人发起冲锋。；已按本行当前值修正措辞。 | crawl-ref/source/player-equip.cc:1866 |
+| source:you no longer feel resistant to poison.<br>EN: You no longer feel resistant to poison. | 你不再感到对毒素有抵抗力。 | 你不再感到对毒素有抵抗力。 | keep | 移除抗毒来源后总抗毒归零才不再抗毒，否定与对象正确。 | crawl-ref/source/player-equip.cc:2458 |
+| source:you no longer have enough gold to %s.<br>EN: You no longer have enough gold to %s. | 你的金币已不足以%s。 | 你的金币已不足以%s。 | keep | 哥萨戈能力金币跌破门槛时不再足够，god_power::display翻译模板与能力短语后组句，余额方向正确。 | crawl-ref/source/player.cc:8758; crawl-ref/source/religion.cc:501 |
+| source:you now have enough gold to %s.<br>EN: You now have enough gold to %s. | 你现在有足够的金币来%s。 | 你现在有足够的金币来%s。 | keep | 哥萨戈能力金币首次足够时现在可支付，模板与本地化能力短语组句完整。 | crawl-ref/source/player.cc:8756; crawl-ref/source/religion.cc:501 |
+| source:you open the %s%s.<br>EN: You open the %s%s. | 你打开了%s%s。 | 你打开了%s%s。 | keep | 普通开门用adj+noun对象，get_door_description提供已译形容词/名词，中文打开对象正确。 | crawl-ref/source/player.cc:9382; crawl-ref/source/terrain.cc:939; crawl-ref/source/player.cc:9261 |
+| source:you quiver from %s and %s!<br>EN: You quiver from %s and %s! | 你因%s和%s而战栗！ | 你因%s和%s而战栗！ | adjust | 伤害生水母消息传入blow/blast及整段英文水母动作，中文因...和...而战栗还把动作误当原因；需显示端整句分支表达受击颤抖并涌出水母。；修复：水母涌出按blow/blast和单只/多只四完整分支显示；战栗原因与涌出动作不误连成双重原因。 | crawl-ref/source/ouch.cc:829; crawl-ref/source/ouch.cc:776; crawl-ref/source/ouch.cc::_maybe_spawn_monsters |
+| source:you reach down and close the %s%s%s.<br>EN: You reach down and close the %s%s%s. | 你伸手关上了%s%s%s。 | 你向下伸手关上了%s%s%s。 | adjust | 飞行关门仅伸手漏掉向下，且items_msg直接传英文pushing片段；需译出向下并在显示端翻译物品推开片段。；修复：门大小、门型保持原显示参数；推开挡路物品片段在显示端翻译，普通/飞行/猛烈/有声/吱嘎完整语序同步；自定义des格式路径不变。 | crawl-ref/source/player.cc:9549; crawl-ref/source/player.cc:9494; crawl-ref/source/terrain.cc:939; crawl-ref/source/player.cc::player_close_door; crawl-ref/source/terrain.cc::get_door_description |
+| source:you reach down and open the %s%s.<br>EN: You reach down and open the %s%s. | 你伸手打开了%s%s。 | 你向下伸手打开了%s%s。 | adjust | 飞行开门reach down仅译伸手漏掉向下，应为你向下伸手打开了%s%s。；已按本行当前值修正措辞。 | crawl-ref/source/player.cc:9375; crawl-ref/source/terrain.cc:939 |
+| source:you recall %s.<br>EN: You recall %s. | 你记起了%s。 | 你记起了%s。 | keep | Revenant升级回忆恩赐故事，gift.second已T_后插入记起对象，回忆动作准确。 | crawl-ref/source/player.cc:3297 |
+| source:you recover from your berserk rage.<br>EN: You recover from your berserk rage. | 你从狂暴的愤怒中恢复过来。 | 你从狂暴的愤怒中恢复过来。 | keep | 狂暴冷却结束而非狂暴初停时恢复过来，中文不声称新的狂暴增益。 | crawl-ref/source/player.cc:5420 |
+| source:you reel with horror at the sight of these foes!<br>EN: You reel with horror at the sight of these foes! | 看到这些敌人，你恐惧得晕头转向！ | 看到这些敌人，你恐惧得晕头转向！ | keep | 中档horror见多个敌人而惊恐晕眩，复数敌人与强于低档的语气保留。 | crawl-ref/source/player-reacts.cc:390 |
+| source:you remember nothing but emptiness.<br>EN: You remember nothing but emptiness. | 你只记得一片虚无。 | 你只记得一片虚无。 | keep | 没有可学的回忆法术时只记得虚无，nothing but限制完整。 | crawl-ref/source/player.cc:3282 |
+| source:you repel a surge of foreign magic.<br>EN: You repel a surge of foreign magic. | 你击退了一股外来魔力的冲击。 | 你击退了一股外来魔力的冲击。 | keep | HP施法者抗拒法力戒指的外来魔力，方向为击退而非受益。 | crawl-ref/source/player-equip.cc:2743 |
+| source:you resist the pull of the abyss.<br>EN: You resist the pull of the Abyss. | 你抵抗了深渊的拉力。 | 你抵抗了深渊的拉力。 | keep | 放逐免疫期内抗拒深渊拉力，专名深渊和抵抗动作准确。 | crawl-ref/source/player.cc:6360 |
+| source:you revert to your normal fleshy form.<br>EN: You revert to your normal fleshy form. | 你恢复到了原本的肉体形态。 | 你恢复到了原本的肉体形态。 | keep | 石像形态结束回到肉体形态，保留normal与fleshy意象。 | crawl-ref/source/transform.cc:716 |
+| source:you savour every drop.<br>EN: You savour every drop. | 你细细品味每一滴。 | 你细细品味每一滴。 | keep | 双倍药水治疗/法力恢复的每滴品味消息适合两处，未误说已完全恢复。 | crawl-ref/source/player.cc:9172; crawl-ref/source/potion.cc:627 |
+| source:you see sparks fly.<br>EN: You see sparks fly. | 你看到火花四溅。 | 你看到火花四溅。 | keep | 沉默中装备电击武器改为看火花，视觉动词保留。 | crawl-ref/source/player-equip.cc:1971 |
+| source:you sense an unholy aura.<br>EN: You sense an unholy aura. | 你感受到一股邪恶的气息。 | 你感受到一股邪恶的气息。 | keep | 玩家或怪物装备汲取武器都感到不洁邪恶气息，两个消费者语义一致。 | crawl-ref/source/monster.cc:766; crawl-ref/source/player-equip.cc:1983 |
+| source:you shake off some fire as you move.<br>EN: You shake off some fire as you move. | 你在移动时甩掉了一些火焰。 | 你在移动时甩掉了一些火焰。 | keep | 移动缩短黏火但未清空时甩掉一些火焰，部分和移动条件完整。 | crawl-ref/source/player.cc:5254 |
+| source:you shake off the liquid flame.<br>EN: You shake off the liquid flame. | 你甩掉了液体火焰。 | 你甩掉了液体火焰。 | keep | 移动后黏火结束时甩掉液体火焰，与部分甩落消息区分。 | crawl-ref/source/player.cc:5250 |
+| source:you shake off the repeated paralysis attempt.<br>EN: You shake off the repeated paralysis attempt. | 你摆脱了反复的瘫痪尝试。 | 你摆脱了反复的瘫痪尝试。 | keep | 重复麻痹/恼怒路径被眩晕免疫抵挡，译文表达摆脱重复麻痹尝试；建议改为你抵御了再次使你麻痹的企图以更自然。 | crawl-ref/source/player.cc:7974; crawl-ref/source/player.cc:8543 |
+| source:you shrug off repeated attempts at paralysis.<br>EN: You shrug off repeated attempts at paralysis. | 你摆脱了反复的瘫痪尝试。 | 你摆脱了反复的瘫痪尝试。 | keep | 已麻痹或有眩晕免疫时抵挡反复麻痹，译文保留反复尝试，措辞建议同713。 | crawl-ref/source/player.cc:7886 |
+| source:you shrug off the wave.<br>EN: You shrug off the wave. | 你摆脱了波浪的影响。 | 你摆脱了波浪的影响。 | keep | 水波伤害被抵抗为零时摆脱波浪影响，未误称主动躲避命中。 | crawl-ref/source/ouch.cc:136 |
+| source:you slam the %s%s shut with a bang%s!<br>EN: You slam the %s%s shut with a bang%s! | 你用%s%s猛地关上门，砰的一声%s！ | 你砰地一声猛关上了%s%s%s！ | adjust | adj+noun是门的大小和名称，现译用%s%s猛地关上门把对象错当工具，且items_msg英文；改你砰地一声猛关上了%s%s%s。；修复：门大小、门型保持原显示参数；推开挡路物品片段在显示端翻译，普通/飞行/猛烈/有声/吱嘎完整语序同步；自定义des格式路径不变。 | crawl-ref/source/player.cc:9523; crawl-ref/source/player.cc:9494; crawl-ref/source/terrain.cc:939; crawl-ref/source/player.cc::player_close_door; crawl-ref/source/terrain.cc::get_door_description |
+| source:you slam the %s%s shut%s!<br>EN: You slam the %s%s shut%s! | 你%s把%s关上了%s！ | 你猛地关上了%s%s%s！ | adjust | adj是大型等门形容词，现句你大型把门关上了不通且遗漏slam力度；改你猛地关上了%s%s%s，并本地化items_msg。；修复：门大小、门型保持原显示参数；推开挡路物品片段在显示端翻译，普通/飞行/猛烈/有声/吱嘎完整语序同步；自定义des格式路径不变。 | crawl-ref/source/player.cc:9509; crawl-ref/source/player.cc:9494; crawl-ref/source/terrain.cc:939; crawl-ref/source/player.cc::player_close_door; crawl-ref/source/terrain.cc::get_door_description |
+| source:you slip free of the bolas.<br>EN: You slip free of the bolas. | 你从流星索中滑脱了。 | 你从流星索中滑脱了。 | keep | 光滑拖鞋使玩家脱离流星索，slip free与捕捉物正确。 | crawl-ref/source/ouch.cc:330 |
+| source:you snap out of the daze.<br>EN: You snap out of the daze. | 你从恍惚中清醒过来。 | 你从恍惚中清醒过来。 | keep | daze结束时从恍惚醒转，未与sleep醒来或混乱混淆。 | crawl-ref/source/player.cc:8591 |
+| source:you splash onto the ground.<br>EN: You splash onto the ground. | 你溅落到了地面上。 | 你溅落到了地面上。 | keep | 水形态受伤向周围洒浅水，溅落地面的液体意象保留。 | crawl-ref/source/ouch.cc:924 |
+| source:you stagger.<br>EN: You stagger. | 你摇晃了一下。 | 你摇晃了一下。 | keep | 已在深渊且放逐不加深时踉跄一下，短暂摇晃符合stagger。 | crawl-ref/source/player.cc:6367 |
+| source:you start to feel a little slower.<br>EN: You start to feel a little slower. | 你开始感觉有点慢了。 | 你开始感觉有点慢了。 | keep | 迅捷即将结束时开始觉得稍慢，little与starting均保留。 | crawl-ref/source/player-reacts.cc:801 |
+| source:you stepped into %s water.<br>EN: You stepped into %s water. | 你踏入了%s水。 | 你踏入了%s水。 | keep | 主动步行进入浅/深水使用踏入，参数浅/深准确并与跌落区别。 | crawl-ref/source/player.cc:773 |
+| source:you stepped into the poisonous swamp.<br>EN: You stepped into the poisonous swamp. | 你踏入了有毒的沼泽。 | 你踏入了有毒的沼泽。 | keep | 主动进入有毒沼泽，动作和毒性均保留。 | crawl-ref/source/player.cc:765 |
+| source:you stop sporulating.<br>EN: You stop sporulating. | 你不再产生孢子了。 | 你不再产生孢子了。 | keep | 真菌形态结束时停止产孢，未误写为摧毁已有孢子。 | crawl-ref/source/transform.cc:960 |
+| source:you suddenly feel %sagile.<br>EN: You suddenly feel %sagile. | 你突然感觉%s敏捷。 | 你突然感觉%s敏捷。 | keep | 敏捷效果初次/续用通过state intensity的更加组成，突然和比较强度保留。 | crawl-ref/source/player.cc:9969 |
+| source:you suddenly lose the ability to move!<br>EN: You suddenly lose the ability to move! | 你突然失去了移动能力！ | 你突然失去了移动能力！ | keep | 施加麻痹后突然失去移动能力，瞬时失能与严重语气准确。 | crawl-ref/source/player.cc:7892 |
+| source:you turn into %s<br>EN: You turn into %s | 你变成了%s | 你变成了%s | keep | 通用变形消息插入本地化形态描述，变成关系正确；描述自带断句的拼接现状不额外压缩。 | crawl-ref/source/transform.cc:254 |
+| source:you turn to %s%s.<br>EN: You turn to %s%s. | 你变回了%s%s。 | 你变回了%s%s。 | keep | 石化解除用body part上下文给出血肉/形态材质，并按仍麻痹与否追加可行动，中文恢复关系与条件完整。 | crawl-ref/source/player-reacts.cc:203 |
+| source:you turn to stone.<br>EN: You turn to stone. | 你变成了石头。 | 你变成了石头。 | keep | 完全石化的变石头消息准确，未误作普通石像变形。 | crawl-ref/source/player.cc:7956 |
+| source:you wake up.<br>EN: You wake up. | 你醒来了。 | 你醒来了。 | keep | 睡眠结束醒来，和恍惚清醒消息有明确区别。 | crawl-ref/source/player.cc:8580 |
+| source:you were %s<br>EN: You were %s | 你当时是%s | 你当时是%s | keep | 通用过去形态说明使用当时是，保留过去状态并接已译描述。 | crawl-ref/source/transform.cc:242 |
+| source:you were overflowing with transmutational energy.<br>EN: You were overflowing with transmutational energy. | 你当时充满了变形能量。 | 你当时充满了变形能量。 | keep | 过去flux形态充满变形能量，过去时与能量满溢的意象保留。 | crawl-ref/source/transform.cc:622 |
+| source:you writhe in agony!<br>EN: You writhe in agony! | 你在痛苦中扭动！ | 你在痛苦中扭动！ | keep | 对负能量特别脆弱时痛苦扭动，强烈痛苦语气保留。 | crawl-ref/source/ouch.cc:295 |
+| source:you'd need another %s to do that!<br>EN: You'd need another %s to do that! | 你需要另一种%s才能做到！ | 你得再有一只%s才能做到！ | adjust | 缺手阻止使用副手槽时another指再有一只手，另一种%s误指类别；建议你得再有一只%s才能做到。；已按本行当前值修正措辞。 | crawl-ref/source/player-equip.cc:99 |
+| source:you're already a statue.<br>EN: You're already a statue. | 你已经是雕像了。 | 你已经是雕像了。 | keep | 石像鬼尝试石像形态时已经是雕像，already前置原因完整。 | crawl-ref/source/transform.cc:2034 |
+| source:you're too dead to take root!<br>EN: You're too dead to take root! | 你太死了，无法扎根！ | 你太死了，无法扎根！ | keep | 死亡形态无法树化的too dead笑话直译为太死了，死与扎根对照保留；可润色死气太重，属建议。 | crawl-ref/source/potion.cc:747 |
+| source:your<br>EN: your | 你的 | 你的 | keep | 玩家所有格在角色name、怪物对白替换、施法显示覆盖、隐形阻碍组句与冰棘中均译你的，已核查实际所有格消费者，关系成立。 | crawl-ref/source/mon-cast.cc:9207; crawl-ref/source/mon-util.cc:4519; crawl-ref/source/player-act.cc:389; crawl-ref/source/potion.cc:485; crawl-ref/source/terrain.cc:2752; crawl-ref/source/mon-util.cc:4532; crawl-ref/source/mon-cast.cc:9204 |
+| source:your %1$s attune%2$s to your body, and you begin to %3$s.<br>EN: Your %1$s attune%2$s to your body, and you begin to %3$s. | 你的%1$s适应了你的身体，你开始%3$s。 | 你的%1$s适应了你的身体，你开始%3$s。 | keep | 装备与身体协调后开始生命/法力再生或汲取药水魔力，已读eq_list与msgs组成；省略英语反身/词尾不损失中文命题。 | crawl-ref/source/player-reacts.cc:1211; crawl-ref/source/player-reacts.cc:1155; crawl-ref/source/player-reacts.cc:1196 |
+| source:your %1$s meld%2$s into your body.<br>EN: Your %1$s meld%2$s into your body. | 你的%1$s融入了你的身体。 | 你的%1$s融入了你的身体。 | keep | 本地化物品列表融入身体，第二参数纯英语单复数词尾在中文省略无语义损失。 | crawl-ref/source/player-equip.cc:1215 |
+| source:your %1$s unmeld%2$s from your body.<br>EN: Your %1$s unmeld%2$s from your body. | 你的%1$s从你的身体中分离。 | 你的%1$s从你的身体中分离。 | keep | 本地化物品列表从身体中分离，和融合消息相反；词尾省略不损失中文命题。 | crawl-ref/source/player-equip.cc:1334 |
+| source:your %s are melded.<br>EN: Your %s are melded. | 你的%s已与你的身体融合。 | 你的%s已与你的身体融合。 | keep | 多个装备槽被形态融合时列出槽名，中文融合于身体完整。 | crawl-ref/source/transform.cc:127; crawl-ref/source/transform.cc:92 |
+| source:your %s briefly %s through it before you manage to get a firm grip on it.<br>EN: Your %s briefly %s through it before you manage to get a firm grip on it. | 你的%1$s短暂地穿过了它，随后你才将它握稳%2$.0s。 | 你的%1$s短暂地穿过了它，随后你才将它握稳%2$.0s。 | keep | 灵体之刃持握时手先穿过再握稳，已译手名与抑制pass词形的参数组成完整。 | crawl-ref/source/player-equip.cc:2029 |
+| source:your %s feel%s oddly empty.<br>EN: Your %s feel%s oddly empty. | 你的%s感到%s异常空洞。 | 你的%s感到%s异常空洞。 | adjust | 单数身体部位时feel%s会传入原始s，中文感到%s异常空洞留下s；需按既有词尾抑制方式只消除英语词尾。；修复：手部空荡感单复数选择完整EN模板，两中文同义，不保留英语s。 | crawl-ref/source/player-equip.cc:2419; crawl-ref/source/player-equip.cc::_equip_armour_effect |
+| source:your %s glow too brightly for you to become invisible.<br>EN: Your %s glow too brightly for you to become invisible. | 你的%s发出太强的光芒，你无法隐身。 | 你的%s发出太强的光芒，你无法隐身。 | adjust | 多发光来源阻止隐形的主句准确，但sources仍是weapon/crown/armour/divine halo英文；需本地化所有显示来源后组句。；修复：四类发光来源逐一在显示端翻译；局部列表context避免既有共享连接词的前导换行，实际andc/comma位置正确。身体/背光失败原因也按完整显示句翻译。 | crawl-ref/source/player.cc:5600; crawl-ref/source/player.cc:5579; crawl-ref/source/player.cc::invis_allowed; crawl-ref/source/stringutil.h::comma_separated_line |
+| source:your %s glows too brightly for you to become invisible.<br>EN: Your %s glows too brightly for you to become invisible. | 你的%s发出太强的光芒，你无法隐身。 | 你的%s发出太强的光芒，你无法隐身。 | adjust | 单发光来源阻止隐形的主句准确，与745共用原始英文sources缺陷，需显示端本地化来源。；修复：四类发光来源逐一在显示端翻译；局部列表context避免既有共享连接词的前导换行，实际andc/comma位置正确。身体/背光失败原因也按完整显示句翻译。 | crawl-ref/source/player.cc:5598; crawl-ref/source/player.cc:5579; crawl-ref/source/player.cc::invis_allowed; crawl-ref/source/stringutil.h::comma_separated_line |
+| source:your %s grows stronger.<br>EN: Your %s grows stronger. | 你的%s变得更强了。 | 你的%s变得更强了。 | keep | 已有灾祸续受影响时变得更强，bane_name已本地化，强化方向准确。 | crawl-ref/source/mutation.cc:3662 |
+| source:your %s have fully recharged.<br>EN: Your %s have fully recharged. | 你的%s已经完全充能了。 | 你的%s已经完全充能了。 | keep | 电鳗肢体能力在满HP时完全充能，已译手部名与完全程度保留。 | crawl-ref/source/player-reacts.cc:1113 |
+| source:your %s is a mass of colorful fungus.<br>EN: Your %s is a mass of colorful fungus. | 你的%s是一团彩色的菌菇。 | 你的%s是一团彩色的菌菇。 | keep | 当前真菌手臂是一团彩色菌菇，身体部位、颜色与团状形象完整。 | crawl-ref/source/transform.cc:1392 |
+| source:your %s is melded.<br>EN: Your %s is melded. | 你的%s已与你的身体融合。 | 你的%s已与你的身体融合。 | keep | 单个装备槽被形态融合时与身体融合，和复数版本同义。 | crawl-ref/source/transform.cc:128; crawl-ref/source/transform.cc:92 |
+| source:your %s mutation feels more permanent.<br>EN: Your %s mutation feels more permanent. | 你的%s变异感觉更加永久了。 | 你的%s变异感觉更加永久了。 | keep | 临时变异转为永久时感觉更加永久，已核查临时计数转移；感觉的修辞与变异名保留。 | crawl-ref/source/mutation.cc:1990 |
+| source:your %s revert to their normal form.<br>EN: Your %s revert to their normal form. | 你的%s恢复了正常形态。 | 你的%s恢复了正常形态。 | keep | 电鳗多肢体恢复正常形态，hand_transform_parts提供前爪/主触手等准确显示名。 | crawl-ref/source/transform.cc:1350; crawl-ref/source/transform.cc:1813 |
+| source:your %s reverts to its normal form.<br>EN: Your %s reverts to its normal form. | 你的%s恢复了正常形态。 | 你的%s恢复了正常形态。 | keep | 单肢体电鳗恢复原状，和多肢体版本语义一致，中文不强加复数。 | crawl-ref/source/transform.cc:1349; crawl-ref/source/transform.cc:1813 |
+| source:your %s scales are hard. (ac +%d)<br>EN: Your %s scales are hard. (AC +%d) | 你的鳞片呈%s，质地坚硬。（AC +%d） | 你的鳞片呈%s，质地坚硬。（AC +%d） | keep | 龙人彩色鳞片坚硬并显示种族护甲值，scale_type枚举全为颜色短语；呈%s与AC整数完整。 | crawl-ref/source/mutation.cc:820; crawl-ref/source/species.cc:251 |
+| source:your %s speed is %s%s%s<br>EN: Your %s speed is %s%s%s | 你的%s速度为%s%s%s | 你的%s速度为%s%s%s | adjust | 实际组成你的移动速度为被风辅助且平均等病句，average也不是平均速度；需完整中文速度句并把平均改为一般/正常。；修复：局部movement speed context覆盖完整四槽及风力/连词/五速度档；普通、顺风、逆风组合完整，average仅此速度语境改正常，原移动耗时不改。 | crawl-ref/source/player.cc:3801; crawl-ref/source/player.cc:3780; crawl-ref/source/dat/i18n/zh/source.txt:24386; crawl-ref/source/player.cc::_display_movement_speed |
+| source:your %s turn into a pair of wriggling electric eels!<br>EN: Your %s turn into a pair of wriggling electric eels! | 你的%s变成了一对扭动的电鳗！ | 你的%s变成了一对扭动的电鳗！ | keep | 非单臂电鳗变形消息为一对扭动电鳗，身体部位由前爪/主触手上下文提供，源文数量和运动保留。 | crawl-ref/source/transform.cc:1337; crawl-ref/source/transform.cc:1813 |
+| source:your %s turns into a wriggling electric eel!<br>EN: Your %s turns into a wriggling electric eel! | 你的%s变成了一条扭动的电鳗！ | 你的%s变成了一条扭动的电鳗！ | keep | 缺一臂时变为一条扭动电鳗，和双数分支区别保留。 | crawl-ref/source/transform.cc:1336; crawl-ref/source/transform.cc:1813 |
+| source:your %s was a mass of colorful fungus.<br>EN: Your %s was a mass of colorful fungus. | 你的%s当时是一团彩色的菌菇。 | 你的%s当时是一团彩色的菌菇。 | keep | 过去真菌手臂说明保留当时、彩色和团状菌菇，与当前式一致。 | crawl-ref/source/transform.cc:1391 |
+| source:your aim is not that steady anymore.<br>EN: Your aim is not that steady anymore. | 你的瞄准不再那么稳定。 | 你的瞄准不再那么稳定。 | keep | 卸下投掷护甲后瞄准不再稳定，变化方向与获得消息相反。 | crawl-ref/source/player-equip.cc:2532 |
+| source:your atemporal blood churns to no real effect.<br>EN: Your atemporal blood churns to no real effect. | 你超越时间的血液翻涌着，却毫无效果。 | 你超越时间的血液翻涌着，却毫无效果。 | keep | 无可加速盟友时非时态血液翻涌但无效果，atemporal与无效限定保留。 | crawl-ref/source/ouch.cc:751 |
+| source:your atemporal blood spills out, speeding your allies!<br>EN: Your atemporal blood spills out, speeding your allies! | 你超越时间的血液洒出，加速了你的盟友！ | 你超越时间的血液洒出，加速了你的盟友！ | keep | 非时态血液加速盟友成功后洒出，主体血液、受益盟友与加速结果完整。 | crawl-ref/source/ouch.cc:773 |
+| source:your athame demands its blood price!<br>EN: Your athame demands its blood price! | 你的仪式匕首索要鲜血代价！ | 你的仪式匕首索要鲜血代价！ | keep | 有血生物装备仪式匕首付出HP时索要鲜血代价，athame术语与代价意象正确。 | crawl-ref/source/player-equip.cc:2106 |
+| source:your athame demands its blood price! (figuratively speaking.)<br>EN: Your athame demands its blood price! (Figuratively speaking.) | 你的仪式匕首索要鲜血代价！（打个比方而已。） | 你的仪式匕首索要鲜血代价！（打个比方而已。） | keep | 无血生物仍付HP时以打个比方保留讽刺括注，与762实际鲜血分支区别。 | crawl-ref/source/player-equip.cc:2108 |
+| source:your athame gleams mockingly in your nearly-dead state.<br>EN: Your athame gleams mockingly in your nearly-dead state. | 你的仪式匕首在你近乎死亡的状态下嘲弄地闪烁着。 | 你的仪式匕首在你近乎死亡的状态下嘲弄地闪烁着。 | keep | 生命生物濒死但未付匕首血价时嘲弄闪光，近乎死亡、武器与嘲弄语气均保留。 | crawl-ref/source/player-equip.cc:2101 |
+| source:your athame gleams mockingly in your nearly-destroyed state.<br>EN: Your athame gleams mockingly in your nearly-destroyed state. | 你的仪式匕首在你近乎毁灭的状态下嘲弄地闪烁着。 | 你的仪式匕首在你近乎毁灭的状态下嘲弄地闪烁着。 | keep | 非生命/亡灵濒毁时仪式匕首嘲弄闪光，毁灭与764死亡区别完整。 | crawl-ref/source/player-equip.cc:2099 |
+| source:your attack delay is about %.1f%s%s.<br>EN: Your attack delay is about %.1f%s%s. | 你的攻击延迟约为%.1f%s%s。 | 你的攻击延迟约为%.1f%s%s。 | adjust | 攻击延迟数值和防具惩罚已有译文，但达到最小延迟时附加原始英文cannot be improved片段；须只在显示端翻译此提示。；修复：最小攻击延迟不能以更高武器技能改善的限制，在显示槽完整翻译。 | crawl-ref/source/player.cc:3870; crawl-ref/source/player.cc:3845; crawl-ref/source/player.cc::_display_attack_delay |
+| source:your auxiliary armour is melded.<br>EN: Your auxiliary armour is melded. | 你的辅助护甲已与你的身体融合。 | 你的辅助护甲已与你的身体融合。 | keep | 辅助护甲融合于身体，EQF_AUXES对应头盔/手套等而非主身护甲，范围准确。 | crawl-ref/source/transform.cc:121 |
+| source:your base attributes are str %d, int %d, dex %d.<br>EN: Your base attributes are Str %d, Int %d, Dex %d. | 你的基础属性是力量%d，智力%d，敏捷%d。 | 你的基础属性是力量%d，智力%d，敏捷%d。 | keep | 属性提示与角色状态两消费者均按Str/Int/Dex提供基础数值，力量/智力/敏捷次序完整。 | crawl-ref/source/player-stats.cc:91; crawl-ref/source/player.cc:3941 |
+| source:your binding sigil disappears.<br>EN: Your binding sigil disappears. | 你的束缚符文消失了。 | 你的束缚符文消失了。 | keep | 单个可见束缚符文到期消失，术语符文与主要游戏显示一致。 | crawl-ref/source/timed-effects.cc:1010 |
+| source:your binding sigils disappear.<br>EN: Your binding sigils disappear. | 你的束缚符文消失了。 | 你的束缚符文消失了。 | keep | 多个可见束缚符文到期消失，中文无需复数词尾，事件和归属完整。 | crawl-ref/source/timed-effects.cc:1008 |
+| source:your blades shrink back into your body and disappear.<br>EN: Your blades shrink back into your body and disappear. | 利刃缩回了你的身体并消失了。 | 利刃缩回了你的身体并消失了。 | keep | 利刃形态结束时缩回身体后消失，动作顺序和消失后果保留。 | crawl-ref/source/transform.cc:667 |
+| source:your blood congeals into armour.<br>EN: Your blood congeals into armour. | 你的血液凝结成了护甲。 | 你的血液凝结成了护甲。 | keep | 凝血护甲首次激活时血液凝成护甲，材质、结果和发生变化完整。 | crawl-ref/source/player.cc:9730 |
+| source:your body armour is %s at protecting you.<br>EN: Your body armour is %s at protecting you. | 你的身体护甲提供的防护%s。 | 你的身体护甲提供的防护%s。 | keep | 利刃形态降低主身护甲防护，三档参数效果大幅减弱/减弱/略有减弱组成通顺，程度顺序正确。 | crawl-ref/source/mutation.cc:731 |
+| source:your body becomes as fragile as glass!<br>EN: Your body becomes as fragile as glass! | 你的身体变得像玻璃一样脆弱！ | 你的身体变得像玻璃一样脆弱！ | keep | vitrify使身体像玻璃一样脆弱，比较对象和脆弱结果完整。 | crawl-ref/source/player.cc:8966 |
+| source:your body becomes insubstantial.<br>EN: Your body becomes insubstantial. | 你的身体变成了虚体。 | 你的身体变成了虚体。 | keep | 雾药水使身体进入虚体，中文材质状态准确；已是虚体的略增分支另用不同消息。 | crawl-ref/source/potion.cc:915 |
+| source:your body collapses into a pile of gold.<br>EN: Your body collapses into a pile of gold. | 你的身体崩塌成了一堆金币。 | 你的身体崩塌成了一堆金币。 | keep | 哥萨戈金化尸体被动让死者身体变金币，译文不把金堆误称普通尸体。 | crawl-ref/source/ouch.cc:1264 |
+| source:your body destabilises.<br>EN: Your body destabilises. | 你的身体变得不稳定了。 | 你的身体变得不稳定了。 | keep | flux开始身体失稳，变化方向与结束恢复稳定相反。 | crawl-ref/source/transform.cc:628 |
+| source:your body is made of elemental water.<br>EN: Your body is made of elemental water. | 你的身体由元素之水构成。 | 你的身体由元素之水构成。 | keep | 水形态当前身体由元素之水构成，形态材质与现在时完整。 | crawl-ref/source/transform.cc:1157 |
+| source:your body is rotting!<br>EN: Your body is rotting! | 你的身体腐烂了！ | 你的身体腐烂了！ | keep | 亡灵变异回退造成汲取的身体腐烂风味保留，不虚构普通毒素伤害。 | crawl-ref/source/mutation.cc:1931 |
+| source:your body momentarily shudders from a surge of wild energies until zin's power calms it.<br>EN: Your body momentarily shudders from a surge of wild energies until Zin's power calms it. | 你的身体因狂野能量的涌动而短暂颤抖，但辛恩之力使其平息了下来。 | 你的身体因狂野能量的涌动而短暂颤抖，但辛的力量使其平息了下来。 | adjust | 圣域内辛平息污染爆发，现译辛恩违反现行Zin辛；应改辛之力/辛的力量，保留短暂颤抖与被平息。；已按本行当前值修正措辞。 | crawl-ref/source/timed-effects.cc:140 |
+| source:your body partially rejects the healing.<br>EN: Your body partially rejects the healing. | 你的身体部分排斥了治疗效果。 | 你的身体部分排斥了治疗效果。 | keep | 药水治疗倍率介于零和正常之间时身体部分排斥，partial而非完全拒绝准确。 | crawl-ref/source/player.cc:9180 |
+| source:your body rejects the healing.<br>EN: Your body rejects the healing. | 你的身体排斥了治疗效果。 | 你的身体排斥了治疗效果。 | keep | 药水治疗倍率为零时身体排斥治疗，和部分排斥档区别保留。 | crawl-ref/source/player.cc:9178 |
+| source:your body returns to its normal shape and substance.<br>EN: Your body returns to its normal shape and substance. | 你的身体恢复到了正常的形态和物质。 | 你的身体恢复到了正常的形态和物质。 | keep | 水形态结束恢复通常形状与材质，中文形态和物质覆盖两命题；建议物质改为构成以避免搭配生硬。 | crawl-ref/source/transform.cc:1167 |
+| source:your body shudders with the violent release of wild energies!<br>EN: Your body shudders with the violent release of wild energies! | 你的身体因狂野能量的猛烈释放而剧烈颤抖！ | 你的身体因狂野能量的猛烈释放而剧烈颤抖！ | keep | 污染爆发时狂野能量猛烈释放引发剧烈颤抖，强度与因果完整。 | crawl-ref/source/timed-effects.cc:90 |
+| source:your body stabilises again.<br>EN: Your body stabilises again. | 你的身体重新稳定下来了。 | 你的身体重新稳定下来了。 | keep | flux结束身体重新稳定，again和反向变化保留。 | crawl-ref/source/transform.cc:633 |
+| source:your body starts to freeze solid!<br>EN: Your body starts to freeze solid! | 你的身体开始冻结成固体！ | 你的身体开始冻结成固体！ | keep | 水形态受冷后身体开始冻成固体，材质与起始冻结准确。 | crawl-ref/source/ouch.cc:448 |
+| source:your body transforms into elemental water.<br>EN: Your body transforms into elemental water. | 你的身体变成了元素之水。 | 你的身体变成了元素之水。 | keep | 水形态进入时身体变元素之水，与当前/过去说明词根一致。 | crawl-ref/source/transform.cc:1162 |
+| source:your body was made of elemental water.<br>EN: Your body was made of elemental water. | 你的身体当时由元素之水构成。 | 你的身体当时由元素之水构成。 | keep | 水形态过去说明保留当时与元素之水构成。 | crawl-ref/source/transform.cc:1156 |
+| source:your boots prevent you from %s.<br>EN: Your boots prevent you from %s. | 你的靴子阻止了你%s。 | 你的靴子阻止了你%s。 | adjust | 登山靴抵挡推拉、歌声、坠落、漩涡等event均原始英文，直接插入中文；应保持内部事件身份英文，在最终显示翻译完整动作并处理动态触手名。；修复：所有固定被移动事件保持NC_英文身份，仅登山靴最终sink按context翻译；动态触手传即时actor参数由sink取本地化名字，空事件继续静默。 | crawl-ref/source/player.cc:7799; crawl-ref/source/spl-vortex.cc:394; crawl-ref/source/mon-tentacle.cc:865; crawl-ref/source/mon-tentacle.cc:1113; crawl-ref/source/mon-ench.cc:1404; crawl-ref/source/melee-attack.cc:5169; crawl-ref/source/melee-attack.cc:5245; crawl-ref/source/mon-cast.cc:1633; crawl-ref/source/god-wrath.cc:1589; crawl-ref/source/actor.cc:1088; crawl-ref/source/actor.cc:1186; crawl-ref/source/beam.cc:5426; crawl-ref/source/player.cc:8622; crawl-ref/source/player.cc::player::resists_dislodge; crawl-ref/source/actor.cc::knockback; crawl-ref/source/mon-tentacle.cc::move_solo_tentacle/move_child_tentacles; crawl-ref/source/spl-vortex.cc::vortex_damage |
+| source:your breath weapon is enhanced in this form.<br>EN: Your breath weapon is enhanced in this form. | 你的吐息武器在此形态中得到增强。 | 你的吐息武器在此形态中得到增强。 | keep | 龙人巨龙形态下增强原有吐息，增强与本形态条件完整，未误称获得全新吐息。 | crawl-ref/source/mutation.cc:668 |
+| source:your cacophony subsides and your armour settles down once more.<br>EN: Your cacophony subsides and your armour settles down once more. | 你的嘈杂之音消退，你的盔甲再次安定了下来。 | 你的嘈杂之音消退，你的盔甲再次安定了下来。 | keep | 嘈杂护甲持续结束时声音消退且护甲重新安定，两分句和once more保留。 | crawl-ref/source/player-reacts.cc:1067 |
+| source:your can't wear that!<br>EN: Your can't wear that! | 你无法穿戴那个！ | 你无法穿戴那个！ | keep | 章鱼头部形状不适合头盔的拒穿消息，中文修正英语Your笔误而保留不可穿戴意义。 | crawl-ref/source/player-equip.cc:555 |
+| source:your catalyst becomes inert.<br>EN: Your catalyst becomes inert. | 你的催化剂失效了。 | 你的催化剂失效了。 | keep | 爆破催化持续到期时催化剂失活，未把失活说成物品损坏或耗尽。 | crawl-ref/source/player-reacts.cc:931 |
+| source:your clear mind protects you.<br>EN: Your clear mind protects you. | 你清醒的心智保护了你。 | 你清醒的心智保护了你。 | keep | 清醒直接抵挡vex时清醒心智保护玩家，主体和保护方向准确。 | crawl-ref/source/player.cc:7969 |
+| source:your condensation shield dissipates!<br>EN: Your condensation shield dissipates! | 你的凝结护盾消散了！ | 你的凝结护盾消散了！ | keep | 凝结护盾突变被热熔解的现行消息，名称与当前突变数据一致；并非按已移除同名法术推测机制。 | crawl-ref/source/ouch.cc:97; crawl-ref/source/mutation-data.h:1088 |
+| source:your damage rating with %s is about %s.<br>EN: Your damage rating with %s is about %s. | 你用%s的伤害评级约为%s | 你用%s的伤害评级约为%s | keep | 使用武器或徒手显示估计伤害评级，两个参数角色正确；可补句号为排版建议，不影响语义。 | crawl-ref/source/player.cc:3893 |
+| source:your demonic touch would destroy those.<br>EN: Your demonic touch would destroy those. | 你的恶魔触手会摧毁它们。 | 你的恶魔之触会摧毁它们。 | adjust | 阻止戴手套的是demonic touch变异的触碰能力，触手误成另一器官；建议你的恶魔之触会摧毁它们。；已按本行当前值修正措辞。 | crawl-ref/source/player-equip.cc:170 |
+| source:your digger instincts prevent you from falling into the shaft!<br>EN: Your digger instincts prevent you from falling into the shaft! | 你挖掘者的本能阻止你掉入竖井！ | 你挖掘者的本能阻止你掉入竖井！ | keep | 蚁人因挖掘本能免于掉竖井，原因、跌落方向和竖井对象完整。 | crawl-ref/source/player.cc:8628 |
+| source:your divine shield fades away.<br>EN: Your divine shield fades away. | 你的神圣护盾消退了。 | 你的神圣护盾消退了。 | keep | 神圣护盾格挡次数用尽后消退，术语神圣护盾符合当前glossary。 | crawl-ref/source/player.cc:6510 |
+| source:your divine stamina protects you from confusion!<br>EN: Your divine stamina protects you from confusion! | 你的神圣耐力保护你免受困惑！ | 你的神圣耐力保护你免受混乱影响！ | adjust | confuse_player的DUR_CONF状态为混乱，译困惑误成普通心理感觉；建议你的神圣耐力保护你免受混乱影响。；已按本行当前值修正措辞。 | crawl-ref/source/player.cc:4808; docs/glossary.md:820 |
+| source:your divine stamina protects you from miasma!<br>EN: Your divine stamina protects you from miasma! | 你的神圣耐力保护你免受瘴气！ | 你的神圣耐力保护你免受瘴气！ | keep | 神圣耐力抵挡瘴气，miasma与防护对象完整。 | crawl-ref/source/player.cc:5138 |
+| source:your divine stamina protects you from petrification!<br>EN: Your divine stamina protects you from petrification! | 你的神圣耐力保护你免受石化！ | 你的神圣耐力保护你免受石化！ | keep | 神圣耐力抵挡石化，petrification术语及保护方向准确。 | crawl-ref/source/player.cc:7930 |
+| source:your divine stamina protects you from poison!<br>EN: Your divine stamina protects you from poison! | 你的神圣耐力保护了你免受毒素伤害！ | 你的神圣耐力保护了你免受毒素伤害！ | keep | 神圣耐力阻止中毒及相关毒素麻痹路径，毒素防护概念保留；建议毒素侵害较毒素伤害更不易被误读成仅HP减伤。 | crawl-ref/source/melee-attack.cc:4258; crawl-ref/source/melee-attack.cc:4275; crawl-ref/source/player.cc:4843 |
+| source:your divine stamina protects you from sickness!<br>EN: Your divine stamina protects you from sickness! | 你的神圣耐力保护你免受疾病！ | 你的神圣耐力保护你免受疾病！ | keep | 神圣耐力防疾病，和普通不适消息对应，未误作毒素。 | crawl-ref/source/player.cc:8193 |
+| source:your equipment is almost entirely melded<br>EN: Your equipment is almost entirely melded | 你的装备几乎已全部与你的身体融合 | 你的装备几乎已全部与你的身体融合 | keep | 超过五类融合装备时几乎全部，与entirely消息保留almost差异。 | crawl-ref/source/transform.cc:123 |
+| source:your equipment is entirely melded.<br>EN: Your equipment is entirely melded. | 你的装备已全部与你的身体融合。 | 你的装备已全部与你的身体融合。 | keep | 全部槽位融合时全部装备融入身体，未保留almost而削弱程度。 | crawl-ref/source/transform.cc:101 |
+| source:your extra speed is starting to fade.<br>EN: Your extra speed is starting to fade. | 你的额外速度开始消退了。 | 你的额外速度开始消退了。 | keep | 加速到期前额外速度开始消退，starting保留，未提前宣称完全结束。 | crawl-ref/source/player.cc:5475 |
+| source:your facial features are unmistakably orcish.<br>EN: Your facial features are unmistakably orcish. | 你的面部特征无疑就是兽人。 | 你的面部特征明显像兽人。 | adjust | 面部特征无疑就是兽人把特征等同种族实体，谓语不成立；建议你的面部特征明显像兽人。；已按本行当前值修正措辞。 | crawl-ref/source/mutation.cc:785 |
+| source:your facial features look somewhat orcish.<br>EN: Your facial features look somewhat orcish. | 你的面部特征看起来有点像兽人。 | 你的面部特征看起来有点像兽人。 | keep | 兽人化初期面貌有点像兽人，程度somewhat与后期确定档区分。 | crawl-ref/source/mutation.cc:784 |
+| source:your flames quiet as the last of your memories are burnt away.<br>EN: Your flames quiet as the last of your memories are burnt away. | 随着最后的记忆被燃尽，你的火焰平息了。 | 随着最后的记忆被燃尽，你的火焰平息了。 | keep | 点燃持续结束时最后记忆燃尽使火焰平息，最后、因果和两个事件完整。 | crawl-ref/source/timed-effects.cc:898 |
+| source:your flesh twists and warps into a mockery of life!<br>EN: Your flesh twists and warps into a mockery of life! | 你的血肉扭曲成了对生命的拙劣模仿！ | 你的血肉扭曲成了对生命的拙劣模仿！ | keep | 死亡形态血肉扭曲为生命拙劣模仿，变形意象与强烈语气完整。 | crawl-ref/source/transform.cc:851 |
+| source:your fleshless body is immune to poison, disease, and asphyxiation.<br>EN: Your fleshless body is immune to poison, disease, and asphyxiation. | 你的身体没有血肉，免疫毒素、疾病和窒息。 | 你的身体没有血肉，免疫毒素、疾病和窒息。 | keep | 非生物血肉缺失而免疫毒/疾病/窒息，三种免疫和原因完整。 | crawl-ref/source/mutation.cc:893 |
+| source:your form twists in death.<br>EN: Your form twists in death. | 你的形态在死亡时扭曲变形。 | 你的形态在死亡时扭曲变形。 | keep | 变形玩家死亡掉落尸体前形态扭曲，死亡时点与形态主体完整。 | crawl-ref/source/ouch.cc:1151 |
+| source:your fortress blast dissipates harmlessly.<br>EN: Your fortress blast dissipates harmlessly. | 你的堡垒冲击无害地消散了。 | 你的堡垒冲击无害地消散了。 | keep | 玩家移动或驱散使堡垒冲击无害消散，两消费者均不造成爆炸伤害，harmlessly准确。 | crawl-ref/source/player-reacts.cc:874; crawl-ref/source/spl-goditem.cc:456 |
+| source:your fungus emits %s spores!<br>EN: Your fungus emits %s spores! | 你的真菌释放了%s孢子！ | 你的真菌释放了%s孢子！ | adjust | 真菌饮药后孢子形容词全部来自未译_spore_msg，连insubstantial也仅N_；需在显示点翻译这些效果词（含既有strenghtening对应的强化），保留运行时英文身份，不能漏掉药水效果。；修复：11种药水孢子形容词使用持久NC_键表加最终C_显示，保留历史strenghtening键和所有效果分支。 | crawl-ref/source/potion.cc:1020; crawl-ref/source/potion.cc:980; crawl-ref/source/potion.cc:995; crawl-ref/source/potion.cc::_spore_msg/_handle_potion_fungus |
+| source:your head dissolves into a mane of billowing mist!<br>EN: Your head dissolves into a mane of billowing mist! | 你的头化作了一团翻涌的雾鬃！ | 你的头化作了一团翻涌的雾鬃！ | keep | 雾鬃形态头部化为翻涌雾鬃，头、鬃状与翻涌动作保留。 | crawl-ref/source/transform.cc:1529 |
+| source:your head is a mane of billowing mist.<br>EN: Your head is a mane of billowing mist. | 你的头是一团翻涌的雾鬃。 | 你的头是一团翻涌的雾鬃。 | keep | 当前雾鬃说明保留头部与翻涌雾鬃，和进入消息词根一致。 | crawl-ref/source/transform.cc:1521 |
+| source:your head returns to normal.<br>EN: Your head returns to normal. | 你的头恢复了正常。 | 你的头恢复了正常。 | keep | 雾鬃形态结束头部恢复正常，未误写成整个身体变回。 | crawl-ref/source/transform.cc:1537 |
+| source:your head was a mane of billowing mist.<br>EN: Your head was a mane of billowing mist. | 你的头当时是一团翻涌的雾鬃。 | 你的头当时是一团翻涌的雾鬃。 | keep | 过去雾鬃说明保留当时，其他形象与当前式一致。 | crawl-ref/source/transform.cc:1520 |
+| source:your hooves can't fit into boots.<br>EN: Your hooves can't fit into boots. | 你的蹄子穿不进靴子。 | 你的蹄子穿不进靴子。 | keep | 蹄子三级突变阻止穿靴，蹄子与无法容纳的关系准确。 | crawl-ref/source/player-equip.cc:186 |
+| source:your icy armour dissipates!<br>EN: Your icy armour dissipates! | 你的冰霜防御消散了！ | 你的冰甲消散了！ | adjust | icemail是可融化的实体冰甲，与822/823同一icy armour词根；冰霜防御过度泛化对象，建议你的冰甲消散了。；已按本行当前值修正措辞。 | crawl-ref/source/ouch.cc:93 |
+| source:your icy armour evaporates.<br>EN: Your icy armour evaporates. | 你的冰甲蒸发了。 | 你的冰甲蒸发了。 | keep | 冰甲到期蒸发，evaporates与melt开始融化的阶段区别保留。 | crawl-ref/source/player-reacts.cc:781 |
+| source:your icy armour starts to melt.<br>EN: Your icy armour starts to melt. | 你的冰甲开始融化。 | 你的冰甲开始融化。 | keep | 冰甲到期前开始融化，start阶段和冰甲术语准确。 | crawl-ref/source/player-reacts.cc:784 |
+| source:your legs become a tail as you dive into the water.<br>EN: Your legs become a tail as you dive into the water. | 你潜入水中时，腿变成了一条尾巴。 | 你潜入水中时，腿变成了一条尾巴。 | keep | 人鱼开始游泳时腿变尾巴，入水条件和身体变化方向完整。 | crawl-ref/source/transform.cc:2671 |
+| source:your life essence is reduced to manifest your ancestor. (-10% hp)<br>EN: Your life essence is reduced to manifest your ancestor. (-10% HP) | 你的生命精华因显现先祖而减少。（-10% 生命值） | 你的生命精华因显现先祖而减少。（-10% 生命值） | keep | 显现先祖消耗生命精华并标明-10%HP，比例、因果与资源准确。 | crawl-ref/source/mutation.cc:793 |
+| source:your limbs are stiffening.<br>EN: Your limbs are stiffening. | 你的四肢正在变僵硬。 | 你的四肢正在变僵硬。 | keep | 石化将完成时四肢变僵硬，进行中的状态未误写为已完全石化。 | crawl-ref/source/player-reacts.cc:219 |
+| source:your lower jaw melts away.<br>EN: Your lower jaw melts away. | 你的下颚融化了。 | 你的下颚融化了。 | keep | 变形改变解剖使挖掘的下颚消失，lower jaw与融化意象准确。 | crawl-ref/source/transform.cc:2274 |
+| source:your lungs are flooded with %s and you cannot breathe.<br>EN: Your lungs are flooded with %s and you cannot breathe. | 你的肺部被%s淹没，无法呼吸。 | 你的肺部被%s淹没，无法呼吸。 | adjust | 肺灌满状态长说明准确描述物质与无法呼吸，但物质props默认water英文且ooze预译；同644须canonical存储加最终显示翻译。；修复：water/ooze规范英文由所有新producer写入WATER_HOLD_SUBSTANCE_KEY；灌肺、怪物气道、咳出/排出及status长说明各在最终显示槽以flood substance上下文翻译；water使用介质水，不复用地形深水。旧已本地化存档值不改写。 | crawl-ref/source/status.cc:678; crawl-ref/source/player.cc:8974; crawl-ref/source/player.h:870; crawl-ref/source/melee-attack.cc:588; crawl-ref/source/melee-attack.cc:4493; crawl-ref/source/melee-attack.cc::do_ooze_flood/mons_apply_attack_flavour; crawl-ref/source/player.cc::player::floodify; crawl-ref/source/monster.cc::monster::floodify; crawl-ref/source/player-reacts.cc::_decrement_durations; crawl-ref/source/mon-ench.cc::monster::remove_enchantment_effect; crawl-ref/source/status.cc::fill_status_info |
+| source:your lungs strain for air.<br>EN: Your lungs strain for air. | 你的肺部迫切地需要空气。 | 你的肺部迫切地需要空气。 | keep | 肺灌满持续伤害期间肺部急需空气，保留呼吸挣扎而非普通疲劳。 | crawl-ref/source/player-reacts.cc:946 |
+| source:your magic begins regenerating once more.<br>EN: Your magic begins regenerating once more. | 你的法力重新开始恢复。 | 你的法力重新开始恢复。 | defer terminology | TAG34Deep Dwarf卸精神护盾后法力重新再生，两调用分支含义相同；旧种族兼容保留当前译文，恢复正常玩法时复审。；保留现值。责任：zh-translator；重入：Review the same preserved identity if its removed form/species returns to normal gameplay, using restored behavior and then-current terminology. | crawl-ref/source/player-equip.cc:2526; crawl-ref/source/player-equip.cc:2886; crawl-ref/source/player-equip.cc:2524; crawl-ref/source/player-equip.cc:2883 |
+| source:your magic is already full.<br>EN: Your magic is already full. | 你的法力已经回满了。 | 你的法力已经回满了。 | keep | 法力已达最大值时拒喝魔法药水，回满准确且未误称无最大法力。 | crawl-ref/source/potion.cc:606 |
+| source:your magical contamination has completely subsided.<br>EN: Your magical contamination has completely subsided. | 你的魔法污染已经完全消退了。 | 你的魔法污染已经完全消退了。 | keep | 魔法污染降到零时完全消退，completely与已完成完整。 | crawl-ref/source/player.cc:4759 |
+| source:your mantle of jade crumbles away.<br>EN: Your mantle of jade crumbles away. | 你的玉衣碎裂消散了。 | 你的玉衣碎裂消散了。 | keep | 玉衣形态结束时玉质外层碎裂消散，材质和崩碎离去完整。 | crawl-ref/source/transform.cc:1461 |
+| source:your mantle thrums with power.<br>EN: Your mantle thrums with power. | 你的玉衣随着力量的涌动而震颤。 | 你的玉衣随着力量的涌动而震颤。 | keep | 玉衣水晶充满后外层力量震颤，既有玉衣指称明确且未误写成纯声音攻击。 | crawl-ref/source/transform.cc:3132 |
+| source:your maw growls hungrily at the sight of %s, but you resist your urges.<br>EN: Your maw growls hungrily at the sight of %s, but you resist your urges. | 你的吞噬之口在看到%s时饥饿地咆哮起来，但你抵抗住了冲动。 | 你的吞噬之口在看到%s时饥饿地咆哮起来，但你抵抗住了冲动。 | keep | 吞噬之口见可食敌人但清醒抵挡迷惑冲动，饥饿咆哮与但抵挡冲动两命题完整。 | crawl-ref/source/transform.cc:2915 |
+| source:your maw growls hungrily at the sight of %s.<br>EN: Your maw growls hungrily at the sight of %s. | 你的吞噬之口在看到%s时饥饿地咆哮起来。 | 你的吞噬之口在看到%s时饥饿地咆哮起来。 | keep | 吞噬之口见可食敌人咆哮并引起迷惑，看到对象与饥饿冲动完整。 | crawl-ref/source/transform.cc:2909 |
+| source:your maximum health is %sincreased.<br>EN: Your maximum health is %sincreased. | 你的最大生命值%s增加了。 | 你的最大生命值%s增加了。 | keep | 形态HP倍率提高时最大生命增加，greatly在倍率足够高时极大地增加，资源与强度保留。 | crawl-ref/source/mutation.cc:682; crawl-ref/source/dat/i18n/zh/source.txt:28752 |
+| source:your maximum health is decreased%s.<br>EN: Your maximum health is decreased%s. | 你的最大生命值降低了%s。 | 你的最大生命值降低了%s。 | keep | 形态HP倍率下降时最大生命降低，技能不足的条件尾句已译且因果完整。 | crawl-ref/source/mutation.cc:692; crawl-ref/source/dat/i18n/zh/source.txt:46483 |
+| source:your mycelia shrivel away.<br>EN: Your mycelia shrivel away. | 你的菌丝枯萎了。 | 你的菌丝枯萎了。 | keep | 菌丝形态结束时菌丝枯萎离去，枯萎的形态结束风味保留；可补消失使away更显明为建议。 | crawl-ref/source/transform.cc:1386 |
+| source:your old self.<br>EN: your old self. | 原来的自己 | 原来的自己 | keep | 无形态自身描述作为变成原来的自己组成句，原来的自己语义完整；原英文句号未在ZH保留属排版建议。 | crawl-ref/source/transform.cc:595 |
+| source:your orb has finished recharging its magic.<br>EN: Your orb has finished recharging its magic. | 你的宝珠已经完成了魔法充能。 | 你的宝珠已经完成了魔法充能。 | keep | 星尘宝珠在满MP且无近敌时冷却结束，魔法充能完成保留宝珠主体与完成态。 | crawl-ref/source/player-reacts.cc:567 |
+| source:your pain echoes through the poison around you!<br>EN: Your pain echoes through the poison around you! | 你的痛苦在周围毒素中回荡！ | 你的痛苦在周围毒素中回荡！ | keep | 美杜莎毒素反应受伤时痛苦在周围中毒者中回荡，毒素与痛苦传播风味完整。 | crawl-ref/source/ouch.cc:985 |
+| source:your plant body is immune to sleep, blinding, and asphyxiation.<br>EN: Your plant body is immune to sleep, blinding, and asphyxiation. | 你的植物身体免疫睡眠、致盲和窒息。 | 你的植物身体免疫睡眠、致盲和窒息。 | keep | 植物身体免疫睡眠、致盲、窒息，三项没有漏译或替换毒免疫。 | crawl-ref/source/mutation.cc:900 |
+| source:your quills recede back into your body.<br>EN: Your quills recede back into your body. | 刺缩回了你的体内。 | 刺缩回了你的体内。 | keep | 刺毛形态结束时刺缩回体内，动作与方向准确，通用刺未造成新的机制承诺。 | crawl-ref/source/transform.cc:1018 |
+| source:your recitation is interrupted.<br>EN: Your recitation is interrupted. | 你的吟诵被打断了。 | 你的吟诵被打断了。 | keep | 吟诵被沉默/混乱/失能/睡眠/狂暴中断，译文中断准确且不擅自指定某个原因。 | crawl-ref/source/player-reacts.cc:642 |
+| source:your robe already provides the effects of brilliance.<br>EN: Your robe already provides the effects of brilliance. | 你的长袍已经提供了智慧效果。 | 你的长袍已经提供了智慧效果。 | keep | 愚行长袍已提供brilliance而阻止重复喝药，现有共享brilliance名智慧，译文保留已经提供该效果；未凭另一个祈祷名强改词根。 | crawl-ref/source/potion.cc:314 |
+| source:your roots penetrate the ground.<br>EN: Your roots penetrate the ground. | 你的根穿透了地面。 | 你的根穿透了地面。 | keep | 树形态根穿透地面并中止传送，动作和地面位置完整。 | crawl-ref/source/transform.cc:2152 |
+| source:your scales start turning %s.<br>EN: Your scales start turning %s. | 你的鳞片开始变为%s。 | 你的鳞片开始变为%s。 | keep | 龙人转色时鳞片开始变色，scale_type所有现行颜色参数经T_提供，起始变化与颜色对象准确。 | crawl-ref/source/player.cc:3434; crawl-ref/source/species.cc:251 |
+| source:your serpentine skin is tough. (ac +%d)<br>EN: Your serpentine skin is tough. (AC +%d) | 你的蛇皮坚韧。（AC +%d） | 你的蛇皮坚韧。（AC +%d） | keep | 娜迦种族护甲说明蛇皮坚韧并显示AC加值，材质、加号和整数完整。 | crawl-ref/source/mutation.cc:819 |
+| source:your skill with %s, %s, and %s is reduced.<br>EN: Your skill with %s, %s, and %s is reduced. | 你对%1$s、%2$s和%3$s的掌握被削弱了。 | 你对%1$s、%2$s和%3$s的掌握被削弱了。 | keep | 半吊子灾祸随机降低三技能，skill_name三参数已本地化，技能数与降低方向完整。 | crawl-ref/source/mutation.cc:3517 |
+| source:your spell capacity is full; you lost the previous spell.<br>EN: Your spell capacity is full; you lost the previous spell. | 你的法术容量已满，你失去了使用了之前的法术。 | 你的法术容量已满；你失去了之前的法术。 | adjust | 失去了使用了之前的法术重复谓语且语义不明；实际删除原记忆法术，应为你的法术容量已满；你失去了之前的法术。；已按本行当前值修正措辞。 | crawl-ref/source/player.cc:3231 |
+| source:your spilled blood starts moving with violent intent!<br>EN: Your spilled blood starts moving with violent intent! | 你洒出的血液开始带着暴力的意图移动！ | 你洒出的血液开始带着暴力的意图移动！ | keep | 洒血成功生成血液怪物后开始恶意行动，血液主体与暴力意图完整；可润色杀意为建议。 | crawl-ref/source/ouch.cc:1066 |
+| source:your stasis prevents paralysis.<br>EN: Your stasis prevents paralysis. | 你的停滞状态阻止了麻痹。 | 你的停滞状态阻止了麻痹。 | keep | 停滞阻止麻痹，麻痹符合当前status术语；和减速/加速/传送的停滞组一致。 | crawl-ref/source/player.cc:7878 |
+| source:your stasis prevents slowing.<br>EN: Your stasis prevents slowing. | 你的停滞状态阻止了减速。 | 你的停滞状态阻止了减速。 | keep | 停滞阻止减速，否定与slow对象准确。 | crawl-ref/source/player.cc:5292 |
+| source:your stasis prevents speeding up.<br>EN: Your stasis prevents speeding up. | 你的停滞状态阻止了加速。 | 你的停滞状态阻止了加速。 | keep | 停滞阻止加速，speeding up与Haste拒绝分支意义一致。 | crawl-ref/source/player.cc:5434 |
+| source:your stasis prevents you from being hasted.<br>EN: Your stasis prevents you from being hasted. | 你的停滞状态阻止了加速效果。 | 你的停滞状态阻止了加速效果。 | keep | 加速药水可用性中停滞阻止Haste，拒绝原因与加速效果准确。 | crawl-ref/source/potion.cc:239 |
+| source:your stasis prevents you from teleporting.<br>EN: your stasis prevents you from teleporting. | 你的停滞状态阻止了你传送。 | 你的停滞状态阻止了你传送。 | keep | 交换位置、普通传送、闪烁与电荷突进检查均以停滞阻止传送，原文泛指位移，译文适合全部消费者且不改协议身份。 | crawl-ref/source/misc.cc:41; crawl-ref/source/player.cc:7572; crawl-ref/source/spl-util.cc:1843; crawl-ref/source/spl-util.cc:2023 |
+| source:your tail turns into legs as you fly out of the water.<br>EN: Your tail turns into legs as you fly out of the water. | 你飞出水面时尾巴变成了腿。 | 你飞出水面时尾巴变成了腿。 | keep | 飞出水面时人鱼尾巴恢复腿，身体变化方向和出水条件完整。 | crawl-ref/source/player.cc:5656 |
+| source:your talons can't fit into boots.<br>EN: Your talons can't fit into boots. | 你的爪子穿不进靴子。 | 你的爪子穿不进靴子。 | keep | 脚爪三级突变阻止穿靴，爪子指足部爪而非手爪，穿不进关系准确。 | crawl-ref/source/player-equip.cc:188 |
+| source:your tendrils shrivel away.<br>EN: Your tendrils shrivel away. | 你的触须枯萎脱落了。 | 你的触须枯萎脱落了。 | keep | 触须头鬃结束时触须枯萎离去，译成枯萎脱落保留离体结果。 | crawl-ref/source/transform.cc:1278 |
+| source:your third eye closes.<br>EN: Your third eye closes. | 你的第三只眼闭合了。 | 你的第三只眼闭合了。 | keep | 第三只眼形态结束时闭合，眼睛序数与动作正确。 | crawl-ref/source/transform.cc:1427 |
+| source:your third eye is open.<br>EN: Your third eye is open. | 你的第三只眼睁开着。 | 你的第三只眼睁开着。 | keep | 当前第三只眼睁开状态，保留持续状态而非再次睁开动作。 | crawl-ref/source/transform.cc:1411 |
+| source:your third eye opens!<br>EN: Your third eye opens! | 你的第三只眼睁开了！ | 你的第三只眼睁开了！ | keep | 进入第三眼形态时睁开，和当前说明/结束闭合的时态区别完整。 | crawl-ref/source/transform.cc:1419 |
+| source:your third eye was open.<br>EN: Your third eye was open. | 你的第三只眼当时睁开着。 | 你的第三只眼当时睁开着。 | keep | 过去第三眼形态说明用当时睁开，和现在式区分。 | crawl-ref/source/transform.cc:1410 |
+| source:your time-warped blood is ready to ripple again.<br>EN: Your time-warped blood is ready to ripple again. | 你的时曲之血准备好再次波动了。 | 你的时曲之血准备好再次波动了。 | keep | 时曲之血仍存在且满HP冷却解除时可再次波动，专属名称和再次准备保留。 | crawl-ref/source/player-reacts.cc:1091 |
+| source:your tiny sun winks out.<br>EN: Your tiny sun winks out. | 你的微型太阳熄灭了。 | 你的微型太阳熄灭了。 | keep | 退出太阳圣甲虫形态移除余烬时微型太阳熄灭，主体与消失风味准确。 | crawl-ref/source/transform.cc:2497 |
+| source:your trail of clouds dissipates.<br>EN: Your trail of clouds dissipates. | 你的云迹消散了。 | 你的云迹消散了。 | keep | 云迹持续结束后云迹消散，cloud trail没有误称某朵独立云。 | crawl-ref/source/player-reacts.cc:925 |
+| source:your transformation has ended.<br>EN: Your transformation has ended. | 你的变形结束了。 | 你的变形结束了。 | keep | 默认形态结束消息保留变形完成结束，不添加形态类型。 | crawl-ref/source/transform.cc:264 |
+| source:your transformation is almost over.<br>EN: Your transformation is almost over. | 你的变形即将结束。 | 你的变形即将结束。 | keep | 临时形态到期前即将结束，和已结束消息的时间阶段区分。 | crawl-ref/source/player-reacts.cc:721 |
+| source:your unliving flesh cannot be transformed in this way.<br>EN: Your unliving flesh cannot be transformed in this way. | 你的不死之躯无法以这种方式变形。 | 你的不死之躯无法以这种方式变形。 | keep | 无生命血肉无法进入所选形态，中文不死之躯表达亡灵身体及这种方式限制。 | crawl-ref/source/transform.cc:2031 |
+| source:your vision is no longer so expansive.<br>EN: Your vision is no longer so expansive. | 你的视野不再那么辽阔了。 | 你的视野不再那么辽阔了。 | keep | 第三眼退出后视野不再扩展，比较缩减保留，不误称失明。 | crawl-ref/source/transform.cc:2520 |
+| source:your weapon exudes an aura of protection.<br>EN: Your weapon exudes an aura of protection. | 你的武器散发出保护的气息。 | 你的武器散发出保护的气息。 | keep | 防护铭印击中后武器散发保护光环，中文保护气息保留武器与防护结果。 | crawl-ref/source/player.cc:9742 |
+| source:your weapon gleams with eagerness.<br>EN: Your weapon gleams with eagerness. | 你的武器闪烁着渴望的光芒。 | 你的武器闪烁着渴望的光芒。 | keep | 高HP持握勇武武器闪烁渴望，拟人风味与亮光准确。 | crawl-ref/source/player-equip.cc:2068 |
+| source:your weapons and armour are melded.<br>EN: Your weapons and armour are melded. | 你的武器和护甲已与你的身体融合。 | 你的武器和护甲已与你的身体融合。 | keep | 武器与护甲两类物理装备融合，明确两类且未错误包括首饰。 | crawl-ref/source/transform.cc:105 |
+| source:your willpower is stripped away!<br>EN: Your willpower is stripped away! | 你的意志力被剥夺了！ | 你的意志力被剥夺了！ | keep | 剥夺意志函数和佐特陷阱都给意志力降低，译文保留剥夺的强烈风味与正确属性。 | crawl-ref/source/player.cc:8928; crawl-ref/source/traps.cc:242 |
+| source:your wings%s won't fit in that.<br>EN: Your wings%s won't fit in that. | 你的翅膀%s穿不进去。 | 你的翅膀%s穿不进去。 | adjust | 龙人退化翅膀分支直接插入even vestigial as they are英文，需在显示端译出即使只是退化翅膀也容不下的让步条件。；修复：大翅膀与退化翅膀选择完整句，退化的让步限定明确，装备槽判定不改。 | crawl-ref/source/player-equip.cc:122; crawl-ref/source/player-equip.cc::get_player_equip_slot_count |
+| source:yredelemnul refuses to have your conquest cut short by the earth!<br>EN: Yredelemnul refuses to have your conquest cut short by the earth! | 伊莱德莱姆努尔拒绝让你的征服被大地中断！ | 伊莱德莱姆努尔拒绝让你的征服被大地中断！ | keep | 伊莱德莱姆努尔举炬保护征服免被竖井中断，现行神名与大地中断征服的声音完整。 | crawl-ref/source/player.cc:8633 |
+| source:zin %1$s %2$s %3$s.<br>EN: Zin %1$s %2$s %3$s. | 辛恩%1$s了%2$s%3$s。 | 辛恩%1$s了%2$s%3$s。 | adjust | 辛恩违反Zin辛；实际有生物组句为辛恩释放了兽人从他的囚牢中，语序错误，空墙分支消散了银色的墙壁但...也缺连接。应分支完整表达辛释放囚徒/撤去空银墙。；修复：辛释放囚徒与撤去空银墙两完整分支分开；对象、所有格、空牢条件保持，旧碎片留兼容。 | crawl-ref/source/timed-effects.cc:729; crawl-ref/source/timed-effects.cc:684; crawl-ref/source/dat/i18n/zh/source.txt:26331; crawl-ref/source/dat/i18n/zh/source.txt:26340; crawl-ref/source/timed-effects.cc::_drop_tomb |
+| source:zin forbids you from drinking this foul brew!<br>EN: Zin forbids you from drinking this foul brew! | 辛禁止你饮用这污秽的混合液！ | 辛禁止你饮用这污秽的混合液！ | keep | 辛禁止喝污秽混合液，现行神名、禁止与污秽酿液意象完整。 | crawl-ref/source/mutation.cc:2339 |
+| source:zot (%d)<br>EN: Zot (%d) | 佐特（%d） | 佐特（%d） | keep | 佐特时钟状态灯把倒计时作为整数显示，佐特专名正确且db_key仍英文Zot，不把展示名称回写身份。 | crawl-ref/source/status.cc:1262 |
+
+### player-display-dependencies
+
+| Identity / English source | 审前中文 | 当前中文 | 终态 | 逐项理由 | 证据 |
+|---|---|---|---|---|---|
+| source:dislodge event&#124;being knocked back<br>EN: dislodge event&#124;being knocked back |  | 被击退 | adjust | 登山靴最终被移动提示的规范事件 being knocked back：只在player::resists_dislodge翻译动作，来源持久/内部事件保持英文；与完整靴子阻止句配合。 | crawl-ref/source/actor.cc:1088 |
+| source:dislodge event&#124;being pulled<br>EN: dislodge event&#124;being pulled |  | 被拉走 | adjust | 登山靴最终被移动提示的规范事件 being pulled：只在player::resists_dislodge翻译动作，来源持久/内部事件保持英文；与完整靴子阻止句配合。 | crawl-ref/source/beam.cc:5426 |
+| source:dislodge event&#124;falling<br>EN: dislodge event&#124;falling |  | 坠落 | adjust | 登山靴最终被移动提示的规范事件 falling：只在player::resists_dislodge翻译动作，来源持久/内部事件保持英文；与完整靴子阻止句配合。 | crawl-ref/source/god-wrath.cc:1589 |
+| source:dislodge event&#124;being dragged<br>EN: dislodge event&#124;being dragged |  | 被拖走 | adjust | 登山靴最终被移动提示的规范事件 being dragged：只在player::resists_dislodge翻译动作，来源持久/内部事件保持英文；与完整靴子阻止句配合。 | crawl-ref/source/melee-attack.cc:5245 |
+| source:dislodge event&#124;being lured by song<br>EN: dislodge event&#124;being lured by song |  | 被歌声引走 | adjust | 登山靴最终被移动提示的规范事件 being lured by song：只在player::resists_dislodge翻译动作，来源持久/内部事件保持英文；与完整靴子阻止句配合。 | crawl-ref/source/mon-ench.cc:1404 |
+| source:dislodge event&#124;falling into an unexpected shaft<br>EN: dislodge event&#124;falling into an unexpected shaft |  | 落入意想不到的竖井 | adjust | 登山靴最终被移动提示的规范事件 falling into an unexpected shaft：只在player::resists_dislodge翻译动作，来源持久/内部事件保持英文；与完整靴子阻止句配合。 | crawl-ref/source/player.cc:8637 |
+| source:dislodge event&#124;being moved by the vortex<br>EN: dislodge event&#124;being moved by the vortex |  | 被漩涡带走 | adjust | 登山靴最终被移动提示的规范事件 being moved by the vortex：只在player::resists_dislodge翻译动作，来源持久/内部事件保持英文；与完整靴子阻止句配合。 | crawl-ref/source/spl-vortex.cc:394 |
+| source:zin recitation book&#124;abominations<br>EN: Zin recitation book&#124;Abominations |  | 《憎恶》 | adjust | 辛吟诵结束引用的书名 Abominations；按对应祷告类别呈现书名，章:节仍由同一seed生成，随后闭幕词独立追加。 | crawl-ref/source/god-abil.cc:605 |
+| source:zin recitation book&#124;ablutions<br>EN: Zin recitation book&#124;Ablutions |  | 《净身礼》 | adjust | 辛吟诵结束引用的书名 Ablutions；按对应祷告类别呈现书名，章:节仍由同一seed生成，随后闭幕词独立追加。 | crawl-ref/source/god-abil.cc:606 |
+| source:zin recitation book&#124;apostates<br>EN: Zin recitation book&#124;Apostates |  | 《叛教者》 | adjust | 辛吟诵结束引用的书名 Apostates；按对应祷告类别呈现书名，章:节仍由同一seed生成，随后闭幕词独立追加。 | crawl-ref/source/god-abil.cc:607 |
+| source:zin recitation book&#124;anathema<br>EN: Zin recitation book&#124;Anathema |  | 《诅罚》 | adjust | 辛吟诵结束引用的书名 Anathema；按对应祷告类别呈现书名，章:节仍由同一seed生成，随后闭幕词独立追加。 | crawl-ref/source/god-abil.cc:608 |
+| source:zin recitation book&#124;bugginess<br>EN: Zin recitation book&#124;Bugginess |  | 《程序错误》 | adjust | 辛吟诵结束引用的书名 Bugginess；按对应祷告类别呈现书名，章:节仍由同一seed生成，随后闭幕词独立追加。 | crawl-ref/source/god-abil.cc:609 |
+| source:hold<br>EN: hold |  | 拿着 | adjust | 缺手失去装备时wear/hold在显示槽翻译，完整物品名和不能再使用含义保留。 | crawl-ref/source/mutation.cc:1452 |
+| source:%s is forcibly removed from your body, breaking its binding!<br>EN: %s is forcibly removed from your body, breaking its binding! |  | %s被强行从你身上卸下，挣脱了束缚！ | adjust | 强制卸下/掉落按bound与unbound选择完整句；新英文同表述binding，装备内部cursed标识不改；旧片段保留兼容。 | crawl-ref/source/mutation.cc:1460 |
+| source:%s is forcibly removed from your body!<br>EN: %s is forcibly removed from your body! |  | %s被强行从你身上卸下！ | adjust | 强制卸下/掉落按bound与unbound选择完整句；新英文同表述binding，装备内部cursed标识不改；旧片段保留兼容。 | crawl-ref/source/mutation.cc:1461 |
+| source:%s falls off, breaking its binding!<br>EN: %s falls off, breaking its binding! |  | %s掉落下来，挣脱了束缚！ | adjust | 强制卸下/掉落按bound与unbound选择完整句；新英文同表述binding，装备内部cursed标识不改；旧片段保留兼容。 | crawl-ref/source/mutation.cc:1466 |
+| source:%s falls off!<br>EN: %s falls off! |  | %s掉落了！ | adjust | 强制卸下/掉落按bound与unbound选择完整句；新英文同表述binding，装备内部cursed标识不改；旧片段保留兼容。 | crawl-ref/source/mutation.cc:1467 |
+| source:you feel the corruptions in your body subside completely.<br>EN: You feel the corruptions in your body subside completely. |  | 你感到体内的变异侵蚀完全消退了。 | adjust | 暂时变异清除按完全/部分两完整句保留差别，不把完全减弱当完全消退。 | crawl-ref/source/mutation.cc:3257 |
+| source:you feel the corruptions in your body subside somewhat.<br>EN: You feel the corruptions in your body subside somewhat. |  | 你感到体内的变异侵蚀有所减轻。 | adjust | 暂时变异清除按完全/部分两完整句保留差别，不把完全减弱当完全消退。 | crawl-ref/source/mutation.cc:3258 |
+| source:you quiver from the blow and a flood of jellies pours out from you!<br>EN: You quiver from the blow and a flood of jellies pours out from you! |  | 你因重击而战栗，大量水母从你体内涌出！ | adjust | 水母涌出按blow/blast和单只/多只四完整分支显示；战栗原因与涌出动作不误连成双重原因。 | crawl-ref/source/ouch.cc:831 |
+| source:you quiver from the blow and a jelly pops out!<br>EN: You quiver from the blow and a jelly pops out! |  | 你因重击而战栗，一只水母冒了出来！ | adjust | 水母涌出按blow/blast和单只/多只四完整分支显示；战栗原因与涌出动作不误连成双重原因。 | crawl-ref/source/ouch.cc:832 |
+| source:you quiver from the blast and a flood of jellies pours out from you!<br>EN: You quiver from the blast and a flood of jellies pours out from you! |  | 你因冲击而战栗，大量水母从你体内涌出！ | adjust | 水母涌出按blow/blast和单只/多只四完整分支显示；战栗原因与涌出动作不误连成双重原因。 | crawl-ref/source/ouch.cc:835 |
+| source:you quiver from the blast and a jelly pops out!<br>EN: You quiver from the blast and a jelly pops out! |  | 你因冲击而战栗，一只水母冒了出来！ | adjust | 水母涌出按blow/blast和单只/多只四完整分支显示；战栗原因与涌出动作不误连成双重原因。 | crawl-ref/source/ouch.cc:836 |
+| source:your wings won't fit in that.<br>EN: Your wings won't fit in that. |  | 那件装备容不下你的翅膀。 | adjust | 大翅膀与退化翅膀选择完整句，退化的让步限定明确，装备槽判定不改。 | crawl-ref/source/player-equip.cc:123 |
+| source:your wings, even vestigial as they are, won't fit in that.<br>EN: Your wings, even vestigial as they are, won't fit in that. |  | 即使你的翅膀已经退化，那件装备也容不下它们。 | adjust | 大翅膀与退化翅膀选择完整句，退化的让步限定明确，装备槽判定不改。 | crawl-ref/source/player-equip.cc:124 |
+| source:your %s feel oddly empty.<br>EN: Your %s feel oddly empty. |  | 你的%s感觉异常空荡。 | adjust | 手部空荡感单复数选择完整EN模板，两中文同义，不保留英语s。 | crawl-ref/source/player-equip.cc:2419 |
+| source:your %s feels oddly empty.<br>EN: Your %s feels oddly empty. |  | 你的%s感觉异常空荡。 | adjust | 手部空荡感单复数选择完整EN模板，两中文同义，不保留英语s。 | crawl-ref/source/player-equip.cc:2420 |
+| source:that put a bit of spring back into your slither.<br>EN: That put a bit of spring back into your slither. |  | 这让你的滑行恢复了几分轻快。 | adjust | 沉重护甲卸下按滑行/步伐选择完整轻快句，不再raw英文或弹性直译。 | crawl-ref/source/player-equip.cc:2486 |
+| source:that put a bit of spring back into your step.<br>EN: That put a bit of spring back into your step. |  | 这让你的步伐恢复了几分轻快。 | adjust | 沉重护甲卸下按滑行/步伐选择完整轻快句，不再raw英文或弹性直译。 | crawl-ref/source/player-equip.cc:2487 |
+| source:you feel a strange surge of divine interest.<br>EN: You feel a strange surge of divine interest. |  | 你感到一股奇异的神圣关注涌来。 | adjust | 信仰项链有神/无神两完整句分别保留神圣关注与奇异限定，不再raw strange。 | crawl-ref/source/player-equip.cc:2771 |
+| source:you feel a surge of divine interest.<br>EN: You feel a surge of divine interest. |  | 你感到一股神圣关注涌来。 | adjust | 信仰项链有神/无神两完整句分别保留神圣关注与奇异限定，不再raw strange。 | crawl-ref/source/player-equip.cc:2772 |
+| source:you finish reciting %s.<br>EN: You finish reciting %s. |  | 你完成了对%s的吟诵。 | adjust | 辛经文标题只包含译后书名及章:节，完整完成句之后才追加独立SpeakDB闭幕词；随机条件、经文seed和查询身份不改。 | crawl-ref/source/player-reacts.cc:674 |
+| source:%s slips away as you move onto it!<br>EN: %s slips away as you move onto it! |  | 当你移到%s上时，它滑开了！ | adjust | feat_preposition仍是规范英文；onto/under/over/inside/into/beside六种方向各选完整显示句。 | crawl-ref/source/player.cc:146 |
+| source:%s slips away as you move under it!<br>EN: %s slips away as you move under it! |  | 当你移到%s下方时，它滑开了！ | adjust | feat_preposition仍是规范英文；onto/under/over/inside/into/beside六种方向各选完整显示句。 | crawl-ref/source/player.cc:147 |
+| source:%s slips away as you move over it!<br>EN: %s slips away as you move over it! |  | 当你移过%s上方时，它滑开了！ | adjust | feat_preposition仍是规范英文；onto/under/over/inside/into/beside六种方向各选完整显示句。 | crawl-ref/source/player.cc:148 |
+| source:%s slips away as you move inside it!<br>EN: %s slips away as you move inside it! |  | 当你移入%s内部时，它滑开了！ | adjust | feat_preposition仍是规范英文；onto/under/over/inside/into/beside六种方向各选完整显示句。 | crawl-ref/source/player.cc:149 |
+| source:%s slips away as you move into it!<br>EN: %s slips away as you move into it! |  | 当你移入%s时，它滑开了！ | adjust | feat_preposition仍是规范英文；onto/under/over/inside/into/beside六种方向各选完整显示句。 | crawl-ref/source/player.cc:150 |
+| source:%s slips away as you move beside it!<br>EN: %s slips away as you move beside it! |  | 当你移到%s旁边时，它滑开了！ | adjust | feat_preposition仍是规范英文；onto/under/over/inside/into/beside六种方向各选完整显示句。 | crawl-ref/source/player.cc:151 |
+| source:movement speed&#124;your %s speed is %s%s%s<br>EN: movement speed&#124;Your %s speed is %s%s%s |  | 你的%s速度%s%s%s | adjust | 移动速度完整四槽中的 Your %s speed is %s%s%s；主语移动方式、顺/逆风状态、转折/并列与五档速度按同一耗时判断组句，中文正常指速度等级而非数学平均。 | crawl-ref/source/player.cc:3807 |
+| source:movement speed&#124;wind-assisted<br>EN: movement speed&#124;wind-assisted |  | 受到风力辅助 | adjust | 移动速度完整四槽中的 wind-assisted；主语移动方式、顺/逆风状态、转折/并列与五档速度按同一耗时判断组句，中文正常指速度等级而非数学平均。 | crawl-ref/source/player.cc:3814 |
+| source:movement speed&#124;wind-hindered<br>EN: movement speed&#124;wind-hindered |  | 受到风力阻碍 | adjust | 移动速度完整四槽中的 wind-hindered；主语移动方式、顺/逆风状态、转折/并列与五档速度按同一耗时判断组句，中文正常指速度等级而非数学平均。 | crawl-ref/source/player.cc:3815 |
+| source:movement speed&#124;, but still<br>EN: movement speed&#124;, but still |  | ，但仍 | adjust | 移动速度完整四槽中的 , but still；主语移动方式、顺/逆风状态、转折/并列与五档速度按同一耗时判断组句，中文正常指速度等级而非数学平均。 | crawl-ref/source/player.cc:3817 |
+| source:movement speed&#124;and<br>EN: movement speed&#124;and |  | ，且 | adjust | 移动速度完整四槽中的 and；主语移动方式、顺/逆风状态、转折/并列与五档速度按同一耗时判断组句，中文正常指速度等级而非数学平均。 | crawl-ref/source/player.cc:3818 |
+| source:movement speed&#124;very fast<br>EN: movement speed&#124;very fast |  | 很快 | adjust | 移动速度完整四槽中的 very fast；主语移动方式、顺/逆风状态、转折/并列与五档速度按同一耗时判断组句，中文正常指速度等级而非数学平均。 | crawl-ref/source/player.cc:3823 |
+| source:movement speed&#124;fast<br>EN: movement speed&#124;fast |  | 较快 | adjust | 移动速度完整四槽中的 fast；主语移动方式、顺/逆风状态、转折/并列与五档速度按同一耗时判断组句，中文正常指速度等级而非数学平均。 | crawl-ref/source/player.cc:3824 |
+| source:movement speed&#124;average<br>EN: movement speed&#124;average |  | 正常 | adjust | 移动速度完整四槽中的 average；主语移动方式、顺/逆风状态、转折/并列与五档速度按同一耗时判断组句，中文正常指速度等级而非数学平均。 | crawl-ref/source/player.cc:3825 |
+| source:movement speed&#124;slow<br>EN: movement speed&#124;slow |  | 较慢 | adjust | 移动速度完整四槽中的 slow；主语移动方式、顺/逆风状态、转折/并列与五档速度按同一耗时判断组句，中文正常指速度等级而非数学平均。 | crawl-ref/source/player.cc:3826 |
+| source:movement speed&#124;very slow<br>EN: movement speed&#124;very slow |  | 很慢 | adjust | 移动速度完整四槽中的 very slow；主语移动方式、顺/逆风状态、转折/并列与五档速度按同一耗时判断组句，中文正常指速度等级而非数学平均。 | crawl-ref/source/player.cc:3827 |
+| source: (and cannot be improved with additional weapon skill)<br>EN:  (and cannot be improved with additional weapon skill) |  | （且无法通过进一步提升武器技能来缩短） | adjust | 最小攻击延迟不能以更高武器技能改善的限制，在显示槽完整翻译。 | crawl-ref/source/player.cc:3879 |
+| source:your body glows too brightly to become invisible.<br>EN: Your body glows too brightly to become invisible. |  | 你的身体光芒太强，无法隐形。 | adjust | 四类发光来源逐一在显示端翻译；局部列表context避免既有共享连接词的前导换行，实际andc/comma位置正确。身体/背光失败原因也按完整显示句翻译。 | crawl-ref/source/player.cc:5577 |
+| source:crown<br>EN: crown |  | 冠冕 | adjust | 四类发光来源逐一在显示端翻译；局部列表context避免既有共享连接词的前导换行，实际andc/comma位置正确。身体/背光失败原因也按完整显示句翻译。 | crawl-ref/source/player.cc:5588 |
+| source:divine halo<br>EN: divine halo |  | 神圣光环 | adjust | 四类发光来源逐一在显示端翻译；局部列表context避免既有共享连接词的前导换行，实际andc/comma位置正确。身体/背光失败原因也按完整显示句翻译。 | crawl-ref/source/player.cc:5596 |
+| source:invisibility sources&#124; and <br>EN: invisibility sources&#124; and  |  | 和 | adjust | 发光来源列表局部连接符 ' and '；末项用和，中间用顿号，英语原空格保持在规范键，中文无多余换行。 | crawl-ref/source/player.cc:5605 |
+| source:invisibility sources&#124;, <br>EN: invisibility sources&#124;,  |  | 、 | adjust | 发光来源列表局部连接符 ', '；末项用和，中间用顿号，英语原空格保持在规范键，中文无多余换行。 | crawl-ref/source/player.cc:5606 |
+| source:you are backlit; invisibility will do you no good right now<br>EN: You are backlit; invisibility will do you no good right now |  | 你正因发光而显形，此时隐形对你毫无帮助 | adjust | 四类发光来源逐一在显示端翻译；局部列表context避免既有共享连接词的前导换行，实际andc/comma位置正确。身体/背光失败原因也按完整显示句翻译。 | crawl-ref/source/player.cc:5617 |
+| source:your boots prevent you from being pulled by %s.<br>EN: Your boots prevent you from being pulled by %s. |  | 你的靴子使你不会被%s拉走。 | adjust | 所有固定被移动事件保持NC_英文身份，仅登山靴最终sink按context翻译；动态触手传即时actor参数由sink取本地化名字，空事件继续静默。 | crawl-ref/source/player.cc:7810 |
+| source: but take no damage<br>EN:  but take no damage |  | ，但没有受到伤害 | adjust | 酸液完全抵抗的无伤片段在最终消息槽翻译，实际伤害及抵抗计算不改。 | crawl-ref/source/player.cc:7854 |
+| source:constrictor possessive&#124;the roots'<br>EN: constrictor possessive&#124;the roots' |  | 树根的 | adjust | 束缚来源 the roots' 的所有格片段；与怪物DESC_ITS合同一致，成功/失败完整句都自行提供束缚谓语，避免漏的或重复的。 | crawl-ref/source/player.cc:8828 |
+| source:constrictor possessive&#124;the zombie hands'<br>EN: constrictor possessive&#124;the zombie hands' |  | 尸手的 | adjust | 束缚来源 the zombie hands' 的所有格片段；与怪物DESC_ITS合同一致，成功/失败完整句都自行提供束缚谓语，避免漏的或重复的。 | crawl-ref/source/player.cc:8829 |
+| source:constrictor possessive&#124;the vines'<br>EN: constrictor possessive&#124;the vines' |  | 藤蔓的 | adjust | 束缚来源 the vines' 的所有格片段；与怪物DESC_ITS合同一致，成功/失败完整句都自行提供束缚谓语，避免漏的或重复的。 | crawl-ref/source/player.cc:8830 |
+| source:constrictor possessive&#124;something's<br>EN: constrictor possessive&#124;something's |  | 某物的 | adjust | 束缚来源 something's 的所有格片段；与怪物DESC_ITS合同一致，成功/失败完整句都自行提供束缚谓语，避免漏的或重复的。 | crawl-ref/source/player.cc:8831 |
+| source:constriction escape&#124;you break free of %s grasp.<br>EN: constriction escape&#124;You break free of %s grasp. |  | 你挣脱了%s束缚。 | adjust | 逃脱成功完整句以已带所有格的来源作参数，表达挣脱该来源的束缚，与未逃脱而束缚减弱分支一致。 | crawl-ref/source/player.cc:8835 |
+| source:, pushing everything out of the way<br>EN: , pushing everything out of the way |  | ，把挡路的东西全推开 | adjust | 门大小、门型保持原显示参数；推开挡路物品片段在显示端翻译，普通/飞行/猛烈/有声/吱嘎完整语序同步；自定义des格式路径不变。 | crawl-ref/source/player.cc:9509 |
+| source:fungus spores&#124;curing<br>EN: fungus spores&#124;curing |  | 治疗性的 | adjust | 药水孢子效果 curing 的显示形容词；对应_spore_msg的具体药水效果，键表仍规范英文，最终C_查询，11种效果含无形孢子均覆盖。 | crawl-ref/source/potion.cc:982 |
+| source:fungus spores&#124;healing<br>EN: fungus spores&#124;healing |  | 愈伤的 | adjust | 药水孢子效果 healing 的显示形容词；对应_spore_msg的具体药水效果，键表仍规范英文，最终C_查询，11种效果含无形孢子均覆盖。 | crawl-ref/source/potion.cc:983 |
+| source:fungus spores&#124;quickening<br>EN: fungus spores&#124;quickening |  | 加速的 | adjust | 药水孢子效果 quickening 的显示形容词；对应_spore_msg的具体药水效果，键表仍规范英文，最终C_查询，11种效果含无形孢子均覆盖。 | crawl-ref/source/potion.cc:984 |
+| source:fungus spores&#124;strenghtening<br>EN: fungus spores&#124;strenghtening |  | 强化力量的 | adjust | 药水孢子效果 strenghtening 的显示形容词；对应_spore_msg的具体药水效果，键表仍规范英文，最终C_查询，11种效果含无形孢子均覆盖。 | crawl-ref/source/potion.cc:985 |
+| source:fungus spores&#124;amplifying<br>EN: fungus spores&#124;amplifying |  | 增幅魔法的 | adjust | 药水孢子效果 amplifying 的显示形容词；对应_spore_msg的具体药水效果，键表仍规范英文，最终C_查询，11种效果含无形孢子均覆盖。 | crawl-ref/source/potion.cc:986 |
+| source:fungus spores&#124;enlightening<br>EN: fungus spores&#124;enlightening |  | 启迪的 | adjust | 药水孢子效果 enlightening 的显示形容词；对应_spore_msg的具体药水效果，键表仍规范英文，最终C_查询，11种效果含无形孢子均覆盖。 | crawl-ref/source/potion.cc:987 |
+| source:fungus spores&#124;invisible<br>EN: fungus spores&#124;invisible |  | 隐形的 | adjust | 药水孢子效果 invisible 的显示形容词；对应_spore_msg的具体药水效果，键表仍规范英文，最终C_查询，11种效果含无形孢子均覆盖。 | crawl-ref/source/potion.cc:988 |
+| source:fungus spores&#124;magical<br>EN: fungus spores&#124;magical |  | 充满魔力的 | adjust | 药水孢子效果 magical 的显示形容词；对应_spore_msg的具体药水效果，键表仍规范英文，最终C_查询，11种效果含无形孢子均覆盖。 | crawl-ref/source/potion.cc:989 |
+| source:fungus spores&#124;infuriating<br>EN: fungus spores&#124;infuriating |  | 激怒生物的 | adjust | 药水孢子效果 infuriating 的显示形容词；对应_spore_msg的具体药水效果，键表仍规范英文，最终C_查询，11种效果含无形孢子均覆盖。 | crawl-ref/source/potion.cc:990 |
+| source:fungus spores&#124;bolstering<br>EN: fungus spores&#124;bolstering |  | 增强抗性的 | adjust | 药水孢子效果 bolstering 的显示形容词；对应_spore_msg的具体药水效果，键表仍规范英文，最终C_查询，11种效果含无形孢子均覆盖。 | crawl-ref/source/potion.cc:991 |
+| source:fungus spores&#124;insubstantial<br>EN: fungus spores&#124;insubstantial |  | 虚幻的 | adjust | 药水孢子效果 insubstantial 的显示形容词；对应_spore_msg的具体药水效果，键表仍规范英文，最终C_查询，11种效果含无形孢子均覆盖。 | crawl-ref/source/potion.cc:992 |
+| source:you hear a series of splatters.<br>EN: You hear a series of splatters. |  | 你听到接连几阵溅落声。 | adjust | 溅落声按一次/接连多次选完整句，不再a/a series of和复数s拼接。 | crawl-ref/source/timed-effects.cc:206 |
+| source:you hear a splatter.<br>EN: You hear a splatter. |  | 你听到一阵溅落声。 | adjust | 溅落声按一次/接连多次选完整句，不再a/a series of和复数s拼接。 | crawl-ref/source/timed-effects.cc:207 |
+| source:zin releases %1$s from %2$s prison.<br>EN: Zin releases %1$s from %2$s prison. |  | 辛将%1$s从%2$s囚牢中释放出来。 | adjust | 辛释放囚徒与撤去空银墙两完整分支分开；对象、所有格、空牢条件保持，旧碎片留兼容。 | crawl-ref/source/timed-effects.cc:731 |
+| source:zin dismisses the silver walls, but there is nothing inside them.<br>EN: Zin dismisses the silver walls, but there is nothing inside them. |  | 辛撤去了银色的墙壁，但里面空无一物。 | adjust | 辛释放囚徒与撤去空银墙两完整分支分开；对象、所有格、空牢条件保持，旧碎片留兼容。 | crawl-ref/source/timed-effects.cc:736 |
+| source:%s falls away, breaking its binding!<br>EN: %s falls away, breaking its binding! |  | %s脱落了，挣脱了束缚！ | adjust | 强制卸下/掉落按bound与unbound选择完整句；新英文同表述binding，装备内部cursed标识不改；旧片段保留兼容。 | crawl-ref/source/transform.cc:2563 |
+| source:%s falls away!<br>EN: %s falls away! |  | %s脱落了！ | adjust | 强制卸下/掉落按bound与unbound选择完整句；新英文同表述binding，装备内部cursed标识不改；旧片段保留兼容。 | crawl-ref/source/transform.cc:2564 |
+| source:rebranding a weapon of distortion<br>EN: rebranding a weapon of distortion |  | 给扭曲武器重新赋予铭印 | adjust | 扭曲武器放逐原因保持规范英文进入banisher、milestone与Abyss Note；仅desc=abyss entry的已知两种原因及无原因Note在最终describe显示翻译。未知、畸形、缺翻译整句英文回退；无标记同文快照不变。 | crawl-ref/source/notes.cc:238 |
+| source:unwielding a weapon of distortion<br>EN: unwielding a weapon of distortion |  | 放下扭曲武器 | adjust | 扭曲武器放逐原因保持规范英文进入banisher、milestone与Abyss Note；仅desc=abyss entry的已知两种原因及无原因Note在最终describe显示翻译。未知、畸形、缺翻译整句英文回退；无标记同文快照不变。 | crawl-ref/source/notes.cc:239 |
+| source:cast into level %d of the abyss (%s)<br>EN: Cast into level %d of the Abyss (%s) |  | 被放逐到深渊第%d层（%s） | adjust | 扭曲武器放逐原因保持规范英文进入banisher、milestone与Abyss Note；仅desc=abyss entry的已知两种原因及无原因Note在最终describe显示翻译。未知、畸形、缺翻译整句英文回退；无标记同文快照不变。 | crawl-ref/source/notes.cc:241 |
+| source: appreciates %s for killing a heretic priest.<br>EN:  appreciates %s for killing a heretic priest. |  | 赞许%s杀死异端牧师的行为。 | adjust | 完整神祇赞许分句以killer的普通显示名作对象；两分支不再把玩家误当赞许对象。 | crawl-ref/source/ouch.cc:1285 |
+| source: appreciates %s for killing an apostate.<br>EN:  appreciates %s for killing an apostate. |  | 赞许%s杀死叛教者的行为。 | adjust | 完整神祇赞许分句以killer的普通显示名作对象；两分支不再把玩家误当赞许对象。 | crawl-ref/source/ouch.cc:1291 |
+| source:flood substance&#124;water<br>EN: flood substance&#124;water |  | 水 | adjust | 水淹介质 water 的专用显示名；water为水而非全局地形深水，ooze为软泥。五个最终显示sink共用此上下文，原始props与生产者保持英文。 | crawl-ref/source/player.cc:9004 |
+| source:flood substance&#124;ooze<br>EN: flood substance&#124;ooze |  | 软泥 | adjust | 水淹介质 ooze 的专用显示名；water为水而非全局地形深水，ooze为软泥。五个最终显示sink共用此上下文，原始props与生产者保持英文。 | crawl-ref/source/player.cc:9004 |
