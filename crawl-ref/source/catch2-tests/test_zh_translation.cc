@@ -9051,8 +9051,10 @@ TEST_CASE("species display: actual draconian maturation translates every colour 
                 const int oldapt = species_apt(sk, SP_BASE_DRACONIAN);
                 const int newapt = species_apt(sk, species_id);
                 if (oldapt != newapt)
+                {
                     expected_aptitude_variants.insert({oldapt > newapt,
                                                       abs(oldapt - newapt) > 1});
+                }
             }
         REQUIRE(aptitude_variants == expected_aptitude_variants);
     }

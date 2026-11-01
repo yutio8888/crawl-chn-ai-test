@@ -398,8 +398,10 @@ static string _badmut(string desc, bool terse=false)
 static pair<string, string> _annotate_form_based(pair<string, string> desc, bool suppressed)
 {
     if (suppressed)
+    {
         return {desc.first.empty() ? "" : _suppressedmut(desc.first, true),
                 _suppressedmut(desc.second, false)};
+    }
     return {_innatemut(desc.first, true), _innatemut(desc.second, false)};
 }
 
