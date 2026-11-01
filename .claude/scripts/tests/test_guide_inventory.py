@@ -66,9 +66,9 @@ class GuideInventoryTest(unittest.TestCase):
             "utf-8", errors="replace"))
         self.assertEqual(
             hashlib.sha256(english.stdout).hexdigest(),
-            # Upstream 0f1e910ab6 includes the Red/White Draconian typo
-            # corrections; unrest.pl itself and its output format are unchanged.
-            "f2d880b247a61f7939420109a17e79a238fca22683df2d4975e4ac9bf50039e2")
+            # Full guide review corrects autofight/targeting, item examples,
+            # binding and scoring prose; unrest.pl and its format are unchanged.
+            "19586be0cc8fc24f7b3f6029455f82a235755b48897ca53db19e9e84b23ed9f8")
 
     def test_unrest_rejects_invalid_utf8(self):
         invalid = self._run_unrest(b"Valid heading\n\xff\n")

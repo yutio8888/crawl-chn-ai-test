@@ -336,12 +336,13 @@ document. These are triggered in a variety of ways, but one commonality is that
 all of these can be quivered: the quiver provides quick access to an action that
 can be fired.
 
-Both melee and ranged combat provide shortcuts that autotarget the nearest
-enemy, if there is one available. Your wielded weapon can be triggered by Tab
-("Autofight"), moving towards or attacking the nearest enemy depending on
-whether there is one in range for the weapon. Your quivered action can be
-triggered by Shift-Tab or 'p' ("Autofire"); if the action takes a target the
-nearest enemy will be selected, otherwise the action will be triggered. See
+Both melee and ranged combat provide shortcuts that select a target using
+the autofight priorities, which consider factors such as attack range,
+stabbing opportunities and distance. Tab ("Autofight") attacks the selected
+enemy with your wielded weapon if it is in range, or usually moves towards it
+otherwise. Options can also enable direct-damage quiver actions. Shift-Tab or
+'p' ("Autofire") triggers your quivered action without moving, selecting a
+target automatically if the action needs one. See
 `Attacking and firing`_ for the full key list related to attacking, quivers, and
 firing.
 
@@ -717,7 +718,7 @@ $        gold           (use 'g' to pick up)
 There are several general keys for item management:
 
 d
-  drop item; if you want to drop only some items from a stack (of arrows, for
+  drop item; if you want to drop only some items from a stack (of stones, for
   example), then press 'd' followed by a number and then the item's slot key
 
 g
@@ -743,7 +744,7 @@ You pick up items with the 'g'et or ',' (comma) command, and drop them with the
 a number before the letter of the item, you will drop that quantity of the item
 (similarly when picking up). The same works if you want to pick up only part of
 a stack and there are several types of items on the square (so that they are
-shown in a list). When there is only a single stack of arrows and you want to
+shown in a list). When there is only a single stack of stones and you want to
 pick up only some of them, use the ';' command. Note that picking up items from
 one square takes exactly one turn. However, dropping several items at once takes
 more turns.
@@ -1045,7 +1046,7 @@ There are two ways to activate memorised spells: by "quivering" them and using
 the fire interface, or directly by pressing 'z' (for Zap). To choose a spell
 for the quiver, use 'Q', or '(' and ')' to cycle among possible actions. Press
 'f' to enter the targeting interface, or shift-tab / 'p' to autofire a
-quivered spell at the nearest monster.
+quivered spell at an automatically selected target.
 
 Use 'I' to display a list of all memorised spells without actually casting one.
 The spells available are labelled with letters; you are free to change this
@@ -1099,8 +1100,8 @@ Otherwise, you use the following commands:
 There are some shortcuts while targeting:
 
 - Typing Shift-direction on your keypad fires straight away in that direction.
-- Pressing 'p' or 'f' fires at the previous target (if it is still alive and in
-  sight). Due to this, most hunters can go a long way by pressing 'vf' to fire
+- Pressing 'f' fires at the current cursor position. The initial cursor can
+  select your previous target if it remains valid. Most hunters can use 'vf' to fire
   their ammunition at a monster and then keep firing at it with further 'vf'
   strokes. At times, it will be useful to switch targets with the '+' or '-'
   commands, though.
@@ -1277,9 +1278,9 @@ mapping 'a' to some other key will treat almost all pressings of 'a' in that new
 way (including dropping and wielding, etc.), so is not recommended. Macroing 'a'
 to some other key will only change the command key 'a'.
 
-You can set up key maps and macros in-game with the '~' key ('Ctrl-D' will also
-work); this also allows for saving all current key bindings and macros.
-Alternatively, you can directly edit the macro.txt file. For more information on
+You can set up key maps and macros in-game with 'Ctrl-D', or quickly add a
+macro with 'Ctrl-E'. Changes are saved when you normally save and exit or end
+the game. Alternatively, you can directly edit the macro.txt file. For more information on
 both and for examples, see macros_guide.txt.
 
 Crawl supports a large number of options that allow for great flexibility in the
@@ -1513,8 +1514,8 @@ the species.
           which allow them to make extra attacks.
 
 .. note:: Humans are a useful reference point when considering other species:
-          they have 0 for almost all aptitudes; have no special abilities,
-          weakness, or constraints against using certain types of equipment;
+          they have 0 for almost all aptitudes; have no special equipment
+          restrictions, and recover health and magic faster while exploring;
           move normally; and gain experience and willpower at a "typical"
           rate. However, you will see that they are categorised as an
           *Intermediate* species -- because they are decent, but not excellent,
@@ -1941,8 +1942,8 @@ Mummies (Mu)
   These are undead creatures who travel into the depths in search of revenge,
   redemption, or just because they want to.
 
-  Mummies progress slowly in levels, half again as slowly as Humans in all
-  skills except fighting, spellcasting and necromancy. The sacred embalming
+  Mummies progress slowly in levels and learn most skills slowly. Fighting,
+  spellcasting and necromancy are relative strengths. The sacred embalming
   rituals that brought them into unlife also grant them a special connection
   with the divine, and as they increase in levels, they become increasingly
   in touch with the powers of death. However, their desiccated bodies are
@@ -2035,7 +2036,7 @@ Gladiators
 
 Monks
   Monks have a head start with the divine. They start with only a simple weapon
-  of their choice, a potion of divine ambrosia, a robe, and an orb of light to
+  of their choice, potions of divine ambrosia and enlightenment, a robe, and an orb of light to
   guide them. However, when they worship a god for the first time, their
   spiritual training gives them a piety boost.
 
@@ -2398,8 +2399,9 @@ direction
   If a monster is in the target square, attack that monster.
 
 Tab
-  Autofight: Attack the nearest monster with your current weapon. If the
-  nearest monster is not in range, by default, this will move towards it.
+  Autofight: Select a monster using the autofight priorities, and attack with
+  your current weapon if it is in range. Otherwise, this usually moves towards
+  it. Options can also enable direct-damage quiver actions.
 
 v
   Targeted attacks with your primary weapon, including attacking non-adjacent
@@ -2608,8 +2610,9 @@ Ctrl-C
   Describe a monster, spell or feature. You can enter a partial name or a regex
   instead of the full name.
 
-~ or Ctrl-D
-  Add or save macros and key mappings.
+Ctrl-D
+  Edit macros and key mappings. Changes are saved on normal save-and-exit or
+  game end. Ctrl-E opens the quick macro editor; ~ opens the game menu.
 
 =
   Reassign inventory/spell/abilities letters.
@@ -2630,7 +2633,7 @@ Ctrl-S
   Save game without query and exit.
 
 Ctrl-Q
-  Quit without saving (with a confirmation prompt).
+  Permanently abandon this character and end the game (with confirmation).
 
 Stashes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2853,8 +2856,8 @@ Travel exclusions mark certain spots of the map as no-go areas for autotravel
 and explore.
 
 e
-  Set travel exclusion. If an exclusion is already present, change size (from
-  single square to full field of vision); after that, remove exclusion.
+  Cycle a travel exclusion: full field of vision, then a single square, then
+  removal. Doors can use a special exclusion shape.
 
 R#
   Set an exclusion with an arbitrary radius, where # is a number from 1 to 8.
@@ -2935,15 +2938,12 @@ Enter
 
 .
   Fire at cursor position and stop there. This can be useful to avoid damaging
-  allies, or to avoid losing arrows.
-
-p
-  Fire at previous target (if still in sight).
+  allies, or to avoid losing thrown missiles.
 
 f
-  Smart-firing: fire at previous target, if it is still in sight; and else fire
-  at the cursor position. You can start shooting at an opponent with 'ff' and
-  then keep firing with 'ff'.
+  Fire at the current cursor position. The initial cursor can select the
+  previous target if it remains valid. You can start shooting with 'ff' and
+  then keep firing with 'ff', checking the selected target each time.
 
 :
   Toggle display of the beam path.
@@ -2976,7 +2976,8 @@ You can use inscriptions to define shortcuts for easy access to items,
 regardless of their actual inventory letter. For example, if an item's
 inscription contains "@w9", you can type 'w9' in order to wield it. Instead of
 the 9, any other digit works as well. And instead of 'w'ield, any other command
-used for handling items can be used: 'r'ead, 'q'uaff, e'v'oke, 'f'ire, etc.
+used for handling items can be used: 'r'ead, 'q'uaff, 'V' to evoke, 'f'ire, etc.
+For evoking, the inscription uses lowercase v even though the command uses V.
 Using "@*9" will make any action command followed by '9' use this item.
 
 Safety inscriptions
@@ -3060,7 +3061,7 @@ You can use the autoinscribe option to have some items automatically inscribed.
 See options_guide.txt for details. Some examples are:
 
   autoinscribe = stone:=f
-  autoinscribe = wand of heal wounds:!v
+  autoinscribe = wand of flame:!v
 
 Artefact autoinscriptions
 ========================================

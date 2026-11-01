@@ -95,20 +95,21 @@ Crawl 选项指南
 3-k     消息频道。
                 plain, prompt, god, duration, danger, warning, recovery,
                 talk, talk_visual, timed_portal, sound, intrinsic_gain,
-                mutation, monster_spell, monster_enchant, monster_warning,
+                mutation, monster_spell, monster_enchant, monster_timeout,
+                monster_warning,
                 friend_spell, friend_enchant, friend_action, monster_damage,
-                monster_target, banishment, equipment, floor, multiturn,
+                monster_target, banishment, equipment, floor, decor_flavour,
+                multiturn,
                 examine, examine_filter, diagnostic, error, tutorial, orb,
                 hell_effect, dgl_message
 3-l     铭文。
                 autoinscribe, show_god_gift
 3-m     宏相关选项。
-                flush.failure, flush.command, flush.message,
+                flush.failure, flush.command, flush.lua, macros,
                 additional_macro_file, bindkey
 3-n     贴图版选项。
                 tile_show_items, tile_skip_title, tile_menu_icons,
-                tile_player_col, tile_monster_col, tile_neutral_col,
-                tile_peaceful_col, tile_friendly_col, tile_plant_col,
+                tile_player_col, tile_monster_col, tile_plant_col,
                 tile_item_col, tile_unseen_col, tile_floor_col, tile_wall_col,
                 tile_mapped_floor_col, tile_mapped_wall_col,
                 tile_explore_horizon_col, tile_door_col, tile_downstairs_col,
@@ -167,7 +168,7 @@ Crawl 选项指南
                 best_effort_brighten_background,
                 best_effort_brighten_foreground, allow_extended_colours,
                 background_colour, foreground_colour,
-                use_default_terminal_colours, use_fake_cursor
+                use_terminal_default_colours, use_fake_cursor
 
 6-  Lua。
                 lua_max_memory
@@ -194,15 +195,16 @@ Crawl 选项指南
 在线游戏时，请在 WebTiles 游戏选择画面中选择“edit rc”，或通过 ssh 进入 rc
 文件编辑器。
 
-离线游戏时，Crawl 会依次检查下列文件，并使用找到的第一个文件作为选项文件：
-
-* settings/init.txt
-* init.txt（位于 Crawl 目录中）
-* .crawlrc（位于 Unix 主目录中）
-
-也可以使用命令行选项
+离线游戏时，命令行选项
     -rc <file>
-让 Crawl 只使用该文件。
+会让 Crawl 只使用该文件。否则，Crawl 会依次搜索下列位置，使用找到的第一个文件：
+
+* 对每个通过 -rcdir 指定的目录，先查找 .crawlrc，再查找 init.txt。
+* Crawl 目录中的 init.txt。
+* 在 Unix 上，依次查找 ~/.crawl/init.txt、~/.crawlrc 和 ~/init.txt。
+* 构建时未指定固定数据目录的版本，依次查找当前目录中的 init.txt、
+  ../init.txt 和 ../settings/init.txt。
+* 最后尝试数据文件搜索路径，其中也会搜索 settings/。
 
 如果 Crawl 使用了初始化文件，开始画面会显示具体使用的文件。Crawl 目录的位置
 因系统而异。
@@ -262,11 +264,7 @@ autopickup_exceptions 选项）。
 选项接受正则表达式（regex）：此时可以直接使用普通字符串、按需修改建议的
 正则表达式，或在网上查找正则表达式语法。
 
-请注意，在教程和提示模式中，为了便于讲解，部分选项设置可能会被覆盖。受影响
-的选项及其在教程游戏中被强制使用的设置如下：
-   clear_messages      = true
-   weapon              = hand axe, for Berserkers in hints mode
-                         （即：提示模式中的狂战士使用 hand axe）
+在提示模式中，为了便于讲解，狂战士会得到一把手斧（hand axe），覆盖 weapon 选项。
 
 0-d     列表选项。
 ----------------
@@ -290,7 +288,7 @@ autopickup_exceptions 选项）。
 对于 drop_filter 等许多选项，在末尾添加与在开头添加实际上没有区别。然而，
 message_colour 等其他选项会考虑条目顺序；其说明中会标为“有序列表选项”。
 多数情况下，较早的条目优先于较晚的条目，因此 += 会服从现有匹配（包括默认
-条目），而 ^= 会覆盖现有匹配。例如，依次使用下列选项：
+条目），而 ^= 会覆盖现有匹配。例如，在英文界面中依次使用下列选项：
    message_colour  = cyan:hits
    message_colour ^= red:crimson
    message_colour += yellow:killer
@@ -354,9 +352,9 @@ remember_name = true
 weapon += (short sword |...| unarmed | random | viable), <weapon>, ...
         （列表选项）
         指定 weapon 选项可以跳过武器选择画面。三叉戟、链枷、刺剑、长剑和
-        战斧仅限战士与角斗士选择，长棍则仅限角斗士。如果为所选背景指定了
-        不合法的选择，游戏会显示标准武器提示。"viable" 会从适合所选角色的
-        “优良”武器中随机选择。指定多个选项时，游戏会从给定列表中随机选择
+        战斧仅限战士与角斗士选择，长棍则仅限角斗士与蚁人战士。如果为所选
+        背景指定了不合法的选择，游戏会显示标准武器提示。"viable" 会从适合所选
+        角色的“优良”武器中随机选择。指定多个选项时，游戏会从给定列表中随机选择
         一种武器。combo 选项会覆盖此选项（而此选项也会覆盖 combo）。
 
 species += (Human |...| Revenant | random | viable), <species>, ...
@@ -369,7 +367,7 @@ background += (Fighter |...| Wanderer | random | viable), <background>, ...
         （列表选项）
         同样可以使用缩写（Fi、HW、CA 等）。"viable" 也有同一项注意事项：
         只有同时设置了 species 选项，它才真正有意义。指定多个背景时，会从
-        给定种族中随机选择一个。combo 选项会覆盖此选项（而此选项也会覆盖
+        给定背景中随机选择一个。combo 选项会覆盖此选项（而此选项也会覆盖
         combo）。
 
 combo += (HuFi . short sword | Human Monk | ...), <combo>, ...
@@ -466,7 +464,7 @@ save_dir = saves/
         保存存档和骸骨文件的目录。相对路径会以 `crawl_dir` 的值为基准进行
         解释。
 
-morgue_dir = morgues/
+morgue_dir = morgue/
         写入死亡记录文件（morgue*.txt 和 morgue*.lst）及角色记录文件的目录。
         相对路径会以 `crawl_dir` 的值为基准进行解释。
 
@@ -481,7 +479,8 @@ sounds_on = true
 sound ^= <regex>:<path to sound file>, <regex>:<path>,
         （有序列表选项）
         如果消息中包含 regex，就播放相应声音文件。如果有多个 regex 匹配，
-        只播放最后一个 regex 对应的声音。regex 不应包含逗号或冒号。例如：
+        只播放当前列表中第一个匹配规则对应的声音。regex 不应包含逗号或冒号。
+        下列英文消息模式示例用于英文界面；中文界面请使用实际显示的中文消息：
              sound += LOW HITPOINT WARNING:sound\sounds2\danger3.wav
         此外还有一些预定义 regex，可用来为无法通过 regex 字符串匹配的事件
         触发声音。例如，把 FIRE_PROMPT_SOUND 用作 regex，会使 Crawl 每次打开
@@ -492,8 +491,8 @@ sound_file_path = <path>
         是为了便于在多个平台上使用同一份配置。下面两行与上面的示例等效：
              sound_file_path = sound\sounds2\
              sound += LOW HITPOINT WARNING:danger3.wav
-        只有最后出现的此选项会生效，而且不会追溯应用于之前出现的 sound
-        选项。
+        播放声音时使用此选项的当前值；即使 sound 规则定义在此选项之前，
+        播放该规则的声音时也会使用当前前缀。
 
 one_SDL_sound_channel = false
         设为 true 时，同一时间只能播放一个声音（如果使用 SDL）。默认值为
@@ -529,8 +528,9 @@ autopickup = $?!+"/♦
 
 autopickup_exceptions ^= <pickup-regex, >don't-pickup-regex, ...
         （有序列表选项）
-        一组正则表达式：前缀为 < 时，强制拾取匹配的物品；前缀为 > 时，绝不
-        拾取匹配的物品。列表顺序会影响结果：对每件物品应用第一个匹配的规则。
+        匹配文本包含规范英文物品名，因此下列英文名称规则也适用于中文界面。
+        前缀为 < 时，强制拾取匹配的物品；前缀为 > 时，绝不拾取匹配的物品。
+        列表顺序会影响结果：对每件物品应用第一个匹配的规则。
 
         示例：
              autopickup_exceptions += <curare-tipped dart
@@ -565,8 +565,9 @@ pickup_thrown = true
         会耗费一回合，不过视野内有敌对怪物时不会触发。
 
 assign_item_slot = (forward | backward)
-        拾取物品时，通常会把物品放入 a-zA-Z 中第一个空闲的物品栏栏位（这是
-        默认的 "forward" 行为）。把 assign_item_slot 设为 "backward" 后，
+        拾取装备时，通常会把它放入 a-zA-Z 中第一个空闲的装备栏位（这是默认的
+        "forward" 行为）。消耗品另按类别和快捷键规则分配，见 consumable_shortcut。
+        把 assign_item_slot 设为 "backward" 后，
         会改为分配最后一个已用栏位之后的第一个字母。
         例如，如果栏位 'a' 和 'c' 中已有物品，那么：
           assign_item_slot = forward, 下件物品会放入 'b'；
@@ -595,8 +596,8 @@ drop_filter += <regex>, <regex>, ...
         设置或清除选择状态。
 
 drop_disables_autopickup = false
-        drop_disables_autopickup = true 会自动从自动拾取中移除已丢弃的非弹药
-        物品。
+        drop_disables_autopickup = true 会自动从自动拾取中移除已丢弃的物品，
+        但弹药和神器除外。
 
 3-b     被动发现（探测到或记住的实体）。
 ----------------------------------------
@@ -635,8 +636,7 @@ friend_highlight = hi:green
 
 neutral_highlight = hi:lightgrey
         以某种方式高亮中立怪物。这样既便于避开中立怪物的行进路线，也能避免
-        意外杀死它。默认设置用深灰色背景显示中立怪物。由于现在已经没有深
-        灰色怪物字形，这样显示没有问题。
+        意外杀死它。默认设置用浅灰色背景显示中立怪物。
 
 unusual_highlight = hi:magenta
         高亮携带异常物品的敌对怪物。这样可以指出某个怪物是否因持有非常规
@@ -753,7 +753,7 @@ rest_delay = 0 (defaults to -1 for online servers)
         rest_delay = -1 会阻止休息期间更新显示。
 
 travel_avoid_terrain = (shallow water | deep water)
-        防止自动移动路径经过浅水。默认不避开任何地形。对于水栖族和／或永久
+        防止自动移动路径经过浅水。默认不避开任何地形。对于人鱼和／或永久
         飞行的角色，设置
              travel_avoid_terrain = shallow water, deep water
         会防止自动移动或探索经过任何水域。此选项支持列表语法。
@@ -855,8 +855,10 @@ tc_forbidden      = lightcyan
 runrest_ignore_message ^= <regex>, <regex>, ...
 runrest_stop_message ^= <regex>, <regex>, ...
         （列表选项）
-        用这些选项强制消息中断或不中断自动移动和休息。匹配对象是完整消息
-        文本。要把子字符串匹配限制在某个消息频道，请在子字符串前加上频道名
+        用这些选项强制消息中断或不中断自动移动和休息。匹配对象是当前界面
+        语言显示的完整消息。下列英文消息示例仅适用于英文界面；中文界面请
+        改用实际显示的中文消息。频道名称仍使用英文。要把子字符串匹配限制
+        在某个消息频道，请在子字符串前加上频道名
         和冒号（消息频道见下文 3-k）。例如，若希望遭受神罚击中时停止自动
         移动，可以使用：
              runrest_stop_message ^= god:wrath finds you
@@ -887,14 +889,14 @@ interrupt_<delay> += <activity_interrupt_type>, <activity_interrupt_type>, ...
         可在感知到但未看见怪物时不打断自动移动。
 
         可用的延时类型为：equip_on, equip_off, ascending_stairs,
-        descending_stairs, imbue_servitor, imprint_weapon, macro,
+        descending_stairs, drop_item, imbue_servitor, imprint_weapon, macro,
 	macro_process_key, memorise, multidrop, passwall, rest, run,
 	shaft_self, transform, travel。（这些名称来自 delay.h 中的 `name()`
 	函数。）
 
         可用的中断类型为：abyss_exit_spawned, ally_attacked,
         ancestor_hp, force, full_hp, full_mp, hp_loss, hit_monster, keypress,
-        message, mimic, monster, monster_attack, sense_monster, teleport。
+        message, mimic, monster, monster_attack, sense_monster。
         （这些名称来自 delay.cc 中的 `activity_interrupt_names` 数组。）
 
 
@@ -902,8 +904,9 @@ delay_safe_poison = <% of hp>:<% of mhp>
         如果定义了 delay_safe_poison = x:y，且预计毒素造成的伤害低于当前生命值
         的 x%，同时也低于最大生命值的 y%，游戏就会忽略该毒素伤害。这适用于
         所有延时动作。只会考虑一行 delay_safe_poison。请注意，要让此项对跑动
-        和休息有效，Crawl 除了忽略伤害，还必须知道要忽略 "You feel sick"
-        消息。例如，默认设置为：
+        和休息有效，Crawl 除了忽略伤害，还必须知道要忽略相应的中毒消息。
+        例如，以下默认设置中的英文消息模式用于英文界面；中文界面应匹配实际
+        中文消息：
              runrest_ignore_message ^= You feel.*sick
              delay_safe_poison = 80:100
 
@@ -912,9 +915,10 @@ runrest_ignore_monster ^= <regex>:<distance>, <regex>:<distance>, ...
         与正则表达式匹配的怪物，只有在它与玩家的距离小于指定数值时才会中断
         当前活动。例如：
              runrest_ignore_monster ^= bat:3
-        只要距离至少为 3，蝙蝠、吸血蝙蝠、火蝙蝠和战斗法球在自动移动、探索
-        和休息时都会被视为安全。如果一个怪物匹配多个表达式，则以第一个匹配
-        的距离进行比较。
+        休息时，只要距离至少为 3，蝙蝠、吸血蝙蝠、火蝙蝠和战斗法球就会被
+        视为安全。移动时，检查会先从当前距离减去 1，因此自动移动或探索时，
+        移动前的距离至少须为 4。正则表达式匹配规范英文怪物名。如果一个怪物
+        匹配多个表达式，则以第一个匹配的距离进行比较。
 
 rest_wait_both = false
         如果把 rest_wait_both 设为 true，只有生命值与法力都完全恢复时，休息
@@ -958,6 +962,7 @@ explore_auto_rest_status = <status name>, <cooldown name>, <duration name>...
 
 auto_exclude += <monster name>, <monster name>, ...
         （列表选项）
+        列表使用规范英文怪物名，不随界面语言改变。
         探索期间，每当遇到此列表中正在睡眠或不移动的怪物，游戏就会自动以该
         怪物为中心设置自动移动排除区，使自动探索绝不会把你带入它的视野。
         如果怪物在你视野内死亡或醒来，此排除区会自动移除。
@@ -1008,9 +1013,10 @@ easy_confirm = (none | safe | all)
         数字键盘上的 '7' 会映射为字母 'y'，可能导致你意外对问题回答 yes。
 
 simple_targeting = false
-        设为 true 时，爆炸和反弹箭类法术会禁用智能瞄准，自动瞄准射程内最近
-        的怪物，而不会尝试寻找既能影响多个怪物又能避开玩家的位置。此设置
-        既适用于使用魔杖时的目标选择，也适用于装入发射栏的法术自动选取目标。
+        设为 true 时，爆炸和反弹箭类法术会禁用智能瞄准。优先保留有效的预设
+        目标或上次目标，否则才选择最近的有效目标；不会再调整目标位置，以
+        同时影响多个怪物并避开玩家。此设置既适用于使用魔杖时的目标选择，
+        也适用于装入发射栏的法术自动选取目标。
 
 force_spell_targeter = hailstorm, starburst, frozen ramparts, ignition,
                        eringya's noxious bog, anguish, cause fear, alistair's
@@ -1027,7 +1033,7 @@ force_ability_targeter = sanctuary, cleansing flame, word of chaos, recite,
                          elemental force, oozemancy, galvanic breath,
                          fathomless shackles, slouch, disaster area, apocalypse,
                          corrupt, foxfire swarm, siphon essence, shadowslip,
-                         watery grave
+                         watery grave, vessel of slaughter
         正常启用列表中的能力时，即使能力本身无需指定目标，也强制显示瞄准器。
         实际上，此设置只会影响默认值中这类目标位置固定的能力；对于瞄准范围
         异常的能力尤其有用。如果选项列表中出现 "all"，列表中的其余内容
@@ -1063,7 +1069,7 @@ spell_menu = false
         设为 true 时，使用 'z' 总会显示全屏法术选择菜单。设为 false 时，
         按 'z' 会在消息区域中提示，而按 '?' 或 '*' 可查看菜单。
 
-easy_floor_use = true
+easy_floor_use = false
         设为 true 时，如果地上只有一件物品，在允许使用地上物品的物品交互
         菜单中按 ',' 从背包物品切换到地上物品，会直接选择该物品，而不会
         切换菜单。例如，地上只有一张卷轴时，按 'r,' 会阅读它。即使背包中
@@ -1072,7 +1078,8 @@ easy_floor_use = true
 sort_menus = [menu:](true | false | auto:X)[:sort_order]
         控制背包和拾取菜单中的物品是否排序，以及如何排序。
 
-        当 sort_menus = false（默认值）时，物品不排序，而是按背包字母排列
+        默认设置会对拾取、背包和丢弃菜单排序，所用排序条件列在本条目末尾。
+        当 sort_menus = false 时，物品不排序，而是按背包字母排列
         （地上的物品则按它们在物品堆中的顺序排列）。
 
         当 sort_menus = true 时，物品按照指定的 sort_order 排序，默认值为：
@@ -1144,8 +1151,7 @@ sort_menus = [menu:](true | false | auto:X)[:sort_order]
         * usefulness:
           按消耗品当前的“实用性”依次排序：应急（例如 ?blinking、
           !heal wounds）、有益（例如 ?acquirement）、普通、危险（例如
-          !lignification）、有害（例如信奉善神时的 ?torment），最后是永久
-          无用的物品。
+          !lignification），最后是永久无用的物品。
 
         在一个或多个排序条件前加 >，即可要求按降序排列，例如：
              sort_menus = true : basename, >qty
@@ -1177,14 +1183,15 @@ sort_menus = [menu:](true | false | auto:X)[:sort_order]
 
 spell_slot ^= <regex>:<list of spell letters>
         （有序列表选项，每行一个值）
+        正则表达式匹配规范英文法术名，不随界面语言改变。
         记忆任何与正则表达式匹配的法术时，游戏会把它分配给列表中第一个可用
         的字母。字母列表中的 + 会开启“覆盖模式”：直到下一个 "-" 为止的
         所有字母，即使已经分配，也都视为可用；在这种情况下，原先分配到该
         栏位的法术只要不匹配同一个 <regex>，就会被移走。
 
-        如果某个法术所匹配的每个正则表达式，其列表中的字母都已占用，就会
-        使用默认顺序 abc...xyzABC..XYZ。如果法术匹配多个正则表达式，只考虑
-        第一个。
+        如果所有匹配规则都无法分配可用字母，就会使用默认顺序
+        abc...xyzABC..XYZ。如果法术匹配多个正则表达式，首个能分配可用字母的
+        规则生效；某条规则没有可用字母时，仍会继续检查之后的匹配规则。
 
         示例：
         * 如果希望 Apportation 放在 A：
@@ -1200,8 +1207,8 @@ spell_slot ^= <regex>:<list of spell letters>
 
 gear_slot ^= <regex>:<inventory letters>
         （有序列表选项，每行一个值）
-        接口与 spell_slot 相同，但覆盖模式默认开启；在字母列表中加入 - 可以
-        关闭覆盖模式。
+        接口与 spell_slot 相同，但匹配当前界面语言的装备名称；协议标签仍
+        使用英文。覆盖模式默认开启；在字母列表中加入 - 可以关闭覆盖模式。
 
 consumable_shortcut += <item name>:<inventory letter>
         （有序列表选项，每行一个值）
@@ -1215,7 +1222,9 @@ consumable_shortcut += <item name>:<inventory letter>
 
 ability_slot ^= <regex>:<ability letters>
         （有序列表选项，每行一个值）
-        接口与 spell_slot 相同，但应用于 'a' 菜单中的能力。
+        接口与 spell_slot 相同，但匹配 'a' 菜单中能力的规范英文名称，不随界面
+        语言改变。同样使用首个能分配可用字母的匹配规则，所有匹配规则都无法
+        分配时才使用默认顺序。
 
 autofight_stop = 50
         如果当前生命值不高于最大生命值的此百分比，自动战斗就不会行动。设为
@@ -1251,8 +1260,8 @@ autofight_caught = false
         或网。
 
 autofight_wait = false
-        设为 true 时，如果使用 ===hit_closest_nomove 而不在敌人攻击范围内，
-        会等待一回合，而不是中止自动战斗。
+        设为 true 时，如果使用 ===hit_closest_nomove，且当前没有位于你可攻击
+        范围内的敌人，就会等待一回合，而不是中止自动战斗。
 
 autofight_prompt_range = true
         持用通常会在攻击时触发确认提示的武器（例如带有 !a 铭文，或受所信奉
@@ -1278,8 +1287,9 @@ automagic_fight = false
         游戏会显示一条消息，且不再采取行动。
 
 automagic_stop = 0
-        与 autofight_stop 类似；如果法力低于此数值（占法力总量的百分比），
-        就会阻止通过自动战斗／自动射击施法。设为 0 时禁用。
+        与 autofight_stop 类似；如果法力不高于法力上限的此百分比，就会阻止
+        通过自动战斗／自动射击施法。对于灯神，此检查使用生命值而非法力。
+        设为 0 时禁用。
 
 fail_severity_to_confirm = 3
         如果尝试施放的法术一旦施法失误会造成严重惩罚，则要求确认。当法术的
@@ -1346,8 +1356,8 @@ show_paged_inventory = true
 3-h     消息与显示功能增强。
 ---------------------------
 
-hp_warning = 10
-        玩家受到伤害，且生命值低于最大生命值的此百分比时，hp_warning 会在
+hp_warning = 30
+        玩家受到伤害，且生命值不高于最大生命值的此百分比时，hp_warning 会在
         危险频道显示 "* * * 低生命警告 * * *"（设为 0 可关闭这些
         消息）。
 
@@ -1358,16 +1368,18 @@ mp_warning = 0
 hp_colour = 70:yellow, 40:red
         （列表选项）
         hp_colour 会在状态显示中用适当颜色显示生命值。在默认设置下，生命值
-        低于 25% 时显示为红色，低于 50% 时显示为黄色，否则使用默认颜色。
+        不高于 40% 时显示为红色，高于 40% 且不高于 70% 时显示为黄色，
+        高于 70% 时使用默认颜色。
 
 mp_colour = 50:yellow, 25:red
         （列表选项）
         mp_colour 对法力所做的处理与 hp_colour 对生命值相同。
 
-stat_colour = 1:lightred, 3:red
+stat_colour = 3:red
         （列表选项）
-        属性低于指定数值时，stat_colour 会按定义顺序为其着色。此项检查先于
-        强效或属性衰减等效果的检查。要使用普通的灰色，请设置：
+        属性不高于指定数值时，stat_colour 会按定义顺序为其着色。此项检查先于
+        强效或属性衰减等效果的检查。属性不高于 0 时，始终显示为亮红色，不受
+        此列表阈值影响。要移除默认阈值，请设置：
            stat_colour -= 3:red
 
 status_caption_colour = brown
@@ -1420,7 +1432,7 @@ item_stack_summary_minimum = 4
 mlist_min_height = 4
         如果消息区域和怪物列表还有额外空间，怪物列表会先扩展到此高度，再把
         更多空间分给消息区域。
-        （请注意，怪物列表只在 ASCII 版中可用。）
+        （此最小高度选项只影响 ASCII 版怪物列表的布局。）
 
 mlist_allow_alternative_layout = false
         让 Crawl 在终端显示中任何可以找到空间的位置显示怪物列表（通常是
@@ -1434,8 +1446,8 @@ monster_item_view_features += <regex>, <regex>
         （列表选项）
         在 ^x 查看说明中显示与 <regex> 匹配的地形特征。此选项也会影响终端版
         的 X 楼层地图。每个 <regex> 都是描述地牢特征的正则表达式。此正则
-        表达式应当匹配使用 'x' 命令时显示的说明。如果正则表达式匹配多个说明，
-        所有相应特征都会列出。
+        表达式应当匹配使用 'x' 命令时按当前界面语言显示的说明。如果正则表达式
+        匹配多个说明，所有相应特征都会列出。
 
         此处有两个特殊关键词：如果任一模式匹配字符串 "stair"，就会显示所有
         能用楼梯命令互动的特征；如果任一模式匹配 "trap"，就会显示所有陷阱
@@ -1545,7 +1557,8 @@ unusual_monster_items += <regex>, <regex>, ...
             unusual_monster_items += disto,chaos
             unusual_monster_items += curare,atropa,datura,dispersal
             unusual_monster_items += throwing net
-        用来匹配的物品说明，是使用 'xv' 查看怪物时通常显示的物品短名称。
+        用来匹配的是规范英文物品短名称，不随界面语言改变；以上英文名称
+        示例也适用于中文界面，而不是按 'xv' 中的本地化显示名匹配。
 
         此选项决定哪些怪物会被选项 tile_show_threat_levels（仅贴图版）、
         monster_list_colour 和 unusual_highlight（仅终端版）视为 "unusual"。
@@ -1561,13 +1574,16 @@ show_blood = true
 food_snacking_frequency = 40
         控制走在水果、肉类或烘焙食品堆上时风味消息的出现频率；数值对应百分比
         概率。正如预期，100% 表示总是出现，0% 表示从不出现，而默认的 40%
-        表示五次中有两次。除非频率设为 100%，否则在大多数情况下，视野中有
-        敌对敌人时，出现概率会降至原来的四分之一。
+        表示五次中有两次。只有在以下条件全部满足时，设置的频率数值才会除以
+        4（向下取整）：附近存在已知、被判定为危险的怪物，频率不是 100%、
+        角色处于混乱状态、
+        未信奉佐姆，且不在通天塔中。
 
 fountain_line_frequency = 40
         控制走在任何类型的喷泉上时风味消息的出现频率；数值对应百分比概率。
         与上一个选项一样，100% 表示总是出现，0% 表示从不出现，默认的 40%
-        表示五次中有两次；如果频率不是 100%，视野中有敌对敌人时概率会降低。
+        表示五次中有两次。仅在 food_snacking_frequency 所列的全部条件满足时，
+        频率才会按同样规则除以 4。
 
 force_more_message += <regex>, <regex>
         （列表选项）
@@ -1604,7 +1620,7 @@ always_show_gems = false
         （如适用）。
 
 more_gem_info = false
-        是否显示已持有宝石的时限和碎裂音效。
+        是否显示已持有宝石的时限和碎裂时的视觉特效。
 
 action_panel_show = true
         是否显示或隐藏动作面板。此选项会在各局游戏之间自动保存，并且仅在
@@ -1662,7 +1678,10 @@ always_show_doom_contam = false
 menu_colour ^= <match>:<colour>:<regex>, <colour>:<regex>, ...
         （有序列表选项）
         对于显示物品的菜单及其他画面（以及少数其他情况；见下方列表），此选项
-        可通过正则表达式控制一行文字的显示颜色。例如，默认选项使用以下一行：
+        可通过正则表达式控制一行文字的显示颜色。物品名称按当前界面语言匹配；
+        下列英文物品名示例仅用于英文界面，中文界面请改用实际中文名称。协议
+        标签（如 emergency_item）仍用英文。例如，英文界面的默认设置使用
+        以下一行：
             menu_colour += lightmagenta:.*orb.*Zot
         在物品拾取菜单中以紫色突出显示佐特宝珠。对于物品，还会按照下文所述，
         用正则表达式检查各种物品标注。例如，以下一行：
@@ -1710,13 +1729,11 @@ menu_colour ^= <match>:<colour>:<regex>, <colour>:<regex>, ...
             ranged          （远程武器。）
             evoker          （元素激发道具。）
             identified      （物品已完全鉴定。）
-            known           （你已辨认物品的子类型。）
-            unidentified    （你尚未辨认物品的子类型。）
-            god gift        （神祇赠予你的物品。）
-            cursed          （受艾申扎利诅咒的物品。）
+            unidentified    （物品尚未完全鉴定。）
 
-        （当然，其中一些标签本来就只适用于部分菜单：只有携带的物品可能处于
-        已装备状态，只有未携带的物品可能尚未鉴定，等等。）
+        携带的物品也可能尚未鉴定。有些标签只适用于部分菜单，例如只有携带的
+        物品可能已装备。神赐或诅咒等铭文标注可能出现在物品的显示名称中，但
+        不属于这里列出的协议前缀；不存在单独的 "known" 前缀。
 
         寻找 menu_colour 匹配项时，这些前缀会被视为添加在实际物品名称之前，
         例如：
@@ -1729,13 +1746,15 @@ menu_colour ^= <match>:<colour>:<regex>, <colour>:<regex>, ...
         更多示例见 `dat/defaults/menu_colours.txt` 中的默认设置。
 
         menu_colour 还可使用 `notes` 匹配项，为游戏内的战后记录笔记着色
-        （可用 `?:` 查看彩色内容）。例如，以下一行会以绿色显示升级记录：
+        （可用 `?:` 查看彩色内容）。笔记按实际显示的语言匹配。下列英文示例
+        仅用于英文界面，会以绿色显示升级记录；中文界面应改用实际中文笔记：
             menu_colour ^= notes:green:Reached XP level
 
 message_colour ^= <colour>:<channel>:<regex>, <colour>:<regex>, ...
         （有序列表选项）
-        message_colour 可以覆盖单条消息的颜色。例如，如果你觉得低生命值警告
-        不够醒目，可以使用类似以下的设置：
+        message_colour 匹配当前界面语言显示的消息，频道名仍用英文。下列英文
+        消息示例仅用于英文界面，中文界面请使用实际中文消息。
+        例如，如果你觉得低生命值警告不够醒目，可以使用类似以下的设置：
              message_colour += yellow:LOW HITPOINT WARNING
         也可以把消息匹配范围缩小到特定频道：
              message_colour += lightred:god:xom
@@ -1772,7 +1791,7 @@ fire_order_spell = all
         autofight_fires。
 
 fire_order_ability = all
-fire_order_ability -= berserk
+fire_order_ability -= berserk, fiery armour, foxfire swarm, rising flame
         （列表选项）
         此选项允许按名称从发射顺序中排除或加入能力。能力内部的顺序由分配的
         字母决定；此选项只控制列表中包含哪些能力。其值可以是用逗号分隔的
@@ -1780,7 +1799,7 @@ fire_order_ability -= berserk
         能力；'attack' 代表在自动战斗中视为伤害类的能力列表。更多信息见
         autofight_fires。
 
-fail_severity_to_quiver = 2
+fail_severity_to_quiver = 3
         从发射栏循环和自动装入发射栏中排除施法失误等级不低于此值的法术。
         使用 -1 可以从自动装入发射栏中完全排除法术。各施法失误数值的说明见
         fail_severity_to_confirm。
@@ -1819,6 +1838,7 @@ CHANNEL_NAME 目前可以是以下值之一：
    mutation        = 获得／失去变异
    monster_spell   = 怪物做手势或施放法术的消息
    monster_enchant = 怪物附魔相关消息
+   monster_timeout = 怪物效果到期的消息
    monster_warning = 怪物进入视野
    friend_spell    = 与 monster_spell 相同，但仅用于友方怪物
    friend_enchant  = 与 monster_enchant 相同，但仅用于友方怪物
@@ -1828,6 +1848,7 @@ CHANNEL_NAME 目前可以是以下值之一：
    banishment      = 放逐他人及被放逐到深渊的消息
    equipment       = 表示穿戴／持用装备的消息
    floor           = 查看或走过地上物品时的消息
+   decor_flavour   = 地牢装饰的风味消息
    multiturn       = 表示长时间动作（穿戴护甲、解剖等）
    examine         = 查看周围环境时的消息
    examine_filter  = 查看周围环境时无关紧要的消息
@@ -1858,8 +1879,10 @@ COLOUR 可以是 5-a 节（colour 选项）中所述的任何颜色。
 
 autoinscribe += <regex>:<inscription>
         （有序列表选项，每行一个值）
-        说明中包含该正则表达式的任何物品都会自动添加铭文（如果已开启自动
-        拾取）。
+        匹配文本包含规范英文物品名及协议标签；下列英文名称规则也适用于
+        中文界面。
+        请求执行自动铭文处理时（例如新取得物品后），会为匹配规则且尚无铭文
+        的物品自动添加铭文，无需开启自动拾取。
 
         例如，可以用它避免意外消耗有潜在危险之魔杖的充能：
              autoinscribe += wand of polymorph:!V
@@ -1898,13 +1921,14 @@ macros += M \{9} za
 
         第二个参数说明触发键，由该键的字符或键码组成（例如 'a'、'A' 或
         \{9}，分别表示 A、Shift-A 或 Tab 键）。第三个参数说明宏或键位映射
-        的动作，由与第二个参数关联的命令序列组成。（例如 "zap" 表示对上一
-        个目标使用 a 栏位的法术。）功能键、数字键盘按键和导航键可以通过文本
+        的动作，由与第二个参数关联的命令序列组成。例如，在默认键位下，"za"
+        会选择 a 栏位的法术，并在需要时打开瞄准器；对于需要瞄准的法术，
+        "zaf" 还会确认当前默认目标。功能键、数字键盘按键和导航键可以通过文本
         键码输入（例如：\{F2}、\{NP-}、\{PgUp}、\{Down} 等）。
 
         如果 rc 文件中含有任何宏／键位映射，载入时会自动把它们保存到
-        macro.txt，并直接覆盖 macro.txt 中已经保存的所有宏／键位映射，且
-        不显示提示。
+        macro.txt，并直接覆盖其中具有相同环境和触发键的已保存绑定，不显示
+        提示。其他绑定会保留。
 
         此语法以 macro.txt 文件所用的格式为基础，但并不完全相同。
 
@@ -1918,8 +1942,9 @@ flush.lua     = true
            lua     -- 每当从 lua 调用 crawl.flush_input() 时
 
 additional_macro_file = path/to/filename
-        添加一个在 macro.txt 之后载入的额外宏文件。可以设置多行
-        additional_macro_file。
+        添加一个在 macro.txt 之前载入的额外宏文件。可以设置多行
+        additional_macro_file。主 macro.txt 中的绑定会覆盖此前具有相同环境和
+        触发键的绑定；之后才应用 rc 文件中的宏，它们还可继续覆盖相同绑定。
 
 bindkey = [^D] CMD_CHARACTER_DUMP
         在比宏更底层的运作层级，更改由哪个按键调用哪条命令。宏（目前）不能
@@ -1950,9 +1975,6 @@ tile_menu_icons = true
 
 tile_player_col              = white
 tile_monster_col             = #660000
-tile_neutral_col             = #660000
-tile_peaceful_col            = #664400
-tile_friendly_col            = #664400
 tile_plant_col               = #446633
 tile_item_col                = #005544
 tile_unseen_col              = black
@@ -1982,9 +2004,6 @@ tile_window_col              = #558855
    tile_player_col              - 玩家位置的颜色，也是楼层地图模式（'X'）中
                                   地图中心的颜色
    tile_monster_col             - 敌对怪物的颜色
-   tile_neutral_col             - 中立怪物的颜色
-   tile_peaceful_col            - 和平怪物的颜色
-   tile_friendly_col            - 友方怪物的颜色
    tile_plant_col               - 不提供经验值之怪物的颜色（植物和真菌）
    tile_item_col                - 已知或已探测物品的颜色
    tile_unseen_col              - 未见区域的颜色（通常为岩石）
@@ -2030,7 +2049,7 @@ tile_key_repeat_delay = 200
 
 tile_tooltip_ms = 500
         鼠标悬停在画面某处后，经过多少毫秒显示工具提示。设为 0 会完全停用
-        工具提示。
+        工具提示。Android 上此选项默认值为 0。
 
 tile_tag_pref = (none| named | enemy | tutorial )
         此设置决定本地贴图版的地牢视图中，哪些怪物带有文字标签。
@@ -2044,8 +2063,8 @@ tile_tag_pref = (none| named | enemy | tutorial )
         独有怪物和鬼魂都是“有名字的怪物”。在 auto 模式下，普通游戏使用
         "enemy"，竞技场模式使用 "named"，教程／提示模式使用 "tutorial"。
 
-tile_window_width  = -90
-tile_window_height = -90
+tile_window_width  = 1280
+tile_window_height = 800
         设置窗口宽度和高度的选项，单位为像素。为正值时直接设置窗口尺寸；
         设为 0 时自动调整窗口尺寸；设为负数时，这些值会解释为屏幕分辨率减去
         给定值。宽度可能被下方的 `tile_window_ratio` 覆盖；此时
@@ -2053,7 +2072,7 @@ tile_window_height = -90
         元素的位置可能迫使这些值变小。例如在 MacOS 上，窗口不会与程序坞或
         菜单栏重叠。
 
-tile_window_ratio  = 1618
+tile_window_ratio  = 0
         设为正值时，贴图版会用此值按窗口高度的比例决定窗口宽度，并以 1000
         为缩放基数。具体公式为：w = h * tile_window_ratio / 1000。
         如果设置此值，`tile_window_width` 会用作最大宽度。最小宽度由界面布局
@@ -2066,7 +2085,7 @@ game_scale = 1
         取值 1 到 8 的整数缩放值，用于增大所有界面元素。可以在不直接支持
         high-dpi 的高分辨率显示器上模拟 high-dpi 渲染，或为超大显示器调整
         缩放。4k 显示器建议设为 3 或 4，2k 显示器通常设为 2 效果最佳。
-        仅限本地贴图版。
+        仅限本地贴图版。Android 会忽略手动设置，并根据屏幕分辨率自动选择缩放。
 
 tile_map_pixels = 0
         小地图每个方格所占的最大像素数。如果分辨率较低，觉得背包太小，可以
@@ -2074,11 +2093,13 @@ tile_map_pixels = 0
         设为零时会自动调整小地图尺寸。
 
 tile_viewport_scale = 1.0
+        Android 上的初始值为 0，并根据屏幕分辨率自动选择缩放。
         应用于地牢视图的缩放系数。最小值为 0.2，最大值由分辨率决定；缩放会
         受到限制，确保至少总能看见你的视线范围。在本地贴图版游戏中，也可以
         用 ctrl-'-' 和 ctrl-'='（部分键盘上为 ctrl-'+'）调整此值。
 
 tile_map_scale = 0.6
+        Android 上的初始值为 0，并根据屏幕分辨率自动选择缩放。
         应用于地图模式（X）中地牢视图的缩放系数。在贴图版的地图模式中，也可
         以用 '{' 和 '}' 调整；在本地贴图版中，还可用 ctrl-'-' 和 ctrl-'='
         （部分键盘上为 ctrl-'+'）调整。
@@ -2111,20 +2132,20 @@ tile_overlay_alpha_percent = 40
         设为 0 会使消息窗口只显示文字，不显示任何背景；设为 100 会让消息
         窗口使用不透明背景。
 
-tile_full_screen = auto
-        将此选项设为 true 或 false，会强制开启或关闭全屏模式。设为其他任何值
-        都会进入 auto 模式；此模式仅在屏幕分辨率宽度小于 1200 或高度小于
+tile_full_screen = false
+        将此选项设为 true 或 false，会强制开启或关闭全屏模式。设为 auto 或
+        maybe 会选择自动模式；此模式仅在屏幕分辨率宽度小于 1200 或高度小于
         800 时启用全屏模式。
 
 tile_use_small_layout = auto
         为窄屏设计的替代布局。如果设为 auto，可用的水平空间不足以舒适地显示
         普通布局时，就会启用此布局。
 
-tile_font_crt_file  = VeraMono.ttf
-tile_font_stat_file = VeraMono.ttf
-tile_font_msg_file  = VeraMono.ttf
-tile_font_tip_file  = VeraMono.ttf
-tile_font_lbl_file  = Vera.ttf
+tile_font_crt_file  = dat/tiles/MapleMono-NF-CN-Regular.ttf
+tile_font_stat_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
+tile_font_msg_file  = dat/tiles/MapleMono-NF-CN-Regular.ttf
+tile_font_tip_file  = dat/tiles/MapleMono-NF-CN-Regular.ttf
+tile_font_lbl_file  = dat/tiles/MapleMono-NF-CN-Regular.ttf
         本地贴图版画面各区域使用的字体。WebTiles 请改用 tile_font_*_family。
         如果要使用其他字体，必须把相应的 *.ttf 文件放入 dat/tiles/ 文件夹。
         各画面区域如下：
@@ -2140,11 +2161,11 @@ tile_font_msg_family  = monospace
 tile_font_lbl_family  = monospace
         WebTiles 画面各区域使用的字体。本地贴图版请改用 tile_font_*_file。
 
-tile_font_crt_size  = 15
-tile_font_stat_size = 16
-tile_font_msg_size  = 14
-tile_font_tip_size  = 15
-tile_font_lbl_size  = 14
+tile_font_crt_size  = 0
+tile_font_stat_size = 0
+tile_font_msg_size  = 0
+tile_font_tip_size  = 0
+tile_font_lbl_size  = 0
         上述画面区域的字号。如果设为零（默认值），字号会根据屏幕尺寸决定。
 
 tile_font_ft_light = false
@@ -2189,12 +2210,12 @@ tile_show_threat_levels = nasty, unusual
         指定 'unusual' 时，由选项 unusual_monster_items 决定怪物携带哪些物品
         会使其突出显示为 unusual。
 
-tile_player_status_icons = slow, constr
+tile_player_status_icons = slow, fragile, constr, will/2, mark
         此选项控制玩家受到特定状态效果影响时，哪些图标会显示在玩家图块上方。
-        有效值包括：slow, fragile, petr, mark, will/2, haste, weak, corr, might,
-        brill, -move。
+        有效值包括：slow, fragile, constr, petr, mark, will/2, haste, weak, corr,
+        might, brill, -move。
 
-tile_layout_priority = minimap, inventory, command, spell, monster
+tile_layout_priority = minimap, inventory, command, spell, ability, monster
         （有序列表选项）
         此选项用于控制各元素在画面右侧、属性区域下方的放置顺序。分辨率较小
         时，没有足够空间容纳所有元素，因此只放置靠前的项目。也可以移除不想
@@ -2303,7 +2324,7 @@ dump_item_origin_price = -1
         物品价格大于或等于此数值时，会在记录中写入物品来源。设为 -1 可禁止
         按价格选择。
 
-dump_message_count = 20
+dump_message_count = 40
         角色记录文件中显示的最后几条消息的数量。
 
 dump_order  = header,hiscore,stats,misc,apostles,inventory,skills,spells,
@@ -2369,8 +2390,9 @@ user_note_prefix = <string>
 
 note_items += <regex>, <regex>, ...
         （列表选项）
-        首次鉴定物品时，如果物品的短说明与某个正则表达式匹配，就会记入
-        笔记。例如：
+        首次鉴定物品时，如果物品按当前界面语言显示的短说明与某个正则表达式
+        匹配，就会记入笔记。下列英文名称示例只用于英文界面；中文界面应使用
+        实际中文名称：
              note_items += book,acquirement
         鉴定神器（固定、unrand 或随机神器）时，无论 note_items 如何设置，
         都一定会记入笔记。
@@ -2380,13 +2402,14 @@ note_items += <regex>, <regex>, ...
 
 note_monsters += <regex>, <regex>, ...
         （列表选项）
-        名称与此逗号分隔列表中某项匹配的怪物会视为值得关注。可以设置多行
-        note_monsters。例如：
+        按当前界面语言显示的名称与此逗号分隔列表中某项匹配的怪物会视为值得
+        关注。可以设置多行 note_monsters。下列英文名称示例只用于英文界面；
+        中文界面应使用实际中文名称：
              note_monsters += Klown,orb of fire
 
 note_hp_percent = 5
-        如果生命值低于最大生命值的某个 note_hp_percentage 百分比，就会记下
-        笔记。程序会避免因同一事件而重复记录笔记。
+        如果生命值仍大于 0，且降至最大生命值的 note_hp_percent 百分比或更低，
+        就会记下笔记。程序会避免因同一事件而重复记录笔记。
 
 note_skill_levels = 1,5,10,15,27
         设置哪些技能等级值得记录。此选项只占一行，但可以用 += 续加。
@@ -2408,8 +2431,9 @@ note_xom_effects = true
 
 note_messages += <regex>, <regex>, ...
         （列表选项）
-        与此逗号分隔列表中某项匹配的消息会视为值得关注。可以设置多行
-        note_messages。例如：
+        按当前界面语言显示的消息与此逗号分隔列表中某项匹配时，会视为值得
+        关注。可以设置多行 note_messages。以下英文消息模式示例只用于英文界面，
+        中文界面请使用实际中文消息：
              note_messages += Something interferes
              note_messages += protects you from harm
         如果希望记录所有被放逐到深渊的事件，请使用：
@@ -2487,19 +2511,22 @@ display_char = <dungeon_character_name : symbol>
 
         dungeon_character_name 可以使用以下项目：wall, permawall,
            wall_magic, floor, floor_magic, door_open, door_closed, trap,
-           stairs_down, stairs_up, grate, altar, arch, fountain, wavy, statue,
+           stairs_down, stairs_up, grate, altar, arch, fountain, wavy,
+           shallow_wavy, statue,
            invis_exposed, item_detected, item_orb, item_rune, item_weapon,
            item_armour, item_wand, item_scroll, item_ring, item_potion,
            item_missile, item_book, item_staff, item_rod, item_miscellany,
+           item_talisman, item_bauble,
            item_corpse, item_skeleton, item_gold, item_gem, item_amulet, cloud,
            cloud_weak, cloud_fading, cloud_terminal, tree, transporter,
            transporter_landing, space, fired_bolt, fired_zap, fired_burst,
-           fired_debug, fired_missile, fired_missile, explosion, frame_horiz,
+           fired_debug, fired_missile, explosion, frame_horiz,
            frame_vert, frame_top_left, frame_top_right, frame_bottom_left,
            frame_bottom_right, draw_horiz, draw_vert, draw_slash,
            draw_backslash, draw_top_left, draw_top_right, draw_bottom_left,
            draw_bottom_right, draw_down, draw_up, draw_right, draw_left
 
+        其中 item_rod 只在 TAG_MAJOR_VERSION == 34 的兼容版本中可用。
         其中大多数项目不言自明。"arch" 用于商店和传送门；"floor_magic" 和
         "wall_magic" 用于在楼层地图上显示魔法测绘到的方格；"invis_exposed"
         是浅水中潜水生物或涉过浅水之隐形生物的字符；"wavy" 表示水和岩浆。
@@ -2517,8 +2544,8 @@ feature += <regex> { <symbol>, <magicmap symbol>, <view colour>,
 feature -= <regex> , <regex>
         （类列表选项）
         其中 <regex> 是描述地牢特征的正则表达式。此正则表达式应当匹配使用
-        'x' 命令时显示的说明。如果正则表达式匹配多个说明，所有相应特征都会
-        受到影响。要查看当前 Crawl 版本中所有可能的特征，可在特征查询菜单
+        'x' 命令时按当前界面语言显示的说明。如果正则表达式匹配多个说明，所有
+        相应特征都会受到影响。要查看当前 Crawl 版本中所有可能的特征，可在特征查询菜单
         （`?/f`）中搜索 `.*`。
 
         {...} 中的列表指定地牢特征的外观，其含义应当不言自明。<symbol> 可以
@@ -2539,7 +2566,8 @@ feature -= <regex> , <regex>
         可以只提供正则表达式（不提供外观），用 -= 清除特征覆盖。这会把说明
         与正则表达式匹配的所有特征恢复为默认外观。
 
-        示例：
+        以下英文地形说明示例仅用于英文界面；中文界面请使用当前显示的中文
+        说明，符号和选项标识保持原样：
          * 把岩壁设为红色：
              feature += rock wall { , , red }
          * 在所有字符集中用 # 表示金属墙：
@@ -2608,7 +2636,8 @@ item_glyph ^= <regexp> : <colour> <glyph>
 item_glyph -= <regexp>
         （有序列表选项）
         自定义所有与 regexp 匹配之物品的字符和／或颜色。与 mon_glyph 不同，
-        这里采用名称部分匹配。
+        这里采用当前界面语言显示的物品名称的部分匹配。下列英文名称示例只
+        用于英文界面；中文界面请改用实际中文名称，协议标签保持英文。
 
         物品名称前会带有标签，包括储藏处追踪和菜单着色所用的标签。因此，
         可以为 {artefact} 或 useless_item 着色。
@@ -2681,7 +2710,7 @@ read_persist_options = false
 5-b     Windows。
 -----------------
 
-dos_use_background_intensity = false
+dos_use_background_intensity = true
         在 Windows 上，如果使用的终端能够显示高强度背景色，把此选项设为
         true 可以更好地突出显示友方。如果终端不适合此选项，部分友方怪物会
         显示为闪烁字符（这种情况下建议把此选项设为 false，以免令人抓狂）。
@@ -2873,11 +2902,11 @@ Lua 可以通过 "options.option_name" 引用选项。例如：
 
 为便于在终端版中配合屏幕阅读器使用 Crawl，建议采用以下设置。
 
-禁用动画和视图延迟，使画面在每条命令后立即更新：
+禁用可配置动画和视图延迟，减少画面变动；某些强制动画仍会保留：
     view_delay = 0
     travel_delay = -1
     rest_delay = -1
-    use_animations = 0
+    use_animations =
 
 把消息放在画面顶部，并禁用消息压缩，使屏幕阅读更容易：
     messages_at_top = true
@@ -2897,6 +2926,10 @@ Lua 可以通过 "options.option_name" 引用选项。例如：
 
 在 ^x 显示、瞄准器和楼层地图中列出相对于玩家的坐标：
     monster_item_view_coordinates = true
+
+以下地形正则表达式匹配当前界面语言显示的说明。英文模式（water、travel trail
+等）示例仅用于英文界面；中文界面请按 'x' 中的实际中文说明修改，选项名与符号
+保持原样。
 
 ^x 显示可以列出一组由正则表达式控制的自定义特征。例如，要在 ^x 中包含
 所有水域，请设置：

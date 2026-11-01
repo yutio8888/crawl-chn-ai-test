@@ -73,8 +73,9 @@ clicking on the spell tiles in the spell panel, or fire ammunition or
 evoke wands by clicking on them in the inventory panel.
 
 In the command panel, you'll also find a tile described as "Autofight",
-which, if clicked, will attack an adjacent monster in melee, or if there is
-no adjacent monster, take one step in the direction of the closest monster.
+which selects a monster using the autofight priorities. It attacks with
+your current weapon if the target is in range, or usually moves towards
+it otherwise. Options can also enable direct-damage quiver actions.
 
 
 Item usage
@@ -91,8 +92,8 @@ the floor section of the inventory panel, or you can click on the player
 tile and pull up a menu of selectable items instead. In the latter case,
 'Enter' will confirm your selection and start pick up.
 
-Dropping items works similarly, either by clicking on single items in the
-inventory panel, or by typing the 'd' command and then selecting items
+Dropping items works similarly, either by Shift-left-clicking single items
+in the inventory panel, or by typing the 'd' command and then selecting items
 from a menu.
 
 
