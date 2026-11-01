@@ -8235,21 +8235,20 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
 #endif
 }
 
-static formatted_string _get_monster_status_descriptions(const monster_info& mi)
+formatted_string get_monster_status_descriptions(const monster_info& mi)
 {
-    vector<string> descriptors = get_monster_status_descriptors(mi);
+    const auto descriptors = get_monster_status_descriptors(mi);
     if (descriptors.empty())
         return formatted_string();
 
     ostringstream out;
-    for (string& tag : descriptors)
+    for (const auto& descriptor : descriptors)
     {
-        const string key = make_stringf("%s monstatus", tag.c_str());
-        string lookup = getLongDescription(key);
+        string lookup = getLongDescription(descriptor.key);
         if (lookup.empty())
             continue;
 
-        out << "<w>" << uppercase_first(tag) << ":</w>\n";
+        out << "<w>" << uppercase_first(descriptor.description) << ":</w>\n";
 
         // Wordwrap and indent slightly.
         linebreak_string(lookup, 77);
@@ -8314,7 +8313,7 @@ int describe_monster(const monster_info &mi, const string& /*footer*/)
 #endif
 
     const formatted_string quote = formatted_string(trimmed_string(inf.quote));
-    const formatted_string status_desc = _get_monster_status_descriptions(mi);
+    const formatted_string status_desc = get_monster_status_descriptions(mi);
 
 
     auto desc_sw = make_shared<Switcher>();

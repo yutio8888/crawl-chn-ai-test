@@ -1508,14 +1508,12 @@ static string _sacrifice_desc(const ability_type ability)
 
 static string _nemelex_desc(ability_type ability)
 {
-    ostringstream desc;
-    deck_type deck = ability_deck(ability);
-
-    desc << T_("Draw a card from ") << (deck == DECK_STACK ? T_("your ") : T_("the "));
-    desc << deck_display_name(deck) << T_("; ")
-         << lowercase_first(deck_description(deck));
-
-    return desc.str();
+    const deck_type deck = ability_deck(ability);
+    return make_stringf_p(deck == DECK_STACK
+                ? T_("Draw a card from your %1$s; %2$s")
+                : T_("Draw a card from the %1$s; %2$s"),
+            deck_display_name(deck).c_str(),
+            lowercase_first(deck_description(deck)).c_str());
 }
 
 static int _tso_cleansing_flame_power(bool allow_random = true)

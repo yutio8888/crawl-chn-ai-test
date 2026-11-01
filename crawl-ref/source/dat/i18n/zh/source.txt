@@ -19343,7 +19343,7 @@ no summoning magic
 无法使用召唤系法术
 %%%%
 no translocations magic
-无法使用位移魔法
+无法使用传送系法术
 %%%%
 no weapons or thrown items
 无法使用武器或投掷物
@@ -19361,7 +19361,7 @@ passive freeze
 被动冻结
 %%%%
 persistent drain
-持续虚弱
+持久衰竭
 %%%%
 poor constitution
 体质虚弱
@@ -19505,7 +19505,7 @@ trickster
 戏法者
 %%%%
 unskilled
-无技能
+资质欠佳
 %%%%
 warmup strikes
 预热打击
@@ -19652,10 +19652,10 @@ The East Wind leaves your foes to susceptible to magic after you Rampage.
 东风会在你冲锋后使敌人更容易受到魔法影响。
 %%%%
 The North Wind lets you shrug off injuries taken while stampeding.
-北风让你能够无视奔踏时受到的伤害。
+北风让你能迅速恢复奔踏时所受的部分伤害。
 %%%%
 The South Wind quickens your rampage movements after stabbing.
-南风在刺击后加速你的冲锋移动。
+南风在你偷袭后加快冲锋移动。
 %%%%
 The West Wind empowers your ranged attacks as you Rampage.
 西风在你冲锋时增强你的远程攻击。
@@ -20090,16 +20090,16 @@ You can hop short distances, but move slowly.
 你可以短距离跳跃，但移动缓慢。
 %%%%
 You can hurl damnation.
-你可以投掷诅咒之火。
+你可以投掷天谴。
 %%%%
 You can magically evade attacks while moving or waiting.
 你可以在移动或等待时魔法般地闪避攻击。
 %%%%
 You can regularly gain power from killing poisoned or drained foes.
-你经常可以通过杀死中毒或虚弱的敌人获得力量。
+你经常可以通过杀死中毒或衰竭的敌人获得力量。
 %%%%
 You can sometimes gain power from killing poisoned or drained foes.
-你有时可以通过杀死中毒或虚弱的敌人获得力量。
+你有时可以通过杀死中毒或衰竭的敌人获得力量。
 %%%%
 You can speak a Word of Chaos.
 你可以说出混沌之语。
@@ -20150,7 +20150,7 @@ You cannot study or cast Summoning magic.
 你无法学习或施放召唤系法术。
 %%%%
 You cannot study or cast Translocations magic.
-你无法学习或施放位移魔法。
+你无法学习或施放传送系法术。
 %%%%
 You cannot study or use magical devices.
 你无法学习或使用魔法装置。
@@ -20435,7 +20435,7 @@ You punish those that try to bend your will. (Will+)
 你惩罚那些试图扭曲你意志的人。（意志+）
 %%%%
 You read scrolls incredibly loudly when enemies are in sight.
-你在敌人视野中时，阅读卷轴的声音异常响亮。
+视野内有敌人时，你阅读卷轴的声音异常响亮。
 %%%%
 You recover more slowly from Doom and Banes.
 你从厄运和灾祸中恢复得更慢。
@@ -20471,7 +20471,7 @@ You resist negative energy. (rN+)
 你抵抗负能量。（负抗+）
 %%%%
 You shall have no god before yourself.
-你将自己置于神之前。
+你不会尊奉自己以外的任何神。
 %%%%
 You sometimes emit foul miasma when damaged in melee.
 你在近战受伤时有时会散发出恶臭的瘴气。
@@ -20594,7 +20594,7 @@ Your guardian grows in power.
 你的守护者力量增长了。
 %%%%
 Your health recovers twice as slowly from being drained.
-你被虚弱后生命恢复速度减半。
+你的生命值上限从衰竭中恢复的速度减半。
 %%%%
 Your hexes are more powerful.
 你的诅咒更加强大。
@@ -20648,13 +20648,13 @@ Your mind is very acute. (Int +8, Str/Dex -2)
 你的头脑非常敏锐。（智力+8，力量/敏捷-2）
 %%%%
 Your movements are less encumbered by armour. (ER -4)
-护甲对你的移动阻碍减少。（负重-4）
+护甲对你行动的阻碍减少。（负重等级-4）
 %%%%
 Your movements are significantly less encumbered by armour. (ER -6)
-护甲对你的移动阻碍显著减少。（负重-6）
+护甲对你行动的阻碍显著减少。（负重等级-6）
 %%%%
 Your movements are slightly less encumbered by armour. (ER -2)
-护甲对你的移动阻碍略微减少。（负重-2）
+护甲对你行动的阻碍略微减少。（负重等级-2）
 %%%%
 Your natural rate of healing is unusually fast.
 你的自然恢复速度异常快。
@@ -26868,7 +26868,7 @@ You begin to radiate repulsive energy.
 你开始散发出排斥能量。
 %%%%
 You begin to recover more slowly from draining effects.
-你开始更慢地从吸取效果中恢复。
+你从衰竭中恢复的速度开始减慢。
 %%%%
 You begin to regenerate health when rolling toward enemies.
 你向敌人翻滚时开始恢复生命。
@@ -26934,7 +26934,7 @@ You can no longer study or cast Summoning magic.
 你无法再学习或施放召唤系法术。
 %%%%
 You can no longer study or cast Translocations magic.
-你无法再学习或施放位移魔法。
+你无法再学习或施放传送系法术。
 %%%%
 You can no longer study or use magical devices.
 你无法再学习或使用魔法装置。
@@ -27003,7 +27003,7 @@ You can once more study and cast Summoning magic.
 你可以重新学习和施放召唤系法术。
 %%%%
 You can once more study and cast Translocations magic.
-你可以重新学习和施放位移魔法。
+你可以重新学习和施放传送系法术。
 %%%%
 You can once more study and use magical devices.
 你可以重新学习和使用魔法装置。
@@ -27420,7 +27420,7 @@ You gain a new grip on the flow of your magic.
 你获得了对魔法流动的新掌控。
 %%%%
 You gain the ability to drink.
-你获得了饮酒的能力。
+你又能饮用药水了。
 %%%%
 You grow a small tail.
 你长出了一条小尾巴。
@@ -27492,7 +27492,7 @@ You possess the skills of a mighty hero.
 你拥有强大英雄的技能。
 %%%%
 You recover from draining at a normal speed again.
-你从吸取效果中恢复的速度恢复正常了。
+你从衰竭中恢复的速度恢复正常了。
 %%%%
 You reflexes return to normal.
 你的反应恢复了正常。
@@ -28039,9 +28039,6 @@ Your spell have diminished power.
 %%%%
 Your spellcasting becomes less encumbered by armour.
 你的施法受到护甲的阻碍减小了。
-%%%%
-Your spellcasting no longer less encumbered by armour.
-你的施法不再受到护甲的阻碍。
 %%%%
 Your stinger grows larger and begins to produce weakening toxins.
 你的毒刺变得更大并开始产生衰弱毒素。
@@ -28797,7 +28794,7 @@ You spin around.
 %s来发牌，但发现你已经有足够的%s。
 %%%%
 It currently has %d cards 
-现在里面有%d张牌 
+当前有%d张牌，
 %%%%
 Replace your current stack?
 替换当前牌堆？
@@ -33513,7 +33510,7 @@ Sacrifice Health
 献祭生命
 %%%%
 Sacrifice Love
-献祭爱情
+献祭爱
 %%%%
 Sacrifice Nimbleness
 献祭敏捷
@@ -33573,10 +33570,10 @@ Ancestor Life: Battlemage
 先祖生命：战斗法师
 %%%%
 Ancestor Life: Hexer
-先祖生命：诅咒师
+先祖生涯：诅咒师
 %%%%
 Ancestor Life: Knight
-先祖生命：骑士
+先祖生涯：骑士
 %%%%
 Bribe Branch
 贿赂分支
@@ -43242,7 +43239,7 @@ You feel yourself growing ill in the presence of %s.
 \n如果你用此诅咒绑定一件物品，阿莎扎丽将强化以下技能：\n
 %%%%
 \nIf you make this sacrifice, your powers granted by Ru will become stronger in proportion to the value of the sacrifice, and you may gain new powers as well.\n\nSacrifices cannot be taken back.\n
-\n如果你做出此牺牲，茹赐予你的力量将根据牺牲的价值变强，你可能还会获得新的力量。\n\n牺牲不可撤销。\n
+\n如果你做出此牺牲，入赐予你的力量将根据牺牲的价值变强，你可能还会获得新的力量。\n\n牺牲不可撤销。\n
 %%%%
  will brand one of your weapons with the corruption of the Abyss.
  将用深渊的腐化之力为你的某件武器附魔。
@@ -48832,3 +48829,99 @@ skill title|Vexing
 %%%%
 skill title|Acrobat
 杂技师
+%%%%
+Draw a card from your %1$s; %2$s
+从你的%1$s中抽一张牌；%2$s
+%%%%
+Draw a card from the %1$s; %2$s
+从%1$s中抽一张牌；%2$s
+%%%%
+set aside for later.
+留待日后使用。
+%%%%
+which may bring the user to safety or impede their foes.
+可以将使用者带到安全之处，或阻挠其敌人。
+%%%%
+which hurl death and destruction with wild abandon.
+肆意播撒死亡与毁灭。
+%%%%
+depicting a range of weird and wonderful creatures.
+描绘着各种诡异而奇妙的生物。
+%%%%
+which wreak havoc on the user.
+会给使用者带来严重祸患。
+%%%%
+sacrifice value|an incredible
+一次价值惊人的
+%%%%
+sacrifice value|a major
+一次价值很高的
+%%%%
+sacrifice value|a medium
+一次价值中等的
+%%%%
+sacrifice value|a modest
+一次价值较小的
+%%%%
+sacrifice value|a trivial
+一次价值微不足道的
+%%%%
+Your spellcasting is no longer less encumbered by armour.
+护甲对你施法的阻碍不再减轻。
+%%%%
+Remaining cards: %s
+剩余卡牌：%s
+%%%%
+It may contain the following cards: %s.
+可能包含以下卡牌：%s。
+%%%%
+flag long|lightly drained
+轻度衰竭
+%%%%
+flag long|heavily drained
+重度衰竭
+%%%%
+flag short|drained
+衰竭
+%%%%
+flag short|very drained
+重度衰竭
+%%%%
+flag short|reflect damage
+反弹伤害
+%%%%
+flag long|incited by Gozag
+受哥萨戈煽动
+%%%%
+flag long|ready to sunder
+碎裂已就绪
+%%%%
+flag long|winding a clockwork bee
+正在给发条蜜蜂上发条
+%%%%
+flag long|damage-immune at range
+免疫非相邻来源的伤害
+%%%%
+flag long|sheltered from injuries
+伤害减半
+%%%%
+flag long|stampeding
+正在奔踏
+%%%%
+flag short|stampeding
+奔踏
+%%%%
+flag long|stupefied
+震慑
+%%%%
+flag short|stupefied
+震慑
+%%%%
+flag long|cursed with the promise of agony
+受到痛苦诅咒
+%%%%
+flag long|soul-gripped
+灵魂被攫住
+%%%%
+flag short|soul-gripped
+灵魂被攫住

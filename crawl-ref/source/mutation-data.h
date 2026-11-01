@@ -2162,8 +2162,8 @@ static const mutation_def mut_data[] =
   "four strong arms",
 
   {"Your four strong arms can wield two-handed weapons with a shield.", "", ""},
-  {"Two of your arms shrink away.", "", ""},
   {"You grow two extra arms.", "", ""},
+  {"Two of your arms shrink away.", "", ""},
 },
 
 { MUT_NO_DRINK, 0, 1, mutflag::bad,
@@ -2224,8 +2224,8 @@ static const mutation_def mut_data[] =
   "multi-lived",
 
   {"You gain extra lives every three experience levels.", "", ""},
-  {"You are no longer multi-lived.", "", ""},
   {"You can now gain extra lives.", "", ""},
+  {"You are no longer multi-lived.", "", ""},
   TILEG_MUT_MULTILIVED,
 },
 
@@ -2401,7 +2401,7 @@ static const mutation_def mut_data[] =
   "runic magic",
   {"Your spellcasting is much less encumbered by armour.", "", ""},
   {"Your spellcasting becomes less encumbered by armour.", "", ""},
-  {"Your spellcasting no longer less encumbered by armour.", "", ""},
+  {"Your spellcasting is no longer less encumbered by armour.", "", ""},
 },
 
 { MUT_FORMLESS, 0, 2, mutflag::good,

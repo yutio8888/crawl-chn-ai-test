@@ -34,6 +34,7 @@ static const vector<monster_info_flag_name> monster_info_flag_names = {
     { MB_BERSERK, "berserk", "berserk", "berserk"},
     { MB_HASTED, "fast", "fast", "fast"},
     { MB_ROLLING, "rolling", "rolling", "rolling"},
+    { MB_STAMPEDE, "stampeding", "stampeding", "stampeding"},
     { MB_INNER_FLAME, "inner flame", "inner flame", "inner flame"},
     { MB_MIRROR_DAMAGE, "reflects damage", "reflecting injuries", "reflect damage"},
     { MB_BOUND_SOUL, "soul bound", "soul bound", "souls bound"},

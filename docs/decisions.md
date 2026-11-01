@@ -4380,6 +4380,14 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 - **法术详情**：防御行使用护甲、闪避、盾牌格挡；抗性行使用意志力及各抗性全称。以独立上下文保留紧凑面板的原有缩写；AC 50% 表示减伤效果减半，AC x3 表示三次独立护甲减伤判定，保留冰爆等条件。
 - **关联修订**：闪避说明中的 enchantments 改为“须用意志力抵抗的魔法效果”；它是绕过闪避的机制分类，包括传送系的放逐，不能缩窄为诅咒系效果。保留爆炸这一独立例外。
 
+### D-C-102 — 能力与变异名称的机制消歧（2026-11-01）
+
+- **Status**: active
+- **Source**: 能力及变异完整正文、`Ability_List`、`mutation-data.h` 与对应技能资质／衰竭恢复消费者复审。
+- **裁决**：`unskilled` 用“资质欠佳”，表示技能资质降低而非没有技能；`persistent drain` 用“持久衰竭”，指通过经验恢复生命值上限衰竭的速度减慢，不改变常规生命回复速度。
+- **能力**：`Sacrifice Love` 用“献祭爱”，其友好关系限制不局限爱情。现行先祖职业选择 `Ancestor Life: Knight/Hexer` 分别用“先祖生涯：骑士／诅咒师”，与已审定的元素师共用“生涯”；这些能力回忆先祖生前身份，不是调整生命值。
+- **范围**：只适用于这些独立名称及其直接说明；不机械替换一般生命、爱情、技能或衰竭文本。旧 Battlemage 兼容身份仍按 D-C-095 保留，恢复时连同其名称和正文复审。地狱分支专名留给完整世界名称依赖组裁决。
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -4530,6 +4538,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-096 | B0-2 missing terms and mutagenic (#147) | 补登记；诱变词根统一，固定法术名例外；资产修订交接 | active |
 | D-C-097 | B0-3 glossary table ownership (#147) | core 接收非 catalog 词；叛教铭文保留；字面括号误报交 A3 | active |
 | D-C-098 | B0-4 shared catalog keys and registration (#147) | 叛教者／束缚对齐共享键；134项登记、6项 catalog 待修 | active |
+| D-C-102 | Ability and mutation semantic names | 资质欠佳／持久衰竭；献祭爱；先祖生涯 | active |
 | D-C-101 | Spell school display names | 全称统一为系；法术列表两字简称；闪避说明消歧 | active |
 | D-C-100 | GENDER_NEUTRAL singular pronouns | 他 / 他的 / 他自己 / 他；移除 ZH 中性先祖 neuter 映射 | active |
 

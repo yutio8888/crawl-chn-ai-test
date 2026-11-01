@@ -539,6 +539,52 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
         self.assertIn("crawl-ref/source/lookup-help.cc",
                       self.payload["input_sha256"])
 
+    def test_complete_body_unions_bind_orphans_and_full_content(self):
+        for category in ("ability", "mutation"):
+            rows = MODULE.complete_description_rows(category, (
+                {"live": "First.\n\nSecond.", "old": "Historical."},
+                {"live": "第一。\n\n第二。", "orphan": "旧译。"},
+            ))
+            by_key = {row["description_key"]: row for row in rows}
+            self.assertEqual({"live", "old", "orphan"}, set(by_key))
+            self.assertEqual("First.\n\nSecond.", by_key["live"]["english_description"])
+            self.assertIsNone(by_key["orphan"]["english_description"])
+            self.assertIsNone(by_key["old"]["chinese_description"])
+            expected = set()
+            for path in MODULE.DESCRIPTION_FILES[category]:
+                expected.update(entry.canonical_key for entry in
+                                MODULE.parse_entries_physical(path))
+            actual = [row for row in self.payload["rows"]
+                      if row["category"] == category + "_description"]
+            self.assertEqual(expected, {row["description_key"] for row in actual})
+            self.assertEqual(len(expected), len(actual))
+
+    def test_flag_labels_keep_order_context_fallback_and_fail_closed(self):
+        source = '''static const vector<monster_info_flag_name> monster_info_flag_names = {
+            {MB_ONE, "", NC_("flag long", "long"), "many"},
+            {MB_TWO, "short", "other long", "many"},
+        };'''
+        db = {"flag long|long": "长", "other long": "另一长", "short": "短", "many": "复数"}
+        with mock.patch.object(MODULE, "active_source", return_value=source):
+            rows = MODULE.monster_status_flag_rows(db)
+        self.assertEqual(["monster_status_flag:MB_ONE", "monster_status_flag:MB_TWO"],
+                         [row["identity"] for row in rows])
+        self.assertEqual(["", "long", "many"],
+                         [item["english"] for item in rows[0]["display_strings"]])
+        self.assertEqual("other long", rows[1]["display_strings"][1]["resolved_lookup_key"])
+        self.assertEqual([], MODULE.inventory_violations(rows, {})["missing_display_translations"])
+        before = MODULE.fact_sha256(rows[1])
+        rows[1]["display_strings"][1]["chinese"] = "更改"
+        self.assertNotEqual(before, MODULE.fact_sha256(rows[1]))
+        for broken in (source.replace('NC_("flag long"', 'NC_("wrong"'),
+                       source.replace('"other long"', 'computed_name()'),
+                       source.replace('"other long"', '"other long" + dynamic_suffix()'),
+                       source.replace('"other long"', 'NC_("flag long", "other long") + dynamic_suffix()'),
+                       source.replace('"other long"', 'translate("other long")')):
+            with mock.patch.object(MODULE, "active_source", return_value=broken):
+                with self.assertRaises(RuntimeError):
+                    MODULE.monster_status_flag_rows(db)
+
     def test_production_initializers_match_inventory_categories(self):
         rows = self.payload["rows"]
         mutation_ids = {

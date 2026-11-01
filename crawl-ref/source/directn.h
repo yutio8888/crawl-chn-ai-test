@@ -363,7 +363,7 @@ string cell_monster_description(const coord_def& pos, bool include_areas = false
 string cell_items_description(const coord_def& pos);
 string cell_floor_description(const coord_def& pos, bool boring_too);
 
-vector<string> get_monster_status_descriptors(const monster_info& mi);
+vector<monster_status_descriptor> get_monster_status_descriptors(const monster_info& mi);
 
 void describe_floor();
 void _walk_on_decor(dungeon_feature_type new_grid);

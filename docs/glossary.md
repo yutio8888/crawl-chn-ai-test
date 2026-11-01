@@ -958,6 +958,9 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 | Battlemage | 战斗法师 | 旧先祖类型保留兼容；一般角色词不受替代；decision=D-C-095 |
 | Curse Item | 诅咒物品 | 旧能力标题保留兼容；当前装备仪式用 Ritual of Binding；decision=D-C-095 |
 | Ancestor Life: Elementalist | 先祖生涯：元素师 | ability.cc；先祖类型 Elementalist，非新玩家背景；decision=D-C-095 |
+| Ancestor Life: Knight | 先祖生涯：骑士 | 现行先祖职业回忆；Life指生前经历，非生命值；decision=D-C-102 |
+| Ancestor Life: Hexer | 先祖生涯：诅咒师 | 与现行Knight/Elementalist共用生涯词根；decision=D-C-102 |
+| Sacrifice Love | 献祭爱 | 入的献祭能力；覆盖爱与友好关系，不限爱情；decision=D-C-102 |
 
 <!-- domain:mutations -->
 ## 十七、变异名
@@ -993,6 +996,8 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 | hooves | 蹄 | mutation; source=mutations.txt |
 | antennae | 触角 | mutation; source=mutations.txt |
 | stinger | 毒刺 | mutation; source=mutations.txt |
+| unskilled | 资质欠佳 | MUT_UNSKILLED；降低技能资质，仍能获得和训练技能；decision=D-C-102 |
+| persistent drain | 持久衰竭 | MUT_PERSISTENT_DRAIN；经验恢复生命上限衰竭较慢，不是自然回血减半；decision=D-C-102 |
 
 ### 新增变异与形态特征（trunk B0）
 

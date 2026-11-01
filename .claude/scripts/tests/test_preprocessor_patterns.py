@@ -162,7 +162,7 @@ class PreprocessorPatternTests(unittest.TestCase):
                                 for f in data['findings']))
 
     def test_trunk_baselines_and_line_shifts_through_all_scanners(self):
-        for name in ('l-you.cc', 'player-equip.cc', 'random.cc', 'target.cc'):
+        for name in ('ability.cc', 'l-you.cc', 'player-equip.cc', 'random.cc', 'target.cc'):
             original = (ROOT / 'crawl-ref/source' / name).read_bytes()
             with tempfile.TemporaryDirectory() as td:
                 path = Path(td) / name

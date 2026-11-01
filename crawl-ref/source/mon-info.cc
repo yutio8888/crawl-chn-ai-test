@@ -123,6 +123,7 @@ static map<enchant_type, monster_info_flags> trivial_ench_mb_mappings = {
     { ENCH_RING_OF_CHAOS,   MB_CLOUD_RING_CHAOS },
     { ENCH_RING_OF_MUTATION,MB_CLOUD_RING_MUTATION },
     { ENCH_RING_OF_FOG,     MB_CLOUD_RING_FOG },
+    { ENCH_RING_OF_MIASMA,  MB_CLOUD_RING_MIASMA },
     { ENCH_RING_OF_ICE,     MB_CLOUD_RING_ICE },
     { ENCH_RING_OF_MISERY,  MB_CLOUD_RING_MISERY },
     { ENCH_RING_OF_ACID,    MB_CLOUD_RING_ACID },
@@ -1685,9 +1686,9 @@ static bool _hide_moninfo_flag(monster_info_flags f)
     return false;
 }
 
-vector<string> monster_info::attributes() const
+vector<monster_status_descriptor> monster_info::attribute_descriptors() const
 {
-    vector<string> v;
+    vector<monster_status_descriptor> v;
     for (auto& name : monster_info_flag_names)
     {
         if (is(name.flag) && !_hide_moninfo_flag(name.flag))
@@ -1699,11 +1700,23 @@ vector<string> monster_info::attributes() const
             // TODO: just use `do_mon_str_replacements`?
             const char* zh_long = C_("flag long", name.long_singular.c_str());
             const string long_str = zh_long;
-            v.push_back(replace_all(long_str,
-                                    "@possessive@",
-                                    pronoun(PRONOUN_POSSESSIVE)));
+            // Gendered entries in monstatus are aliases of the "its" entry.
+            // Identity must never depend on a translated pronoun or heading.
+            const string key = replace_all(name.long_singular,
+                                           "@possessive@", "its") + " monstatus";
+            v.push_back({key, replace_all(long_str, "@possessive@",
+                                         pronoun(PRONOUN_POSSESSIVE))});
         }
     }
+
+    return v;
+}
+
+vector<string> monster_info::attributes() const
+{
+    vector<string> v;
+    for (const auto& attribute : attribute_descriptors())
+        v.push_back(attribute.description);
 
     if (type == MONS_NAMELESS_REVENANT)
     {

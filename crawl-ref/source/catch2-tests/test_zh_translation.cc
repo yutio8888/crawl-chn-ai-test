@@ -25,6 +25,7 @@
 #include "env.h"
 #include "english.h"
 #include "feature.h"
+#include "format.h"
 #include "fineff.h"
 #include "files.h"
 #include "god-conduct.h"
@@ -51,6 +52,7 @@
 #include "mon-explode.h"
 #include "mon-poly.h"
 #include "mon-info.h"
+#include "mon-info-flag-name.h"
 #include "target.h"
 #include "melee-attack.h"
 #include "mon-speak.h"
@@ -8414,5 +8416,177 @@ TEST_CASE("spell details expand defence and resistance labels in context",
         CHECK(spell_resist_string(SPELL_BOLT_OF_DRAINING, true, 100) == "负能量抗性");
         CHECK(spell_resist_string(SPELL_SPIT_ACID, true, 100) == "腐蚀抗性");
         CHECK(spell_resist_string(SPELL_STEAM_BALL, true, 100) == "蒸汽抗性");
+    }
+}
+
+TEST_CASE("mechanics: monster status details separate identity and display",
+          "[zh-translation][mechanics-rereview]")
+{
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    you = player();
+    scoped_monspeak_world world;
+    unwind_var<game_type> restore_game(crawl_state.type, GAME_TYPE_NORMAL);
+    monster_info info(MONS_HOUND);
+    info.pos = coord_def(20, 21);
+    info.attitude = ATT_HOSTILE;
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+
+    // Exercise every flag through the actual detail-page formatter. Some
+    // display-only flags deliberately have no explanatory TextDB body.
+    for (const auto& flag : monster_info_flag_names)
+    {
+        info.mb.reset();
+        info.mb.set(flag.flag);
+        const auto descriptors = get_monster_status_descriptors(info);
+        REQUIRE(descriptors.size() == 1);
+        const auto& descriptor = descriptors.front();
+        INFO(descriptor.key);
+        CHECK(descriptor.key.find(" monstatus") != string::npos);
+        CHECK_FALSE(rule_mixed_cn_en(descriptor.key));
+        const string body = getLongDescription(descriptor.key);
+        const string rendered = get_monster_status_descriptions(info).tostring();
+        if (body.empty())
+            CHECK(rendered.empty());
+        else
+        {
+            CHECK(rendered.find(uppercase_first(descriptor.description) + ":")
+                  != string::npos);
+            CHECK_FALSE(rule_embedded_lua_error(rendered));
+            if (language == lang_t::ZH)
+                CHECK_FALSE(rule_mixed_cn_en(rendered));
+        }
+    }
+
+    for (auto gender : {GENDER_NEUTER, GENDER_MALE, GENDER_FEMALE, GENDER_NEUTRAL})
+    {
+        info.props[MON_GENDER_KEY] = static_cast<int>(gender);
+        info.mb.reset();
+        info.mb.set(MB_BREATH_WEAPON);
+        auto descriptors = get_monster_status_descriptors(info);
+        REQUIRE(descriptors.size() == 1);
+        CHECK(descriptors[0].key == "catching its breath monstatus");
+        REQUIRE_FALSE(get_monster_status_descriptions(info).tostring().empty());
+        const string heading = descriptors[0].description;
+        i18n_cache_clear();
+        CHECK(descriptors[0].description == heading);
+        CHECK(get_monster_status_descriptors(info)[0].description == heading);
+    }
+
+    info.mb.reset();
+    info.mb.set(MB_PARALYSED);
+    info.mb.set(MB_FROZEN_IN_TERROR);
+    auto descriptors = get_monster_status_descriptors(info);
+    REQUIRE(descriptors.size() == 1);
+    CHECK(descriptors[0].key == "paralysed with fear monstatus");
+    info.mb.reset();
+    info.mb.set(MB_DISTRACTED);
+    info.mb.set(MB_CANT_SEE_YOU);
+    crawl_state.type = GAME_TYPE_ARENA;
+    CHECK(get_monster_status_descriptors(info).empty());
+    crawl_state.type = GAME_TYPE_NORMAL;
+    CHECK(get_monster_status_descriptors(info).size() == 2);
+
+    info.mb.reset();
+    for (auto attitude : {ATT_GOOD_NEUTRAL, ATT_NEUTRAL})
+    {
+        info.attitude = attitude;
+        descriptors = get_monster_status_descriptors(info);
+        REQUIRE(descriptors.size() == 1);
+        CHECK(descriptors[0].key == (attitude == ATT_GOOD_NEUTRAL
+                                    ? "peaceful monstatus" : "indifferent monstatus"));
+        CHECK_FALSE(get_monster_status_descriptions(info).tostring().empty());
+    }
+    info.mb.set(MB_FRENZIED);
+    descriptors = get_monster_status_descriptors(info);
+    REQUIRE(descriptors.size() == 1);
+    CHECK(descriptors[0].key == "frenzied and wild monstatus");
+}
+
+TEST_CASE("mechanics: monster miasma ring reaches its status description",
+          "[zh-translation][mechanics-rereview]")
+{
+    ZhTranslationFixture mode;
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    you = player();
+    scoped_monspeak_world world;
+    monster* source = world.place(MONS_HOUND);
+    REQUIRE(source);
+    define_monster(*source);
+    source->add_ench(ENCH_RING_OF_MIASMA);
+    monster_info info(source);
+    CHECK(info.is(MB_CLOUD_RING_MIASMA));
+    CHECK(get_monster_status_descriptions(info).tostring().find(
+              T_("surrounded by foul miasma")) != string::npos);
+}
+
+TEST_CASE("mechanics: Ru sacrifice value boundaries render complete descriptions",
+          "[zh-translation][mechanics-rereview]")
+{
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.religion = GOD_RU;
+    init_sac_index();
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+    struct value_case { int piety; const char* en; };
+    const value_case cases[] = {
+        {1, "a trivial"}, {12, "a trivial"}, {13, "a modest"}, {20, "a modest"},
+        {21, "a medium"}, {28, "a medium"}, {29, "a major"}, {39, "a major"},
+        {40, "an incredible"}, {65, "an incredible"},
+    };
+    for (const auto& row : cases)
+    {
+        you.sacrifice_piety[ABIL_RU_SACRIFICE_EXPERIENCE] = row.piety;
+        const string description = ru_sacrifice_description(ABIL_RU_SACRIFICE_EXPERIENCE);
+        INFO(description);
+        CHECK(description.find(C_("sacrifice value", row.en)) != string::npos);
+        CHECK(description.find('%') == string::npos);
+        if (language == lang_t::ZH)
+            CHECK_FALSE(rule_mixed_cn_en(description));
+        else
+            CHECK(description.find("This is " + string(row.en) + " sacrifice.") == 0);
+    }
+    you.religion = GOD_NO_GOD;
+    CHECK(ru_sacrifice_description(ABIL_RU_SACRIFICE_EXPERIENCE).empty());
+}
+
+TEST_CASE("mechanics: Nemelex abilities render deck contents and card counts",
+          "[zh-translation][mechanics-rereview]")
+{
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.religion = GOD_NEMELEX_XOBEH;
+    you.props[NEMELEX_STACK_KEY].new_vector(SV_INT);
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+    for (auto ability : {ABIL_NEMELEX_DRAW_ESCAPE, ABIL_NEMELEX_DRAW_DESTRUCTION,
+                         ABIL_NEMELEX_DRAW_SUMMONING, ABIL_NEMELEX_DRAW_STACK})
+    {
+        const deck_type deck = ability_deck(ability);
+        for (int count : {0, 1, 3})
+        {
+            if (deck == DECK_STACK)
+            {
+                auto& stack = you.props[NEMELEX_STACK_KEY].get_vector();
+                stack.clear();
+                for (int i = 0; i < count; ++i)
+                    stack.push_back(CARD_VELOCITY);
+            }
+            else
+                you.props[deck_name(deck)] = count;
+            const string description = get_ability_desc(ability, false);
+            INFO(description);
+            CHECK(description.find(deck_display_name(deck)) != string::npos);
+            CHECK(description.find(deck_contents(deck)) != string::npos);
+            CHECK(description.find('%') == string::npos);
+            CHECK_FALSE(rule_embedded_lua_error(description));
+            if (language == lang_t::ZH)
+                CHECK_FALSE(rule_mixed_cn_en(description));
+            else
+                CHECK(description.find("Draw a card from ") == 0);
+        }
     }
 }
