@@ -110,8 +110,8 @@ Display character status
 %%%%
 CMD_DISPLAY_CHARACTER_STATUS verbose
 
-Displays details on your current movement speed, attack speed, stealth, magic
-resistance, and any currently active enchantments or status effects.
+Displays details on your movement speed, accuracy, attack speed, damage rating,
+and any currently active enchantments or status effects.
 %%%%
 CMD_DISPLAY_KNOWN_OBJECTS
 
@@ -165,20 +165,22 @@ equipment, spells, skills, notes, etc.
 %%%%
 CMD_AUTOFIGHT
 
-Hit the closest monster
+Attack a nearby monster
 %%%%
 CMD_AUTOFIGHT verbose
 
-Moves towards the closest hostile monster, or attacks an adjacent monster with
-your current weapon.
+Attacks a selected hostile monster with your current weapon when in range,
+or moves towards it. Autofight settings can also enable directly damaging
+quivered actions.
 %%%%
 CMD_AUTOFIGHT_NOMOVE
 
-Hit an adjacent monster
+Attack without moving
 %%%%
 CMD_AUTOFIGHT_NOMOVE verbose
 
-Attacks an adjacent monster with your current weapon.
+Attacks a selected hostile monster without moving, using your current weapon
+or an available directly damaging quivered action, subject to autofight settings.
 %%%%
 CMD_WAIT
 
@@ -271,7 +273,7 @@ Add waypoint
 %%%%
 CMD_MAP_ADD_WAYPOINT verbose
 
-Sets a waypoint at your current position.
+Sets a waypoint at the map cursor.
 %%%%
 CMD_MAP_EXCLUDE_AREA
 

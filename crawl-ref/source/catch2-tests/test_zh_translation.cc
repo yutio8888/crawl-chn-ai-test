@@ -36,6 +36,7 @@
 #include "ghost.h"
 #include "god-abil.h"
 #include "hiscores.h"
+#include "hints.h"
 #include "item-status-flag-type.h"
 #include "item-use.h"
 #include "item-name.h"
@@ -44,6 +45,7 @@
 #include "item-prop-enum.h"
 #include "jobs.h"
 #include "lang-en-guard.h"
+#include "libutil.h"
 #include "losglobal.h"
 #include "lookup-help.h"
 #include "macro.h"
@@ -2107,6 +2109,229 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(partial_tip == "\n[Ctrl + 左键] 部分拾取");
     REQUIRE(partial_tip.find("NULL") == string::npos);
     REQUIRE(partial_tip.find('%') == string::npos);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "guidance: throw hints reselect items without promising quiver replay",
+                 "[zh-translation][guidance-rereview][hints][keybindings]")
+{
+    init_properties();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    unwind_var<hints_state> restore_hints(Hints);
+    you = player();
+    you.species = SP_HUMAN;
+    you.set_position(coord_def(20, 20));
+    for (int slot = 0; slot < 2; ++slot)
+    {
+        item_def &item = you.inv[slot];
+        item.base_type = OBJ_MISSILES;
+        item.sub_type = slot == 0 ? MI_STONE : MI_BOOMERANG;
+        item.quantity = 5;
+        item.rnd = 1;
+        item.slot = 'a' + slot;
+        item.link = slot;
+        item.pos = ITEM_IN_INVENTORY;
+    }
+    REQUIRE(you.quiver_action.set_from_slot(0));
+    REQUIRE(you.quiver_action.item_is_quivered(0));
+    const int fire_key = command_to_key(CMD_FIRE);
+    const int selection_key = command_to_key(CMD_FIRE_ITEM_NO_QUIVER);
+    REQUIRE(fire_key != selection_key);
+    unwinder restore_bindings([=]() {
+        bind_command_to_key(CMD_FIRE, fire_key);
+        bind_command_to_key(CMD_FIRE_ITEM_NO_QUIVER, selection_key);
+    });
+    for (bool rebound : {false, true})
+    {
+        bind_command_to_key(CMD_FIRE, rebound ? selection_key : fire_key);
+        bind_command_to_key(CMD_FIRE_ITEM_NO_QUIVER,
+                            rebound ? fire_key : selection_key);
+        REQUIRE(name_to_command("CMD_FIRE_ITEM_NO_QUIVER")
+                == CMD_FIRE_ITEM_NO_QUIVER);
+        CHECK(context_for_command(CMD_FIRE_ITEM_NO_QUIVER) == KMC_DEFAULT);
+        CHECK(key_to_command(command_to_key(CMD_FIRE_ITEM_NO_QUIVER), KMC_DEFAULT)
+              == CMD_FIRE_ITEM_NO_QUIVER);
+        CHECK(key_to_command(command_to_key(CMD_FIRE), KMC_DEFAULT) == CMD_FIRE);
+        const string selection = command_to_string(CMD_FIRE_ITEM_NO_QUIVER);
+        const string old_repeat = command_to_string(CMD_FIRE) + "f";
+        for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+        {
+            TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+            for (bool in_pack : {true, false})
+            {
+                item_def item = you.inv[1];
+                if (!in_pack)
+                {
+                    item.slot = 0;
+                    item.link = NON_ITEM;
+                    item.pos = you.pos();
+                }
+                const string text = hints_describe_item(item);
+                CHECK(text.find("<w>" + selection + "</w>") != string::npos);
+                CHECK(text.find("<w>" + old_repeat + "</w>") == string::npos);
+                CHECK(text.find(language == lang_t::ZH
+                    ? "重新打开物品菜单" : "reopen the item menu") != string::npos);
+                CHECK(text.find("$cmd[") == string::npos);
+                CHECK(text.find("$1") == string::npos);
+                if (in_pack)
+                    CHECK(text.find("<w>b</w>") != string::npos);
+                else
+                    CHECK(text.find(language == lang_t::ZH
+                        ? "先拾取此物品" : "first pick up the item") != string::npos);
+                CHECK(you.quiver_action.item_is_quivered(0));
+                CHECK_FALSE(you.quiver_action.item_is_quivered(1));
+            }
+
+            // The shared spell-target path still teaches its spell repeat;
+            // the item-selection hint must not change that consumer.
+            you.spells[0] = SPELL_MAGIC_DART;
+            you.spell_no = 1;
+            const string spell_hint = hints_memorise_info();
+            const string spell_repeat = command_to_string(CMD_CAST_SPELL) + "ap";
+            CHECK(spell_hint.find("<w>" + spell_repeat + "</w>") != string::npos);
+            CHECK(spell_hint.find(language == lang_t::ZH
+                ? "重新打开物品菜单" : "reopen the item menu") == string::npos);
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "guidance: exclusion hints use targeting bindings rather than map bindings",
+                 "[zh-translation][guidance-rereview][hints][keybindings]")
+{
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    unwind_var<hints_state> restore_hints(Hints);
+    you = player();
+    you.species = SP_HUMAN;
+    Hints.hints_explored = false;
+    monster_info monster(MONS_OGRE);
+    monster.attitude = ATT_HOSTILE;
+    monster.threat = MTHRT_TOUGH;
+    monster.mb.set(MB_UNAWARE);
+    const command_type commands[] = {
+        CMD_TARGET_EXCLUDE, CMD_TARGET_DESCRIBE,
+        CMD_MAP_EXCLUDE_AREA, CMD_MAP_CLEAR_EXCLUDES,
+        CMD_LOOK_AROUND, CMD_DISPLAY_MAP,
+    };
+    vector<std::pair<command_type, int>> bindings;
+    for (command_type command : commands)
+        bindings.emplace_back(command, command_to_key(command));
+    unwinder restore_bindings([&bindings]() {
+        for (const auto &binding : bindings)
+            bind_command_to_key(binding.first, binding.second);
+    });
+    for (bool rebound : {false, true})
+    {
+        for (size_t i = 0; i < bindings.size(); i += 2)
+        {
+            bind_command_to_key(bindings[i].first,
+                                bindings[i + (rebound ? 1 : 0)].second);
+            bind_command_to_key(bindings[i + 1].first,
+                                bindings[i + (rebound ? 0 : 1)].second);
+        }
+        REQUIRE(context_for_command(CMD_TARGET_EXCLUDE) == KMC_TARGETING);
+        REQUIRE(context_for_command(CMD_MAP_EXCLUDE_AREA) == KMC_LEVELMAP);
+        CHECK(key_to_command(command_to_key(CMD_TARGET_EXCLUDE), KMC_TARGETING)
+              == CMD_TARGET_EXCLUDE);
+        CHECK(key_to_command(command_to_key(CMD_MAP_EXCLUDE_AREA), KMC_LEVELMAP)
+              == CMD_MAP_EXCLUDE_AREA);
+        for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+        {
+            TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+            const string text = hints_describe_monster(monster, false);
+            CHECK(text.find("<w>" + command_to_string(CMD_LOOK_AROUND) + "</w>")
+                  != string::npos);
+            CHECK(text.find("<w>" + command_to_string(CMD_TARGET_EXCLUDE) + "</w>")
+                  != string::npos);
+            if (rebound)
+            {
+                CHECK(text.find("<w>" + command_to_string(CMD_MAP_EXCLUDE_AREA)
+                                + "</w>") == string::npos);
+            }
+            CHECK(text.find("$cmd[") == string::npos);
+            CHECK(text.find(language == lang_t::ZH
+                ? "禁区" : "excluded") != string::npos);
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "guidance: real tutorial output retains actions after platform filtering",
+                 "[zh-translation][guidance-rereview][tutorial][keybindings]")
+{
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+#ifdef USE_TILE_LOCAL
+    unwind_var<bool> headless(crawl_state.tiles_disabled, true);
+#endif
+    struct row
+    {
+        const char *key;
+        command_type command;
+        const char *english_action;
+        const char *chinese_action;
+    };
+    const row rows[] = {
+        {"tutorial2 resting", CMD_REST, "heal by resting", "休息以恢复"},
+        {"tutorial3 amulet", CMD_EQUIP, "Jewellery is put on", "即可佩戴"},
+        {"tutorial3 artefact_armour", CMD_EQUIP,
+         "Try equipping this cloak", "来装备这件披风"},
+        {"tutorial3 autoexplore_reminder", CMD_EXPLORE,
+         "explore the level automatically", "来自动探索本楼层"},
+        {"tutorial3 potion", CMD_QUAFF, "quaff this potion", "来饮用这瓶药水"},
+        {"tutorial3 scroll_noautopickup", CMD_PICKUP,
+         "this scroll now", "来拾取它"},
+        {"tutorial3 wand_fire", CMD_EVOKE, "evoke a wand", "来使用魔杖"},
+        {"tutorial4 meph_reminder", CMD_MEMORISE_SPELL,
+         "memorise your newly-available spell", "记忆新获得的法术"},
+        {"tutorial4 ring_power", CMD_EQUIP, "Put on this ring", "戴上这枚戒指"},
+        {"tutorial5 berserk", CMD_USE_ABILITY,
+         "use Trog's Berserk power", "使用特洛格赐予你的狂暴能力"},
+    };
+    for (const auto &entry : rows)
+    {
+        const int original = command_to_key(entry.command);
+        const command_type alternate = CMD_DISPLAY_CHARACTER_STATUS;
+        const int alternate_key = command_to_key(alternate);
+        REQUIRE(original != alternate_key);
+        unwinder restore_bindings([=]() {
+            bind_command_to_key(entry.command, original);
+            bind_command_to_key(alternate, alternate_key);
+        });
+        for (bool rebound : {false, true})
+        {
+            bind_command_to_key(entry.command, rebound ? alternate_key : original);
+            bind_command_to_key(alternate, rebound ? original : alternate_key);
+            for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+            {
+                TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+                const string raw = getHintString(entry.key);
+                REQUIRE(raw.find("<localtiles>") != string::npos);
+                msgwin_temporary_mode temporary;
+                unwinder clear_messages([]() { msgwin_clear_temporary(); });
+                msg::tee observed;
+                tutorial_msg(entry.key);
+                const string text = observed.get_store();
+                INFO(entry.key << " rebound=" << rebound);
+                CHECK(text.find(language == lang_t::ZH
+                    ? entry.chinese_action : entry.english_action) != string::npos);
+                CHECK(text.find("[" + command_to_string(entry.command) + "]")
+                      != string::npos);
+                CHECK(text.find("$cmd[") == string::npos);
+                CHECK(text.find("<input>") == string::npos);
+                CHECK(text.find("<localtiles>") == string::npos);
+#ifndef USE_TILE_LOCAL
+                CHECK(text.find("mouseclick") == string::npos);
+                CHECK(text.find("点击") == string::npos);
+#endif
+                CHECK(key_to_command(command_to_key(entry.command), KMC_DEFAULT)
+                      == entry.command);
+            }
+        }
+    }
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
