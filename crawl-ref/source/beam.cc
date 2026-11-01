@@ -4283,6 +4283,8 @@ static string _beam_display_name(const bolt &beam)
     {
         return orb_beam_name_display(beam.name);
     }
+    if (beam.origin_spell == SPELL_LRD)
+        return fragmentation_name_display(beam.name);
     if (Options.language == lang_t::ZH && beam.origin_spell != SPELL_NO_SPELL)
         return spell_title(beam.origin_spell);
     return T_(beam.name.c_str());

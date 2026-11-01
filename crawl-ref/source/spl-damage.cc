@@ -129,8 +129,8 @@ spret cast_fire_storm(int pow, bolt &beam, bool fail)
 
     if (cell_is_solid(beam.target))
     {
-        const char *feat = feat_type_name(env.grid(beam.target));
-        mprf(T_("You can't place the storm on %s."), article_a(feat).c_str());
+        const string feat = feature_description(env.grid(beam.target), "", DESC_A);
+        mprf(T_("You can't place the storm on %s."), feat.c_str());
         return spret::abort;
     }
 
@@ -334,7 +334,7 @@ spret cast_chain_spell(spell_type spell_cast, int pow,
     bolt beam;
 
     // initialise beam structure
-    beam.name           = "arc of chaos";
+    beam.name           = N_("arc of chaos");
     beam.aux_source     = "chain of chaos";
     beam.glyph          = dchar_glyph(DCHAR_FIRED_ZAP);
     beam.flavour        = BEAM_CHAOS;
@@ -450,7 +450,7 @@ spret cast_chain_spell(spell_type spell_cast, int pow,
         if (target.x == -1)
         {
             if (see_source)
-                mprf(T_("The %s grounds out."), beam.name.c_str());
+                mprf(T_("The %s grounds out."), T_(beam.name.c_str()));
 
             break;
         }
@@ -462,9 +462,9 @@ spret cast_chain_spell(spell_type spell_cast, int pow,
         first = false;
 
         if (see_source && !see_targ)
-            mprf(T_("The %s arcs out of your line of sight!"), beam.name.c_str());
+            mprf(T_("The %s arcs out of your line of sight!"), T_(beam.name.c_str()));
         else if (!see_source && see_targ)
-            mprf(T_("The %s suddenly appears!"), beam.name.c_str());
+            mprf(T_("The %s suddenly appears!"), T_(beam.name.c_str()));
 
         beam.source = source;
         beam.target = target;
@@ -703,11 +703,11 @@ static spret _cast_los_attack_spell(spell_type spell, int pow,
     switch (spell)
     {
         case SPELL_OZOCUBUS_REFRIGERATION:
-            player_msg = "The heat is drained from your surroundings.";
-            global_msg = "Something drains the heat from around you.";
-            mons_vis_msg = T_(" drains the heat from the surrounding"
+            player_msg = N_("The heat is drained from your surroundings.");
+            global_msg = N_("Something drains the heat from around you.");
+            mons_vis_msg = N_(" drains the heat from the surrounding"
                             " environment!");
-            mons_invis_msg = "The ambient heat is drained!";
+            mons_invis_msg = N_("The ambient heat is drained!");
             prompt_verb = "refrigerate";
             vulnerable = [](const actor *caster, const actor *act) {
                 return act != caster
@@ -719,21 +719,21 @@ static spret _cast_los_attack_spell(spell_type spell, int pow,
             break;
 
         case SPELL_DRAIN_LIFE:
-            player_msg = "You draw life from your surroundings.";
-            global_msg = T_("Something draws the life force from your"
+            player_msg = N_("You draw life from your surroundings.");
+            global_msg = N_("Something draws the life force from your"
                             " surroundings.");
-            mons_vis_msg = " draws from the surrounding life force!";
-            mons_invis_msg = "The surrounding life force dissipates!";
+            mons_vis_msg = N_(" draws from the surrounding life force!");
+            mons_invis_msg = N_("The surrounding life force dissipates!");
             prompt_verb = "drain life";
             tile = TILE_BOLT_DRAIN_LIFE;
             vulnerable = &_drain_lifeable;
             break;
 
         case SPELL_SONIC_WAVE:
-            player_msg = "You send a blast of sound all around you.";
-            global_msg = "Something sends a blast of sound all around you.";
-            mons_vis_msg = " sends a blast of sound all around you!";
-            mons_invis_msg = "Sound blasts the surrounding area!";
+            player_msg = N_("You send a blast of sound all around you.");
+            global_msg = N_("Something sends a blast of sound all around you.");
+            mons_vis_msg = N_(" sends a blast of sound all around you!");
+            mons_invis_msg = N_("Sound blasts the surrounding area!");
             tile = TILE_BOLT_SINGING;
             // prompt_verb = "sing" The singing sword prompts in melee-attack
             vulnerable = [](const actor *caster, const actor *act) {
@@ -764,7 +764,7 @@ static spret _cast_los_attack_spell(spell_type spell, int pow,
                 fail_check();
             }
 
-            mpr(player_msg);
+            mpr(T_(player_msg));
             if (spell == SPELL_OZOCUBUS_REFRIGERATION)
                 flash_view_delay(UA_PLAYER, beam.colour, 250, 40, &hitfunc);
             else if (spell == SPELL_DRAIN_LIFE)
@@ -776,11 +776,11 @@ static spret _cast_los_attack_spell(spell_type spell, int pow,
         else
         {
             if (!agent)
-                mpr(global_msg);
+                mpr(T_(global_msg));
             else if (you.can_see(*agent))
-                simple_monster_message(*mons, mons_vis_msg);
+                simple_monster_message(*mons, T_(mons_vis_msg));
             else if (you.see_cell(agent->pos()))
-                mpr(mons_invis_msg);
+                mpr(T_(mons_invis_msg));
 
             if (!agent || you.see_cell(agent->pos()))
             {
@@ -913,7 +913,7 @@ spret cast_freeze(int pow, monster* mons, bool fail)
     int hurted = mons_adjust_flavoured(mons, beam, orig_hurted, false);
     mprf(T_("You freeze %s%s%s"),
          mons->name(DESC_THE).c_str(),
-         hurted ? "" : " but do no damage",
+         hurted ? "" : T_(" but do no damage"),
          attack_strength_punctuation(hurted).c_str());
 
     // print the resist message and expose to the cold
@@ -1245,7 +1245,7 @@ static bool _init_frag_player(frag_effect &effect)
 {
     if (you.form == transformation::statue || you.has_mutation(MUT_STONE_BODY))
     {
-        effect.name       = "blast of rock fragments";
+        effect.name       = NC_("fragmentation blast", "blast of rock fragments");
         effect.colour     = BROWN;
         if (you.form != transformation::statue)
             effect.damage = frag_damage_type::player_gargoyle;
@@ -1253,20 +1253,20 @@ static bool _init_frag_player(frag_effect &effect)
     }
     else if (you.form == transformation::jademantle)
     {
-        effect.name       = "blast of jade fragments";
+        effect.name       = NC_("fragmentation blast", "blast of jade fragments");
         effect.colour     = GREEN;
         effect.damage = frag_damage_type::player_gargoyle;
         return true;
     }
     else if (you.species == SP_REVENANT)
     {
-        effect.name   = "blast of bone shards";
+        effect.name   = NC_("fragmentation blast", "blast of bone shards");
         effect.colour = LIGHTGREY;
         return true;
     }
     if (you.petrified() || you.petrifying())
     {
-        effect.name       = "blast of petrified fragments";
+        effect.name       = NC_("fragmentation blast", "blast of petrified fragments");
         effect.colour     = mons_class_colour(player_mons(true));
         return true;
     }
@@ -1275,68 +1275,68 @@ static bool _init_frag_player(frag_effect &effect)
 
 struct monster_frag
 {
-    const char* type;
+    const char* name;
     colour_t colour;
     frag_damage_type damage;
 };
 
 static const map<monster_type, monster_frag> fraggable_monsters = {
-    { MONS_TOENAIL_GOLEM,     { "toenail", RED } },
+    { MONS_TOENAIL_GOLEM,     { NC_("fragmentation blast", "blast of toenail fragments"), RED } },
     // I made saltlings not have a big crystal explosion for balance reasons -
     // there are so many of them, it seems wrong to have them be so harmful to
     // their own allies. This could be wrong!
-    { MONS_SALTLING,          { "salt crystal", WHITE } },
-    { MONS_PILLAR_OF_SALT,    { "salt crystal", WHITE } },
-    { MONS_PILE_OF_DEBRIS,    { "stone", LIGHTGRAY } },
-    { MONS_PETRIFIED_FLOWER,  { "stone", LIGHTGRAY } },
-    { MONS_EARTH_ELEMENTAL,   { "rock", BROWN } },
-    { MONS_MOUNTAINSHELL,     { "rock", BROWN } },
-    { MONS_ROCKSLIME,         { "rock", BROWN } },
-    { MONS_BOULDER,           { "rock", BROWN } },
-    { MONS_USHABTI,           { "rock", BROWN } },
-    { MONS_STATUE,            { "rock", BROWN } },
-    { MONS_GARGOYLE,          { "rock", BROWN } },
-    { MONS_ROCK_FISH,         { "rock", BROWN } },
-    { MONS_VV,                { "rock", BROWN } },
-    { MONS_HELLFIRE_MORTAR,   { "rock", BROWN } },
-    { MONS_STACK_OF_SCRAP,    { "metal", CYAN, frag_damage_type::metal } },
-    { MONS_CRAWLING_FLESH_CAGE, { "metal", CYAN, frag_damage_type::metal } },
-    { MONS_RUSTED_INSPECTOR,  { "metal", CYAN, frag_damage_type::metal } },
-    { MONS_IRON_ELEMENTAL,    { "metal", CYAN, frag_damage_type::metal } },
-    { MONS_IRON_GOLEM,        { "metal", CYAN, frag_damage_type::metal } },
-    { MONS_PEACEKEEPER,       { "metal", CYAN, frag_damage_type::metal } },
-    { MONS_WAR_GARGOYLE,      { "metal", CYAN, frag_damage_type::metal } },
-    { MONS_CLOCKWORK_BEE,     { "metal", CYAN, frag_damage_type::metal } },
-    { MONS_CLOCKWORK_BEE_INACTIVE, { "metal", CYAN, frag_damage_type::metal } },
-    { MONS_LIGHTNING_SPIRE,   { "metal", CYAN, frag_damage_type::metal } },
-    { MONS_BLAZEHEART_GOLEM,  { "metal", CYAN, frag_damage_type::metal } },
-    { MONS_WALKING_ALEMBIC,   { "metal", CYAN, frag_damage_type::metal } },
-    { MONS_MONARCH_BOMB,      { "metal", CYAN, frag_damage_type::metal } },
-    { MONS_BOMBLET,           { "metal", CYAN, frag_damage_type::metal } },
-    { MONS_PHALANX_BEETLE,    { "metal", CYAN, frag_damage_type::metal } },
-    { MONS_SPELLSPARK_SERVITOR, { "metal", CYAN, frag_damage_type::metal } },
-    { MONS_PLATINUM_PARAGON,  { "platinum", CYAN, frag_damage_type::metal } },
-    { MONS_JADE_CRYSTAL_AIR,   { "jade", LIGHTCYAN, frag_damage_type::crystal } },
-    { MONS_JADE_CRYSTAL_EARTH, { "jade", LIGHTCYAN, frag_damage_type::crystal } },
-    { MONS_JADE_CRYSTAL_FIRE,  { "jade", LIGHTCYAN, frag_damage_type::crystal } },
-    { MONS_JADE_CRYSTAL_ICE,   { "jade", LIGHTCYAN, frag_damage_type::crystal } },
-    { MONS_GLASS_EYE,         { "glass", LIGHTCYAN,
+    { MONS_SALTLING,          { NC_("fragmentation blast", "blast of salt crystal fragments"), WHITE } },
+    { MONS_PILLAR_OF_SALT,    { NC_("fragmentation blast", "blast of salt crystal fragments"), WHITE } },
+    { MONS_PILE_OF_DEBRIS,    { NC_("fragmentation blast", "blast of stone fragments"), LIGHTGRAY } },
+    { MONS_PETRIFIED_FLOWER,  { NC_("fragmentation blast", "blast of stone fragments"), LIGHTGRAY } },
+    { MONS_EARTH_ELEMENTAL,   { NC_("fragmentation blast", "blast of rock fragments"), BROWN } },
+    { MONS_MOUNTAINSHELL,     { NC_("fragmentation blast", "blast of rock fragments"), BROWN } },
+    { MONS_ROCKSLIME,         { NC_("fragmentation blast", "blast of rock fragments"), BROWN } },
+    { MONS_BOULDER,           { NC_("fragmentation blast", "blast of rock fragments"), BROWN } },
+    { MONS_USHABTI,           { NC_("fragmentation blast", "blast of rock fragments"), BROWN } },
+    { MONS_STATUE,            { NC_("fragmentation blast", "blast of rock fragments"), BROWN } },
+    { MONS_GARGOYLE,          { NC_("fragmentation blast", "blast of rock fragments"), BROWN } },
+    { MONS_ROCK_FISH,         { NC_("fragmentation blast", "blast of rock fragments"), BROWN } },
+    { MONS_VV,                { NC_("fragmentation blast", "blast of rock fragments"), BROWN } },
+    { MONS_HELLFIRE_MORTAR,   { NC_("fragmentation blast", "blast of rock fragments"), BROWN } },
+    { MONS_STACK_OF_SCRAP,    { NC_("fragmentation blast", "blast of metal fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_CRAWLING_FLESH_CAGE, { NC_("fragmentation blast", "blast of metal fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_RUSTED_INSPECTOR,  { NC_("fragmentation blast", "blast of metal fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_IRON_ELEMENTAL,    { NC_("fragmentation blast", "blast of metal fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_IRON_GOLEM,        { NC_("fragmentation blast", "blast of metal fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_PEACEKEEPER,       { NC_("fragmentation blast", "blast of metal fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_WAR_GARGOYLE,      { NC_("fragmentation blast", "blast of metal fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_CLOCKWORK_BEE,     { NC_("fragmentation blast", "blast of metal fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_CLOCKWORK_BEE_INACTIVE, { NC_("fragmentation blast", "blast of metal fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_LIGHTNING_SPIRE,   { NC_("fragmentation blast", "blast of metal fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_BLAZEHEART_GOLEM,  { NC_("fragmentation blast", "blast of metal fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_WALKING_ALEMBIC,   { NC_("fragmentation blast", "blast of metal fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_MONARCH_BOMB,      { NC_("fragmentation blast", "blast of metal fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_BOMBLET,           { NC_("fragmentation blast", "blast of metal fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_PHALANX_BEETLE,    { NC_("fragmentation blast", "blast of metal fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_SPELLSPARK_SERVITOR, { NC_("fragmentation blast", "blast of metal fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_PLATINUM_PARAGON,  { NC_("fragmentation blast", "blast of platinum fragments"), CYAN, frag_damage_type::metal } },
+    { MONS_JADE_CRYSTAL_AIR,   { NC_("fragmentation blast", "blast of jade shards"), LIGHTCYAN, frag_damage_type::crystal } },
+    { MONS_JADE_CRYSTAL_EARTH, { NC_("fragmentation blast", "blast of jade shards"), LIGHTCYAN, frag_damage_type::crystal } },
+    { MONS_JADE_CRYSTAL_FIRE,  { NC_("fragmentation blast", "blast of jade shards"), LIGHTCYAN, frag_damage_type::crystal } },
+    { MONS_JADE_CRYSTAL_ICE,   { NC_("fragmentation blast", "blast of jade shards"), LIGHTCYAN, frag_damage_type::crystal } },
+    { MONS_GLASS_EYE,         { NC_("fragmentation blast", "blast of glass shards"), LIGHTCYAN,
                                 frag_damage_type::crystal } },
-    { MONS_SCREAMING_REFRACTION, { "crystal", GREEN,
+    { MONS_SCREAMING_REFRACTION, { NC_("fragmentation blast", "blast of crystal shards"), GREEN,
                                 frag_damage_type::crystal } },
-    { MONS_CRYSTAL_GUARDIAN,  { "crystal", GREEN,
+    { MONS_CRYSTAL_GUARDIAN,  { NC_("fragmentation blast", "blast of crystal shards"), GREEN,
                                 frag_damage_type::crystal } },
-    { MONS_CRYSTAL_ECHIDNA,   { "crystal", GREEN,
+    { MONS_CRYSTAL_ECHIDNA,   { NC_("fragmentation blast", "blast of crystal shards"), GREEN,
                                 frag_damage_type::crystal } },
-    { MONS_ORANGE_STATUE,     { "orange crystal", LIGHTRED,
+    { MONS_ORANGE_STATUE,     { NC_("fragmentation blast", "blast of orange crystal shards"), LIGHTRED,
                                 frag_damage_type::crystal } },
-    { MONS_OBSIDIAN_BAT,      { "obsidian", MAGENTA,
+    { MONS_OBSIDIAN_BAT,      { NC_("fragmentation blast", "blast of obsidian shards"), MAGENTA,
                                 frag_damage_type::crystal } },
-    { MONS_OBSIDIAN_STATUE,   { "obsidian", MAGENTA,
+    { MONS_OBSIDIAN_STATUE,   { NC_("fragmentation blast", "blast of obsidian shards"), MAGENTA,
                                 frag_damage_type::crystal } },
-    { MONS_DIAMOND_SAWBLADE,  { "diamond", WHITE,
+    { MONS_DIAMOND_SAWBLADE,  { NC_("fragmentation blast", "blast of diamond shards"), WHITE,
                                 frag_damage_type::crystal } },
-    { MONS_ROXANNE,           { "sapphire", BLUE, frag_damage_type::crystal } },
+    { MONS_ROXANNE,           { NC_("fragmentation blast", "blast of sapphire shards"), BLUE, frag_damage_type::crystal } },
 };
 
 bool monster_type_is_fraggable(monster_type mc)
@@ -1354,9 +1354,7 @@ static bool _init_frag_monster(frag_effect &effect, const monster &mon)
     {
         const monster_frag &frag = frag_f->second;
         effect.damage = frag.damage;
-        const bool crystal = frag.damage == frag_damage_type::crystal;
-        effect.name = make_stringf_p(T_("blast of %s %s"), frag.type,
-                                   crystal ? T_("shards") : T_("fragments"));
+        effect.name = frag.name;
         effect.colour = frag.colour;
         return true;
     }
@@ -1365,20 +1363,20 @@ static bool _init_frag_monster(frag_effect &effect, const monster &mon)
     if (mon.petrified() || mon.petrifying())
     {
         monster_info minfo(&mon);
-        effect.name       = "blast of petrified fragments";
+        effect.name       = NC_("fragmentation blast", "blast of petrified fragments");
         effect.colour     = minfo.colour();
         return true;
     }
     if (mon.is_icy()) // blast of ice
     {
-        effect.name       = "icy blast";
+        effect.name       = NC_("fragmentation blast", "icy blast");
         effect.colour     = WHITE;
         effect.damage     = frag_damage_type::ice;
         return true;
     }
     if (mon.is_skeletal()) // blast of bone
     {
-        effect.name   = "blast of bone shards";
+        effect.name   = NC_("fragmentation blast", "blast of bone shards");
         effect.colour = LIGHTGREY;
         return true;
     }
@@ -1388,45 +1386,68 @@ static bool _init_frag_monster(frag_effect &effect, const monster &mon)
 
 struct feature_frag
 {
-    const char* type;
+    const char* name;
     const char* what;
     frag_damage_type damage;
 };
 
 static const map<dungeon_feature_type, feature_frag> fraggable_terrain = {
     // Stone and rock terrain
-    { DNGN_ROCK_WALL, { "rock", N_("wall") } },
-    { DNGN_SLIMY_WALL, { "rock", N_("wall") } },
-    { DNGN_STONE_WALL, { "rock", N_("wall") } },
-    { DNGN_PERMAROCK_WALL, { "rock", N_("wall") } },
-    { DNGN_CLEAR_ROCK_WALL, { "rock", N_("wall") } },
-    { DNGN_CLEAR_STONE_WALL, { "rock", N_("wall") } },
-    { DNGN_CLEAR_PERMAROCK_WALL, { "rock", N_("wall") } },
-    { DNGN_ORCISH_IDOL, { "rock", N_("stone idol") } },
-    { DNGN_GRANITE_STATUE, { "rock", N_("statue") } },
-    { DNGN_PETRIFIED_TREE, { "rock", N_("petrified wood") } },
-    { DNGN_SPIKE_LAUNCHER, { "rock", N_("spike launcher") } },
+    { DNGN_ROCK_WALL, { NC_("fragmentation blast", "blast of rock fragments"), N_("wall") } },
+    { DNGN_SLIMY_WALL, { NC_("fragmentation blast", "blast of rock fragments"), N_("wall") } },
+    { DNGN_STONE_WALL, { NC_("fragmentation blast", "blast of rock fragments"), N_("wall") } },
+    { DNGN_PERMAROCK_WALL, { NC_("fragmentation blast", "blast of rock fragments"), N_("wall") } },
+    { DNGN_CLEAR_ROCK_WALL, { NC_("fragmentation blast", "blast of rock fragments"), N_("wall") } },
+    { DNGN_CLEAR_STONE_WALL, { NC_("fragmentation blast", "blast of rock fragments"), N_("wall") } },
+    { DNGN_CLEAR_PERMAROCK_WALL, { NC_("fragmentation blast", "blast of rock fragments"), N_("wall") } },
+    { DNGN_ORCISH_IDOL, { NC_("fragmentation blast", "blast of rock fragments"), N_("stone idol") } },
+    { DNGN_GRANITE_STATUE, { NC_("fragmentation blast", "blast of rock fragments"), N_("statue") } },
+    { DNGN_PETRIFIED_TREE, { NC_("fragmentation blast", "blast of rock fragments"), N_("petrified wood") } },
+    { DNGN_SPIKE_LAUNCHER, { NC_("fragmentation blast", "blast of rock fragments"), N_("spike launcher") } },
     // Stone arches and doors
-    { DNGN_OPEN_DOOR, { "rock", N_("stone door frame") } },
-    { DNGN_OPEN_CLEAR_DOOR, { "rock", N_("stone door frame") } },
-    { DNGN_CLOSED_DOOR, { "rock", N_("stone door frame") } },
-    { DNGN_CLOSED_CLEAR_DOOR, { "rock", N_("stone door frame") } },
-    { DNGN_RUNED_DOOR, { "rock", N_("stone door frame") } },
-    { DNGN_RUNED_CLEAR_DOOR, { "rock", N_("stone door frame") } },
-    { DNGN_SEALED_DOOR, { "rock", N_("stone door frame") } },
-    { DNGN_SEALED_CLEAR_DOOR, { "rock", N_("stone door frame") } },
-    { DNGN_BROKEN_DOOR, { "rock", N_("stone door frame") } },
-    { DNGN_BROKEN_CLEAR_DOOR, { "rock", N_("stone door frame") } },
-    { DNGN_STONE_ARCH, { "rock", N_("stone arch") } },
+    { DNGN_OPEN_DOOR, { NC_("fragmentation blast", "blast of rock fragments"), N_("stone door frame") } },
+    { DNGN_OPEN_CLEAR_DOOR, { NC_("fragmentation blast", "blast of rock fragments"), N_("stone door frame") } },
+    { DNGN_CLOSED_DOOR, { NC_("fragmentation blast", "blast of rock fragments"), N_("stone door frame") } },
+    { DNGN_CLOSED_CLEAR_DOOR, { NC_("fragmentation blast", "blast of rock fragments"), N_("stone door frame") } },
+    { DNGN_RUNED_DOOR, { NC_("fragmentation blast", "blast of rock fragments"), N_("stone door frame") } },
+    { DNGN_RUNED_CLEAR_DOOR, { NC_("fragmentation blast", "blast of rock fragments"), N_("stone door frame") } },
+    { DNGN_SEALED_DOOR, { NC_("fragmentation blast", "blast of rock fragments"), N_("stone door frame") } },
+    { DNGN_SEALED_CLEAR_DOOR, { NC_("fragmentation blast", "blast of rock fragments"), N_("stone door frame") } },
+    { DNGN_BROKEN_DOOR, { NC_("fragmentation blast", "blast of rock fragments"), N_("stone door frame") } },
+    { DNGN_BROKEN_CLEAR_DOOR, { NC_("fragmentation blast", "blast of rock fragments"), N_("stone door frame") } },
+    { DNGN_STONE_ARCH, { NC_("fragmentation blast", "blast of rock fragments"), N_("stone arch") } },
     // Metal -- small but nasty explosion
-    { DNGN_METAL_STATUE, { "metal", N_("metal statue"), frag_damage_type::metal } },
-    { DNGN_METAL_WALL, { "metal", N_("metal wall"), frag_damage_type::metal } },
-    { DNGN_GRATE, { "metal", N_("iron grate"), frag_damage_type::metal } },
-    { DNGN_ZOT_STATUE, { "metal", N_("metal statue") } },
+    { DNGN_METAL_STATUE, { NC_("fragmentation blast", "blast of metal fragments"), N_("metal statue"), frag_damage_type::metal } },
+    { DNGN_METAL_WALL, { NC_("fragmentation blast", "blast of metal fragments"), N_("metal wall"), frag_damage_type::metal } },
+    { DNGN_GRATE, { NC_("fragmentation blast", "blast of metal fragments"), N_("iron grate"), frag_damage_type::metal } },
+    { DNGN_ZOT_STATUE, { NC_("fragmentation blast", "blast of metal fragments"), N_("metal statue") } },
     // Crystal -- large & nasty explosion
-    { DNGN_CRYSTAL_WALL, { "crystal", N_("crystal wall"),
+    { DNGN_CRYSTAL_WALL, { NC_("fragmentation blast", "blast of crystal shards"), N_("crystal wall"),
                            frag_damage_type::crystal } },
 };
+
+// Exact names come from the production tables above and the player/ice/bone
+// branches. No saved string parser or material-name guessing is involved.
+string fragmentation_name_display(const string& canonical)
+{
+    for (const auto& entry : fraggable_monsters)
+        if (canonical == entry.second.name)
+            return C_("fragmentation blast", entry.second.name);
+    for (const auto& entry : fraggable_terrain)
+        if (canonical == entry.second.name)
+            return C_("fragmentation blast", entry.second.name);
+    static const char* const special_names[] = {
+        NC_("fragmentation blast", "blast of rock fragments"),
+        NC_("fragmentation blast", "blast of jade fragments"),
+        NC_("fragmentation blast", "blast of bone shards"),
+        NC_("fragmentation blast", "blast of petrified fragments"),
+        NC_("fragmentation blast", "icy blast")
+    };
+    for (const char* name : special_names)
+        if (canonical == name)
+            return C_("fragmentation blast", name);
+    return canonical;
+}
 
 // Initializes the provided frag_effect with the appropriate Lee's Rapid
 // Deconstruction explosion for the given target. Return true iff the target
@@ -1442,9 +1463,7 @@ static bool _init_frag_grid(frag_effect &effect,
     const feature_frag &frag = frag_f->second;
 
     effect.damage = frag.damage;
-    const bool crystal = frag.damage == frag_damage_type::crystal;
-    effect.name = make_stringf_p(T_("blast of %s %s"), frag.type,
-                               crystal ? T_("shards") : T_("fragments"));
+    effect.name = frag.name;
     if (what)
         *what = frag.what;
 
@@ -1800,7 +1819,7 @@ static int _shatter_player(int pow, actor *wielder, bool devastator = false)
     if (damage > 0)
     {
         mprf(damage > 15 ? T_("You shudder from the earth-shattering force%s")
-                        : "You shudder%s",
+                        : T_("You shudder%s"),
              attack_strength_punctuation(damage).c_str());
         if (devastator)
             ouch(damage, KILLED_BY_MONSTER, wielder->mid);
@@ -1985,7 +2004,7 @@ spret cast_scorch(const actor& agent, int pow, bool fail)
     const int post_ac_dam = max(0, targ->apply_ac(base_dam));
 
     mprf(T_("Flames lash %s%s."), targ->name(DESC_THE).c_str(),
-         post_ac_dam ? "" : " but do no damage");
+         post_ac_dam ? "" : T_(" but do no damage"));
     const coord_def p = targ->pos();
     noisy(spell_effect_noise(SPELL_SCORCH), p);
 
@@ -2830,10 +2849,8 @@ static void _discharge_message(int dam)
         else
         {
             const bool plural = coinflip();
-            mprf_p(T_("%1$s blue arc%2$s harmlessly ground%3$s."),
-                plural ? "Some" : "A",
-                plural ? "s" : "",
-                plural ? " themselves" : "s itself");
+            mpr(plural ? T_("Some blue arcs harmlessly ground themselves.")
+                       : T_("A blue arc harmlessly grounds itself."));
         }
     }
 }
@@ -5249,16 +5266,17 @@ void unleash_fortress_blast(actor& caster)
 
     if (caster.is_player())
     {
-        string desc = "a";
+        string desc = NC_("fortress blast strength", "a");
         if (power < 30)
-            desc = "a weak";
+            desc = NC_("fortress blast strength", "a weak");
         else if (power > 180)
-            desc = "an overpowering";
+            desc = NC_("fortress blast strength", "an overpowering");
         else if (power > 135)
-            desc = "a very strong";
+            desc = NC_("fortress blast strength", "a very strong");
         else if (power > 80)
-            desc = "a strong";
-        mprf(MSGCH_DURATION, T_("You unleash %s concussive blast!"), desc.c_str());
+            desc = NC_("fortress blast strength", "a strong");
+        mprf(MSGCH_DURATION, T_("You unleash %s concussive blast!"),
+             C_("fortress blast strength", desc.c_str()));
     }
 
     bolt blast;

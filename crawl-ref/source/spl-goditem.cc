@@ -1192,8 +1192,8 @@ void setup_cleansing_flame_beam(bolt &beam, int pow,
     beam.colour       = YELLOW;
     beam.origin_spell = SPELL_CLEANSING_FLAME;
     beam.aux_source   = (caster == cleansing_flame_source::tso)
-                        ? T_("the Shining One's cleansing flame")
-                        : T_("cleansing flame");
+                        ? N_("the Shining One's cleansing flame")
+                        : N_("cleansing flame");
     beam.ex_size      = 2;
     beam.is_explosion = true;
 
