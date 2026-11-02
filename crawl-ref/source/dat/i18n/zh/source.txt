@@ -49218,3 +49218,206 @@ When you kill a natural, plant, or demonic creature with a stab, you may create 
 
 你用偷袭杀死自然生物、植物或恶魔时，可能会创造一个吸血仆从。
 %%%%
+, but does no damage.
+
+，但未造成伤害。
+%%%%
+Hit by a%1$s %2$s thrown by %3$s
+
+被%3$s投出的%1$s%2$s击中
+%%%%
+Shot with a%1$s %2$s by %3$s
+
+被%3$s用%1$s%2$s射中
+%%%%
+Xom enchantment list|, 
+
+，
+%%%%
+Xom scenery list|, 
+
+，
+%%%%
+Xom scenery list|, and 
+
+，而且
+%%%%
+attack verb|gore
+
+顶撞
+%%%%
+bound soul name|bound 
+
+缚魂
+%%%%
+compact equipment caption|Eq: 
+
+装:
+%%%%
+decapitation verb|chop
+
+砍掉
+%%%%
+decapitation verb|claw
+
+用爪撕掉
+%%%%
+decapitation verb|hack
+
+劈掉
+%%%%
+decapitation verb|lop
+
+削掉
+%%%%
+decapitation verb|slice
+
+切掉
+%%%%
+decapitation verb|tear
+
+扯掉
+%%%%
+deck summary list| and 
+
+和
+%%%%
+deck summary list|, 
+
+、
+%%%%
+fortress blast strength|a
+
+一阵
+%%%%
+god choice list| or 
+
+或
+%%%%
+god choice list|, 
+
+、
+%%%%
+invisibility sources| and 
+
+和
+%%%%
+macro cycle mode|confirmation
+
+确认
+%%%%
+macro cycle mode|macros
+
+宏
+%%%%
+macro cycle mode|targeting
+
+目标选择
+%%%%
+macro mapping mode|buggy keymap
+
+有错误的按键映射
+%%%%
+macro mapping mode|buggy keymaps
+
+有错误的按键映射
+%%%%
+macro mapping mode|confirmation keymap
+
+确认按键映射
+%%%%
+macro mapping mode|confirmation keymaps
+
+确认按键映射
+%%%%
+macro mapping mode|level map keymap
+
+楼层地图按键映射
+%%%%
+macro mapping mode|level map keymaps
+
+楼层地图按键映射
+%%%%
+macro mapping mode|macro
+
+宏
+%%%%
+macro mapping mode|macros
+
+宏
+%%%%
+macro mapping mode|menu keymap
+
+菜单按键映射
+%%%%
+macro mapping mode|menu keymaps
+
+菜单按键映射
+%%%%
+macro mapping mode|regular keymap
+
+常规按键映射
+%%%%
+macro mapping mode|regular keymaps
+
+常规按键映射
+%%%%
+macro mapping mode|targeting keymap
+
+目标选择按键映射
+%%%%
+macro mapping mode|targeting keymaps
+
+目标选择按键映射
+%%%%
+monster body action|beheads %s
+
+砍下%s的头
+%%%%
+movement speed|and
+
+，且
+%%%%
+movement speed|flying
+
+飞行
+%%%%
+movement speed|moving
+
+移动
+%%%%
+movement speed|swimming
+
+游泳
+%%%%
+movement speed|wading
+
+涉水
+%%%%
+press <w>%</w>. 
+
+按<w>%</w>。 
+%%%%
+recollection spell list| and 
+
+和
+%%%%
+recollection spell list|, 
+
+、
+%%%%
+servitor creation verb|forge
+
+铸造
+%%%%
+shock discharge source|shield
+
+盾牌
+%%%%
+tile offsets|shield
+
+盾牌
+%%%%
+tile offsets|weapon
+
+武器

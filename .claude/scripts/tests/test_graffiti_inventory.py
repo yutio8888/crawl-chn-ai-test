@@ -145,7 +145,11 @@ class GraffitiInventoryTests(unittest.TestCase):
 
     def test_checked_in_ledger_binds_complete_production_inventory(self):
         records = MODULE._strict_block(RESULTS)
-        inventory = copy.deepcopy(self.inventory)
+        # The checked-in ledger is a production artifact and binds the current
+        # docs/glossary.md; the class fixture above pins the historical
+        # glossary for the frozen-fact tests, so rebuild here.
+        inventory = MODULE.build_inventory(
+            BASELINE, self.en_path, self.zh_path, ROOT / "docs/glossary.md")
         inventory["dumps"]["english"]["artifact_sha256"] = records[0][
             "english_production_dump_sha256"
         ]

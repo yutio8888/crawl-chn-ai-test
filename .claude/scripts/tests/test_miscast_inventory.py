@@ -64,13 +64,10 @@ class MiscastInventoryTests(unittest.TestCase):
         cls.zh_path.write_text(
             json.dumps(cls.zh_artifact, ensure_ascii=False), encoding="utf-8"
         )
-        historical_glossary = cls.root / "historical-glossary.md"
-        historical_glossary.write_bytes(subprocess.check_output([
-            "git", "-C", str(ROOT), "show",
-            f"{GLOSSARY_FIXTURE_REF}:docs/glossary.md",
-        ]))
+        # The strict facts below are validated against the checked-in
+        # production ledger, which binds the current docs/glossary.md.
         cls.inventory = MODULE.build_inventory(
-            BASELINE, cls.en_path, cls.zh_path, historical_glossary
+            BASELINE, cls.en_path, cls.zh_path, ROOT / "docs/glossary.md"
         )
         records = MODULE._strict_block(RESULTS)
         # The checked-in ledger binds the real production-dump byte hashes.

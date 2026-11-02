@@ -449,13 +449,13 @@ int list_wizard_commands(bool do_redraw_screen)
         wizard_help_1 += T_("<w>=</w>      show info about skill points\n");
         wizard_help_1 += T_("<w>n</w>      set Zot clock to a value\n");
         wizard_help_1 += T_("<w>N</w>      get current tension value\n");
-        wizard_help_1 += T_("\n");
+        wizard_help_1 += "\n";
         wizard_help_1 += T_("<yellow>Dungeon features</yellow>\n");
         wizard_help_1 += T_("<w>T</w>      make a trap\n");
         wizard_help_1 += T_("<w>,</w>/<w>.</w>    create up/down staircase\n");
         wizard_help_1 += T_("<w>(</w>      turn cell into feature\n");
         wizard_help_1 += T_("<w>\\</w>      make a shop\n");
-        wizard_help_1 += T_("\n");
+        wizard_help_1 += "\n";
         wizard_help_1 += T_("<yellow>Builder debugging</yellow>\n");
         wizard_help_1 += T_("<w>L</w>      place a vault by name\n");
         wizard_help_1 += T_("<w>P</w>      create a level based on a vault\n");
@@ -472,7 +472,7 @@ int list_wizard_commands(bool do_redraw_screen)
         // to not confuse non-devs. The command will still work.
         wizard_help_1 += T_("<w>Ctrl-L</w> show builder logs for level\n");
         #endif
-        wizard_help_1 += T_("\n");
+        wizard_help_1 += "\n";
         wizard_help_1 += T_("<yellow>Other level related commands</yellow>\n");
         wizard_help_1 += T_("<w>{</w>      magic mapping\n");
         wizard_help_1 += T_("<w>b</w>      controlled blink\n");
@@ -502,13 +502,13 @@ int list_wizard_commands(bool do_redraw_screen)
         wizard_help_2 += T_("<w>p</w>      polymorph into a form\n");
         wizard_help_2 += T_("<w>V</w>      toggle xray vision\n");
         wizard_help_2 += T_("<w>E</w>      (un)freeze time\n");
-        wizard_help_2 += T_("\n");
+        wizard_help_2 += "\n";
         wizard_help_2 += T_("<yellow>Monster related commands</yellow>\n");
         wizard_help_2 += T_("<w>m</w>/<w>M</w>    create specified monster\n");
         wizard_help_2 += T_("<w>D</w>      detect all monsters\n");
         wizard_help_2 += T_("<w>G</w>      dismiss all monsters\n");
         wizard_help_2 += T_("<w>\"</w>      list monsters\n");
-        wizard_help_2 += T_("\n");
+        wizard_help_2 += "\n";
         wizard_help_2 += T_("<yellow>Item related commands</yellow>\n");
         wizard_help_2 += T_("<w>a</w>      acquirement\n");
         wizard_help_2 += T_("<w>i</w>/<w>I</w>    identify/unidentify inventory\n");
@@ -524,7 +524,7 @@ int list_wizard_commands(bool do_redraw_screen)
         wizard_help_2 += T_("<w>'</w>      list items\n");
         wizard_help_2 += T_("<w>J</w>      Jiyva off-level sacrifice\n");
         wizard_help_2 += T_("<w>Z</w>      Unobtain runes and Orb of Zot\n");
-        wizard_help_2 += T_("\n");
+        wizard_help_2 += "\n";
         wizard_help_2 += T_("<yellow>Debugging commands</yellow>\n");
         wizard_help_2 += T_("<w>f</w>      quick fight simulation\n");
         wizard_help_2 += T_("<w>F</w>      single scale fsim\n");
@@ -540,7 +540,7 @@ int list_wizard_commands(bool do_redraw_screen)
         wizard_help_2 += T_("<w>Ctrl-Y</w> temporarily suppress wizmode\n");
         wizard_help_2 += T_("<w>Ctrl-C</w> force a crash\n");
         wizard_help_2 += T_("<w>`</w>      list unassigned command keys\n");
-        wizard_help_2 += T_("\n");
+        wizard_help_2 += "\n";
         wizard_help_2 += T_("<yellow>Other wizard commands</yellow>\n");
         wizard_help_2 += T_("(not prefixed with <w>&</w>!)\n");
         wizard_help_2 += T_("<w>x?</w>     list targeted commands\n");

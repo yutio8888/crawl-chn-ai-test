@@ -626,8 +626,11 @@ class MonspellInventoryTests(unittest.TestCase):
         inventory = build(historical_glossary)
         self.assertEqual(CURRENT_INVENTORY_SHA256,
                          inventory["inventory_sha256"])
+        # The checked-in ledger is a production artifact and binds the current
+        # docs/glossary.md; the historical fixture above stays unchanged.
+        ledger_inventory = build(ROOT / "docs/glossary.md")
         MODULE.validate_results(
-            ROOT / "docs/monspell-review-results.md", inventory, None
+            ROOT / "docs/monspell-review-results.md", ledger_inventory, None
         )
 
     def write_results(self, records: list[dict], suffix: str = "") -> Path:

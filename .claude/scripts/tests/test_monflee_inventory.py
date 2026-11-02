@@ -302,8 +302,26 @@ class MonfleeInventoryTests(unittest.TestCase):
         )
         self.assertEqual(CURRENT_INVENTORY_SHA256,
                          inventory["inventory_sha256"])
+        # The checked-in ledger is a production artifact and binds the current
+        # docs/glossary.md; reuse the fixture dumps with the current glossary.
+        ledger_inventory = MODULE.build_inventory(
+            PRODUCTION_BASELINE, en_path, zh_path, ROOT / "docs/glossary.md"
+        )
+        ledger_inventory["dumps"]["english"]["artifact_sha256"] = (
+            PRODUCTION_EN_ARTIFACT_SHA256
+        )
+        ledger_inventory["dumps"]["localized"]["artifact_sha256"] = (
+            PRODUCTION_ZH_ARTIFACT_SHA256
+        )
+        ledger_core = {
+            key: value for key, value in ledger_inventory.items()
+            if key != "inventory_sha256"
+        }
+        ledger_inventory["inventory_sha256"] = MODULE._sha256(
+            MODULE._canonical_json(ledger_core)
+        )
         MODULE.validate_results(
-            ROOT / "docs/monflee-review-results.md", inventory, None
+            ROOT / "docs/monflee-review-results.md", ledger_inventory, None
         )
 
     def test_schema_and_source_snapshot_binding_fail_closed(self):

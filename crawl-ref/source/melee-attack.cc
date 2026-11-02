@@ -3365,7 +3365,10 @@ string melee_attack::mons_body_attack_phrase(const string& verb)
         possessive = false;
     }
     else if (verb == "decapitate")
+    {
         format = NC_("monster body action", "beheads %s");
+        possessive = false;
+    }
     else
         return "";
     const string owner = possessive ? apostrophise(defender_name(true))
