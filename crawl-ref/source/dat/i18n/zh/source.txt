@@ -51073,4 +51073,15 @@ No longer under Kirke's spell, the hog returns to its human form!
 %%%%
 No longer under Kirke's spell, the hog returns to its original form!
 不再受喀耳刻的法术影响，这头猪恢复了原形！
-
+%%%%
+%s blessed by the Shining One
+受到光辉者祝福的%s
+%%%%
+%s corrupted by Lugonu
+受到卢格努腐化的%s
+%%%%
+%s bloodied by Kikubaaqudgha
+被奇库巴库哈染血的%s
+%%%%
+%s touched by the gods
+受到诸神触碰的%s

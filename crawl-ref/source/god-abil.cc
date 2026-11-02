@@ -143,13 +143,13 @@ static const char *_god_blessing_description(god_type god)
     switch (god)
     {
     case GOD_SHINING_ONE:
-        return T_("blessed by the Shining One");
+        return T_("%s blessed by the Shining One");
     case GOD_LUGONU:
-        return "corrupted by Lugonu";
+        return T_("%s corrupted by Lugonu");
     case GOD_KIKUBAAQUDGHA:
-        return "bloodied by Kikubaaqudgha";
+        return T_("%s bloodied by Kikubaaqudgha");
     default:
-        return "touched by the gods";
+        return T_("%s touched by the gods");
     }
 }
 
@@ -166,7 +166,7 @@ bool bless_weapon(god_type god, brand_type brand, colour_t colour)
 {
     ASSERT(can_do_capstone_ability(god));
 
-    int item_slot = prompt_invent_item("Brand which weapon?",
+    int item_slot = prompt_invent_item(T_("Brand which weapon?"),
                                        menu_type::invlist,
                                        OSEL_BLESSABLE_WEAPON, OPER_ANY);
 
@@ -217,7 +217,7 @@ bool bless_weapon(god_type god, brand_type brand, colour_t colour)
     calc_mp(); // in case the old brand was antimagic,
     you.redraw_armour_class = true; // protection,
     you.redraw_evasion = true;      // or evasion
-    const string desc = old_name + " " + _god_blessing_description(god);
+    const string desc = make_stringf(_god_blessing_description(god), old_name.c_str());
     take_note(Note(NOTE_ID_ITEM, 0, 0, wpn.name(DESC_A), desc));
     wpn.flags |= ISFLAG_NOTED_ID;
     wpn.props[FORCED_ITEM_COLOUR_KEY] = colour;
