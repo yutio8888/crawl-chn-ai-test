@@ -375,15 +375,22 @@ def active_source(path, snapshot=None):
 
 
 def function_body(text, name):
-    match = re.search(r"\b" + re.escape(name) + r"\s*\([^;]*?\)\s*\{", text, re.S)
-    if not match:
-        raise RuntimeError(f"function not found: {name}")
-    start = match.end() - 1
+    from scan_i18n import CPP_LITERAL_RE, _mask_cpp_comments
+    code = _mask_cpp_comments(text, raw_strings=True)
+    code = CPP_LITERAL_RE.sub(
+        lambda match: re.sub(r"[^\n]", " ", match.group()), code,
+    )
+    matches = list(re.finditer(
+        r"\b" + re.escape(name) + r"\s*\([^;{}]*?\)\s*\{", code, re.S,
+    ))
+    if len(matches) != 1:
+        raise RuntimeError(f"function missing or duplicate: {name}")
+    start = matches[0].end() - 1
     depth = 0
-    for i in range(start, len(text)):
-        if text[i] == "{":
+    for i in range(start, len(code)):
+        if code[i] == "{":
             depth += 1
-        elif text[i] == "}":
+        elif code[i] == "}":
             depth -= 1
             if depth == 0:
                 return text[start + 1:i]
@@ -1242,14 +1249,52 @@ def changed_textdb_keys(path, review_base):
     }
 
 
-def array_literals(text, array_name):
-    match = re.search(
-        r"\b" + re.escape(array_name)
-        + r"\s*\[\]\s*=\s*\{(.*?)\};", text, re.S,
+def code_matches(pattern, source):
+    from scan_i18n import CPP_LITERAL_RE
+    literals = list(CPP_LITERAL_RE.finditer(source))
+    return [match for match in re.finditer(pattern, source, re.S)
+            if not any(literal.start() <= match.start() < literal.end()
+                       for literal in literals)]
+
+
+def literal_array_entries(body, array_name):
+    """Consume literal/NC_ entries in order, rejecting unsupported syntax."""
+    literal = r'"(?:\\.|[^"\\])*"'
+    trivia = r"\s*"
+    entry_pattern = re.compile(
+        trivia + r"(?:NC_" + trivia + r"\(" + trivia + "(" + literal + ")"
+        + trivia + "," + trivia + "(" + literal + ")" + trivia + r"\)|("
+        + literal + "))" + trivia + r"(,|$)", re.S,
     )
-    if not match:
-        raise RuntimeError(f"array not found: {array_name}")
-    return re.findall(r'"([^"]*)"', match.group(1))
+    values = []
+    offset = 0
+    while offset < len(body):
+        if re.fullmatch(trivia, body[offset:], re.S):
+            break
+        match = entry_pattern.match(body, offset)
+        if match is None:
+            raise RuntimeError(f"unsupported array entry: {array_name}")
+        raw_context, raw_key, raw_literal, _ = match.groups()
+        values.append((json.loads(raw_context) if raw_context else None,
+                       json.loads(raw_key or raw_literal)))
+        offset = match.end()
+    return values
+
+
+def array_literals(text, array_name, context=None):
+    from scan_i18n import _mask_cpp_comments
+    text = _mask_cpp_comments(text, raw_strings=True)
+    matches = code_matches(
+        r"\b" + re.escape(array_name)
+        + r"\s*\[\]\s*=\s*\{(.*?)\};", text,
+    )
+    if len(matches) != 1:
+        raise RuntimeError(f"array missing or duplicate: {array_name}")
+    values = literal_array_entries(matches[0].group(1), array_name)
+    if any(entry_context is not None and entry_context != context
+           for entry_context, _ in values):
+        raise RuntimeError(f"array context drift: {array_name}")
+    return [value for _, value in values]
 
 
 def unrand_enum_identity(name, block):
@@ -1402,13 +1447,7 @@ def scroll_appearance_components(snapshot=None):
     """Read ordered scroll components from current keys or historical literals."""
     # Reuse the scanner's string-aware masker: source comments cannot stand
     # in for declarations or C_ consumers, and comment-like key bytes survive.
-    from scan_i18n import CPP_LITERAL_RE, _mask_cpp_comments
-
-    def code_matches(pattern, source):
-        literals = list(CPP_LITERAL_RE.finditer(source))
-        return [match for match in re.finditer(pattern, source, re.S)
-                if not any(literal.start() <= match.start() < literal.end()
-                           for literal in literals)]
+    from scan_i18n import _mask_cpp_comments
 
     active = snapshot or audit_snapshot()
     text = _mask_cpp_comments(
@@ -1417,16 +1456,6 @@ def scroll_appearance_components(snapshot=None):
     enums = enum_constants(
         ["zh-scroll-appearance.h"],
         {"scroll_binding_type", "scroll_seal_type"}, active,
-    )
-    # This finite producer has only literal and NC_ entries. Consume the entire
-    # initializer; collecting every quoted string would mistake contexts for
-    # additional components and silently lose ordering or unsupported entries.
-    literal = r'"(?:\\.|[^"\\])*"'
-    trivia = r"\s*"
-    entry_pattern = re.compile(
-        trivia + r"(?:NC_" + trivia + r"\(" + trivia + "(" + literal + ")"
-        + trivia + "," + trivia + "(" + literal + ")" + trivia + r"\)|("
-        + literal + "))" + trivia + r"(,|$)", re.S,
     )
     result = []
     for family, enum_name, sentinel, count, context in (
@@ -1468,26 +1497,13 @@ def scroll_appearance_components(snapshot=None):
                                  + r'"\s*,\s*' + part + r'_key\s*\)', consumer)
             ):
                 raise RuntimeError(f"scroll NC_/C_ consumer drift: {array_name}")
-        # Comments are trivia only between tokens, never inside a key.
-        body = body.strip()
-        values = []
-        offset = 0
-        while offset < len(body):
-            if re.fullmatch(trivia, body[offset:], re.S):
-                break
-            match = entry_pattern.match(body, offset)
-            if match is None:
-                raise RuntimeError(f"unsupported scroll array entry: {array_name}")
-            raw_context, raw_key, raw_literal, _ = match.groups()
-            entry_context = json.loads(raw_context) if raw_context else None
-            value = json.loads(raw_key or raw_literal)
+        values = literal_array_entries(body, array_name)
+        for entry_context, value in values:
             if deferred:
                 if entry_context != (context if value else None):
                     raise RuntimeError(f"scroll context drift: {array_name}")
             elif entry_context is not None:
                 raise RuntimeError(f"unexpected historical scroll lookup: {array_name}")
-            values.append((entry_context, value))
-            offset = match.end()
         if len(values) != count or len({value for _, value in values}) != count:
             raise RuntimeError(f"scroll array count or duplicate drift: {array_name}")
         for ordinal, ((enum_id, _), (entry_context, value)) in enumerate(
@@ -1556,20 +1572,36 @@ def scroll_appearance_rows(source_db, base_source_db, review_base):
 def unidentified_appearance_rows(source_db, base_source_db,
                                  review_base=ISSUE29_REVIEW_BASE):
     item_name = active_source(SRC / "item-name.cc")
+    from scan_i18n import _mask_cpp_comments
+    contexts = {}
+    primary = {}
+    for family in ("ring-primary", "amulet-primary"):
+        body = _mask_cpp_comments(function_body(
+            item_name, family.replace("-", "_") + "_string",
+        ), raw_strings=True)
+        consumer = code_matches(
+            r'return\s+(?:C_\(\s*(".*?")\s*,\s*|T_\(\s*)'
+            r'primary_strings\[p\s*%\s*NDSC_JEWEL_PRI\]\s*\)\s*;', body,
+        )
+        if len(consumer) != 1:
+            raise RuntimeError(f"jewellery appearance consumer drift: {family}")
+        raw_context = consumer[0].group(1)
+        contexts[family] = json.loads(raw_context) if raw_context else None
+        primary[family] = array_literals(
+            body, "primary_strings", contexts[family],
+        )
     specs = [
-        ("wand-primary", array_literals(item_name, "primary_strings")[:12]),
+        ("wand-primary",
+         array_literals(function_body(item_name, "wand_primary_string"),
+                        "primary_strings")),
         ("wand-secondary",
          array_literals(function_body(item_name, "wand_secondary_string"),
                         "secondary_strings")),
-        ("ring-primary",
-         array_literals(function_body(item_name, "ring_primary_string"),
-                        "primary_strings")),
+        ("ring-primary", primary["ring-primary"]),
         ("ring-secondary",
          array_literals(function_body(item_name, "ring_secondary_string"),
                         "secondary_strings")),
-        ("amulet-primary",
-         array_literals(function_body(item_name, "amulet_primary_string"),
-                        "primary_strings")),
+        ("amulet-primary", primary["amulet-primary"]),
         ("amulet-secondary",
          array_literals(function_body(item_name, "amulet_secondary_string"),
                         "secondary_strings")),
@@ -1596,7 +1628,11 @@ def unidentified_appearance_rows(source_db, base_source_db,
     for family, values in specs:
         for ordinal, value in enumerate(values):
             english = value.strip()
-            current_chinese = source_db.get(english.lower(), english)
+            context = contexts.get(family)
+            current_chinese = (
+                source_db.get(compute_canonical_key(f"{context}|{english}"))
+                if context else None
+            ) or source_db.get(english.lower(), english)
             rows.append({
                 "identity": f"appearance:{family}:{ordinal:03d}",
                 "category": "appearance",
@@ -1612,8 +1648,13 @@ def unidentified_appearance_rows(source_db, base_source_db,
                 "_metadata": {
                     "family": family,
                     "physical_ordinal": ordinal,
+                    **({"source_context": context} if context else {}),
                 },
-                "_conclusion": "keep",
+                "_conclusion": (
+                    "adjust" if current_chinese
+                    != base_source_db.get(english.lower(), english)
+                    else "keep"
+                ),
             })
     rows.extend(scroll_appearance_rows(source_db, base_source_db, review_base))
     return rows
@@ -2050,7 +2091,7 @@ def source_db_dependency_spec(row):
             if context is None:  # Historical literals and structural SSE_NONE.
                 return None
         else:
-            context = None
+            context = row.get("_metadata", {}).get("source_context")
         english = "" if english == "(empty component)" else english
     elif category == "special":
         if str(row["identity"]).startswith("special:RUNE_"):

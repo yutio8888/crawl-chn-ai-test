@@ -69,6 +69,10 @@ DESCRIPTION_FILES = {
         SRC / "dat/descript/ability.txt",
         SRC / "dat/descript/zh/ability.txt",
     ),
+    "passive": (
+        SRC / "dat/descript/passives.txt",
+        SRC / "dat/descript/zh/passives.txt",
+    ),
     "skill": (
         SRC / "dat/descript/skills.txt",
         SRC / "dat/descript/zh/skills.txt",
@@ -127,6 +131,7 @@ REVIEW_CATEGORY_HEADINGS = (
     ("ability_description", "全部能力正文证据卡"),
     ("mutation", "变异证据卡"),
     ("mutation_description", "全部变异正文证据卡"),
+    ("passive_description", "被动效果正文证据卡"),
     ("duration", "时长状态证据卡"),
     ("status", "附加状态证据卡"),
     ("status_description", "玩家状态正文证据卡"),
@@ -1189,7 +1194,7 @@ def build_inventory():
         descriptions["monster_status"]["chinese"],
     ))
     complete_bodies = []
-    for category in ("mutation", "ability"):
+    for category in ("mutation", "ability", "passive"):
         complete_bodies.extend(complete_description_rows(category, (
             descriptions[category]["english"], descriptions[category]["chinese"],
         )))
@@ -1235,7 +1240,7 @@ def build_inventory():
                 "duration/status producers used by fill_status_info",
                 "complete EN/ZH player-status TextDB body union, including help-only keys",
                 "non-religious ability definitions and descriptions",
-                "complete EN/ZH ability and mutation TextDB body unions",
+                "complete EN/ZH ability, mutation and passive TextDB body unions",
                 "all monster flag-table short/long/plural display labels",
                 "current and save-compatibility skills, descriptions and titles",
                 "skill-specific title overrides and shared conduct/substitution producers",
@@ -1243,7 +1248,7 @@ def build_inventory():
                 "English monster-status TextDB slots and their ZH counterparts",
             ],
             "excluded": [
-                "god-specific ability definitions and passives owned by Issue #25",
+                "god-specific ability definitions owned by Issue #25",
                 "spell/item identity re-review",
                 "balance, formulas, probabilities and costs",
                 "internal durations without any change to their game behaviour",

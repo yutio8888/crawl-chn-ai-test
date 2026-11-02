@@ -159,6 +159,70 @@ def quality_m1_fixture():
 
 
 class ItemNameInventoryAuditTest(unittest.TestCase):
+    def test_appearance_arrays_preserve_order_and_context_without_extra_slots(self):
+        source = '''const char* entries[] = {
+            "wooden", NC_("material", "ruby"), /* trivia */ "blue",
+        };'''
+        self.assertEqual(["wooden", "ruby", "blue"],
+                         MODULE.array_literals(source, "entries", "material"))
+        for changed in (
+            source.replace('"material"', '"wrong"'),
+            source.replace('NC_("material", "ruby")', 'unknown_entry()'),
+            source + source,
+            '// ' + source.replace('\n', ' '),
+            'const char* decoy = R"(' + source + ')";',
+        ):
+            with self.subTest(source=changed), self.assertRaises(RuntimeError):
+                MODULE.array_literals(changed, "entries", "material")
+
+    def test_jewellery_appearance_inventory_binds_actual_context_consumer(self):
+        source = MODULE.active_source(MODULE.SRC / "item-name.cc")
+        db = {"ruby": "红宝石色", "jewellery appearance|ruby": "红宝石",
+              "wooden": "木制"}
+        with mock.patch.object(MODULE, "scroll_appearance_rows", return_value=[]):
+            rows = MODULE.unidentified_appearance_rows(db, {})
+        ruby = next(row for row in rows if row["identity"] == "appearance:ring-primary:010")
+        wooden = next(row for row in rows if row["identity"] == "appearance:ring-primary:000")
+        self.assertEqual("ruby", ruby["english_source"])
+        self.assertEqual("红宝石", ruby["current_chinese"])
+        self.assertEqual("木制", wooden["current_chinese"])
+        spec = MODULE.source_db_dependency_spec(ruby)
+        self.assertEqual("C_", spec["lookup_kind"])
+        self.assertEqual(["jewellery appearance|ruby", "ruby"],
+                         [entry["canonical_key"] for entry in spec["candidates"]])
+        consumer = 'return C_("jewellery appearance", primary_strings[p % NDSC_JEWEL_PRI]);'
+        historical = re.sub(r'NC_\("jewellery appearance",\s*("[^"]*")\)',
+                            r'\1', source).replace(
+            consumer, 'return T_(primary_strings[p % NDSC_JEWEL_PRI]);')
+        with mock.patch.object(MODULE, "active_source", return_value=historical), \
+                mock.patch.object(MODULE, "scroll_appearance_rows", return_value=[]):
+            old_rows = MODULE.unidentified_appearance_rows(db, {})
+        old_ruby = next(row for row in old_rows if row["identity"] == ruby["identity"])
+        self.assertEqual("红宝石色", old_ruby["current_chinese"])
+        self.assertEqual("T_", MODULE.source_db_dependency_spec(old_ruby)["lookup_kind"])
+        decoy = 'string ring_primary_string(int p) {' + MODULE.function_body(
+            source, "ring_primary_string") + '}'
+        wrong_source = source.replace(consumer, consumer.replace(
+            '"jewellery appearance"', '"wrong"'), 1)
+        for prefix in ('/* ' + decoy + ' */\n',
+                       'const char* decoy = R"(' + decoy + ')";\n'):
+            with self.subTest(prefix=prefix), \
+                    mock.patch.object(MODULE, "active_source", return_value=prefix + wrong_source), \
+                    mock.patch.object(MODULE, "scroll_appearance_rows", return_value=[]), \
+                    self.assertRaises(RuntimeError):
+                MODULE.unidentified_appearance_rows(db, {})
+        for replacement in (
+            'return T_(primary_strings[p % NDSC_JEWEL_PRI]);',
+            consumer.replace('"jewellery appearance"', '"wrong"'),
+            '/* ' + consumer + ' */ return primary_strings[p % NDSC_JEWEL_PRI];',
+            '(void)R"(' + consumer + ')"; return primary_strings[p % NDSC_JEWEL_PRI];',
+        ):
+            with self.subTest(replacement=replacement), \
+                    mock.patch.object(MODULE, "active_source", return_value=source.replace(consumer, replacement, 1)), \
+                    mock.patch.object(MODULE, "scroll_appearance_rows", return_value=[]), \
+                    self.assertRaises(RuntimeError):
+                MODULE.unidentified_appearance_rows(db, {})
+
     def test_source_entries_match_localized_sourcedb_semantics(self):
         with tempfile.TemporaryDirectory() as directory:
             source_dir = Path(directory)
