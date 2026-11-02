@@ -4099,7 +4099,8 @@ bool describe_feature_wide(const coord_def& pos, bool do_actions)
             const bool special = cmd == CMD_GO_DOWNSTAIRS
                     && (feat_is_altar(feat) || feat == DNGN_ENTER_SHOP
                         || feat_is_portal(feat) || feat_is_gate(feat)
-                        || feat == DNGN_TRANSPORTER)
+                        || feat == DNGN_TRANSPORTER
+                        || feat == DNGN_PURIFIED_MUTATION_CATALYST)
                 || cmd == CMD_GO_UPSTAIRS && feat_is_gate(feat);
             if (special)
             {

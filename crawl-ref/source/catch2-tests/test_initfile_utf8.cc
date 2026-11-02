@@ -254,7 +254,9 @@ TEST_CASE("residual rereview: actual option parsing localizes errors without acc
             T_("Bad %s value: %s (should be true or false)"),
             "default_autopickup", "invalid%s");
         const string output = get_last_messages(10, true);
-        CHECK(output.find(error) != string::npos);
+        // The message store wraps long English diagnostics across lines.
+        const string unwrapped = replace_all(output, "\n", " ");
+        CHECK(unwrapped.find(error) != string::npos);
         CHECK(output.find("default_autopickup") != string::npos);
         CHECK(output.find("invalid%s") != string::npos);
         CHECK(output.find("residual-test.rc:17") != string::npos);
