@@ -513,6 +513,61 @@ class ReleaseArtifactTest(unittest.TestCase):
         source.unlink()
         source.write_bytes(original)
 
+    def test_android_aapt2_resource_case_variants_are_valid(self) -> None:
+        rule = next(item for item in self.rules if item.archive_type == "apk")
+        # Real optimized APKs use distinct paths referenced by resources.arsc.
+        resources = {
+            "res/2F.xml": b"first", "res/2f.xml": b"second",
+            "res/BT.xml": b"third", "res/bT.xml": b"fourth",
+            "res/bt.xml": b"fifth",
+        }
+        self._rewrite(rule, self._payloads(rule) | resources)
+        self._validate()
+        self.assertIn(rule.filename, (self.root / "SHA256SUMS").read_text())
+        with zipfile.ZipFile(self.artifacts / rule.filename) as archive:
+            for name, content in resources.items():
+                self.assertEqual(archive.read(name), content)
+
+    def test_apk_resource_case_exception_preserves_safety_boundaries(self) -> None:
+        rule = next(item for item in self.rules if item.archive_type == "apk")
+        payloads = self._payloads(rule) | {"res/2F.xml": b"first"}
+        mutations = (
+            ("duplicate archive member", "res/2F.xml", None),
+            ("duplicate archive member", "res/2F.xml/", stat.S_IFDIR | 0o755),
+            ("case-insensitive member collision", "res/2f.xml/", stat.S_IFDIR | 0o755),
+            ("case-insensitive member collision", "RES/2f.xml", None),
+            ("unsafe archive member", "res/../escape.xml", None),
+            ("invalid archive member", "res//2f.xml", None),
+            ("case-insensitive member collision", "res/2f.xml", stat.S_IFDIR | 0o755),
+            ("case-insensitive member collision", "res/2f.xml", stat.S_IFLNK | 0o777),
+            ("case-insensitive member collision", "res/2f.xml", stat.S_IFIFO | 0o644),
+        )
+        for pattern, name, mode in mutations:
+            with self.subTest(member=name, mode=mode):
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore", UserWarning)
+                    self._rewrite(rule, payloads, zip_extra=[(name, b"x", mode)])
+                self.assert_rejected(pattern)
+
+        for first, second in (
+            ("assets/extra.txt", "assets/EXTRA.txt"),
+            ("lib/arm64-v8a/libmain.so", "lib/arm64-v8a/LIBMAIN.so"),
+        ):
+            with self.subTest(member=second):
+                self._rewrite(
+                    rule, self._payloads(rule) | {first: b"first"},
+                    zip_extra=[(second, b"second", None)],
+                )
+                self.assert_rejected("case-insensitive member collision")
+
+    def test_windows_resources_keep_case_insensitive_collision_gate(self) -> None:
+        rule = next(item for item in self.rules if item.archive_type == "zip")
+        self._rewrite(
+            rule, self._payloads(rule) | {f"{rule.root}/res/2F.xml": b"first"},
+            zip_extra=[(f"{rule.root}/res/2f.xml", b"second", None)],
+        )
+        self.assert_rejected("case-insensitive member collision")
+
     def test_zip_and_apk_member_safety_invariants_are_rejected(self) -> None:
         archive_rules = [
             rule
