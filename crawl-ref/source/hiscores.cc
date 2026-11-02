@@ -54,6 +54,7 @@
 #include "religion.h"
 #include "scroller.h"
 #include "skills.h"
+#include "spl-damage.h"
 #include "state.h"
 #include "status.h"
 #include "stringutil.h"
@@ -2369,6 +2370,9 @@ string scorefile_entry::death_place(death_desc_verbosity verbosity) const
 // indirect-effect producers. Unrecognized saved values remain verbatim.
 static string _death_beam_display_name(const string &cause)
 {
+    const string fragment = fragmentation_name_display(cause);
+    if (fragment != cause)
+        return fragment;
     const string projectile = projectile_display_name(cause);
     if (projectile != cause)
         return projectile;
@@ -2377,6 +2381,8 @@ static string _death_beam_display_name(const string &cause)
 
     static const char *const indirect_causes[] = {
         N_("Freeze"),
+        N_("the Shining One's cleansing flame"),
+        N_("cleansing flame"),
         N_("Lee's Rapid Deconstruction"),
         N_("Olgreb's Toxic Radiance"),
         N_("Shatter"),

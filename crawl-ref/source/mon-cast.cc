@@ -7909,7 +7909,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
             mprf(T_("%s and strikes %s%s%s"),
                  airstrike_intensity_display(empty_space, tile).c_str(),
                  foe->name(DESC_THE).c_str(),
-                 spell_cast == SPELL_SLEETSTRIKE ? " with frigid sleet" : "",
+                 spell_cast == SPELL_SLEETSTRIKE ? T_(" with frigid sleet") : "",
                  attack_strength_punctuation(damage_taken).c_str());
 
             flash_tile(foe->pos(), WHITE, 60, tile);

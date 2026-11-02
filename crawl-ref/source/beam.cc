@@ -4254,6 +4254,8 @@ static pie_effect _random_pie_effect(const actor &defender)
 // use the translated spell title instead of the English zap name.
 static string _beam_display_name(const bolt &beam)
 {
+    if (beam.origin_spell == SPELL_LRD)
+        return fragmentation_name_display(beam.name);
     if (Options.language == lang_t::ZH && beam.origin_spell != SPELL_NO_SPELL)
         return spell_title(beam.origin_spell);
     return T_(beam.name.c_str());

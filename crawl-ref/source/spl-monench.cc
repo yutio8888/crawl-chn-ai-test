@@ -493,7 +493,7 @@ void do_vexed_attack(actor& attacker, bool always_hit_ally)
                             : feature_description_at(pos, false, DESC_THE);
         if (you.can_see(attacker))
         {
-            mprf_p(T_("%1$s %2$s %3$s!"),
+            mprf_p(C_("anguish action", "%1$s %2$s %3$s!"),
                     attacker.name(DESC_THE).c_str(),
                     has_attacks ? (attacker.is_monster() ? T_("attacks") : T_("attack"))
                                 : T_("glares at"),
