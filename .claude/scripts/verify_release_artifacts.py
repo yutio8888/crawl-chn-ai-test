@@ -222,10 +222,11 @@ def release_rules(tag: str, source_root: Path) -> tuple[ArtifactRule, ...]:
 
 
 def _validate_member_names(
-    names: list[str], *, root: str | None, archive_name: str
+    names: list[str], *, root: str | None, archive_name: str,
+    apk_resource_files: set[str] | None = None,
 ) -> None:
     seen: set[str] = set()
-    seen_casefolded: set[str] = set()
+    seen_casefolded: dict[str, str] = {}
     root_prefix = f"{root}/" if root is not None else None
     for name in names:
         if not name or "\\" in name or "//" in name:
@@ -248,11 +249,21 @@ def _validate_member_names(
             )
         folded = canonical.casefold()
         if folded in seen_casefolded:
-            raise ReleaseArtifactError(
-                f"{archive_name}: case-insensitive member collision {canonical!r}"
+            previous = seen_casefolded[folded]
+            # AAPT2 resource-path shortening uses both upper- and lower-case
+            # names. Android reads these files by exact path from resources.arsc;
+            # they are not extracted onto the host's case-insensitive filesystem.
+            resource_variants = (
+                apk_resource_files is not None
+                and previous in apk_resource_files
+                and name in apk_resource_files
             )
+            if not resource_variants:
+                raise ReleaseArtifactError(
+                    f"{archive_name}: case-insensitive member collision {canonical!r}"
+                )
         seen.add(canonical)
-        seen_casefolded.add(folded)
+        seen_casefolded[folded] = name
         if (
             root is not None
             and canonical != root
@@ -367,6 +378,13 @@ def _validate_apk(path: Path, rule: ArtifactRule, source_root: Path) -> None:
                 [info.filename for info in infos],
                 root=None,
                 archive_name=path.name,
+                apk_resource_files={
+                    info.filename for info in infos
+                    if info.filename.startswith("res/")
+                    and not info.is_dir()
+                    and stat.S_IFMT(info.external_attr >> 16)
+                    in (0, stat.S_IFREG)
+                },
             )
             _validate_zh_member_set(
                 path.name,

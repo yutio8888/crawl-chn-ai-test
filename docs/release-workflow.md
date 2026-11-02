@@ -49,6 +49,9 @@
 校验器是 `.claude/scripts/verify_release_artifacts.py`。缺少文件、空文件、未知产物、
 内容漂移、不可执行主程序、重复/大小写冲突成员、路径穿越、符号链接、特殊归档成员或
 损坏归档，以及 APK 缺少签名、ABI 或关键 native library 都会使发布失败。
+APK 的 `res/` 普通资源文件按 Android 的精确路径查找语义区分大小写，允许 AAPT2
+资源路径缩名产生的 `res/2F.xml` / `res/2f.xml` 等不同文件；精确重名、目录冲突及
+其他命名空间的大小写冲突仍会失败。Windows ZIP 与 macOS DMG 不使用此例外。
 自动流程拒绝任何同标签的既有 Release（包括 draft），也不会上传或刷新其资产。工作流若在
 草稿创建后重跑，会停在 create-only 边界；需要修复产物时必须递增 `CCC` 并使用新标签。
 `CCC` 到达 `999` 后递增 `B`，并从 `001` 重新开始；不回收旧编号。
