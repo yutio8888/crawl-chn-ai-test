@@ -1156,13 +1156,17 @@ static const char* ring_primary_string(uint32_t p)
 {
     static const char* const primary_strings[] = {
         "wooden", "silver", "golden", "iron", "steel", "tourmaline", "brass",
-        "copper", "granite", "ivory", "ruby", "marble", "jade", "glass",
-        "agate", "bone", "diamond", "emerald", "peridot", "garnet", "opal",
-        "pearl", "coral", "sapphire", "cabochon", "gilded", "onyx", "bronze",
+        "copper", "granite", "ivory", NC_("jewellery appearance", "ruby"),
+        "marble", "jade", "glass", "agate", "bone", "diamond",
+        NC_("jewellery appearance", "emerald"), "peridot", "garnet", "opal",
+        "pearl", "coral", NC_("jewellery appearance", "sapphire"),
+        "cabochon", "gilded", "onyx", "bronze",
         "moonstone"
     };
     COMPILE_CHECK(ARRAYSZ(primary_strings) == NDSC_JEWEL_PRI);
-    return T_(primary_strings[p % NDSC_JEWEL_PRI]);
+    // Material names differ from the shared potion-colour labels. Other
+    // appearances intentionally retain the ordinary catalog fallback.
+    return C_("jewellery appearance", primary_strings[p % NDSC_JEWEL_PRI]);
 }
 
 static const char* amulet_secondary_string(uint32_t s)
@@ -1179,14 +1183,20 @@ static const char* amulet_secondary_string(uint32_t s)
 static const char* amulet_primary_string(uint32_t p)
 {
     static const char* const primary_strings[] = {
-        "sapphire", "zirconium", "golden", "emerald", "garnet", "bronze",
-        "brass", "copper", "ruby", "citrine", "bone", "platinum", "jade",
-        "fluorescent", "amethyst", "cameo", "pearl", "blue", "peridot",
+        NC_("jewellery appearance", "sapphire"),
+        NC_("jewellery appearance", "zirconium"), "golden",
+        NC_("jewellery appearance", "emerald"), "garnet", "bronze",
+        "brass", "copper", NC_("jewellery appearance", "ruby"),
+        "citrine", "bone", "platinum", "jade",
+        "fluorescent", NC_("jewellery appearance", "amethyst"),
+        "cameo", "pearl", "blue", "peridot",
         "jasper", "diamond", "malachite", "steel", "cabochon", "silver",
         "soapstone", "lapis lazuli", "filigree", "beryl"
     };
     COMPILE_CHECK(ARRAYSZ(primary_strings) == NDSC_JEWEL_PRI);
-    return T_(primary_strings[p % NDSC_JEWEL_PRI]);
+    // Material names differ from the shared potion-colour labels. Other
+    // appearances intentionally retain the ordinary catalog fallback.
+    return C_("jewellery appearance", primary_strings[p % NDSC_JEWEL_PRI]);
 }
 
 const char* rune_type_name(short p)
@@ -1222,7 +1232,7 @@ const char* rune_type_name(short p)
 
 static string gem_type_name(gem_type g)
 {
-    return string(gem_adj(g)) + T_(" gem");
+    return string(C_("gem appearance", gem_adj(g))) + T_(" gem");
 }
 
 static const char* _misc_type_name_en(int type)

@@ -391,16 +391,16 @@ Agent memory is not authoritative. Resolve current context from this file and
 
 ---
 
-### D-A-026 — sensed monster → 感知怪物
+### D-A-026 — sensed monster → 感知到的怪物
 
 - **Type**: A — Entity ruling
 - **Status**: active
-- **Date**: 2026-07-05
-- **Source**: Monster name terminology batch
-- **Choice**: 感知怪物 (difficulty + 感知怪物 for subtypes)
-- **Rejected**: 侦测怪物 (too military/radar), 灵知怪物 (too esoteric)
-- **Rationale**: These are Ashenzari-detection placeholders — monsters revealed through walls before the player can see them. 感知 captures extrasensory detection. Base form: 感知到的怪物 (with 的). Subtypes drop 的 for compound compatibility: 简单感知怪物, 友善感知怪物.
-- **Examples**: sensed monster → 感知到的怪物, easy sensed monster → 简单感知怪物, nasty sensed monster → 危险感知怪物
+- **Date**: 2026-07-05; semantic correction 2026-11-02
+- **Source**: Monster name terminology batch; full six-name dependency re-review
+- **Choice**: Base `sensed monster → 感知到的怪物`; subtypes `trivial → 感知到的微不足道的怪物`, `easy → 感知到的弱小怪物`, `tough → 感知到的危险怪物`, `nasty → 感知到的极危险怪物`, `friendly → 感知到的友方怪物`.
+- **Rejected**: 侦测怪物 (too military/radar), 灵知怪物 (too esoteric). The former subtype labels 简单感知怪物／困难感知怪物 confuse threat with the difficulty of detection; 微弱感知怪物 can imply a weak signal, while 危险感知怪物 alone loses the stronger nasty tier.
+- **Rationale**: These are detected-monster display placeholders. `god-passive.cc:ash_monster_tier` selects the four hostile tiers from `monster_info::threat`; `mutation.cc:check_monster_detect` distinguishes friendly, tiered and generic detected monsters. `dat/descript/monsters.txt` defines the tier descriptions as trivially weak, weak, somewhat dangerous and very dangerous. The Chinese names now qualify the monster with that threat level and retain the detected state; they do not describe detection difficulty. The existing six Chinese description bodies already preserve those meanings and remain unchanged.
+- **Scope**: Six display names only. English monster names, YAML identities, enum ordering, threat calculation and friendly detection are unchanged. The 2026-11-02 correction replaces the old subtype examples, not the term 感知 or the underlying mechanics.
 
 ---
 

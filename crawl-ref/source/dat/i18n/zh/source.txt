@@ -456,7 +456,7 @@ The Shining One will bless your weapon with holy wrath... once.
 光辉者将为你的武器加持神圣惩戒……一次。
 %%%%
 The Shining One is no longer ready to bless your weapon.
-光辉者尚未准备好再次祝福你的武器。
+光辉者不再准备好祝福你的武器。
 %%%%
 bring forth the wretched and dying
 唤来悲惨与垂死之物
@@ -486,7 +486,7 @@ Kikubaaqudgha will grant you forbidden knowledge or bloody your weapon with pain
 奇库巴库哈将赐予你禁忌知识或为你的武器加持痛苦……一次。
 %%%%
 Kikubaaqudgha is no longer ready to enhance your necromancy.
-奇库巴库哈尚未准备好强化你的死灵法术。
+奇库巴库哈不再准备好强化你的死灵法术。
 %%%%
 Kikubaaqudgha will grant you forbidden knowledge.
 奇库巴库哈将赐予你禁忌知识。
@@ -561,13 +561,13 @@ Okawaru will grant you a choice of weapons... once.
 奥卡瓦鲁将让你从武器中挑选……一次。
 %%%%
 Okawaru is no longer ready to gift you weaponry.
-奥卡瓦鲁尚未准备好赐予你武器。
+奥卡瓦鲁不再准备赐予你武器。
 %%%%
 Okawaru will grant you a choice of armour... once.
 奥卡瓦鲁将让你从护甲中挑选……一次。
 %%%%
 Okawaru is no longer ready to gift you armour.
-奥卡瓦鲁尚未准备好赐予你护甲。
+奥卡瓦鲁不再准备赐予你护甲。
 %%%%
 gain health from killing
 通过杀戮获得生命
@@ -684,7 +684,7 @@ Lugonu will corrupt your weapon with distortion... once.
 卢格努将用扭曲腐蚀你的武器……一次。
 %%%%
 Lugonu is no longer ready to corrupt your weapon.
-卢格努尚未准备好腐蚀你的武器。
+卢格努不再准备好腐蚀你的武器。
 %%%%
 smite your foes
 惩击你的敌人
@@ -4832,7 +4832,7 @@ The roots constricting %s sink back into the ground.
 不再意志坚定。
 %%%%
  is no longer stupefied.
-不再愚钝。
+不再受到震慑。
 %%%%
 is no longer touched by paradox.
 不再被悖论触碰。
@@ -18025,40 +18025,40 @@ two-tendriled
 双卷须
 %%%%
 one hand-pair
-一对爪
+需用一对手握持的
 %%%%
 two hand-pairs
-两对爪
+需用两对手握持的
 %%%%
 one claw-pair
-一对爪
+需用一对爪握持的
 %%%%
 two claw-pairs
-两对爪
+需用两对爪握持的
 %%%%
 one paw-pair
-一对爪
+需用一对爪握持的
 %%%%
 two paw-pairs
-两对爪
+需用两对爪握持的
 %%%%
 one tentacle-pair
-一对触手
+需用一对触手握持的
 %%%%
 two tentacle-pairs
-两对触手
+需用两对触手握持的
 %%%%
 one grasper-pair
-一对抓握器
+需用一对抓握器握持的
 %%%%
 two grasper-pairs
-两对抓握器
+需用两对抓握器握持的
 %%%%
 one tendril-pair
-一对卷须
+需用一对卷须握持的
 %%%%
 two tendril-pairs
-两对卷须
+需用两对卷须握持的
 %%%%
  '%s' category. 
 '%s'类别。
@@ -21096,7 +21096,7 @@ infested
 被侵染
 %%%%
 stupefied
-迟钝
+震慑
 %%%%
 pinned
 被钉住
@@ -21180,7 +21180,7 @@ drained
 被吸取
 %%%%
 very drained
-严重吸取
+重度衰竭
 %%%%
 magic-sapped
 魔力枯竭
@@ -21546,7 +21546,7 @@ ablaze with memories
 因回忆而燃烧
 %%%%
 winding a clockwork bee
-正在组装发条蜜蜂
+正在给发条蜜蜂上发条
 %%%%
 feeble figment
 虚弱幻象
@@ -26008,10 +26008,10 @@ You worshipped %s.\n
 你曾信仰%s。\n
 %%%%
 You are %s\n
-你对柯苏特%s\n
+你是%s\n
 %%%%
 You were %s\n
-你曾对柯苏特%s\n
+你曾是%s\n
 %%%%
 You know the following spells:\n\n
 你掌握以下法术：\n\n
@@ -30185,7 +30185,7 @@ Delay
 延迟
 %%%%
 *Slow
-*缓慢
+*减速
 %%%%
 ^Fragile
 ^脆弱
@@ -30212,7 +30212,7 @@ Hungry
 -传送
 %%%%
 +Blink
-+闪现
++闪烁
 %%%%
 +Rage
 +狂暴
@@ -30260,7 +30260,7 @@ Bear,
 熊，
 %%%%
 Brand
-铭文
+铭印
 %%%%
 Brill Will-∞
 聪慧 意志-∞
@@ -30305,7 +30305,7 @@ FireWiz
 火焰施法辅助
 %%%%
 Flames, rFlCloud
-烈焰，火云抗
+烈焰，免疫火云
 %%%%
 Fury
 狂怒
@@ -30440,16 +30440,16 @@ Zealotry,
 狂热，
 %%%%
 ^Contam
-^污染
+^诱变辐射
 %%%%
 ^Dim
 卸下削弱法术
 %%%%
 ^Drain
-^吸取
+^衰竭
 %%%%
 anguish,
-痛苦，
+哀痛，
 %%%%
 backblast,
 后爆，
@@ -30500,13 +30500,13 @@ flash freeze,
 瞬间冻结，
 %%%%
 freeze, rev,
-冻结，反转，
+冻结，增效，
 %%%%
 freezing cloud,
 冰云，
 %%%%
 immolate, rFlCloud
-自燃，火云抗
+内焰，免疫火云
 %%%%
 knockback,
 击退，
@@ -30539,10 +30539,10 @@ reach-cleave
 远距劈砍
 %%%%
 reach-cleave, Poleaxe
-远距劈砍，长柄斧加
+远距劈砍，长柄斧
 %%%%
 shock,
-冲击，
+电击，
 %%%%
 silver,
 银，
@@ -31463,7 +31463,7 @@ Discharge
 放电
 %%%%
 Immolate
-献祭
+内焰
 %%%%
 Spellvamp
 法术吸血
@@ -32222,7 +32222,7 @@ lumpy
 块状的
 %%%%
 smoky
-烟熏的
+烟雾缭绕的
 %%%%
 sedimented
 有沉淀的
@@ -32234,7 +32234,7 @@ murky
 浑浊的
 %%%%
 gluggy
-咕嘟的
+稠糊的
 %%%%
 oily
 油性的
@@ -33266,7 +33266,7 @@ Recall Apostles
 召回使徒
 %%%%
 Recall Undead Harvest
-召回亡灵收割
+召回亡灵随从
 %%%%
 Elemental Force
 元素之力
@@ -33419,10 +33419,10 @@ Fathomless Shackles
 深不可测的枷锁
 %%%%
 Grow Ballistomycete
-生长孢子炮菌
+催生孢子炮菌
 %%%%
 Grow Oklob
-生长奥克罗布
+催生奥克罗布
 %%%%
 Imbue Servitor
 灌注仆从
@@ -34373,7 +34373,7 @@ earth elemental
 地元素
 %%%%
 easy sensed monster
-简单感知怪物
+感知到的弱小怪物
 %%%%
 electric eel
 电鳗
@@ -34463,7 +34463,7 @@ freezing wraith
 冰冻幽魂
 %%%%
 friendly sensed monster
-友善感知怪物
+感知到的友方怪物
 %%%%
 frilled lizard
 褶边蜥蜴
@@ -34820,7 +34820,7 @@ nameless horror
 无名恐怖
 %%%%
 nasty sensed monster
-危险感知怪物
+感知到的极危险怪物
 %%%%
 necrophage
 食尸者
@@ -35252,7 +35252,7 @@ torturous demonspawn
 折磨恶魔裔
 %%%%
 tough sensed monster
-困难感知怪物
+感知到的危险怪物
 %%%%
 training dummy
 训练假人
@@ -35261,7 +35261,7 @@ trapdoor spider
 陷门蜘蛛
 %%%%
 trivial sensed monster
-微弱感知怪物
+感知到的微不足道的怪物
 %%%%
 troll
 巨魔
@@ -35474,7 +35474,7 @@ Jiyva will unlock the Slime Pits vault.
 被辛之怒逼疯了！
 %%%%
  is left stupefied by the wrath of Zin!
-被辛之怒弄得呆傻了！
+被辛之怒震慑得无法行动！
 %%%%
  chaotic flesh sizzles and spatters!
 混沌之肉滋滋作响，溅出液体！
@@ -38627,7 +38627,7 @@ rain
 雨水
 %%%%
 the rain
-雨中
+雨水
 %%%%
 rust
 锈蚀
@@ -39143,19 +39143,19 @@ hand|hand
 手
 %%%%
 hand|hands
-双手
+手
 %%%%
 hand|paw
 爪
 %%%%
 hand|paws
-双爪
+爪
 %%%%
 hand|claw
 利爪
 %%%%
 hand|claws
-双利爪
+利爪
 %%%%
 hand|tentacle
 触手
@@ -39167,7 +39167,7 @@ hand|fist
 拳头
 %%%%
 hand|fists
-双拳
+拳头
 %%%%
 hand|eel hand
 鳗鱼手
@@ -39518,7 +39518,7 @@ hand|grasper
 钳手
 %%%%
 hand|graspers
-双钳手
+钳手
 %%%%
 hand|tendril
 触须
@@ -41486,7 +41486,7 @@ blast of lightning
 闪电冲击
 %%%%
 blast of putrescent gases
-腐臭爆裂
+腐臭气体冲击
 %%%%
 blast of shadow
 暗影冲击
@@ -51085,3 +51085,93 @@ No longer under Kirke's spell, the hog returns to its original form!
 %%%%
 %s touched by the gods
 受到诸神触碰的%s
+%%%%
+jewellery appearance|sapphire
+蓝宝石
+%%%%
+jewellery appearance|emerald
+祖母绿
+%%%%
+jewellery appearance|ruby
+红宝石
+%%%%
+jewellery appearance|amethyst
+紫水晶
+%%%%
+jewellery appearance|zirconium
+锆
+%%%%
+gem appearance|smoky
+含烟
+%%%%
+gem appearance|glittering
+闪亮
+%%%%
+gem appearance|shimmering
+流光
+%%%%
+gem appearance|earthy
+土色
+%%%%
+gem appearance|mossy
+覆苔
+%%%%
+gem appearance|azure
+湛蓝
+%%%%
+gem appearance|jade
+翠玉
+%%%%
+gem appearance|milky-white
+乳白
+%%%%
+gem appearance|starry
+星辉
+%%%%
+gem appearance|shining
+闪耀
+%%%%
+gem appearance|ivory
+象牙色
+%%%%
+gem appearance|sanguine
+血红
+%%%%
+gem appearance|midnight
+午夜
+%%%%
+gem appearance|prismatic
+虹彩
+%%%%
+Thief
+盗贼
+%%%%
+Paladin
+圣骑士
+%%%%
+Hill Dwarf
+丘陵矮人
+%%%%
+Ogre-Mage
+食人魔法师
+%%%%
+Grey Elf
+灰精灵
+%%%%
+Gnome
+侏儒
+%%%%
+You don't have enough magic to cast %s!
+你的法力不足以施放%s！
+%%%%
+Which spell slot to assign to automagic? (Enter to disable, Esc to cancel)
+将哪个法术栏位指定给自动施法？（Enter停用，Esc取消）
+%%%%
+Automagic will cast spell in slot %s (%s).
+自动施法将施放%s栏位的法术（%s）。
+%%%%
+Automagic enabled, will cast spell in slot %s (%s).
+已启用自动施法，将施放%s栏位的法术（%s）。
+%%%%
+no spell currently
+当前无法术

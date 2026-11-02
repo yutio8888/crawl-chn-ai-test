@@ -842,7 +842,7 @@ string Note::describe(bool when, bool where, bool what) const
             break;
         case NOTE_GEM_LOST:
             result << T_("Lost the ")
-                   << gem_adj(static_cast<gem_type>(first))
+                   << C_("gem appearance", gem_adj(static_cast<gem_type>(first)))
                    << T_(" gem through the power of Zot.");
             break;
         case NOTE_GAIN_LIFE:
