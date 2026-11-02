@@ -2088,6 +2088,8 @@ TEST_CASE("monster rereview: real gold theft writes canonical marked note and ro
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
     issue10_world world;
+    unwind_var<use_animations_type> animations(
+        Options.use_animations, use_animations_type());
     unwind_var<vector<Note>> saved_notes(note_list);
     const bool was_active = notes_are_active();
     activate_notes(true);
@@ -2151,6 +2153,8 @@ TEST_CASE("monster rereview: real item theft describes stolen quantity and keeps
     for (int quantity : {1, 10})
     {
         issue10_world world;
+    unwind_var<use_animations_type> animations(
+        Options.use_animations, use_animations_type());
         unwind_var<vector<Note>> saved_notes(note_list);
         const bool was_active = notes_are_active();
         activate_notes(true);
@@ -2216,6 +2220,8 @@ TEST_CASE("monster rereview: actual vex stores canonical cause and note across l
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
     issue10_world world;
+    unwind_var<use_animations_type> animations(
+        Options.use_animations, use_animations_type());
     unwind_var<vector<Note>> saved_notes(note_list);
     const bool was_active = notes_are_active();
     activate_notes(true);
@@ -2264,6 +2270,8 @@ TEST_CASE("monster rereview: real yell places wild adverb before Chinese action 
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
     issue10_world world;
+    unwind_var<use_animations_type> animations(
+        Options.use_animations, use_animations_type());
     for (bool berserk : {false, true})
     for (bool fugue : {false, true})
     {
@@ -2286,6 +2294,8 @@ TEST_CASE("monster rereview: soul-bound naming and four item binding displays us
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
     issue10_world world;
+    unwind_var<use_animations_type> animations(
+        Options.use_animations, use_animations_type());
     struct item_kind { object_class_type base; int subtype; };
     const item_kind kinds[] = {{OBJ_WEAPONS, WPN_DAGGER}, {OBJ_ARMOUR, ARM_ROBE},
                               {OBJ_JEWELLERY, RING_FIRE}, {OBJ_STAVES, STAFF_FIRE}};
@@ -2316,6 +2326,8 @@ TEST_CASE("monster rereview: actual delayed discharge translates raw source at f
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
     issue10_world world;
+    unwind_var<use_animations_type> animations(
+        Options.use_animations, use_animations_type());
     no_notes suppress_notes;
     monster* source = world.place(MONS_SHOCK_SERPENT, coord_def(20, 21));
     you.hp = you.hp_max = 1000;
@@ -2345,6 +2357,8 @@ TEST_CASE("monster rereview: actual slow orb keeps canonical caster property thr
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
     issue10_world world;
+    unwind_var<use_animations_type> animations(
+        Options.use_animations, use_animations_type());
     no_notes suppress_notes;
     init_zap_index();
     monster* caster = world.place(MONS_ORC_WIZARD, coord_def(20, 21));
@@ -2376,6 +2390,8 @@ TEST_CASE("monster rereview: finite canonical orb names render at actual beam an
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
     issue10_world world;
+    unwind_var<use_animations_type> animations(
+        Options.use_animations, use_animations_type());
     monster* source = world.place(MONS_ORC_WIZARD, coord_def(20, 21));
     const char* names[] = {"orb of destruction", "wavering orb of destruction",
         "annihilating fire", "annihilating cold", "annihilating electricity",
@@ -2391,6 +2407,7 @@ TEST_CASE("monster rereview: finite canonical orb names render at actual beam an
         // These are the bounded canonical setup outputs. This case exercises
         // final sinks, not the private random annihilation setup itself.
         bolt beam;
+        beam.animate = false;
         beam.name = canonical;
         beam.aux_source = canonical;
         beam.origin_spell = starts_with(canonical, "annihilating ")
@@ -2420,6 +2437,8 @@ TEST_CASE("monster rereview: actual Waterstrike translates grounded and airborne
     const bool airborne = GENERATE(false, true);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
     issue10_world world;
+    unwind_var<use_animations_type> animations(
+        Options.use_animations, use_animations_type());
     no_notes suppress_notes;
     init_zap_index();
     you.hp = you.hp_max = 1000;
@@ -2448,6 +2467,8 @@ TEST_CASE("monster rereview: real thrown-creature score parses canonical cause a
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
     issue10_world world;
+    unwind_var<use_animations_type> animations(
+        Options.use_animations, use_animations_type());
     monster* thrower = world.place(MONS_ORC_WIZARD, coord_def(20, 21));
     // Exercise the real legacy parser and score sinks using the exact producer
     // shape. The private throw-site selection/movement producer is source-audited.
@@ -2477,6 +2498,8 @@ TEST_CASE("monster rereview: actual dream dust covers strengths, plural endings 
     const int branch = GENERATE(0, 1, 2, 3, 4, 5);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
     issue10_world world;
+    unwind_var<use_animations_type> animations(
+        Options.use_animations, use_animations_type());
     no_notes suppress_notes;
     init_zap_index();
     const int count[] = {1, 2, 6, 6, 6, 6};
