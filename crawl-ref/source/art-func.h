@@ -486,7 +486,7 @@ static void _STORM_QUEEN_melee_effects(item_def* /*item*/, actor* wearer,
     if (!attacker || !one_chance_in(3)) return;
     schedule_shock_discharge_fineff(wearer, *attacker,
                                     wearer->pos(), 3,
-                                    "shield");
+                                    NC_("shock discharge source", "shield"));
 
 }
 

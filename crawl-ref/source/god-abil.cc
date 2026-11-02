@@ -5376,8 +5376,10 @@ bool ru_do_sacrifice(ability_type sac)
         mut = sac_def.mutation;
         num_sacrifices = 1;
         if (sac == ABIL_RU_SACRIFICE_HAND)
+        {
             offer_text = make_stringf(C_("Ru sacrifice offer", sac_def.sacrifice_text),
                                      you.hand_name(true).c_str());
+        }
         else
             offer_text = C_("Ru sacrifice offer", sac_def.sacrifice_text);
         mile_text = make_stringf("%s.", sac_def.milestone_text);

@@ -87,6 +87,7 @@ vector<coord_def> plasma_beam_targets(const actor &agent, int pow);
 vector<coord_def> plasma_beam_paths(coord_def source, const vector<coord_def> &targets);
 dice_def base_fragmentation_damage(int pow, bool random);
 bool monster_type_is_fraggable(monster_type mc);
+string fragmentation_name_display(const string& canonical);
 bool setup_fragmentation_beam(bolt &beam, int pow, const actor *caster,
                               const coord_def target, bool quiet,
                               const char **what);

@@ -566,7 +566,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                 CHECK(dump.find(cause) == string::npos);
             CHECK(saved.get_fields().str_field("kaux") == cause);
             CHECK(saved.raw_string() == raw);
-            CHECK(saved.death_description(scorefile_entry::DDV_LOGVERBOSE).find(cause) != string::npos);
+            // The log producer enforces canonical English. The verbosity
+            // enum alone is also used by display paths in the current language.
+            CHECK(saved.long_kill_message().find(cause) != string::npos);
+            CHECK(saved.short_kill_message().find("Blorkula the Orcula") != string::npos);
+            CHECK(Options.language == language);
         }
     }
 }

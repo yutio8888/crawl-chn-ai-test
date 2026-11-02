@@ -572,9 +572,10 @@ bool valid_electric_charge_target(const actor& agent, coord_def target, string* 
     {
         if (act && agent.aware_of(*act) && fail_reason)
         {
-            *fail_reason = make_stringf(T_("%s %s visible enough to target properly."),
-                                            act->pronoun(PRONOUN_SUBJECTIVE).c_str(),
-                                            act->verb_for_display(N_("aren't")).c_str());
+            *fail_reason = make_stringf_p(
+                T_("%1$s cannot be targeted properly because %2$s outline is unclear."),
+                act->pronoun(PRONOUN_SUBJECTIVE).c_str(),
+                act->pronoun(PRONOUN_POSSESSIVE).c_str());
         }
         else if (fail_reason)
             *fail_reason = T_("You can't see anything there to charge at.");
@@ -1860,13 +1861,14 @@ spret cast_gravitas(int pow, const coord_def& where, bool fail)
     // XXX: If this is ever usable from elsewhere than the item, change this.
     mpr(T_("You rattle the tambourine."));
 
-    mprf(T_("Waves of gravity draw inward%s%s."),
-         mons || feat_is_solid(env.grid(where)) ? " around " : "",
-         mons ? mons->name(DESC_THE).c_str() :
-                feat_is_solid(env.grid(where)) ? feature_description(env.grid(where),
-                                                                     "",
-                                                                     DESC_THE)
-                                                                    .c_str() : "");
+    if (mons || feat_is_solid(env.grid(where)))
+    {
+        const string center = mons ? mons->name(DESC_THE)
+            : feature_description(env.grid(where), "", DESC_THE);
+        mprf(T_("Waves of gravity draw inward around %s."), center.c_str());
+    }
+    else
+        mpr(T_("Waves of gravity draw inward."));
 
     draw_ring_animation(where, radius, LIGHTMAGENTA);
     pull_monsters_inward(where, radius);
@@ -2394,23 +2396,23 @@ spret cast_gavotte(int pow, const coord_def dir, bool fail)
     // XXX: Surely there's a better way to do this
     string dir_msg = "???";
     if (dir.x == 0 && dir.y == -1)
-        dir_msg = "north";
+        dir_msg = N_("north");
     else if (dir.x == 0 && dir.y == 1)
-        dir_msg = "south";
+        dir_msg = N_("south");
     else if (dir.x == -1 && dir.y == 0)
-        dir_msg = "west";
+        dir_msg = N_("west");
     else if (dir.x == 1 && dir.y == 0)
-        dir_msg = "east";
+        dir_msg = N_("east");
     else if (dir.x == -1 && dir.y == -1)
-        dir_msg = "northwest";
+        dir_msg = N_("northwest");
     else if (dir.x == 1 && dir.y == -1)
-        dir_msg = "northeast";
+        dir_msg = N_("northeast");
     else if (dir.x == -1 && dir.y == 1)
-        dir_msg = "southwest";
+        dir_msg = N_("southwest");
     else if (dir.x == 1 && dir.y == 1)
-        dir_msg = "southeast";
+        dir_msg = N_("southeast");
 
-    mprf(T_("Gravity reorients to the %s!"), dir_msg.c_str());
+    mprf(T_("Gravity reorients to the %s!"), T_(dir_msg.c_str()));
 
     if (you.stasis())
         canned_msg(MSG_STRANGE_STASIS);

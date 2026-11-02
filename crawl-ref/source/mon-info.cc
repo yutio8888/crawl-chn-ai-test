@@ -1298,7 +1298,7 @@ string monster_info::common_name(description_level_type desc) const
         ss << (T_("spectral "));
 
     if (type == MONS_BOUND_SOUL && !is(MB_NAME_ZOMBIE) && !nocore)
-        ss << (T_("bound "));
+        ss << C_("bound soul name", "bound ");
 
     if (is(MB_SPECTRALISED))
         ss << (T_("ghostly "));

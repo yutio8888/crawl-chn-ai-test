@@ -95,14 +95,14 @@ void surge_power(const int enhanced)
 {
     if (enhanced)               // one way or the other {dlb}
     {
-        const string modifier = (enhanced  < -2) ? "extraordinarily" :
-                                (enhanced == -2) ? "extremely" :
-                                (enhanced ==  2) ? "strong" :
-                                (enhanced  >  2) ? "huge"
-                                                 : "";
-        mprf(T_("You feel %s %s"),
-             !modifier.length() ? T_("a") : T_(article_a(modifier).c_str()),
-             (enhanced < 0) ? T_("numb sensation.") : T_("surge of power!"));
+        const char* message = enhanced < -2
+            ? N_("You feel an extraordinarily numb sensation.")
+            : enhanced == -2 ? N_("You feel an extremely numb sensation.")
+            : enhanced < 0 ? N_("You feel a numb sensation.")
+            : enhanced > 2 ? N_("You feel a huge surge of power!")
+            : enhanced == 2 ? N_("You feel a strong surge of power!")
+                            : N_("You feel a surge of power!");
+        mpr(T_(message));
     }
 }
 
@@ -397,7 +397,7 @@ static void _apply_post_zap_effect(spell_type spell, coord_def target)
         break;
     case SPELL_BOMBARD:
         if (coinflip())
-            you.stumble_away_from(target, "the blast");
+            you.stumble_away_from(target, N_("the blast"));
         break;
     default:
         break;
@@ -2033,7 +2033,7 @@ static string _mon_threat_string(const CrawlStoreValue &mon_store)
     // dummy monster rolled, which may not match what the actual monster
     // rolls.
     if (mons_is_ghost_demon(dummy.type))
-        desc = get_monster_data(dummy.type)->name;
+        desc = T_(get_monster_data(dummy.type)->name);
 
     const string col_name = colour_to_str(col);
 
