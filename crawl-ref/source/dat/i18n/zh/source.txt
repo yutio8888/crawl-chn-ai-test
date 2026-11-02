@@ -47814,10 +47814,6 @@ Old value: 0x%08llx
 
 旧值：0x%08llx
 %%%%
-You can't see any susceptible monsters within range! (Use <w>Z</w> to cast anyway.)
-
-你在范围内看不到任何可能受影响的怪物！(使用<w>Z</w>强制施放。)
-%%%%
 To do this, press <w>%%</w>, then <w>%s</w> to select %s.
 
 要做到这点，请按<w>%%</w>，然后按<w>%s</w>选择%s。
