@@ -7,6 +7,8 @@
 #include "artefact.h"
 #include "database.h"
 #include "files.h"
+#include "game-options.h"
+#include "macro.h"
 #include "initfile.h"
 #include "invent.h"
 #include "item-prop.h"
@@ -229,4 +231,144 @@ TEST_CASE("User option includes retain the locale-aware reader",
 
     REQUIRE(options.note_items.size() == 1);
     REQUIRE(options.note_items.front().tostring() == "获取");
+}
+
+TEST_CASE("residual rereview: actual option parsing localizes errors without accepting translated values",
+          "[initfile][zh-translation][residual-rereview][option-errors]")
+{
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        game_options options;
+        options.autopickup_on = false;
+        options.basefilename = "residual-test.rc";
+        options.line_num = 17;
+        const GameOption *option = options.option_from_name("default_autopickup");
+        REQUIRE(option);
+        const bool was_loaded = option->was_loaded();
+        clear_message_store();
+        options.read_option_line("default_autopickup = invalid%s");
+        CHECK_FALSE(options.autopickup_on);
+        CHECK(option->was_loaded() == was_loaded);
+        const string error = make_stringf(
+            T_("Bad %s value: %s (should be true or false)"),
+            "default_autopickup", "invalid%s");
+        const string output = get_last_messages(10, true);
+        // The message store wraps long English diagnostics across lines.
+        const string unwrapped = replace_all(output, "\n", " ");
+        CHECK(unwrapped.find(error) != string::npos);
+        CHECK(output.find("default_autopickup") != string::npos);
+        CHECK(output.find("invalid%s") != string::npos);
+        CHECK(output.find("residual-test.rc:17") != string::npos);
+        if (language == lang_t::ZH)
+            CHECK(output.find("(should be true or false)") == string::npos);
+        options.read_option_line("default_autopickup = yes");
+        CHECK(options.autopickup_on);
+        CHECK(option->was_loaded());
+        options.read_option_line("default_autopickup = no");
+        CHECK_FALSE(options.autopickup_on);
+
+        int value = 3;
+        IntGameOption integer(value, {"test_integer"}, 3, 1, 5);
+        for (const char *invalid : {"not-a-number", "0", "6"})
+        {
+            CHECK_FALSE(integer.loadFromString(invalid, RCFILE_LINE_EQUALS).empty());
+            CHECK(value == 3);
+            CHECK_FALSE(integer.was_loaded());
+        }
+        CHECK(integer.loadFromString("4", RCFILE_LINE_EQUALS).empty());
+        CHECK(value == 4);
+        CHECK(integer.was_loaded());
+
+        int choice = 0;
+        const map<string, int> choices = {{"auto", 0}, {"false", 1}, {"true", 2}};
+        MultipleChoiceGameOption<int> multiple(choice, {"test_choice"}, 0, choices);
+        const string choices_text = comma_separated_fn(choices.begin(), choices.end(),
+            [] (const pair<string, int> &entry) { return entry.first; },
+            C_("rc option choices", " or "), C_("rc option choices", ", "));
+        CHECK(multiple.loadFromString("invalid", RCFILE_LINE_EQUALS)
+              == make_stringf(T_("Bad %s value: %s (should be %s)"),
+                              "test_choice", "invalid", choices_text.c_str()));
+        CHECK(choice == 0);
+        CHECK_FALSE(multiple.was_loaded());
+        for (const auto &entry : choices)
+            CHECK(choices_text.find(entry.first) != string::npos);
+        if (language == lang_t::ZH)
+            CHECK(choices_text.find(" or ") == string::npos);
+        CHECK(multiple.loadFromString("true", RCFILE_LINE_EQUALS).empty());
+        CHECK(choice == 2);
+        CHECK(multiple.was_loaded());
+
+        DisabledGameOption disabled({"unavailable"});
+        opt_parse_state state;
+        state.key = "actual_disabled_alias";
+        CHECK(disabled.loadFromParseState(state)
+              == make_stringf(T_("Option '%s' is disabled in this build."), state.key.c_str()));
+    }
+}
+
+TEST_CASE("residual rereview: option errors fall back before a language database is loaded",
+          "[initfile][zh-translation][residual-rereview][option-errors]")
+{
+    // Same lookup state as early startup: language requested, no language DB.
+    TranslationFixture translation(lang_t::ZH, nullptr);
+    bool value = false;
+    BoolGameOption option(value, {"test_flag"}, false);
+    CHECK(option.loadFromString("invalid", RCFILE_LINE_EQUALS)
+          == "Bad test_flag value: invalid (should be true or false)");
+    CHECK_FALSE(value);
+    CHECK_FALSE(option.was_loaded());
+    CHECK(option.loadFromString("yes", RCFILE_LINE_EQUALS).empty());
+    CHECK(value);
+}
+
+TEST_CASE("residual rereview: malformed rc macro diagnostics do not treat input as a format",
+          "[initfile][zh-translation][residual-rereview][macro-errors]")
+{
+    REQUIRE_FALSE(has_pending_input());
+    pause_all_key_recorders paused;
+    // Observe existing keymaps through their real expansion API, without
+    // editing/saving any user bindings or introducing production test hooks.
+    auto keymap_outputs = []
+    {
+        vector<keyseq> outputs;
+        for (int context = KMC_DEFAULT; context < KMC_CONTEXT_COUNT; ++context)
+        {
+            macro_buf_add_with_keymap({'x', 'y', '%', 's'}, KeymapContext(context));
+            keyseq expanded;
+            for (int key; (key = macro_buf_get()) != -1; )
+                expanded.push_back(key);
+            outputs.push_back(expanded);
+        }
+        return outputs;
+    };
+    const vector<keyseq> before = keymap_outputs();
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        game_options options;
+        const char *inputs[] = {"M%s", "M x%s", "X%s x y"};
+        const string expected[] = {
+            make_stringf(T_("Cannot parse macros += %s, there is only one argument"), inputs[0]),
+            make_stringf(T_("Cannot parse macros += %s, there are only two arguments"), inputs[1]),
+            make_stringf(T_("'%s' is not a valid macro or keymap context (macros += %s)"),
+                         "X%s", inputs[2])
+        };
+        for (int i = 0; i < 3; ++i)
+        {
+            CHECK(read_rc_file_macro(inputs[i]) == expected[i]);
+            clear_message_store();
+            options.read_option_line(string("macros += ") + inputs[i]);
+            const string output = get_last_messages(10, true);
+            CHECK(output.find(expected[i]) != string::npos);
+            CHECK(output.find(inputs[i]) != string::npos);
+            if (language == lang_t::ZH)
+            {
+                CHECK(output.find("is not a valid macro") == string::npos);
+                CHECK(output.find("Cannot parse macros") == string::npos);
+            }
+        }
+        CHECK(keymap_outputs() == before);
+        CHECK_FALSE(has_pending_input());
+    }
 }

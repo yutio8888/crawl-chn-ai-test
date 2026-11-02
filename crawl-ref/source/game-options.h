@@ -107,7 +107,7 @@ public:
         // not actually called in automatic code
         if (on_set)
             on_set();
-        return make_stringf("disabled option");
+        return make_stringf(T_("disabled option"));
     }
 
     virtual string loadFromParseState(const opt_parse_state &state) override;
@@ -372,7 +372,7 @@ template<typename R, typename... A>
 R funret(R(*)(A...));
 
 template<typename C, typename R, typename... A>
-R funret(R(C::*)(A...));
+R funret(R(C::*function)(A...));
 
 // functor class for use in ListGameOption calls where a function does the
 // type conversion. Is there a way to do this passing a function directly
@@ -401,7 +401,7 @@ class ListGameOption : public GameOption
 {
 public:
     ListGameOption(vector<T> &list, std::set<std::string> _names,
-                   vector<T> _default = {},
+                   vector<T> _default = vector<T>(),
                    bool _case_sensitive = false,
                    function<void()> _on_set = nullptr)
         : GameOption(_names, _case_sensitive, _on_set),
@@ -511,7 +511,7 @@ public:
         string normalized = field;
         if (!choices.size())
         {
-            return make_stringf("Option '%s' is disabled in this build.",
+            return make_stringf(T_("Option '%s' is disabled in this build."),
                 name().c_str());
         }
         if (normalize_bools)
@@ -528,8 +528,8 @@ public:
 
             string all_choices = comma_separated_fn(choices.begin(),
                 choices.end(), [] (const pair<string, T> &p) {return p.first;},
-                " or ");
-            return make_stringf("Bad %s value: %s (should be %s)",
+                C_("rc option choices", " or "), C_("rc option choices", ", "));
+            return make_stringf(T_("Bad %s value: %s (should be %s)"),
                                 name().c_str(), field.c_str(),
                                 all_choices.c_str());
         }
@@ -555,7 +555,7 @@ class MaybeBoolGameOption : public MultipleChoiceGameOption<maybe_bool>
 {
 public:
     MaybeBoolGameOption(maybe_bool &_val, std::set<std::string> _names,
-                maybe_bool _default, vector<string> extra_maybe = {})
+                maybe_bool _default, vector<string> extra_maybe = vector<string>())
         : MultipleChoiceGameOption(_val, _names, _default,
             {{"true", true},
              {"false", false},

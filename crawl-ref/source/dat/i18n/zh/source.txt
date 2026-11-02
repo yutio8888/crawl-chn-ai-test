@@ -51450,3 +51450,618 @@ You have finished your manual of %s and toss it away.
 %%%%
 %s touched by the gods
 受到诸神触碰的%s
+%%%%
+(immune)
+（免疫）
+%%%%
+Tide inertia: %d. New value (smaller = faster tide) or use +/- to change tide: 
+潮汐惯性：%d。输入新值（数值越小，潮汐越快），或用+/-改变潮汐：
+%%%%
+Bad highlight string -- %s
+无效的高亮字符串——%s
+%%%%
+Bad colour -- %s
+无效颜色——%s
+%%%%
+Option '%s' is disabled in this build.
+此构建已禁用选项“%s”。
+%%%%
+Bad %s value: %s (should be true or false)
+%s的值无效：%s（应为true或false）
+%%%%
+Bad %s -- %s\n
+无效的%s——%s\n
+%%%%
+%s (for %s)
+%s（选项%s）
+%%%%
+Couldn't parse integer option %s: "%s"
+无法解析整数选项%s：“%s”
+%%%%
+Bad %s: %d should be >= %d
+%s的值无效：%d应大于或等于%d
+%%%%
+Bad %s: %d should be <= %d
+%s的值无效：%d应小于或等于%d
+%%%%
+Couldn't parse decimal option %s: "%s"
+无法解析小数选项%s：“%s”
+%%%%
+Bad %s: %g should be >= %g
+%s的值无效：%g应大于或等于%g
+%%%%
+Bad %s: %g should be <= %g
+%s的值无效：%g应小于或等于%g
+%%%%
+Bad %s pair: '%s'
+无效的%s配对：“%s”
+%%%%
+Bad %s: '%s'
+%s的值无效：“%s”
+%%%%
+disabled option
+选项已禁用
+%%%%
+rc option choices| or 
+或
+%%%%
+rc option choices|, 
+，
+%%%%
+Bad %s value: %s (should be %s)
+%s的值无效：%s（应为%s）
+%%%%
+Options error: Bad monster_list_colour: '%s'
+选项错误：无效的monster_list_colour：“%s”
+%%%%
+Bad monster_list_colour key: %s\n
+无效的monster_list_colour键：%s\n
+%%%%
+Options error: Bad custom_text_colours key: '%s'
+选项错误：无效的custom_text_colours键：“%s”
+%%%%
+Bad custom_text_colours: %s\n
+无效的custom_text_colours：%s\n
+%%%%
+Invalid glyph override: %X
+无效的字形覆盖值：%X
+%%%%
+Unknown ability '%s'\n
+未知能力“%s”\n
+%%%%
+Unknown spell '%s'\n
+未知法术“%s”\n
+%%%%
+Unknown scroll '%s'\n
+未知卷轴“%s”\n
+%%%%
+Unknown monster: "%s"
+未知怪物：“%s”
+%%%%
+User lua is disabled in this build! `%s`
+此构建已禁用用户Lua！`%s`
+%%%%
+User lua is disabled in this build! (file: %s)
+此构建已禁用用户Lua！（文件：%s）
+%%%%
+Can't find base tile "%s" of variant tile "%s"
+找不到变体图块所需的基础图块“%s”（变体图块：“%s”）
+%%%%
+Unknown tile: "%s"
+未知图块：“%s”
+%%%%
+Can't use that monster as a mons: player tile, sorry: "%s"
+抱歉，不能用该怪物作为mons:玩家图块：“%s”
+%%%%
+Invalid setting for tile_player_tile: "%s"
+tile_player_tile的设置无效：“%s”
+%%%%
+Invalid %s tile offsets: "%s"
+%s图块偏移量无效：“%s”
+%%%%
+Unknown terrain type '%s'
+未知地形类型“%s”
+%%%%
+Unknown consumable type: %s\n
+未知消耗品类型：%s\n
+%%%%
+Unknown animation type '%s'
+未知动画类型“%s”
+%%%%
+Unknown explore stop condition '%s'
+未知的自动探索停止条件“%s”
+%%%%
+Unknown greedy visit condition '%s'
+未知的贪婪探索访问条件“%s”
+%%%%
+Options error: Missing colour in message_colour setting: '%s'
+选项错误：message_colour设置缺少颜色：“%s”
+%%%%
+Options error: Bad colour '%s' in message_colour setting: '%s'
+选项错误：message_colour设置中的颜色“%s”无效（设置：“%s”）
+%%%%
+Options error: Missing tag/color in colour mapping: '%s'
+选项错误：颜色映射缺少标签或颜色：“%s”
+%%%%
+Options error: Unknown color in colour mapping: '%s'
+选项错误：颜色映射中有未知颜色：“%s”
+%%%%
+Options error: invalid sound mapping '%s'
+选项错误：无效的声音映射“%s”
+%%%%
+Error parsing slot mapping: '%s'\n
+解析栏位映射时出错：“%s”\n
+%%%%
+Error parsing consumable mapping: '%s'\n
+解析消耗品映射时出错：“%s”\n
+%%%%
+Bad longwalk_range: "%s" (expected los, visible, unlimited, or a positive number)
+longwalk_range的值无效：“%s”（应为los、visible、unlimited或正数）
+%%%%
+Unknown option name for default: '%s'
+default指定了未知选项名：“%s”
+%%%%
+Option 'lua_max_memory' is disabled in this build.
+此构建已禁用选项“lua_max_memory”。
+%%%%
+Couldn't parse integer option lua_max_memory: "%s"
+无法解析整数选项lua_max_memory：“%s”
+%%%%
+lua_file failed: clua not enabled on this build!
+lua_file失败：此构建未启用clua！
+%%%%
+No variable named '%s' to make constant
+没有名为“%s”的变量可设为常量
+%%%%
+'%s' is already a constant
+“%s”已是常量
+%%%%
+Bad object type '%*s' for autopickup.\n
+自动拾取设置中的物品类型“%*s”无效。\n
+%%%%
+Bad colour -- %s=%d or %s=%d\n
+无效颜色——%s=%d或%s=%d\n
+%%%%
+Bad channel -- %s
+无效通道——%s
+%%%%
+Bad fire item start index: %s\n
+发射物品的起始索引无效：%s\n
+%%%%
+Autoinscribe string must have exactly one colon: %s\n
+自动铭刻字符串必须恰有一个冒号：%s\n
+%%%%
+Autoinscribe pattern is empty: %s\n
+自动铭刻匹配模式为空：%s\n
+%%%%
+Autoinscribe result is empty: %s\n
+自动铭刻结果为空：%s\n
+%%%%
+Error parsing autoinscribe string: %s\n
+解析自动铭刻字符串时出错：%s\n
+%%%%
+Bad skill level to note -- %s\n
+要记录的技能等级无效——%s\n
+%%%%
+Bad item type '%*s' for action_panel.\n
+action_panel中的物品类型“%*s”无效。\n
+%%%%
+Too many fake langs; maximum is %d
+伪语言数量过多；上限为%d
+%%%%
+Invalid fake-lang format: %s
+无效的伪语言格式：%s
+%%%%
+Lang %s doesn't take a value
+语言%s不接受数值
+%%%%
+Invalid value '%s' provided for lang
+为语言提供的值“%s”无效
+%%%%
+Unknown language %s!
+未知语言%s！
+%%%%
+Cannot find %sfile "%s".
+找不到%s文件“%s”。
+%%%%
+Cannot include %sfile: %s
+无法包含%s文件：%s
+%%%%
+Sorry, this spell isn't supported for dummies!
+抱歉，虚拟施法者不支持此法术！
+%%%%
+%s%6s | No hits
+%s%6s | 无命中
+%%%%
+All unrands are now eligible to generate once again.
+所有固定神器现在都可以再次生成了。
+%%%%
+No exact match for mutation '%s', possible matches are: 
+没有与变异“%s”完全匹配的名称，可能的匹配项有：
+%%%%
+wizard name matches| and 
+和
+%%%%
+wizard name matches|, 
+，
+%%%%
+No exact match for bane '%s', possible matches are: 
+没有与灾祸“%s”完全匹配的名称，可能的匹配项有：
+%%%%
+Top HUD test state: (n)ormal, (s)tress, (c)lear? 
+顶部状态栏测试状态：正常(n)、压力测试(s)或清除(c)？
+%%%%
+No saved top HUD test state to restore.
+没有可恢复的顶部状态栏测试前状态。
+%%%%
+Restored the pre-test HUD state.
+已恢复测试前的状态栏状态。
+%%%%
+Unknown top HUD test state; use n, s, or c.
+未知的顶部状态栏测试状态；请使用n、s或c。
+%%%%
+Applied top HUD stress state.
+已应用顶部状态栏压力测试状态。
+%%%%
+Applied top HUD normal state.
+已应用顶部状态栏正常状态。
+%%%%
+Enter new Zot clock value (current = %d, from 0 to %d): 
+输入新的佐特计时器数值（当前为%d，范围为0至%d）：
+%%%%
+Reset capstone god abilities.
+已重置神祇终极能力。
+%%%%
+configuration file kind|macro 
+宏
+%%%%
+tile offsets|shield
+盾牌
+%%%%
+tile offsets|weapon
+武器
+%%%%
+<w>A</w>      set all skills to level\n
+<w>A</w>      将所有技能设为指定等级\n
+%%%%
+<w>Ctrl-D</w> change enchantments/durations\n
+<w>Ctrl-D</w> 更改附魔状态与持续时间\n
+%%%%
+<w>g</w>      exercise a skill\n
+<w>g</w>      锻炼一项技能\n
+%%%%
+<w>k</w>      change experience level and skills\n
+<w>k</w>      更改经验等级与技能\n
+%%%%
+<w>l</w>      change experience level\n
+<w>l</w>      更改经验等级\n
+%%%%
+<w>Ctrl-P</w> list props\n
+<w>Ctrl-P</w> 列出属性\n
+%%%%
+<w>r</w>      change character's species\n
+<w>r</w>      更改角色种族\n
+%%%%
+<w>s</w>      set skill to level\n
+<w>s</w>      将技能设为指定等级\n
+%%%%
+<w>x</w>      gain an experience level\n
+<w>x</w>      提升一级经验等级\n
+%%%%
+<w>$</w>      set gold to a specified value\n
+<w>$</w>      将金币设为指定数量\n
+%%%%
+<w>]</w>      get a mutation\n
+<w>]</w>      获得变异\n
+%%%%
+<w>}</w>      toggle a bane\n
+<w>}</w>      切换灾祸\n
+%%%%
+<w>_</w>      gain religion\n
+<w>_</w>      信奉神祇\n
+%%%%
+<w>^</w>      set piety to a value\n
+<w>^</w>      设置虔诚值\n
+%%%%
+<w>@</w>      set Str Int Dex\n
+<w>@</w>      设置力量、智力、敏捷\n
+%%%%
+<w>Q</w>      set/reset top HUD test state\n
+<w>Q</w>      设置或重置顶部状态栏测试状态\n
+%%%%
+<w>#</w>      load character from a dump file\n
+<w>#</w>      从角色转储文件载入角色\n
+%%%%
+<w>&</w>      list all divine followers\n
+<w>&</w>      列出所有神祇追随者\n
+%%%%
+<w>=</w>      show info about skill points\n
+<w>=</w>      显示技能点数信息\n
+%%%%
+<w>n</w>      set Zot clock to a value\n
+<w>n</w>      设置佐特计时器数值\n
+%%%%
+<w>N</w>      get current tension value\n
+<w>N</w>      获取当前紧张度\n
+%%%%
+<w>j</w>      reset single-use god abilities\n
+<w>j</w>      重置一次性神祇能力\n
+%%%%
+<w>,</w>/<w>.</w>    create up/down staircase\n
+<w>,</w>/<w>.</w>    创建向上或向下的楼梯\n
+%%%%
+<w>(</w>      turn cell into feature\n
+<w>(</w>      将格子改为指定地形\n
+%%%%
+<w>\\</w>      make a shop\n
+<w>\\</w>      创建商店\n
+%%%%
+<w>L</w>      place a vault by name\n
+<w>L</w>      按名称放置地图模板\n
+%%%%
+<w>P</w>      create a level based on a vault\n
+<w>P</w>      根据地图模板创建楼层\n
+%%%%
+<w>R</w>      regenerate current level\n
+<w>R</w>      重新生成当前楼层\n
+%%%%
+<w>Ctrl-A</w> generate new Abyss area\n
+<w>Ctrl-A</w> 生成新的深渊区域\n
+%%%%
+<w>K</w>      mark all vaults as unused\n
+<w>K</w>      将所有地图模板标为未使用\n
+%%%%
+<w>:</w>      find branches and overflow\n       temples in the dungeon\n
+<w>:</w>      查找地牢中的分支和\n       额外神殿\n
+%%%%
+<w>;</w>      list known levels and counters\n
+<w>;</w>      列出已知楼层和计数器\n
+%%%%
+<w>Ctrl-E</w> dump level builder information\n
+<w>Ctrl-E</w> 导出楼层生成器信息\n
+%%%%
+<w>Ctrl-L</w> show builder logs for level\n
+<w>Ctrl-L</w> 显示楼层生成器日志\n
+%%%%
+<w>{</w>      magic mapping\n
+<w>{</w>      魔法测绘\n
+%%%%
+<w>b</w>      controlled blink\n
+<w>b</w>      可控闪烁\n
+%%%%
+<w>B</w>      controlled teleport\n
+<w>B</w>      可控传送\n
+%%%%
+<w>~</w>      go to a specific level\n
+<w>~</w>      前往指定楼层\n
+%%%%
+<w>u</w>/<w>d</w>    shift up/down one level\n
+<w>u</w>/<w>d</w>    向上或向下移动一层\n
+%%%%
+<w>e</w>      trigger explore traps\n
+<w>e</w>      触发探索陷阱\n
+%%%%
+<w>Ctrl-B</w> banish yourself to the Abyss\n
+<w>Ctrl-B</w> 将自己放逐到深渊\n
+%%%%
+<w>Ctrl-S</w> change Abyss speed\n
+<w>Ctrl-S</w> 更改深渊速度\n
+%%%%
+<w>Ctrl-W</w> change Shoals' tide speed\n
+<w>Ctrl-W</w> 更改浅滩潮汐速度\n
+%%%%
+<w>c</w>      card effect\n
+<w>c</w>      卡牌效果\n
+%%%%
+<w>Ctrl-G</w> save/load ghost (bones file)\n
+<w>Ctrl-G</w> 保存或载入鬼魂（bones文件）\n
+%%%%
+<w>h</w>/<w>H</w>    heal yourself (super-Heal)\n
+<w>h</w>/<w>H</w>    治疗自己（超级治疗）\n
+%%%%
+<w>X</w>      make Xom do something now\n
+<w>X</w>      让佐姆立刻做点什么\n
+%%%%
+<w>z</w>      cast spell by number/name\n
+<w>z</w>      按编号或名称施法\n
+%%%%
+<w>!</w>      memorise spell\n
+<w>!</w>      记忆法术\n
+%%%%
+<w>W</w>      god wrath\n
+<w>W</w>      触发神罚\n
+%%%%
+<w>w</w>      god mollification\n
+<w>w</w>      平息神怒\n
+%%%%
+<w>p</w>      polymorph into a form\n
+<w>p</w>      变为指定形态\n
+%%%%
+<w>V</w>      toggle xray vision\n
+<w>V</w>      切换透视视野\n
+%%%%
+<w>E</w>      (un)freeze time\n
+<w>E</w>      冻结或解冻时间\n
+%%%%
+<w>m</w>/<w>M</w>    create specified monster\n
+<w>m</w>/<w>M</w>    创建指定怪物\n
+%%%%
+<w>D</w>      detect all monsters\n
+<w>D</w>      探测所有怪物\n
+%%%%
+<w>G</w>      dismiss all monsters\n
+<w>G</w>      移除所有怪物\n
+%%%%
+<w>"</w>      list monsters\n
+<w>"</w>      列出怪物\n
+%%%%
+<w>a</w>      acquirement\n
+<w>a</w>      获取宝物\n
+%%%%
+<w>i</w>/<w>I</w>    identify/unidentify inventory\n
+<w>i</w>/<w>I</w>    鉴定或取消鉴定物品栏\n
+%%%%
+<w>y</w>/<w>Y</w>    id/unid item types+level items\n
+<w>y</w>/<w>Y</w>    鉴定或取消鉴定物品类型及本层物品\n
+%%%%
+<w>o</w>/<w>%</w>    create an object\n
+<w>o</w>/<w>%</w>    创建物品\n
+%%%%
+<w>t</w>      tweak object properties\n
+<w>t</w>      调整物品属性\n
+%%%%
+<w>v</w>      recharge all XP evokers\n
+<w>v</w>      为所有经验充能道具充能\n
+%%%%
+<w>Ctrl-V</w> show gold value of an item\n
+<w>Ctrl-V</w> 显示物品的金币价值\n
+%%%%
+<w>-</w>      get a god gift\n
+<w>-</w>      获得神赐\n
+%%%%
+<w>|</w>      create all unrand artefacts\n
+<w>|</w>      创建所有固定神器\n
+%%%%
+<w>Ctrl-\\</w> create all unrands / fallbacks\n
+<w>Ctrl-\\</w> 创建所有固定神器或其替代品\n
+%%%%
+<w>+</w>      make randart from item\n
+<w>+</w>      将物品变为随机神器\n
+%%%%
+<w>'</w>      list items\n
+<w>'</w>      列出物品\n
+%%%%
+<w>J</w>      Jiyva off-level sacrifice\n
+<w>J</w>      执行吉瓦的其他楼层献祭\n
+%%%%
+<w>U</w>      mark all unrands as never generated\n
+<w>U</w>      将所有固定神器标为从未生成\n
+%%%%
+<w>Z</w>      Unobtain runes and Orb of Zot\n
+<w>Z</w>      撤销获得符文和佐特宝珠\n
+%%%%
+<w>f</w>      quick fight simulation\n
+<w>f</w>      快速战斗模拟\n
+%%%%
+<w>F</w>      single scale fsim\n
+<w>F</w>      单轴战斗模拟\n
+%%%%
+<w>Ctrl-F</w> double scale fsim\n
+<w>Ctrl-F</w> 双轴战斗模拟\n
+%%%%
+<w>Ctrl-I</w> item generation stats\n
+<w>Ctrl-I</w> 物品生成统计\n
+%%%%
+<w>O</w>      measure exploration time\n
+<w>O</w>      测量探索用时\n
+%%%%
+<w>Ctrl-T</w> dungeon (D)Lua interpreter\n
+<w>Ctrl-T</w> 地牢(D)Lua解释器\n
+%%%%
+<w>Ctrl-U</w> client (C)Lua interpreter\n
+<w>Ctrl-U</w> 客户端(C)Lua解释器\n
+%%%%
+<w>Ctrl-X</w> Xom effect stats\n
+<w>Ctrl-X</w> 佐姆效果统计\n
+%%%%
+<w>Ctrl-Q</w> make some debug messages quiet\n
+<w>Ctrl-Q</w> 屏蔽部分调试消息\n
+%%%%
+<w>Ctrl-Y</w> temporarily suppress wizmode\n
+<w>Ctrl-Y</w> 暂时禁用巫师模式\n
+%%%%
+<w>Ctrl-C</w> force a crash\n
+<w>Ctrl-C</w> 强制崩溃\n
+%%%%
+<w>`</w>      list unassigned command keys\n
+<w>`</w>      列出未分配的命令按键\n
+%%%%
+<w>x?</w>     list targeted commands\n
+<w>x?</w>     列出目标选择命令\n
+%%%%
+<w>X?</w>     list map-mode commands\n
+<w>X?</w>     列出地图模式命令\n
+%%%%
+<yellow>Player stats</yellow>\n
+<yellow>角色属性</yellow>\n
+%%%%
+<yellow>Dungeon features</yellow>\n
+<yellow>地牢地形</yellow>\n
+%%%%
+<yellow>Builder debugging</yellow>\n
+<yellow>生成器调试</yellow>\n
+%%%%
+<yellow>Other level related commands</yellow>\n
+<yellow>其他楼层相关命令</yellow>\n
+%%%%
+<yellow>Other player related effects</yellow>\n
+<yellow>其他角色相关效果</yellow>\n
+%%%%
+<yellow>Monster related commands</yellow>\n
+<yellow>怪物相关命令</yellow>\n
+%%%%
+<yellow>Item related commands</yellow>\n
+<yellow>物品相关命令</yellow>\n
+%%%%
+<yellow>Debugging commands</yellow>\n
+<yellow>调试命令</yellow>\n
+%%%%
+<yellow>Other wizard commands</yellow>\n
+<yellow>其他巫师命令</yellow>\n
+%%%%
+(not prefixed with <w>&</w>!)\n
+（不以<w>&</w>开头！）\n
+%%%%
+Cannot parse macros += %s, there is only one argument
+无法解析macros += %s：只有一个参数
+%%%%
+'%s' is not a valid macro or keymap context (macros += %s)
+“%s”不是有效的宏或按键映射上下文（macros += %s）
+%%%%
+Cannot parse macros += %s, there are only two arguments
+无法解析macros += %s：只有两个参数
+%%%%
+Awoken.
+已唤醒。
+%%%%
+A covering of ice.
+覆盖着一层冰。
+%%%%
+A halo.
+光环。
+%%%%
+An umbra.
+本影。
+%%%%
+Liquefied ground.
+液化的地面。
+%%%%
+(<)go up
+(<)上行
+%%%%
+(>)go down
+(>)下行
+%%%%
+([)view destination
+([)查看目的地
+%%%%
+(])view destination
+(])查看目的地
+%%%%
+(O)pen
+(O)开门
+%%%%
+(C)lose
+(C)关门
+%%%%
+(>)imbibe
+(>)饮用
+%%%%
+Praying here may force you to leave your current form or remove some of your equipment. Pray anyway?
+在此祈祷可能迫使你解除当前形态或卸下部分装备。仍要祈祷吗？
+%%%%
+Praying here may force you to leave your current form. Pray anyway?
+在此祈祷可能迫使你解除当前形态。仍要祈祷吗？
+%%%%
+Praying here may force you to remove some of your equipment. Pray anyway?
+在此祈祷可能迫使你卸下部分装备。仍要祈祷吗？

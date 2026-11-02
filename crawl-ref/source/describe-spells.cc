@@ -499,7 +499,9 @@ static string _describe_living_spells(const monster_info &mon_owner)
     const string base_desc = spell_effect_string(spell, &mon_owner);
     if (base_desc.empty())
         return "";
-    const string desc = base_desc[0] == '(' ? base_desc : make_stringf(T_("(%s)"),
+    // Both supported display languages may return an already bracketed effect.
+    const bool bracketed = starts_with(base_desc, "(") || starts_with(base_desc, "（");
+    const string desc = bracketed ? base_desc : make_stringf(T_("(%s)"),
             base_desc.c_str());
     return make_stringf(T_("%dx%s"), n, desc.c_str());
 }
@@ -535,7 +537,7 @@ string spell_effect_string(spell_type spell, const monster_info *mon_owner,
         }
 
         if (you.immune_to_hex(spell))
-            return "(immune)";
+            return T_("(immune)");
 
         const string hex_str = make_stringf(T_("%d%%"), hex_chance(spell, mon_owner, is_wand));
 
