@@ -63,6 +63,7 @@
 #include "unwind.h"
 #include "xom.h"
 
+#include <clocale>
 #include <functional>
 #include <tuple>
 
@@ -2314,7 +2315,8 @@ TEST_CASE("monster rereview: actual vex stores canonical cause and note across l
     loaded.load(input);
     for (lang_t display_language : {lang_t::EN, lang_t::ZH})
     {
-        unwind_var<lang_t> lang(Options.language, display_language);
+        TranslationFixture display_mode(display_language,
+            display_language == lang_t::ZH ? "zh" : nullptr);
         CHECK(loaded.describe(false, false, true) == make_stringf(
             T_("Vexed by %s for %d turns"), death_source_display_name(expected).c_str(), 3));
         if (display_language == lang_t::ZH)
@@ -2765,6 +2767,9 @@ TEST_CASE("item effects rereview: actual shop dump translates unknown suffix wit
 {
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([&] { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
     issue10_world world;
     ShopInfo shop;
     shop.shop.type = SHOP_GENERAL;
@@ -2786,6 +2791,8 @@ TEST_CASE("item effects rereview: actual shop dump translates unknown suffix wit
         output += buffer;
     const string expected = make_stringf(T_("%s%s (%d gold)"),
         Stash::stash_item_name(item).c_str(), T_(" (unknown)"), item_price(item, shop.shop));
+    INFO(output);
+    INFO(expected);
     CHECK(output.find(expected) != string::npos);
     CHECK(shop.shop.stock.front().flags == item.flags);
     CHECK_FALSE(item_type_known(shop.shop.stock.front()));
