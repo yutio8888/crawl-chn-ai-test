@@ -128,15 +128,11 @@ static bool _pray_ecumenical_altar()
 
     if (form_at_risk || gear_at_risk)
     {
-        vector<string> consequences;
-        if (form_at_risk)
-            consequences.emplace_back("leave your current form");
-        if (gear_at_risk)
-            consequences.emplace_back("remove some of your equipment");
-        const string prompt = "Praying here may force you to "
-            + comma_separated_line(consequences.begin(), consequences.end(),
-                                   " or ")
-            + ". Pray anyway?";
+        const string prompt = form_at_risk && gear_at_risk
+            ? T_("Praying here may force you to leave your current form or remove some of your equipment. Pray anyway?")
+            : form_at_risk
+                ? T_("Praying here may force you to leave your current form. Pray anyway?")
+                : T_("Praying here may force you to remove some of your equipment. Pray anyway?");
         if (!yesno(prompt.c_str(), false, 'n'))
         {
             canned_msg(MSG_OK);

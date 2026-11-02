@@ -52020,3 +52020,48 @@ Cannot parse macros += %s, there is only one argument
 %%%%
 Cannot parse macros += %s, there are only two arguments
 无法解析macros += %s：只有两个参数
+%%%%
+Awoken.
+已唤醒。
+%%%%
+A covering of ice.
+覆盖着一层冰。
+%%%%
+A halo.
+光环。
+%%%%
+An umbra.
+本影。
+%%%%
+Liquefied ground.
+液化的地面。
+%%%%
+(<)go up
+(<)上行
+%%%%
+(>)go down
+(>)下行
+%%%%
+([)view destination
+([)查看目的地
+%%%%
+(])view destination
+(])查看目的地
+%%%%
+(O)pen
+(O)开门
+%%%%
+(C)lose
+(C)关门
+%%%%
+(>)imbibe
+(>)饮用
+%%%%
+Praying here may force you to leave your current form or remove some of your equipment. Pray anyway?
+在此祈祷可能迫使你解除当前形态或卸下部分装备。仍要祈祷吗？
+%%%%
+Praying here may force you to leave your current form. Pray anyway?
+在此祈祷可能迫使你解除当前形态。仍要祈祷吗？
+%%%%
+Praying here may force you to remove some of your equipment. Pray anyway?
+在此祈祷可能迫使你卸下部分装备。仍要祈祷吗？

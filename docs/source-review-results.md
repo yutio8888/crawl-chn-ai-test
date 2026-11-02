@@ -13665,3 +13665,662 @@
 | source:you can't repeat mutation catalyst actions.<br>EN: You can't repeat mutation catalyst actions. |  | 你不能重复诱变催化器操作。 | adjust | 实际诱变催化器地形完整命名诱变催化器操作，不再沿用旧的祭坛标签；按当前催化器词根。 | crawl-ref/source/main.cc:1407; crawl-ref/source/dat/i18n/zh/source.txt:51434 |
 | source:you have finished your manual of %s and skilfully toss it away.<br>EN: You have finished your manual of %s and skilfully toss it away. |  | 你完成了%s手册的学习，熟练地将其丢掉了。 | adjust | Throwing手册耗尽完整句保留「熟练地」丢掉的文字玩笑；%s为技能名，完成学习而非完成实体书本。 | crawl-ref/source/skills.cc:1712; crawl-ref/source/dat/i18n/zh/source.txt:51437 |
 | source:you have finished your manual of %s and toss it away.<br>EN: You have finished your manual of %s and toss it away. |  | 你完成了%s手册的学习，将其丢掉了。 | adjust | 普通手册耗尽完整句仅说丢掉，无Throwing才有的熟练副词；技能名自然接手册学习。 | crawl-ref/source/skills.cc:1713; crawl-ref/source/dat/i18n/zh/source.txt:51440 |
+
+## 原始字符串候选与配置、巫师显示补漏
+
+- 冻结严格missing-t扫描候选439条逐项核读，410条保留规范身份、调试/技术接口、已有显示分支或明确测试/工具用途；29条显示实现问题已逐项修复。候选清单SHA-256 `0f53badb9540a70d2fc0c30b7b8c7858dc0af2c0b452d0f8aa3a39b8f9eb8ecd`。该启发式集合的双向覆盖不代表所有游戏输出。
+- 实际194接口和9补充既有身份，共203项独立语言复核Ready；190项资产动作当前值全部一致。与此前13465卡重叠2项，新增201个唯一身份，累计13666。此前所有译值回读不变，原证据保留；新增卡具体理由如下。SourceDB SHA-256 `a251489d5ff49a79a637b44f781df001958cba1d84ee455890105e3bccea11dc`，术语SHA-256 `8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`。
+- 修复巫师完整双列帮助、配置错误整句、免疫及嵌套法术括号、有限巫师状态与提示、fsim人读无命中摘要和随机神器外观最终回退。英文输入选项、宏语法、匹配候选、枚举/存档身份及TSV格式保留。宏解析错误返回完整字符串，由唯一调用方以固定%s显示，避免用户百分号变成格式指令。完整SourceDB历史/动态尾部审核仍另批进行。
+- 独立语言报告：`.claude/metrics/verify/residual-source-rereview-20261102/postfix-language-review.json`；内联实现审查：同目录`code-review.md`。6项实际消费者测试已编写，编译和运行尚待串行验证，不声明通过。交互帮助/输入及双数据库miss回退仅源码审查；早期启动fixture仅复现无语言DB查找状态。原始扫描日志及解析限制均保留。
+
+### residual-display-dependencies
+
+| Identity / English source | 审前中文 | 当前中文 | 终态 | 逐项理由 | 证据 |
+|---|---|---|---|---|---|
+| source:(immune)<br>EN: (immune) |  | （免疫） | adjust | 免疫明确为意志检定对该法术无效，中文全角括号与living-spell前缀只包一层，不混成0%概率。 | crawl-ref/source/describe-spells.cc:540; crawl-ref/source/dat/i18n/zh/source.txt:51455 |
+| source:not in shoals or no heightmap; tide not available.<br>EN: Not in Shoals or no heightmap; tide not available. | 不在浅滩中或没有高度图；潮汐不可用。 | 不在浅滩中或没有高度图；潮汐不可用。 | keep | 不在浅滩或没有高度图任一条件都无潮汐，析取及不可用否定保留。 | crawl-ref/source/dgn-shoals.cc:1217; crawl-ref/source/dat/i18n/zh/source.txt:5522 |
+| source:tide inertia: %d. new value (smaller = faster tide) or use +/- to change tide: <br>EN: Tide inertia: %d. New value (smaller = faster tide) or use +/- to change tide:  |  | 潮汐惯性：%d。输入新值（数值越小，潮汐越快），或用+/-改变潮汐： | adjust | 潮汐惯性当前值、越小越快和+/-改潮三个信息完整，输入符号不中文化。 | crawl-ref/source/dgn-shoals.cc:1225; crawl-ref/source/dat/i18n/zh/source.txt:51458 |
+| source:bad highlight string -- %s<br>EN: Bad highlight string -- %s |  | 无效的高亮字符串——%s | adjust | 无效高亮属性串原样显示，未将高亮语法当普通颜色名解释。 | crawl-ref/source/game-options.cc:36; crawl-ref/source/dat/i18n/zh/source.txt:51461 |
+| source:bad colour -- %s<br>EN: Bad colour -- %s |  | 无效颜色——%s | adjust | 颜色解析失败，错误原字段保留；两实际调用同义，不翻译输入。 | crawl-ref/source/game-options.cc:40; crawl-ref/source/initfile.cc:4073; crawl-ref/source/dat/i18n/zh/source.txt:51464 |
+| source:option '%s' is disabled in this build.<br>EN: Option '%s' is disabled in this build. |  | 此构建已禁用选项“%s”。 | adjust | 此构建禁用选项而非用户已关掉开关，实际parse-state别名作为槽保留。 | crawl-ref/source/game-options.cc:93; crawl-ref/source/game-options.h:514; crawl-ref/source/dat/i18n/zh/source.txt:51467 |
+| source:bad %s value: %s (should be true or false)<br>EN: Bad %s value: %s (should be true or false) |  | %s的值无效：%s（应为true或false） | adjust | 布尔选项名和坏值各自原样，允许输入true/false仍英文，不误导中文真/假。 | crawl-ref/source/game-options.cc:103; crawl-ref/source/dat/i18n/zh/source.txt:51470 |
+| source:bad %s -- %s&#92;n<br>EN: Bad %s -- %s&#92;n |  | 无效的%s——%s&#92;n | adjust | 颜色选项名1和坏字段2保留，换行仍独立结尾，不倒置成坏选项值名称。 | crawl-ref/source/game-options.cc:115; crawl-ref/source/dat/i18n/zh/source.txt:51473 |
+| source:%s (for %s)<br>EN: %s (for %s) |  | %s（选项%s） | adjust | 已成形的错误1后注明所属选项2，两个槽角色不同且完整。 | crawl-ref/source/game-options.cc:126; crawl-ref/source/dat/i18n/zh/source.txt:51476 |
+| source:couldn't parse integer option %s: "%s"<br>EN: Couldn't parse integer option %s: "%s" |  | 无法解析整数选项%s：“%s” | adjust | 整数解析失败保留选项名和原输入，不误说已经越过上下界。 | crawl-ref/source/game-options.cc:149; crawl-ref/source/dat/i18n/zh/source.txt:51479 |
+| source:bad %s: %d should be &gt;= %d<br>EN: Bad %s: %d should be &gt;= %d |  | %s的值无效：%d应大于或等于%d | adjust | 实际值低于最小值时提示应大于或等于，等号保留，三个槽顺序正确。 | crawl-ref/source/game-options.cc:151; crawl-ref/source/dat/i18n/zh/source.txt:51482 |
+| source:bad %s: %d should be &lt;= %d<br>EN: Bad %s: %d should be &lt;= %d |  | %s的值无效：%d应小于或等于%d | adjust | 实际值高于最大值时提示应小于或等于，不反转上界方向。 | crawl-ref/source/game-options.cc:153; crawl-ref/source/dat/i18n/zh/source.txt:51485 |
+| source:couldn't parse decimal option %s: "%s"<br>EN: Couldn't parse decimal option %s: "%s" |  | 无法解析小数选项%s：“%s” | adjust | 小数选项解析失败与整数提示分开，原输入字节保留。 | crawl-ref/source/game-options.cc:164; crawl-ref/source/dat/i18n/zh/source.txt:51488 |
+| source:bad %s: %g should be &gt;= %g<br>EN: Bad %s: %g should be &gt;= %g |  | %s的值无效：%g应大于或等于%g | adjust | 小数下界比较保留大于或等于及%g值，不声称整数限制。 | crawl-ref/source/game-options.cc:167; crawl-ref/source/dat/i18n/zh/source.txt:51491 |
+| source:bad %s: %g should be &lt;= %g<br>EN: Bad %s: %g should be &lt;= %g |  | %s的值无效：%g应小于或等于%g | adjust | 小数上界比较保留小于或等于及%g值，不反转界限。 | crawl-ref/source/game-options.cc:169; crawl-ref/source/dat/i18n/zh/source.txt:51494 |
+| source:bad %s pair: '%s'<br>EN: Bad %s pair: '%s' |  | 无效的%s配对：“%s” | adjust | 颜色阈值配置的pair是两段配对，提示保留选项名和出错原配对串。 | crawl-ref/source/game-options.cc:221; crawl-ref/source/dat/i18n/zh/source.txt:51497 |
+| source:bad %s: '%s'<br>EN: Bad %s: '%s' |  | %s的值无效：“%s” | adjust | 颜色阈值中坏颜色字段原样显示，保留所属选项名，不把颜色当阈值数字。 | crawl-ref/source/game-options.cc:238; crawl-ref/source/dat/i18n/zh/source.txt:51500 |
+| source:disabled option<br>EN: disabled option |  | 选项已禁用 | adjust | DisabledGameOption直接入口反馈选项已禁用，不伪造具体别名；不同完整入口另有具体名。 | crawl-ref/source/game-options.h:110; crawl-ref/source/dat/i18n/zh/source.txt:51503 |
+| source:rc option choices&#124; or <br>EN: rc option choices&#124; or  |  | 或 | adjust | 合法choices最后两项用或，列的是替代输入，不误称同时全部需要。 | crawl-ref/source/game-options.h:531; crawl-ref/source/dat/i18n/zh/source.txt:51506 |
+| source:rc option choices&#124;, <br>EN: rc option choices&#124;,  |  | ， | adjust | 合法choices中间中文逗号分隔，原choice关键词不翻译。 | crawl-ref/source/game-options.h:531; crawl-ref/source/dat/i18n/zh/source.txt:51509 |
+| source:bad %s value: %s (should be %s)<br>EN: Bad %s value: %s (should be %s) |  | %s的值无效：%s（应为%s） | adjust | 坏选项名、原值和合法choice全列表完整；只译外壳/连接词，输入语法不改。 | crawl-ref/source/game-options.h:532; crawl-ref/source/dat/i18n/zh/source.txt:51512 |
+| source:options error: bad monster_list_colour: '%s'<br>EN: Options error: Bad monster_list_colour: '%s' |  | 选项错误：无效的monster_list_colour：“%s” | adjust | monster_list_colour原错误颜色字段原样反馈，保留配置键名以便用户定位。 | crawl-ref/source/initfile.cc:172; crawl-ref/source/dat/i18n/zh/source.txt:51515 |
+| source:bad monster_list_colour key: %s&#92;n<br>EN: Bad monster_list_colour key: %s&#92;n |  | 无效的monster_list_colour键：%s&#92;n | adjust | 无法识别的是monster_list_colour分类键，保留实际坏key与结尾换行。 | crawl-ref/source/initfile.cc:180; crawl-ref/source/dat/i18n/zh/source.txt:51518 |
+| source:options error: bad custom_text_colours key: '%s'<br>EN: Options error: Bad custom_text_colours key: '%s' |  | 选项错误：无效的custom_text_colours键：“%s” | adjust | custom_text_colours原key错误标题和原参数保留；既有参数半边问题另记录代码观察，不擅改T_迁移。 | crawl-ref/source/initfile.cc:194; crawl-ref/source/dat/i18n/zh/source.txt:51521 |
+| source:bad custom_text_colours: %s&#92;n<br>EN: Bad custom_text_colours: %s&#92;n |  | 无效的custom_text_colours：%s&#92;n | adjust | custom_text_colours解析错误原字段完整，配置键保持可搜索英文。 | crawl-ref/source/initfile.cc:203; crawl-ref/source/dat/i18n/zh/source.txt:51524 |
+| source:invalid glyph override: %x<br>EN: Invalid glyph override: %X |  | 无效的字形覆盖值：%X | adjust | 字形覆盖值不满足单列宽度，%X十六进制代码点保留，不译为替换了某怪物。 | crawl-ref/source/initfile.cc:1756; crawl-ref/source/dat/i18n/zh/source.txt:51527 |
+| source:unknown ability '%s'&#92;n<br>EN: Unknown ability '%s'&#92;n |  | 未知能力“%s”&#92;n | adjust | 未知能力名为用户输入槽，多个添加/删除/施放顺序入口都保留该原名。 | crawl-ref/source/initfile.cc:1819; crawl-ref/source/initfile.cc:1937; crawl-ref/source/initfile.cc:1951; crawl-ref/source/dat/i18n/zh/source.txt:51530 |
+| source:unknown spell '%s'&#92;n<br>EN: Unknown spell '%s'&#92;n |  | 未知法术“%s”&#92;n | adjust | 未知法术是原输入名称，不把输入替换成猜测中文法术名；三处入口同义。 | crawl-ref/source/initfile.cc:1870; crawl-ref/source/initfile.cc:1911; crawl-ref/source/initfile.cc:1925; crawl-ref/source/dat/i18n/zh/source.txt:51533 |
+| source:unknown scroll '%s'&#92;n<br>EN: Unknown scroll '%s'&#92;n |  | 未知卷轴“%s”&#92;n | adjust | 未知卷轴的原输入保留，和法术/能力错误对象不同。 | crawl-ref/source/initfile.cc:1974; crawl-ref/source/initfile.cc:1995; crawl-ref/source/dat/i18n/zh/source.txt:51536 |
+| source:unknown monster: "%s"<br>EN: Unknown monster: "%s" |  | 未知怪物：“%s” | adjust | 未知怪物错误保留实际完整用户字段，包含glyph或tile选项来源时不截去信息。 | crawl-ref/source/initfile.cc:2070; crawl-ref/source/initfile.cc:2093; crawl-ref/source/initfile.cc:3087; crawl-ref/source/dat/i18n/zh/source.txt:51539 |
+| source:user lua is disabled in this build! &#96;%s&#96;<br>EN: User lua is disabled in this build! &#96;%s&#96; |  | 此构建已禁用用户Lua！&#96;%s&#96; | adjust | 构建禁用用户Lua而非代码本身语法错，反引号内原代码保留。 | crawl-ref/source/initfile.cc:2844; crawl-ref/source/initfile.cc:2867; crawl-ref/source/dat/i18n/zh/source.txt:51542 |
+| source:user lua is disabled in this build! (file: %s)<br>EN: User lua is disabled in this build! (file: %s) |  | 此构建已禁用用户Lua！（文件：%s） | adjust | 禁用用户Lua提示带实际文件名，不误说文件不存在。 | crawl-ref/source/initfile.cc:2905; crawl-ref/source/dat/i18n/zh/source.txt:51545 |
+| source:can't find base tile "%s" of variant tile "%s"<br>EN: Can't find base tile "%s" of variant tile "%s" |  | 找不到变体图块所需的基础图块“%s”（变体图块：“%s”） | adjust | 找不到基础图块槽1，变体图块槽2同时交代；中文重述未交换两种名称。 | crawl-ref/source/initfile.cc:3067; crawl-ref/source/dat/i18n/zh/source.txt:51548 |
+| source:unknown tile: "%s"<br>EN: Unknown tile: "%s" |  | 未知图块：“%s” | adjust | 未知图块原名保留，区别怪物名及基础/变体关系。 | crawl-ref/source/initfile.cc:3077; crawl-ref/source/dat/i18n/zh/source.txt:51551 |
+| source:can't use that monster as a mons: player tile, sorry: "%s"<br>EN: Can't use that monster as a mons: player tile, sorry: "%s" |  | 抱歉，不能用该怪物作为mons:玩家图块：“%s” | adjust | 不能作为mons:玩家图块的怪物原名仍在，mons:规范前缀保留，不当玩家名字。 | crawl-ref/source/initfile.cc:3091; crawl-ref/source/dat/i18n/zh/source.txt:51554 |
+| source:invalid setting for tile_player_tile: "%s"<br>EN: Invalid setting for tile_player_tile: "%s" |  | tile_player_tile的设置无效：“%s” | adjust | tile_player_tile设置无效的原字段保留，非宣称图块文件损坏。 | crawl-ref/source/initfile.cc:3102; crawl-ref/source/dat/i18n/zh/source.txt:51557 |
+| source:invalid %s tile offsets: "%s"<br>EN: Invalid %s tile offsets: "%s" |  | %s图块偏移量无效：“%s” | adjust | 盾牌/武器显示类型和原偏移串两槽完整，偏移单位及范围不自行补写。 | crawl-ref/source/initfile.cc:3130; crawl-ref/source/dat/i18n/zh/source.txt:51560 |
+| source:unknown terrain type '%s'<br>EN: Unknown terrain type '%s' |  | 未知地形类型“%s” | adjust | 未知地形类型用原输入，未将地形标签当地图模板名称。 | crawl-ref/source/initfile.cc:3175; crawl-ref/source/dat/i18n/zh/source.txt:51563 |
+| source:unknown consumable type: %s&#92;n<br>EN: Unknown consumable type: %s&#92;n |  | 未知消耗品类型：%s&#92;n | adjust | 消耗品类型未知，原名称保留，和快捷键字母本身出错不同。 | crawl-ref/source/initfile.cc:3190; crawl-ref/source/dat/i18n/zh/source.txt:51566 |
+| source:unknown animation type '%s'<br>EN: Unknown animation type '%s' |  | 未知动画类型“%s” | adjust | 未知动画类别是原type字段，译文不改变受支持类型。 | crawl-ref/source/initfile.cc:3288; crawl-ref/source/dat/i18n/zh/source.txt:51569 |
+| source:unknown explore stop condition '%s'<br>EN: Unknown explore stop condition '%s' |  | 未知的自动探索停止条件“%s” | adjust | 自动探索停止条件未知，保留规范化后的实际条件字符串。 | crawl-ref/source/initfile.cc:3331; crawl-ref/source/dat/i18n/zh/source.txt:51572 |
+| source:unknown greedy visit condition '%s'<br>EN: Unknown greedy visit condition '%s' |  | 未知的贪婪探索访问条件“%s” | adjust | 贪婪探索的访问条件未知，和停止条件两用途不混淆。 | crawl-ref/source/initfile.cc:3357; crawl-ref/source/dat/i18n/zh/source.txt:51575 |
+| source:options error: missing colour in message_colour setting: '%s'<br>EN: Options error: Missing colour in message_colour setting: '%s' |  | 选项错误：message_colour设置缺少颜色：“%s” | adjust | message_colour设置缺少颜色而非有未知颜色，保留完整原设置。 | crawl-ref/source/initfile.cc:3444; crawl-ref/source/dat/i18n/zh/source.txt:51578 |
+| source:options error: bad colour '%s' in message_colour setting: '%s'<br>EN: Options error: Bad colour '%s' in message_colour setting: '%s' |  | 选项错误：message_colour设置中的颜色“%s”无效（设置：“%s”） | adjust | 坏颜色1与完整设置2角色清晰，缺少/无效两种错误不合并。 | crawl-ref/source/initfile.cc:3453; crawl-ref/source/dat/i18n/zh/source.txt:51581 |
+| source:options error: missing tag/color in colour mapping: '%s'<br>EN: Options error: Missing tag/color in colour mapping: '%s' |  | 选项错误：颜色映射缺少标签或颜色：“%s” | adjust | 颜色映射缺少标签或颜色的结构信息完整，原映射字符串保留。 | crawl-ref/source/initfile.cc:3470; crawl-ref/source/dat/i18n/zh/source.txt:51584 |
+| source:options error: unknown color in colour mapping: '%s'<br>EN: Options error: Unknown color in colour mapping: '%s' |  | 选项错误：颜色映射中有未知颜色：“%s” | adjust | 颜色映射存在未知颜色，与前条缺少结构区别，原串不改。 | crawl-ref/source/initfile.cc:3489; crawl-ref/source/dat/i18n/zh/source.txt:51587 |
+| source:options error: invalid sound mapping '%s'<br>EN: Options error: invalid sound mapping '%s' |  | 选项错误：无效的声音映射“%s” | adjust | 声音映射语法无效，未误说没有声音文件；原映射保留。 | crawl-ref/source/initfile.cc:3511; crawl-ref/source/dat/i18n/zh/source.txt:51590 |
+| source:error parsing slot mapping: '%s'&#92;n<br>EN: Error parsing slot mapping: '%s'&#92;n |  | 解析栏位映射时出错：“%s”&#92;n | adjust | 栏位映射的解析错误原字符串完整，区别消耗品映射。 | crawl-ref/source/initfile.cc:3536; crawl-ref/source/dat/i18n/zh/source.txt:51593 |
+| source:error parsing consumable mapping: '%s'&#92;n<br>EN: Error parsing consumable mapping: '%s'&#92;n |  | 解析消耗品映射时出错：“%s”&#92;n | adjust | 消耗品映射解析错误原字符串完整，未把栏位和物品类型混同。 | crawl-ref/source/initfile.cc:3548; crawl-ref/source/dat/i18n/zh/source.txt:51596 |
+| source:bad longwalk_range: "%s" (expected los, visible, unlimited, or a positive number)<br>EN: Bad longwalk_range: "%s" (expected los, visible, unlimited, or a positive number) |  | longwalk_range的值无效：“%s”（应为los、visible、unlimited或正数） | adjust | longwalk_range接受los/visible/unlimited或正数四种，全部英文合法值与正数条件保留。 | crawl-ref/source/initfile.cc:3607; crawl-ref/source/dat/i18n/zh/source.txt:51599 |
+| source:unknown option name for default: '%s'<br>EN: Unknown option name for default: '%s' |  | default指定了未知选项名：“%s” | adjust | default引用未知选项名，保留default功能关键词和实际选项，不误成未知默认数值。 | crawl-ref/source/initfile.cc:3880; crawl-ref/source/dat/i18n/zh/source.txt:51602 |
+| source:option 'lua_max_memory' is disabled in this build.<br>EN: Option 'lua_max_memory' is disabled in this build. |  | 此构建已禁用选项“lua_max_memory”。 | adjust | 仅此构建禁用lua_max_memory，选项名仍可搜索，不误作内存已用满。 | crawl-ref/source/initfile.cc:3926; crawl-ref/source/dat/i18n/zh/source.txt:51605 |
+| source:couldn't parse integer option lua_max_memory: "%s"<br>EN: Couldn't parse integer option lua_max_memory: "%s" |  | 无法解析整数选项lua_max_memory：“%s” | adjust | lua_max_memory整数解析错误原值保留，不新增内存单位或上限承诺。 | crawl-ref/source/initfile.cc:3929; crawl-ref/source/dat/i18n/zh/source.txt:51608 |
+| source:lua_file failed: clua not enabled on this build!<br>EN: lua_file failed: clua not enabled on this build! |  | lua_file失败：此构建未启用clua！ | adjust | lua_file失败因为此构建未启用clua，保留两不同接口名和因果。 | crawl-ref/source/initfile.cc:3942; crawl-ref/source/dat/i18n/zh/source.txt:51611 |
+| source:no variable named '%s' to make constant<br>EN: No variable named '%s' to make constant |  | 没有名为“%s”的变量可设为常量 | adjust | 不存在该变量所以不能设为常量，名字原样，非变量已有值无效。 | crawl-ref/source/initfile.cc:3956; crawl-ref/source/dat/i18n/zh/source.txt:51614 |
+| source:'%s' is already a constant<br>EN: '%s' is already a constant |  | “%s”已是常量 | adjust | 该名字已经是常量，和变量不存在分支相反，原名字保留。 | crawl-ref/source/initfile.cc:3958; crawl-ref/source/dat/i18n/zh/source.txt:51617 |
+| source:bad object type '%*s' for autopickup.&#92;n<br>EN: Bad object type '%*s' for autopickup.&#92;n |  | 自动拾取设置中的物品类型“%*s”无效。&#92;n | adjust | 自动拾取的坏物品类型用原%*s动态宽度/字符串槽，不交换width与char*，不擅改precision规则。 | crawl-ref/source/initfile.cc:4045; crawl-ref/source/dat/i18n/zh/source.txt:51620 |
+| source:bad colour -- %s=%d or %s=%d&#92;n<br>EN: Bad colour -- %s=%d or %s=%d&#92;n |  | 无效颜色——%s=%d或%s=%d&#92;n | adjust | 两个颜色名称及各自解析数值按原%s=%d成对保留，中间或表示可能出错项。 | crawl-ref/source/initfile.cc:4058; crawl-ref/source/dat/i18n/zh/source.txt:51623 |
+| source:bad channel -- %s<br>EN: Bad channel -- %s |  | 无效通道——%s | adjust | 通道名无效，槽内原subkey保留，不误作颜色错误。 | crawl-ref/source/initfile.cc:4071; crawl-ref/source/dat/i18n/zh/source.txt:51626 |
+| source:bad fire item start index: %s&#92;n<br>EN: Bad fire item start index: %s&#92;n |  | 发射物品的起始索引无效：%s&#92;n | adjust | 发射物品起始索引错误保留原字段，不把字母索引当法术编号。 | crawl-ref/source/initfile.cc:4146; crawl-ref/source/dat/i18n/zh/source.txt:51629 |
+| source:autoinscribe string must have exactly one colon: %s&#92;n<br>EN: Autoinscribe string must have exactly one colon: %s&#92;n |  | 自动铭刻字符串必须恰有一个冒号：%s&#92;n | adjust | 自动铭刻必须恰好一个冒号，保留exactly one而非至少一个。 | crawl-ref/source/initfile.cc:4256; crawl-ref/source/dat/i18n/zh/source.txt:51632 |
+| source:autoinscribe pattern is empty: %s&#92;n<br>EN: Autoinscribe pattern is empty: %s&#92;n |  | 自动铭刻匹配模式为空：%s&#92;n | adjust | 自动铭刻左侧匹配模式为空，区别右侧结果为空。 | crawl-ref/source/initfile.cc:4263; crawl-ref/source/dat/i18n/zh/source.txt:51635 |
+| source:autoinscribe result is empty: %s&#92;n<br>EN: Autoinscribe result is empty: %s&#92;n |  | 自动铭刻结果为空：%s&#92;n | adjust | 自动铭刻右侧结果为空，原全文保留，未误称正则不存在。 | crawl-ref/source/initfile.cc:4270; crawl-ref/source/dat/i18n/zh/source.txt:51638 |
+| source:error parsing autoinscribe string: %s&#92;n<br>EN: Error parsing autoinscribe string: %s&#92;n |  | 解析自动铭刻字符串时出错：%s&#92;n | adjust | 自动铭刻字符串不能解析的兜底错误，原字段完整，不新增自动修正。 | crawl-ref/source/initfile.cc:4279; crawl-ref/source/dat/i18n/zh/source.txt:51641 |
+| source:bad skill level to note -- %s&#92;n<br>EN: Bad skill level to note -- %s&#92;n |  | 要记录的技能等级无效——%s&#92;n | adjust | 要记录的技能等级无效，原数值字段保留；等级而非技能点。 | crawl-ref/source/initfile.cc:4306; crawl-ref/source/dat/i18n/zh/source.txt:51644 |
+| source:bad item type '%*s' for action_panel.&#92;n<br>EN: Bad item type '%*s' for action_panel.&#92;n |  | action_panel中的物品类型“%*s”无效。&#92;n | adjust | action_panel坏物品类型保留动态宽度参数和原字符串，配置键名不翻译。 | crawl-ref/source/initfile.cc:4446; crawl-ref/source/dat/i18n/zh/source.txt:51647 |
+| source:too many fake langs; maximum is %d<br>EN: Too many fake langs; maximum is %d |  | 伪语言数量过多；上限为%d | adjust | 伪语言数量上限%d保留，是叠加数量而非语言字符数。 | crawl-ref/source/initfile.cc:4592; crawl-ref/source/dat/i18n/zh/source.txt:51650 |
+| source:invalid fake-lang format: %s<br>EN: Invalid fake-lang format: %s |  | 无效的伪语言格式：%s | adjust | 伪语言格式错误保留整串，不误说某真实语言缺译。 | crawl-ref/source/initfile.cc:4600; crawl-ref/source/dat/i18n/zh/source.txt:51653 |
+| source:lang %s doesn't take a value<br>EN: Lang %s doesn't take a value |  | 语言%s不接受数值 | adjust | 该伪语言不接受附加数值，和唯一接受整数值的butt分支一致；原语言名保留。 | crawl-ref/source/initfile.cc:4615; crawl-ref/source/dat/i18n/zh/source.txt:51656 |
+| source:invalid value '%s' provided for lang<br>EN: Invalid value '%s' provided for lang |  | 为语言提供的值“%s”无效 | adjust | 附加整数值无效时显示原值，区别语言本身未知。 | crawl-ref/source/initfile.cc:4622; crawl-ref/source/dat/i18n/zh/source.txt:51659 |
+| source:unknown language %s!<br>EN: Unknown language %s! |  | 未知语言%s！ | adjust | 未知伪语言名字原样显示，不把它当用户选中的系统语言。 | crawl-ref/source/initfile.cc:4631; crawl-ref/source/dat/i18n/zh/source.txt:51662 |
+| source:cannot find %sfile "%s".<br>EN: Cannot find %sfile "%s". |  | 找不到%s文件“%s”。 | adjust | 宏文件/普通文件类型短修饰接文件，原文件名保留；找不到和安全拒绝包含分开。 | crawl-ref/source/initfile.cc:4694; crawl-ref/source/dat/i18n/zh/source.txt:51665 |
+| source:cannot include %sfile: %s<br>EN: Cannot include %sfile: %s |  | 无法包含%s文件：%s | adjust | 无法包含指定类型文件的原因原err.what保留，不误作单纯不存在。 | crawl-ref/source/initfile.cc:4701; crawl-ref/source/dat/i18n/zh/source.txt:51668 |
+| source:sorry, this spell isn't supported for dummies!<br>EN: Sorry, this spell isn't supported for dummies! |  | 抱歉，虚拟施法者不支持此法术！ | adjust | dummies指巫师虚拟施法怪，不嘲讽玩家愚笨；不支持法术的否定完整。 | crawl-ref/source/mon-cast.cc:4254; crawl-ref/source/dat/i18n/zh/source.txt:51671 |
+| source:%s%6s &#124; no hits<br>EN: %s%6s &#124; No hits |  | %s%6s &#124; 无命中 | adjust | 仅人类可读无命中摘要本地化，prefix/attacker两槽和宽度保留；TSV数值及表头不纳此译。 | crawl-ref/source/wiz-fsim.cc:61; crawl-ref/source/dat/i18n/zh/source.txt:51674 |
+| source:all unrands are now eligible to generate once again.<br>EN: All unrands are now eligible to generate once again. |  | 所有固定神器现在都可以再次生成了。 | adjust | unrands为固定神器，全体重新可生成资格而非立即生成全部；与重置unique_items相符。 | crawl-ref/source/wiz-item.cc:1427; crawl-ref/source/dat/i18n/zh/source.txt:51677 |
+| source:no exact match for mutation '%s', possible matches are: <br>EN: No exact match for mutation '%s', possible matches are:  |  | 没有与变异“%s”完全匹配的名称，可能的匹配项有： | adjust | 无完全匹配的变异原查询名保留，后列可能匹配项，不说没有任何部分匹配。 | crawl-ref/source/wiz-you.cc:600; crawl-ref/source/dat/i18n/zh/source.txt:51680 |
+| source:wizard name matches&#124; and <br>EN: wizard name matches&#124; and  |  | 和 | adjust | 可能名称列表末连接词和可嵌入两类查询，不翻译原查询/匹配身份。 | crawl-ref/source/wiz-you.cc:604; crawl-ref/source/wiz-you.cc:692; crawl-ref/source/dat/i18n/zh/source.txt:51683 |
+| source:wizard name matches&#124;, <br>EN: wizard name matches&#124;,  |  | ， | adjust | 可能名称列表中间中文逗号，长列表仍能分项，非新的合法输入分隔语法。 | crawl-ref/source/wiz-you.cc:605; crawl-ref/source/wiz-you.cc:693; crawl-ref/source/dat/i18n/zh/source.txt:51686 |
+| source:no exact match for bane '%s', possible matches are: <br>EN: No exact match for bane '%s', possible matches are:  |  | 没有与灾祸“%s”完全匹配的名称，可能的匹配项有： | adjust | 灾祸原查询无完全匹配但可能项仍列出，明确bane与mutation区别。 | crawl-ref/source/wiz-you.cc:688; crawl-ref/source/dat/i18n/zh/source.txt:51689 |
+| source:top hud test state: (n)ormal, (s)tress, (c)lear? <br>EN: Top HUD test state: (n)ormal, (s)tress, (c)lear?  |  | 顶部状态栏测试状态：正常(n)、压力测试(s)或清除(c)？ | adjust | 顶部HUD测试normal/stress/clear三操作分别n/s/c，中文说明不改输入字母。 | crawl-ref/source/wiz-you.cc:873; crawl-ref/source/dat/i18n/zh/source.txt:51692 |
+| source:no saved top hud test state to restore.<br>EN: No saved top HUD test state to restore. |  | 没有可恢复的顶部状态栏测试前状态。 | adjust | 没有保存的测试前状态可恢复，和尚未测试/当前无HUD两概念不混。 | crawl-ref/source/wiz-you.cc:885; crawl-ref/source/dat/i18n/zh/source.txt:51695 |
+| source:restored the pre-test hud state.<br>EN: Restored the pre-test HUD state. |  | 已恢复测试前的状态栏状态。 | adjust | 已恢复的是测试前HUD状态，不误说恢复测试压力样本。 | crawl-ref/source/wiz-you.cc:889; crawl-ref/source/dat/i18n/zh/source.txt:51698 |
+| source:unknown top hud test state; use n, s, or c.<br>EN: Unknown top HUD test state; use n, s, or c. |  | 未知的顶部状态栏测试状态；请使用n、s或c。 | adjust | 未知状态时明确三合法输入n、s、c，非任意正常/压力/清除中文词。 | crawl-ref/source/wiz-you.cc:894; crawl-ref/source/dat/i18n/zh/source.txt:51701 |
+| source:applied top hud stress state.<br>EN: Applied top HUD stress state. |  | 已应用顶部状态栏压力测试状态。 | adjust | 已应用压力测试状态，不把它当自然可达普通游戏状态。 | crawl-ref/source/wiz-you.cc:943; crawl-ref/source/dat/i18n/zh/source.txt:51704 |
+| source:applied top hud normal state.<br>EN: Applied top HUD normal state. |  | 已应用顶部状态栏正常状态。 | adjust | 已应用正常测试状态，和清除恢复原状态不混。 | crawl-ref/source/wiz-you.cc:944; crawl-ref/source/dat/i18n/zh/source.txt:51707 |
+| source:enter new zot clock value (current = %d, from 0 to %d): <br>EN: Enter new Zot clock value (current = %d, from 0 to %d):  |  | 输入新的佐特计时器数值（当前为%d，范围为0至%d）： | adjust | 佐特计时器当前值和0至最大界限两整数槽完整，未自行补毫秒或回合。 | crawl-ref/source/wiz-you.cc:1357; crawl-ref/source/dat/i18n/zh/source.txt:51710 |
+| source:reset capstone god abilities.<br>EN: Reset capstone god abilities. |  | 已重置神祇终极能力。 | adjust | 重置神祇终极能力资格，和一次性能力标志/两神特别状态复位相符，不重置信仰。 | crawl-ref/source/wiz-you.cc:1393; crawl-ref/source/dat/i18n/zh/source.txt:51713 |
+| source:&lt;yellow&gt;player stats&lt;/yellow&gt;&#92;n<br>EN: &lt;yellow&gt;Player stats&lt;/yellow&gt;&#92;n |  | &lt;yellow&gt;角色属性&lt;/yellow&gt;&#92;n | adjust | 角色属性分类标题，非怪物或物品页。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:428; crawl-ref/source/dat/i18n/zh/source.txt:51986 |
+| source:&lt;w&gt;a&lt;/w&gt;      set all skills to level&#92;n<br>EN: &lt;w&gt;A&lt;/w&gt;      set all skills to level&#92;n |  | &lt;w&gt;A&lt;/w&gt;      将所有技能设为指定等级&#92;n | adjust | A将所有技能设为目标级，保留all范围。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:429; crawl-ref/source/dat/i18n/zh/source.txt:51725 |
+| source:&lt;w&gt;ctrl-d&lt;/w&gt; change enchantments/durations&#92;n<br>EN: &lt;w&gt;Ctrl-D&lt;/w&gt; change enchantments/durations&#92;n |  | &lt;w&gt;Ctrl-D&lt;/w&gt; 更改附魔状态与持续时间&#92;n | adjust | Ctrl-D改附魔状态和持续时间，两个对象都在。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:430; crawl-ref/source/dat/i18n/zh/source.txt:51728 |
+| source:&lt;w&gt;g&lt;/w&gt;      exercise a skill&#92;n<br>EN: &lt;w&gt;g&lt;/w&gt;      exercise a skill&#92;n |  | &lt;w&gt;g&lt;/w&gt;      锻炼一项技能&#92;n | adjust | g锻炼一项技能，不误说直接设定等级。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:431; crawl-ref/source/dat/i18n/zh/source.txt:51731 |
+| source:&lt;w&gt;k&lt;/w&gt;      change experience level and skills&#92;n<br>EN: &lt;w&gt;k&lt;/w&gt;      change experience level and skills&#92;n |  | &lt;w&gt;k&lt;/w&gt;      更改经验等级与技能&#92;n | adjust | k同时改经验等级与技能，两项完整。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:432; crawl-ref/source/dat/i18n/zh/source.txt:51734 |
+| source:&lt;w&gt;l&lt;/w&gt;      change experience level&#92;n<br>EN: &lt;w&gt;l&lt;/w&gt;      change experience level&#92;n |  | &lt;w&gt;l&lt;/w&gt;      更改经验等级&#92;n | adjust | l只改经验等级，与k不同。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:433; crawl-ref/source/dat/i18n/zh/source.txt:51737 |
+| source:&lt;w&gt;ctrl-p&lt;/w&gt; list props&#92;n<br>EN: &lt;w&gt;Ctrl-P&lt;/w&gt; list props&#92;n |  | &lt;w&gt;Ctrl-P&lt;/w&gt; 列出属性&#92;n | adjust | Ctrl-P列props属性，不误说显示全部法术。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:434; crawl-ref/source/dat/i18n/zh/source.txt:51740 |
+| source:&lt;w&gt;r&lt;/w&gt;      change character's species&#92;n<br>EN: &lt;w&gt;r&lt;/w&gt;      change character's species&#92;n |  | &lt;w&gt;r&lt;/w&gt;      更改角色种族&#92;n | adjust | r改变角色种族，不是怪物变形。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:435; crawl-ref/source/dat/i18n/zh/source.txt:51743 |
+| source:&lt;w&gt;s&lt;/w&gt;      set skill to level&#92;n<br>EN: &lt;w&gt;s&lt;/w&gt;      set skill to level&#92;n |  | &lt;w&gt;s&lt;/w&gt;      将技能设为指定等级&#92;n | adjust | s将一项技能设目标级，与全部A区分。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:436; crawl-ref/source/dat/i18n/zh/source.txt:51746 |
+| source:&lt;w&gt;x&lt;/w&gt;      gain an experience level&#92;n<br>EN: &lt;w&gt;x&lt;/w&gt;      gain an experience level&#92;n |  | &lt;w&gt;x&lt;/w&gt;      提升一级经验等级&#92;n | adjust | x增加一个经验等级，保留一级而非设任意级。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:437; crawl-ref/source/dat/i18n/zh/source.txt:51749 |
+| source:&lt;w&gt;$&lt;/w&gt;      set gold to a specified value&#92;n<br>EN: &lt;w&gt;$&lt;/w&gt;      set gold to a specified value&#92;n |  | &lt;w&gt;$&lt;/w&gt;      将金币设为指定数量&#92;n | adjust | $设置指定金币数，不是随机获得金币。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:438; crawl-ref/source/dat/i18n/zh/source.txt:51752 |
+| source:&lt;w&gt;]&lt;/w&gt;      get a mutation&#92;n<br>EN: &lt;w&gt;]&lt;/w&gt;      get a mutation&#92;n |  | &lt;w&gt;]&lt;/w&gt;      获得变异&#92;n | adjust | ]获得变异，键符号不作标点改写。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:439; crawl-ref/source/dat/i18n/zh/source.txt:51755 |
+| source:&lt;w&gt;}&lt;/w&gt;      toggle a bane&#92;n<br>EN: &lt;w&gt;}&lt;/w&gt;      toggle a bane&#92;n |  | &lt;w&gt;}&lt;/w&gt;      切换灾祸&#92;n | adjust | }切换灾祸，非只添加不可删除。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:440; crawl-ref/source/dat/i18n/zh/source.txt:51758 |
+| source:&lt;w&gt;_&lt;/w&gt;      gain religion&#92;n<br>EN: &lt;w&gt;_&lt;/w&gt;      gain religion&#92;n |  | &lt;w&gt;_&lt;/w&gt;      信奉神祇&#92;n | adjust | _信奉神祇，与设置虔诚^分开。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:441; crawl-ref/source/dat/i18n/zh/source.txt:51761 |
+| source:&lt;w&gt;^&lt;/w&gt;      set piety to a value&#92;n<br>EN: &lt;w&gt;^&lt;/w&gt;      set piety to a value&#92;n |  | &lt;w&gt;^&lt;/w&gt;      设置虔诚值&#92;n | adjust | ^设置虔诚值，术语不用虔诚度。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:442; crawl-ref/source/dat/i18n/zh/source.txt:51764 |
+| source:&lt;w&gt;@&lt;/w&gt;      set str int dex&#92;n<br>EN: &lt;w&gt;@&lt;/w&gt;      set Str Int Dex&#92;n |  | &lt;w&gt;@&lt;/w&gt;      设置力量、智力、敏捷&#92;n | adjust | @按原顺序设置力量/智力/敏捷。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:444; crawl-ref/source/dat/i18n/zh/source.txt:51767 |
+| source:&lt;w&gt;q&lt;/w&gt;      set/reset top hud test state&#92;n<br>EN: &lt;w&gt;Q&lt;/w&gt;      set/reset top HUD test state&#92;n |  | &lt;w&gt;Q&lt;/w&gt;      设置或重置顶部状态栏测试状态&#92;n | adjust | Q设置或重置顶部HUD测试，两个方向完整。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:445; crawl-ref/source/dat/i18n/zh/source.txt:51770 |
+| source:&lt;w&gt;#&lt;/w&gt;      load character from a dump file&#92;n<br>EN: &lt;w&gt;#&lt;/w&gt;      load character from a dump file&#92;n |  | &lt;w&gt;#&lt;/w&gt;      从角色转储文件载入角色&#92;n | adjust | #从角色dump文件载入角色，不是载入普通存档。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:446; crawl-ref/source/dat/i18n/zh/source.txt:51773 |
+| source:&lt;w&gt;&amp;&lt;/w&gt;      list all divine followers&#92;n<br>EN: &lt;w&gt;&amp;&lt;/w&gt;      list all divine followers&#92;n |  | &lt;w&gt;&amp;&lt;/w&gt;      列出所有神祇追随者&#92;n | adjust | &amp;列神祇追随者，未改成列全部怪物。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:447; crawl-ref/source/dat/i18n/zh/source.txt:51776 |
+| source:&lt;w&gt;=&lt;/w&gt;      show info about skill points&#92;n<br>EN: &lt;w&gt;=&lt;/w&gt;      show info about skill points&#92;n |  | &lt;w&gt;=&lt;/w&gt;      显示技能点数信息&#92;n | adjust | =显示技能点信息，区别技能等级。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:448; crawl-ref/source/dat/i18n/zh/source.txt:51779 |
+| source:&lt;w&gt;n&lt;/w&gt;      set zot clock to a value&#92;n<br>EN: &lt;w&gt;n&lt;/w&gt;      set Zot clock to a value&#92;n |  | &lt;w&gt;n&lt;/w&gt;      设置佐特计时器数值&#92;n | adjust | n设置佐特计时器，和N紧张度不同。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:449; crawl-ref/source/dat/i18n/zh/source.txt:51782 |
+| source:&lt;w&gt;n&lt;/w&gt;      get current tension value&#92;n<br>EN: &lt;w&gt;N&lt;/w&gt;      get current tension value&#92;n |  | &lt;w&gt;N&lt;/w&gt;      获取当前紧张度&#92;n | adjust | N获取当前紧张度，大小写保留。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:450; crawl-ref/source/dat/i18n/zh/source.txt:51785 |
+| source:&lt;w&gt;j&lt;/w&gt;      reset single-use god abilities&#92;n<br>EN: &lt;w&gt;j&lt;/w&gt;      reset single-use god abilities&#92;n |  | &lt;w&gt;j&lt;/w&gt;      重置一次性神祇能力&#92;n | adjust | j重置一次性神祇能力，不重置所有能力等级。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:451; crawl-ref/source/dat/i18n/zh/source.txt:51788 |
+| source:&lt;yellow&gt;dungeon features&lt;/yellow&gt;&#92;n<br>EN: &lt;yellow&gt;Dungeon features&lt;/yellow&gt;&#92;n |  | &lt;yellow&gt;地牢地形&lt;/yellow&gt;&#92;n | adjust | 地牢地形分类标题，feature指地形。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:453; crawl-ref/source/dat/i18n/zh/source.txt:51989 |
+| source:&lt;w&gt;,&lt;/w&gt;/&lt;w&gt;.&lt;/w&gt;    create up/down staircase&#92;n<br>EN: &lt;w&gt;,&lt;/w&gt;/&lt;w&gt;.&lt;/w&gt;    create up/down staircase&#92;n |  | &lt;w&gt;,&lt;/w&gt;/&lt;w&gt;.&lt;/w&gt;    创建向上或向下的楼梯&#92;n | adjust | 逗号/句点依序创建上/下楼梯，对应两个方向。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:454; crawl-ref/source/dat/i18n/zh/source.txt:51791 |
+| source:&lt;w&gt;(&lt;/w&gt;      turn cell into feature&#92;n<br>EN: &lt;w&gt;(&lt;/w&gt;      turn cell into feature&#92;n |  | &lt;w&gt;(&lt;/w&gt;      将格子改为指定地形&#92;n | adjust | (将单个格改指定地形，不新建整层。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:455; crawl-ref/source/dat/i18n/zh/source.txt:51794 |
+| source:&lt;w&gt;&#92;&#92;&lt;/w&gt;      make a shop&#92;n<br>EN: &lt;w&gt;&#92;&#92;&lt;/w&gt;      make a shop&#92;n |  | &lt;w&gt;&#92;&#92;&lt;/w&gt;      创建商店&#92;n | adjust | 反斜杠键创建商店，实际反斜杠原样显示。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:456; crawl-ref/source/dat/i18n/zh/source.txt:51797 |
+| source:&lt;yellow&gt;builder debugging&lt;/yellow&gt;&#92;n<br>EN: &lt;yellow&gt;Builder debugging&lt;/yellow&gt;&#92;n |  | &lt;yellow&gt;生成器调试&lt;/yellow&gt;&#92;n | adjust | 生成器调试分类，builder不是人物职业。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:458; crawl-ref/source/dat/i18n/zh/source.txt:51992 |
+| source:&lt;w&gt;l&lt;/w&gt;      place a vault by name&#92;n<br>EN: &lt;w&gt;L&lt;/w&gt;      place a vault by name&#92;n |  | &lt;w&gt;L&lt;/w&gt;      按名称放置地图模板&#92;n | adjust | L按名称放置地图模板，vault非储藏库。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:459; crawl-ref/source/dat/i18n/zh/source.txt:51800 |
+| source:&lt;w&gt;p&lt;/w&gt;      create a level based on a vault&#92;n<br>EN: &lt;w&gt;P&lt;/w&gt;      create a level based on a vault&#92;n |  | &lt;w&gt;P&lt;/w&gt;      根据地图模板创建楼层&#92;n | adjust | P依据地图模板创建整个楼层，区别L局部放置。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:460; crawl-ref/source/dat/i18n/zh/source.txt:51803 |
+| source:&lt;w&gt;r&lt;/w&gt;      regenerate current level&#92;n<br>EN: &lt;w&gt;R&lt;/w&gt;      regenerate current level&#92;n |  | &lt;w&gt;R&lt;/w&gt;      重新生成当前楼层&#92;n | adjust | R重新生成当前楼层，不是重新载入缓存。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:461; crawl-ref/source/dat/i18n/zh/source.txt:51806 |
+| source:&lt;w&gt;ctrl-a&lt;/w&gt; generate new abyss area&#92;n<br>EN: &lt;w&gt;Ctrl-A&lt;/w&gt; generate new Abyss area&#92;n |  | &lt;w&gt;Ctrl-A&lt;/w&gt; 生成新的深渊区域&#92;n | adjust | Ctrl-A生成新深渊区域，专名准确。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:462; crawl-ref/source/dat/i18n/zh/source.txt:51809 |
+| source:&lt;w&gt;k&lt;/w&gt;      mark all vaults as unused&#92;n<br>EN: &lt;w&gt;K&lt;/w&gt;      mark all vaults as unused&#92;n |  | &lt;w&gt;K&lt;/w&gt;      将所有地图模板标为未使用&#92;n | adjust | K标所有模板未使用，非立即重放全部模板。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:463; crawl-ref/source/dat/i18n/zh/source.txt:51812 |
+| source:&lt;w&gt;:&lt;/w&gt;      find branches and overflow&#92;n       temples in the dungeon&#92;n<br>EN: &lt;w&gt;:&lt;/w&gt;      find branches and overflow&#92;n       temples in the dungeon&#92;n |  | &lt;w&gt;:&lt;/w&gt;      查找地牢中的分支和&#92;n       额外神殿&#92;n | adjust | 冒号查找分支与额外神殿两对象，保留跨行关系。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:464; crawl-ref/source/dat/i18n/zh/source.txt:51815 |
+| source:&lt;w&gt;;&lt;/w&gt;      list known levels and counters&#92;n<br>EN: &lt;w&gt;;&lt;/w&gt;      list known levels and counters&#92;n |  | &lt;w&gt;;&lt;/w&gt;      列出已知楼层和计数器&#92;n | adjust | 分号列已知楼层及计数器，不误称未知关卡。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:466; crawl-ref/source/dat/i18n/zh/source.txt:51818 |
+| source:&lt;w&gt;ctrl-e&lt;/w&gt; dump level builder information&#92;n<br>EN: &lt;w&gt;Ctrl-E&lt;/w&gt; dump level builder information&#92;n |  | &lt;w&gt;Ctrl-E&lt;/w&gt; 导出楼层生成器信息&#92;n | adjust | Ctrl-E导出楼层生成器信息，不是地图截图。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:467; crawl-ref/source/dat/i18n/zh/source.txt:51821 |
+| source:&lt;w&gt;ctrl-l&lt;/w&gt; show builder logs for level&#92;n<br>EN: &lt;w&gt;Ctrl-L&lt;/w&gt; show builder logs for level&#92;n |  | &lt;w&gt;Ctrl-L&lt;/w&gt; 显示楼层生成器日志&#92;n | adjust | Ctrl-L显示生成日志，仅DEBUG条件行。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:472; crawl-ref/source/dat/i18n/zh/source.txt:51824 |
+| source:&lt;yellow&gt;other level related commands&lt;/yellow&gt;&#92;n<br>EN: &lt;yellow&gt;Other level related commands&lt;/yellow&gt;&#92;n |  | &lt;yellow&gt;其他楼层相关命令&lt;/yellow&gt;&#92;n | adjust | 其他楼层相关命令标题保持分类。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:475; crawl-ref/source/dat/i18n/zh/source.txt:51995 |
+| source:&lt;w&gt;{&lt;/w&gt;      magic mapping&#92;n<br>EN: &lt;w&gt;{&lt;/w&gt;      magic mapping&#92;n |  | &lt;w&gt;{&lt;/w&gt;      魔法测绘&#92;n | adjust | {魔法测绘，非改地形或生成楼层。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:476; crawl-ref/source/dat/i18n/zh/source.txt:51827 |
+| source:&lt;w&gt;b&lt;/w&gt;      controlled blink&#92;n<br>EN: &lt;w&gt;b&lt;/w&gt;      controlled blink&#92;n |  | &lt;w&gt;b&lt;/w&gt;      可控闪烁&#92;n | adjust | b可控闪烁短距效果，与B传送区分。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:477; crawl-ref/source/dat/i18n/zh/source.txt:51830 |
+| source:&lt;w&gt;b&lt;/w&gt;      controlled teleport&#92;n<br>EN: &lt;w&gt;B&lt;/w&gt;      controlled teleport&#92;n |  | &lt;w&gt;B&lt;/w&gt;      可控传送&#92;n | adjust | B可控传送，保留大写与b不同。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:478; crawl-ref/source/dat/i18n/zh/source.txt:51833 |
+| source:&lt;w&gt;~&lt;/w&gt;      go to a specific level&#92;n<br>EN: &lt;w&gt;~&lt;/w&gt;      go to a specific level&#92;n |  | &lt;w&gt;~&lt;/w&gt;      前往指定楼层&#92;n | adjust | ~前往指定楼层，不限定上下相邻。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:479; crawl-ref/source/dat/i18n/zh/source.txt:51836 |
+| source:&lt;w&gt;u&lt;/w&gt;/&lt;w&gt;d&lt;/w&gt;    shift up/down one level&#92;n<br>EN: &lt;w&gt;u&lt;/w&gt;/&lt;w&gt;d&lt;/w&gt;    shift up/down one level&#92;n |  | &lt;w&gt;u&lt;/w&gt;/&lt;w&gt;d&lt;/w&gt;    向上或向下移动一层&#92;n | adjust | u/d分别上/下移一层，保留one范围。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:480; crawl-ref/source/dat/i18n/zh/source.txt:51839 |
+| source:&lt;w&gt;e&lt;/w&gt;      trigger explore traps&#92;n<br>EN: &lt;w&gt;e&lt;/w&gt;      trigger explore traps&#92;n |  | &lt;w&gt;e&lt;/w&gt;      触发探索陷阱&#92;n | adjust | e触发探索陷阱，不泛化全部陷阱。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:481; crawl-ref/source/dat/i18n/zh/source.txt:51842 |
+| source:&lt;w&gt;ctrl-b&lt;/w&gt; banish yourself to the abyss&#92;n<br>EN: &lt;w&gt;Ctrl-B&lt;/w&gt; banish yourself to the Abyss&#92;n |  | &lt;w&gt;Ctrl-B&lt;/w&gt; 将自己放逐到深渊&#92;n | adjust | Ctrl-B将自己放逐至深渊，受事是玩家。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:482; crawl-ref/source/dat/i18n/zh/source.txt:51845 |
+| source:&lt;w&gt;ctrl-s&lt;/w&gt; change abyss speed&#92;n<br>EN: &lt;w&gt;Ctrl-S&lt;/w&gt; change Abyss speed&#92;n |  | &lt;w&gt;Ctrl-S&lt;/w&gt; 更改深渊速度&#92;n | adjust | Ctrl-S改深渊速度，不是玩家行动速度。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:483; crawl-ref/source/dat/i18n/zh/source.txt:51848 |
+| source:&lt;w&gt;ctrl-w&lt;/w&gt; change shoals' tide speed&#92;n<br>EN: &lt;w&gt;Ctrl-W&lt;/w&gt; change Shoals' tide speed&#92;n |  | &lt;w&gt;Ctrl-W&lt;/w&gt; 更改浅滩潮汐速度&#92;n | adjust | Ctrl-W改浅滩潮汐速度，不是水位直接设定。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:484; crawl-ref/source/dat/i18n/zh/source.txt:51851 |
+| source:&lt;yellow&gt;other player related effects&lt;/yellow&gt;&#92;n<br>EN: &lt;yellow&gt;Other player related effects&lt;/yellow&gt;&#92;n |  | &lt;yellow&gt;其他角色相关效果&lt;/yellow&gt;&#92;n | adjust | 其他角色相关效果分类标题。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:488; crawl-ref/source/dat/i18n/zh/source.txt:51998 |
+| source:&lt;w&gt;c&lt;/w&gt;      card effect&#92;n<br>EN: &lt;w&gt;c&lt;/w&gt;      card effect&#92;n |  | &lt;w&gt;c&lt;/w&gt;      卡牌效果&#92;n | adjust | c卡牌效果，不误说创建卡牌物品。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:489; crawl-ref/source/dat/i18n/zh/source.txt:51854 |
+| source:&lt;w&gt;ctrl-g&lt;/w&gt; save/load ghost (bones file)&#92;n<br>EN: &lt;w&gt;Ctrl-G&lt;/w&gt; save/load ghost (bones file)&#92;n |  | &lt;w&gt;Ctrl-G&lt;/w&gt; 保存或载入鬼魂（bones文件）&#92;n | adjust | Ctrl-G保存/载入鬼魂bones文件，DEBUG_BONES条件保留。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:491; crawl-ref/source/dat/i18n/zh/source.txt:51857 |
+| source:&lt;w&gt;h&lt;/w&gt;/&lt;w&gt;h&lt;/w&gt;    heal yourself (super-heal)&#92;n<br>EN: &lt;w&gt;h&lt;/w&gt;/&lt;w&gt;H&lt;/w&gt;    heal yourself (super-Heal)&#92;n |  | &lt;w&gt;h&lt;/w&gt;/&lt;w&gt;H&lt;/w&gt;    治疗自己（超级治疗）&#92;n | adjust | h/H治疗与超级治疗的大小写关系保留。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:493; crawl-ref/source/dat/i18n/zh/source.txt:51860 |
+| source:&lt;w&gt;x&lt;/w&gt;      make xom do something now&#92;n<br>EN: &lt;w&gt;X&lt;/w&gt;      make Xom do something now&#92;n |  | &lt;w&gt;X&lt;/w&gt;      让佐姆立刻做点什么&#92;n | adjust | X让佐姆立即行动，非玩家立即施法。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:494; crawl-ref/source/dat/i18n/zh/source.txt:51863 |
+| source:&lt;w&gt;z&lt;/w&gt;      cast spell by number/name&#92;n<br>EN: &lt;w&gt;z&lt;/w&gt;      cast spell by number/name&#92;n |  | &lt;w&gt;z&lt;/w&gt;      按编号或名称施法&#92;n | adjust | z按编号或名称施法，两种输入形式保留。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:495; crawl-ref/source/dat/i18n/zh/source.txt:51866 |
+| source:&lt;w&gt;!&lt;/w&gt;      memorise spell&#92;n<br>EN: &lt;w&gt;!&lt;/w&gt;      memorise spell&#92;n |  | &lt;w&gt;!&lt;/w&gt;      记忆法术&#92;n | adjust | !记忆法术，与直接施放z区分。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:496; crawl-ref/source/dat/i18n/zh/source.txt:51869 |
+| source:&lt;w&gt;w&lt;/w&gt;      god wrath&#92;n<br>EN: &lt;w&gt;W&lt;/w&gt;      god wrath&#92;n |  | &lt;w&gt;W&lt;/w&gt;      触发神罚&#92;n | adjust | W触发神罚，与小写w平息区别。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:497; crawl-ref/source/dat/i18n/zh/source.txt:51872 |
+| source:&lt;w&gt;w&lt;/w&gt;      god mollification&#92;n<br>EN: &lt;w&gt;w&lt;/w&gt;      god mollification&#92;n |  | &lt;w&gt;w&lt;/w&gt;      平息神怒&#92;n | adjust | w平息神怒，不误说获得神赐。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:498; crawl-ref/source/dat/i18n/zh/source.txt:51875 |
+| source:&lt;w&gt;p&lt;/w&gt;      polymorph into a form&#92;n<br>EN: &lt;w&gt;p&lt;/w&gt;      polymorph into a form&#92;n |  | &lt;w&gt;p&lt;/w&gt;      变为指定形态&#92;n | adjust | p变为指定形态，非更换种族r。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:499; crawl-ref/source/dat/i18n/zh/source.txt:51878 |
+| source:&lt;w&gt;v&lt;/w&gt;      toggle xray vision&#92;n<br>EN: &lt;w&gt;V&lt;/w&gt;      toggle xray vision&#92;n |  | &lt;w&gt;V&lt;/w&gt;      切换透视视野&#92;n | adjust | V切换透视视野，保留toggle双向。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:500; crawl-ref/source/dat/i18n/zh/source.txt:51881 |
+| source:&lt;w&gt;e&lt;/w&gt;      (un)freeze time&#92;n<br>EN: &lt;w&gt;E&lt;/w&gt;      (un)freeze time&#92;n |  | &lt;w&gt;E&lt;/w&gt;      冻结或解冻时间&#92;n | adjust | E冻结或解冻时间，两个动作均保留。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:501; crawl-ref/source/dat/i18n/zh/source.txt:51884 |
+| source:&lt;yellow&gt;monster related commands&lt;/yellow&gt;&#92;n<br>EN: &lt;yellow&gt;Monster related commands&lt;/yellow&gt;&#92;n |  | &lt;yellow&gt;怪物相关命令&lt;/yellow&gt;&#92;n | adjust | 怪物相关命令分类标题。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:503; crawl-ref/source/dat/i18n/zh/source.txt:52001 |
+| source:&lt;w&gt;m&lt;/w&gt;/&lt;w&gt;m&lt;/w&gt;    create specified monster&#92;n<br>EN: &lt;w&gt;m&lt;/w&gt;/&lt;w&gt;M&lt;/w&gt;    create specified monster&#92;n |  | &lt;w&gt;m&lt;/w&gt;/&lt;w&gt;M&lt;/w&gt;    创建指定怪物&#92;n | adjust | m/M创建指定怪物，大小写双键保留。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:504; crawl-ref/source/dat/i18n/zh/source.txt:51887 |
+| source:&lt;w&gt;d&lt;/w&gt;      detect all monsters&#92;n<br>EN: &lt;w&gt;D&lt;/w&gt;      detect all monsters&#92;n |  | &lt;w&gt;D&lt;/w&gt;      探测所有怪物&#92;n | adjust | D探测所有怪物，范围all未丢。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:505; crawl-ref/source/dat/i18n/zh/source.txt:51890 |
+| source:&lt;w&gt;g&lt;/w&gt;      dismiss all monsters&#92;n<br>EN: &lt;w&gt;G&lt;/w&gt;      dismiss all monsters&#92;n |  | &lt;w&gt;G&lt;/w&gt;      移除所有怪物&#92;n | adjust | G移除所有怪物，不误说安抚/遣散单个。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:506; crawl-ref/source/dat/i18n/zh/source.txt:51893 |
+| source:&lt;w&gt;"&lt;/w&gt;      list monsters&#92;n<br>EN: &lt;w&gt;"&lt;/w&gt;      list monsters&#92;n |  | &lt;w&gt;"&lt;/w&gt;      列出怪物&#92;n | adjust | 双引号键列出怪物，不被换成中文引号键。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:507; crawl-ref/source/dat/i18n/zh/source.txt:51896 |
+| source:&lt;yellow&gt;item related commands&lt;/yellow&gt;&#92;n<br>EN: &lt;yellow&gt;Item related commands&lt;/yellow&gt;&#92;n |  | &lt;yellow&gt;物品相关命令&lt;/yellow&gt;&#92;n | adjust | 物品相关命令分类标题。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:509; crawl-ref/source/dat/i18n/zh/source.txt:52004 |
+| source:&lt;w&gt;a&lt;/w&gt;      acquirement&#92;n<br>EN: &lt;w&gt;a&lt;/w&gt;      acquirement&#92;n |  | &lt;w&gt;a&lt;/w&gt;      获取宝物&#92;n | adjust | a获取宝物，保留acquirement含义。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:510; crawl-ref/source/dat/i18n/zh/source.txt:51899 |
+| source:&lt;w&gt;i&lt;/w&gt;/&lt;w&gt;i&lt;/w&gt;    identify/unidentify inventory&#92;n<br>EN: &lt;w&gt;i&lt;/w&gt;/&lt;w&gt;I&lt;/w&gt;    identify/unidentify inventory&#92;n |  | &lt;w&gt;i&lt;/w&gt;/&lt;w&gt;I&lt;/w&gt;    鉴定或取消鉴定物品栏&#92;n | adjust | i/I鉴定或取消鉴定物品栏，两个相反动作保留。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:511; crawl-ref/source/dat/i18n/zh/source.txt:51902 |
+| source:&lt;w&gt;y&lt;/w&gt;/&lt;w&gt;y&lt;/w&gt;    id/unid item types+level items&#92;n<br>EN: &lt;w&gt;y&lt;/w&gt;/&lt;w&gt;Y&lt;/w&gt;    id/unid item types+level items&#92;n |  | &lt;w&gt;y&lt;/w&gt;/&lt;w&gt;Y&lt;/w&gt;    鉴定或取消鉴定物品类型及本层物品&#92;n | adjust | y/Y涵盖物品类型和本层物品，不漏后者。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:512; crawl-ref/source/dat/i18n/zh/source.txt:51905 |
+| source:&lt;w&gt;o&lt;/w&gt;/&lt;w&gt;%&lt;/w&gt;    create an object&#92;n<br>EN: &lt;w&gt;o&lt;/w&gt;/&lt;w&gt;%&lt;/w&gt;    create an object&#92;n |  | &lt;w&gt;o&lt;/w&gt;/&lt;w&gt;%&lt;/w&gt;    创建物品&#92;n | adjust | o/%创建物品，两键和百分号按键原样。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:513; crawl-ref/source/dat/i18n/zh/source.txt:51908 |
+| source:&lt;w&gt;t&lt;/w&gt;      tweak object properties&#92;n<br>EN: &lt;w&gt;t&lt;/w&gt;      tweak object properties&#92;n |  | &lt;w&gt;t&lt;/w&gt;      调整物品属性&#92;n | adjust | t调整物品属性，非仅物品数量。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:514; crawl-ref/source/dat/i18n/zh/source.txt:51911 |
+| source:&lt;w&gt;v&lt;/w&gt;      recharge all xp evokers&#92;n<br>EN: &lt;w&gt;v&lt;/w&gt;      recharge all XP evokers&#92;n |  | &lt;w&gt;v&lt;/w&gt;      为所有经验充能道具充能&#92;n | adjust | v为所有经验充能道具充能，不限召唤器。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:515; crawl-ref/source/dat/i18n/zh/source.txt:51914 |
+| source:&lt;w&gt;ctrl-v&lt;/w&gt; show gold value of an item&#92;n<br>EN: &lt;w&gt;Ctrl-V&lt;/w&gt; show gold value of an item&#92;n |  | &lt;w&gt;Ctrl-V&lt;/w&gt; 显示物品的金币价值&#92;n | adjust | Ctrl-V显示物品金币价值，不是当前余额。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:516; crawl-ref/source/dat/i18n/zh/source.txt:51917 |
+| source:&lt;w&gt;-&lt;/w&gt;      get a god gift&#92;n<br>EN: &lt;w&gt;-&lt;/w&gt;      get a god gift&#92;n |  | &lt;w&gt;-&lt;/w&gt;      获得神赐&#92;n | adjust | 减号键获得神赐，非减少虔诚值。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:517; crawl-ref/source/dat/i18n/zh/source.txt:51920 |
+| source:&lt;w&gt;&#124;&lt;/w&gt;      create all unrand artefacts&#92;n<br>EN: &lt;w&gt;&#124;&lt;/w&gt;      create all unrand artefacts&#92;n |  | &lt;w&gt;&#124;&lt;/w&gt;      创建所有固定神器&#92;n | adjust | 竖线键创建全部固定神器，不误称随机神器。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:518; crawl-ref/source/dat/i18n/zh/source.txt:51923 |
+| source:&lt;w&gt;ctrl-&#92;&#92;&lt;/w&gt; create all unrands / fallbacks&#92;n<br>EN: &lt;w&gt;Ctrl-&#92;&#92;&lt;/w&gt; create all unrands / fallbacks&#92;n |  | &lt;w&gt;Ctrl-&#92;&#92;&lt;/w&gt; 创建所有固定神器或其替代品&#92;n | adjust | Ctrl-反斜杠创建固定神器或替代品，fallback不丢。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:519; crawl-ref/source/dat/i18n/zh/source.txt:51926 |
+| source:&lt;w&gt;+&lt;/w&gt;      make randart from item&#92;n<br>EN: &lt;w&gt;+&lt;/w&gt;      make randart from item&#92;n |  | &lt;w&gt;+&lt;/w&gt;      将物品变为随机神器&#92;n | adjust | 加号键将已有物品变随机神器，保留from item。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:520; crawl-ref/source/dat/i18n/zh/source.txt:51929 |
+| source:&lt;w&gt;'&lt;/w&gt;      list items&#92;n<br>EN: &lt;w&gt;'&lt;/w&gt;      list items&#92;n |  | &lt;w&gt;'&lt;/w&gt;      列出物品&#92;n | adjust | 单引号键列出物品，不被当中文引号输入。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:521; crawl-ref/source/dat/i18n/zh/source.txt:51932 |
+| source:&lt;w&gt;j&lt;/w&gt;      jiyva off-level sacrifice&#92;n<br>EN: &lt;w&gt;J&lt;/w&gt;      Jiyva off-level sacrifice&#92;n |  | &lt;w&gt;J&lt;/w&gt;      执行吉瓦的其他楼层献祭&#92;n | adjust | J执行吉瓦其他楼层献祭，off-level不误作离开信仰。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:522; crawl-ref/source/dat/i18n/zh/source.txt:51935 |
+| source:&lt;w&gt;u&lt;/w&gt;      mark all unrands as never generated&#92;n<br>EN: &lt;w&gt;U&lt;/w&gt;      mark all unrands as never generated&#92;n |  | &lt;w&gt;U&lt;/w&gt;      将所有固定神器标为从未生成&#92;n | adjust | U将全部固定神器标未生成，非清除地上全部神器。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:523; crawl-ref/source/dat/i18n/zh/source.txt:51938 |
+| source:&lt;w&gt;z&lt;/w&gt;      unobtain runes and orb of zot&#92;n<br>EN: &lt;w&gt;Z&lt;/w&gt;      Unobtain runes and Orb of Zot&#92;n |  | &lt;w&gt;Z&lt;/w&gt;      撤销获得符文和佐特宝珠&#92;n | adjust | Z撤销已获得符文/佐特宝珠标记，不保证销毁任意物品。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:524; crawl-ref/source/dat/i18n/zh/source.txt:51941 |
+| source:&lt;yellow&gt;debugging commands&lt;/yellow&gt;&#92;n<br>EN: &lt;yellow&gt;Debugging commands&lt;/yellow&gt;&#92;n |  | &lt;yellow&gt;调试命令&lt;/yellow&gt;&#92;n | adjust | 调试命令分类标题，生命周期明确。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:526; crawl-ref/source/dat/i18n/zh/source.txt:52007 |
+| source:&lt;w&gt;f&lt;/w&gt;      quick fight simulation&#92;n<br>EN: &lt;w&gt;f&lt;/w&gt;      quick fight simulation&#92;n |  | &lt;w&gt;f&lt;/w&gt;      快速战斗模拟&#92;n | adjust | f快速战斗模拟，非发动真实战斗。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:527; crawl-ref/source/dat/i18n/zh/source.txt:51944 |
+| source:&lt;w&gt;f&lt;/w&gt;      single scale fsim&#92;n<br>EN: &lt;w&gt;F&lt;/w&gt;      single scale fsim&#92;n |  | &lt;w&gt;F&lt;/w&gt;      单轴战斗模拟&#92;n | adjust | F单轴fsim，和双轴Ctrl-F区分。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:528; crawl-ref/source/dat/i18n/zh/source.txt:51947 |
+| source:&lt;w&gt;ctrl-f&lt;/w&gt; double scale fsim&#92;n<br>EN: &lt;w&gt;Ctrl-F&lt;/w&gt; double scale fsim&#92;n |  | &lt;w&gt;Ctrl-F&lt;/w&gt; 双轴战斗模拟&#92;n | adjust | Ctrl-F双轴fsim，原模拟术语完整。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:529; crawl-ref/source/dat/i18n/zh/source.txt:51950 |
+| source:&lt;w&gt;ctrl-i&lt;/w&gt; item generation stats&#92;n<br>EN: &lt;w&gt;Ctrl-I&lt;/w&gt; item generation stats&#92;n |  | &lt;w&gt;Ctrl-I&lt;/w&gt; 物品生成统计&#92;n | adjust | Ctrl-I物品生成统计，非现有物品列表。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:530; crawl-ref/source/dat/i18n/zh/source.txt:51953 |
+| source:&lt;w&gt;o&lt;/w&gt;      measure exploration time&#92;n<br>EN: &lt;w&gt;O&lt;/w&gt;      measure exploration time&#92;n |  | &lt;w&gt;O&lt;/w&gt;      测量探索用时&#92;n | adjust | O测量探索用时，不改计时器值。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:531; crawl-ref/source/dat/i18n/zh/source.txt:51956 |
+| source:&lt;w&gt;ctrl-t&lt;/w&gt; dungeon (d)lua interpreter&#92;n<br>EN: &lt;w&gt;Ctrl-T&lt;/w&gt; dungeon (D)Lua interpreter&#92;n |  | &lt;w&gt;Ctrl-T&lt;/w&gt; 地牢(D)Lua解释器&#92;n | adjust | Ctrl-T地牢D-Lua解释器，保留D标识。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:532; crawl-ref/source/dat/i18n/zh/source.txt:51959 |
+| source:&lt;w&gt;ctrl-u&lt;/w&gt; client (c)lua interpreter&#92;n<br>EN: &lt;w&gt;Ctrl-U&lt;/w&gt; client (C)Lua interpreter&#92;n |  | &lt;w&gt;Ctrl-U&lt;/w&gt; 客户端(C)Lua解释器&#92;n | adjust | Ctrl-U客户端C-Lua解释器，区别地牢解释器。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:533; crawl-ref/source/dat/i18n/zh/source.txt:51962 |
+| source:&lt;w&gt;ctrl-x&lt;/w&gt; xom effect stats&#92;n<br>EN: &lt;w&gt;Ctrl-X&lt;/w&gt; Xom effect stats&#92;n |  | &lt;w&gt;Ctrl-X&lt;/w&gt; 佐姆效果统计&#92;n | adjust | Ctrl-X佐姆效果统计，专名准确。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:534; crawl-ref/source/dat/i18n/zh/source.txt:51965 |
+| source:&lt;w&gt;ctrl-q&lt;/w&gt; make some debug messages quiet&#92;n<br>EN: &lt;w&gt;Ctrl-Q&lt;/w&gt; make some debug messages quiet&#92;n |  | &lt;w&gt;Ctrl-Q&lt;/w&gt; 屏蔽部分调试消息&#92;n | adjust | Ctrl-Q屏蔽部分调试消息，非关闭所有消息；DEBUG_DIAGNOSTICS条件保留。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:536; crawl-ref/source/dat/i18n/zh/source.txt:51968 |
+| source:&lt;w&gt;ctrl-y&lt;/w&gt; temporarily suppress wizmode&#92;n<br>EN: &lt;w&gt;Ctrl-Y&lt;/w&gt; temporarily suppress wizmode&#92;n |  | &lt;w&gt;Ctrl-Y&lt;/w&gt; 暂时禁用巫师模式&#92;n | adjust | Ctrl-Y暂时禁用巫师模式，保留temporarily。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:538; crawl-ref/source/dat/i18n/zh/source.txt:51971 |
+| source:&lt;w&gt;ctrl-c&lt;/w&gt; force a crash&#92;n<br>EN: &lt;w&gt;Ctrl-C&lt;/w&gt; force a crash&#92;n |  | &lt;w&gt;Ctrl-C&lt;/w&gt; 强制崩溃&#92;n | adjust | Ctrl-C强制崩溃，未粉饰成正常退出。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:539; crawl-ref/source/dat/i18n/zh/source.txt:51974 |
+| source:&lt;w&gt;&#96;&lt;/w&gt;      list unassigned command keys&#92;n<br>EN: &lt;w&gt;&#96;&lt;/w&gt;      list unassigned command keys&#92;n |  | &lt;w&gt;&#96;&lt;/w&gt;      列出未分配的命令按键&#92;n | adjust | 反引号列未分配命令键，不误作列所有键。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:540; crawl-ref/source/dat/i18n/zh/source.txt:51977 |
+| source:&lt;yellow&gt;other wizard commands&lt;/yellow&gt;&#92;n<br>EN: &lt;yellow&gt;Other wizard commands&lt;/yellow&gt;&#92;n |  | &lt;yellow&gt;其他巫师命令&lt;/yellow&gt;&#92;n | adjust | 其他巫师命令分类标题。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:542; crawl-ref/source/dat/i18n/zh/source.txt:52010 |
+| source:(not prefixed with &lt;w&gt;&amp;&lt;/w&gt;!)&#92;n<br>EN: (not prefixed with &lt;w&gt;&amp;&lt;/w&gt;!)&#92;n |  | （不以&lt;w&gt;&amp;&lt;/w&gt;开头！）&#92;n | adjust | 后两命令不以&amp;前缀，否定是重要使用条件。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:543; crawl-ref/source/dat/i18n/zh/source.txt:52013 |
+| source:&lt;w&gt;x?&lt;/w&gt;     list targeted commands&#92;n<br>EN: &lt;w&gt;x?&lt;/w&gt;     list targeted commands&#92;n |  | &lt;w&gt;x?&lt;/w&gt;     列出目标选择命令&#92;n | adjust | x?列目标选择命令，不是x后直接升级。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:544; crawl-ref/source/dat/i18n/zh/source.txt:51980 |
+| source:&lt;w&gt;x?&lt;/w&gt;     list map-mode commands&#92;n<br>EN: &lt;w&gt;X?&lt;/w&gt;     list map-mode commands&#92;n |  | &lt;w&gt;X?&lt;/w&gt;     列出地图模式命令&#92;n | adjust | X?列地图模式命令，与小写x?不同。 原键、标记和结尾换行保持。 | crawl-ref/source/wizard.cc:545; crawl-ref/source/dat/i18n/zh/source.txt:51983 |
+| source:configuration file kind&#124;macro <br>EN: configuration file kind&#124;macro  |  | 宏 | adjust | macro文件类型仅译宏，接两完整父句成为宏文件；原文件路径和配置键不变。 | crawl-ref/source/initfile.cc:4695; crawl-ref/source/dat/i18n/zh/source.txt:51716 |
+| source:tile offsets&#124;shield<br>EN: tile offsets&#124;shield |  | 盾牌 | adjust | set_shield真分支偏移类型为盾牌，不把坐标值或tile ID翻译。 | crawl-ref/source/initfile.cc:3131; crawl-ref/source/dat/i18n/zh/source.txt:51719 |
+| source:tile offsets&#124;weapon<br>EN: tile offsets&#124;weapon |  | 武器 | adjust | set_shield假分支为武器偏移类型，与盾牌分支对称。 | crawl-ref/source/initfile.cc:3131; crawl-ref/source/dat/i18n/zh/source.txt:51722 |
+| source:cannot parse macros += %s, there is only one argument<br>EN: Cannot parse macros += %s, there is only one argument |  | 无法解析macros += %s：只有一个参数 | adjust | 只有一个参数的macros +=原字段完整插入，literal百分号当数据；不误说宏已保存。 | crawl-ref/source/macro.cc:1773; crawl-ref/source/dat/i18n/zh/source.txt:52016 |
+| source:'%s' is not a valid macro or keymap context (macros += %s)<br>EN: '%s' is not a valid macro or keymap context (macros += %s) |  | “%s”不是有效的宏或按键映射上下文（macros += %s） | adjust | 无效宏/按键映射context1及完整原输入2各自保留，context规范字母不翻译，完整错误不再当格式串。 | crawl-ref/source/macro.cc:1802; crawl-ref/source/dat/i18n/zh/source.txt:52019 |
+| source:cannot parse macros += %s, there are only two arguments<br>EN: Cannot parse macros += %s, there are only two arguments |  | 无法解析macros += %s：只有两个参数 | adjust | 只有两个参数时错误保留原字段，与缺全部/只有一参分支不同，不创建宏。 | crawl-ref/source/macro.cc:1812; crawl-ref/source/dat/i18n/zh/source.txt:52022 |
+| source:non-descript<br>EN: non-descript | 朴素 | 朴素 | adjust | 两级RandNameDB外观都空时朴素准确为non-descript；仅常量T_，已本地化随机外观不被二次查译；现有randart语言锁定存储不扩新例外。 | crawl-ref/source/artefact.cc:1655; crawl-ref/source/dat/i18n/zh/source.txt:42397 |
+| source:atheism<br>EN: atheism | 无神论 | 无神论 | keep | 无神玩家的@player_god@替换成无神论，适合关于信仰的讲话槽；不是虚构名叫无神的神祇，真实神名分支不变。 | crawl-ref/source/shout.cc:376; crawl-ref/source/shout.cc:372-378; crawl-ref/source/dat/i18n/zh/source.txt:49468 |
+| source:monspell raw direction&#124;at %s<br>EN: monspell raw direction&#124;at %s | 朝%s | 朝%s | keep | 非投射物方向AT为朝目标，完整如朝兽人施法/看去，主语仍施法者，不虚称命中。 | crawl-ref/source/mon-cast.cc:9555; crawl-ref/source/mon-cast-target.cc:82-426; crawl-ref/source/dat/i18n/zh/source.txt:49471 |
+| source:monspell raw direction&#124;next to %s<br>EN: monspell raw direction&#124;next to %s | 朝%s旁边 | 朝%s旁边 | keep | 方向NEXT_TO为朝目标旁边，保留邻格而非正中目标，不反转成目标朝旁边。 | crawl-ref/source/mon-cast.cc:9555; crawl-ref/source/mon-cast-target.cc:82-426; crawl-ref/source/dat/i18n/zh/source.txt:49474 |
+| source:monspell raw direction&#124;past %s<br>EN: monspell raw direction&#124;past %s | 朝%s身后 | 朝%s身后 | keep | 方向PAST为朝目标身后，对应越过方向；与看去/施法母句组合，不先断言命中或伤害。 | crawl-ref/source/mon-cast.cc:9555; crawl-ref/source/mon-cast-target.cc:82-426; crawl-ref/source/dat/i18n/zh/source.txt:49477 |
+| source:monspell raw projectile target&#124;at %s<br>EN: monspell raw projectile target&#124;at %s | 直奔%s而去 | 直奔%s而去 | keep | 投射物AT为直奔目标而去，投射物是隐含主语，未误用施法者的看去谓语，也未保证击中。 | crawl-ref/source/mon-cast.cc:9555; crawl-ref/source/mon-cast-target.cc:82-426; crawl-ref/source/dat/i18n/zh/source.txt:49480 |
+| source:monspell raw projectile target&#124;next to %s<br>EN: monspell raw projectile target&#124;next to %s | 飞向%s旁边 | 飞向%s旁边 | keep | 投射物NEXT_TO为飞向目标旁边，和直接目标不同；不是投射物站在对象旁边。 | crawl-ref/source/mon-cast.cc:9555; crawl-ref/source/mon-cast-target.cc:82-426; crawl-ref/source/dat/i18n/zh/source.txt:49483 |
+| source:monspell raw projectile target&#124;past %s<br>EN: monspell raw projectile target&#124;past %s | 从%s旁边掠过 | 从%s旁边掠过 | keep | 投射物PAST为从目标旁边掠过，保留越过/擦过关系，接射出弹丸/吐息母句通顺，不虚构弹药类型。 | crawl-ref/source/mon-cast.cc:9555; crawl-ref/source/mon-cast-target.cc:82-426; crawl-ref/source/dat/i18n/zh/source.txt:49486 |
+| source:monster speech gaze&#124;looks at %s<br>EN: monster speech gaze&#124;looks at %s | 看向%s | 看向%s | keep | 可见怪物foe的完整凝视谓语为看向该对象，接紧张地自然；保留实际foe而非总环顾。 | crawl-ref/source/mon-util.cc:4495; crawl-ref/source/dat/database/zh/monspeak.txt:_friendly_beogh_speech_rare_; crawl-ref/source/dat/i18n/zh/source.txt:49489 |
+| source:monster speech gaze&#124;looks around<br>EN: monster speech gaze&#124;looks around | 环顾四周 | 环顾四周 | keep | player/null foe分支完整谓语环顾四周，接紧张地自然，与怪物对象分支明确区别。 | crawl-ref/source/mon-util.cc:4495; crawl-ref/source/dat/database/zh/monspeak.txt:_friendly_beogh_speech_rare_; crawl-ref/source/dat/i18n/zh/source.txt:49492 |
+
+### 冻结原始扫描候选逐项处理
+
+此表是代码候选分类，不加入SourceDB身份计数；历史初判与实现后处理分开记录。
+
+| 候选身份 | 初判 | 实现后处理 | 逐项证据与理由 |
+|---|---|---|---|
+| ability.cc:1682:"%s spell" | keep | keep | 动态构造TextDB英文查询键；取回的正文另走本地化数据库，不能翻译键。；crawl-ref/source/ability.cc:1682 |
+| describe.cc:5692:"%s bane" | keep | keep | 动态构造TextDB英文查询键；取回的正文另走本地化数据库，不能翻译键。；crawl-ref/source/describe.cc:5692 |
+| mon-cast.cc:6975:"%s charge" | keep | keep | 动态构造TextDB英文查询键；取回的正文另走本地化数据库，不能翻译键。；crawl-ref/source/mon-cast.cc:6975 |
+| mutation.cc:1051:"%s mutation" | keep | keep | 动态构造TextDB英文查询键；取回的正文另走本地化数据库，不能翻译键。；crawl-ref/source/mutation.cc:1051 |
+| mutation.cc:1243:"%s mutation" | keep | keep | 动态构造TextDB英文查询键；取回的正文另走本地化数据库，不能翻译键。；crawl-ref/source/mutation.cc:1243 |
+| mutation.cc:2578:"%s mutation" | keep | keep | 动态构造TextDB英文查询键；取回的正文另走本地化数据库，不能翻译键。；crawl-ref/source/mutation.cc:2578 |
+| abyss.cc:436:"Cast into level %d of the Abyss" | keep | keep | 带专用desc标记的Note规范英文payload；当前Note::describe显示门处理译文，存档字符串保持英文。；crawl-ref/source/abyss.cc:436; crawl-ref/source/notes.cc |
+| abyss.cc:2324:"Corrupted %s" | keep | keep | 带专用desc标记的Note规范英文payload；当前Note::describe显示门处理译文，存档字符串保持英文。；crawl-ref/source/abyss.cc:2324; crawl-ref/source/notes.cc |
+| monster.cc:6508:"%s stole %d gold" | keep | keep | 带专用desc标记的Note规范英文payload；当前Note::describe显示门处理译文，存档字符串保持英文。；crawl-ref/source/monster.cc:6508; crawl-ref/source/notes.cc |
+| monster.cc:6586:"%s stole %s" | keep | keep | 带专用desc标记的Note规范英文payload；当前Note::describe显示门处理译文，存档字符串保持英文。；crawl-ref/source/monster.cc:6586; crawl-ref/source/notes.cc |
+| notes.cc:554:"Corrupted %s" | keep | keep | Note显示门以英文重建/匹配历史记录，随后才格式化中文；此比较字符串不是输出漏译。；crawl-ref/source/notes.cc:554 |
+| notes.cc:573:" stole %d gold" | keep | keep | Note显示门以英文重建/匹配历史记录，随后才格式化中文；此比较字符串不是输出漏译。；crawl-ref/source/notes.cc:573 |
+| actor.cc:835:" for %d" | keep | keep | DEBUG/DEBUG_DIAGNOSTICS编译分支的开发诊断数据；常规构建的游戏文案不走此输出。；crawl-ref/source/actor.cc:835 |
+| actor.cc:847:" for %d" | keep | keep | DEBUG/DEBUG_DIAGNOSTICS编译分支的开发诊断数据；常规构建的游戏文案不走此输出。；crawl-ref/source/actor.cc:847 |
+| attack.cc:729:" for %d" | keep | keep | DEBUG/DEBUG_DIAGNOSTICS编译分支的开发诊断数据；常规构建的游戏文案不走此输出。；crawl-ref/source/attack.cc:729 |
+| command.cc:146:"&#92;n&lt;w&gt;crawl_dir&lt;/w&gt;: '%s'" | keep | keep | DEBUG/DEBUG_DIAGNOSTICS编译分支的开发诊断数据；常规构建的游戏文案不走此输出。；crawl-ref/source/command.cc:146 |
+| command.cc:148:" (option '%s')" | keep | keep | DEBUG/DEBUG_DIAGNOSTICS编译分支的开发诊断数据；常规构建的游戏文案不走此输出。；crawl-ref/source/command.cc:148 |
+| command.cc:149:"&#92;n&lt;w&gt;save_dir&lt;/w&gt;:  '%s'" | keep | keep | DEBUG/DEBUG_DIAGNOSTICS编译分支的开发诊断数据；常规构建的游戏文案不走此输出。；crawl-ref/source/command.cc:149 |
+| command.cc:151:" (option '%s')" | keep | keep | DEBUG/DEBUG_DIAGNOSTICS编译分支的开发诊断数据；常规构建的游戏文案不走此输出。；crawl-ref/source/command.cc:151 |
+| command.cc:152:"&#92;n&lt;w&gt;macro_dir&lt;/w&gt;: '%s'" | keep | keep | DEBUG/DEBUG_DIAGNOSTICS编译分支的开发诊断数据；常规构建的游戏文案不走此输出。；crawl-ref/source/command.cc:152 |
+| command.cc:154:" (option '%s')" | keep | keep | DEBUG/DEBUG_DIAGNOSTICS编译分支的开发诊断数据；常规构建的游戏文案不走此输出。；crawl-ref/source/command.cc:154 |
+| describe.cc:8171:"&#92;nPlaced by map: %s" | keep | keep | DEBUG/DEBUG_DIAGNOSTICS编译分支的开发诊断数据；常规构建的游戏文案不走此输出。；crawl-ref/source/describe.cc:8171 |
+| directn.cc:3784:" (height: %d)" | keep | keep | DEBUG/DEBUG_DIAGNOSTICS编译分支的开发诊断数据；常规构建的游戏文案不走此输出。；crawl-ref/source/directn.cc:3784 |
+| directn.cc:3793:" [Vault: %s (%d,%d)-(%d,%d) (%dx%d)]" | keep | keep | DEBUG/DEBUG_DIAGNOSTICS编译分支的开发诊断数据；常规构建的游戏文案不走此输出。；crawl-ref/source/directn.cc:3793 |
+| clua.cc:316:"invalid filename: %s" | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/clua.cc:316 |
+| clua.cc:324:"Can't find &#92;"%s&#92;"" | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/clua.cc:324 |
+| clua.cc:1345:"%s, function %s, line %d&#92;n" | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/clua.cc:1345 |
+| cluautil.h:188:"Point (%d,%d) is out of bounds" | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/cluautil.h:188 |
+| dbg-asrt.cc:511:"error (persist_to_string): %s" | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/dbg-asrt.cc:511 |
+| l-crawl.cc:1824:"'%s' matches no god." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-crawl.cc:1824 |
+| l-crawl.cc:1877:"Bad number of max runes: %d" | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-crawl.cc:1877 |
+| l-debug.cc:263:"'%s' matches no god." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-debug.cc:263 |
+| l-debug.cc:389:"unknown thing to disable: %s" | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-debug.cc:389 |
+| l-dgn.cc:182:"Chance must be in the range [0,%d]" | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-dgn.cc:182 |
+| l-dgn.cc:363:"Line %d out of range (0-%d)" | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-dgn.cc:363 |
+| l-dgn.cc:384:"Index %d out of range" | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-dgn.cc:384 |
+| l-dgn.cc:588:"Not enough points to test connectedness " | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-dgn.cc:588 |
+| l-dgn.cc:973:"unknown branch: '%s'." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-dgn.cc:973 |
+| l-dgnmon.cc:118:"mon #%d: Can't use a place with no natural " | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-dgnmon.cc:118 |
+| l-dgnmon.cc:130:"mon #%d: can't use random monster in " | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-dgnmon.cc:130 |
+| l-file.cc:138:"Cannot marshall %s" | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-file.cc:138 |
+| l-item.cc:1796:"Invalid item slot: %d" | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-item.cc:1796 |
+| l-item.cc:1816:"Invalid item spec '%s'." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-item.cc:1816 |
+| l-item.cc:1833:"Invalid item set name '%s'." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-item.cc:1833 |
+| l-item.cc:1856:"Invalid item spec '%s'." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-item.cc:1856 |
+| l-mons.cc:385:"Don't know how to set monster property of the " | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-mons.cc:385 |
+| l-mons.cc:409:"Don't have a property called '%s'." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-mons.cc:409 |
+| l-mons.cc:471:"No such enchantment: %s" | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-mons.cc:471 |
+| l-mons.cc:496:"No such enchantment: %s" | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-mons.cc:496 |
+| l-wiz.cc:33:"No such monster: '%s'." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-wiz.cc:33 |
+| l-you.cc:62:"Unknown skill name &#96;%s&#96;." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-you.cc:62 |
+| l-you.cc:924:"Invalid spell: '%s'." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-you.cc:924 |
+| l-you.cc:1171:"No such mutation: '%s'." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-you.cc:1171 |
+| l-you.cc:1209:"No such mutation: '%s'." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-you.cc:1209 |
+| l-you.cc:1227:"No such mutation: '%s'." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-you.cc:1227 |
+| l-you.cc:1838:"'%s' matches no branches." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-you.cc:1838 |
+| l-you.cc:1868:"No such mutation: '%s'." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-you.cc:1868 |
+| l-you.cc:1880:"No such mutation: '%s'." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-you.cc:1880 |
+| l-you.cc:1918:"No such bane: '%s'." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-you.cc:1918 |
+| l-you.cc:1932:"No such bane: '%s'." | keep | keep | Lua绑定、脚本装载或持久化失败的技术错误接口；保留原始类型、名称和诊断文本以便脚本排错。；crawl-ref/source/l-you.cc:1932 |
+| clua.cc:1051:"__ch_stash_search_%u" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/clua.cc:1051 |
+| dungeon.cc:2574:"temple_overflow_%d" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/dungeon.cc:2574 |
+| dungeon.cc:2614:"temple_overflow_generic_%d" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/dungeon.cc:2614 |
+| dungeon.cc:3676:"temple_altars_%d" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/dungeon.cc:3676 |
+| errors.cc:66:"%s.out" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/errors.cc:66 |
+| files.cc:2891:"%s-v%d.%d.backup" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/files.cc:2891 |
+| god-abil.cc:3794:"%s shop name:%s%s greed:%d gozag" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/god-abil.cc:3794 |
+| item-prop.cc:3707:"ITEM_SET_%d_CHOSEN" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/item-prop.cc:3707 |
+| item-prop.cc:3712:"ITEM_SET_%d_UNIDED" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/item-prop.cc:3712 |
+| main.cc:2404:"/usr/bin/open -R '%s'" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/main.cc:2404 |
+| mapdef.cc:2760:"temple_overflow_generic_%u" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/mapdef.cc:2760 |
+| mon-gear.cc:1444:"wpn_april_staff%d" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/mon-gear.cc:1444 |
+| mon-gear.cc:1445:"april_staff%d" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/mon-gear.cc:1445 |
+| ng-init.cc:140:"temple_altars_%d" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/ng-init.cc:140 |
+| ng-init.cc:197:"temple_overflow_generic_%d" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/ng-init.cc:197 |
+| ng-init.cc:223:"temple_overflow_%d" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/ng-init.cc:223 |
+| religion.cc:4183:"ecu-%d,%d" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/religion.cc:4183 |
+| spl-summoning.cc:1306:"summon_horrible_things" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/spl-summoning.cc:1306 |
+| stairs.cc:271:"zig.exit" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/stairs.cc:271 |
+| traps.cc:719:"shafted_in_%s" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/traps.cc:719 |
+| zot.cc:361:"gem.lost" | keep | keep | 文件/命令/地图标签/属性/里程碑身份构造，值进入机器查询或持久化；不属于展示文本。；crawl-ref/source/zot.cc:361 |
+| ctest.cc:73:"Starting %s: %s" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/ctest.cc:73 |
+| ctest.cc:83:"Test success: %s" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/ctest.cc:83 |
+| dbg-scan.cc:274:" [vault: %s (%d,%d)-(%d,%d) (%dx%d)]" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/dbg-scan.cc:274 |
+| dbg-util.cc:157:"Invalid monster index %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/dbg-util.cc:157 |
+| dbg-util.cc:160:"%s [midx = %d]" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/dbg-util.cc:160 |
+| dbg-util.cc:169:"player %s" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/dbg-util.cc:169 |
+| dbg-util.cc:176:"bad monster[%" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/dbg-util.cc:176 |
+| dbg-util.cc:186:"Constricting %s.&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/dbg-util.cc:186 |
+| dbg-util.cc:191:"Constricted by %s.&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/dbg-util.cc:191 |
+| dbg-util.cc:464:"art val: %d, item val: %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/dbg-util.cc:464 |
+| dgn-layouts.cc:434:" octa_room [oblique %d, %s]" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/dgn-layouts.cc:434 |
+| dgn-layouts.cc:1058:" many_pools [%s %d]" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/dgn-layouts.cc:1058 |
+| dgn-layouts.cc:1109:" river [%s]" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/dgn-layouts.cc:1109 |
+| dgn-layouts.cc:1165:" lake [%s]" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/dgn-layouts.cc:1165 |
+| dungeon.cc:287:"Builder log for %s:" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/dungeon.cc:287 |
+| dungeon.cc:1560:"Vault placement failure for '%s'." | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/dungeon.cc:1560 |
+| ghost.cc:1256:"Bad damage: %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/ghost.cc:1256 |
+| ghost.cc:1262:"Bad max HP: %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/ghost.cc:1262 |
+| ghost.cc:1268:"Bad XL: %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/ghost.cc:1268 |
+| ghost.cc:1274:"Bad EV: %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/ghost.cc:1274 |
+| ghost.cc:1280:"Bad brand: %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/ghost.cc:1280 |
+| ghost.cc:1286:"Bad species: %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/ghost.cc:1286 |
+| ghost.cc:1292:"Bad job: %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/ghost.cc:1292 |
+| ghost.cc:1298:"Bad best skill: %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/ghost.cc:1298 |
+| ghost.cc:1304:"Bad best skill level: %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/ghost.cc:1304 |
+| ghost.cc:1310:"Bad god: %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/ghost.cc:1310 |
+| ghost.cc:1323:"Bad attack type/flavour: %d/%d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/ghost.cc:1323 |
+| ghost.cc:1348:"Bad spell: %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/ghost.cc:1348 |
+| ghost.cc:1363:"Buggy ghost %s: %s" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/ghost.cc:1363 |
+| hints.cc:572:"death random %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/hints.cc:572 |
+| hints.cc:599:"finished random %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/hints.cc:599 |
+| items.cc:4472:"weird detected item" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/items.cc:4472 |
+| items.cc:4477:"undefined item" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/items.cc:4477 |
+| items.cc:4486:"weird item subtype and no info" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/items.cc:4486 |
+| items.cc:4488:"huge item subtype" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/items.cc:4488 |
+| items.cc:4490:"unided item of a type that can't be" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/items.cc:4490 |
+| items.cc:4496:"item color invalid" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/items.cc:4496 |
+| items.cc:4501:"item has uninitialized rnd" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/items.cc:4501 |
+| l-debug.cc:435:"seed: %" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/l-debug.cc:435 |
+| mapdef.cc:205:"adding %s on index %d (%d)" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mapdef.cc:205 |
+| mapdef.cc:2431:"Error: testing weight of %d deployed for vault %s." | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mapdef.cc:2431 |
+| mon-death.cc:258:"Error, exp for monster with no damage: %s" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-death.cc:258 |
+| mon-movetarget.cc:68:"No path found!" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-movetarget.cc:68 |
+| mon-movetarget.cc:144:"%s: Target out of reach! What now?" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-movetarget.cc:144 |
+| mon-movetarget.cc:178:"Need to calculate a path... (dist = %d)" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-movetarget.cc:178 |
+| mon-movetarget.cc:186:"Distance too great, don't attempt pathfinding! (%s)" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-movetarget.cc:186 |
+| mon-movetarget.cc:193:"Need a path for %s from (%d, %d) to (%d, %d), max. dist = %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-movetarget.cc:193 |
+| mon-movetarget.cc:319:"merfolk avatar target is (%d, %d), dist = %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-movetarget.cc:319 |
+| mon-movetarget.cc:403:"Found a path to (%d, %d) with %d surrounding water squares" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-movetarget.cc:403 |
+| mon-movetarget.cc:420:"Monster %s reached target (%d, %d)" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-movetarget.cc:420 |
+| mon-movetarget.cc:428:"Arrived at first waypoint." | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-movetarget.cc:428 |
+| mon-movetarget.cc:434:"We reached the end of our path: stop travelling." | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-movetarget.cc:434 |
+| mon-movetarget.cc:443:"Next waypoint: (%d, %d)" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-movetarget.cc:443 |
+| mon-movetarget.cc:453:"Can't see waypoint grid." | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-movetarget.cc:453 |
+| mon-movetarget.cc:479:"Need to erase %d of %d waypoints." | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-movetarget.cc:479 |
+| mon-movetarget.cc:502:"Next waypoint: (%d, %d)" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-movetarget.cc:502 |
+| mon-movetarget.cc:687:"Monster %s (pp: %d, %d) is now patrolling to (%d, %d)" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-movetarget.cc:687 |
+| mon-pathfind.cc:107:"The monster is already there!" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-pathfind.cc:107 |
+| mon-pathfind.cc:193:"Couldn't find a path from (%d,%d) to (%d,%d)." | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-pathfind.cc:193 |
+| mon-pathfind.cc:232:"Looking at neighbour (%d,%d)" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-pathfind.cc:232 |
+| mon-pathfind.cc:258:"old dist: %d, new dist: %d, infinite: %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-pathfind.cc:258 |
+| mon-pathfind.cc:270:"Adding (%d,%d) to hash (total dist = %d)" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-pathfind.cc:270 |
+| mon-pathfind.cc:280:"Improving (%d,%d) to total dist %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-pathfind.cc:280 |
+| mon-pathfind.cc:302:"Arrived at target." | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-pathfind.cc:302 |
+| mon-pathfind.cc:330:"Returning (%d, %d) as best pos with total dist %d." | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-pathfind.cc:330 |
+| mon-pathfind.cc:337:"No positions for path length %d." | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-pathfind.cc:337 |
+| mon-pathfind.cc:350:"Backtracking..." | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-pathfind.cc:350 |
+| mon-pathfind.cc:366:"prev: (%d, %d), pos: (%d, %d)" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-pathfind.cc:366 |
+| mon-pathfind.cc:399:"&#92;nWaypoints:" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-pathfind.cc:399 |
+| mon-pathfind.cc:410:"waypoint: (%d, %d)" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-pathfind.cc:410 |
+| mon-tentacle.cc:300:"connector placement failed at %d %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-tentacle.cc:300 |
+| mon-tentacle.cc:768:"link information corruption!!! tentacle in chain doesn't match mindex" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-tentacle.cc:768 |
+| mon-tentacle.cc:994:"pathed to %d %d from %d %d mid %d count %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-tentacle.cc:994 |
+| mon-util.cc:5194:"Monster %d has no name&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5194 |
+| mon-util.cc:5204:"%s has WL %d &gt; 200&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5204 |
+| mon-util.cc:5206:"%s has rPois++&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5206 |
+| mon-util.cc:5208:"%s has rElec++&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5208 |
+| mon-util.cc:5215:"%s has 0 HD: %d&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5215 |
+| mon-util.cc:5217:"%s has &lt;= 0 HP: %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5217 |
+| mon-util.cc:5220:"%s has an empty glyph&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5220 |
+| mon-util.cc:5223:"%s has negative AC&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5223 |
+| mon-util.cc:5225:"%s has negative EV&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5225 |
+| mon-util.cc:5227:"%s has negative xp&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5227 |
+| mon-util.cc:5230:"%s has 0 speed&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5230 |
+| mon-util.cc:5232:"%s has 0 speed&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5232 |
+| mon-util.cc:5238:"%s has too many genders&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5238 |
+| mon-util.cc:5241:"%s has no defined shape&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5241 |
+| mon-util.cc:5250:"%s isn't a species but has a corpse tile&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5250 |
+| mon-util.cc:5258:"%s has a corpse tile &amp; no corpse&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5258 |
+| mon-util.cc:5263:"%s has a corpse but no corpse tile&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5263 |
+| mon-util.cc:5307:"Book #%d is unused (%s)&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5307 |
+| mon-util.cc:5320:"Empty book %s&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5320 |
+| mon-util.cc:5327:"Book %s contains invalid spell %d&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5327 |
+| mon-util.cc:5338:"Spellbook %s has spell %s at freq %d " | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5338 |
+| mon-util.cc:5357:"Spellbook %s has spell %s in " | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5357 |
+| mon-util.cc:5368:"Spellbook %s has spell %s marked " | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5368 |
+| mon-util.cc:5376:"Spellbook %s has spell %s with no " | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/mon-util.cc:5376 |
+| monster.cc:2093:" (NUM_MONSTERS + %d)" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/monster.cc:2093 |
+| tilereg-dgn.cc:211:"rendering DungeonRegion&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/tilereg-dgn.cc:211 |
+| tilereg-dgn.cc:663:"GC(%d, %d) EP(%d, %d)&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/tilereg-dgn.cc:663 |
+| tilereg-dgn.cc:666:"HEIGHT(%d)&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/tilereg-dgn.cc:666 |
+| tilereg-dgn.cc:674:"GC(%d, %d) [out of sight]&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/tilereg-dgn.cc:674 |
+| tilereg-dgn.cc:676:"HEIGHT(%d)&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/tilereg-dgn.cc:676 |
+| tilereg-dgn.cc:684:"Vault: %s (%d,%d)-(%d,%d) (%dx%d)&#92;n&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/tilereg-dgn.cc:684 |
+| tilereg-dgn.cc:722:"&#92;nFLV: floor: %d (%s) (%d)" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/tilereg-dgn.cc:722 |
+| tilereg-doll.cc:89:"rendering DollEditRegion&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/tilereg-doll.cc:89 |
+| tilereg-grid.cc:148:"rendering GridRegion&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/tilereg-grid.cc:148 |
+| tilereg-map.cc:103:"rendering MapRegion&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/tilereg-map.cc:103 |
+| tilereg-msg.cc:115:"rendering MessageRegion&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/tilereg-msg.cc:115 |
+| tilereg-tab.cc:313:"rendering TabbedRegion&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/tilereg-tab.cc:313 |
+| tilereg-text.cc:241:"rendering TextRegion&#92;n" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/tilereg-text.cc:241 |
+| tilesdl.cc:1871:"&#92;nredrawing tiles" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/tilesdl.cc:1871 |
+| travel.cc:1201:"Stopping explore at target %d,%d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/travel.cc:1201 |
+| travel.cc:1207:"Stopping explore; everything in los of %d,%d is mapped" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/travel.cc:1207 |
+| wiz-mon.cc:372:" summoner=%s(%d)" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/wiz-mon.cc:372 |
+| xom.cc:435:"xom_tick(), delta: %d, piety: %d" | keep | keep | 测试、地图生成或状态一致性诊断；具体调用为测试日志、debug验证、dprf/diagnostics通道或DEBUG分支，保留技术格式。；crawl-ref/source/xom.cc:435 |
+| describe-spells.cc:534:"(%dd%d)" | keep | keep | 纯数值、骰式、颜色或结构标记；无可翻译自然语言，格式必须保留。；crawl-ref/source/describe-spells.cc:534 |
+| describe.cc:8687:"&lt;red&gt;" | keep | keep | 纯数值、骰式、颜色或结构标记；无可翻译自然语言，格式必须保留。；crawl-ref/source/describe.cc:8687 |
+| describe.cc:8693:"&lt;red&gt;" | keep | keep | 纯数值、骰式、颜色或结构标记；无可翻译自然语言，格式必须保留。；crawl-ref/source/describe.cc:8693 |
+| dgn-overview.cc:175:"&lt;yellow&gt;%s&lt;/yellow&gt;" | keep | keep | 纯数值、骰式、颜色或结构标记；无可翻译自然语言，格式必须保留。；crawl-ref/source/dgn-overview.cc:175 |
+| god-passive.cc:2317:"&lt;lightred&gt;%s&lt;/lightred&gt;" | keep | keep | 纯数值、骰式、颜色或结构标记；无可翻译自然语言，格式必须保留。；crawl-ref/source/god-passive.cc:2317 |
+| hiscores.cc:1879:"%llu" | keep | keep | 纯数值、骰式、颜色或结构标记；无可翻译自然语言，格式必须保留。；crawl-ref/source/hiscores.cc:1879 |
+| message.cc:1764:"%s&lt;lightgrey&gt;%s&lt;/lightgrey&gt;" | keep | keep | 纯数值、骰式、颜色或结构标记；无可翻译自然语言，格式必须保留。；crawl-ref/source/message.cc:1764 |
+| mon-cast.cc:2977:"%dd%d+%d" | keep | keep | 纯数值、骰式、颜色或结构标记；无可翻译自然语言，格式必须保留。；crawl-ref/source/mon-cast.cc:2977 |
+| newgame.cc:820:"%llu" | keep | keep | 纯数值、骰式、颜色或结构标记；无可翻译自然语言，格式必须保留。；crawl-ref/source/newgame.cc:820 |
+| newgame.cc:875:"%llu" | keep | keep | 纯数值、骰式、颜色或结构标记；无可翻译自然语言，格式必须保留。；crawl-ref/source/newgame.cc:875 |
+| shout.cc:1258:".i%d { background: #%s }&#92;n" | keep | keep | 纯数值、骰式、颜色或结构标记；无可翻译自然语言，格式必须保留。；crawl-ref/source/shout.cc:1258 |
+| stringutil.h:301:"%ld" | keep | keep | 纯数值、骰式、颜色或结构标记；无可翻译自然语言，格式必须保留。；crawl-ref/source/stringutil.h:301 |
+| stringutil.h:305:"%lld" | keep | keep | 纯数值、骰式、颜色或结构标记；无可翻译自然语言，格式必须保留。；crawl-ref/source/stringutil.h:305 |
+| stringutil.h:313:"%lu" | keep | keep | 纯数值、骰式、颜色或结构标记；无可翻译自然语言，格式必须保留。；crawl-ref/source/stringutil.h:313 |
+| stringutil.h:317:"%llu" | keep | keep | 纯数值、骰式、颜色或结构标记；无可翻译自然语言，格式必须保留。；crawl-ref/source/stringutil.h:317 |
+| tileweb-text.cc:213:"&lt;span class=&#92;"fg%d bg%d&#92;"&gt;" | keep | keep | 纯数值、骰式、颜色或结构标记；无可翻译自然语言，格式必须保留。；crawl-ref/source/tileweb-text.cc:213 |
+| dgn-overview.cc:137:"will face %s" | keep | keep | 英文里程碑/责因身份生产者，独立于本地化展示；翻译会改变日志、统计或关联键。；crawl-ref/source/dgn-overview.cc:137 |
+| god-abil.cc:6215:"remembered their ancestor %s as %s." | keep | keep | 英文里程碑/责因身份生产者，独立于本地化展示；翻译会改变日志、统计或关联键。；crawl-ref/source/god-abil.cc:6215 |
+| god-abil.cc:7203:"accepted the %s" | keep | keep | 英文里程碑/责因身份生产者，独立于本地化展示；翻译会改变日志、统计或关联键。；crawl-ref/source/god-abil.cc:7203 |
+| god-wrath.cc:1704:"anointed by %s" | keep | keep | 英文里程碑/责因身份生产者，独立于本地化展示；翻译会改变日志、统计或关联键。；crawl-ref/source/god-wrath.cc:1704 |
+| dgn-shoals.cc:1217:"Not in Shoals or no heightmap; tide not available." | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 确认未翻译的向导操作提示/人类可读统计；R批次补消费端T_及完整父句，保留键盘/数值参数。；crawl-ref/source/dgn-shoals.cc:1217 |
+| mon-cast.cc:4254:"Sorry, this spell isn't supported for dummies!" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 确认未翻译的向导操作提示/人类可读统计；R批次补消费端T_及完整父句，保留键盘/数值参数。；crawl-ref/source/mon-cast.cc:4254 |
+| wiz-fsim.cc:61:"%s%6s &#124; No hits" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 确认未翻译的向导操作提示/人类可读统计；R批次补消费端T_及完整父句，保留键盘/数值参数。；crawl-ref/source/wiz-fsim.cc:61 |
+| wiz-item.cc:1427:"All unrands are now eligible to generate once again." | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 确认未翻译的向导操作提示/人类可读统计；R批次补消费端T_及完整父句，保留键盘/数值参数。；crawl-ref/source/wiz-item.cc:1427 |
+| wiz-you.cc:600:"No exact match for mutation '%s', possible matches are: " | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 确认未翻译的向导操作提示/人类可读统计；R批次补消费端T_及完整父句，保留键盘/数值参数。；crawl-ref/source/wiz-you.cc:600 |
+| wiz-you.cc:687:"No exact match for bane '%s', possible matches are: " | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 确认未翻译的向导操作提示/人类可读统计；R批次补消费端T_及完整父句，保留键盘/数值参数。；crawl-ref/source/wiz-you.cc:687 |
+| wiz-you.cc:883:"No saved top HUD test state to restore." | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 确认未翻译的向导操作提示/人类可读统计；R批次补消费端T_及完整父句，保留键盘/数值参数。；crawl-ref/source/wiz-you.cc:883 |
+| wiz-you.cc:887:"Restored the pre-test HUD state." | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 确认未翻译的向导操作提示/人类可读统计；R批次补消费端T_及完整父句，保留键盘/数值参数。；crawl-ref/source/wiz-you.cc:887 |
+| wiz-you.cc:892:"Unknown top HUD test state; use n, s, or c." | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 确认未翻译的向导操作提示/人类可读统计；R批次补消费端T_及完整父句，保留键盘/数值参数。；crawl-ref/source/wiz-you.cc:892 |
+| wiz-you.cc:941:"Applied top HUD stress state." | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 确认未翻译的向导操作提示/人类可读统计；R批次补消费端T_及完整父句，保留键盘/数值参数。；crawl-ref/source/wiz-you.cc:941 |
+| wiz-you.cc:1355:"Enter new Zot clock value " | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 确认未翻译的向导操作提示/人类可读统计；R批次补消费端T_及完整父句，保留键盘/数值参数。；crawl-ref/source/wiz-you.cc:1355 |
+| wiz-you.cc:1391:"Reset capstone god abilities." | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 确认未翻译的向导操作提示/人类可读统计；R批次补消费端T_及完整父句，保留键盘/数值参数。；crawl-ref/source/wiz-you.cc:1391 |
+| game-options.cc:36:"Bad highlight string -- %s" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 配置错误返回字符串直接经read_option_line→report_error→MSGCH_ERROR显示；应翻译父句，保留选项名和合法输入值。；crawl-ref/source/game-options.cc:36; crawl-ref/source/initfile.cc:3996; crawl-ref/source/initfile.cc:4754; crawl-ref/source/startup.cc:380 |
+| game-options.cc:40:"Bad colour -- %s" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 配置错误返回字符串直接经read_option_line→report_error→MSGCH_ERROR显示；应翻译父句，保留选项名和合法输入值。；crawl-ref/source/game-options.cc:40; crawl-ref/source/initfile.cc:3996; crawl-ref/source/initfile.cc:4754; crawl-ref/source/startup.cc:380 |
+| game-options.cc:93:"Option '%s' is disabled in this build." | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 配置错误返回字符串直接经read_option_line→report_error→MSGCH_ERROR显示；应翻译父句，保留选项名和合法输入值。；crawl-ref/source/game-options.cc:93; crawl-ref/source/initfile.cc:3996; crawl-ref/source/initfile.cc:4754; crawl-ref/source/startup.cc:380 |
+| game-options.cc:103:"Bad %s value: %s (should be true or false)" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 配置错误返回字符串直接经read_option_line→report_error→MSGCH_ERROR显示；应翻译父句，保留选项名和合法输入值。；crawl-ref/source/game-options.cc:103; crawl-ref/source/initfile.cc:3996; crawl-ref/source/initfile.cc:4754; crawl-ref/source/startup.cc:380 |
+| game-options.cc:115:"Bad %s -- %s&#92;n" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 配置错误返回字符串直接经read_option_line→report_error→MSGCH_ERROR显示；应翻译父句，保留选项名和合法输入值。；crawl-ref/source/game-options.cc:115; crawl-ref/source/initfile.cc:3996; crawl-ref/source/initfile.cc:4754; crawl-ref/source/startup.cc:380 |
+| game-options.cc:126:"%s (for %s)" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 配置错误返回字符串直接经read_option_line→report_error→MSGCH_ERROR显示；应翻译父句，保留选项名和合法输入值。；crawl-ref/source/game-options.cc:126; crawl-ref/source/initfile.cc:3996; crawl-ref/source/initfile.cc:4754; crawl-ref/source/startup.cc:380 |
+| game-options.cc:149:"Couldn't parse integer option %s: &#92;"%s&#92;"" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 配置错误返回字符串直接经read_option_line→report_error→MSGCH_ERROR显示；应翻译父句，保留选项名和合法输入值。；crawl-ref/source/game-options.cc:149; crawl-ref/source/initfile.cc:3996; crawl-ref/source/initfile.cc:4754; crawl-ref/source/startup.cc:380 |
+| game-options.cc:151:"Bad %s: %d should be &gt;= %d" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 配置错误返回字符串直接经read_option_line→report_error→MSGCH_ERROR显示；应翻译父句，保留选项名和合法输入值。；crawl-ref/source/game-options.cc:151; crawl-ref/source/initfile.cc:3996; crawl-ref/source/initfile.cc:4754; crawl-ref/source/startup.cc:380 |
+| game-options.cc:153:"Bad %s: %d should be &lt;= %d" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 配置错误返回字符串直接经read_option_line→report_error→MSGCH_ERROR显示；应翻译父句，保留选项名和合法输入值。；crawl-ref/source/game-options.cc:153; crawl-ref/source/initfile.cc:3996; crawl-ref/source/initfile.cc:4754; crawl-ref/source/startup.cc:380 |
+| game-options.cc:164:"Couldn't parse decimal option %s: &#92;"%s&#92;"" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 配置错误返回字符串直接经read_option_line→report_error→MSGCH_ERROR显示；应翻译父句，保留选项名和合法输入值。；crawl-ref/source/game-options.cc:164; crawl-ref/source/initfile.cc:3996; crawl-ref/source/initfile.cc:4754; crawl-ref/source/startup.cc:380 |
+| game-options.cc:167:"Bad %s: %g should be &gt;= %g" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 配置错误返回字符串直接经read_option_line→report_error→MSGCH_ERROR显示；应翻译父句，保留选项名和合法输入值。；crawl-ref/source/game-options.cc:167; crawl-ref/source/initfile.cc:3996; crawl-ref/source/initfile.cc:4754; crawl-ref/source/startup.cc:380 |
+| game-options.cc:169:"Bad %s: %g should be &lt;= %g" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 配置错误返回字符串直接经read_option_line→report_error→MSGCH_ERROR显示；应翻译父句，保留选项名和合法输入值。；crawl-ref/source/game-options.cc:169; crawl-ref/source/initfile.cc:3996; crawl-ref/source/initfile.cc:4754; crawl-ref/source/startup.cc:380 |
+| game-options.cc:221:"Bad %s pair: '%s'" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 配置错误返回字符串直接经read_option_line→report_error→MSGCH_ERROR显示；应翻译父句，保留选项名和合法输入值。；crawl-ref/source/game-options.cc:221; crawl-ref/source/initfile.cc:3996; crawl-ref/source/initfile.cc:4754; crawl-ref/source/startup.cc:380 |
+| game-options.cc:238:"Bad %s: '%s'" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 配置错误返回字符串直接经read_option_line→report_error→MSGCH_ERROR显示；应翻译父句，保留选项名和合法输入值。；crawl-ref/source/game-options.cc:238; crawl-ref/source/initfile.cc:3996; crawl-ref/source/initfile.cc:4754; crawl-ref/source/startup.cc:380 |
+| game-options.h:514:"Option '%s' is disabled in this build." | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 配置错误返回字符串直接经read_option_line→report_error→MSGCH_ERROR显示；应翻译父句，保留选项名和合法输入值。；crawl-ref/source/game-options.h:514; crawl-ref/source/initfile.cc:3996; crawl-ref/source/initfile.cc:4754; crawl-ref/source/startup.cc:380 |
+| game-options.h:532:"Bad %s value: %s (should be %s)" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | 配置错误返回字符串直接经read_option_line→report_error→MSGCH_ERROR显示；应翻译父句，保留选项名和合法输入值。；crawl-ref/source/game-options.h:532; crawl-ref/source/initfile.cc:3996; crawl-ref/source/initfile.cc:4754; crawl-ref/source/startup.cc:380 |
+| game-options.h:110:"disabled option" | defer implementation | adjust：显示查询已接入，行为/参数保持；对应接口已独立复核，运行待验 | DisabledGameOption直接loadFromString非自动调用路径但公开返回错误；与同组错误一并补本地化。；crawl-ref/source/game-options.h:110 |
+| god-abil.cc:6331:"Remember %s name as what? " | keep | keep | 现有显式中文分支已构造完整译文；本命中仅保留英文分支的原句与形态变化。；crawl-ref/source/god-abil.cc:6331 |
+| l-you.cc:1539:"Your %s crystal%s are infused with energy." | keep | keep | 现有显式中文分支已构造完整译文；本命中仅保留英文分支的原句与形态变化。；crawl-ref/source/l-you.cc:1539 |
+| spl-summoning.cc:2909:"%s conjure%s some %s!" | keep | keep | 现有显式中文分支已构造完整译文；本命中仅保留英文分支的原句与形态变化。；crawl-ref/source/spl-summoning.cc:2909 |
+| spl-summoning.cc:3105:"%s send%s a boulder barrelling forward!" | keep | keep | 现有显式中文分支已构造完整译文；本命中仅保留英文分支的原句与形态变化。；crawl-ref/source/spl-summoning.cc:3105 |
+| spl-summoning.cc:3235:"%s sculpt%s a pair of cannons out of ice!" | keep | keep | 现有显式中文分支已构造完整译文；本命中仅保留英文分支的原句与形态变化。；crawl-ref/source/spl-summoning.cc:3235 |
+| spl-summoning.cc:3246:"%s sculpt%s a cannon out of ice!" | keep | keep | 现有显式中文分支已构造完整译文；本命中仅保留英文分支的原句与形态变化。；crawl-ref/source/spl-summoning.cc:3246 |
+| spl-summoning.cc:3880:"%s dismount%s %s crocodile." | keep | keep | 现有显式中文分支已构造完整译文；本命中仅保留英文分支的原句与形态变化。；crawl-ref/source/spl-summoning.cc:3880 |
+| spl-summoning.cc:4376:"%s construct%s an explosive harbinger and set it loose." | keep | keep | 现有显式中文分支已构造完整译文；本命中仅保留英文分支的原句与形态变化。；crawl-ref/source/spl-summoning.cc:4376 |
+| spl-summoning.cc:4449:"%s command%s %s explosives to detonate!" | keep | keep | 现有显式中文分支已构造完整译文；本命中仅保留英文分支的原句与形态变化。；crawl-ref/source/spl-summoning.cc:4449 |
+| xom.cc:3054:"%s %s blinded and untethered in space!" | keep | keep | 现有显式中文分支已构造完整译文；本命中仅保留英文分支的原句与形态变化。；crawl-ref/source/xom.cc:3054 |
+| xom.cc:3127:"%s %s interlaced with infuriating chaos!" | keep | keep | 现有显式中文分支已构造完整译文；本命中仅保留英文分支的原句与形态变化。；crawl-ref/source/xom.cc:3127 |
+| god-wrath.cc:129:"the %s of %s" | keep | keep | 规范英文神罚/光束/死亡原因身份生产者；现有独立死亡/光束显示门完成本地化，不能翻译内部字段。；crawl-ref/source/god-wrath.cc:129; crawl-ref/source/beam.cc; crawl-ref/source/hiscores.cc |
+| mon-cast.cc:9945:"Hit by %s thrown by %s" | keep | keep | 规范英文神罚/光束/死亡原因身份生产者；现有独立死亡/光束显示门完成本地化，不能翻译内部字段。；crawl-ref/source/mon-cast.cc:9945; crawl-ref/source/beam.cc; crawl-ref/source/hiscores.cc |
+| mon-project.cc:364:"wavering %s" | keep | keep | 规范英文神罚/光束/死亡原因身份生产者；现有独立死亡/光束显示门完成本地化，不能翻译内部字段。；crawl-ref/source/mon-project.cc:364; crawl-ref/source/beam.cc; crawl-ref/source/hiscores.cc |
+| mon-project.cc:405:"annihilating %s" | keep | keep | 规范英文神罚/光束/死亡原因身份生产者；现有独立死亡/光束显示门完成本地化，不能翻译内部字段。；crawl-ref/source/mon-project.cc:405; crawl-ref/source/beam.cc; crawl-ref/source/hiscores.cc |
+| mutation.cc:2164:"gaining the %s mutation" | keep | keep | 规范英文神罚/光束/死亡原因身份生产者；现有独立死亡/光束显示门完成本地化，不能翻译内部字段。；crawl-ref/source/mutation.cc:2164; crawl-ref/source/beam.cc; crawl-ref/source/hiscores.cc |
+| mutation.cc:2327:"losing the %s mutation" | keep | keep | 规范英文神罚/光束/死亡原因身份生产者；现有独立死亡/光束显示门完成本地化，不能翻译内部字段。；crawl-ref/source/mutation.cc:2327; crawl-ref/source/beam.cc; crawl-ref/source/hiscores.cc |
+| player-equip.cc:2931:"%sing a weapon of distortion" | keep | keep | 规范英文神罚/光束/死亡原因身份生产者；现有独立死亡/光束显示门完成本地化，不能翻译内部字段。；crawl-ref/source/player-equip.cc:2931; crawl-ref/source/beam.cc; crawl-ref/source/hiscores.cc |
+| transform.cc:2361:"gaining the %s transformation" | keep | keep | 规范英文神罚/光束/死亡原因身份生产者；现有独立死亡/光束显示门完成本地化，不能翻译内部字段。；crawl-ref/source/transform.cc:2361; crawl-ref/source/beam.cc; crawl-ref/source/hiscores.cc |
+| transform.cc:2597:"losing the %s form" | keep | keep | 规范英文神罚/光束/死亡原因身份生产者；现有独立死亡/光束显示门完成本地化，不能翻译内部字段。；crawl-ref/source/transform.cc:2597; crawl-ref/source/beam.cc; crawl-ref/source/hiscores.cc |
+| dlua.cc:64:"function %s()&#92;n%s&#92;nend&#92;n" | keep | keep | 生成可执行Lua函数文本，属于语法而非显示。；crawl-ref/source/dlua.cc:64 |
+| mapdef.cc:166:"malformed declaration - must use = or : in '%s'" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:166 |
+| mapdef.cc:183:"no substitute defined in '%s'" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:183 |
+| mapdef.cc:798:"bad spec: '%s' in '%s'" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:798 |
+| mapdef.cc:963:"Illegal spec: %s" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:963 |
+| mapdef.cc:1000:"Bad NSUBST spec: %s (%s)" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:1000 |
+| mapdef.cc:2486:"Map inf is invalid: %s" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:2486 |
+| mapdef.cc:2821:"Map '%s' has no DEPTH, no PLACE and no " | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:2821 |
+| mapdef.cc:2953:"Map too large - height %d (max %d)" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:2953 |
+| mapdef.cc:2960:"Map too large - width %d (max %d)" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:2960 |
+| mapdef.cc:2969:"Map too large - %dx%d (max %dx%d)" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:2969 |
+| mapdef.cc:3541:"No vault found for tag '%s'" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:3541 |
+| mapdef.cc:3582:"Fatal lua error while resolving subvault '%s'" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:3582 |
+| mapdef.cc:3585:"Could not fit '%s' in (%d,%d) to (%d, %d)." | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:3585 |
+| mapdef.cc:3765:"Unknown spell name: '%s' in '%s'" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:3765 |
+| mapdef.cc:3772:"Not a monster spell: '%s'" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:3772 |
+| mapdef.cc:3783:"Need a positive spell frequency;" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:3783 |
+| mapdef.cc:3830:"bad %sench specifier: &#92;"%s&#92;"" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:3830 |
+| mapdef.cc:3839:"unknown ench: &#92;"%s&#92;"" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:3839 |
+| mapdef.cc:3847:"invalid dur in ench specifier &#92;"%s&#92;"" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:3847 |
+| mapdef.cc:3854:"invalid deg in ench specifier &#92;"%s&#92;"" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:3854 |
+| mapdef.cc:3885:"Not enough non-semicolons for '%s' spec." | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:3885 |
+| mapdef.cc:3894:"Too many semi-colons for '%s' spec." | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:3894 |
+| mapdef.cc:3910:"More items than monster item slots " | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:3910 |
+| mapdef.cc:4038:"bad monster summon type: &#92;"%s&#92;"" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:4038 |
+| mapdef.cc:4077:"bad monster colour &#92;"%s&#92;" in &#92;"%s&#92;"" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:4077 |
+| mapdef.cc:4093:"bad monster god: &#92;"%s&#92;"" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:4093 |
+| mapdef.cc:4108:"bad tile name: &#92;"%s&#92;"." | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:4108 |
+| mapdef.cc:4228:"unknown monster: &#92;"%s&#92;"" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:4228 |
+| mapdef.cc:4235:"can't place dummy monster: &#92;"%s&#92;"" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:4235 |
+| mapdef.cc:4283:"Monster '%s' can't use items." | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:4283 |
+| mapdef.cc:4302:"Monster '%s' needs a defining item." | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:4302 |
+| mapdef.cc:4338:"Index out of range: %d" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:4338 |
+| mapdef.cc:5168:"unknown god name: '%s'" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5168 |
+| mapdef.cc:5191:"'%s' cannot leave corpses" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5191 |
+| mapdef.cc:5197:"'%s' has no skeleton" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5197 |
+| mapdef.cc:5234:"Requested corpse '%s' is invalid" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5234 |
+| mapdef.cc:5253:"Bad item generation weight: '%d'" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5253 |
+| mapdef.cc:5328:"Bad item level: %d" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5328 |
+| mapdef.cc:5379:"Bad item plus: %s" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5379 |
+| mapdef.cc:5399:"Unknown artefact property: %s" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5399 |
+| mapdef.cc:5407:"Bad artefact property value: %s" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5407 |
+| mapdef.cc:5414:"Item brand can only be set with the " | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5414 |
+| mapdef.cc:5422:"Bad value for artefact property %s: %d" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5422 |
+| mapdef.cc:5445:"Bad uniq level: %d" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5445 |
+| mapdef.cc:5471:"Bad spell school: %s" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5471 |
+| mapdef.cc:5482:"Bad spell school: %s" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5482 |
+| mapdef.cc:5499:"Bad spellbook size: %d" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5499 |
+| mapdef.cc:5508:"Bad slevels: %d." | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5508 |
+| mapdef.cc:5527:"Bad spell: %s" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5527 |
+| mapdef.cc:5553:"removed deck: &#92;"%s&#92;"." | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5553 |
+| mapdef.cc:5572:"Bad spell school: %s" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5572 |
+| mapdef.cc:5595:"bad tile name: &#92;"%s&#92;"." | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5595 |
+| mapdef.cc:5607:"bad tile name: &#92;"%s&#92;"." | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5607 |
+| mapdef.cc:5681:"Item plus too high: %d" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5681 |
+| mapdef.cc:5710:"No such ego as: %s" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5710 |
+| mapdef.cc:5715:"Ego '%s' is invalid for item '%s'." | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5715 |
+| mapdef.cc:5730:"Ego '%s' is incompatible with item '%s'." | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5730 |
+| mapdef.cc:5743:"Bad item class: '%s'" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5743 |
+| mapdef.cc:5850:"Bad item class: '%s'" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5850 |
+| mapdef.cc:5858:"Bad item name: '%s'" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5858 |
+| mapdef.cc:5872:"Bad item name: '%s'" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5872 |
+| mapdef.cc:5886:"Error parsing '%s':&#92;n%s" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:5886 |
+| mapdef.cc:6028:"Unable to parse marker from %s" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:6028 |
+| mapdef.cc:6192:"bad shop type: '%s'" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:6192 |
+| mapdef.cc:6195:"too many semi-colons for '%s' spec" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:6195 |
+| mapdef.cc:6246:"no features matching &#92;"%s&#92;"" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:6246 |
+| mapdef.cc:6296:"Unknown flag: '%s'" | keep | keep | 地图DSL解析/布局验证错误，保留技术诊断与原始输入；不是正常游戏叙事或菜单父句。；crawl-ref/source/mapdef.cc:6296 |
+| mapdef.cc:2444:"Map: %s&#92;n%s%s%s%s%s%s" | keep | keep | map_def::describe导出地图及Lua各段源码的开发检查报告，保留语言段标签。；crawl-ref/source/mapdef.cc:2444 |
+| mapmark.cc:195:"feature (%s)" | keep | keep | map_marker::debug_describe及Lua错误字段；开发标记调试/序列化错误，保留技术结构。；crawl-ref/source/mapmark.cc:195 |
+| mapmark.cc:409:"error (%s): %s" | keep | keep | map_marker::debug_describe及Lua错误字段；开发标记调试/序列化错误，保留技术结构。；crawl-ref/source/mapmark.cc:409 |
+| mapmark.cc:431:"error (prop:%s): %s" | keep | keep | map_marker::debug_describe及Lua错误字段；开发标记调试/序列化错误，保留技术结构。；crawl-ref/source/mapmark.cc:431 |
+| mapmark.cc:448:"error (table_to_string): %s" | keep | keep | map_marker::debug_describe及Lua错误字段；开发标记调试/序列化错误，保留技术结构。；crawl-ref/source/mapmark.cc:448 |
+| mapmark.cc:519:"Lugonu corrupt (%d)" | keep | keep | map_marker::debug_describe及Lua错误字段；开发标记调试/序列化错误，保留技术结构。；crawl-ref/source/mapmark.cc:519 |
+| mapmark.cc:640:"Tomb (%d, %d, %d)" | keep | keep | map_marker::debug_describe及Lua错误字段；开发标记调试/序列化错误，保留技术结构。；crawl-ref/source/mapmark.cc:640 |
+| mapmark.cc:697:"Malign gateway (summoner: %d, duration: %d)" | keep | keep | map_marker::debug_describe及Lua错误字段；开发标记调试/序列化错误，保留技术结构。；crawl-ref/source/mapmark.cc:697 |
+| mapmark.cc:790:"Terrain change marker (%d-&gt;%d, %d)" | keep | keep | map_marker::debug_describe及Lua错误字段；开发标记调试/序列化错误，保留技术结构。；crawl-ref/source/mapmark.cc:790 |
+| mapmark.cc:876:"Cloud spreader marker (%d)" | keep | keep | map_marker::debug_describe及Lua错误字段；开发标记调试/序列化错误，保留技术结构。；crawl-ref/source/mapmark.cc:876 |
+| mapmark.cc:929:"position (%d,%d)" | keep | keep | map_marker::debug_describe及Lua错误字段；开发标记调试/序列化错误，保留技术结构。；crawl-ref/source/mapmark.cc:929 |
+| mapmark.cc:985:"active feature (%s, owner: %d, power: %d)" | keep | keep | map_marker::debug_describe及Lua错误字段；开发标记调试/序列化错误，保留技术结构。；crawl-ref/source/mapmark.cc:985 |
+| melee-attack.cc:3529:"burn" | keep | keep | hands_act在消费时翻译动作并构造完整手部主语；原始英文动词是helper接口。；crawl-ref/source/melee-attack.cc:3529; crawl-ref/source/player-act.cc |
+| player-equip.cc:1987:"tingle" | keep | keep | hands_act在消费时翻译动作并构造完整手部主语；原始英文动词是helper接口。；crawl-ref/source/player-equip.cc:1987; crawl-ref/source/player-act.cc |
+| mon-util.cc:3246:"invalid monster_type %d" | keep | keep | 同一invalid-monster分支已有中文T_返回；此处仅canonical_english/英文后备。；crawl-ref/source/mon-util.cc:3246 |
+| stash.cc:1757:"%d match" | keep | keep | T_包裹单复数三元键，扫描器未识别该表达式；实际消费已翻译。；crawl-ref/source/stash.cc:1757 |
+| stash.cc:1759:"%d match" | keep | keep | T_包裹单复数三元键，扫描器未识别该表达式；实际消费已翻译。；crawl-ref/source/stash.cc:1759 |
+| status.cc:273:"lost %s" | keep | keep | status_info.short_db_key为英文数据库身份；相邻short_text/light_text独立本地化。；crawl-ref/source/status.cc:273 |
+| status.cc:1112:"indomitable (%d)" | keep | keep | status_info.short_db_key为英文数据库身份；相邻short_text/light_text独立本地化。；crawl-ref/source/status.cc:1112 |
+| status.cc:1119:"salvo (%d)" | keep | keep | status_info.short_db_key为英文数据库身份；相邻short_text/light_text独立本地化。；crawl-ref/source/status.cc:1119 |
+| xom.cc:573:"cast spell '%s'" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:573; crawl-ref/source/notes.cc |
+| xom.cc:1248:"summons %d friend%s" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:1248; crawl-ref/source/notes.cc |
+| xom.cc:1280:"summons friendly %s" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:1280; crawl-ref/source/notes.cc |
+| xom.cc:1344:"%s polymorph %s -&gt; %s" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:1344; crawl-ref/source/notes.cc |
+| xom.cc:1600:"lit up %d webs" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:1600; crawl-ref/source/notes.cc |
+| xom.cc:1721:"made a garden" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:1721; crawl-ref/source/notes.cc |
+| xom.cc:1938:"made a ring of doors, pushed %d %s out" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:1938; crawl-ref/source/notes.cc |
+| xom.cc:1944:"made a ring of doors, pulled %d in and pushed %d out" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:1944; crawl-ref/source/notes.cc |
+| xom.cc:2088:"give %smutation%s" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:2088; crawl-ref/source/notes.cc |
+| xom.cc:2208:"divine lightning + %d bolts" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:2208; crawl-ref/source/notes.cc |
+| xom.cc:2325:"scenery %s" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:2325; crawl-ref/source/notes.cc |
+| xom.cc:2449:"%d fountains blood" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:2449; crawl-ref/source/notes.cc |
+| xom.cc:2459:"%d snacks swapped" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:2459; crawl-ref/source/notes.cc |
+| xom.cc:2468:"%d trees warped" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:2468; crawl-ref/source/notes.cc |
+| xom.cc:2526:"%d doors open" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:2526; crawl-ref/source/notes.cc |
+| xom.cc:2541:"%d doors close" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:2541; crawl-ref/source/notes.cc |
+| xom.cc:2672:"summons %d living force lance%s" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:2672; crawl-ref/source/notes.cc |
+| xom.cc:2778:"enchant monster%s (%s, %s)" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:2778; crawl-ref/source/notes.cc |
+| xom.cc:2920:"buffed friendly %s %d %s" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:2920; crawl-ref/source/notes.cc |
+| xom.cc:2968:"charmed %d monster%s" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:2968; crawl-ref/source/notes.cc |
+| xom.cc:3079:"warped sight and space for %d monster%s" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:3079; crawl-ref/source/notes.cc |
+| xom.cc:3131:"chaos laced + vexed %d monster%s" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:3131; crawl-ref/source/notes.cc |
+| xom.cc:4166:"summons %d hostile %s%s" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:4166; crawl-ref/source/notes.cc |
+| xom.cc:4225:"summoned %d hostile %s + %d friendly %s" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:4225; crawl-ref/source/notes.cc |
+| xom.cc:4401:"made %s speak a word of recall" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:4401; crawl-ref/source/notes.cc |
+| xom.cc:5633:"%d-stop teleportation journey%s" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:5633; crawl-ref/source/notes.cc |
+| xom.cc:5662:"%d-stop teleportation journey%s" | keep | keep | NOTE_XOM_EFFECT规范英文事件payload；现有Note显示门按事件语义翻译，保留生产值供存档与回退。；crawl-ref/source/xom.cc:5662; crawl-ref/source/notes.cc |
+| catch2-tests/test_textdb_phase0.cc:4214:"depth-%02d" | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_textdb_phase0.cc:4214 |
+| catch2-tests/test_textdb_phase0.cc:4217:"@depth-%02d@" | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_textdb_phase0.cc:4217 |
+| catch2-tests/test_textdb_phase0.cc:4266:"@runtime-%03d@" | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_textdb_phase0.cc:4266 |
+| catch2-tests/test_zh_issue149.cc:1348:"indomitable (%d)" | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_zh_issue149.cc:1348 |
+| catch2-tests/test_zh_issue149.cc:1355:"Indom (%d)" | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_zh_issue149.cc:1355 |
+| catch2-tests/test_zh_issue149.cc:1356:"indomitable (%d)" | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_zh_issue149.cc:1356 |
+| catch2-tests/test_zh_issue149.cc:1360:"Indom (%d)" | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_zh_issue149.cc:1360 |
+| catch2-tests/test_zh_issue149.cc:1797:"&lt;darkgrey&gt;地狱犬咬了你，但没有造成伤害。&lt;/darkgrey&gt;" | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_zh_issue149.cc:1797 |
+| catch2-tests/test_zh_issue6_descriptions.cc:181:"Poison (max %d) and %s" | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_zh_issue6_descriptions.cc:181 |
+| catch2-tests/test_zh_translation.cc:6525:"%s conjure%s some %s!" | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_zh_translation.cc:6525 |
+| catch2-tests/test_zh_translation.cc:6533:"%s send%s a boulder barrelling forward!" | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_zh_translation.cc:6533 |
+| catch2-tests/test_zh_translation.cc:6539:"%s sculpts two cannons from ice!" | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_zh_translation.cc:6539 |
+| catch2-tests/test_zh_translation.cc:6541:"%s sculpt%s a pair of cannons out of ice!" | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_zh_translation.cc:6541 |
+| catch2-tests/test_zh_translation.cc:6550:"%s dismount%s %s crocodile." | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_zh_translation.cc:6550 |
+| catch2-tests/test_zh_translation.cc:6556:"%s construct%s an explosive harbinger and set it loose." | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_zh_translation.cc:6556 |
+| catch2-tests/test_zh_translation.cc:6562:"%s command%s %s explosives to detonate!" | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_zh_translation.cc:6562 |
+| catch2-tests/test_zh_translation.cc:10846:"Cast into level %d of the Abyss" | keep | keep | Catch2测试输入、英语期望或负例；不是生产文案，不能把夹具原文改成译文。；crawl-ref/source/catch2-tests/test_zh_translation.cc:10846 |
+| prebuilt/levcomp.tab.cc:1456:"Bad default-depth: %s (%s)" | keep | keep | 自动生成levcomp解析器的default-depth语法错误；上游语法源码和生成结果一致，不编辑生成文件。；crawl-ref/source/prebuilt/levcomp.tab.cc:1456 |
+| prebuilt/levcomp.tab.cc:1707:"kfeat(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1707 |
+| prebuilt/levcomp.tab.cc:1724:"kmons(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1724 |
+| prebuilt/levcomp.tab.cc:1741:"kitem(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1741 |
+| prebuilt/levcomp.tab.cc:1758:"kmask(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1758 |
+| prebuilt/levcomp.tab.cc:1775:"kprop(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1775 |
+| prebuilt/levcomp.tab.cc:1792:"shuffle(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1792 |
+| prebuilt/levcomp.tab.cc:1803:"clear(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1803 |
+| prebuilt/levcomp.tab.cc:1820:"tags(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1820 |
+| prebuilt/levcomp.tab.cc:1844:"lua_marker(&#92;"%s&#92;", function () " | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1844 |
+| prebuilt/levcomp.tab.cc:1854:"marker(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1854 |
+| prebuilt/levcomp.tab.cc:1878:"lfloorcol(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1878 |
+| prebuilt/levcomp.tab.cc:1895:"lrockcol(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1895 |
+| prebuilt/levcomp.tab.cc:1912:"lfloortile(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1912 |
+| prebuilt/levcomp.tab.cc:1929:"lrocktile(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1929 |
+| prebuilt/levcomp.tab.cc:1940:"fheight(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1940 |
+| prebuilt/levcomp.tab.cc:1951:"ftile(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1951 |
+| prebuilt/levcomp.tab.cc:1962:"rtile(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1962 |
+| prebuilt/levcomp.tab.cc:1973:"tile(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1973 |
+| prebuilt/levcomp.tab.cc:1996:"colour(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:1996 |
+| prebuilt/levcomp.tab.cc:2025:"nsubst(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:2025 |
+| prebuilt/levcomp.tab.cc:2042:"subst(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:2042 |
+| prebuilt/levcomp.tab.cc:2065:"item(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:2065 |
+| prebuilt/levcomp.tab.cc:2088:"mons(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:2088 |
+| prebuilt/levcomp.tab.cc:2099:"place(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:2099 |
+| prebuilt/levcomp.tab.cc:2110:"desc(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:2110 |
+| prebuilt/levcomp.tab.cc:2121:"order(%d)" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:2121 |
+| prebuilt/levcomp.tab.cc:2137:"depth(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:2137 |
+| prebuilt/levcomp.tab.cc:2176:"depth_chance(&#92;"%s&#92;", %d)" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:2176 |
+| prebuilt/levcomp.tab.cc:2187:"chance(%d)" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:2187 |
+| prebuilt/levcomp.tab.cc:2197:"depth_weight(&#92;"%s&#92;", %d)" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:2197 |
+| prebuilt/levcomp.tab.cc:2208:"weight(%d)" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:2208 |
+| prebuilt/levcomp.tab.cc:2224:"orient(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:2224 |
+| prebuilt/levcomp.tab.cc:2235:"welcome(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:2235 |
+| prebuilt/levcomp.tab.cc:2246:"map(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:2246 |
+| prebuilt/levcomp.tab.cc:2257:"subvault(&#92;"%s&#92;")" | keep | keep | 自动生成levcomp解析器构造Lua代码调用，属于可执行语法；英文函数名/标签必须不变。；crawl-ref/source/prebuilt/levcomp.tab.cc:2257 |
+| util/monster/monster-main.cc:64:"&#92;033[0;%d%d%sm%s&#92;033[0m" | keep | keep | 独立monster开发工具的ANSI控制序列或骰式，非自然语言。；crawl-ref/source/util/monster/monster-main.cc:64 |
+| util/monster/monster-main.cc:252:"%dd%d" | keep | keep | 独立monster开发工具的ANSI控制序列或骰式，非自然语言。；crawl-ref/source/util/monster/monster-main.cc:252 |
+| util/monster/monster-main.cc:358:"head %d: " | keep | keep | 独立util/monster命令行数据检查工具，非游戏UI；本轮排除该工具自身英文报表。；crawl-ref/source/util/monster/monster-main.cc:358 |
+| util/monster/monster-main.cc:826:"(spiny %s)" | keep | keep | 独立util/monster命令行数据检查工具，非游戏UI；本轮排除该工具自身英文报表。；crawl-ref/source/util/monster/monster-main.cc:826 |
+| util/monster/monster-main.cc:864:"(reach %d)" | keep | keep | 独立util/monster命令行数据检查工具，非游戏UI；本轮排除该工具自身英文报表。；crawl-ref/source/util/monster/monster-main.cc:864 |

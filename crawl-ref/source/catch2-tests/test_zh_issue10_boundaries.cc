@@ -3742,3 +3742,29 @@ TEST_CASE("residual rereview: noninteractive wizard consumers retain their state
     }
 }
 #endif
+
+TEST_CASE("residual rereview: burstshroom stats retain damage while localizing the label",
+          "[zh-translation][residual-rereview][spore-damage]")
+{
+    issue10_world world;
+    init_zap_index();
+    monster_info spore(MONS_BURSTSHROOM);
+    spore.hd = 6;
+    spore.summoner_id = MID_NOBODY;
+    const dice_def damage = zap_damage(ZAP_BURSTSPORE, spore.hd * 10, true, false);
+    const string dice = make_stringf("%dd%d", damage.num, damage.size);
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        describe_info description;
+        bool stats = false;
+        get_monster_db_desc(spore, description, stats);
+        REQUIRE(stats);
+        const string output = description.body.str();
+        CHECK(output.find(string(T_("Spore damage:")) + " " + dice) != string::npos);
+        if (language == lang_t::ZH)
+            CHECK(output.find("Spore damage:") == string::npos);
+        CHECK(spore.type == MONS_BURSTSHROOM);
+        CHECK(spore.hd == 6);
+    }
+}

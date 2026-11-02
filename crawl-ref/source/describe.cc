@@ -3504,7 +3504,7 @@ static vector<extra_feature_desc> _get_feature_extra_descs(const coord_def &pos)
         && env.map_knowledge(pos).flags & MAP_AWOKEN_FOREST)
     {
         ret.push_back({
-            "Awoken.",
+            T_("Awoken."),
             getLongDescription("awoken"),
             tile_def(TILE_AWOKEN_OVERLAY)
         });
@@ -3512,7 +3512,7 @@ static vector<extra_feature_desc> _get_feature_extra_descs(const coord_def &pos)
     if (feat_is_wall(feat) && env.map_knowledge(pos).flags & MAP_ICY)
     {
         ret.push_back({
-            "A covering of ice.",
+            T_("A covering of ice."),
             getLongDescription("ice covered"),
             tile_def(TILE_FLOOR_ICY)
         });
@@ -3522,7 +3522,7 @@ static vector<extra_feature_desc> _get_feature_extra_descs(const coord_def &pos)
         if (haloed(pos) && !umbraed(pos))
         {
             ret.push_back({
-                "A halo.",
+                T_("A halo."),
                 getLongDescription("haloed"),
                 tile_def(TILE_HALO_RANGE)
             });
@@ -3530,7 +3530,7 @@ static vector<extra_feature_desc> _get_feature_extra_descs(const coord_def &pos)
         if (umbraed(pos) && !haloed(pos))
         {
             ret.push_back({
-                "An umbra.",
+                T_("An umbra."),
                 getLongDescription("umbraed"),
                 tile_def(TILE_UMBRA)
             });
@@ -3538,7 +3538,7 @@ static vector<extra_feature_desc> _get_feature_extra_descs(const coord_def &pos)
         if (liquefied(pos, true))
         {
             ret.push_back({
-                "Liquefied ground.",
+                T_("Liquefied ground."),
                 getLongDescription("liquefied"),
                 tile_def(TILE_LIQUEFACTION)
             });
@@ -3566,14 +3566,14 @@ static vector<extra_feature_desc> _get_feature_extra_descs(const coord_def &pos)
 static string _feat_action_desc(const vector<command_type>& actions,
                                                 dungeon_feature_type feat)
 {
-    static const map<command_type, string> act_str =
+    static const map<command_type, const char*> act_str =
     {
-        { CMD_GO_UPSTAIRS,      "(<)go up" },
-        { CMD_GO_DOWNSTAIRS,    "(>)go down" },
-        { CMD_MAP_PREV_LEVEL,   "([)view destination" },
-        { CMD_MAP_NEXT_LEVEL,   "(])view destination" },
-        { CMD_OPEN_DOOR,        "(O)pen" },
-        { CMD_CLOSE_DOOR,       "(C)lose" },
+        { CMD_GO_UPSTAIRS,      N_("(<)go up") },
+        { CMD_GO_DOWNSTAIRS,    N_("(>)go down") },
+        { CMD_MAP_PREV_LEVEL,   N_("([)view destination") },
+        { CMD_MAP_NEXT_LEVEL,   N_("(])view destination") },
+        { CMD_OPEN_DOOR,        N_("(O)pen") },
+        { CMD_CLOSE_DOOR,       N_("(C)lose") },
 
     };
     return comma_separated_fn(begin(actions), end(actions),
@@ -3591,11 +3591,11 @@ static string _feat_action_desc(const vector<command_type>& actions,
                 return string(T_("(>)enter"));
             }
             else if (cmd == CMD_GO_DOWNSTAIRS && feat == DNGN_PURIFIED_MUTATION_CATALYST)
-                return string("(>)imbibe");
+                return string(T_("(>)imbibe"));
             else if (cmd == CMD_GO_UPSTAIRS && feat_is_gate(feat))
                 return string(T_("(<)exit"));
             else
-                return act_str.at(cmd);
+                return string(T_(act_str.at(cmd)));
         },
         T_(", or ")) + ".";
 }
@@ -7757,7 +7757,7 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         const dice_def dam = mi.summoner_id == MID_PLAYER
             ? get_form(transformation::spore)->get_special_damage(false)
             : zap_damage(ZAP_BURSTSPORE, mi.hd * 10, true, false);
-        result << "Spore damage: " << dam.num << "d" << dam.size << "\n";
+        result << T_("Spore damage:") << " " << dam.num << "d" << dam.size << "\n";
     }
 
     // Flying monsters can't be forced to fall into liquids these days.
