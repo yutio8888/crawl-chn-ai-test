@@ -3192,7 +3192,8 @@ TEST_CASE("interface rereview: real corruption producer stores English and marke
         loaded.load(input);
         for (lang_t display_language : {lang_t::EN, lang_t::ZH, lang_t::EN})
         {
-            unwind_var<lang_t> mode(Options.language, display_language);
+            TranslationFixture display_mode(display_language,
+                display_language == lang_t::ZH ? "zh" : nullptr);
             const string display = loaded.describe(false, false, true);
             CHECK(display == (display_language == lang_t::ZH
                 ? make_stringf(T_("Corrupted %s"), place.describe(true, true).c_str())
@@ -3218,6 +3219,10 @@ TEST_CASE("interface rereview: real corruption producer stores English and marke
             CHECK(invalid.describe(false, false, true) == invalid.name);
             invalid.place = level_id(NUM_BRANCHES, 1);
             CHECK(invalid.describe(false, false, true) == invalid.name);
+        }
+        {
+            TranslationFixture missing_database(lang_t::ZH, nullptr);
+            CHECK(loaded.describe(false, false, true) == original.name);
         }
     }
     REQUIRE(continuation.size() == 3);
