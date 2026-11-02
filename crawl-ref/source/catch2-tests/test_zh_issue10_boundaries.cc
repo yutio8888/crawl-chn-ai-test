@@ -3411,14 +3411,14 @@ TEST_CASE("interface rereview: actual overview rune row retains real command cou
     you.base_stats.init(10);
     you.experience_level = 1;
     you.runes.reset();
-    you.runes[RUNE_SWAMP] = true;
+    you.runes.set(RUNE_SWAMP);
     if (count == 2)
-        you.runes[RUNE_SNAKE] = true;
+        you.runes.set(RUNE_SNAKE);
     you.obtainable_runes = 3;
     const auto before = you.runes;
     vector<string> runes;
     for (int i = 0; i < NUM_RUNE_TYPES; ++i)
-        if (you.runes[i])
+        if (you.runes.get(i))
             runes.emplace_back(rune_type_name(i));
     const string list = comma_separated_line(runes.begin(), runes.end(), ", ", ", ");
     const string expected = formatted_string::parse_string(make_stringf_p(
@@ -3428,7 +3428,8 @@ TEST_CASE("interface rereview: actual overview rune row retains real command cou
     CHECK(output.find(expected) != string::npos);
     for (const string& rune : runes)
         CHECK(output.find(rune) != string::npos);
-    CHECK(you.runes == before);
+    for (int i = 0; i < NUM_RUNE_TYPES; ++i)
+        CHECK(you.runes.get(i) == before.get(i));
     CHECK(you.obtainable_runes == 3);
 }
 
@@ -3500,11 +3501,11 @@ TEST_CASE("interface rereview: actual branch rune descriptions preserve all rema
     int index = 0;
     for (rune_type rune : branches[branch].runes)
         if (index++ < collected)
-            you.runes[rune] = true;
+            you.runes.set(rune);
     const auto before = you.runes;
     vector<string> names;
     for (rune_type rune : branches[branch].runes)
-        if (!(remaining_only && you.runes[rune]))
+        if (!(remaining_only && you.runes.get(rune)))
             names.emplace_back(rune_type_name(rune));
     const string output = branch_rune_desc(branch, remaining_only);
     if (names.empty())
@@ -3520,7 +3521,8 @@ TEST_CASE("interface rereview: actual branch rune descriptions preserve all rema
         for (const string& name : names)
             CHECK(output.find(name) != string::npos);
     }
-    CHECK(you.runes == before);
+    for (int i = 0; i < NUM_RUNE_TYPES; ++i)
+        CHECK(you.runes.get(i) == before.get(i));
 }
 
 TEST_CASE("interface rereview: actual slime wall damage localizes all wall counts and icy victim predicates",
