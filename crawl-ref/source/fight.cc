@@ -1121,8 +1121,8 @@ bool player_unrand_bad_target(const item_def &weapon,
         hitfunc.set_aim(defender.pos());
 
         return stop_attack_prompt(hitfunc,
-                                  T_("attack near"),
-                                  nullptr, nullptr, defending_monster,
+                                  N_("attack"),
+                                  nullptr, nullptr, nullptr,
                                   check_only);
     }
     if (is_unrandom_artefact(weapon, UNRAND_ARC_BLADE))
@@ -1507,34 +1507,25 @@ bool stop_attack_prompt(const monster* mon, bool beam_attack,
     if (!zh && !starts_with(adj, "your"))
         adj = "the " + adj;
     mon_name = adj + mon_name;
-    string verb;
+    string action;
     if (beam_attack)
     {
         if (beam_target == mon->pos())
-            verb = T_("fire at ");
+            action = make_stringf(T_("fire at %s"), mon_name.c_str());
         else
         {
-            if (zh)
-            {
-                verb = make_stringf(C_("attack prompt", "fire in %s direction"),
-                                    mon_name.c_str());
-                mon_name = "";
-            }
-            else
-            {
-                verb = "fire in " + apostrophise(mon_name) + " direction";
-                mon_name = "";
-            }
+            // EN requires a possessive; the context's ZH template supplies it.
+            const string direction = zh ? mon_name : apostrophise(mon_name);
+            action = make_stringf(C_("attack prompt", "fire in %s direction"),
+                                  direction.c_str());
         }
     }
     else
-        verb = T_("attack ");
+        action = make_stringf(T_("attack %s"), mon_name.c_str());
 
-    const string prompt = make_stringf(
-             T_("Really %s%s%s?%s"),
-             verb.c_str(), mon_name.c_str(), suffix.c_str(),
-             penance ? (T_(" This attack would place you under penance!"))
-                     : "");
+    const string prompt = make_stringf_p(
+        T_("Really %1$s%2$s?%3$s"), action.c_str(), suffix.c_str(),
+        penance ? T_(" This attack would place you under penance!") : "");
 
     if (prompted)
         *prompted = true;
@@ -1606,19 +1597,19 @@ bool stop_attack_prompt(targeter &hitfunc, const char* verb,
     if (hits_player)
     {
         if (mon_name.empty())
-            mon_name = "yourself";
+            mon_name = T_("yourself");
         else
-            mon_name = "yourself and " + mon_name;
+            mon_name = make_stringf_p(T_("%1$s and %2$s"),
+                                     T_("yourself"), mon_name.c_str());
     }
 
+    string action = T_(verb);
+    trim_string(action);
     const string prompt = make_stringf_p(
-             T_("Really %s%s %s%s?%s"),
-             verb,
-             defender_ok ? (T_(" near")) : "",
-             mon_name.c_str(),
-             victims.suffix(),
-             penance ? (T_(" This attack would place you under penance!"))
-                     : "");
+        defender_ok ? T_("Really %1$s near %2$s%3$s?%4$s")
+                    : T_("Really %1$s %2$s%3$s?%4$s"),
+        action.c_str(), mon_name.c_str(), victims.suffix(),
+        penance ? T_(" This attack would place you under penance!") : "");
 
     if (prompted)
         *prompted = true;
@@ -1637,14 +1628,14 @@ string stop_summoning_reason(resists_t resists, monclass_flags_t flags)
     if (get_resist(resists, MR_RES_POISON) <= 0
         && you.duration[DUR_TOXIC_RADIANCE])
     {
-        return "emitting a toxic aura";
+        return N_("emitting a toxic aura");
     }
     if (you.duration[DUR_NOXIOUS_BOG] && !(flags & M_FLIES))
-        return "spewing a noxious bog";
+        return N_("spewing a noxious bog");
     if (you.duration[DUR_VORTEX])
-        return "in the middle of a polar vortex";
+        return N_("in the middle of a polar vortex");
     if (you.duration[DUR_FUSILLADE])
-        return "raining down reagents";
+        return N_("raining down reagents");
     return "";
 }
 
@@ -1735,8 +1726,8 @@ bool stop_summoning_prompt(resists_t resists, monclass_flags_t flags,
     if (noun.empty())
         return false;
 
-    string prompt = make_stringf(T_("Really %s while %s?"),
-                                 verb.c_str(), noun.c_str());
+    string prompt = make_stringf_p(T_("Really %1$s while %2$s?"),
+                                   T_(verb.c_str()), T_(noun.c_str()));
 
     if (yesno(prompt.c_str(), false, 'n'))
         return false;

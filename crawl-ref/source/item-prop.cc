@@ -33,6 +33,7 @@
 #include "options.h"
 #include "orb-type.h"
 #include "potion-type.h"
+#include "positional_format.h"
 #include "random.h"
 #include "religion.h"
 #include "shopping.h"
@@ -2258,6 +2259,46 @@ string launched_projectile_name(const item_def &item)
         default:
             return T_("eggplant");
     }
+}
+
+// Resolve only names produced by launched_projectile_name; unknown saved
+// names are free text and must remain untouched.
+string projectile_display_name(const string& canonical)
+{
+    string root = canonical;
+    const bool wind_blessed = starts_with(root, "wind-blessed ");
+    if (wind_blessed)
+        root = root.substr(13);
+    string display;
+    for (int i = 0; i < NUM_MISSILES; ++i)
+    {
+        string english;
+        { ScopedLangEn en; english = missile_name(static_cast<missile_type>(i)); }
+        if (root == english)
+        {
+            display = missile_name(static_cast<missile_type>(i));
+            break;
+        }
+    }
+    static const char* const launcher_projectiles[] = {
+        N_("damnation bolt"), N_("sling bullet"), N_("arrow"), N_("bolt"),
+        N_("slug"), N_("eggplant")
+    };
+    if (display.empty())
+        for (const char* key : launcher_projectiles)
+            if (root == key)
+            {
+                display = T_(key);
+                break;
+            }
+    if (display.empty())
+        return canonical;
+    if (wind_blessed)
+    {
+        return make_stringf_p(C_("projectile prefix", "%1$s %2$s"),
+                             T_("wind-blessed"), display.c_str());
+    }
+    return display;
 }
 
 // Returns true if item can be reasonably thrown without a launcher.

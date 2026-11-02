@@ -2550,13 +2550,13 @@ string monster::arm_name(bool plural, bool *can_plural) const
 string monster::blood_name() const
 {
     if (has_blood())
-        return "blood";
+        return N_("blood");
 
     mon_holy_type holi = holiness();
     if (holi & (MH_DEMONIC | MH_HOLY))
-        return "ichor";
+        return N_("ichor");
     else if (holi & MH_PLANT && mons_genus(type) != MONS_FUNGUS)
-        return "sap";
+        return N_("sap");
     // XXX: Not bothering to fill this out, since it's currently never called.
     else if (holi & (MH_NONLIVING | MH_UNDEAD))
         return "???";
@@ -2570,11 +2570,11 @@ string monster::blood_name() const
         case MON_SHAPE_ARACHNID:
         case MON_SHAPE_SNAIL:
         case MON_SHAPE_SNAKE:   // Worms; real snakes have actual blood.
-            return "haemolymph";
+            return N_("haemolymph");
 
         case MON_SHAPE_ORB:
             if (mons_genus(type) == MONS_FLOATING_EYE)
-                return "vitreous fluid";
+                return N_("vitreous fluid");
             break;
 
         default:
@@ -2582,7 +2582,7 @@ string monster::blood_name() const
     }
 
     // Generic fallback
-    return "vital fluids";
+    return N_("vital fluids");
 }
 
 int monster::mindex() const

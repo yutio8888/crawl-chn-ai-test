@@ -15,6 +15,13 @@
 #include "env.h"
 #include "format.h"
 #include "ghost.h"
+#include "fight.h"
+#include "hiscores.h"
+#include "lang-en-guard.h"
+#include "melee-attack.h"
+#include "notes.h"
+#include "positional_format.h"
+#include "target.h"
 #include "i18n.h"
 #include "invent.h"
 #include "item-prop.h"
@@ -44,6 +51,8 @@
 #include "spl-summoning.h"
 #include "spl-util.h"
 #include "state.h"
+#include "status.h"
+#include "random.h"
 #include "stringutil.h"
 #include "test_zh_fixture.h"
 #include "transform.h"
@@ -1366,4 +1375,354 @@ TEST_CASE("sirocco knockback localizes its cause without changing beam identity"
     else
         CHECK(message.find("Terence is knocked back by the scorching wind.")
               != string::npos);
+}
+
+namespace
+{
+struct combat_ranged_consumer : ranged_attack
+{
+    using ranged_attack::ranged_attack;
+    using attack::handle_phase_hit;
+};
+struct combat_melee_consumer : melee_attack
+{
+    using melee_attack::melee_attack;
+    using attack::announce_hit;
+    using attack::handle_phase_hit;
+    int calc_damage() override { return 0; }
+};
+struct combat_fixed_melee : combat_melee_consumer
+{
+    using combat_melee_consumer::combat_melee_consumer;
+    int calc_damage() override { return 4; }
+};
+}
+
+TEST_CASE("combat rereview: real ranged producers keep score parsing and display separate",
+          "[zh-translation][combat-rereview][ranged-protocol]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    no_notes suppress_notes;
+    monster *source = world.place(MONS_ORC, coord_def(20, 21));
+    for (bool launched : {false, true})
+    {
+        item_def projectile;
+        projectile.base_type = launched ? OBJ_WEAPONS : OBJ_MISSILES;
+        projectile.sub_type = launched ? static_cast<int>(WPN_SHORTBOW)
+                                       : static_cast<int>(MI_STONE);
+        projectile.quantity = 1;
+        combat_ranged_consumer hit(source, &you, &projectile);
+        string projectile_en, attacker_en;
+        {
+            ScopedLangEn en;
+            projectile_en = launched_projectile_name(projectile);
+            attacker_en = source->name(DESC_A);
+        }
+        const string canonical = make_stringf(launched
+            ? "Shot with a%s %s by %s" : "Hit by a%s %s thrown by %s",
+            is_vowel(projectile_en[0]) ? "n" : "", projectile_en.c_str(),
+            attacker_en.c_str());
+        REQUIRE(hit.aux_source == canonical);
+        scorefile_entry score(3, source->mid, KILLED_BY_BEAM,
+                              hit.aux_source.c_str(), true);
+        score.init(1600000000);
+        const string raw = score.raw_string();
+        CHECK(score.get_fields().str_field("kaux") == canonical);
+        scorefile_entry loaded;
+        REQUIRE(loaded.parse(raw));
+        {
+            ScopedLangEn en;
+            const string terse = loaded.death_description(scorefile_entry::DDV_TERSE);
+            CHECK(terse.find("???") == string::npos);
+            CHECK(terse.find("orc/" + projectile_en) != string::npos);
+        }
+        const string display = loaded.death_description(scorefile_entry::DDV_VERBOSE);
+        CHECK(display.find(launched_projectile_name(projectile)) != string::npos);
+        if (language == lang_t::ZH)
+            CHECK(display.find(projectile_en) == string::npos);
+        CHECK(loaded.raw_string() == raw);
+        CHECK(loaded.get_fields().str_field("kaux") == canonical);
+    }
+    for (const char* unknown : {"unknown legacy projectile", "wind-blessed future missile"})
+        CHECK(projectile_display_name(unknown) == unknown);
+}
+
+TEST_CASE("combat rereview: actual disjunction dart stores canonical source after prefix and copy",
+          "[zh-translation][combat-rereview][blink-protocol]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    no_notes suppress_notes;
+    monster *source = world.place(MONS_ORC, coord_def(20, 21));
+    item_def dart;
+    dart.base_type = OBJ_MISSILES;
+    dart.sub_type = MI_DART;
+    dart.brand = SPMSL_DISJUNCTION;
+    dart.quantity = 1;
+    combat_ranged_consumer original(source, &you, &dart);
+    original.set_projectile_prefix("wind-blessed");
+    combat_ranged_consumer hit(source, &you, &dart);
+    original.copy_params_to(hit);
+    hit.needs_message = true;
+    const string message = observe_message([&] { hit.handle_phase_hit(); });
+    CHECK(message.find(T_("You become untethered in space!")) != string::npos);
+    REQUIRE(you.duration[DUR_BLINKITIS] > 0);
+    string source_en, projectile_en;
+    {
+        ScopedLangEn en;
+        source_en = source->name(DESC_A, true);
+        projectile_en = "wind-blessed " + launched_projectile_name(dart);
+    }
+    CHECK(you.props[BLINKITIS_SOURCE_KEY].get_string() == source_en);
+    CHECK(you.props[BLINKITIS_AUX_KEY].get_string() == projectile_en);
+    scorefile_entry score(2, source->mid, KILLED_BY_BLINKING, "", true);
+    score.init(1600000000);
+    const string raw = score.raw_string();
+    CHECK(score.get_fields().str_field("killer") == source_en);
+    CHECK(score.get_fields().str_field("kaux") == projectile_en);
+    CHECK(score.death_description(scorefile_entry::DDV_VERBOSE)
+          .find(projectile_display_name(projectile_en)) != string::npos);
+    CHECK(score.raw_string() == raw);
+}
+
+TEST_CASE("combat rereview: actual body actions use complete predicates for damage and zero damage",
+          "[zh-translation][combat-rereview][body-actions]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    no_notes suppress_notes;
+    struct action { int index; const char* canonical; const char* predicate; bool possessive; };
+    const action actions[] = {
+        {6, "tickle", "tickles %s", false},
+        {14, "eye-gouge", "gouges %s eyes", true},
+        {16, "headlock", "locks %s head", true},
+        {17, "wrestle", "wrestles with %s", false},
+        {19, "kneecap", "strikes %s knees", true},
+        {1, "head-knock", "knocks %s head", true},
+    };
+    monster *source = world.place(MONS_KILLER_KLOWN, coord_def(20, 21));
+    monster *victim = world.place(MONS_ORC, coord_def(21, 21));
+    const int item_index = get_mitm_slot();
+    REQUIRE(item_index != NON_ITEM);
+    unwind_var<item_def> restore_item(env.item[item_index]);
+    item_def& helmet = env.item[item_index];
+    helmet.base_type = OBJ_ARMOUR;
+    helmet.sub_type = ARM_HELMET;
+    helmet.quantity = 1;
+    for (const auto& action : actions)
+    for (bool zero_damage : {false, true})
+    for (bool player_target : {true, false})
+    {
+        source->type = string(action.canonical) == "head-knock"
+            ? MONS_HAUNTED_ARMOUR : MONS_KILLER_KLOWN;
+        source->inv[MSLOT_ARMOUR] = source->type == MONS_HAUNTED_ARMOUR
+            ? item_index : NON_ITEM;
+        const int choices = source->type == MONS_HAUNTED_ARMOUR ? 3 : 20;
+        uint64_t chosen_seed = 0;
+        for (uint64_t seed = 1; seed < 512 && !chosen_seed; ++seed)
+        {
+            rng::subgenerator probe(seed, 0x434f4d424154ULL);
+            if (random2(choices) == action.index) chosen_seed = seed;
+        }
+        REQUIRE(chosen_seed != 0);
+        actor* target = player_target ? static_cast<actor*>(&you) : victim;
+        const int hp_before = player_target ? you.hp : victim->hit_points;
+        combat_melee_consumer hit(source, target);
+        hit.needs_message = hit.attacker_visible = hit.defender_visible = true;
+        hit.attk_type = AT_HIT;
+        hit.attk_flavour = AF_PLAIN;
+        hit.damage_done = 7;
+        string output;
+        {
+            rng::subgenerator random(chosen_seed, 0x434f4d424154ULL);
+            output = observe_message([&] {
+                if (zero_damage) hit.handle_phase_hit();
+                else hit.announce_hit();
+            });
+        }
+        CAPTURE(action.canonical, zero_damage, player_target, output);
+        if (language == lang_t::ZH)
+        {
+            const string target = action.possessive ? apostrophise(hit.defender_name(true))
+                                                    : hit.defender_name(true);
+            const string predicate = make_stringf(C_("monster body action", action.predicate),
+                                                  target.c_str());
+            CHECK(output.find(predicate) != string::npos);
+            CHECK(output.find(action.canonical) == string::npos);
+        }
+        else
+            CHECK(output.find(source->conj_verb(action.canonical) + " " + hit.defender_name(true)) != string::npos);
+        if (zero_damage)
+        {
+            CHECK(hit.damage_done == 0);
+            CHECK((player_target ? you.hp : victim->hit_points) == hp_before);
+        }
+    }
+}
+
+TEST_CASE("combat rereview: real anchor and sap enchantments distinguish initial and renewed duration",
+          "[zh-translation][combat-rereview][enchantment-messages]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    init_duration_index();
+    no_notes suppress_notes;
+    const auto old_animations = Options.use_animations;
+    unwinder restore_animations([&] { Options.use_animations = old_animations; });
+    Options.use_animations = use_animations_type();
+    for (bool renewal : {false, true})
+    {
+        you.duration[DUR_DIMENSION_ANCHOR] = renewal ? 1 : 0;
+        you.duration[DUR_SAP_MAGIC] = renewal ? 1 : 0;
+        for (beam_type flavour : {BEAM_DIMENSION_ANCHOR, BEAM_SAP_MAGIC})
+        {
+            bolt beam;
+            beam.flavour = flavour;
+            // Test the real duration/message path without uninitialized UI animations.
+            beam.animate = false;
+            beam.thrower = KILL_YOU;
+            beam.source_id = MID_PLAYER;
+            const char* key = flavour == BEAM_DIMENSION_ANCHOR
+                ? (renewal ? "You feel more firmly anchored in space."
+                           : "You feel firmly anchored in space.")
+                : (renewal ? "Your magic feels more tainted." : "Your magic feels tainted.");
+            const string output = observe_message([&] { beam.affect_player_enchantment(false); });
+            CHECK(output.find(T_(key)) != string::npos);
+            if (language == lang_t::ZH) CHECK(output.find("more ") == string::npos);
+        }
+    }
+}
+
+TEST_CASE("combat rereview: actual attack and summoning prompts preserve action and spatial roles",
+          "[zh-translation][combat-rereview][prompts]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *ally = world.place(MONS_ORC, coord_def(20, 21));
+    ally->base_attitude = ATT_FRIENDLY;
+    action_prompt_capture captured;
+    for (bool beam : {false, true})
+    for (coord_def target : {ally->pos(), coord_def(20, 22)})
+    {
+        captured.prompt.clear();
+        REQUIRE(stop_attack_prompt(ally, beam, target));
+        REQUIRE_FALSE(captured.prompt.empty());
+        if (language == lang_t::EN)
+            CHECK(captured.prompt.find(beam ? "fire " : "attack ") != string::npos);
+        else
+        {
+            CHECK(captured.prompt.find("fire ") == string::npos);
+            CHECK(captured.prompt.find("attack ") == string::npos);
+            CHECK(captured.prompt.find(ally->name(DESC_PLAIN)) != string::npos);
+        }
+    }
+    targeter_smite area(&you, LOS_RADIUS, 1, 1);
+    REQUIRE(area.set_aim(ally->pos()));
+    for (const monster* defender : {static_cast<const monster*>(nullptr), static_cast<const monster*>(ally)})
+    {
+        captured.prompt.clear();
+        REQUIRE(stop_attack_prompt(area, "attack", nullptr, nullptr, defender));
+        if (language == lang_t::EN)
+            CHECK((captured.prompt.find("attack near ") != string::npos) == !defender);
+        else
+        {
+            CHECK(captured.prompt.find(ally->name(DESC_PLAIN)) != string::npos);
+            CHECK(captured.prompt.find(" near") == string::npos);
+        }
+    }
+    for (duration_type duration : {DUR_TOXIC_RADIANCE, DUR_NOXIOUS_BOG, DUR_VORTEX, DUR_FUSILLADE})
+    {
+        you.duration[duration] = 1;
+        captured.prompt.clear();
+        REQUIRE(stop_summoning_prompt());
+        REQUIRE_FALSE(captured.prompt.empty());
+        if (language == lang_t::EN) CHECK(captured.prompt.find("Really do that while ") == 0);
+        else
+        {
+            CHECK(captured.prompt.find("do that") == string::npos);
+            CHECK(captured.prompt.find(" while ") == string::npos);
+        }
+        you.duration[duration] = 0;
+    }
+}
+
+TEST_CASE("combat rereview: real player melee constriction localizes its subject",
+          "[zh-translation][combat-rereview][constriction]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    no_notes suppress_notes;
+    you.species = SP_OCTOPODE;
+    monster *victim = world.place(MONS_ORC, coord_def(21, 20));
+    you.start_constricting(*victim, CONSTRICT_MELEE);
+    REQUIRE(victim->is_constricted());
+    REQUIRE_FALSE(victim->has_invalid_constrictor());
+    you.time_taken = 0;
+    const int hp = victim->hit_points;
+    const string output = observe_message([&] { you.handle_constriction(); });
+    CHECK(victim->hit_points == hp);
+    CHECK(output.find(T_("You")) != string::npos);
+    if (language == lang_t::ZH)
+        CHECK(output.find("You") == string::npos);
+    victim->stop_being_constricted(true);
+}
+
+TEST_CASE("combat rereview: actual hydra decapitation preserves claw and blade semantics",
+          "[zh-translation][combat-rereview][decapitation]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    init_mut_index();
+    no_notes suppress_notes;
+    you.species = SP_TROLL;
+    you.mutation[MUT_CLAWS] = 3;
+    you.base_stats.init(10);
+    REQUIRE(you.has_claws() >= 3);
+    monster* hydra = world.place(MONS_HYDRA, coord_def(20, 21));
+    hydra->hit_points = hydra->max_hit_points = 1000;
+    item_def blade;
+    blade.base_type = OBJ_WEAPONS;
+    blade.sub_type = WPN_LONG_SWORD;
+    blade.quantity = 1;
+    const vector<vector<const char*>> actions = {
+        {"rip", "tear", "claw"}, {"slice", "lop", "chop", "hack"}
+    };
+    for (int kind : {0, 1})
+    for (int index = 0; index < static_cast<int>(actions[kind].size()); ++index)
+    {
+        uint64_t chosen_seed = 0;
+        for (uint64_t seed = 1; seed < 512 && !chosen_seed; ++seed)
+        {
+            rng::subgenerator probe(seed, 0x434f4d48454144ULL);
+            if (random2(actions[kind].size()) == index) chosen_seed = seed;
+        }
+        REQUIRE(chosen_seed != 0);
+        hydra->num_heads = 3;
+        combat_fixed_melee hit(&you, hydra);
+        hit.set_weapon(kind == 0 ? nullptr : &blade);
+        hit.needs_message = hit.attacker_visible = hit.defender_visible = true;
+        // The real damage/head/message producer runs with a fixed damage roll;
+        // simulation suppresses blood scheduling. Player/world state is restored.
+        hit.simu = true;
+        const string verb = language == lang_t::ZH
+            ? C_("decapitation verb", actions[kind][index]) : actions[kind][index];
+        string output;
+        {
+            rng::subgenerator random(chosen_seed, 0x434f4d48454144ULL);
+            output = observe_message([&] { hit.handle_phase_hit(); });
+        }
+        CAPTURE(kind, index, output);
+        CHECK(output.find(verb) != string::npos);
+        CHECK(hydra->num_heads == 4);
+        if (language == lang_t::ZH)
+            CHECK(output.find(actions[kind][index]) == string::npos);
+    }
 }

@@ -9230,3 +9230,607 @@
 | source: (upgrade)<br>EN:  (upgrade) |  | （强化） | adjust | 调试变形升格为（强化），比较方向和括号保留，不改旧新怪物名。 | crawl-ref/source/notes.cc:377 |
 | source: (downgrade)<br>EN:  (downgrade) |  | （弱化） | adjust | 调试变形降格为（弱化），与强化方向相反；未知形态不猜译。 | crawl-ref/source/notes.cc:377 |
 | source:%s goes to deal, but finds you have enough %s cards.<br>EN: %s goes to deal, but finds you have enough %s cards. | %s来发牌，但发现你已经有足够的%s。 | %s来发牌，但发现你已经有足够的%s牌。 | adjust | 裸牌类列表现在完整显示逃脱牌或逃脱、毁灭和召唤牌；父句牌名词已补，神祇来发牌和已足够的转折完整，属性键不译。 | crawl-ref/source/xom.cc; crawl-ref/source/god-passive.cc |
+
+## 战斗消息与投射物边界续批
+
+- 新冻结主集合543个身份（清单摘要 `d5e29d4e0ff0dd105482843d0eaf9cca855974aff7a3a0891c8a32dc1e59e9f9`），初审及修后语言复核与清单双向相等。另列44个完整句或显示依赖，当前账本共9704张唯一卡；终态keep=8898, adjust=796, defer terminology=5, defer implementation=5。
+- 当前SourceDB SHA-256 `bfdf159d12b9cad06214b743acee272945cdf45905e7e4da7c7fb2de8013bfce`；术语SHA-256 `8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`。前9117卡译值完全相等并复用已审证据；543初审26 adjust及23实施暂缓均已修复，修后语言终态543 keep。
+- 实际25文字动作、46接口动作、49当前生产绑定和5动态接口均已核读。随机身体攻击与斩首保留同一次英文动作选择，中文使用完整谓语；攻击/召唤确认保留方向、附近关系、状态原因和盟友惩罚警告。ranged aux及blink属性恢复规范英文，显示端仅解析既有有限投射物身份，未知旧值原样保留。天谴重弩弹药的名称由毁灭之矢纠正为天谴弩箭。
+- 原始报告及修后复核位于 `.claude/metrics/verify/combat-rereview-20261101/`。7项新增真实消费者测试已与issue6共16例、536断言通过。首次完整code profile静态、编译和smoke通过，但新夹具因未初始化动画颜色中止；修复后重编译及定向运行通过，原失败记录保留。后续集成运行暴露旧Issue157日志边界断言，已按真实长/短日志消费者修正；定向9例540断言通过，ea0854a801..ed7244118e绑定code profile全部通过（0阻断），适用远程CI仍待完成。
+
+### combat-actions
+
+| Identity / English source | 审前中文 | 当前中文 | 终态 | 逐项理由 | 证据 |
+|---|---|---|---|---|---|
+| source: (and %zu other bad targets)<br>EN:  (and %zu other bad targets) | （及%zu个其他不良目标） | （及%zu个其他不良目标） | keep | 范围攻击有多个不宜攻击目标时显示剩余个数，数量扣除首例且及表示追加；不良目标可润色为不宜攻击的目标。 | crawl-ref/source/fight.cc:1695 |
+| source: and electrocute %s<br>EN:  and electrocute %s | <br>并电击了%s | <br>并电击了%s | keep | 玩家带电冲锋追加电击敌人的宾格代词，和主命中句并列，动作与对象完整。 | crawl-ref/source/melee-attack.cc:3812 |
+| source: and electrocutes %s<br>EN:  and electrocutes %s | <br>并电击了%s | <br>并电击了%s | keep | 怪物带电冲锋追加电击敌人，与1仅英语动词人称不同，中文同译恰当。 | crawl-ref/source/melee-attack.cc:3813 |
+| source: and shatters for extra damage<br>EN:  and shatters for extra damage | 并碎裂造成额外伤害 | 并碎裂造成额外伤害 | keep | 投射物碎裂增伤时追加碎裂和额外伤害，非仅物品损毁，两命题完整。 | crawl-ref/source/ranged-attack.cc:844 |
+| source: and shatters,<br>EN:  and shatters, | 并碎裂， | 并碎裂， | keep | 投射物命中却零伤害时追加碎裂并衔接but，中文碎裂与转折上下文完整。 | crawl-ref/source/ranged-attack.cc:332 |
+| source: appears confused.<br>EN:  appears confused. | 显得困惑了。 | 陷入了混乱。 | adjust | 实际成功添加ENCH_CONFUSION后显示，当前困惑没有采用已确认状态混乱，应为显得混乱了/陷入了混乱。；修后复核：成功混乱附魔显示陷入混乱，不误为一般困惑。 | crawl-ref/source/beam.cc:6465 |
+| source: barely<br>EN:  barely | 勉强 | 勉强 | keep | 闪避差额最接近命中的未命中档，勉强与未命中组成；和closely同译可进一步区分为差一点，属建议。 | crawl-ref/source/attack.cc:762 |
+| source: becomes paralysed!<br>EN:  becomes paralysed! | 被麻痹了！ | 被麻痹了！ | keep | 怪物非停滞且未麻痹时施加麻痹，中文被麻痹与发生变化准确。 | crawl-ref/source/beam.cc:2008 |
+| source: becomes untethered in space!<br>EN:  becomes untethered in space! | 在空间中失联了！ | 在空间中失去了锚定！ | adjust | 分离飞镖给予BLINKITIS使空间锚定解除，失联误像联系中断；宜与玩家消息同用在空间中失去了锚定。；修后复核：分离飞镖使怪物在空间失去锚定，不译联系失联，和玩家分支一致。 | crawl-ref/source/ranged-attack.cc:748 |
+| source: begins to glow.<br>EN:  begins to glow. | 开始发光。 | 开始发光。 | keep | 污染从无到有使怪物开始发光，云与flux近战两个消费者均正确。 | crawl-ref/source/cloud.cc:1332; crawl-ref/source/melee-attack.cc:740 |
+| source: begins to grow on the wall!<br>EN:  begins to grow on the wall! | 开始在墙上生长！ | 开始在墙上生长！ | keep | 墙面生成初生黏菌体后开始生长，墙上位置与开始生长完整。 | crawl-ref/source/beam.cc:1048 |
+| source: begins to petrify.<br>EN:  begins to petrify. | 开始石化。 | 开始石化。 | keep | 怪物进入石化第一阶段时开始石化，未误称已完全石化。 | crawl-ref/source/beam.cc:2028 |
+| source: body is warped painfully!<br>EN:  body is warped painfully! | 的身体痛苦地扭曲了！ | 身体痛苦地扭曲了！ | adjust | 身体扭曲使用所有格怪物名，再接的身体会生成的的身体；须只保留一处所有格标记。；修后复核：need_possessive=true已提供怪物的，当前身体片段不再加第二个的。 | crawl-ref/source/beam.cc:6752; crawl-ref/source/message.cc:2267 |
+| source: but do no damage<br>EN:  but do no damage |  但没有造成伤害 |  但没有造成伤害 | keep | 零伤害时追加但未造成伤害，玩家缠绕与光束击中玩家/怪物三种上下文均适合。 | crawl-ref/source/actor.cc:796; crawl-ref/source/beam.cc:4377; crawl-ref/source/beam.cc:5768 |
+| source: but does no damage<br>EN:  but does no damage | 但没有造成伤害 | 但没有造成伤害 | adjust | 零伤害后缀本身准确且覆盖光束/风击/冰墙/冷空气；但共享terrain.cc两处不可见怪物直接插原始something，产生中文主句夹英文，应在显示端翻译该目标占位。；修后复核：墙冻与冷空气两个共享terrain目标均T_(something)，不可见身份不暴露；零伤害后缀本义准确。 | crawl-ref/source/beam.cc:4377; crawl-ref/source/beam.cc:5768; crawl-ref/source/spl-damage.cc:1019; crawl-ref/source/terrain.cc:2670; crawl-ref/source/terrain.cc:2717 |
+| source: closely<br>EN:  closely | 勉强 | 勉强 | keep | 未命中较接近档closely与barely都译勉强，句意成立但强度层次可润色区分。 | crawl-ref/source/attack.cc:761 |
+| source: completely<br>EN:  completely | 完全 | 完全 | keep | 大幅未命中档完全与未命中组成，程度正确。 | crawl-ref/source/attack.cc:759 |
+| source: completely resists.<br>EN:  completely resists. | 完全抵抗了。 | 完全抵抗了。 | keep | 火冷电酸毒负能量瘴气神圣污焰天谴等零伤害完全抵抗路径均读过，完全与抵抗语义准确。 | crawl-ref/source/beam.cc:1523; crawl-ref/source/beam.cc:1557; crawl-ref/source/beam.cc:1578; crawl-ref/source/beam.cc:1598; crawl-ref/source/beam.cc:1610; crawl-ref/source/beam.cc:1689; crawl-ref/source/beam.cc:1717; crawl-ref/source/beam.cc:1738; crawl-ref/source/beam.cc:1788; crawl-ref/source/beam.cc:1798; crawl-ref/source/beam.cc:1823 |
+| source: decays.<br>EN:  decays. | 腐烂了。 | 腐烂了。 | keep | 腐败攻击成功施加虚弱或汲取后腐烂，译文保留decay风味而未误说必死。 | crawl-ref/source/melee-attack.cc:1149 |
+| source: enters a blood-rage!<br>EN:  enters a blood-rage! | 进入了嗜血狂暴！ | 进入了嗜血狂暴！ | keep | 血怒攻击者已有强效时转狂暴，嗜血狂暴准确并与仅变强分支区别。 | crawl-ref/source/melee-attack.cc:4615 |
+| source: falls asleep!<br>EN:  falls asleep! | 睡着了！ | 睡着了！ | keep | 冬眠法术与致眠云都真正使怪物睡眠，睡着完成态适合两消费者。 | crawl-ref/source/beam.cc:6476; crawl-ref/source/cloud.cc:1448 |
+| source: for a moment.<br>EN:  for a moment. | ，持续了一瞬。 | ，持续了一瞬。 | keep | 仍能看见隐形目标时隐形视觉变化仅持续一瞬，短暂限定保留。 | crawl-ref/source/beam.cc:6151 |
+| source: from afar<br>EN:  from afar | 从远处 | 从远处 | keep | 怪物攻击距离大于一格时从远处，插入攻击主语之后作状语合适。 | crawl-ref/source/melee-attack.cc:3784 |
+| source: glows dangerously bright.<br>EN:  glows dangerously bright. | 发出危险的光芒。 | 发出危险的强光。 | adjust | 污染已存在时glows dangerously bright强调亮度，当前危险的光芒缺明亮程度，应为发出危险的强光。；修后复核：已有污染发光保留危险强光的明亮程度，首次发光分支未改。 | crawl-ref/source/cloud.cc:1334; crawl-ref/source/melee-attack.cc:742 |
+| source: grows more vulnerable to poison.<br>EN:  grows more vulnerable to poison. |  对毒素变得更加脆弱。 |  对毒素变得更加脆弱。 | keep | ENCH_POISON_VULN成功增加毒素易伤，对毒素更加脆弱准确。 | crawl-ref/source/beam.cc:6624 |
+| source: grows two more!<br>EN:  grows two more! | 又长出了两个！ | 又长出了两个！ | keep | 多头怪被斩首后在未达上限时长两个头，中文两个承接前句头部语境，数量正确。 | crawl-ref/source/melee-attack.cc:3353 |
+| source: is blinded.<br>EN:  is blinded. | 被致盲了。 | 被致盲了。 | keep | 射弹致盲成功后被致盲，实际状态与译文一致。 | crawl-ref/source/beam.cc:5340 |
+| source: is burned by acid!<br>EN:  is burned by acid! | 被酸液灼伤了！ | 被酸液灼伤了！ | keep | 攻击酸性防御者后攻击者被酸灼伤，施受者由消息主体提供，酸液和灼伤正确。 | crawl-ref/source/melee-attack.cc:3521 |
+| source: is burned by your cloak of flames.<br>EN:  is burned by your cloak of flames. | 被你的火焰斗篷灼伤了。 | 被你的火焰斗篷灼伤了。 | keep | 火焰披覆反伤攻击者，明确你的火焰斗篷为伤害来源。 | crawl-ref/source/melee-attack.cc:4822 |
+| source: is burned terribly!<br>EN:  is burned terribly! | 被严重烧伤了！ | 被严重烧伤了！ | keep | 火焰/岩浆对易伤怪物增伤时严重烧伤，程度和灼伤类型完整。 | crawl-ref/source/beam.cc:1540; crawl-ref/source/beam.cc:1779 |
+| source: is charmed!<br>EN:  is charmed! | 被魅惑了！ | 被魅惑了！ | keep | BEAM_CHARM成功添加魅惑或迷惑阵营效果，魅惑消息准确。 | crawl-ref/source/beam.cc:6504 |
+| source: is chilled terribly!<br>EN:  is chilled terribly! | 被严重冻伤了！ | 被严重冻伤了！ | keep | 寒冷及冰伤对易伤者加重时严重冻伤，与火焰/蒸汽区别。 | crawl-ref/source/beam.cc:1567; crawl-ref/source/beam.cc:1757 |
+| source: is covered in liquid fire!<br>EN:  is covered in liquid fire! | 被液态火焰覆盖了！ | 被液态火焰覆盖了！ | keep | 怪物黏火刚获得时被液态火焰覆盖，覆盖结果准确。 | crawl-ref/source/beam.cc:2130 |
+| source: is cursed with the promise of agony.<br>EN:  is cursed with the promise of agony. | 被诅咒承受痛苦的承诺。 | 被施加了预示剧痛的诅咒。 | adjust | 痛苦诅咒给予未来剧痛的预示，当前被诅咒承受痛苦的承诺语义和语法均不成立，应译被施加了预示剧痛的诅咒。；修后复核：剧痛预示诅咒表达未来剧痛威胁，不再出现承受痛苦的承诺病句。 | crawl-ref/source/beam.cc:6306 |
+| source: is doused terribly!<br>EN:  is doused terribly! | 被严重浇透了！ | 被严重浇透了！ | keep | 水伤易伤怪物被严重浇透，保留水浸和强烈程度，不误称着火。 | crawl-ref/source/beam.cc:1549 |
+| source: is drained terribly!<br>EN:  is drained terribly! | 被严重汲取了！ | 被严重汲取了！ | keep | 负能量增伤时严重汲取，实际汲取行为和严重程度准确。 | crawl-ref/source/beam.cc:1704 |
+| source: is electrocuted!<br>EN:  is electrocuted! | 被电击了！ | 被电击了！ | keep | 电流/雷击/眩晕矢易伤时电击，中文没有误作纯麻痹。 | crawl-ref/source/beam.cc:1588 |
+| source: is empowered.<br>EN:  is empowered. | 被增强了。 | 被增强了。 | keep | 亡灵被盟友火炬光增强与怪物法术增强两处共用被增强，语义适合两者。 | crawl-ref/source/beam.cc:5351; crawl-ref/source/mon-cast.cc:7325 |
+| source: is filled with an inner flame.<br>EN:  is filled with an inner flame. | 被内在火焰充满了。 | 体内充满了内焰。 | adjust | 实际Inner Flame附魔应采用内焰词根，内在火焰直译生硬且与法术/状态名脱节，建议体内充满了内焰。；修后复核：内焰术语正确，怪物体内充满内焰，主语不是火焰自己。 | crawl-ref/source/beam.cc:6564 |
+| source: is filled with an intense inner flame!<br>EN:  is filled with an intense inner flame! | 被强烈的内在火焰充满！ | 体内充满了强烈的内焰！ | adjust | 大体型怪物较强Inner Flame附魔须保留intense，并使用内焰，建议体内充满了强烈的内焰。；修后复核：强烈内焰保留大体型对应intense，未与普通内焰混同。 | crawl-ref/source/beam.cc:6563 |
+| source: is firmly anchored in space.<br>EN:  is firmly anchored in space. | 被牢牢固定在空间中。 | 被牢牢固定在空间中。 | keep | 空间锚定成功时牢牢固定在空间，机制对象与强化感觉准确。 | crawl-ref/source/beam.cc:6576 |
+| source: is flash-frozen.<br>EN:  is flash-frozen. | 被瞬间冻结了。 | 被瞬间冻结了。 | keep | 冰霜射弹及寒冷能力使怪物瞬冻，两消费者的瞬间冻结一致。 | crawl-ref/source/beam.cc:5290; crawl-ref/source/mon-cast.cc:7934 |
+| source: is frozen into a solid block of ice!<br>EN:  is frozen into a solid block of ice! | 被冻成了一整块冰！ | 被冻成了一整块冰！ | keep | 致死冻结前封入整块冰，solid block与冻结形象保留。 | crawl-ref/source/beam.cc:5145 |
+| source: is haunted by guilt!<br>EN:  is haunted by guilt! | 被罪恶感折磨着！ | 被罪恶感折磨着！ | keep | 神器和群体anguish使罪恶感困扰目标，罪恶感与折磨风味完整。 | crawl-ref/source/art-func.h:146; crawl-ref/source/beam.cc:1983 |
+| source: is healed by the life force!<br>EN:  is healed by the life force! | 被生命力治愈了！ | 被生命力治愈了！ | keep | 吸取生命后怪物施法者获得治疗，生命力治愈的来源和结果完整。 | crawl-ref/source/beam.cc:2376 |
+| source: is infested!<br>EN:  is infested! | 被寄生了！ | 被寄生了！ | keep | Infestation状态附着目标，寄生不误作普通感染或生成立即死亡。 | crawl-ref/source/beam.cc:6693 |
+| source: is on fire!<br>EN:  is on fire! | 着火了！ | 着火了！ | keep | 可燃灌木受火易伤时着火，和其他生物烧伤不同的植物表现保留。 | crawl-ref/source/beam.cc:1537 |
+| source: is paralysed.<br>EN:  is paralysed. | 被麻痹了。 | 被麻痹了。 | keep | 眩晕矢电击造成短暂麻痹，中文麻痹术语正确。 | crawl-ref/source/beam.cc:5329 |
+| source: is pinned in place!<br>EN:  is pinned in place! | 被钉在了原地！ | 被钉在了原地！ | keep | 墓爪等射弹束缚目标原地，被钉在原地保留移动限制。 | crawl-ref/source/beam.cc:5356 |
+| source: is poisoned.<br>EN:  is poisoned. | 中毒了。 | 中毒了。 | keep | 初次或仍增长的毒素层数被报告中毒，状态准确。 | crawl-ref/source/beam.cc:2083 |
+| source: is scalded terribly!<br>EN:  is scalded terribly! | 被严重烫伤了！ | 被严重烫伤了！ | keep | 蒸汽对火易伤目标造成严重烫伤，区别火焰烧伤。 | crawl-ref/source/beam.cc:1542 |
+| source: is struck blind.<br>EN:  is struck blind. | 被致盲了。 | 被致盲了。 | keep | 近战致盲攻击对怪物真正施加盲目，中文被致盲准确。 | crawl-ref/source/melee-attack.cc:572 |
+| source: is struck by your quills.<br>EN:  is struck by your quills. | 被你的棘刺击中。 | 被你的棘刺击中。 | keep | 刺毛形态反击攻击者，棘刺击中保留玩家归属与攻击来源；棘刺/刺毛可按已定形态词根统一为建议。 | crawl-ref/source/melee-attack.cc:4943 |
+| source: is struck by your spines.<br>EN:  is struck by your spines. | 被你的尖刺击中。 | 被你的尖刺击中。 | keep | 玩家尖刺突变反伤，尖刺与归属正确，并与quills形态分支区分。 | crawl-ref/source/melee-attack.cc:4930 |
+| source: is unaffected.<br>EN:  is unaffected. | 不受影响。 | 不受影响。 | keep | 群体附魔/光束/怪物能力/飞镖/变形对免疫目标无效，所有真实调用读过，不受影响作为通用无效消息适合。 | crawl-ref/source/beam.cc:1901; crawl-ref/source/beam.cc:1909; crawl-ref/source/beam.cc:1919; crawl-ref/source/beam.cc:5003; crawl-ref/source/beam.cc:6613; crawl-ref/source/mon-cast.cc:6246; crawl-ref/source/ranged-attack.cc:568; crawl-ref/source/ranged-attack.cc:732; crawl-ref/source/spl-monench.cc:52 |
+| source: is very cold.<br>EN:  is very cold. | 感到极寒。 | 感到极寒。 | keep | 寒冷护甲反击使怪物极寒，强烈寒冷风味与实际冷伤一致。 | crawl-ref/source/melee-attack.cc:4855 |
+| source: looks as sick as possible!<br>EN:  looks as sick as possible! | 看起来病得不能再病了！ | 看起来病得不能再病了！ | keep | 毒素达到最大层数时病得不能再病，保留as possible上限而非普通生病。 | crawl-ref/source/beam.cc:2079 |
+| source: looks drowsy...<br>EN:  looks drowsy... | 看起来昏昏欲睡…… | 看起来昏昏欲睡…… | keep | 冬眠先进入drowsy阶段时昏昏欲睡，不误称已睡着。 | crawl-ref/source/beam.cc:6336 |
+| source: looks even sicker.<br>EN:  looks even sicker. | 看起来病得更重了。 | 看起来病得更重了。 | keep | 已有中毒层数增加时病得更重，比较方向正确。 | crawl-ref/source/beam.cc:2081 |
+| source: looks frightened!<br>EN:  looks frightened! | 看起来很害怕！ | 看起来很害怕！ | keep | 群体恐惧与怪物恐惧法术两处真正使怪物害怕，看起来害怕适合。 | crawl-ref/source/beam.cc:1981; crawl-ref/source/mon-cast.cc:6419 |
+| source: looks invigorated.<br>EN:  looks invigorated. | 看起来更有活力了。 | 看起来更有活力了。 | keep | 反魔法攻击吸取非施法目标后看起来更有活力，和施法目标更强烈分支相对应。 | crawl-ref/source/melee-attack.cc:4408 |
+| source: looks more vulnerable to fire.<br>EN:  looks more vulnerable to fire. | 看起来对火焰更加脆弱。 | 看起来对火焰更加脆弱。 | keep | 火焰易伤增加使怪物对火焰更加脆弱，比较关系正确。 | crawl-ref/source/beam.cc:4194 |
+| source: looks very invigorated.<br>EN:  looks very invigorated. | 看起来精力充沛。 | 看起来精力充沛。 | keep | 反魔法攻击施法目标后更有活力的强化档，精力充沛较普通有活力表达强档。 | crawl-ref/source/melee-attack.cc:4407 |
+| source: melts!<br>EN:  melts! | 融化了！ | 融化了！ | keep | 冰质怪物火/岩浆易伤时融化，两处均是融冰形象。 | crawl-ref/source/beam.cc:1533; crawl-ref/source/beam.cc:1774 |
+| source: near<br>EN:  near | 附近 | 附近 | adjust | 目标本身可攻击但附近有不当目标时追加near；当前把附近放目标之前，实际组合成攻击附近[怪物]，空间关系颠倒，应完整表达在该目标附近攻击。；修后复核：near完整父句明确在不当目标附近进行动作，不把附近误修饰目标选择。 | crawl-ref/source/fight.cc:1617; crawl-ref/source/fight.cc:1608 |
+| source: partially resists.<br>EN:  partially resists. | 部分抵抗了。 | 部分抵抗了。 | keep | 毒箭、冰、岩浆和虚弱法术均部分抵抗，保留未完全抵抗这一程度。 | crawl-ref/source/beam.cc:1640; crawl-ref/source/beam.cc:1752; crawl-ref/source/beam.cc:1767; crawl-ref/source/spl-monench.cc:175 |
+| source: prevents your attack.<br>EN:  prevents your attack. | 阻止了你的攻击。 | 阻止了你的攻击。 | keep | 依莱维伦阻止不当攻击，神祇主语由simple_god_message提供，阻止你的攻击完整。 | crawl-ref/source/melee-attack.cc:1871 |
+| source: seems to be slow for longer.<br>EN:  seems to be slow for longer. | 似乎会减速更久。 | 似乎会减速更久。 | keep | 已有减速再施加时持续更久，中文明确时间延长而非进一步减速。 | crawl-ref/source/beam.cc:2049 |
+| source: seems to grow stronger.<br>EN:  seems to grow stronger. | 似乎变得更强了。 | 似乎变得更强了。 | keep | 怪物强效初次获得时似乎更强，保留观察性语气。 | crawl-ref/source/beam.cc:6383 |
+| source: seems to slow down.<br>EN:  seems to slow down. | 似乎减速了。 | 似乎减速了。 | keep | 毒窒与减速法术初次添加slow时似乎减速，与续时消息有别。 | crawl-ref/source/beam.cc:2050; crawl-ref/source/spl-monench.cc:121 |
+| source: seems to speed up.<br>EN:  seems to speed up. | 似乎加速了。 | 似乎加速了。 | keep | 光束和卡牌成功给怪物加速时似乎加速，方向一致。 | crawl-ref/source/beam.cc:6371; crawl-ref/source/decks.cc:1127 |
+| source: shatters and turns to gold!<br>EN:  shatters and turns to gold! | 碎裂成了黄金！ | 碎裂成了黄金！ | keep | 哥萨戈冻结致死转金时碎裂并成为黄金，中文碎裂成黄金表达两个相继结果。 | crawl-ref/source/beam.cc:5143 |
+| source: shudders as magic cascades through %s%s<br>EN:  shudders as magic cascades through %s%s | 震颤着，魔力涌过%s%s | 震颤着，魔力涌过%s%s | keep | flux污染爆发时魔力涌过怪物并震颤，宾格代词与强度标点完整。 | crawl-ref/source/melee-attack.cc:723 |
+| source: struggles to breathe.<br>EN:  struggles to breathe. | 艰难地呼吸着。 | 艰难地呼吸着。 | keep | 箭毒使怪物呼吸困难并受毒伤，艰难呼吸与窒息风味正确。 | crawl-ref/source/beam.cc:2043 |
+| source: suddenly seems more agile.<br>EN:  suddenly seems more agile. | 突然变得更加敏捷了。 | 突然变得更加敏捷了。 | keep | 敏捷附魔成功时突然更加敏捷，时间与强化方向准确。 | crawl-ref/source/beam.cc:6636 |
+| source: suddenly seems more resistant.<br>EN:  suddenly seems more resistant. | 突然变得更加抗性了。 | 突然显得抗性更强了。 | adjust | 更加抗性把名词抗性直接作形容词，中文不成立；建议突然显得抗性更强了。；修后复核：抗性更强是自然谓语，不再把抗性名词直接当更加抗性。 | crawl-ref/source/beam.cc:6668 |
+| source: surges with doubled vitality!<br>EN:  surges with doubled vitality! | 涌动着双倍活力！ | 涌动着双倍活力！ | keep | doubled vigour给予双倍活力，双倍数值与涌动感完整。 | crawl-ref/source/beam.cc:6392 |
+| source: tastes blood and grows stronger!<br>EN:  tastes blood and grows stronger! | 尝到鲜血，变得更强了！ | 尝到鲜血，变得更强了！ | keep | 血怒攻击者未强效时尝血后变强，两动作和顺序保留。 | crawl-ref/source/melee-attack.cc:4620 |
+| source: this attack would place you under penance!<br>EN:  This attack would place you under penance! | 这次攻击会让你受到惩罚！ | 这次攻击会使你受到惩戒！ | adjust | penance警告适用于神祇违禁攻击，应使用当前惩戒术语而不是泛称惩罚，建议这次攻击会使你受到惩戒。；修后复核：违禁攻击可能受惩戒，警告位于完整确认后，保留条件性。 | crawl-ref/source/fight.cc:1536; crawl-ref/source/fight.cc:1620 |
+| source: this would place you under penance!<br>EN:  This would place you under penance! |  这会让你遭受苦修！ | 这会使你受到惩戒！ | adjust | 与78同类违禁目标确认，却泛用自我牺牲语境苦修，当前调用可因攻击神祇保护对象触发，应为这会使你受到惩戒。；修后复核：共享禁忌攻击警告用惩戒，不误入自我牺牲苦修语境。 | crawl-ref/source/beam.cc:8028; crawl-ref/source/fight.cc:1702 |
+| source: venom grows more potent.<br>EN:  venom grows more potent. | 毒液变得更加致命了。 | 毒液变得更加致命了。 | keep | 集中毒液使毒更强时消息使用怪物所有格，毒液更加致命保留毒性强化。 | crawl-ref/source/beam.cc:6720 |
+| source: with %s<br>EN:  with %s | （%s） | （%s） | keep | 混沌光束显示实际伤害类别的括注，括号替代with不改变类型关系；_beam_type_name提供显示译文。 | crawl-ref/source/beam.cc:4375; crawl-ref/source/beam.cc:5766 |
+| source: with a divine shield<br>EN:  with a divine shield |  借助神圣护盾 |  借助神圣护盾 | keep | 远程格挡由神圣护盾完成时借助神圣护盾，名称与原因正确。 | crawl-ref/source/ranged-attack.cc:200 |
+| source: with an invisible shield<br>EN:  with an invisible shield | 用隐形的盾牌 | 用隐形的盾牌 | keep | 无实体盾牌的远程反射分支用隐形盾，动作工具关系成立。 | crawl-ref/source/ranged-attack.cc:202 |
+| source: wounds heal themselves!<br>EN:  wounds heal themselves! | 伤口自行愈合了！ | 伤口自行愈合了！ | keep | 治疗使目标满HP时伤口自行愈合，保留自身伤口和完全修复结果。 | crawl-ref/source/beam.cc:6417 |
+| source: writhes in agony!<br>EN:  writhes in agony! | 痛苦地扭动着！ | 痛苦地扭动着！ | keep | 神圣/污焰易伤导致痛苦扭动，与抵抗分支对比正确。 | crawl-ref/source/beam.cc:1740 |
+| source:!<br>EN: ! | ！ | ！ | keep | 伤害强度标点、隐形和施法风险共用叹号，中文全角叹号表达同一强调。 | crawl-ref/source/attack.cc:747; crawl-ref/source/beam.cc:6152; crawl-ref/source/spl-cast.cc:1353 |
+| source:%1$s %2$s healed.<br>EN: %1$s %2$s healed. | <br>%1$s%2$.0s恢复了生命值。 | <br>%1$s%2$.0s恢复了生命值。 | keep | 邪恶献祭治疗可见目标，are纯系动词不在中文显示，目标生命恢复完整。 | crawl-ref/source/beam.cc:2341 |
+| source:%1$s %2$s life force from %3$s%4$s<br>EN: %1$s %2$s life force from %3$s%4$s | <br>%1$s从%3$s身上%2$.0s汲取了生命力%4$s | <br>%1$s从%3$s身上%2$.0s汲取了生命力%4$s | keep | 吸血光束施法者从受害者汲取生命力，draw纯词形被固定汲取吸收，施受者与标点完整。 | crawl-ref/source/beam.cc:2354 |
+| source:%1$s %2$s%3$s %4$s%5$s%6$s%7$s%8$s<br>EN: %1$s %2$s%3$s %4$s%5$s%6$s%7$s%8$s | %1$s%7$s%2$s%3$s了%4$s%5$s%6$s%8$s | %1$s%7$s%2$s%3$s了%4$s%5$s%6$s%8$s | keep | 怪物命中模板把远处/武器描述移到动词前，保留潜行、对象、电击、调试与强度槽；个别随机动词自身无法带此宾语另有依赖卡。 | crawl-ref/source/melee-attack.cc:3853 |
+| source:%1$s fails to defend %2$s.<br>EN: %1$s fails to defend %2$s. | %1$s未能保护%2$s。 | %1$s未能保护%2$s。 | keep | 刺击未察觉目标未能自卫，主语名与反身代词组成自然，失败方向准确。 | crawl-ref/source/attack.cc:792 |
+| source:%s %s %s but do no damage.<br>EN: %s %s %s but do no damage. | %s%s了%s，但没有造成伤害。 | %s%s了%s，但没有造成伤害。 | keep | 玩家近战命中零伤害，攻击者/动词/目标参数角色正确；动词取实际显示译文。 | crawl-ref/source/melee-attack.cc:977 |
+| source:%s %s %s but does no damage.<br>EN: %s %s %s but does no damage. | %s%s了%s，但没有造成伤害。 | %s%s了%s，但没有造成伤害。 | keep | 怪物近战命中零伤害，和91仅英语第三人称词形不同，中文同译恰当。 | crawl-ref/source/melee-attack.cc:977 |
+| source:%s %s %s ground!<br>EN: %s %s %s ground! | %s%s了%s阵地！ | %s%s了%s阵地！ | keep | 抗践踏时hold译死死守住并接所有格阵地，组成守住了自己的阵地，未出现英语are词尾。 | crawl-ref/source/melee-attack.cc:5181 |
+| source:%s %s %s last head off!<br>EN: %s %s %s last head off! | %1$s%2$.0s砍下了%3$s最后一个头！ | %1$s%2$.0s砍下了%3$s最后一个头！ | adjust | 砍最后一个头一律忽略语义动词；decapitate在爪击时选rip/tear/claw，当前硬编码砍下把爪撕误成刀砍，应保留撕/砍的动作区别。；修后复核：七个撕/切动作均实际传入最后头模板槽2，目标属格与最后一个头保留。 | crawl-ref/source/melee-attack.cc:3467; crawl-ref/source/melee-attack.cc:3450 |
+| source:%s %s %s vigour!<br>EN: %s %s %s vigour! | %1$s汲取了%3$s精力！ | %1$s汲取了%3$s精力！ | keep | 吸取目标活力，drain已由固定汲取表达，英语词形槽省略不丢语义。 | crawl-ref/source/attack.cc:690 |
+| source:%s %s %s!<br>EN: %s %s %s! | %s%s了%s！ | %s%s了%s！ | keep | 激怒和烧伤两种附加攻击均经verb_for_display翻译后组句，施受者和动作完整。 | crawl-ref/source/melee-attack.cc:4320; crawl-ref/source/melee-attack.cc:4509 |
+| source:%s %s %s%s<br>EN: %s %s %s%s | %s%s了%s%s | %s%s了%s%s | keep | 法杖冷/火/炼金/塑能及怪物冻、电、圣污焰、水攻击，动词经过显示翻译，目标与伤害强度槽齐全。 | crawl-ref/source/melee-attack.cc:3558; crawl-ref/source/melee-attack.cc:3572; crawl-ref/source/melee-attack.cc:3579; crawl-ref/source/melee-attack.cc:3595; crawl-ref/source/melee-attack.cc:4125; crawl-ref/source/melee-attack.cc:4146; crawl-ref/source/melee-attack.cc:4347; crawl-ref/source/melee-attack.cc:4365; crawl-ref/source/melee-attack.cc:4546 |
+| source:%s %s %s%s%s<br>EN: %s %s %s%s%s | %s%s了%s%s%s | %s%s了%s%s%s | adjust | 玩家辅助攻击组句正确，但共享actor::constriction_damage_defender在玩家普通缠绕路径直接设置attacker_desc为英文You，最终出现You缠绕了目标，需在显示槽翻译主语。；修后复核：actor玩家普通缠绕主语T_(You)=你，原五槽命中句可复用，未把actor身份改中文。 | crawl-ref/source/actor.cc:830; crawl-ref/source/melee-attack.cc:2851; crawl-ref/source/actor.cc:824 |
+| source:%s %s afflicted by dizzying energies!<br>EN: %s %s afflicted by dizzying energies! | %s%s令人眩晕的能量折磨！ | %s%s令人眩晕的能量折磨！ | keep | are上下文实际被，形成被令人眩晕的能量折磨，主被动与致晕来源完整。 | crawl-ref/source/melee-attack.cc:4221 |
+| source:%s %s as negative energy consumes %s%s<br>EN: %s %s as negative energy consumes %s%s | %1$s因负能量吞噬%3$s而%2$s%4$s | %1$s因负能量吞噬%3$s而%2$s%4$s | keep | 负能量法杖吞噬目标而枯萎，位置语法把因果放前，目标/代词与强度保留。 | crawl-ref/source/melee-attack.cc:3587 |
+| source:%s %s backwards!<br>EN: %s %s backwards! | %s%s向后退去！ | %s%s向后退去！ | keep | 践踏使受害者滑退、踉跄或被推，实际分别用trample slip、stumble、are shoved显示词，向后方向正确。 | crawl-ref/source/melee-attack.cc:5200 |
+| source:%s %s electrocuted%s<br>EN: %s %s electrocuted%s | %s%s电击了%s | %s%s电击了%s | keep | 空气法杖使受害者被电击，are上下文译被，不误作主动电击他人。 | crawl-ref/source/melee-attack.cc:3552 |
+| source:%s %s engulfed in a cloud of dizzying spores!<br>EN: %s %s engulfed in a cloud of dizzying spores! | %s%s一团眩晕孢子云吞没！ | %s%s一团眩晕孢子云吞没！ | keep | 混乱孢子攻击吞没受害者，被字来自are，眩晕能量与孢子云完整。 | crawl-ref/source/melee-attack.cc:4211 |
+| source:%s %s engulfed in a cloud of soporific spores!<br>EN: %s %s engulfed in a cloud of soporific spores! | %s%s一团催眠孢子云吞没！ | %s%s一团催眠孢子云吞没！ | keep | 催眠孢子攻击吞没受害者，和眩晕孢子分支区分并保留被动。 | crawl-ref/source/melee-attack.cc:4634 |
+| source:%s %s engulfed in flames%s<br>EN: %s %s engulfed in flames%s | %s%s火焰吞没%s | %s%s火焰吞没%s | keep | 火攻击使受害者被火焰吞没，are被与强度标点组成完整。 | crawl-ref/source/melee-attack.cc:4105 |
+| source:%s %s flashes viciously!<br>EN: %s %s flashes viciously! | %s%s猛烈闪光！ | %s%s猛烈闪光！ | keep | 撕裂武器发动时攻击者所有格加武器名猛烈闪光，所有格关系正确。 | crawl-ref/source/melee-attack.cc:1984 |
+| source:%s %s held in place!<br>EN: %s %s held in place! | %s%s紧紧束缚在原地！ | %s%s紧紧束缚在原地！ | keep | 已被缠绕导致无法受践踏位移时被束缚原地，are被与held组合自然。 | crawl-ref/source/melee-attack.cc:5175 |
+| source:%s %s one of %s heads off!<br>EN: %s %s one of %s heads off! | %1$s%2$.0s砍下了%3$s一个头！ | %1$s%2$.0s砍下了%3$s一个头！ | adjust | 多个头时也统一砍下而省略rip/tear/claw等语义动词，与94同缺陷，应保留爪撕和切砍区别。；修后复核：同七动作传入多头模板，保留其中一个头和撕/切区别，不固定砍下。 | crawl-ref/source/melee-attack.cc:3487; crawl-ref/source/melee-attack.cc:3450 |
+| source:%s %s skewered by barbed spikes.<br>EN: %s %s skewered by barbed spikes. | %s%s倒刺刺穿。 | %s%s倒刺刺穿。 | keep | 倒刺攻击使受害者被倒刺刺穿，are被与barbed spikes准确。 | crawl-ref/source/melee-attack.cc:4244 |
+| source:%s %s struck by %s %s.<br>EN: %s %s struck by %s %s. | %s%s%s%s击中。 | %s%s%s%s击中。 | keep | 攻击者被防御者荆棘/尖刺击中，四参数分别受害者、被、所有者、刺，角色完整。 | crawl-ref/source/melee-attack.cc:4966 |
+| source:%s %s vitality from %s injuries!<br>EN: %s %s vitality from %s injuries! | %s%s了%s伤口中的生命力！ | %s%s了%s伤口中的生命力！ | keep | 吸血攻击从目标伤口汲取生命力，draw上下文汲取与所有格伤口组成完整。 | crawl-ref/source/melee-attack.cc:4178 |
+| source:%s %s yanked forward by the %s.<br>EN: %s %s yanked forward by the %s. | %1$s被%3$s向前猛拉%2$.0s。 | %1$s被%3$s向前猛拉%2$.0s。 | keep | 光束拉动目标向前，中文只抑制英语are，保留光束作为施事及向前猛拉。 | crawl-ref/source/beam.cc:5463 |
+| source:%s %s%s<br>EN: %s %s%s | %1$s%2$s%3$s | %1$s%2$s%3$s | keep | 隐形消息主语加闪烁消失方式与一瞬/叹号，短暂与真正不可见的两情况完整。 | crawl-ref/source/beam.cc:6148 |
+| source:%s absorbs the %s as it strikes your slime.<br>EN: %s absorbs the %s as it strikes your slime. | %s在%s击中你的粘液时将其吸收了。 | %s在%s击中你的粘液时将其吸收了。 | keep | 吉瓦在黏液被击中时吸收光束，神名、投射物和触发时点角色正确；粘/黏可统一为建议。 | crawl-ref/source/beam.cc:5562 |
+| source:%s and strikes %s%s<br>EN: %s and strikes %s%s | %s落下，击中了%s%s | %s，并击中了%s%s | adjust | airstrike_intensity_display只说明空气微弱/普通/剧烈扭曲，当前%s落下凭空增加向下落的动作；建议%s，并击中了%s%s，保留扭曲和命中。；修后复核：空气扭曲强度描述后并击中目标，删去无源落下动作；两处近战分支同核。 | crawl-ref/source/melee-attack.cc:1036; crawl-ref/source/melee-attack.cc:4728; crawl-ref/source/spl-damage.cc:960 |
+| source:%s appears from out of thin air!<br>EN: %s appears from out of thin air! | %s凭空出现了！ | %s凭空出现了！ | keep | 光束和恢复可见的猪形态怪物均可凭空出现，article_a不引入中文冠词。 | crawl-ref/source/beam.cc:723; crawl-ref/source/dactions.cc:496 |
+| source:%s appears from out of your range of vision.<br>EN: %s appears from out of your range of vision. | %s从你的视野之外出现了。 | %s从你的视野之外出现了。 | keep | 光束从可见范围外进入视野，出现方向与视野边界完整。 | crawl-ref/source/beam.cc:1437 |
+| source:%s becomes entangled by vines.<br>EN: %s becomes entangled by vines. | %s被藤蔓缠住了。 | %s被藤蔓缠住了。 | keep | 缠绕铭印使目标被藤蔓缠住，媒介与结果正确。 | crawl-ref/source/attack.cc:1419 |
+| source:%s block %s attack.<br>EN: %s block %s attack. | %s格挡了%s攻击。 | %s格挡了%s攻击。 | keep | 玩家或复数目标格挡攻击，用自己的/攻击者所有格修饰攻击，施受者关系正确。 | crawl-ref/source/melee-attack.cc:335 |
+| source:%s blocks %s attack.<br>EN: %s blocks %s attack. | %s格挡了%s攻击。 | %s格挡了%s攻击。 | keep | 单数怪物格挡消息与119同义，中文不需英语词形变化。 | crawl-ref/source/melee-attack.cc:336 |
+| source:%s blocks the %s with %s %s... and reflects it back!<br>EN: %s blocks the %s with %s %s... and reflects it back! | <br>%s用%s%s格挡了%s……并将其反射了回去！ | <br>%s用%s%s格挡了%s……并将其反射了回去！ | adjust | 反射四参数原顺序为怪物、光束、所有格、盾牌，现中文顺序未编号却改成怪物用光束所有格格挡盾牌，工具与对象错位，须使用位置参数。；修后复核：新的四编号槽模板已核实际actor/beam/possessive/shield，中文工具与被挡对象正确；原未编号键兼容保留。 | crawl-ref/source/beam.cc:5496 |
+| source:%s blocks the %s.<br>EN: %s blocks the %s. | %s格挡了%s。 | %s格挡了%s。 | keep | 怪物普通格挡光束，主体和光束宾语正确。 | crawl-ref/source/beam.cc:5518 |
+| source:%s convulses%s<br>EN: %s convulses%s | %s抽搐了%s | %s抽搐了%s | keep | 神圣/污焰造成抽搐，convulse与强度标点保留，两伤害类型均适合。 | crawl-ref/source/attack.cc:1223; crawl-ref/source/attack.cc:1245 |
+| source:%s crush %s against the %s%s<br>EN: %s crush %s against the %s%s | %s把%s撞到了%s上%s | %s把%s撞到了%s上%s | keep | 玩家把目标撞到墙/地形上，raw_feature_description已提供显示译文，受撞对象和障碍位置完整。 | crawl-ref/source/melee-attack.cc:690 |
+| source:%s crushes %s against the %s%s<br>EN: %s crushes %s against the %s%s | %s把%s撞到了%s上%s | %s把%s撞到了%s上%s | keep | 怪物把目标撞到障碍上，与124仅英语人称不同，中文同译恰当。 | crawl-ref/source/melee-attack.cc:682 |
+| source:%s drags %s backwards!<br>EN: %s drags %s backwards! | %s将%s向后拖拽！ | %s将%s向后拖拽！ | keep | 攻击者把目标向后拖，方向为相对受害者后方，drag动作保留。 | crawl-ref/source/melee-attack.cc:5253 |
+| source:%s drains %s %s.<br>EN: %s drains %s %s. | %s吸取了%s%s。 | %s吸取了%s%s。 | keep | 反魔法攻击取法力或力量显示上下文，吸取目标的该资源，三参数关系完整。 | crawl-ref/source/melee-attack.cc:4392 |
+| source:%s drains %s%s<br>EN: %s drains %s%s | %s吸取了%s%s | %s吸取了%s%s | keep | 汲取铭印吸取目标并报告强度，动作和目标保留，未把汲取误称普通近战伤害。 | crawl-ref/source/attack.cc:678 |
+| source:%s draws vitality from your wounds!<br>EN: %s draws vitality from your wounds! | %s从你的伤口中汲取生命力！ | %s从你的伤口中汲取生命力！ | keep | 受害者是玩家时攻击者从玩家伤口汲生命，施受关系准确。 | crawl-ref/source/attack.cc:1310 |
+| source:%s fire resistance burns away.<br>EN: %s fire resistance burns away. | %s火焰抗性被烧尽了。 | %s火焰抗性被烧尽了。 | keep | 火焰烧去目标抗火，使用所有格名字加火焰抗性，降低方向正确。 | crawl-ref/source/beam.cc:5302 |
+| source:%s fire resistance is stripped away!<br>EN: %s fire resistance is stripped away! | %s火焰抗性被剥离了！ | %s火焰抗性被剥离了！ | keep | 近战火易伤剥离目标抗火，所有格与剥离动作准确。 | crawl-ref/source/melee-attack.cc:3291 |
+| source:%s forbids you from animating such a foul weapon!<br>EN: %s forbids you from animating such a foul weapon! | %s禁止你赋予如此污秽的武器生命！ | %s禁止你赋予如此污秽的武器生命！ | keep | 神祇禁止使污秽武器获得生命，forbids与animate含义完整。 | crawl-ref/source/beam.cc:317 |
+| source:%s grab %s.<br>EN: %s grab %s. | <br>%s抓住了%s。 | <br>%s抓住了%s。 | keep | 复数/玩家缠绕攻击抓住目标，完成态与对象正确。 | crawl-ref/source/melee-attack.cc:4434 |
+| source:%s grabs %s.<br>EN: %s grabs %s. | <br>%s抓住了%s。 | <br>%s抓住了%s。 | keep | 单数怪物抓住目标，和133同译不损失人称信息。 | crawl-ref/source/melee-attack.cc:4440 |
+| source:%s is blasted smooth%s<br>EN: %s is blasted smooth%s | %s被轰平了%s | %s被轰平了%s | keep | 心智爆破对发光橙脑的光滑脑笑话译轰平，保留光滑化及爆击夸张。 | crawl-ref/source/beam.cc:6318 |
+| source:%s is completely immune to your confusing touch!<br>EN: %s is completely immune to your confusing touch! | %s完全免疫你的混乱之触！ | %s完全免疫你的混乱之触！ | keep | 完全免疫混乱之触时消息含完全与法术名，否定效果正确。 | crawl-ref/source/attack.cc:1384 |
+| source:%s is dispelled%s<br>EN: %s is dispelled%s | %s被驱散了%s | %s被驱散了%s | keep | 驱散亡灵实际对亡灵造成伤害而被驱散，中文不错误声称已彻底消灭。 | crawl-ref/source/beam.cc:6244 |
+| source:%s is engulfed in spores.<br>EN: %s is engulfed in spores. | %s 被孢子吞没了。 | %s 被孢子吞没了。 | keep | 孢子辅助攻击使目标被孢子吞没并虚弱，吞没媒介正确；空格属非语义排版。 | crawl-ref/source/melee-attack.cc:1062 |
+| source:%s is healed.<br>EN: %s is healed. | %s被治愈了。 | %s被治愈了。 | keep | 吸血攻击者与成对怪物联动治疗均有HP恢复，被治愈适合两者，不承诺满HP。 | crawl-ref/source/attack.cc:1315; crawl-ref/source/mon-death.cc:1694 |
+| source:%s is seared by the foul flame within you%s<br>EN: %s is seared by the foul flame within you%s | %s被你体内的污秽之焰灼烧%s | %s被你体内的污秽之焰灼烧%s | keep | 攻击者被玩家体内污秽之焰灼伤，来源在玩家体内与受伤对象完整。 | crawl-ref/source/melee-attack.cc:5004 |
+| source:%s is struck blind by the light of %s divine shield.<br>EN: %s is struck blind by the light of %s divine shield. | %s被%s神圣护盾的光芒致盲了。 | %s被%s神圣护盾的光芒致盲了。 | keep | 神圣护盾反射光使攻击者失明，护盾所有者与光芒致盲关系正确。 | crawl-ref/source/melee-attack.cc:352 |
+| source:%s life force is offered up.<br>EN: %s life force is offered up. | %s生命力被献祭了。 | %s生命力被献祭了。 | keep | 邪恶献祭献出受害者生命力，生命力所有格与被献祭动作正确。 | crawl-ref/source/beam.cc:2327 |
+| source:%s might hit %s%s.%s %s<br>EN: %s might hit %s%s.%s %s | %s可能击中%s%s。%s %s | %s可能击中%s%s。%s %s | keep | 来源可能击中不当目标，追加其他目标数、惩戒与后续问句，各参数保留；penance措辞随共享79修复。 | crawl-ref/source/fight.cc:1697 |
+| source:%s mind is blasted%s<br>EN: %s mind is blasted%s | %s精神受到冲击%s | %s精神受到冲击%s | keep | 单头目标心智被冲击，所有格与精神受冲击完整。 | crawl-ref/source/beam.cc:6323 |
+| source:%s minds are blasted%s<br>EN: %s minds are blasted%s | %s精神受到冲击%s | %s精神受到冲击%s | keep | 多头目标多个心智被冲击，中文精神集合表达无需复数，和144同译合理。 | crawl-ref/source/beam.cc:6322 |
+| source:%s orb emits a pulse of dizzying energy.<br>EN: %s orb emits a pulse of dizzying energy. | %s球体释放出一阵令人眩晕的能量脉冲。 | %s球体释放出一阵令人眩晕的能量脉冲。 | keep | 镶有宝珠的防御者释放致眩脉冲，宝珠归属、能量与脉冲完整。 | crawl-ref/source/melee-attack.cc:773 |
+| source:%s pins %s in place with %s attack.<br>EN: %s pins %s in place with %s attack. | %1$s用%3$s攻击将%2$s束缚在原地。 | %1$s用%3$s攻击将%2$s束缚在原地。 | keep | 攻击者用自己的攻击把另一目标钉住，位置参数保留自身所有格攻击及受束缚目标。 | crawl-ref/source/fight.cc:436 |
+| source:%s poisons %s!<br>EN: %s poisons %s! | %s使%s中毒了！ | %s使%s中毒了！ | keep | 近战毒素攻击使目标中毒，施毒者和目标关系完整。 | crawl-ref/source/melee-attack.cc:3925 |
+| source:%s riposte.<br>EN: %s riposte. | %s发动了反击。 | %s发动了反击。 | keep | 玩家反击消息与实际riposte攻击对应，不误写成主动第二次攻击机会。 | crawl-ref/source/melee-attack.cc:5073 |
+| source:%s ripostes.<br>EN: %s ripostes. | %s发动了反击。 | %s发动了反击。 | keep | 怪物反击消息与149仅英语人称不同，中文同译恰当。 | crawl-ref/source/melee-attack.cc:5075 |
+| source:%s seems less certain of %s magic.<br>EN: %s seems less certain of %s magic. | %s似乎对%s魔力不那么自信了。 | %s似乎对%s魔力不那么自信了。 | keep | sap magic使目标不确定自己的魔法，现魔力可被误读MP；建议用魔法，属于措辞精确化建议。 | crawl-ref/source/beam.cc:6647 |
+| source:%s stiffens with fear!<br>EN: %s stiffens with fear! | %s 因恐惧而僵住了！ | %s 因恐惧而僵住了！ | keep | 嚎叫使目标因恐惧僵住并束缚，恐惧原因与失去移动完整。 | crawl-ref/source/melee-attack.cc:1348 |
+| source:%s strikes at %s from the darkness!<br>EN: %s strikes at %s from the darkness! | %s从黑暗中攻击%s！ | %s从黑暗中攻击%s！ | keep | 黑暗中的暗袭者攻击目标，黑暗来源和攻击对象完整。 | crawl-ref/source/melee-attack.cc:242 |
+| source:%s turn aside %s attack!<br>EN: %s turn aside %s attack! | %s挡开了%s攻击！ | %s挡开了%s攻击！ | keep | 玩家挡开攻击者的攻击，所有格与挡开动作准确。 | crawl-ref/source/melee-attack.cc:309 |
+| source:%s turns aside %s attack!<br>EN: %s turns aside %s attack! | %s挡开了%s攻击！ | %s挡开了%s攻击！ | keep | 怪物挡开攻击者的攻击，和154的主客体关系一致。 | crawl-ref/source/melee-attack.cc:308 |
+| source:%s vents fumes.<br>EN: %s vents fumes. | %s喷出了烟雾。 | %s喷出了烟雾。 | keep | 炼金生物攻击喷出烟雾并产生毒云，喷烟风味正确，源句没有承诺具体毒性所以不硬增。 | crawl-ref/source/melee-attack.cc:4683 |
+| source:%s writhes in agony%s<br>EN: %s writhes in agony%s | %s在痛苦中扭动%s | %s在痛苦中扭动%s | keep | 痛苦铭印与痛苦法术使受害者扭动，痛苦与强度标点保留。 | crawl-ref/source/attack.cc:549; crawl-ref/source/beam.cc:6273 |
+| source:%s%s misses %s.<br>EN: %s%s misses %s. | %s%s未命中%s。 | %s%s未命中%s。 | keep | 怪物未命中主体后放闪避程度再接未命中对象，中文语序适合。 | crawl-ref/source/melee-attack.cc:385 |
+| source:'s weak point<br>EN: 's weak point | 的弱点 | 的弱点 | keep | 蟹类grunt风味弱点片段当前由完整弱点模板表达，的弱点与关系准确，未误作攻击者自己的弱点。 | crawl-ref/source/melee-attack.cc:3028 |
+| source:... and %1$s it back!<br>EN: ... and %1$s it back! | ...并反射了回去！ | ...并反射了回去！ | keep | 反射回去句忽略英语reflect词形而固定表达反射，动作和方向完整。 | crawl-ref/source/ranged-attack.cc:205 |
+| source:...but it dissipates before reaching you.<br>EN: ...but it dissipates before reaching you. | ……但它还未到达你身边便消散了。 | ……但它还未到达你身边便消散了。 | keep | 吸血受阻时生命力尚未抵达玩家便消散，before与但转折完整。 | crawl-ref/source/beam.cc:2361 |
+| source:&#92;ntrigger chance:  %d%%&#92;nbase damage:     %d<br>EN: &#92;nTrigger chance:  %d%%&#92;nBase damage:     %d | &#92;n触发几率：%d%%&#92;n基础伤害：%d | &#92;n触发几率：%d%%&#92;n基础伤害：%d | keep | 辅助攻击说明显示触发概率与基础伤害，百分号和数字顺序正确。 | crawl-ref/source/melee-attack.cc:5517 |
+| source:&#92;ntrigger chance:  %d%%&#92;nbase damage:     %d&#92;n&#92;n<br>EN: &#92;nTrigger chance:  %d%%&#92;nBase damage:     %d&#92;n&#92;n | &#92;n触发几率：%d%%&#92;n基础伤害：%d&#92;n&#92;n | &#92;n触发几率：%d%%&#92;n基础伤害：%d&#92;n&#92;n | keep | 米诺陶反射头槌说明含触发概率、伤害和段后换行，数值完整。 | crawl-ref/source/melee-attack.cc:5504 |
+| source:a bog forms beneath %s!<br>EN: A bog forms beneath %s! | %s下方形成了一片沼泽！ | %s下方形成了一片沼泽！ | keep | 冷却攻击在受害者脚下形成毒沼，形成与位置完整；原EN仅bog，中文不额外捏造毒性数值。 | crawl-ref/source/melee-attack.cc:845 |
+| source:a chunk of <br>EN: a chunk of  | <br>一大块 | <br>一大块 | keep | 体型差较大吞食受害者一块肉，一大块作为份量前缀接名字成立。 | crawl-ref/source/melee-attack.cc:1229 |
+| source:a clap of thunder<br>EN: a clap of thunder | 一声雷鸣 | 一声雷鸣 | keep | 电球爆炸在不可见时报告一声雷鸣，声音类型正确并由You hear显示端翻译。 | crawl-ref/source/beam.cc:6805 |
+| source:a concussive explosion<br>EN: a concussive explosion | 一声震荡爆炸 | 一声震荡爆炸 | keep | 爆尘爆炸听觉为震荡爆炸，保留concussive且语法可接听到了。 | crawl-ref/source/beam.cc:6849 |
+| source:a fiery explosion<br>EN: a fiery explosion | 一声炽烈的爆炸 | 一声炽烈的爆炸 | keep | 燃烧吐息余烬爆炸听觉为炽烈爆炸，fiery风味保留。 | crawl-ref/source/beam.cc:6861 |
+| source:a loud shattering of glass<br>EN: a loud shattering of glass | 一声响亮的玻璃碎裂声 | 一声响亮的玻璃碎裂声 | keep | 致晕烧瓶碎裂时听到响亮玻璃碎声，材质、响度和碎裂完整。 | crawl-ref/source/beam.cc:6813 |
+| source:a part of your body evaporates into steam!<br>EN: A part of your body evaporates into steam! | 你身体的一部分蒸发成了蒸汽！ | 你身体的一部分蒸发成了蒸汽！ | keep | 水灵形态受火后身体部分蒸发成蒸汽，部分与液转气结果完整。 | crawl-ref/source/beam.cc:4553 |
+| source:a quiet echo<br>EN: a quiet echo | 一声微弱的回声 | 一声微弱的回声 | keep | 反魔法爆发听觉为微弱回声，quiet保留。 | crawl-ref/source/beam.cc:6865 |
+| source:a quiet whistle<br>EN: a quiet whistle | 一声轻微的呼啸 | 一声轻微的呼啸 | keep | 暗影球爆炸听觉为轻微呼啸，quiet与whistle保留。 | crawl-ref/source/beam.cc:6873 |
+| source:a raging storm<br>EN: a raging storm | 狂暴风暴的呼啸声 | 狂暴风暴的呼啸声 | keep | 火风暴爆发听觉为狂暴风暴呼啸，原听觉名词由中文补出声音以自然接听到，未改机制。 | crawl-ref/source/beam.cc:6809 |
+| source:a raging storm of fire appears!<br>EN: A raging storm of fire appears! | 狂暴的火焰风暴出现了！ | 狂暴的火焰风暴出现了！ | keep | 火焰风暴可见爆发消息，狂暴、火焰与出现动作完整。 | crawl-ref/source/beam.cc:6808 |
+| source:a sharp crackling<br>EN: a sharp crackling | 一阵尖锐的噼啪声 | 一阵尖锐的噼啪声 | keep | 附魔解构爆炸听到尖锐噼啪声，sharp与crackling正确。 | crawl-ref/source/beam.cc:6821 |
+| source:a spider bursts forth from the wound!<br>EN: A spider bursts forth from the wound! | 一只蜘蛛从伤口中爆出！ | 一只蜘蛛从伤口中爆出！ | keep | 近战寄生创口生成蜘蛛，从伤口爆出与蜘蛛数量一只完整。 | crawl-ref/source/melee-attack.cc:4580 |
+| source:a stygian plague fills %s body.<br>EN: A stygian plague fills %s body. | 冥河瘟疫充满了%s的身体。 | 冥河瘟疫充满了%s身体。 | adjust | rimeblight用apostrophise怪物名已经产生的，当前模板%s的身体又加的，形成怪物的的身体，需移除重复所有格。；修后复核：目标名经apostrophise已带的，身体父句不再重复属格；冥河瘟疫主体不变。 | crawl-ref/source/beam.cc:6733; crawl-ref/source/message.cc:2279 |
+| source:a violent squelch<br>EN: a violent squelch | 一声猛烈的挤压声 | 一声猛烈的挤压声 | keep | 酸球爆炸听到猛烈挤压声，squelch黏湿音色可更具体，但当前声音大意成立。 | crawl-ref/source/beam.cc:6877 |
+| source:a wave of flame ripples out!<br>EN: A wave of flame ripples out! | 一道火焰波浪向外扩散！ | 一道火焰波浪向外扩散！ | keep | 火焰波向外扩散，波状与向外方向正确。 | crawl-ref/source/beam.cc:6840 |
+| source:agility<br>EN: agility | 敏捷 | 敏捷 | keep | BEAM_AGILITY显示类别为敏捷，真实ENCH_AGILE效果与词根准确。 | crawl-ref/source/beam.cc:7671 |
+| source:an explosion<br>EN: an explosion | 一声爆炸 | 一声爆炸 | keep | 火球、寒冰爆、永冻爆发、霜弹等爆炸听觉共用一声爆炸，逐调用读过，未错误限定火焰。 | crawl-ref/source/beam.cc:6801; crawl-ref/source/beam.cc:6825; crawl-ref/source/beam.cc:6829; crawl-ref/source/beam.cc:6837; crawl-ref/source/beam.cc:6869 |
+| source:are unaffected<br>EN: are unaffected | 不受影响 | 不受影响 | keep | 无敌意志力时未知来源法术无法影响玩家，不受影响与拒绝结果准确。 | crawl-ref/source/beam.cc:3664 |
+| source:attack <br>EN: attack  | <br>攻击 | <br>攻击 | keep | 攻击确认片段用于范围武器、劈砍和普通近战，攻击可作动宾谓词并接目标。 | crawl-ref/source/fight.cc:1079; crawl-ref/source/fight.cc:1088; crawl-ref/source/fight.cc:1186; crawl-ref/source/fight.cc:1531 |
+| source:attack near<br>EN: attack near | 攻击附近的 | 攻击附近的 | adjust | 目标附近发生攻击的确认verb，当前攻击附近的把near误作目标位置，实际应在目标附近攻击；需与64/341的完整句一起处理。；修后复核：Devastator原目标仍原位，只在确认显示改为在不当目标附近攻击；旧attack near不再硬拼。 | crawl-ref/source/fight.cc:1124; crawl-ref/source/fight.cc:1615 |
+| source:attack prompt&#124;ally <br>EN: attack prompt&#124;ally  | 盟友 | 盟友 | keep | 具名不合格盟友提示额外盟友前缀，语义盟友准确，不把中立者也当友军。 | crawl-ref/source/fight.cc:1438 |
+| source:attack prompt&#124;fire in %s direction<br>EN: attack prompt&#124;fire in %s direction | 向%s的方向 | 朝%s的方向射击 | adjust | fire in target direction仅向%s的方向，省掉射击动作；完整确认变成确定要向盟友方向吗，建议向%s的方向射击。；修后复核：方向短句保留朝目标方向射击，ZH目标不预加属格、模板提供的；完整确认不缺动作。 | crawl-ref/source/fight.cc:1519 |
+| source:attack prompt&#124;your <br>EN: attack prompt&#124;your  | 你的 | 你的 | keep | 攻击确认玩家所有格前缀你的，与怪物名称组合正确。 | crawl-ref/source/fight.cc:1434 |
+| source:attack prompt&#124;your ally <br>EN: attack prompt&#124;your ally  | 你的盟友 | 你的盟友 | keep | 既有明确盟友关系的确认前缀你的盟友，归属与友好态度完整。 | crawl-ref/source/fight.cc:1420 |
+| source:attack verb&#124;open<br>EN: attack verb&#124;open | 剖开 | 剖开 | keep | 剖开枕套式大伤害上下文open是剖开而非开门，已读完整句分支，语境选择正确。 | crawl-ref/source/melee-attack.cc:3100 |
+| source:attack verb&#124;spit<br>EN: attack verb&#124;spit | 刺穿 | 刺穿 | keep | 像烤猪一样串刺的spit上下文译刺穿，未误作喷吐，完整句再表达串起。 | crawl-ref/source/melee-attack.cc:3035 |
+| source:backlight<br>EN: backlight | 背光 | 背光 | keep | BEAM_CORONA使目标光照显形的类别名背光，保留被照亮含义并与普通火伤有别。 | crawl-ref/source/beam.cc:7655 |
+| source:balefully<br>EN: balefully | 凶险地 | 凶险地 | keep | 仪式匕首因目标已有负面状态而凶险地攻击，副词在动词前且不误称实际灾祸状态。 | crawl-ref/source/melee-attack.cc:2997; crawl-ref/source/melee-attack.cc:3055 |
+| source:batter<br>EN: batter | 猛撞 | 猛撞 | keep | 触手伤害中高档猛撞目标，batter强于bludgeon而弱于thrash，程度顺序合理。 | crawl-ref/source/melee-attack.cc:3206 |
+| source:beam<br>EN: beam | 光束 | 光束 | keep | 自伤风险提示中无投射物对象时通用光束名，和投射物名分支区分。 | crawl-ref/source/beam.cc:7982; crawl-ref/source/beam.cc:7989 |
+| source:beam hit monster&#124;the %1$s %2$s %3$s%4$s%5$s%6$s<br>EN: beam hit monster&#124;The %1$s %2$s %3$s%4$s%5$s%6$s | %1$s%2$s了%3$s%4$s%5$s。 | %1$s%2$s了%3$s%4$s%5$s%6$s | adjust | 击中怪物模板丢弃第六参数伤害强度标点并固定句号，所有伤害档变同语气；应保留%6$s。；修后复核：光束命中怪物第6槽实际伤害强度标点保留，零伤害/强伤不强制同句号。 | crawl-ref/source/beam.cc:5770; crawl-ref/source/attack.cc:740 |
+| source:beam hit player&#124;the %1$s %2$s %3$s%4$s%5$s%6$s<br>EN: beam hit player&#124;The %1$s %2$s %3$s%4$s%5$s%6$s | %1$s%2$s了%3$s%4$s%5$s！ | %1$s%2$s了%3$s%4$s%5$s%6$s | adjust | 击中玩家模板丢弃第六参数并固定叹号，连零伤害都改同语气；应保留%6$s。；修后复核：光束命中玩家第6槽强度标点保留，零伤害不被固定强叹号。 | crawl-ref/source/beam.cc:4379; crawl-ref/source/attack.cc:740 |
+| source:beat<br>EN: beat | 捶打 | 捶打 | keep | 重击鼓状/血泥两种完整风味句采用捶打/捶成，基本beat词义正确并覆盖所有消费者。 | crawl-ref/source/melee-attack.cc:3143; crawl-ref/source/melee-attack.cc:3243 |
+| source:bludgeon<br>EN: bludgeon | 锤击 | 锤击 | keep | 钝器和触手中档打击锤击，保留重击意象；不将拳击词误作武器名。 | crawl-ref/source/melee-attack.cc:3124; crawl-ref/source/melee-attack.cc:3204 |
+| source:breath of the dead<br>EN: breath of the dead | 死亡之息 | 死亡之息 | keep | 死亡咆哮类型名死亡之息保留亡者吐息意象，来自BEAM_DEATH_RATTLE显示映射。 | crawl-ref/source/beam.cc:7676 |
+| source:buffet<br>EN: buffet | <br>抽打 | <br>抽打 | keep | 附身披风/围巾随机抽打目标，buffet为反复拍打而非食物自助餐，语境准确。 | crawl-ref/source/melee-attack.cc:3758 |
+| source:by zin's power, the %s is contained.<br>EN: By Zin's power, the %s is contained. | 凭借辛的力量，%s被压制了。 | 凭借辛的力量，%s被压制了。 | keep | 辛的圣域力量限制光束作用，contained译压制而非容器盛装，神名正确。 | crawl-ref/source/beam.cc:7020 |
+| source:calcifying dust<br>EN: calcifying dust | 钙化尘 | 钙化尘 | keep | 石化云类别为钙化尘，对应使身体钙化石化，材质意象完整。 | crawl-ref/source/beam.cc:7664 |
+| source:carve<br>EN: carve | 切削 | 切削 | keep | 切片高档火腿/火鸡风味carve为切削，完整句以像切火腿/火鸡一样切开表达，语义完整。 | crawl-ref/source/melee-attack.cc:3079; crawl-ref/source/melee-attack.cc:3087; crawl-ref/source/melee-attack.cc:3106 |
+| source:charm %s<br>EN: charm %s | 魅惑%s | 魅惑%s | keep | 魅惑危险召唤确认中动作与目标都在同一完整片段，魅惑%s准确。 | crawl-ref/source/beam.cc:7969 |
+| source:cherry-coloured flames burn away your fire resistance!<br>EN: Cherry-coloured flames burn away your fire resistance! | 樱桃色的火焰烧毁了你的火焰抗性！ | 樱桃色的火焰烧毁了你的火焰抗性！ | keep | 樱桃色火焰烧去玩家火抗，颜色、火焰及降低抗性后果完整。 | crawl-ref/source/beam.cc:4206 |
+| source:chop<br>EN: chop | 剁 | 剁 | keep | 剁成碎片风味的chop译剁，和完整片段剁成碎片对应。 | crawl-ref/source/melee-attack.cc:3108 |
+| source:claw<br>EN: claw | 爪击 | 爪击 | keep | 脚爪辅助、手爪辅助、爪伤近战三消费者爪击语义准确，真实身体部位由各动作来源决定。 | crawl-ref/source/melee-attack.cc:2200; crawl-ref/source/melee-attack.cc:2335; crawl-ref/source/melee-attack.cc:3193 |
+| source:cloud of bats<br>EN: cloud of bats | 蝙蝠云 | 蝙蝠云 | keep | 蝙蝠群云光束类型蝙蝠云，群状云意象正确。 | crawl-ref/source/beam.cc:7706 |
+| source:clumsily bash<br>EN: clumsily bash | 笨拙地猛击 | 笨拙地猛击 | keep | 不适合武器的低伤害时笨拙地猛击，保留笨拙而非正常击中。 | crawl-ref/source/melee-attack.cc:2992 |
+| source:concussive force<br>EN: concussive force | 冲击力 | 冲击力 | keep | 震荡武器造成位移原因是冲击力，来源短语只用于显示；受力及位移原因准确。 | crawl-ref/source/melee-attack.cc:666 |
+| source:creaking and crackling<br>EN: creaking and crackling | 一阵嘎吱与噼啪声 | 一阵嘎吱与噼啪声 | keep | 急根爆发听觉嘎吱与噼啪声，两个声音均保留。 | crawl-ref/source/beam.cc:6845 |
+| source:crush<br>EN: crush | 压碎 | 压碎 | keep | 高档钝击像葡萄一样压碎，crush压碎与专用完整句一致。 | crawl-ref/source/melee-attack.cc:3141 |
+| source:crystallising<br>EN: crystallising | 结晶化 | 结晶化 | keep | BEAM_CRYSTALLISING显示结晶化，保留过程而非物品晶体。 | crawl-ref/source/beam.cc:7694 |
+| source:cut<br>EN: cut | 切割 | 切割 | keep | 切割目标成碎条的cut译切割，和完整结果句一致。 | crawl-ref/source/melee-attack.cc:3104 |
+| source:defenestrate<br>EN: defenestrate | <br>扔出窗外 | <br>扔出窗外 | keep | 杀人小丑诙谐随机攻击把目标扔出窗外，defenestrate正确而不当成实际穿墙位移保证。 | crawl-ref/source/melee-attack.cc:3711 |
+| source:devastation<br>EN: devastation | 毁灭 | 毁灭 | keep | BEAM_DEVASTATION显示毁灭，实际附带剥夺意志但沿用英文类别名，不抹去源文风味。 | crawl-ref/source/beam.cc:7692 |
+| source:dice<br>EN: dice | 切碎 | 切碎 | keep | 食人魔大伤切丁风味dice译切碎，完整句保留像洋葱切丁的更具体结果。 | crawl-ref/source/melee-attack.cc:3067 |
+| source:dispelling energy<br>EN: dispelling energy | 驱散能量 | 驱散能量 | keep | 驱散能量光束特例显示驱散能量，和普通伤害类别有别。 | crawl-ref/source/beam.cc:7587 |
+| source:drained resource&#124;magic<br>EN: drained resource&#124;magic | 法力 | 法力 | keep | 反魔法/法力噬咬针对施法者吸取magic资源时明确法力，不误当法术威力。 | crawl-ref/source/melee-attack.cc:2808; crawl-ref/source/melee-attack.cc:4395 |
+| source:drained resource&#124;power<br>EN: drained resource&#124;power | 力量 | 力量 | keep | 反魔法攻击非施法者吸取power的泛称力量，与法力资源分支保持区别。 | crawl-ref/source/melee-attack.cc:2809; crawl-ref/source/melee-attack.cc:4396 |
+| source:elbow<br>EN: elbow | <br>肘击 | <br>肘击 | keep | 小丑肘击目标的随机动作，肘击可直接带目标作宾语，完整句成立。 | crawl-ref/source/melee-attack.cc:3713 |
+| source:elemental brand hit&#124;%1$s %2$s %3$s%4$s%5$s<br>EN: elemental brand hit&#124;%1$s %2$s %3$s%4$s%5$s | %1$s%4$s%2$s了%3$s%5$s | %1$s%4$s%2$s了%3$s%5$s | keep | 元素铭印命中模板把severely移到动词前，保留攻击者/目标/严重程度/标点，火冷分支实际一致。 | crawl-ref/source/attack.cc:1465 |
+| source:elemental brand verb&#124;freeze<br>EN: elemental brand verb&#124;freeze | 冻伤 | 冻伤 | keep | 寒冰铭印freeze用冻伤适应活体目标，未误称把目标完全冻住。 | crawl-ref/source/attack.cc:1206 |
+| source:engulfs<br>EN: engulfs | 吞噬 | 吞噬 | keep | 光束包围玩家/怪物及三类法术命中使用engulfs吞噬，烈焰/水等吞没的意象成立；可统一吞没为措辞建议。 | crawl-ref/source/beam.cc:4318; crawl-ref/source/beam.cc:5618; crawl-ref/source/spl-damage.cc:3236; crawl-ref/source/spl-damage.cc:4036; crawl-ref/source/spl-damage.cc:5017 |
+| source:entwining bolas<br>EN: entwining bolas | 缠绕流星索 | 缠绕流星索 | keep | BEAM_BOLAS类型名缠绕流星索，保留武器种类与缠绕效果。 | crawl-ref/source/beam.cc:7704 |
+| source:eviscerate<br>EN: eviscerate | 剖腹 | 剖腹 | keep | 爪伤高档和玩家暗影特击使用剖腹，eviscerate的猛烈内脏伤害意象完整。 | crawl-ref/source/melee-attack.cc:3197; crawl-ref/source/melee-attack.cc:3735 |
+| source:eye-gouge<br>EN: eye-gouge | <br>挖眼 | <br>挖眼 | adjust | 小丑随机动词eye-gouge译挖眼后直接进入%verb了%target，形成挖眼了你而非挖你的眼睛，须完整表达身体部位宾语。；修后复核：抠挖目标眼睛完整body谓语，目标所有格只一次；普通和零伤害均使用。 | crawl-ref/source/melee-attack.cc:3718; crawl-ref/source/melee-attack.cc:3853 |
+| source:faint brimstone surges around %s!<br>EN: Faint brimstone surges around %s! | 淡淡的硫磺在%s周围涌动！ | 淡淡的硫磺在%s周围涌动！ | keep | 地狱猎击目标周围涌动淡硫磺，faint、围绕目标和涌动意象完整。 | crawl-ref/source/melee-attack.cc:4593 |
+| source:fedhas protects the tree from harm.<br>EN: Fedhas protects the tree from harm. | 费德哈斯保护了这棵树。 | 费德哈保护了这棵树，使其免受伤害。 | adjust | Fedhas当前费德哈斯与已确认费德哈不一致，建议费德哈保护了这棵树，使其免受伤害。；修后复核：费德哈神名与当前术语一致，保护树免受伤害完整。 | crawl-ref/source/beam.cc:964 |
+| source:fire at <br>EN: fire at  | <br>向……射击 | <br>向……射击 | adjust | fire at片段为向……射击，随后追加mon_name，形成向……射击盟友，字面省略号不应出现；需用完整向%s射击片段。；修后复核：完整fire at目标短句进入确认，旧省略号碎片不再拼接，目标位置正确。 | crawl-ref/source/fight.cc:1514; crawl-ref/source/fight.cc:1534 |
+| source:fire at %s<br>EN: fire at %s | <br>向%s射击 | 向%s射击 | keep | 朝具体目标射击确认使用完整向%s射击，中文动宾语序正确，目标由参数内嵌。 | crawl-ref/source/beam.cc:8011 |
+| source:fire in %s direction<br>EN: fire in %s direction | <br>向%s的方向 | 向%s的方向射击 | adjust | 与186同原EN方向射击，现中文缺射击动作，建议向%s的方向射击。；修后复核：无context方向显示同样保留向目标方向射击，不漏动作。 | crawl-ref/source/beam.cc:8016 |
+| source:flagellate<br>EN: flagellate | 鞭笞 | 鞭笞 | keep | 鞭伤较强档鞭笞，强度较普通鞭打更强，动词能接目标。 | crawl-ref/source/melee-attack.cc:3163 |
+| source:flatten<br>EN: flatten | 压扁 | 压扁 | keep | 钝击把目标压得像煎饼，flatten压扁与完整句意义一致。 | crawl-ref/source/melee-attack.cc:3149 |
+| source:flickers and vanishes<br>EN: flickers and vanishes | 闪烁了一下就消失了 | 闪烁了一下就消失了 | keep | 隐形视觉变化闪烁后消失，配一瞬或叹号后保持两动作顺序。 | crawl-ref/source/beam.cc:6483 |
+| source:flog<br>EN: flog | <br>鞭打 | <br>鞭打 | keep | 鞭伤低档与小丑随机鞭打共享，鞭打可带目标，两消费者完整。 | crawl-ref/source/melee-attack.cc:3161; crawl-ref/source/melee-attack.cc:3707 |
+| source:fracture<br>EN: fracture | 碎裂 | 碎裂 | keep | 不死树类切割大伤采用fracture，完整句打成碎片承担及物动作，单词碎裂未在此误作主动句。 | crawl-ref/source/melee-attack.cc:3073 |
+| source:fragments<br>EN: fragments | 碎片 | 碎片 | keep | 碎片爆炸和光束类型都表示碎片，与晶体shards区别来自材质槽，译文准确。 | crawl-ref/source/beam.cc:7625; crawl-ref/source/spl-damage.cc:1359; crawl-ref/source/spl-damage.cc:1447 |
+| source:gore<br>EN: gore | 血肉 | 血肉 | keep | 血爆伤害类别gore译血肉，保留血肉横飞而非冲撞动词的正确词义。 | crawl-ref/source/beam.cc:7699 |
+| source:half of <br>EN: half of  | <br>半个 | <br>半个 | keep | 体型差一级吞食半个受害者，half of接名字，半个量词在当前生物语境成立。 | crawl-ref/source/melee-attack.cc:1228 |
+| source:hammer<br>EN: hammer | 锤打 | 锤打 | keep | 像敲锣一样锤打的hammer准确，既定完整句保留比喻。 | crawl-ref/source/melee-attack.cc:3145 |
+| source:head-knock<br>EN: head-knock | <br>敲头 | <br>敲头 | adjust | 附身头盔的head-knock译敲头，通用句变敲头了你，须将目标的头作为宾语，或使用完整敲了你一记头槌。；修后复核：敲击目标头部，属格目标已提供，不再敲头了你。 | crawl-ref/source/melee-attack.cc:3747; crawl-ref/source/melee-attack.cc:3853 |
+| source:head-slam<br>EN: head-slam | <br>猛砸 | <br>猛砸 | keep | 附身头盔head-slam译猛砸，头部来源由头盔主体暗示；建议明说头槌以更完整，非阻断。 | crawl-ref/source/melee-attack.cc:3747 |
+| source:headlock<br>EN: headlock | <br>锁头 | <br>锁头 | adjust | 小丑headlock译锁头，当前动词加了目标为锁头了你，缺目标头部结构，宜完整句锁住了目标的头。；修后复核：锁住目标头部完整谓语，普通/零伤害不重复目标。 | crawl-ref/source/melee-attack.cc:3720; crawl-ref/source/melee-attack.cc:3853 |
+| source:healing<br>EN: healing | 治疗 | 治疗 | keep | BEAM_HEALING的类别治疗，真实治疗效果对应，不误作完全治愈保证。 | crawl-ref/source/beam.cc:7636 |
+| source:heavy kick<br>EN: heavy kick | <br>猛踢 | <br>猛踢 | keep | 附身靴子随机猛踢，heavy程度与踢的动作完整。 | crawl-ref/source/melee-attack.cc:3752 |
+| source:hibernation<br>EN: hibernation | 冬眠 | 冬眠 | keep | BEAM_HIBERNATION冬眠，与普通sleep类别分开，已读逐渐昏睡行为。 | crawl-ref/source/beam.cc:7657 |
+| source:hit by a%s %s thrown by %s<br>EN: Hit by a%s %s thrown by %s | 被%3$s投掷的%2$s击中 | 被%3$s投掷的%2$s击中 | adjust | 投掷死亡来源aux_source使用T_且投射物/攻击者也本地化；attack::inflict_damage将其传给hurt，hiscores依赖Hit by/ thrown by解析，必须保留完整规范英文身份，只在显示翻译。；修后复核：完整canonical投掷aux_source保持EN，成绩最终端识别物品后显示被攻击者投掷的物品击中；不把raw字段翻译。 | crawl-ref/source/ranged-attack.cc:60; crawl-ref/source/attack.cc:713; crawl-ref/source/hiscores.cc:2032; crawl-ref/source/hiscores.cc:2062; crawl-ref/source/item-prop.cc:2233 |
+| source:hits<br>EN: hits | 击中 | 击中 | keep | 光束与远程普通命中动词击中，已查射弹piercing条件，未误作穿透。 | crawl-ref/source/beam.cc:4319; crawl-ref/source/beam.cc:5619; crawl-ref/source/ranged-attack.cc:832 |
+| source:impale<br>EN: impale | 刺穿 | 刺穿 | keep | 中高档穿刺伤使用刺穿，强于puncture且可接目标，意义正确。 | crawl-ref/source/melee-attack.cc:3013 |
+| source:infuriate<br>EN: infuriate | 激怒 | 激怒 | keep | 激怒型近战实际施加强效/狂暴，激怒作为动作准确。 | crawl-ref/source/melee-attack.cc:4322 |
+| source:into a bloody pulp<br>EN: into a bloody pulp | 打成血泥 | 打成血泥 | keep | 高伤无血液目标之外的有血怪物被捶成血泥，结果片段由完整句承接，不出现重复打成。 | crawl-ref/source/melee-attack.cc:3244 |
+| source:into a gooey mess<br>EN: into a gooey mess | 成一团黏糊 | 成一团黏糊 | keep | 巨眼球被砸成黏糊团，gooey mess材质与结果完整。 | crawl-ref/source/melee-attack.cc:3134 |
+| source:into fine dust<br>EN: into fine dust | 成粉末 | 成粉末 | keep | 极强拳击目标成细粉，独立片段成粉末与完整句细粉一致。 | crawl-ref/source/melee-attack.cc:3229 |
+| source:into pieces<br>EN: into pieces | 成碎片 | 成碎片 | keep | 切割风味剁成碎片，pieces结果完整。 | crawl-ref/source/melee-attack.cc:3108 |
+| source:into ribbons<br>EN: into ribbons | 成碎条 | 成碎条 | keep | 切割风味切成细条，ribbons碎条比喻完整。 | crawl-ref/source/melee-attack.cc:3104 |
+| source:into splinters<br>EN: into splinters | 粉碎四溅 | 粉碎四溅 | keep | 爪/钝击不死树类使碎片四溅，完整句采用打成/击成碎片，splinters木质细碎意象由对象语境承担。 | crawl-ref/source/melee-attack.cc:3074; crawl-ref/source/melee-attack.cc:3128 |
+| source:it tastes like %s.<br>EN: It tastes like %s. | 它尝起来像%s. | 它尝起来像%s. | keep | 吞食不可见怪物后按属名说明味道像某生物，味觉与比较对象准确；句号半角属排版建议。 | crawl-ref/source/melee-attack.cc:1237 |
+| source:its own<br>EN: its own | 自己的 | 自己的 | keep | 自我攻击被自身格挡时自己的修饰攻击，reflexive所有格正确。 | crawl-ref/source/melee-attack.cc:339 |
+| source:karate-kick<br>EN: karate-kick | <br>空手道踢 | <br>空手道踢 | keep | 小丑karate-kick的空手道踢可作为踢的方式，术语与动作保留。 | crawl-ref/source/melee-attack.cc:3719 |
+| source:kneecap<br>EN: kneecap | <br>膝撞 | <br>膝撞 | adjust | kneecap是攻击对方膝盖，膝撞却是用自己膝盖撞人，施力器官和受击部位颠倒，需译击打目标的膝盖。；修后复核：击打的是目标膝盖，不误为攻击者用膝盖撞，器官角色准确。 | crawl-ref/source/melee-attack.cc:3723; crawl-ref/source/melee-attack.cc:3853 |
+| source:lightning courses through %s%s<br>EN: Lightning courses through %s%s | 闪电贯穿了%s%s | 闪电贯穿了%s%s | keep | 电击铭印对怪物闪电贯穿，目标与强度标点完整。 | crawl-ref/source/attack.cc:1263 |
+| source:like a drum<br>EN: like a drum | 像鼓一样 | 像鼓一样 | keep | 鼓的比喻在完整句中放于捶打前，像敲鼓一样准确。 | crawl-ref/source/melee-attack.cc:3143 |
+| source:like a gong<br>EN: like a gong | 像锣一样 | 像锣一样 | keep | 锣的比喻在完整句中像敲锣一样锤打，意象完整。 | crawl-ref/source/melee-attack.cc:3145 |
+| source:like a grape<br>EN: like a grape | 像葡萄一样 | 像葡萄一样 | keep | 葡萄比喻由完整句像压葡萄一样压碎，未反成拿葡萄作武器。 | crawl-ref/source/melee-attack.cc:3141 |
+| source:like a ham<br>EN: like a ham | 像火腿一样 | 像火腿一样 | keep | 火腿比喻由完整句像切火腿一样，动物分割风味完整。 | crawl-ref/source/melee-attack.cc:3106 |
+| source:like a kebab<br>EN: like a kebab | 像烤肉串一样 | 像烤肉串一样 | keep | 烤肉串比喻由完整句串成烤肉串形，skewer和kebab保留。 | crawl-ref/source/melee-attack.cc:3037 |
+| source:like a pancake<br>EN: like a pancake | 像煎饼一样 | 像煎饼一样 | keep | 煎饼比喻完整句把目标压得扁，flatten结果与比喻完整。 | crawl-ref/source/melee-attack.cc:3149 |
+| source:like a pig<br>EN: like a pig | 像猪一样 | 像猪一样 | keep | 猪的比喻spit在此是烤肉签串刺，完整句串起猪保留正确动作。 | crawl-ref/source/melee-attack.cc:3035 |
+| source:like a pillowcase<br>EN: like a pillowcase | 像枕套一样 | 像枕套一样 | keep | 枕套比喻完整句像拆枕套一样剖开，open的割开语境正确。 | crawl-ref/source/melee-attack.cc:3100 |
+| source:like a pincushion<br>EN: like a pincushion | 像针垫一样 | 像针垫一样 | keep | 针垫比喻完整句将目标扎满孔，pincushion形象完整。 | crawl-ref/source/melee-attack.cc:3039 |
+| source:like a punching bag<br>EN: like a punching bag | 像沙袋一样 | 像沙袋一样 | keep | 沙袋比喻完整句像打沙袋一样殴击，动作与受击物比喻完整。 | crawl-ref/source/melee-attack.cc:3231 |
+| source:like a ripe choko<br>EN: like a ripe choko | 像成熟的佛手瓜一样 | 像成熟的佛手瓜一样 | keep | 佛手瓜原成熟程度保留，植物并非其他瓜类，完整句切开正确。 | crawl-ref/source/melee-attack.cc:3102 |
+| source:like a sieve<br>EN: like a sieve | 像筛子一样 | 像筛子一样 | keep | 筛子比喻完整句满是窟窿，穿孔动作与比喻一致。 | crawl-ref/source/melee-attack.cc:3041 |
+| source:like a turkey<br>EN: like a turkey | 像火鸡一样 | 像火鸡一样 | keep | 火鸡比喻适用于鸟类/tengu高伤切割，完整句像切火鸡一样，未漏实体。 | crawl-ref/source/melee-attack.cc:3088 |
+| source:like an ant<br>EN: like an ant | 像蚂蚁一样 | 像蚂蚁一样 | keep | 蚂蚁比喻完整句像碾蚁一样压碎，细小生物意象完整。 | crawl-ref/source/melee-attack.cc:3234 |
+| source:like an anvil<br>EN: like an anvil | 像铁砧一样 | 像铁砧一样 | keep | 铁砧比喻完整句像敲铁砧一样猛砸，hammering关系正确。 | crawl-ref/source/melee-attack.cc:3147 |
+| source:like an onion<br>EN: like an onion | 像洋葱一样 | 像洋葱一样 | keep | 洋葱比喻完整句切成丁，保留dice的丁状结果。 | crawl-ref/source/melee-attack.cc:3068 |
+| source:like the proverbial ant<br>EN: like the proverbial ant | 像俗话中的蚂蚁一样 | 像俗话中的蚂蚁一样 | keep | grunt模式俗话中的蚂蚁笑话保留proverbial限定，不擅自改成本土典故。 | crawl-ref/source/melee-attack.cc:3222 |
+| source:like the proverbial ham<br>EN: like the proverbial ham | 像俗话中的火腿一样 | 像俗话中的火腿一样 | keep | grunt猪类俗话中的火腿笑话限定保留，完整句切火腿关系正确。 | crawl-ref/source/melee-attack.cc:3080 |
+| source:like the proverbial pig<br>EN: like the proverbial pig | 像俗话中的猪一样 | 像俗话中的猪一样 | keep | grunt猪类俗话中的猪笑话限定保留，实际完整句正确串刺；通用spit片段另列372。 | crawl-ref/source/melee-attack.cc:3021 |
+| source:liquefy further<br>EN: liquefy further | 进一步液化 | 进一步液化 | keep | 已有wretched攻击液化时进一步液化，further区别初次开始液化。 | crawl-ref/source/melee-attack.cc:4673 |
+| source:magic missile<br>EN: magic missile | 魔法飞弹 | 魔法飞弹 | keep | BEAM_MMISSILE魔法飞弹类别，非普通投掷物，法术词形例外与glossary一致。 | crawl-ref/source/beam.cc:7605 |
+| source:magic web<br>EN: magic web | 魔法网 | 魔法网 | keep | EN_SNARE类别魔法网，限制媒介为网，未误当普通法术名。 | crawl-ref/source/beam.cc:7665 |
+| source:magma<br>EN: magma | 岩浆 | 岩浆 | keep | BEAM_LAVA类别岩浆，材质和高温液体正确。 | crawl-ref/source/beam.cc:7626 |
+| source:malmutation<br>EN: malmutation | 恶性变异 | 恶性变异 | keep | BEAM_MALMUTATE类别恶性变异，对应malmutate，恶性限定完整。 | crawl-ref/source/beam.cc:7643 |
+| source:mangle<br>EN: mangle | 撕碎 | 撕碎 | keep | 中强爪击撕碎，区别低档抓挠和最高剖腹，动作准确。 | crawl-ref/source/melee-attack.cc:3195 |
+| source:melee hit&#124;you attack %1$s's weak point%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You attack %1$s's weak point%2$s%3$s%4$s%5$s | 你%2$s攻击了%1$s的弱点%3$s%4$s%5$s | 你%2$s攻击了%1$s的弱点%3$s%4$s%5$s | keep | 蟹类grunt弱点完整句明确攻击目标的弱点，武器状语前置、电击与标点槽完整。 | crawl-ref/source/melee-attack.cc:3029 |
+| source:melee hit&#124;you beat %1$s into a bloody pulp%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You beat %1$s into a bloody pulp%2$s%3$s%4$s%5$s | 你%2$s将%1$s捶成了血泥%3$s%4$s%5$s | 你%2$s将%1$s捶成了血泥%3$s%4$s%5$s | keep | 有血怪物超强拳击捶成血泥，blood和pulp结果完整，武器前置且附加槽齐全。 | crawl-ref/source/melee-attack.cc:3245 |
+| source:melee hit&#124;you beat %1$s like a drum%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You beat %1$s like a drum%2$s%3$s%4$s%5$s | 你%2$s像敲鼓一样捶打了%1$s%3$s%4$s%5$s | 你%2$s像敲鼓一样捶打了%1$s%3$s%4$s%5$s | keep | 钝器像敲鼓一样捶打目标，鼓比喻与角色参数完整。 | crawl-ref/source/melee-attack.cc:3144 |
+| source:melee hit&#124;you carve %1$s like a ham%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You carve %1$s like a ham%2$s%3$s%4$s%5$s | 你%2$s像切火腿一样切开了%1$s%3$s%4$s%5$s | 你%2$s像切火腿一样切开了%1$s%3$s%4$s%5$s | keep | 强切割像切火腿切开目标，完整比喻、武器状语、附加电击和强度槽保留。 | crawl-ref/source/melee-attack.cc:3107 |
+| source:melee hit&#124;you carve %1$s like a turkey%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You carve %1$s like a turkey%2$s%3$s%4$s%5$s | 你%2$s像切火鸡一样切开了%1$s%3$s%4$s%5$s | 你%2$s像切火鸡一样切开了%1$s%3$s%4$s%5$s | keep | 鸟类目标高伤像切火鸡，实体和比喻没有误作攻击者食物。 | crawl-ref/source/melee-attack.cc:3089 |
+| source:melee hit&#124;you carve %1$s like the proverbial ham%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You carve %1$s like the proverbial ham%2$s%3$s%4$s%5$s | 你%2$s像切俗话中的火腿一样切开了%1$s%3$s%4$s%5$s | 你%2$s像切俗话中的火腿一样切开了%1$s%3$s%4$s%5$s | keep | grunt俗话中的火腿限定完整，完整句没有把proverbial省略。 | crawl-ref/source/melee-attack.cc:3081 |
+| source:melee hit&#124;you chop %1$s into pieces%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You chop %1$s into pieces%2$s%3$s%4$s%5$s | 你%2$s将%1$s剁成了碎片%3$s%4$s%5$s | 你%2$s将%1$s剁成了碎片%3$s%4$s%5$s | keep | 切伤剁成碎片，目标、碎片结果和附加槽完整。 | crawl-ref/source/melee-attack.cc:3109 |
+| source:melee hit&#124;you crush %1$s like a grape%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You crush %1$s like a grape%2$s%3$s%4$s%5$s | 你%2$s像压葡萄一样压碎了%1$s%3$s%4$s%5$s | 你%2$s像压葡萄一样压碎了%1$s%3$s%4$s%5$s | keep | 钝伤像压葡萄压碎目标，目标和动作先后关系准确。 | crawl-ref/source/melee-attack.cc:3142 |
+| source:melee hit&#124;you cut %1$s into ribbons%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You cut %1$s into ribbons%2$s%3$s%4$s%5$s | 你%2$s将%1$s切成了碎条%3$s%4$s%5$s | 你%2$s将%1$s切成了碎条%3$s%4$s%5$s | keep | 切伤把目标切成碎条，结果形状完整。 | crawl-ref/source/melee-attack.cc:3105 |
+| source:melee hit&#124;you dice %1$s like an onion%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You dice %1$s like an onion%2$s%3$s%4$s%5$s | 你%2$s像切洋葱一样将%1$s切成了丁%3$s%4$s%5$s | 你%2$s像切洋葱一样将%1$s切成了丁%3$s%4$s%5$s | keep | 食人魔被像切洋葱一样切丁，dice与onion两命题完整。 | crawl-ref/source/melee-attack.cc:3069 |
+| source:melee hit&#124;you flatten %1$s like a pancake%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You flatten %1$s like a pancake%2$s%3$s%4$s%5$s | 你%2$s将%1$s压得像煎饼一样扁%3$s%4$s%5$s | 你%2$s将%1$s压得像煎饼一样扁%3$s%4$s%5$s | keep | 钝伤压目标像煎饼一样扁，压扁动作和结果完整。 | crawl-ref/source/melee-attack.cc:3150 |
+| source:melee hit&#124;you fracture %1$s into splinters%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You fracture %1$s into splinters%2$s%3$s%4$s%5$s | 你%2$s将%1$s打成了碎片%3$s%4$s%5$s | 你%2$s将%1$s打成了碎片%3$s%4$s%5$s | keep | 不死树类骨木碎片风味以打成碎片表达，未误用无生命主语的不及物碎裂。 | crawl-ref/source/melee-attack.cc:3075 |
+| source:melee hit&#124;you hammer %1$s like a gong%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You hammer %1$s like a gong%2$s%3$s%4$s%5$s | 你%2$s像敲锣一样锤打了%1$s%3$s%4$s%5$s | 你%2$s像敲锣一样锤打了%1$s%3$s%4$s%5$s | keep | 像敲锣锤打，动作和比喻完整。 | crawl-ref/source/melee-attack.cc:3146 |
+| source:melee hit&#124;you open %1$s like a pillowcase%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You open %1$s like a pillowcase%2$s%3$s%4$s%5$s | 你%2$s像拆开枕套一样剖开了%1$s%3$s%4$s%5$s | 你%2$s像拆开枕套一样剖开了%1$s%3$s%4$s%5$s | keep | 像拆开枕套剖开目标，open选义正确，未按开门译。 | crawl-ref/source/melee-attack.cc:3101 |
+| source:melee hit&#124;you perforate %1$s like a sieve%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You perforate %1$s like a sieve%2$s%3$s%4$s%5$s | 你%2$s将%1$s戳得像筛子一样满是窟窿%3$s%4$s%5$s | 你%2$s将%1$s戳得像筛子一样满是窟窿%3$s%4$s%5$s | keep | 穿孔伤使目标像筛子满窟窿，perforate动作和结果完整。 | crawl-ref/source/melee-attack.cc:3042 |
+| source:melee hit&#124;you pound %1$s into fine dust%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You pound %1$s into fine dust%2$s%3$s%4$s%5$s | 你%2$s将%1$s砸成了细粉%3$s%4$s%5$s | 你%2$s将%1$s砸成了细粉%3$s%4$s%5$s | keep | 拳击把目标砸成细粉，fine程度保留。 | crawl-ref/source/melee-attack.cc:3230 |
+| source:melee hit&#124;you pound %1$s like an anvil%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You pound %1$s like an anvil%2$s%3$s%4$s%5$s | 你%2$s像敲铁砧一样猛砸了%1$s%3$s%4$s%5$s | 你%2$s像敲铁砧一样猛砸了%1$s%3$s%4$s%5$s | keep | 像敲铁砧猛砸目标，比喻对应受击目标而非用铁砧武器。 | crawl-ref/source/melee-attack.cc:3148 |
+| source:melee hit&#124;you pummel %1$s like a punching bag%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You pummel %1$s like a punching bag%2$s%3$s%4$s%5$s | 你%2$s像打沙袋一样殴击了%1$s%3$s%4$s%5$s | 你%2$s像打沙袋一样殴击了%1$s%3$s%4$s%5$s | keep | 像打沙袋一样殴击，反复击打意象完整。 | crawl-ref/source/melee-attack.cc:3232 |
+| source:melee hit&#124;you shatter %1$s into splinters%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You shatter %1$s into splinters%2$s%3$s%4$s%5$s | 你%2$s将%1$s击成了碎片%3$s%4$s%5$s | 你%2$s将%1$s击成了碎片%3$s%4$s%5$s | keep | 不死树类被钝击成碎片，shatter击碎与splinters细碎结果完整。 | crawl-ref/source/melee-attack.cc:3129 |
+| source:melee hit&#124;you skewer %1$s like a kebab%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You skewer %1$s like a kebab%2$s%3$s%4$s%5$s | 你%2$s像串烤肉串一样将%1$s串了起来%3$s%4$s%5$s | 你%2$s像串烤肉串一样将%1$s串了起来%3$s%4$s%5$s | keep | 像烤串把目标串起，skewer而非普通戳刺，烤串比喻完整。 | crawl-ref/source/melee-attack.cc:3038 |
+| source:melee hit&#124;you slice %1$s like a ripe choko%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You slice %1$s like a ripe choko%2$s%3$s%4$s%5$s | 你%2$s像切熟透的佛手瓜一样切开了%1$s%3$s%4$s%5$s | 你%2$s像切熟透的佛手瓜一样切开了%1$s%3$s%4$s%5$s | keep | 成熟佛手瓜比喻和切开动作完整，ripe没有漏译。 | crawl-ref/source/melee-attack.cc:3103 |
+| source:melee hit&#124;you spit %1$s like a pig%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You spit %1$s like a pig%2$s%3$s%4$s%5$s | 你%2$s像串起猪一样将%1$s串了起来%3$s%4$s%5$s | 你%2$s像串起猪一样将%1$s串了起来%3$s%4$s%5$s | keep | spit在串烤猪语境译串起，动作和猪的比喻完整。 | crawl-ref/source/melee-attack.cc:3036 |
+| source:melee hit&#124;you spit %1$s like the proverbial pig%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You spit %1$s like the proverbial pig%2$s%3$s%4$s%5$s | 你%2$s像串起俗话中的猪一样将%1$s串了起来%3$s%4$s%5$s | 你%2$s像串起俗话中的猪一样将%1$s串了起来%3$s%4$s%5$s | keep | 同烤猪比喻保留proverbial限定，完整句正确避免喷吐错义。 | crawl-ref/source/melee-attack.cc:3022 |
+| source:melee hit&#124;you splatter %1$s into a gooey mess%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You splatter %1$s into a gooey mess%2$s%3$s%4$s%5$s | 你%2$s将%1$s砸成了一团黏糊%3$s%4$s%5$s | 你%2$s将%1$s砸成了一团黏糊%3$s%4$s%5$s | keep | 巨眼球被砸成黏糊团，gooey mess整体材质与破碎结果保留。 | crawl-ref/source/melee-attack.cc:3135 |
+| source:melee hit&#124;you squash %1$s like an ant%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You squash %1$s like an ant%2$s%3$s%4$s%5$s | 你%2$s像碾碎蚂蚁一样碾碎了%1$s%3$s%4$s%5$s | 你%2$s像碾碎蚂蚁一样碾碎了%1$s%3$s%4$s%5$s | keep | 像碾蚂蚁碾碎目标，身体小且被碾碎的意象完整。 | crawl-ref/source/melee-attack.cc:3235 |
+| source:melee hit&#124;you squash %1$s like the proverbial ant%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You squash %1$s like the proverbial ant%2$s%3$s%4$s%5$s | 你%2$s像碾碎俗话中的蚂蚁一样碾碎了%1$s%3$s%4$s%5$s | 你%2$s像碾碎俗话中的蚂蚁一样碾碎了%1$s%3$s%4$s%5$s | keep | grunt蚁人俗话中的蚂蚁限定保留，不擅改典故。 | crawl-ref/source/melee-attack.cc:3223 |
+| source:melee hit&#124;you stick %1$s like a pincushion%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You stick %1$s like a pincushion%2$s%3$s%4$s%5$s | 你%2$s像扎针垫一样将%1$s扎满了孔%3$s%4$s%5$s | 你%2$s像扎针垫一样将%1$s扎满了孔%3$s%4$s%5$s | keep | 针垫风味把目标扎满孔，孔洞结果准确。 | crawl-ref/source/melee-attack.cc:3040 |
+| source:melee hit&#124;you thrash %1$s mercilessly%2$s%3$s%4$s%5$s<br>EN: melee hit&#124;You thrash %1$s mercilessly%2$s%3$s%4$s%5$s | 你%2$s毫不留情地鞭抽了%1$s%3$s%4$s%5$s | 你%2$s毫不留情地鞭抽了%1$s%3$s%4$s%5$s | keep | 鞭子高伤毫不留情鞭抽目标，mercilessly和鞭类动作一致。 | crawl-ref/source/melee-attack.cc:3168 |
+| source:melt<br>EN: melt | 融化 | 融化 | keep | 火铭印对冰质怪物融化，远程火焰弹同样取此分支，语义覆盖两调用。 | crawl-ref/source/attack.cc:1196; crawl-ref/source/ranged-attack.cc:656 |
+| source:mercilessly<br>EN: mercilessly | 毫不留情地 | 毫不留情地 | keep | mercilessly放在鞭抽动词前，副词语序和无怜悯程度正确。 | crawl-ref/source/melee-attack.cc:3167 |
+| source:mercury<br>EN: mercury | 水银 | 水银 | keep | BEAM_MERCURY水银类别，元素物质准确；与法术专名汞矢不强行同名。 | crawl-ref/source/beam.cc:7705 |
+| source:missile<br>EN: missile | 投掷物 | 投掷物 | keep | 普通投掷物类别与物品大类missile共享投掷物，非仅飞弹法术，通用含义适合。 | crawl-ref/source/beam.cc:7604; crawl-ref/source/item-name.cc:1420 |
+| source:mushrooms sprout behind %s.<br>EN: Mushrooms sprout behind %s. | 蘑菇在%s背后冒了出来。 | 蘑菇在%s背后冒了出来。 | keep | 蘑菇在受害者背后生成，sprout与behind位置完整。 | crawl-ref/source/melee-attack.cc:830 |
+| source:neutral <br>EN: neutral  | <br>中立 | <br>中立 | keep | 非敌对中立怪物确认前缀中立，和盟友前缀区分。 | crawl-ref/source/fight.cc:1458 |
+| source:non-hostile <br>EN: non-hostile  | <br>非敌对 | <br>非敌对 | keep | 不会攻击玩家但不一定中立/盟友时用非敌对，关系范围准确。 | crawl-ref/source/fight.cc:1467 |
+| source:omen<br>EN: omen | 凶兆 | 凶兆 | keep | BEAM_ILL_OMEN凶兆类别，保留不祥而非普通预兆。 | crawl-ref/source/beam.cc:7707 |
+| source:pain wracks your body!<br>EN: Pain wracks your body! | 痛苦穿过了你的身体！ | 痛苦穿过了你的身体！ | keep | Pain伤害使全身受剧痛折磨，当前痛苦穿过只剩运动意象；建议剧痛折磨着你的身体以更贴近wracks，属措辞建议。 | crawl-ref/source/beam.cc:3848 |
+| source:perforate<br>EN: perforate | 穿孔 | 穿孔 | keep | 高穿刺使目标穿孔，完整句扎成筛子表达，词义正确。 | crawl-ref/source/melee-attack.cc:3041 |
+| source:pierce<br>EN: pierce | 刺穿 | 刺穿 | keep | 脚部触手尖刺辅助攻击用刺穿，未混为普通踢腿。 | crawl-ref/source/melee-attack.cc:2202 |
+| source:pierces through<br>EN: pierces through | 穿透 | 穿透 | keep | 远程穿透且没有碎裂时动词穿透，through保留。 | crawl-ref/source/ranged-attack.cc:832 |
+| source:piercing cold boils outward!<br>EN: Piercing cold boils outward! | 刺骨的寒气向外翻腾！ | 刺骨的寒气向外翻腾！ | keep | 永冻爆发刺骨寒气向外翻腾，刺骨程度与outward方向准确。 | crawl-ref/source/beam.cc:6828 |
+| source:pinch<br>EN: pinch | <br>掐 | <br>掐 | keep | 小丑掐目标，pinch与直接宾语组句自然。 | crawl-ref/source/melee-attack.cc:3714 |
+| source:poison sting<br>EN: poison sting | 毒刺 | 毒刺 | keep | 毒针类型显示毒刺，毒性与尖刺形象完整。 | crawl-ref/source/beam.cc:7618 |
+| source:poke<br>EN: poke | <br>戳 | <br>戳 | keep | 小丑轻戳目标，poke不是用力击打，动词合适。 | crawl-ref/source/melee-attack.cc:3705 |
+| source:pounce on<br>EN: pounce on | 扑向 | 扑向 | keep | 猫科刺击从背后扑向受害者，动作对象和方向正确。 | crawl-ref/source/attack.cc:779 |
+| source:pound<br>EN: pound | <br>猛击 | <br>猛击 | keep | 强钝击、拳击与小丑随机重击三处pound，猛击适合；专用完整句保留砸成粉等具体结果。 | crawl-ref/source/melee-attack.cc:3147; crawl-ref/source/melee-attack.cc:3229; crawl-ref/source/melee-attack.cc:3708 |
+| source:prod<br>EN: prod | <br>捅 | <br>捅 | keep | 小丑prod比poke更用力地捅，动词可直接带目标。 | crawl-ref/source/melee-attack.cc:3706 |
+| source:pulverise<br>EN: pulverise | 粉碎 | 粉碎 | keep | 超强拳击pulverise为粉碎，直接及物动词成立。 | crawl-ref/source/melee-attack.cc:3233 |
+| source:pummel<br>EN: pummel | 殴击 | 殴击 | keep | 中强拳击与沙袋风味均殴击，保持反复击打意象。 | crawl-ref/source/melee-attack.cc:3217; crawl-ref/source/melee-attack.cc:3231 |
+| source:puncture<br>EN: puncture | 穿刺 | 穿刺 | keep | 普通穿刺中伤穿刺，较impale刺穿更一般，语义准确。 | crawl-ref/source/melee-attack.cc:3011 |
+| source:ranged block&#124;%1$s %2$s the %3$s%4$s%5$s<br>EN: ranged block&#124;%1$s %2$s the %3$s%4$s%5$s | %1$s%4$s%2$s了%3$s%5$s | %1$s%4$s%2$s了%3$s%5$s | keep | 远程格挡模板把盾牌方式移至格挡前，保留格挡对象和反射后句，中文参数角色正确。 | crawl-ref/source/ranged-attack.cc:213 |
+| source:really %s while %s?<br>EN: really %s while %s? | 确定要在%s时%s吗？ | 确定要在%s时%s吗？ | adjust | 原参数依次动作verb和危险条件noun，中文无编号却写在%s时%s，把动作与条件颠倒，须位置参数并匹配格式调用。；修后复核：完整while父句将当前危险条件放你正之后、欲做动作放确认内，四条件全译，时序不反转。 | crawl-ref/source/fight.cc:1738 |
+| source:really %s while wielding %s?<br>EN: Really %s while wielding %s? | 确定要%s同时手持%s？ | 确定要%s同时手持%s？ | keep | 不适合武器确认保留攻击动作与持握物，确定要动作同时手持武器语序稍生硬但命题完整，可润色。 | crawl-ref/source/fight.cc:1046 |
+| source:really %s%s %s%s?%s<br>EN: Really %s%s %s%s?%s | 确定要%s%s %s%s？%s | 确定要%s%s %s%s？%s | adjust | 范围攻击确认把near置于目标之前，和64/184共同误成攻击附近目标，不能靠词片段硬接，需完整表达在目标附近进行攻击。；修后复核：范围确认near/direct两完整模板按实际不当目标职责选择，目标列表/限定/惩戒均保留。 | crawl-ref/source/fight.cc:1615; crawl-ref/source/fight.cc:1617 |
+| source:really %s%s%s?%s<br>EN: Really %s%s%s?%s | 确定要%s%s%s？%s | 确定要%s%s%s？%s | adjust | 普通攻击/射击确认主模板参数位置正确，但所接射击方向与towards片段有遗漏或英语泄漏，必须一同审完这些真实分支。；修后复核：fight和beam的直接、方向、多目标towards三分支都形成完整射击动作；原父key仍有效但不依赖旧碎片。 | crawl-ref/source/beam.cc:8025; crawl-ref/source/fight.cc:1534; crawl-ref/source/beam.cc:8022 |
+| source:resist<br>EN: resist | 抵抗了 | 抵抗了 | keep | 未知来源附魔被抵挡时抵抗了与但你组成通顺。 | crawl-ref/source/beam.cc:3665 |
+| source:rock<br>EN: rock | 岩石 | 岩石 | keep | 挖掘光束打碎普通墙体的材质岩石，和黏液/万魔殿怪材质分支有别。 | crawl-ref/source/beam.cc:938 |
+| source:scorching wind<br>EN: scorching wind | 灼热风 | 灼热风 | keep | 热风法术类别及击退来源灼热风，保留高温与风，不误称普通空气。 | crawl-ref/source/beam.cc:5372; crawl-ref/source/zap-data.h:2913 |
+| source:scratch<br>EN: scratch | 抓挠 | 抓挠 | keep | 爪伤最弱档抓挠，程度轻于爪击与撕碎，语义合适。 | crawl-ref/source/melee-attack.cc:3191 |
+| source:sear<br>EN: sear | 灼烧 | 灼烧 | keep | 圣/污焰灼烧的sear经显示动词翻译，灼烧准确。 | crawl-ref/source/melee-attack.cc:4349; crawl-ref/source/melee-attack.cc:4367 |
+| source:severely <br>EN: severely  | 严重地 | 严重地 | keep | 元素易伤伤害严重程度前置到冻伤/烧伤动词前，严重地表达severely。 | crawl-ref/source/attack.cc:1470 |
+| source:shared pain<br>EN: shared pain | 共享痛苦 | 共享痛苦 | keep | BEAM_SHARED_PAIN共享痛苦，和实际anguish分摊伤害的意象吻合。 | crawl-ref/source/beam.cc:7680 |
+| source:shave<br>EN: shave | 削刮 | 削刮 | keep | grunt牦牛类被shave剃削，削刮保留刮削毛皮风味，未误作杀戮机制名。 | crawl-ref/source/melee-attack.cc:3094 |
+| source:shot with a%s %s by %s<br>EN: Shot with a%s %s by %s | 被%3$s用%2$s射中 | 被%3$s用%2$s射中 | adjust | 射击死亡aux_source模板及投射物/攻击者名本地化，hiscores要求Shot with与by英文解析；同248必须完整构造规范英文，显示另译。；修后复核：canonical射击aux_source保持EN，成绩最终端译攻击者用投射物射中，和投掷方向清楚区分。 | crawl-ref/source/ranged-attack.cc:66; crawl-ref/source/attack.cc:713; crawl-ref/source/hiscores.cc:2032; crawl-ref/source/hiscores.cc:2062; crawl-ref/source/item-prop.cc:2233 |
+| source:shrill echo<br>EN: shrill echo | 尖锐的回声 | 尖锐的回声 | keep | 空间扭曲爆炸听觉尖锐回声，shrill形容声音而非视觉，组句准确。 | crawl-ref/source/beam.cc:6857 |
+| source:shrivel<br>EN: shrivel | 枯萎 | 枯萎 | keep | 负能量法杖使受害者枯萎，shrivel没有误作施法者萎缩。 | crawl-ref/source/melee-attack.cc:3589 |
+| source:skewer<br>EN: skewer | 刺穿 | 刺穿 | keep | 烤串式高穿刺用刺穿，完整句保留串起的特殊意象。 | crawl-ref/source/melee-attack.cc:3037 |
+| source:slap<br>EN: slap | 拍击 | 拍击 | keep | 触手、附身手套与小丑三组slap均拍击，动词和目标位置一致。 | crawl-ref/source/melee-attack.cc:3709; crawl-ref/source/melee-attack.cc:3732; crawl-ref/source/melee-attack.cc:3763 |
+| source:slash<br>EN: slash | 劈斩 | 劈斩 | keep | 普通切割中伤劈斩，和高档切开/砍碎风味区分。 | crawl-ref/source/melee-attack.cc:3062 |
+| source:slice<br>EN: slice | 切割 | 切割 | keep | 中高切割与佛手瓜风味slice为切割，完整句另表达切开，比喻没有丢失。 | crawl-ref/source/melee-attack.cc:3064; crawl-ref/source/melee-attack.cc:3102 |
+| source:slime<br>EN: slime | 黏液 | 黏液 | keep | 挖掘黏液墙的材质名黏液，wall对象上下文准确。 | crawl-ref/source/beam.cc:934 |
+| source:slip<br>EN: slip | 滑倒 | 滑倒 | keep | 滑动后退真实消费者调用trample verb上下文的打着滑，当前普通滑倒不进入该组句；保留该身份并注明上下文差异。 | crawl-ref/source/melee-attack.cc:5195; crawl-ref/source/dat/i18n/zh/source.txt:48549 |
+| source:smack<br>EN: smack | <br>掌掴 | <br>掌掴 | keep | 附身手套随机掌掴，smack与目标作宾语自然。 | crawl-ref/source/melee-attack.cc:3763 |
+| source:sock<br>EN: sock | 猛击 | 猛击 | keep | 弱钝击sock为猛击而非袜子，语境选择正确。 | crawl-ref/source/melee-attack.cc:3122 |
+| source:software bugs nibble your toes!<br>EN: Software bugs nibble your toes! | 软件虫子啃咬着你的脚趾！ | 软件虫子啃咬着你的脚趾！ | keep | 未枚举附魔回退的软件虫啃脚趾笑话完整，bug没有误解为实际常规怪物。 | crawl-ref/source/beam.cc:4073 |
+| source:some %s shatters into small pieces.<br>EN: Some %s shatters into small pieces. | 一些%s碎成了小片。 | 一些%s碎成了小片。 | keep | 怪物挖墙材料碎成小片，部分材料Some译一些，材质参数准确。 | crawl-ref/source/beam.cc:942 |
+| source:something<br>EN: Something | 某个东西 | 某个东西 | keep | 未知攻击者/被抛者/目标、战斗描述和对白均用某个东西，主语/宾语场景都成立，未泄漏身份。 | crawl-ref/source/actor.cc:1050; crawl-ref/source/attack.cc:353; crawl-ref/source/mon-act.cc:4157; crawl-ref/source/mon-cast-target.cc:427; crawl-ref/source/mon-cast.cc:9919; crawl-ref/source/mon-cast.cc:9922; crawl-ref/source/mon-cast.cc:10589; crawl-ref/source/monster.cc:2132 |
+| source:something tries to affect you, but you %s.<br>EN: Something tries to affect you, but you %s. | 有什么东西试图影响你，但你%s。 | 有什么东西试图影响你，但你%s。 | keep | 未知来源附魔尝试影响玩家后不受影响/抵抗两种结果，转折与结果完整。 | crawl-ref/source/beam.cc:3663 |
+| source:space distorts around %s%s<br>EN: Space distorts around %s%s | 空间在%s周围扭曲%s | 空间在%s周围扭曲%s | keep | 扭曲铭印小伤时空间在目标周围扭曲，位置和强度标点完整。 | crawl-ref/source/attack.cc:503 |
+| source:space twists violently!<br>EN: Space twists violently! | 空间剧烈扭曲！ | 空间剧烈扭曲！ | keep | 空间扭曲爆炸可见时剧烈扭曲，空间主体与violent程度正确。 | crawl-ref/source/beam.cc:6856 |
+| source:space warps violently around %s%s<br>EN: Space warps violently around %s%s | 空间在%s周围剧烈扭曲%s | 空间在%s周围剧烈扭曲%s | keep | 扭曲铭印较强伤害时目标周围剧烈扭曲，和366小档区别保留。 | crawl-ref/source/attack.cc:510 |
+| source:spatial disruption<br>EN: spatial disruption | 空间扰乱 | 空间扰乱 | keep | BEAM_WARPING类别空间扰乱，扰动与空间意象正确，不误作生物变形。 | crawl-ref/source/beam.cc:7695 |
+| source:spicy!<br>EN: Spicy! | 真辣！ | 真辣！ | keep | 吞食带黏火的受害者觉得辣，Spicy幽默保留，未当毒性机制解释。 | crawl-ref/source/melee-attack.cc:1243 |
+| source:spines<br>EN: spines | 尖刺 | 尖刺 | keep | 怪物尖刺反击攻击者，spines尖刺与荆棘分支区别保留。 | crawl-ref/source/melee-attack.cc:4970 |
+| source:spit<br>EN: spit | 吐刺 | 串刺 | adjust | spit此处为烤猪式串刺而非喷吐，吐刺误义；当前主显示使用正确完整句，但此冻结词条仍须校正为串刺/刺穿。；修后复核：spit在串烤猪语境是串刺，旧通用词与正确完整hit句一致，未误作喷吐。 | crawl-ref/source/melee-attack.cc:3020 |
+| source:splatter<br>EN: splatter | 砸烂 | 砸烂 | keep | 大眼球被砸烂成黏糊，splatter为液态四溅式打击，砸烂适合实际对象。 | crawl-ref/source/melee-attack.cc:3133 |
+| source:spore attack&#124;%1$s %2$s at %3$s%4$s%5$s%6$s%7$s<br>EN: spore attack&#124;%1$s %2$s at %3$s%4$s%5$s%6$s%7$s | %1$s向%3$s%2$s%4$s%5$s%6$s%7$s | %1$s向%3$s%2$s%4$s%5$s%6$s%7$s | keep | 孢子攻击专用模板把目标置于向之后，释放孢子动词接于其后，武器/电击/标点齐全。 | crawl-ref/source/melee-attack.cc:3841 |
+| source:spore attack&#124;%1$s releases spores at %2$s but does no damage.<br>EN: spore attack&#124;%1$s releases spores at %2$s but does no damage. | %1$s向%2$s释放孢子，但没有造成伤害。 | %1$s向%2$s释放孢子，但没有造成伤害。 | keep | 孢子命中但零伤害专用句明确释放孢子，目标和零伤害否定完整。 | crawl-ref/source/melee-attack.cc:971 |
+| source:spores<br>EN: spores | 孢子 | 孢子 | keep | BEAM_SPORE类别孢子，媒介正确。 | crawl-ref/source/beam.cc:7617 |
+| source:squash<br>EN: squash | 压扁 | 压扁 | keep | 蚁人或蚂蚁风味超强拳击压扁，和完整句碾碎意象一致。 | crawl-ref/source/melee-attack.cc:3221; crawl-ref/source/melee-attack.cc:3234 |
+| source:squeeze<br>EN: squeeze | <br>挤压 | <br>挤压 | keep | 小丑挤压目标，及物动词可自然进入通用命中句。 | crawl-ref/source/melee-attack.cc:3716 |
+| source:start to liquefy<br>EN: start to liquefy | 开始液化 | 开始液化 | keep | wretched首次开始液化，时间起点与液化变化准确。 | crawl-ref/source/melee-attack.cc:4673 |
+| source:stealthily <br>EN: stealthily  | <br>潜行 | <br>潜行 | keep | 吸血鬼仆从暗刺时stealthily译潜行，单纯副词可润色悄然，避免潜行咬了目标的生硬串动词；属建议。 | crawl-ref/source/melee-attack.cc:3830 |
+| source:stick<br>EN: stick | 扎 | 扎 | keep | 针垫风味stick为扎，完整句扎满孔，动词选义正确。 | crawl-ref/source/melee-attack.cc:3039 |
+| source:sticky fire<br>EN: sticky fire | 黏性火焰 | 黏性火焰 | keep | 黏火与火堆箭特例、一般黏火类别均显示黏性火焰，黏附性质完整。 | crawl-ref/source/beam.cc:7580; crawl-ref/source/beam.cc:7620 |
+| source:stomp<br>EN: stomp | <br>重踏 | <br>重踏 | keep | 附身靴子重踏目标，stomp力度与脚部动作完整。 | crawl-ref/source/melee-attack.cc:3752 |
+| source:strange energies course through your body.<br>EN: Strange energies course through your body. | 奇怪的能量在你体内奔涌。 | 奇怪的能量在你体内奔涌。 | keep | 恶性变异与解构残余魔法导致奇异能量奔涌体内，源句中性怪异没有误承诺治疗。 | crawl-ref/source/beam.cc:3733 |
+| source:strangle<br>EN: strangle | <br>勒 | <br>勒 | keep | 附身披风/围巾勒目标，strangle的窒息意象由勒表达，未误作普通抽打。 | crawl-ref/source/melee-attack.cc:3758 |
+| source:strangle-hug<br>EN: strangle-hug | <br>锁喉 | <br>锁喉 | keep | 小丑strangle-hug锁喉保留窒息擒抱，略去hug的拥抱诙谐可作建议，不单独阻断。 | crawl-ref/source/melee-attack.cc:3715 |
+| source:strike<br>EN: strike | 攻击 | 攻击 | keep | 非猫科刺击从背后攻击，strike的通用动作正确。 | crawl-ref/source/attack.cc:779 |
+| source:stumble<br>EN: stumble | 踉跄 | 踉跄 | keep | 践踏后能自主走动者向后踉跄，和空中被推/光滑打滑分支区别保留。 | crawl-ref/source/melee-attack.cc:5196 |
+| source:stunning bolt<br>EN: stunning bolt | 眩晕矢 | 眩晕矢 | keep | 眩晕矢类别名，实际对非电抗/非停滞者附带短麻痹，与stun风味一致。 | crawl-ref/source/beam.cc:7629 |
+| source:sucker-punch<br>EN: sucker-punch | <br>偷袭 | <br>偷袭 | keep | 小丑sucker-punch译偷袭能表意外攻击，但未显拳击；可润色冷不防地拳击，属建议。 | crawl-ref/source/melee-attack.cc:3712 |
+| source:tease<br>EN: tease | <br>戏弄 | <br>戏弄 | keep | 小丑戏弄目标作为诙谐攻击动词，tease词义完整。 | crawl-ref/source/melee-attack.cc:3717 |
+| source:tentacle-slap<br>EN: tentacle-slap | 触手拍击 | 触手拍击 | keep | 触手最弱伤害使用触手拍击，器官与拍打动作完整。 | crawl-ref/source/melee-attack.cc:3202 |
+| source:that %s could hit you up to %d times. continue anyway?<br>EN: That %s could hit you up to %d times. Continue anyway? | 那%s可能会击中你最多%d次。仍然继续吗？ | 那%s可能会击中你最多%d次。仍然继续吗？ | keep | 自伤光束提示最多命中次数，up to和整数上限完整。 | crawl-ref/source/beam.cc:7980 |
+| source:that %s is likely to hit you. continue anyway?<br>EN: That %s is likely to hit you. Continue anyway? | 那%s很可能会击中你。仍然继续吗？ | 那%s很可能会击中你。仍然继续吗？ | keep | 单次自伤风险提示很可能击中玩家，概率语气与继续确认完整。 | crawl-ref/source/beam.cc:7987 |
+| source:the %1$s misses %2$s.<br>EN: The %1$s misses %2$s. | %1$s未击中%2$s。 | %1$s未击中%2$s。 | keep | 光束未命中怪物，位置参数角色为光束和目标，未命中方向正确。 | crawl-ref/source/beam.cc:5726 |
+| source:the %1$s repels the %2$s!<br>EN: The %1$s repels the %2$s! | %2$s弹开了%1$s！ | %1$s弹开了%2$s！ | adjust | 原参数1怪物2光束，ZH却2弹开1，变光束弹开怪物；必须改为1弹开2，保留谁排斥谁。；修后复核：槽1怪物弹开槽2光束，原主客倒置消除。 | crawl-ref/source/beam.cc:5720 |
+| source:the %s %s %s!<br>EN: The %s %s %s! | %s%s了%s！ | %s%s了%s！ | keep | 附魔光束命中玩家或尸体，光束主语、实际动词和受害者准确。 | crawl-ref/source/beam.cc:4322 |
+| source:the %s %s %s%s but does no damage.<br>EN: The %s %s %s%s but does no damage. | %s%s%s%s但未造成伤害。 | %s%s%s%s但未造成伤害。 | keep | 远程命中零伤害句保留投射物/动词/目标与可选碎裂，不误把碎裂当增伤已发生。 | crawl-ref/source/ranged-attack.cc:328 |
+| source:the %s %s %s%s%s%s<br>EN: The %s %s %s%s%s%s | %s%s%s%s%s%s | %s%s%s%s%s%s | keep | 远程正常命中六槽保留投射物、动作、目标、碎裂增伤、调试和强度标点，组成自然。 | crawl-ref/source/ranged-attack.cc:840 |
+| source:the %s %s %s.<br>EN: The %s %s %s. | %s%s了%s。 | %s%s了%s。 | keep | 附魔光束命中怪物的三槽句，动词显示翻译、对象角色与完成态准确。 | crawl-ref/source/beam.cc:5623 |
+| source:the %s bounces off of thin air!<br>EN: The %s bounces off of thin air! | %s从空气中弹开了！ | %s从空气中弹开了！ | keep | 不可见盾牌使光束似乎从空中弹开，thin air不泄漏盾牌身份，中文完整。 | crawl-ref/source/beam.cc:5512 |
+| source:the %s is repelled.<br>EN: The %s is repelled. | %s被排斥了。 | %s被排斥了。 | keep | 玩家或怪物排斥投射物时投射物被弹开，被排斥语义适合两个路径。 | crawl-ref/source/beam.cc:3633; crawl-ref/source/ranged-attack.cc:237 |
+| source:the %s misses you.<br>EN: The %s misses you. | %s没有击中你。 | %s没有击中你。 | keep | 光束未命中玩家，命中否定与受害者你完整。 | crawl-ref/source/beam.cc:3638 |
+| source:the %s passes through %s.<br>EN: The %s passes through %s. | %s穿透了%s。 | %s穿透了%s。 | keep | 虚体/特例令光束穿过怪物，穿透动词与主体光束保持正确。 | crawl-ref/source/beam.cc:5579 |
+| source:the %s reflects off an invisible shield around %s!<br>EN: The %s reflects off an invisible shield around %s! | %s从%s周围的隐形护盾上反射了出去！ | %s从%s周围的隐形护盾上反射了出去！ | keep | 光束从目标周围隐形护盾反射，盾牌位置、目标和反射方向完整。 | crawl-ref/source/beam.cc:5506 |
+| source:the %s reflects off the divine shield protecting %s!<br>EN: The %s reflects off the divine shield protecting %s! | 这道%s被保护%s的神圣护盾反射了！ | 这道%s被保护%s的神圣护盾反射了！ | keep | 神圣护盾保护目标并反射光束，当前术语与保护关系完整。 | crawl-ref/source/beam.cc:5505 |
+| source:the %s shatters into small pieces.<br>EN: The %s shatters into small pieces. | %s碎成了小片。 | %s碎成了小片。 | keep | 玩家挖墙材料碎成小片，主语材料由本地化wall变量提供。 | crawl-ref/source/beam.cc:941 |
+| source:the %s%s misses %s.<br>EN: The %s%s misses %s. | %s%s未命中%s。 | %s%s未命中%s。 | keep | 远程闪避程度插入投射物后未命中前，和实际未命中差额一致。 | crawl-ref/source/ranged-attack.cc:250 |
+| source:the antimagic surges outward!<br>EN: The antimagic surges outward! | 反魔法力量向外涌出！ | 反魔法力量向外涌出！ | keep | 反魔法吐息爆炸时反魔法向外涌出，源类型与方向完整。 | crawl-ref/source/beam.cc:6864 |
+| source:the ball of acid explodes!<br>EN: The ball of acid explodes! | 酸球爆炸了！ | 酸球爆炸了！ | keep | 酸球爆炸，酸属性与球形和爆炸完整。 | crawl-ref/source/beam.cc:6876 |
+| source:the beam explodes into a cloud of software bugs!<br>EN: The beam explodes into a cloud of software bugs! | 光束爆炸成一团软件错误！ | 光束爆炸成一团软件错误！ | keep | 未定义爆炸的software bugs回退笑话保留光束爆炸及程序错误云，不误作普通虫群。 | crawl-ref/source/beam.cc:6914 |
+| source:the bolas passes through %s!<br>EN: The bolas passes through %s! | 流星索穿过了%s！ | 流星索穿过了%s！ | keep | 流星索穿过无实体/无定形怪物，不声称已束缚。 | crawl-ref/source/beam.cc:1848 |
+| source:the bolas wraps around %s and binds %s in place!<br>EN: The bolas wraps around %s and binds %s in place! | 流星索缠住了%s，将%s束缚在原地！ | 流星索缠住了%s，将%s束缚在原地！ | keep | 流星索缠绕后将同一对象束缚原地，两次参数分别名称和宾格代词，关系正确。 | crawl-ref/source/beam.cc:1857 |
+| source:the cloud of blastmotes explodes!<br>EN: The cloud of blastmotes explodes! | 爆尘云爆炸了！ | 爆尘云爆炸了！ | keep | blastmotes爆尘云爆炸，词根与爆炸完整。 | crawl-ref/source/beam.cc:6848 |
+| source:the damaged grate falls apart.<br>EN: The damaged grate falls apart. | 受损的格栅散架了。 | 受损的格栅散架了。 | keep | 受损格栅被挖掘光束打散，损伤状态与散架结果完整。 | crawl-ref/source/beam.cc:930 |
+| source:the demonic tree burns, releasing chaotic energy.<br>EN: The demonic tree burns, releasing chaotic energy. | 恶魔之树燃烧着，释放出混沌能量。 | 恶魔之树燃烧着，释放出混沌能量。 | keep | 恶魔树燃烧释放混沌能量，恶魔属性和释放后果保留。 | crawl-ref/source/beam.cc:976 |
+| source:the embers explode!<br>EN: The embers explode! | 余烬爆炸了！ | 余烬爆炸了！ | keep | 燃烧吐息余烬爆炸，余烬主体与爆炸完整。 | crawl-ref/source/beam.cc:6860 |
+| source:the enchantments explode!<br>EN: The enchantments explode! | 附魔爆炸了！ | 附魔爆炸了！ | keep | 解构法术撕裂附魔爆炸，附魔成为爆炸源而非玩家施法失败。 | crawl-ref/source/beam.cc:6820 |
+| source:the eyeballs on your body gaze at %s.<br>EN: The eyeballs on your body gaze at %s. | 你身上的眼球凝视着%s。 | 你身上的眼球凝视着%s。 | keep | 眼球护体变异眼球凝视敌人并致混乱，身上位置和凝视对象完整。 | crawl-ref/source/melee-attack.cc:4882 |
+| source:the fireball explodes!<br>EN: The fireball explodes! | 火球爆炸了！ | 火球爆炸了！ | keep | 火球爆炸，可见消息与法术身份一致。 | crawl-ref/source/beam.cc:6800 |
+| source:the flames cauterise the wound!<br>EN: The flames cauterise the wound! | 火焰烧灼了伤口！ | 火焰烧灼了伤口！ | keep | 火武器砍水螅头后烧灼伤口阻止再生，cauterise烧灼伤口准确，未误称治疗HP。 | crawl-ref/source/melee-attack.cc:3345 |
+| source:the flask of dizzying concoctions shatters into a vile cloud!<br>EN: The flask of dizzying concoctions shatters into a vile cloud! | 装满眩晕混合物的烧瓶碎裂成一团污浊的云雾！ | 装满眩晕混合物的烧瓶碎裂成一团污浊的云雾！ | keep | 致晕烧瓶破裂成污浊云，容器、致晕内容物、碎裂和云结果完整。 | crawl-ref/source/beam.cc:6812 |
+| source:the flickering shadows explode!<br>EN: The flickering shadows explode! | 闪烁的阴影爆炸了！ | 闪烁的暗影爆炸了！ | adjust | 暗影球爆炸的flickering shadows译闪烁的阴影，当前Shadow词根为暗影，建议闪烁的暗影爆炸了以统一实体。；修后复核：闪烁的暗影与Shadow实体词根统一，爆炸动作未丢。 | crawl-ref/source/beam.cc:6872 |
+| source:the ghostly flame explodes!<br>EN: The ghostly flame explodes! | 鬼火爆炸了！ | 鬼火爆炸了！ | keep | 幽魂火球及幽魂献祭爆炸都为鬼火爆炸，两个消费者已读，ghostly flame意象适合。 | crawl-ref/source/beam.cc:6816; crawl-ref/source/beam.cc:6832 |
+| source:the gout of umbral fire explodes!<br>EN: The gout of umbral fire explodes! | 暗影之火爆发了！ | 暗影之火爆发了！ | keep | 暗影火炬之火爆炸，暗影之火爆发保留核心类型与爆发；可补一股以显gout，属建议。 | crawl-ref/source/beam.cc:6852 |
+| source:the grappling hook guides your attack.<br>EN: The grappling hook guides your attack. | 抓钩引导了你的攻击。 | 抓钩引导了你的攻击。 | keep | 动能抓钩附着引导攻击，抓钩主体与攻击引导关系完整。 | crawl-ref/source/melee-attack.cc:266 |
+| source:the ground beneath %s fractures%s<br>EN: The ground beneath %s fractures%s | %s脚下的地面裂开了%s | %s脚下的地面裂开了%s | keep | 大地法杖打击使目标脚下地面裂开，地点和断裂结果完整。 | crawl-ref/source/melee-attack.cc:3566 |
+| source:the last of your unstable energy dissipates and you return to your previous form.<br>EN: The last of your unstable energy dissipates and you return to your previous form. | 你不稳定的能量消散了，你恢复了之前的形态。 | 你最后一点不稳定能量消散了，你恢复了之前的形态。 | adjust | flux最后残余能量耗尽后恢复上个形态，当前漏last限定，建议你最后一点不稳定能量消散了，你恢复了之前的形态。；修后复核：最后一点不稳定能量消散并恢复之前形态，last限定恢复。 | crawl-ref/source/melee-attack.cc:751 |
+| source:the magic binding %s to this plane unravels!<br>EN: The magic binding %s to this plane unravels! | 将%s束缚在此位面的魔法瓦解了！ | 将%s束缚在此位面的魔法瓦解了！ | keep | 解构召唤目标的位面束缚并逐走它，中文魔法瓦解与绑定此位面关系准确。 | crawl-ref/source/beam.cc:6679 |
+| source:the mangrove smoulders and burns.<br>EN: The mangrove smoulders and burns. | 红树林树木闷烧起来。 | 红树林树木闷烧起来。 | keep | 红树林树木闷烧，smoulder与burn由闷烧表达，不误作普通松树。 | crawl-ref/source/beam.cc:974 |
+| source:the mass of ice explodes!<br>EN: The mass of ice explodes! | 冰块爆炸了！ | 冰块爆炸了！ | keep | 寒冰爆可见消息冰块爆炸，质量团块与爆炸准确。 | crawl-ref/source/beam.cc:6824; crawl-ref/source/beam.cc:6836 |
+| source:the mercury splashes!<br>EN: The mercury splashes! | 水银四溅了！ | 水银四溅了！ | keep | 水银溅射到邻近目标时四溅，物质与溅射动作准确。 | crawl-ref/source/beam.cc:1672 |
+| source:the mud splashes down.<br>EN: The mud splashes down. | 泥浆溅下去了。 | 泥浆溅下去了。 | keep | 泥息落地形成泥地，泥浆溅下与向下方向正确。 | crawl-ref/source/beam.cc:2741 |
+| source:the orb of electricity explodes!<br>EN: The orb of electricity explodes! | 电球爆炸了！ | 电球爆炸了！ | keep | 电球爆炸消息电球与爆炸完整。 | crawl-ref/source/beam.cc:6804 |
+| source:the roar of flame<br>EN: the roar of flame | 火焰的咆哮声 | 火焰的咆哮声 | keep | 火焰波听觉咆哮声，flame声音意象完整。 | crawl-ref/source/beam.cc:6841 |
+| source:the roots erupt in riotous growth!<br>EN: The roots erupt in riotous growth! | 根须疯狂地爆发式生长！ | 根须疯狂地爆发式生长！ | keep | 急根爆发疯狂生长，根须与剧烈生长过程完整。 | crawl-ref/source/beam.cc:6844 |
+| source:the shards fragment into shrapnel!<br>EN: The shards fragment into shrapnel! | 碎片裂成了弹片！ | 碎片裂成了弹片！ | keep | 霜弹碎裂成弹片，初级碎片到杀伤弹片的变化完整。 | crawl-ref/source/beam.cc:6868 |
+| source:the shriek of haunting fire<br>EN: the shriek of haunting fire | 鬼火的尖啸声 | 鬼火的尖啸声 | keep | 幽魂火两类爆炸听到鬼火尖啸，haunting和shriek声音准确。 | crawl-ref/source/beam.cc:6817; crawl-ref/source/beam.cc:6833 |
+| source:the shriek of umbral fire<br>EN: the shriek of umbral fire | 暗影之火的尖啸声 | 暗影之火的尖啸声 | keep | 暗影火炬爆炸听到暗影之火尖啸，和幽魂鬼火区别保留。 | crawl-ref/source/beam.cc:6853 |
+| source:the silver sears <br>EN: The silver sears  | <br>银光灼烧了 | <br>银光灼烧了 | keep | 银质伤害被写成银光灼烧，源句silver指银材质，建议白银灼烧以避免添光源，属措辞建议。 | crawl-ref/source/beam.cc:2195 |
+| source:the sphere of damnation explodes!<br>EN: The sphere of damnation explodes! | 诅咒之球爆炸了！ | 天谴之球爆炸了！ | adjust | Damnation是天谴非curse，诅咒之球混淆两种机制，建议天谴之球爆炸了，两法术同改。；修后复核：两天谴爆炸法术共用天谴之球，不再误当curse诅咒。 | crawl-ref/source/beam.cc:6792; crawl-ref/source/beam.cc:6796 |
+| source:the tree burns like a torch!<br>EN: The tree burns like a torch! | 这棵树像火炬一样燃烧！ | 这棵树像火炬一样燃烧！ | keep | 普通树像火炬燃烧，比较对象火炬和燃烧动作完整。 | crawl-ref/source/beam.cc:972 |
+| source:the wailing of the damned<br>EN: the wailing of the damned | 受诅咒者的哀嚎声 | 受诅咒者的哀嚎声 | keep | 天谴爆炸听到受诅咒者哀嚎，damned此处指受罚者并非把伤害类型译诅咒，普通语境可保留。 | crawl-ref/source/beam.cc:6793; crawl-ref/source/beam.cc:6797 |
+| source:the wall<br>EN: the wall | 墙壁 | 墙壁 | keep | 撞击墙体时墙壁作为障碍宾语，两人称分支都正确。 | crawl-ref/source/melee-attack.cc:685; crawl-ref/source/melee-attack.cc:693 |
+| source:the wave splashes down.<br>EN: The wave splashes down. | 波浪拍下去了。 | 波浪拍下去了。 | keep | 原始水波落地拍下，水波与落地动作完整。 | crawl-ref/source/beam.cc:2676 |
+| source:the winds around you quicken.<br>EN: The winds around you quicken. | 你周围的风加速了。 | 你周围的风加速了。 | keep | 南风变异受益时周围风加快，保留风速变化而非直接宣称玩家Haste。 | crawl-ref/source/attack.cc:1535 |
+| source:this spell isn't strong enough to banish yourself.<br>EN: This spell isn't strong enough to banish yourself. | 这个法术不够强，无法放逐你自己。 | 这个法术不够强，无法放逐你自己。 | keep | 玩家法术不够强而不能自我放逐，强度不足、否定与自身目标完整。 | crawl-ref/source/beam.cc:3833 |
+| source:thorns<br>EN: thorns | 荆棘 | 荆棘 | keep | 荆棘丛反伤的thorns荆棘准确，与怪物尖刺分支区分。 | crawl-ref/source/melee-attack.cc:4969 |
+| source:thrash<br>EN: thrash | 鞭抽 | 鞭抽 | keep | 鞭伤高档及触手高伤thrash译鞭抽，鞭及柔性触手的猛烈抽打都成立。 | crawl-ref/source/melee-attack.cc:3166; crawl-ref/source/melee-attack.cc:3208 |
+| source:thump<br>EN: thump | 重击 | 重击 | keep | 弱钝击thump重击，和sock非衣物词义一致。 | crawl-ref/source/melee-attack.cc:3122 |
+| source:thunder<br>EN: thunder | 雷鸣 | 雷鸣 | keep | BEAM_THUNDER类别雷鸣，雷声/雷击风味正确。 | crawl-ref/source/beam.cc:7628 |
+| source:tickle<br>EN: tickle | <br>挠痒 | <br>挠痒 | adjust | 小丑tickle译挠痒直接套通用及物句成为挠痒了你，须完整表达给目标挠痒，不能仅孤立词通过。；修后复核：给目标挠痒痒用目标本体而非属格，完整body谓语语法自然。 | crawl-ref/source/melee-attack.cc:3710; crawl-ref/source/melee-attack.cc:3853 |
+| source:torment damage<br>EN: torment damage | 折磨伤害 | 折磨伤害 | keep | BEAM_TORMENT_DAMAGE显示折磨伤害，机制Torment与glossary准确。 | crawl-ref/source/beam.cc:7661 |
+| source:trip-wire<br>EN: trip-wire | <br>绊倒 | <br>绊倒 | keep | 小丑trip-wire译绊倒，保留使目标绊倒的动作风味，不硬加实际陷阱道具。 | crawl-ref/source/melee-attack.cc:3722 |
+| source:unravelled magic<br>EN: unravelled magic | 解析魔法 | 解构残余魔法 | adjust | BEAM_UNRAVELLED_MAGIC是解构后散乱魔法并导致malmutate，解析魔法误成分析/解读魔法，应为解构的魔法或解构残余魔法。；修后复核：BEAM_UNRAVELLED_MAGIC为解构残余魔法，不误为分析解析法术；与恶性变异后果语境相合。 | crawl-ref/source/beam.cc:7679; crawl-ref/source/beam.cc:3732 |
+| source:upheaval targetter<br>EN: upheaval targetter | 剧变指向器 | 剧变指向器 | keep | 卡兹拉尔Upheaval目标选择器显示剧变指向器，保留内部目标选择类别而非普通伤害法术；可称目标选择器为建议。 | crawl-ref/source/beam.cc:7696 |
+| source:verb&#124;are<br>EN: verb&#124;are | 被 | 被 | keep | are在缠绕、击退、法杖电击、火焰、孢子、倒刺、荆棘、原地束缚全部实际消费者均为被动，译被逐组成立。 | crawl-ref/source/actor.cc:845; crawl-ref/source/actor.cc:1129; crawl-ref/source/melee-attack.cc:3554; crawl-ref/source/melee-attack.cc:4107; crawl-ref/source/melee-attack.cc:4213; crawl-ref/source/melee-attack.cc:4223; crawl-ref/source/melee-attack.cc:4246; crawl-ref/source/melee-attack.cc:4636; crawl-ref/source/melee-attack.cc:4967; crawl-ref/source/melee-attack.cc:5177; crawl-ref/source/english.cc:295 |
+| source:verb&#124;are shoved<br>EN: verb&#124;are shoved | 被推得 | 被推得 | keep | 空中/失能目标被践踏推向后，are shoved译被推得后接向后退去，方向完整。 | crawl-ref/source/melee-attack.cc:5197 |
+| source:verb&#124;block<br>EN: verb&#124;block | 格挡 | 格挡 | keep | 远程格挡显示动词格挡，和ranged block主模板组成自然。 | crawl-ref/source/ranged-attack.cc:215 |
+| source:verb&#124;draw<br>EN: verb&#124;draw | 汲取 | 汲取 | keep | 吸血攻击的draw译汲取，和伤口中生命力宾语组合准确。 | crawl-ref/source/melee-attack.cc:4180 |
+| source:verb&#124;hold<br>EN: verb&#124;hold | 死死守住 | 死死守住 | keep | 践踏未能位移的hold译死死守住，和自己的阵地组句成立。 | crawl-ref/source/melee-attack.cc:5183 |
+| source:vexing<br>EN: vexing | 恼怒 | 恼怒 | keep | BEAM_VEX显示恼怒，实际vex状态词根准确。 | crawl-ref/source/beam.cc:7702 |
+| source:vigour-doubling<br>EN: vigour-doubling | 活力倍增 | 活力倍增 | keep | BEAM_DOUBLE_VIGOUR显示活力倍增，double数值关系保留。 | crawl-ref/source/beam.cc:7701 |
+| source:vile clutch<br>EN: vile clutch | 邪恶抓握 | 邪恶抓握 | keep | BEAM_VILE_CLUTCH显示邪恶抓握，保留邪恶与束缚动作风味。 | crawl-ref/source/beam.cc:7683 |
+| source:visual effects<br>EN: visual effects | 视觉效果 | 视觉效果 | keep | BEAM_VISUAL显示视觉效果，标记非伤害类型的视觉用途正确。 | crawl-ref/source/beam.cc:7660 |
+| source:vitrification<br>EN: vitrification | 玻璃化 | 玻璃化 | keep | 玻璃化与玻璃化凝视两类别均显示玻璃化，结果词根正确。 | crawl-ref/source/beam.cc:7689; crawl-ref/source/beam.cc:7690 |
+| source:weakness<br>EN: weakness | 弱化 | 弱化 | keep | BEAM_WEAKNESS显示弱化，实际降低攻击强度；与状态虚弱可统一为建议而非错误承诺。 | crawl-ref/source/beam.cc:7691 |
+| source:weird stuff<br>EN: weird stuff | 怪东西 | 怪东西 | keep | 万魔殿墙的诡异材料怪东西，源文口语weird stuff语气保留。 | crawl-ref/source/beam.cc:936 |
+| source:wrestle<br>EN: wrestle | <br>摔跤 | <br>摔跤 | adjust | 小丑wrestle译摔跤直接接了目标成为摔跤了你，须完整与目标扭摔或用可带宾语的扭摔，不能孤立词通过。；修后复核：与目标扭打用目标本体，不能把摔跤直接了目标；普通/零伤害两sink正确。 | crawl-ref/source/melee-attack.cc:3721; crawl-ref/source/melee-attack.cc:3853 |
+| source:you<br>EN: You | 你 | 你 | keep | 光束受击对象、辅助攻击主语、施法目标、对白代词与玩家name所有上下文you/You均译你，保持第二人称；actor原始You漏译另列98。 | crawl-ref/source/beam.cc:4324; crawl-ref/source/beam.cc:4373; crawl-ref/source/melee-attack.cc:2850; crawl-ref/source/mon-cast-target.cc:120; crawl-ref/source/mon-cast-target.cc:269; crawl-ref/source/mon-cast-target.cc:285; crawl-ref/source/mon-cast.cc:6299; crawl-ref/source/mon-cast.cc:9184; crawl-ref/source/mon-util.cc:4538; crawl-ref/source/mon-util.cc:4540; crawl-ref/source/player-act.cc:386 |
+| source:you %1$s %2$s%3$s%4$s%5$s%6$s%7$s<br>EN: You %1$s %2$s%3$s%4$s%5$s%6$s%7$s | 你%3$s%1$s了%2$s%4$s%5$s%6$s%7$s | 你%4$s%3$s%1$s了%2$s%5$s%6$s%7$s | adjust | 普通双持命中模板把weapon_desc的用你的武器仍放目标后，组成你砍了目标用你的剑；应将武器槽%4$s移至程度和动词前。；修后复核：双持命中武器槽4前移程度和攻击动词前，目标、带电和强度槽仍保留。 | crawl-ref/source/melee-attack.cc:3888; crawl-ref/source/melee-attack.cc:3796 |
+| source:you %s %s but do no damage.<br>EN: You %s %s but do no damage. | 你%s%s，但没有造成伤害。 | 你%s%s，但没有造成伤害。 | keep | 玩家辅助攻击零伤害句保留动作、对象与未造成伤害，顺序符合中文。 | crawl-ref/source/melee-attack.cc:2765 |
+| source:you %s %s from behind!<br>EN: You %s %s from behind! | 你从背后%s了%s！ | 你从背后%s了%s！ | keep | 从背后扑击/攻击目标，from behind前置状语与实际刺击条件一致。 | crawl-ref/source/attack.cc:780 |
+| source:you %s!<br>EN: You %s! | 你%s！ | 你%s！ | keep | 液化初次或进一步的两片段都可接你%s，程度与变化过程完整。 | crawl-ref/source/melee-attack.cc:4672 |
+| source:you are blinded by the light of %s divine shield.<br>EN: You are blinded by the light of %s divine shield. | 你被%s神圣护盾的光芒致盲了。 | 你被%s神圣护盾的光芒致盲了。 | keep | 玩家被对方神圣护盾之光致盲，所有者、致盲来源与受害者正确。 | crawl-ref/source/melee-attack.cc:360 |
+| source:you are electrocuted%s<br>EN: You are electrocuted%s | 你被电击了%s | 你被电击了%s | keep | 电击铭印对玩家中文被电击，受伤主体与强度槽完整。 | crawl-ref/source/attack.cc:1262 |
+| source:you are encased in ice.<br>EN: You are encased in ice. | 你被冰封了。 | 你被冰封了。 | keep | 冰武器、冷光束、怪物法术使玩家冰封，三个消费者均冻住状态，译文适合。 | crawl-ref/source/art-func.h:1104; crawl-ref/source/beam.cc:4544; crawl-ref/source/mon-cast.cc:7927 |
+| source:you are skewered in place!<br>EN: You are skewered in place! | 你被钉在了原地！ | 你被钉在了原地！ | keep | 墓爪把玩家钉住原地，移动限制与skewered意象完整。 | crawl-ref/source/beam.cc:4459 |
+| source:you attempt to attack %s, but flinch away in fear!<br>EN: You attempt to attack %s, but flinch away in fear! | 你尝试攻击%s，却因恐惧而退缩了！ | 你尝试攻击%s，却因恐惧而退缩了！ | keep | 恐惧导致玩家攻击前退缩，尝试、转折和原因完整。 | crawl-ref/source/melee-attack.cc:1904 |
+| source:you become untethered in space!<br>EN: You become untethered in space! | 你在空间中失去了锚定！ | 你在空间中失去了锚定！ | adjust | 分离飞镖玩家失去空间锚定的显示正确，但邻近BLINKITIS_AUX=本地化proj_name，hiscores直接读该字段作死亡来源；须规范英文存储，显示端翻译，不扩展快照例外。；修后复核：分离飞镖死亡身份和投射物EN字段另存，玩家即时失去锚定消息正确；最终成绩仅识别已知投射物显示。 | crawl-ref/source/ranged-attack.cc:738; crawl-ref/source/ranged-attack.cc:740; crawl-ref/source/hiscores.cc:1547; crawl-ref/source/item-prop.cc:2233 |
+| source:you block the %s.<br>EN: You block the %s. | 你格挡了%s。 | 你格挡了%s。 | keep | 玩家普通格挡光束，格挡对象与玩家主体准确。 | crawl-ref/source/beam.cc:3603 |
+| source:you block the %s... and reflect it back!<br>EN: You block the %s... and reflect it back! | 你格挡了%s……并将其反射了回去！ | 你格挡了%s……并将其反射了回去！ | keep | 玩家反射无实体盾牌时格挡后反射回去，两动作和方向完整。 | crawl-ref/source/beam.cc:3596 |
+| source:you catch %s completely off-guard!<br>EN: You catch %s completely off-guard! | 你完全出其不意地击中了%s！ | 你完全出其不意地击中了%s！ | keep | 刺击使目标完全措手不及，完全出其不意保留完全无防备程度。 | crawl-ref/source/attack.cc:774 |
+| source:you convulse!<br>EN: You convulse! | 你抽搐了！ | 你抽搐了！ | keep | 驱散亡灵对玩家造成抽搐，convulse与被攻击状态准确。 | crawl-ref/source/beam.cc:3869 |
+| source:you devour %s%s!<br>EN: You devour %s%s! | 你吞噬了%s%s! | 你吞噬了%s%s! | keep | 吞食份量空/半个/一大块参数与怪物名，所有分支份量和吞噬完整；半角叹号可统一为建议。 | crawl-ref/source/melee-attack.cc:1230 |
+| source:you drain %s %s.<br>EN: You drain %s %s. | 你吸取了%s%s。 | 你吸取了%s%s。 | keep | 玩家反魔法辅助攻击汲取目标的法力/力量，资源由专用上下文区分，所有格与汲取动作完整。 | crawl-ref/source/melee-attack.cc:2806 |
+| source:you draw in some of the released energy.<br>EN: You draw in some of the released energy. | 你吸收了部分释放的能量。 | 你吸收了部分释放的能量。 | keep | 调谐护甲吸收释放能量恢复部分MP，some部分限定和释放来源完整。 | crawl-ref/source/melee-attack.cc:3651 |
+| source:you emit a cloud of foul miasma!<br>EN: You emit a cloud of foul miasma! | 你释放出一团恶臭的瘴气！ | 你释放出一团恶臭的瘴气！ | keep | 瘴气变异受击后放恶臭瘴气云，云、气味与发出动作完整。 | crawl-ref/source/melee-attack.cc:5031 |
+| source:you feel %sfirmly anchored in space.<br>EN: You feel %sfirmly anchored in space. | 你感到%s牢牢固定在空间中。 | 你感到%s牢牢固定在空间中。 | adjust | 空间锚定已有状态续用直接传英文more ，实际你感到more 牢牢固定在空间中；需本地化比较程度并使更加牢固自然。；修后复核：首次/续用两完整空间锚定句分别牢固/更牢固，raw more消除。 | crawl-ref/source/beam.cc:3917 |
+| source:you feel a momentary urge to oink.<br>EN: You feel a momentary urge to oink. | 你短暂地有想要发出猪叫声的冲动。 | 你短暂地有想要发出猪叫声的冲动。 | keep | 猪化失败短暂想猪叫，光束与卡牌两处回退都准确，不误称已变猪。 | crawl-ref/source/beam.cc:3898; crawl-ref/source/decks.cc:1792 |
+| source:you feel an ill-omen....<br>EN: You feel an ill-omen.... | 你感到不祥的预兆…… | 你感到不祥的预兆…… | keep | 厄运施加失败后感觉不祥预兆，ill-omen凶兆风味与感觉语气完整。 | crawl-ref/source/beam.cc:4053 |
+| source:you feel devious.<br>EN: You feel devious. | 你感到狡诈。 | 你感到狡诈。 | keep | devious效果首次增强时感到狡诈，语义与武器狡黠风味一致。 | crawl-ref/source/attack.cc:1521 |
+| source:you feel invigorated.<br>EN: You feel invigorated. | 你感到精力充沛。 | 你感到精力充沛。 | keep | 法力噬咬真正恢复MP时精力充沛，感觉与恢复实际一致。 | crawl-ref/source/melee-attack.cc:2822 |
+| source:you feel life coursing into your body%s<br>EN: You feel life coursing into your body%s | 你感到生命力涌入你的身体%s | 你感到生命力涌入你的身体%s | keep | 吸血光束及其他施法吸取把生命力注入玩家，两个消费者都有HP恢复，强度标点保留。 | crawl-ref/source/beam.cc:2386; crawl-ref/source/spl-cast.cc:3807 |
+| source:you feel light-headed.<br>EN: You feel light-headed. | 你感到头晕。 | 你感到头晕。 | keep | 眩晕效果初次获得时头晕，light-headed并非头轻体重减少。 | crawl-ref/source/beam.cc:4141 |
+| source:you feel the transmutational energy in your body is nearly expended.<br>EN: You feel the transmutational energy in your body is nearly expended. | 你感到体内的变化能量几乎耗尽了。 | 你感到体内的变形能量几乎耗尽了。 | adjust | flux同一transmutational energy在当前其他消息为变形能量，此处变化能量脱离固定形态词根，应统一体内的变形能量几乎耗尽。；修后复核：体内变形能量几乎耗尽与Flux同系列一致，不误为普通变化。 | crawl-ref/source/melee-attack.cc:755 |
+| source:you feel unable to drink.<br>EN: You feel unable to drink. | 你感到无法饮用。 | 你感到无法饮用。 | keep | 禁药效果初次使玩家无法饮用，不能饮用的能力限制保留。 | crawl-ref/source/beam.cc:4157 |
+| source:you feel your inability to drink will last longer.<br>EN: You feel your inability to drink will last longer. | 你感到你无法饮用的状态将持续更久。 | 你感到你无法饮用的状态将持续更久。 | keep | 已有禁药效果续时会持续更久，未误成更加严重的禁药程度。 | crawl-ref/source/beam.cc:4155 |
+| source:you feel your light-headedness will last longer.<br>EN: You feel your light-headedness will last longer. | 你感到你的头晕将持续更久。 | 你感到你的头晕将持续更久。 | keep | 已有眩晕续时头晕持续更久，持续时间与状态正确。 | crawl-ref/source/beam.cc:4139 |
+| source:you feel your silence will last longer.<br>EN: You feel your silence will last longer. | 你感到你的沉默将持续更久。 | 你感到你的沉默将持续更久。 | keep | 已有沉默将持续更久，术语沉默与续时含义完整。 | crawl-ref/source/beam.cc:4175 |
+| source:you feel your vulnerability to fire will last longer.<br>EN: You feel your vulnerability to fire will last longer. | 你感觉你的火焰易伤还会持续更久。 | 你感觉你的火焰易伤还会持续更久。 | keep | 已有火易伤续时，火焰易伤与持续更久完整。 | crawl-ref/source/beam.cc:4202 |
+| source:you feel yourself grow more vulnerable to poison.<br>EN: You feel yourself grow more vulnerable to poison. | 你感到自己对毒素更加脆弱了。 | 你感到自己对毒素更加脆弱了。 | keep | 毒易伤施加时对毒素更脆弱，方向和对象正确。 | crawl-ref/source/beam.cc:3996 |
+| source:you ferociously counterattack!<br>EN: You ferociously counterattack! | 你猛烈地反击了！ | 你猛烈地反击了！ | keep | 米诺陶头槌猛烈反击，ferociously与counterattack完整。 | crawl-ref/source/melee-attack.cc:423 |
+| source:you have difficulty breathing.<br>EN: You have difficulty breathing. | 你呼吸困难。 | 你呼吸困难。 | keep | 箭毒造成呼吸困难，实际中毒、窒息伤害和减速行为与呼吸困难风味一致。 | crawl-ref/source/beam.cc:2152 |
+| source:you hear %s!<br>EN: you hear %s! | 你听到了%s！ | 你听到了%s！ | keep | 爆炸听觉将翻译后的各声音名插入听到了%s，各声音类别与听觉动作完整。 | crawl-ref/source/beam.cc:6910 |
+| source:you hear a grinding noise.<br>EN: You hear a grinding noise. | 你听到一阵研磨声。 | 你听到一阵研磨声。 | keep | 挖掘墙体发出研磨声，声音和听到动作准确。 | crawl-ref/source/beam.cc:916 |
+| source:you hear a sizzling sound!<br>EN: You hear a sizzling sound! | 你听到一阵嘶嘶声！ | 你听到一阵嘶嘶声！ | keep | 冷热元素云抵消发出嘶嘶声，声音意象正确。 | crawl-ref/source/beam.cc:3024 |
+| source:you hear a splash.<br>EN: You hear a splash. | 你听到了溅水声。 | 你听到了溅水声。 | keep | 水波落地与地形物品落水都可溅水，两个真实消费者共享消息准确。 | crawl-ref/source/beam.cc:2678; crawl-ref/source/terrain.cc:1088 |
+| source:you hear an explosion!<br>EN: you hear an explosion! | 你听到了一声爆炸！ | 你听到了一声爆炸！ | keep | 光束自定义爆炸与怪物爆炸不可见时听到一声爆炸，范围通用合适。 | crawl-ref/source/beam.cc:6901; crawl-ref/source/mon-explode.cc:46 |
+| source:you hear the sound of one hand!<br>EN: You hear the sound of one hand! | 你听到一只手发出的声音！ | 你听到一只手发出的声音！ | keep | 未定义爆炸听到单手之声的程序笑话保留，未擅自正常化成拍手声。 | crawl-ref/source/beam.cc:6915 |
+| source:you knock %s out of %s grip!<br>EN: You knock %s out of %s grip! | 你将%s从%s掌握中击落！ | 你将%s从%s掌握中击落！ | keep | 玩家击落目标持握物品，物品与对方所有格参数正确；掌握可润色手中为建议。 | crawl-ref/source/melee-attack.cc:605 |
+| source:you let out a bloodcurdling howl!<br>EN: You let out a bloodcurdling howl! | 你发出了一声令人胆寒的嚎叫！ | 你发出了一声令人胆寒的嚎叫！ | keep | 狼形态嚎叫令人胆寒，声量和嚎叫风味保留。 | crawl-ref/source/melee-attack.cc:1340 |
+| source:you lift your head to howl, but no sound comes out.<br>EN: You lift your head to howl, but no sound comes out. | 你仰头欲嚎，却发不出声音。 | 你仰头欲嚎，却发不出声音。 | keep | 沉默时仰头欲嚎但无声，起动作与but否定结果完整。 | crawl-ref/source/melee-attack.cc:1335 |
+| source:you pounce on the unaware %s!<br>EN: You pounce on the unaware %s! | 你扑向毫无防备的%s！ | 你扑向毫无防备的%s！ | keep | 猫科刺击扑向未察觉目标，扑击与无防备限定完整。 | crawl-ref/source/attack.cc:788 |
+| source:you revel in the kill!<br>EN: You revel in the kill! | 你沉醉于杀戮之中！ | 你沉醉于杀戮之中！ | keep | 狼形态击杀激发狂怒时沉醉杀戮，revel的快感语气保留。 | crawl-ref/source/melee-attack.cc:1319 |
+| source:you rip the existence from %s to re-knit yourself!<br>EN: You rip the existence from %s to re-knit yourself! | 你从%s身上剥离存在来重新编织自己！ | 你从%s身上剥离存在来重新编织自己！ | keep | 点燃时从受害者存在中剥离能量重编自身，存在、剥离与修复意象完整，可润色重塑自身为建议。 | crawl-ref/source/melee-attack.cc:5653 |
+| source:you sap %s willpower!<br>EN: You sap %s willpower! | 你削弱了%s意志力！ | 你削弱了%s意志力！ | keep | 噬魂辅助攻击削弱对方意志，sap与意志力属性方向准确。 | crawl-ref/source/melee-attack.cc:2794 |
+| source:you sink your fangs into %s and drain %s dry!<br>EN: You sink your fangs into %s and drain %s dry! | 你把獠牙插入%s，吸干了%s！ | 你把獠牙插入%s，吸干了%s！ | keep | 吸血鬼将目标吸干并可能收为仆从，獠牙插入和吸干两动作完整。 | crawl-ref/source/melee-attack.cc:641 |
+| source:you sink your fangs into %s and drink %s %s.<br>EN: You sink your fangs into %s and drink %s %s. | 你把獠牙插入%s，畅饮了%s%s。 | 你把獠牙插入%s，畅饮了%s%s。 | adjust | 獠牙刺入和饮用动作本身准确，但monster::blood_name实际返回原始blood/ichor/sap/haemolymph/vitreous fluid/vital fluids，未经翻译直接插中文，应在最终显示点翻译全部可达体液名。；修后复核：六体液真实叶全部最终sink翻译，鲜血/灵液/树液/血淋巴液/玻璃体液/体液不互换，未知???仍保留。 | crawl-ref/source/melee-attack.cc:634; crawl-ref/source/monster.cc:2549; crawl-ref/source/monster.cc:2565 |
+| source:you smell burning wood.<br>EN: You smell burning wood. | 你闻到了木头燃烧的气味。 | 你闻到了木头燃烧的气味。 | keep | 不可见树木烧毁时闻到木头燃烧气味，嗅觉与材质完整。 | crawl-ref/source/beam.cc:979 |
+| source:you spit out %s as %s twist &amp; change in your maw!<br>EN: You spit out %s as %s twist &amp; change in your maw! | <br>你将%s吐了出来——%s在你的嘴里扭动变形！ | <br>你将%s吐了出来——%s在你的嘴里扭动变形！ | keep | 吞食目标因混沌扭曲变化而吐出，复数英语动词形态用中文同句，吐出与口中扭变关系完整。 | crawl-ref/source/melee-attack.cc:1294 |
+| source:you spit out %s as %s twists &amp; changes in your maw!<br>EN: You spit out %s as %s twists &amp; changes in your maw! | <br>你将%s吐了出来——%s在你的嘴里扭动变形！ | <br>你将%s吐了出来——%s在你的嘴里扭动变形！ | keep | 单数目标吞食后扭曲吐出，同521中文不标单复数合理。 | crawl-ref/source/melee-attack.cc:1299 |
+| source:you%s<br>EN: You%s | 你%s | 你%s | keep | 抵抗程度与完全无效片段由actor::resist_margin_phrase本地化后加你，三个附魔/恐惧消费者均自然。 | crawl-ref/source/beam.cc:3677; crawl-ref/source/mon-cast.cc:6372; crawl-ref/source/mon-cast.cc:6447; crawl-ref/source/actor.cc:959 |
+| source:you%s miss %s%s.<br>EN: You%s miss %s%s. | 你%s未命中%s%s。 | 你%s未命中%s%s。 | adjust | 玩家辅助未命中模板的weapon_desc置于目标后，真实双持时为你未命中目标用你的剑；需完整前置武器状语并匹配位置格式调用。；修后复核：双持miss新编号父句武器槽3前置，程度和目标槽准确，旧键兼容不当运行句。 | crawl-ref/source/melee-attack.cc:2864; crawl-ref/source/melee-attack.cc:3796 |
+| source:your %s blocks the %s... and reflects it back!<br>EN: Your %s blocks the %s... and reflects it back! | 你的%s格挡了%s……并将其反射了回去！ | 你的%s格挡了%s……并将其反射了回去！ | keep | 玩家实体反射盾先格挡再反射光束，盾牌和光束参数角色正确。 | crawl-ref/source/beam.cc:3590 |
+| source:your %s misses %s.<br>EN: Your %s misses %s. | 你的%s未命中%s。 | 你的%s未命中%s。 | keep | 玩家辅助攻击未命中，aux_attack为相应攻击名，所属与未命中对象完整。 | crawl-ref/source/melee-attack.cc:2644 |
+| source:your attached jelly eats the %s!<br>EN: Your attached jelly eats the %s! | 你身上的果冻吃掉了%s！ | 你身上的果冻吃掉了%s！ | keep | 吉瓦附着果冻吞掉投射物并治疗玩家，附着位置和吃掉动作完整，jelly词根与果冻形态一致。 | crawl-ref/source/ranged-attack.cc:272 |
+| source:your autodazzler retaliates!<br>EN: Your autodazzler retaliates! | 你的自动炫目器反击了！ | 你的自动炫目器反击了！ | keep | Coglin自动炫目器反击发动，装置名称和反击触发完整。 | crawl-ref/source/attack.cc:1673 |
+| source:your blow resonates through %s.<br>EN: Your blow resonates through %s. | 你的打击在%s体内激起了共鸣。 | 你的打击在%s体内激起了共鸣。 | keep | tempering受击共鸣穿过目标，打击在体内激起共鸣的译法保留传播与共振意象。 | crawl-ref/source/melee-attack.cc:2887 |
+| source:your body is warped painfully!<br>EN: Your body is warped painfully! | 你的身体痛苦地扭曲了！ | 你的身体痛苦地扭曲了！ | keep | warp body使身体痛苦扭曲，actual暂变异/玻璃化行为与风味不冲突。 | crawl-ref/source/beam.cc:4063 |
+| source:your lifeless body<br>EN: your lifeless body | 你的尸体 | 你的尸体 | keep | 玩家HP已零时受击对象为尸体，lifeless body的尸体含义准确，未混为仍活着亡灵。 | crawl-ref/source/beam.cc:4324; crawl-ref/source/beam.cc:4373 |
+| source:your magic feels %stainted.<br>EN: Your magic feels %stainted. | 你的魔力感到%s被玷污了。 | 你的魔力感到%s被玷污了。 | adjust | sap magic续时参数more原始英文且魔力感到被玷污拟人失当，须译比较程度并表达你感到自己的魔法受到了更深的污染。；修后复核：初次/续用两完整污染句表达你感觉自己的魔法受污染/更严重污染，消除raw more和魔法自己感觉。 | crawl-ref/source/beam.cc:4014 |
+| source:your mind is blasted!<br>EN: Your mind is blasted! | 你的心智被轰击了！ | 你的心智被轰击了！ | keep | 心智爆破使玩家心智受冲击，主体心智和强烈轰击风味完整。 | crawl-ref/source/beam.cc:3879 |
+| source:your paragon deflects %s attack away from you.<br>EN: Your paragon deflects %s attack away from you. | 你的典范将%s攻击偏转开了。 | 你的典范将%s攻击偏转开了。 | keep | 白金典范挡开对玩家攻击，典范与偏转开保持保护意图；可明说从你身边挡开以完整突出away from you，属建议。 | crawl-ref/source/attack.cc:1685 |
+| source:your projectile teleports!<br>EN: Your projectile teleports! | 你的投射物被传送了！ | 你的投射物被传送了！ | keep | 次元靶心使投射物传送到目标，传送与投射物主体完整。 | crawl-ref/source/beam.cc:2654 |
+| source:your slime covering ruptures, deflecting the attack, %s attack away%s<br>EN: Your slime covering ruptures, deflecting the attack, %s attack away%s | 你的软泥覆盖层破裂，偏转并弹开了%s攻击%s | 你的软泥覆盖层破裂，偏转并弹开了%s攻击%s | keep | 软泥覆盖层破裂偏转攻击，原EN有重复病句但中文合理表达同一防护结果，所有格攻击与标点完整。 | crawl-ref/source/melee-attack.cc:1158 |
+| source:your spellmotor activates!<br>EN: Your spellmotor activates! | 你的法术引擎启动了！ | 你的法术引擎启动了！ | keep | 法术引擎发动附加近战，装置名称和启动完整。 | crawl-ref/source/melee-attack.cc:5583 |
+| source:your teleport is interrupted.<br>EN: Your teleport is interrupted. | 你的传送被打断了。 | 你的传送被打断了。 | keep | 空间锚定中断待发生传送，中文被打断而非已完成传送，状态准确。 | crawl-ref/source/beam.cc:3923 |
+| source:your tendrils<br>EN: Your tendrils | <br>你的触须 | <br>你的触须 | keep | 美杜莎辅助毒刺消息主语你的触须，与实际触须攻击正确。 | crawl-ref/source/melee-attack.cc:2850 |
+| source:your tendrils lash around %s %s and pull it to the ground!<br>EN: Your tendrils lash around %s %s and pull it to the ground! | 你的触须缠绕住%s%s并将其拉到地上！ | 你的触须缠绕住%s%s并将其拉到地上！ | keep | 触须缠住怪物持握武器并拉到地上，所有格由apostrophise提供，武器作pull it对象，拉落结果完整。 | crawl-ref/source/melee-attack.cc:4902 |
+| source:your will is overpowered!<br>EN: Your will is overpowered! | 你的意志被压制了！ | 你的意志被压制了！ | keep | 魅惑光束压倒玩家意志并混乱，意志被压制与被压倒风味相符。 | crawl-ref/source/beam.cc:3825 |
+| source:your will lashes out at %s%s<br>EN: Your will lashes out at %s%s | 你的意志猛击%s%s | 你的意志猛击%s%s | keep | willful demon抵挡附魔后意志反伤施法者，猛击对象和强度标点完整。 | crawl-ref/source/beam.cc:3688 |
+
+### combat-display-dependencies
+
+| Identity / English source | 审前中文 | 当前中文 | 终态 | 逐项理由 | 证据 |
+|---|---|---|---|---|---|
+| source:you feel more firmly anchored in space.<br>EN: You feel more firmly anchored in space. |  | 你感觉自己在空间中被锚定得更牢固了。 | adjust | 已有空间锚定续用时更牢固，保留比较程度，未显示raw more。 | crawl-ref/source/beam.cc:3918 |
+| source:you feel firmly anchored in space.<br>EN: You feel firmly anchored in space. |  | 你感觉自己被牢牢地锚定在空间中。 | adjust | 首次空间锚定用牢牢锚定，与续用比较句区分。 | crawl-ref/source/beam.cc:3919 |
+| source:your magic feels more tainted.<br>EN: Your magic feels more tainted. |  | 你感觉自己的魔法受到了更严重的污染。 | adjust | 已有sap magic受更严重污染；感觉主体是你，受污染对象是魔法而非法力。 | crawl-ref/source/beam.cc:4016 |
+| source:your magic feels tainted.<br>EN: Your magic feels tainted. |  | 你感觉自己的魔法受到了污染。 | adjust | 初次sap magic魔法受污染，不拟人化魔法在感觉，也不添加更字。 | crawl-ref/source/beam.cc:4017 |
+| source:%1$s blocks the %2$s with %3$s %4$s... and reflects it back!<br>EN: %1$s blocks the %2$s with %3$s %4$s... and reflects it back! |  | %1$s用%3$s%4$s挡住了%2$s……并将其反射了回去！ | adjust | 槽1格挡怪物、槽2光束、槽3所有格、槽4盾牌；中文以3+4为工具格挡2，随后反射2，角色未倒置。 | crawl-ref/source/beam.cc:5498 |
+| source:fire towards %s<br>EN: fire towards %s |  | 朝%s射击 | adjust | 多不当目标的完整朝目标列表射击，不漏射击动作或拼入raw towards。 | crawl-ref/source/beam.cc:8027 |
+| source:attack %s<br>EN: attack %s |  | 攻击%s | adjust | 近战攻击具体目标，完整动宾短句进入确认父句，不与射击混同。 | crawl-ref/source/fight.cc:1524 |
+| source:really %1$s%2$s?%3$s<br>EN: Really %1$s%2$s?%3$s |  | 真的要%1$s%2$s吗？%3$s | adjust | 槽1完整动作、槽2目标限定后缀、槽3惩戒警告；父句确认动作而不重复目标。 | crawl-ref/source/fight.cc:1527 |
+| source:%1$s and %2$s<br>EN: %1$s and %2$s |  | %1$s和%2$s | adjust | 范围确认列表自身与怪物两对象用和连接，无新增所有关系。 | crawl-ref/source/fight.cc:1602 |
+| source:really %1$s near %2$s%3$s?%4$s<br>EN: Really %1$s near %2$s%3$s?%4$s |  | 真的要在%2$s附近%1$s%3$s吗？%4$s | adjust | 动作在槽2目标附近进行；中文在目标附近再做动作，near不误修饰另一个附近目标，槽3限定及槽4惩戒保留。 | crawl-ref/source/fight.cc:1609 |
+| source:really %1$s %2$s%3$s?%4$s<br>EN: Really %1$s %2$s%3$s?%4$s |  | 真的要%1$s%2$s%3$s吗？%4$s | adjust | 直接攻击不当目标时动作+目标，和near父句区分；限定与惩戒尾句完整。 | crawl-ref/source/fight.cc:1610 |
+| source:emitting a toxic aura<br>EN: emitting a toxic aura |  | 散发毒性光环 | adjust | 当前正散发毒性光环，是召唤危险条件而非新动作或新效果。 | crawl-ref/source/fight.cc:1631 |
+| source:spewing a noxious bog<br>EN: spewing a noxious bog |  | 喷涌出有毒沼泽 | adjust | 当前正喷涌有毒沼泽，保留noxious毒性及状态持续时序。 | crawl-ref/source/fight.cc:1634 |
+| source:in the middle of a polar vortex<br>EN: in the middle of a polar vortex |  | 处于极地漩涡之中 | adjust | 当前处于极地漩涡之中，使用Polar Vortex现行极地漩涡术语，未改成普通冰旋风。 | crawl-ref/source/fight.cc:1636 |
+| source:raining down reagents<br>EN: raining down reagents |  | 洒落炼金试剂 | adjust | 当前正洒落炼金试剂，保留试剂媒介和持续动作，不凭raining捏造天气。 | crawl-ref/source/fight.cc:1638 |
+| source:really %1$s while %2$s?<br>EN: Really %1$s while %2$s? |  | 你正%2$s，真的要%1$s吗？ | adjust | 槽1欲做动作、槽2当前危险条件，中文你正条件，真的要动作吗，while时序和角色不互换。 | crawl-ref/source/fight.cc:1729 |
+| source:do that<br>EN: do that |  | 那样做 | adjust | 共享方向短句完整保留朝目标方向射击，值以当前source实际文本为准。 | crawl-ref/source/fight.cc::stop_summoning_prompt |
+| source:summon<br>EN: summon |  | 召唤 | adjust | 共享方向短句完整保留朝目标方向射击，值以当前source实际文本为准。 | crawl-ref/source/fight.cc::stop_summoning_prompt |
+| source:projectile prefix&#124;%1$s %2$s<br>EN: projectile prefix&#124;%1$s %2$s |  | %1$s%2$s | adjust | 槽1受风祝福的修饰槽2投射物，中文相邻前置修饰；canonical wind-blessed仍另存。 | crawl-ref/source/item-prop.cc:2297 |
+| source:wind-blessed<br>EN: wind-blessed |  | 受风祝福的 | adjust | 受风祝福的为投射物前置修饰，不作原始前缀身份或额外机制承诺。 | crawl-ref/source/item-prop.cc:2298 |
+| source:monster body attack&#124;%1$s %2$s but does no damage.<br>EN: monster body attack&#124;%1$s %2$s but does no damage. |  | %1$s%2$s，却未造成伤害。 | adjust | 槽1攻击者，槽2已含完整目标的body谓语，未再追加一次目标；零伤害否定保留。 | crawl-ref/source/melee-attack.cc:980 |
+| source:you%1$s miss %2$s%3$s.<br>EN: You%1$s miss %2$s%3$s. |  | 你%3$s%1$s未能击中%2$s。 | adjust | 槽1闪避程度、槽2目标、槽3双持武器描述；中文武器状语在未能击中前，未放目标后。 | crawl-ref/source/melee-attack.cc:2870 |
+| source:decapitation verb&#124;rip<br>EN: decapitation verb&#124;rip |  | 撕掉 | adjust | 撕掉保留爪撕动作而非刀砍。 | crawl-ref/source/melee-attack.cc:3457 |
+| source:decapitation verb&#124;tear<br>EN: decapitation verb&#124;tear |  | 扯掉 | adjust | 扯掉保留撕扯动作。 | crawl-ref/source/melee-attack.cc:3457 |
+| source:decapitation verb&#124;claw<br>EN: decapitation verb&#124;claw |  | 用爪撕掉 | adjust | 用爪撕掉保留爪作工具。 | crawl-ref/source/melee-attack.cc:3458 |
+| source:decapitation verb&#124;slice<br>EN: decapitation verb&#124;slice |  | 切掉 | adjust | 切掉保留利刃切断。 | crawl-ref/source/melee-attack.cc:3466 |
+| source:decapitation verb&#124;lop<br>EN: decapitation verb&#124;lop |  | 削掉 | adjust | 削掉保留削断动作。 | crawl-ref/source/melee-attack.cc:3466 |
+| source:decapitation verb&#124;chop<br>EN: decapitation verb&#124;chop |  | 砍掉 | adjust | 砍掉保留劈砍。 | crawl-ref/source/melee-attack.cc:3467 |
+| source:decapitation verb&#124;hack<br>EN: decapitation verb&#124;hack |  | 劈掉 | adjust | 劈掉保留用力劈断。 | crawl-ref/source/melee-attack.cc:3467 |
+| source:decapitation&#124;%1$s %2$s %3$s last head off!<br>EN: decapitation&#124;%1$s %2$s %3$s last head off! |  | %1$s%2$s了%3$s最后一个头！ | adjust | 槽1攻击者、2七选动作、3已带所有格目标；保留动作撕/扯/爪/切/削/砍/劈及最后一个头，不吞槽2。 | crawl-ref/source/melee-attack.cc:3479 |
+| source:decapitation&#124;%1$s %2$s one of %3$s heads off!<br>EN: decapitation&#124;%1$s %2$s one of %3$s heads off! |  | %1$s%2$s了%3$s其中一个头！ | adjust | 槽3已带所有格目标，切掉其中一个头与最后头分支不同；槽2七种语义动作保留，未固定砍下。 | crawl-ref/source/melee-attack.cc:3499 |
+| source:monster body action&#124;gouges %s eyes<br>EN: monster body action&#124;gouges %s eyes |  | 抠挖%s眼睛 | adjust | 目标所有格已在%s中，抠挖其眼睛，不重复的、不误成挖眼了目标。 | crawl-ref/source/melee-attack.cc:3799 |
+| source:monster body action&#124;knocks %s head<br>EN: monster body action&#124;knocks %s head |  | 敲击%s头部 | adjust | 目标所有格已提供，敲击的是目标头部，不声称攻击者用头。 | crawl-ref/source/melee-attack.cc:3801 |
+| source:monster body action&#124;locks %s head<br>EN: monster body action&#124;locks %s head |  | 锁住%s头部 | adjust | 目标所有格已提供，锁住其头部，避免锁头了目标。 | crawl-ref/source/melee-attack.cc:3803 |
+| source:monster body action&#124;strikes %s knees<br>EN: monster body action&#124;strikes %s knees |  | 击打%s膝盖 | adjust | 击打目标膝盖，未误为攻击者用自身膝撞；所有格不重复。 | crawl-ref/source/melee-attack.cc:3805 |
+| source:monster body action&#124;tickles %s<br>EN: monster body action&#124;tickles %s |  | 给%s挠痒痒 | adjust | %s为目标本体非所有格，给目标挠痒痒，避免给你的挠痒。 | crawl-ref/source/melee-attack.cc:3808 |
+| source:monster body action&#124;wrestles with %s<br>EN: monster body action&#124;wrestles with %s |  | 与%s扭打 | adjust | %s为目标本体，与目标扭打，避免摔跤了目标或与目标的扭打。 | crawl-ref/source/melee-attack.cc:3813 |
+| source:monster body attack&#124;%1$s %2$s%3$s%4$s%5$s%6$s%7$s<br>EN: monster body attack&#124;%1$s %2$s%3$s%4$s%5$s%6$s%7$s |  | %1$s%2$s%6$s%3$s%4$s%5$s%7$s | adjust | 槽1攻击者、2潜行、3完整目标谓语、4电击、5调试、6距离/武器状语、7强度标点；中文6在谓语前，3内目标只出现一次。 | crawl-ref/source/melee-attack.cc:3902 |
+| source:ichor<br>EN: ichor |  | 灵液 | adjust | 神圣或恶魔体液为灵液，未误作普通伤口血；源分支身份不译。 | crawl-ref/source/monster.cc:2556 |
+| source:sap<br>EN: sap |  | 树液 | adjust | 非真菌植物体液为树液，不误作sap magic或法力汲取。 | crawl-ref/source/monster.cc:2558 |
+| source:haemolymph<br>EN: haemolymph |  | 血淋巴液 | adjust | 昆虫等体液为血淋巴液，不把器官与流体混同。 | crawl-ref/source/monster.cc:2572 |
+| source:vitreous fluid<br>EN: vitreous fluid |  | 玻璃体液 | adjust | 浮眼的体液为玻璃体液，保留眼内液体含义，不译普通玻璃材质。 | crawl-ref/source/monster.cc:2576 |
+| source:vital fluids<br>EN: vital fluids |  | 体液 | adjust | 其余可用体液的泛称体液，不擅定血或树液。 | crawl-ref/source/monster.cc:2584 |
+| source:damnation bolt<br>EN: damnation bolt | 毁灭之矢 | 天谴弩箭 | adjust | UNRAND_DAMNATION神器名及完整正文都指天谴弩箭，已修一致；canonical仍damnation bolt。 | crawl-ref/source/item-prop.cc::projectile_display_name; crawl-ref/source/dat/descript/zh/unrand.txt:Damnation |

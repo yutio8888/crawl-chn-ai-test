@@ -2747,7 +2747,7 @@ A storm instantly forms around you!
 一阵风暴瞬间在你周围形成！
 %%%%
 A stygian plague fills %s body.
-冥河瘟疫充满了%s的身体。
+冥河瘟疫充满了%s身体。
 %%%%
 A tentacle flies out from the starspawn's body!
 一条触手从星之子体内飞出！
@@ -2983,7 +2983,7 @@ Antique Weapon
  外观暂时改变了。
 %%%%
  appears confused.
-显得困惑了。
+陷入了混乱。
 %%%%
  appreciates the change of pace.
  欣赏这种节奏的变化。
@@ -3181,7 +3181,7 @@ becomes momentarily stuck in the toxic bog.
 被麻痹了！
 %%%%
  becomes untethered in space!
-在空间中失联了！
+在空间中失去了锚定！
 %%%%
 becoming %s
 正在变为%s
@@ -3274,7 +3274,7 @@ blinking
 闪烁
 %%%%
  body is warped painfully!
-的身体痛苦地扭曲了！
+身体痛苦地扭曲了！
 %%%%
 Boing!
 蹦！
@@ -4160,7 +4160,7 @@ Fedhas booms out: Become one with the cycle of life!
 费德哈斯轰鸣道：与生命的循环合为一体！
 %%%%
 Fedhas protects the tree from harm.
-费德哈斯保护了这棵树。
+费德哈保护了这棵树，使其免受伤害。
 %%%%
 fellow slime
 同道的史莱姆
@@ -4676,7 +4676,7 @@ is covered in magical glow
 覆盖着魔法光芒
 %%%%
  is cursed with the promise of agony.
-被诅咒承受痛苦的承诺。
+被施加了预示剧痛的诅咒。
 %%%%
  is dazed by the mutagenic energy.
 被变异能量弄得晕眩。
@@ -4718,10 +4718,10 @@ You are dazed by the spores!
 被蛛网缠住了！
 %%%%
  is filled with an inner flame.
-被内在火焰充满了。
+体内充满了内焰。
 %%%%
  is filled with an intense inner flame!
-被强烈的内在火焰充满！
+体内充满了强烈的内焰！
 %%%%
  is firmly anchored in space.
 被牢牢固定在空间中。
@@ -6861,7 +6861,7 @@ sucker-punch
 突然变得更加敏捷了。
 %%%%
  suddenly seems more resistant.
-突然变得更加抗性了。
+突然显得抗性更强了。
 %%%%
 Suddenly you stand beside yourself.
 突然你站在了自己身旁。
@@ -7378,7 +7378,7 @@ The last of your harvested death is exhausted.
 你收割的最后一点死亡能量耗尽了。
 %%%%
 The last of your unstable energy dissipates and you return to your previous form.
-你不稳定的能量消散了，你恢复了之前的形态。
+你最后一点不稳定能量消散了，你恢复了之前的形态。
 %%%%
 The lava burns you terribly!
 熔岩严重地灼伤了你！
@@ -7876,7 +7876,7 @@ This altar belongs to %s, but you can't tell which.\nPress the corresponding let
 这个祭坛属于%s，但你无法分辨是哪位神祇。\n按对应字母了解神祇详情，按回车皈依或按Esc取消。
 %%%%
  This attack would place you under penance!
-这次攻击会让你受到惩罚！
+这次攻击会使你受到惩戒！
 %%%%
 This helmet is too large for your head.
 这个头盔对你的头来说太大了。
@@ -8575,7 +8575,7 @@ You
 你
 %%%%
 You %1$s %2$s%3$s%4$s%5$s%6$s%7$s
-你%3$s%1$s了%2$s%4$s%5$s%6$s%7$s
+你%4$s%3$s%1$s了%2$s%5$s%6$s%7$s
 %%%%
 You %1$s into a shaft and fall %2$d level%3$s!
 你%1$s入竖井，掉了%2$d层！
@@ -10244,7 +10244,7 @@ You feel the Shining One's silent rage upon you!
 你感受到光辉者的沉默怒火降临在你身上！
 %%%%
 You feel the transmutational energy in your body is nearly expended.
-你感到体内的变化能量几乎耗尽了。
+你感到体内的变形能量几乎耗尽了。
 %%%%
 You feel tipsy.
 你感到微醺。
@@ -16240,10 +16240,10 @@ will-reducing
 意志削弱
 %%%%
 beam hit player|The %1$s %2$s %3$s%4$s%5$s%6$s
-%1$s%2$s了%3$s%4$s%5$s！
+%1$s%2$s了%3$s%4$s%5$s%6$s
 %%%%
 beam hit monster|The %1$s %2$s %3$s%4$s%5$s%6$s
-%1$s%2$s了%3$s%4$s%5$s。
+%1$s%2$s了%3$s%4$s%5$s%6$s
 %%%%
  with %s
 （%s）
@@ -16258,7 +16258,7 @@ beam hit monster|The %1$s %2$s %3$s%4$s%5$s%6$s
 %s冰棘在%s面前碎裂了。
 %%%%
 The %1$s repels the %2$s!
-%2$s弹开了%1$s！
+%1$s弹开了%2$s！
 %%%%
 The %1$s misses %2$s.
 %1$s未击中%2$s。
@@ -18906,7 +18906,7 @@ umbral torchlight
 暗影火炬之光
 %%%%
 unravelled magic
-解析魔法
+解构残余魔法
 %%%%
 unravelling
 解构
@@ -21645,7 +21645,7 @@ flag long|divinely shielded
 受神圣护盾保护
 %%%%
 damnation bolt
-毁灭之矢
+天谴弩箭
 %%%%
 assassin centipede
 刺客蜈蚣
@@ -29464,12 +29464,10 @@ fire at
 向……射击
 %%%%
 fire at %s
-
 向%s射击
 %%%%
 fire in %s direction
-
-向%s的方向
+向%s的方向射击
 %%%%
 ghostly 
 
@@ -29625,7 +29623,7 @@ impale
 刺穿
 %%%%
 spit
-吐刺
+串刺
 %%%%
 slash
 劈斩
@@ -29916,7 +29914,7 @@ Enter next level anyway?
 仍然进入下一层吗？
 %%%%
  This would place you under penance!
- 这会让你遭受苦修！
+这会使你受到惩戒！
 %%%%
  describe         
  描述             
@@ -33156,7 +33154,7 @@ spines
 %s%s了%s！
 %%%%
 %s and strikes %s%s
-%s落下，击中了%s%s
+%s，并击中了%s%s
 %%%%
 Renounce Religion
 放弃信仰
@@ -35544,7 +35542,7 @@ deep water
 开始发光。
 %%%%
  glows dangerously bright.
-发出危险的光芒。
+发出危险的强光。
 %%%%
  decays.
 腐烂了。
@@ -38760,7 +38758,7 @@ The mass of ice explodes!
 冰块爆炸了！
 %%%%
 The sphere of damnation explodes!
-诅咒之球爆炸了！
+天谴之球爆炸了！
 %%%%
 The ball of acid explodes!
 酸球爆炸了！
@@ -38790,7 +38788,7 @@ The shards fragment into shrapnel!
 碎片裂成了弹片！
 %%%%
 The flickering shadows explode!
-闪烁的阴影爆炸了！
+闪烁的暗影爆炸了！
 %%%%
 The embers explode!
 余烬爆炸了！
@@ -45279,7 +45277,7 @@ attack prompt|ally
 盟友
 %%%%
 attack prompt|fire in %s direction
-向%s的方向
+朝%s的方向射击
 %%%%
 spore attack|%1$s %2$s at %3$s%4$s%5$s%6$s%7$s
 %1$s向%3$s%2$s%4$s%5$s%6$s%7$s
@@ -49801,6 +49799,135 @@ A bound item is preventing you from removing %s.
 %%%%
 melee action|hit
 击打
+%%%%
+You feel more firmly anchored in space.
+你感觉自己在空间中被锚定得更牢固了。
+%%%%
+You feel firmly anchored in space.
+你感觉自己被牢牢地锚定在空间中。
+%%%%
+Your magic feels more tainted.
+你感觉自己的魔法受到了更严重的污染。
+%%%%
+Your magic feels tainted.
+你感觉自己的魔法受到了污染。
+%%%%
+%1$s blocks the %2$s with %3$s %4$s... and reflects it back!
+%1$s用%3$s%4$s挡住了%2$s……并将其反射了回去！
+%%%%
+fire towards %s
+朝%s射击
+%%%%
+attack %s
+攻击%s
+%%%%
+Really %1$s%2$s?%3$s
+真的要%1$s%2$s吗？%3$s
+%%%%
+%1$s and %2$s
+%1$s和%2$s
+%%%%
+Really %1$s near %2$s%3$s?%4$s
+真的要在%2$s附近%1$s%3$s吗？%4$s
+%%%%
+Really %1$s %2$s%3$s?%4$s
+真的要%1$s%2$s%3$s吗？%4$s
+%%%%
+emitting a toxic aura
+散发毒性光环
+%%%%
+spewing a noxious bog
+喷涌出有毒沼泽
+%%%%
+in the middle of a polar vortex
+处于极地漩涡之中
+%%%%
+raining down reagents
+洒落炼金试剂
+%%%%
+Really %1$s while %2$s?
+你正%2$s，真的要%1$s吗？
+%%%%
+do that
+那样做
+%%%%
+summon
+召唤
+%%%%
+projectile prefix|%1$s %2$s
+%1$s%2$s
+%%%%
+wind-blessed
+受风祝福的
+%%%%
+monster body attack|%1$s %2$s but does no damage.
+%1$s%2$s，却未造成伤害。
+%%%%
+You%1$s miss %2$s%3$s.
+你%3$s%1$s未能击中%2$s。
+%%%%
+decapitation verb|rip
+撕掉
+%%%%
+decapitation verb|tear
+扯掉
+%%%%
+decapitation verb|claw
+用爪撕掉
+%%%%
+decapitation verb|slice
+切掉
+%%%%
+decapitation verb|lop
+削掉
+%%%%
+decapitation verb|chop
+砍掉
+%%%%
+decapitation verb|hack
+劈掉
+%%%%
+decapitation|%1$s %2$s %3$s last head off!
+%1$s%2$s了%3$s最后一个头！
+%%%%
+decapitation|%1$s %2$s one of %3$s heads off!
+%1$s%2$s了%3$s其中一个头！
+%%%%
+monster body action|gouges %s eyes
+抠挖%s眼睛
+%%%%
+monster body action|knocks %s head
+敲击%s头部
+%%%%
+monster body action|locks %s head
+锁住%s头部
+%%%%
+monster body action|strikes %s knees
+击打%s膝盖
+%%%%
+monster body action|tickles %s
+给%s挠痒痒
+%%%%
+monster body action|wrestles with %s
+与%s扭打
+%%%%
+monster body attack|%1$s %2$s%3$s%4$s%5$s%6$s%7$s
+%1$s%2$s%6$s%3$s%4$s%5$s%7$s
+%%%%
+ichor
+灵液
+%%%%
+sap
+树液
+%%%%
+haemolymph
+血淋巴液
+%%%%
+vitreous fluid
+玻璃体液
+%%%%
+vital fluids
+体液
 %%%%
 You are already invoking Yredelemnul's grip!
 你已经在召唤伊莱德莱姆努尔之握了！
