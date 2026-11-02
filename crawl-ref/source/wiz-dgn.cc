@@ -89,7 +89,7 @@ void wizard_place_stairs(bool down)
     if (stairs == DNGN_UNSEEN)
         return;
 
-    mprf(T_("Creating %sstairs."), down ? "down" : "up");
+    mpr(down ? T_("Creating downstairs.") : T_("Creating upstairs."));
     dungeon_terrain_changed(you.pos(), stairs);
 }
 

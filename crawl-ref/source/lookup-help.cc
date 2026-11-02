@@ -1380,10 +1380,10 @@ static string _branch_transit_runes(branch_type br)
     string desc;
     const bool exit = br == BRANCH_VAULTS;
     const int num_runes = br == BRANCH_ZOT ? ZOT_ENTRY_RUNES : 1;
-    return make_stringf(T_("\n\nThis branch can only be %sed while carrying at "
-                        "least %d rune%s of Zot."),
-                        exit ? "exit" : "enter",
-                        num_runes, num_runes > 1 ? "s" : "");
+    return make_stringf_p(exit
+        ? T_("\n\nThis branch can only be exited while carrying at least %1$d rune%2$s of Zot.")
+        : T_("\n\nThis branch can only be entered while carrying at least %1$d rune%2$s of Zot."),
+        num_runes, num_runes > 1 ? "s" : "");
 }
 
 static string _branch_depth(branch_type br)
@@ -1448,15 +1448,17 @@ static string _branch_subbranches(branch_type br)
 
     for (branch_iterator it; it; ++it)
         if (it->parent_branch == br && !branch_is_unfinished(it->id))
-            subbranch_names.push_back(it->longname);
+            subbranch_names.push_back(T_(it->longname));
 
     // Lair's random branches are explained in the description.
     if (!subbranch_names.empty() && br != BRANCH_LAIR)
     {
-        desc += make_stringf_p(T_("\n\nThis branch contains the entrance%s to %s."),
-                             subbranch_names.size() > 1 ? "s" : "",
-                             comma_separated_line(begin(subbranch_names),
-                                                  end(subbranch_names)).c_str());
+        desc += make_stringf(subbranch_names.size() > 1
+            ? T_("\n\nThis branch contains the entrances to %s.")
+            : T_("\n\nThis branch contains the entrance to %s."),
+            comma_separated_line(begin(subbranch_names), end(subbranch_names),
+                C_("branch entrance list", " and "),
+                C_("branch entrance list", ", ")).c_str());
     }
 
     return desc;

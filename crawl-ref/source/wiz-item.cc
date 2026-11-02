@@ -271,7 +271,8 @@ static void _tweak_randart(item_def &item)
     {
     case ARTP_VAL_BOOL:
         mprf(MSGCH_PROMPT, T_("Toggling %s to %s."), artp_name(prop),
-             props[prop] ? "off" : "on");
+             props[prop] ? C_("artefact property state", "off")
+                         : C_("artefact property state", "on"));
         artefact_set_property(item, static_cast<artefact_prop_type>(prop),
                              !props[prop]);
         break;
@@ -279,7 +280,7 @@ static void _tweak_randart(item_def &item)
     case ARTP_VAL_POS:
     {
         mprf(MSGCH_PROMPT, T_("%s was %d."), artp_name(prop), props[prop]);
-        const int val = prompt_for_int("New value? ", true);
+        const int val = prompt_for_int(T_("New value? "), true);
 
         if (val < 0)
         {
@@ -294,7 +295,7 @@ static void _tweak_randart(item_def &item)
     case ARTP_VAL_ANY:
     {
         mprf(MSGCH_PROMPT, T_("%s was %d."), artp_name(prop), props[prop]);
-        const int val = prompt_for_int("New value? ", false);
+        const int val = prompt_for_int(T_("New value? "), false);
         artefact_set_property(item, static_cast<artefact_prop_type>(prop),
                              val);
         break;
@@ -303,10 +304,10 @@ static void _tweak_randart(item_def &item)
     case ARTP_VAL_BRAND:
     {
         mprf(MSGCH_PROMPT, T_("%s was %s."), artp_name(prop),
-             props[prop] ? ego_type_string(item, false).c_str() : "normal");
+             props[prop] ? ego_type_string(item, false).c_str() : T_("normal"));
 
         char specs[80];
-        msgwin_get_line("New ego? ", specs, sizeof(specs));
+        msgwin_get_line(T_("New ego? "), specs, sizeof(specs));
         if (specs[0] == '\0')
         {
             canned_msg(MSG_OK);
@@ -389,7 +390,7 @@ void wizard_tweak_object()
         else
             mprf(T_("Old value: 0x%08" PRIx64), old_val);
 
-        msgwin_get_line("New value? ", specs, sizeof(specs));
+        msgwin_get_line(T_("New value? "), specs, sizeof(specs));
         if (specs[0] == '\0')
         {
             canned_msg(MSG_OK);
@@ -441,7 +442,7 @@ void wizard_value_item()
     if (prompt_failed(i))
         return;
 
-    const item_def& item(you.inv[i]);
+    const item_def& item = you.inv[i];
     const int real_value = item_value(item, true);
     const int known_value = item_value(item, false);
     if (real_value != known_value)
@@ -663,7 +664,7 @@ void wizard_list_items()
         {
             mprf(T_("(%2d,%2d): %s%s"), item.pos.x, item.pos.y,
                  item.name(DESC_PLAIN, false, false, false).c_str(),
-                 item.flags & ISFLAG_MIMIC ? " mimic" : "");
+                 item.flags & ISFLAG_MIMIC ? T_(" mimic") : "");
         }
     }
 
@@ -678,7 +679,7 @@ void wizard_list_items()
         {
             mprf(T_("%3d at (%2d,%2d): %s%s"), item, ri->x, ri->y,
                  env.item[item].name(DESC_PLAIN, false, false, false).c_str(),
-                 env.item[item].flags & ISFLAG_MIMIC ? " mimic" : "");
+                 env.item[item].flags & ISFLAG_MIMIC ? T_(" mimic") : "");
         }
     }
 }

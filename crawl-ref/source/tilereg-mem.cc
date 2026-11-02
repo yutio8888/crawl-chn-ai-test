@@ -8,6 +8,7 @@
 #include "describe.h"
 #include "macro.h"
 #include "output.h"
+#include "positional_format.h"
 #include "religion.h"
 #include "spl-book.h"
 #include "spl-cast.h"
@@ -46,12 +47,11 @@ void MemoriseRegion::draw_tag()
 
     const spell_type spell = (spell_type) idx;
     const string failure = failure_rate_to_string(raw_spell_fail(spell));
-    string desc = make_stringf(T_("%s    (%s)    %d/%d spell slot%s"),
-                               spell_title(spell),
-                               failure.c_str(),
-                               spell_levels_required(spell),
-                               player_spell_levels(),
-                               spell_levels_required(spell) > 1 ? "s" : "");
+    string desc = make_stringf_p(spell_levels_required(spell) > 1
+        ? T_("%1$s    (%2$s)    %3$d/%4$d spell slots")
+        : T_("%1$s    (%2$s)    %3$d/%4$d spell slot"),
+        spell_title(spell), failure.c_str(), spell_levels_required(spell),
+        player_spell_levels());
     draw_desc(desc.c_str());
 }
 

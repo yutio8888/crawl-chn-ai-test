@@ -6133,7 +6133,7 @@ string player_save_info::short_desc(bool use_qualifier) const
                     ? game_state::game_type_name_for(saved_game_type)
                     : "";
     if (!qualifier.empty())
-        desc << "[" << qualifier << "] ";
+        desc << "[" << T_(qualifier.c_str()) << "] ";
 
     const string display_species = !species::is_valid(species)
                                  ? T_(species_name.c_str())

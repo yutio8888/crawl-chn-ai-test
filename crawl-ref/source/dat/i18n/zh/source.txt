@@ -2843,7 +2843,7 @@ adjust
 调整
 %%%%
 Adjust (g)ear, (s)pells, (a)bilities, (p)otions, sc(r)olls or e(v)ocables?
-整理（g）装备、（s）法术、（a）能力、（p）药水、卷（r）轴或（v）可施放物品？
+整理（g）装备、（s）法术、（a）能力、（p）药水、卷（r）轴或（v）可激活物品？
 %%%%
 adjust to
 调整到
@@ -6492,7 +6492,7 @@ Sloth
 懒惰
 %%%%
 slow self (%d%%)
-自慢（%d%%）
+自身减速（%d%%）
 %%%%
 slowed movement
 移动减缓
@@ -7444,7 +7444,7 @@ The mud splashes down.
 泥浆溅下去了。
 %%%%
 The mutagenic energy flows into you.
-变异能量流入了你的身体。
+诱变能量流入了你的身体。
 %%%%
  shudders as wild magic violently cascades through %s%s
  在狂野魔法剧烈涌过%s时颤抖%s
@@ -8235,7 +8235,7 @@ Unknown command.
 未知命令。
 %%%%
 Unknown command. (For a list of commands type <w>??</w>.)
-未知命令。（输入<w>?</w>查看命令列表。）
+未知命令。（输入<w>??</w>查看命令列表。）
 %%%%
 Unknown command. (For a list of commands type <w>?\?</w>.)
 未知命令。（输入<w>?\?</w>查看命令列表。）
@@ -8406,7 +8406,7 @@ Which rune (ESC to exit)?
  低语道：这些会让你开口的！
 %%%%
 Whoops, nicked a vault in slime connectivity fixup
-哎呀，在黏液连接修复中碰到了保险库
+哎呀，修复黏液区域连通性时挖到了地图模板。
 %%%%
 Why would you want to do that?
 你为什么要那样做？
@@ -8523,7 +8523,7 @@ wizardry
 精准施法
 %%%%
 wizardry (x%d)
-巫师（x%d）
+精准施法（x%d）
 %%%%
  wobbles defiantly for a moment.
 顽强地短暂摇晃了一下。
@@ -8651,7 +8651,7 @@ You already know that spell!
 你已经掌握那个法术了！
 %%%%
 You also have %d voucher%s.
-你还有 %d 张优惠券%s。
+你还有%d张优惠券%.0s。
 %%%%
 You announce your regal presence to all who look upon you.
 你向所有仰望你的人宣告了你的王者存在。
@@ -9032,7 +9032,7 @@ You begin waiting.
 你开始等待。
 %%%%
 You begin with %s%s%s.
-你携带%s%s%s出发了。
+出发时，你%s%s%s。
 %%%%
 You bind the blast furnace heart with slag iron.
 你用熔渣铁绑定了鼓风炉之心。
@@ -11188,7 +11188,7 @@ You're already here!
 你已经在这里了！
 %%%%
 You're confused, stopping %s.
-你感到困惑，停止了%s。
+你陷入混乱，停止了%s。
 %%%%
 You're in a travel-excluded area, stopping %s.
 你处于旅行禁区内，停止%s。
@@ -12594,8 +12594,7 @@ Setting crawl_dir to `%s`.
 将crawl_dir设置为`%s`。
 %%%%
 %1$s %2$s %3$s.
-
-%1$s%2$s了%3$s。
+%1$s被%3$s%2$s了。
 %%%%
 %s
 
@@ -13525,7 +13524,7 @@ A mostly normal game mode that provides more advanced hints than the tutorial.
 一个基本正常的游戏模式，提供比教程更高级的提示。
 %%%%
 Dungeon Descent
-地牢下降
+地牢下行
 %%%%
 A game mode consisting of a branching, one-way path through the dungeon.
 通过地牢的分支单向路径的游戏模式。
@@ -16342,7 +16341,7 @@ Press [p] or [ctrl-v] to paste a seed from the clipboard\n(overriding the curren
 按 [p] 或 [ctrl-v] 从剪贴板粘贴种子\n（覆盖当前值）。\n
 %%%%
 The seed will determine the layout, monsters and items\nthat are all RELATIVE to this version of the Dungeon Crawl. Mid-run\nupgrades may affect the seed's effects. (Consult the manual for details.)\n
-种子将决定地牢布局、怪物和物品\n这些都是相对于此版本的地牢爬行。中途升级\n可能会影响种子效果。（详见手册。）\n
+种子决定地牢布局、怪物和物品；\n这些结果取决于当前的Crawl版本。游戏中途升级版本\n可能影响种子的生成结果。（详见手册。）\n
 %%%%
 WARNING: Your build does not support stable seeds!\nThe level may differ from the "official" seeded game.\n
 警告：你的构建版本不支持稳定种子！\n关卡可能与"官方"种子游戏不同。\n
@@ -17887,7 +17886,7 @@ The wall freezes %s%s%s
 墙壁冻结了%s%s%s
 %%%%
 The frigid air chills %s%s%s
-寒冷空气冻伤了%s%s%s
+寒冷的空气侵袭了%s%s%s
 %%%%
 Drain Magic
 汲取魔力
@@ -21738,7 +21737,7 @@ Acolyte
 侍僧
 %%%%
 Cost level: %d  Total experience: %d  Next cost level: %d Skill cost: %d
-技能等级：%d  总经验：%d  下一等级：%d  技能费用：%d
+技能费用等级：%d  总经验：%d  下一费用等级所需经验：%d  技能费用：%d
 %%%%
 Dex+3
 敏捷+3
@@ -23685,7 +23684,7 @@ You lose your grip on the chains of life and death.
 你失去了对生死之链的掌控。
 %%%%
 Your vapourised %s dissipates without effect.
-你汽化的%s消散了，没有产生效果。
+你汽化的%s药水消散了，没有产生效果。
 %%%%
 You are no longer glowing.
 你不再发光了。
@@ -26143,7 +26142,7 @@ their
 %1$s怒视着%2$s！
 %%%%
 %1$s loses %2$s grip on your mind.
-%1$s对你精神的控制力减弱了。
+%1$s失去了对你心智的控制。
 %%%%
 %1$s shimmers and splits apart.
 %1$s闪烁着分裂开来。
@@ -26164,13 +26163,13 @@ Blessed fire suddenly surrounds you!
 圣火突然包围了你！
 %%%%
 By Zin's power, all blood is cleared from the sanctuary.
-凭借辛恩之力，庇护所中的鲜血被全部清除了。
+凭借辛之力，庇护所中的鲜血被全部清除了。
 %%%%
 By Zin's power, all foul fumes within the sanctuary are swept away.
-凭借辛恩之力，庇护所中的污浊雾气被全部驱散了。
+凭借辛之力，庇护所中的污浊雾气被全部驱散了。
 %%%%
 By Zin's power, the foul cloud within the sanctuary is swept away.
-凭借辛恩之力，庇护所中的污浊云团被驱散了。
+凭借辛之力，庇护所中的污浊云团被驱散了。
 %%%%
 Careful! You are now flying above %1$s.
 小心！你正在%1$s上方飞行。
@@ -26197,10 +26196,10 @@ The Abyss bends around you!
 深渊在你周围扭曲了！
 %%%%
 The Orb lets out a furious burst of light!
-天球发出了愤怒的光芒！
+宝珠猛然迸发出愤怒的光芒！
 %%%%
 The Orb lets out an agonising shriek!
-天球发出了痛苦的尖叫！
+宝珠发出了痛苦的尖叫！
 %%%%
 The abyss shimmers again as the detected abyssal rune vanishes from your memory%1$s.
 深渊再次闪烁，你记忆中探测到的深渊符文消失了%1$s。
@@ -31382,10 +31381,10 @@ The dream sheep shake their wool and sparkle.
 梦羊们抖动着自己的羊毛，闪闪发亮。
 %%%%
 the sanctuary denies %s grip on your mind.
-圣所拒绝了%s对你心灵的控制。
+庇护所让你摆脱了%s心智控制。
 %%%%
 this branch contains the %s rune%s of zot.
-这个分支包含佐特符文的%s%s。
+这个分支包含%s佐特符文%.0s。
 %%%%
 wearing %s %s preventing teleportation
 穿着%s件防止传送的%s
@@ -32441,10 +32440,10 @@ verb|sizzle
 嘶嘶作响
 %%%%
 verb|are swarmed by
-被蜂拥包围
+蜂拥包围
 %%%%
 verb|bask
-沐浴其中
+沐浴
 %%%%
 verb|are engulfed
 被吞没
@@ -35748,7 +35747,7 @@ Piety needs to be between 0 and %d.
 虔诚值必须在 0 到 %d 之间。
 %%%%
 Ru piety can't be greater than %d.
-鲁的虔诚值不能超过 %d。
+入的虔诚值不能超过 %d。
 %%%%
 Interest must be between 0 and 255.
 兴趣值必须在 0 到 255 之间。
@@ -35826,7 +35825,7 @@ No durations matching '%s'.
 没有匹配"%s"的状态。
 %%%%
 Can't set duration directly to 0, setting it to 1 instead.
-无法直接将状态设为 0，已改为设为 1。
+无法直接将持续时间设为 0，已改为设为 1。
 %%%%
 Enter new experience level: 
 输入新经验等级：
@@ -35856,7 +35855,7 @@ You suffer the terrible wrath of No God.
 %s今天没有发怒的心情。
 %%%%
 You are not under penance.
-你并未处于苦修状态。
+你并未处于神祇的惩戒之下。
 %%%%
 Transformation failed.
 变形失败。
@@ -35871,7 +35870,7 @@ You already worship that god!
 你已经信仰该神祇了！
 %%%%
 (Tension uses a given god's perspective to check on their summons; use 'No God' to ignore this.)
-（紧张度从指定神祇的视角检查其召唤物；使用"No God"可忽略此检查。）
+（紧张度从指定神祇的视角检查其召唤物；使用“无神”可忽略此检查。）
 %%%%
 %s tension value: %d
 %s的紧张度值：%d
@@ -36010,7 +36009,7 @@ Regenerating level.
 正在重新生成楼层。
 %%%%
 All vaults are now eligible for [re]use.
-所有地牢现在都可以[重新]使用。
+所有地图模板现在都可以[重新]使用。
 %%%%
 Setting Abyss speed to %i.
 将深渊速度设为 %i。
@@ -36031,7 +36030,7 @@ Additionally, it isn't alive.
 此外，它并非活物。
 %%%%
 Floating monster: %s at (%d,%d), midx = %d
-浮空怪物：%s 于 (%d,%d)，midx = %d
+游离怪物：%s 于 (%d,%d)，midx = %d
 %%%%
 Also at (%d, %d): %s, midx = %d
 同样位于 (%d, %d)：%s，midx = %d
@@ -36043,7 +36042,7 @@ Other monster isn't holding it, though.
 不过另一只怪物并未持有它。
 %%%%
 %s not in any vaults.
-%s不在任何地牢中。
+%s不在任何地图模板内。
 %%%%
 flux bauble
 变形球
@@ -36115,16 +36114,16 @@ Currently generating level.
 当前正在生成楼层。
 %%%%
 Vault being placed: %s
-正在放置的地牢：%s
+正在放置的地图模板：%s
 %%%%
 Subvaults: %s
-子地库：%s
+子地图模板：%s
 %%%%
 Level build method = %s, level layout type  = %s, absdepth0 = %d
 关卡构建方法 = %s，关卡布局类型 = %s，绝对深度0 = %d
 %%%%
 Level vaults:
-关卡地库：
+楼层地图模板：
 %%%%
     %s
     %s
@@ -36367,7 +36366,7 @@ Unknown card.
 未知卡牌。
 %%%%
 Evokers recharged.
-召唤器已充能。
+可激活道具已充能。
 %%%%
 Unobtained all runes and the Orb of Zot.
 已取消获得所有符文和佐特宝珠。
@@ -36568,13 +36567,13 @@ Build '%s'
 \n示例：\n
 %%%%
   Sigmund v Jessica\n
-  Sigmund 对阵 Jessica\n
+  Sigmund v Jessica\n
 %%%%
   99 orc v Royal Jelly\n
-  99只兽人 对阵 果冻王\n
+  99 orc v Royal Jelly\n
 %%%%
   20-headed hydra v 10 kobold ; scimitar ego:flaming
-  多头蛇（20头） 对阵 10只狗头人；弯刀 附魔：烈焰
+  20-headed hydra v 10 kobold ; scimitar ego:flaming
 %%%%
 ) in view: (%d,%d), see_cell: %s
 ) 视野内：(%d,%d)，可见格：%s
@@ -38125,7 +38124,7 @@ What type of %s?
 什么类型的%s？
 %%%%
 ("all" for all) 
-（输入 "all" 可列出所有）
+（输入 "all" 可创建全部）
 %%%%
 obsolete
 已淘汰
@@ -38233,7 +38232,7 @@ You cannot shatter the chains on %s while it is melded with your body!
 你可以重新改信，一切都会好起来。
 %%%%
 %s Skill %4.1f Aptitude %c%d
-%s技能 %4.1f 天赋 %c%d
+%s技能 %4.1f 资质 %c%d
 %%%%
 ) *EXPLORE*
 ）*EXPLORE*
@@ -43907,7 +43906,7 @@ a Dungeon Sprint
 地牢冲刺
 %%%%
 a Dungeon Descent
-地牢下降
+地牢下行
 %%%%
 an Unknown
 未知类型
@@ -45194,7 +45193,7 @@ game start|<yellow>%s, %s the %s %s.</yellow>
 <yellow>%s，%s（%s %s）。</yellow>
 %%%%
 game start|%s set off with %s%s%s.
-%s携带%s%s%s出发了。
+%s出发时%s%s%s。
 %%%%
 game start|%s the %s %s began the quest for the Orb.
 %s（%s %s）开始了寻找宝珠的征程。
@@ -45413,7 +45412,7 @@ species skin|bones
 骨头
 %%%%
 species skin|fleshy
-皮肤的
+肉质的
 %%%%
 species skin|skin
 皮肤
@@ -51073,6 +51072,372 @@ No longer under Kirke's spell, the hog returns to its human form!
 %%%%
 No longer under Kirke's spell, the hog returns to its original form!
 不再受喀耳刻的法术影响，这头猪恢复了原形！
+%%%%
+\nYour adherence to the laws of Zin forbids you from using such a device.
+\n你遵循辛的律法，不能使用这种装置。
+%%%%
+\nYou must first come back to life before you may mutate.
+\n你必须先恢复生命，才能发生变异。
+%%%%
+\nThis is completely useless to you, as you cannot mutate.
+\n你无法发生变异，因此这对你毫无用处。
+%%%%
+<w>\nWhile standing here, you can crack open %1$s with the</w> <cyan>%2$s</cyan> <w>key</w>.
+<w>\n站在这里时，你可以按</w> <cyan>%2$s</cyan> <w>键敲开%1$s</w>。
+%%%%
+Your summoned allies are left behind.
+你的召唤盟友被留在了原来的楼层。
+%%%%
+Your summoned ally is left behind.
+你的召唤盟友被留在了原来的楼层。
+%%%%
+Your mindless puppets stay behind to rot.
+你的无心智傀儡留在原来的楼层腐烂。
+%%%%
+Your mindless puppet stays behind to rot.
+你的无心智傀儡留在原来的楼层腐烂。
+%%%%
+Your mindless puppets stay behind.
+你的无心智傀儡留在了原来的楼层。
+%%%%
+Your mindless puppet stays behind.
+你的无心智傀儡留在了原来的楼层。
+%%%%
+Fatal lua error%1$s: %2$s
+致命 Lua 错误%1$s：%2$s
+%%%%
+Lua error (map %1$s)%2$s: %3$s
+Lua 错误（地图 %1$s）%2$s：%3$s
+%%%%
+ appears in a burst of microwaves!
+伴着一阵微波出现了！
+%%%%
+ pops from nullspace!
+从虚无空间中蹦了出来！
+%%%%
+ appears in a shower of translocational energy.
+在倾泻的移位能量中出现了。
+%%%%
+ appears in a shower of sparks.
+在飞溅的火花中出现了。
+%%%%
+ materialises.
+显现出了实体。
+%%%%
+ emerges from chaos.
+从混沌中现身了。
+%%%%
+ emerges from the beyond.
+从彼界现身了。
+%%%%
+ erupts from nowhere.
+凭空猛然冒了出来。
+%%%%
+ bursts from nowhere.
+突然凭空冲了出来。
+%%%%
+ is cast out of space.
+被抛出了空间。
+%%%%
+ is cast out of reality.
+被抛出了现实。
+%%%%
+ coalesces out of pure chaos.
+从纯粹的混沌中凝聚成形。
+%%%%
+ coalesces out of seething chaos.
+从翻涌的混沌中凝聚成形。
+%%%%
+ punctures the fabric of time!
+穿破了时间的帷幕！
+%%%%
+ punctures the fabric of the universe.
+穿破了宇宙的帷幕。
+%%%%
+ manifests!
+显现了！
+%%%%
+ manifests with a bang!
+砰的一声显现了！
+%%%%
+ warns you: %s is a foul glowing shapeshifter.
+警告你：%s是邪恶的发光变形怪。
+%%%%
+ warns you: %s is a foul shapeshifter.
+警告你：%s是邪恶的变形怪。
+%%%%
+ mimic
+（拟态怪）
+%%%%
+\n(Cancelled after %d trials)
+\n（在%d次对战后取消）
+%%%%
+\n(Cancelled after %d trial)
+\n（在%d次对战后取消）
+%%%%
+Arena results:
+竞技场结果：
+%%%%
+<cyan>Hit any key to continue, ctrl-p for the full log.</cyan>
+<cyan>按任意键继续，按 ctrl-p 查看完整日志。</cyan>
+%%%%
+Enter your choice of teams:\n 
+输入你选择的对战队伍：\n 
+%%%%
+Floating monster %s (%d, %d)
+游离怪物%s（%d，%d）
+%%%%
+%s in vault(s) 
+%s所在地图模板：
+%%%%
+vault diagnostic list| and 
+和
+%%%%
+vault diagnostic list|, 
+、
+%%%%
+Bogus env.mgrid (%d, %d) pointing to %s
+无效的 env.mgrid（%d，%d）指向%s
+%%%%
+Monster pointed to
+被指向的怪物
+%%%%
+%s messages will be suppressed.
+将隐藏%s消息。
+%%%%
+%s messages will be printed.
+将显示%s消息。
+%%%%
+\n\nThis branch can only be exited while carrying at least %1$d rune%2$s of Zot.
+\n\n只有携带至少%1$d枚佐特符文，才能离开这一分支。
+%%%%
+\n\nThis branch can only be entered while carrying at least %1$d rune%2$s of Zot.
+\n\n只有携带至少%1$d枚佐特符文，才能进入这一分支。
+%%%%
+\n\nThis branch contains the entrances to %s.
+\n\n这一分支内有通往%s的入口。
+%%%%
+\n\nThis branch contains the entrance to %s.
+\n\n这一分支内有通往%s的入口。
+%%%%
+branch entrance list| and 
+和
+%%%%
+branch entrance list|, 
+、
+%%%%
+macro mapping mode|macro
+宏
+%%%%
+macro mapping mode|regular keymap
+常规按键映射
+%%%%
+macro mapping mode|menu keymap
+菜单按键映射
+%%%%
+macro mapping mode|targeting keymap
+目标选择按键映射
+%%%%
+macro mapping mode|level map keymap
+楼层地图按键映射
+%%%%
+macro mapping mode|confirmation keymap
+确认按键映射
+%%%%
+macro mapping mode|buggy keymap
+有错误的按键映射
+%%%%
+Redefined %1$s '%2$s' => '%3$s'.
+已重新定义%1$s：'%2$s' => '%3$s'。
+%%%%
+Created %1$s '%2$s' => '%3$s'.
+已创建%1$s：'%2$s' => '%3$s'。
+%%%%
+\n<w>%1$s:</w> %2$d/%3$d rune%4$s: %5$s
+\n<w>%1$s:</w> %2$d/%3$d枚符文：%5$s
+%%%%
+Your icy thorns crumble before %s.
+你的冰棘在%s面前碎裂了。
+%%%%
+The icy thorns crumble before %s.
+冰棘在%s面前碎裂了。
+%%%%
+%1$s    (%2$s)    %3$d/%4$d spell slots
+%1$s    （%2$s）    法术容量：所需%3$d／剩余%4$d
+%%%%
+%1$s    (%2$s)    %3$d/%4$d spell slot
+%1$s    （%2$s）    法术容量：所需%3$d／剩余%4$d
+%%%%
+New value? 
+新数值？
+%%%%
+New ego? 
+新的附加属性？
+%%%%
+To what level? (current = %.1f) 
+设为多少级？（当前为%.1f）
+%%%%
+Increased %1$s to skill level %2$.1f.
+已将%1$s技能提高至%2$.1f级。
+%%%%
+Lowered %1$s to skill level %2$.1f.
+已将%1$s技能降低至%2$.1f级。
+%%%%
+Reset %1$s to skill level %2$.1f.
+已将%1$s技能重设为%2$.1f级。
+%%%%
+General
+总体
+%%%%
+Create/edit %s from key
+按键创建或编辑%s
+%%%%
+Clear all %s
+清除全部%s
+%%%%
+Current %s
+当前%s
+%%%%
+macro mapping mode|macros
+宏
+%%%%
+macro mapping mode|regular keymaps
+常规按键映射
+%%%%
+macro mapping mode|menu keymaps
+菜单按键映射
+%%%%
+macro mapping mode|targeting keymaps
+目标选择按键映射
+%%%%
+macro mapping mode|level map keymaps
+楼层地图按键映射
+%%%%
+macro mapping mode|confirmation keymaps
+确认按键映射
+%%%%
+macro mapping mode|buggy keymaps
+有错误的按键映射
+%%%%
+Editing <w>%s</w>.
+正在编辑<w>%s</w>。
+%%%%
+Really clear all %s?
+确定要清除全部%s吗？
+%%%%
+All %s cleared!
+已清除全部%s！
+%%%%
+\nYou can choose lessons:
+\n你可以选择以下课程：
+%%%%
+\nYou can choose maps:
+\n你可以选择以下地图：
+%%%%
+ (<red>Errors during initialization!</red>)
+（<red>初始化期间发生错误！</red>）
+%%%%
+Seeded
+指定种子
+%%%%
+Tutorial
+教程
+%%%%
+Unknown
+未知
+%%%%
+An altar to %s
+%s的祭坛
+%%%%
+macro cycle mode|macros
+宏
+%%%%
+macro cycle mode|default
+默认
+%%%%
+macro cycle mode|menu
+菜单
+%%%%
+macro cycle mode|level
+楼层地图
+%%%%
+macro cycle mode|targeting
+目标选择
+%%%%
+macro cycle mode|confirmation
+确认
+%%%%
+ cycle mode: %s
+切换模式：%s
+%%%%
+ edit keymaps
+编辑按键映射
+%%%%
+Creating downstairs.
+正在创建下行楼梯。
+%%%%
+Creating upstairs.
+正在创建上行楼梯。
+%%%%
+compact equipment caption|Eq: 
+装: 
+%%%%
+the following items: 
+携带以下物品：
+%%%%
+sound state|on
+开启
+%%%%
+sound state|off
+关闭
+%%%%
+ and reappears
+，又重新出现了
+%%%%
+The wall melts %s!
+墙壁融化了%s！
+%%%%
+The walls melt %s!
+墙壁融化了%s！
+%%%%
+The wall burns %s!
+墙壁灼伤了%s！
+%%%%
+The walls burn %s!
+墙壁灼伤了%s！
+%%%%
+artefact property state|on
+开启
+%%%%
+artefact property state|off
+关闭
+%%%%
+X-ray vision enabled.
+透视视野已开启。
+%%%%
+X-ray vision disabled.
+透视视野已关闭。
+%%%%
+empty-handed timing|already
+已经
+%%%%
+empty-handed timing|now
+现在
+%%%%
+You can't repeat shop actions.
+你不能重复商店操作。
+%%%%
+You can't repeat altar actions.
+你不能重复祭坛操作。
+%%%%
+You can't repeat mutation catalyst actions.
+你不能重复诱变催化器操作。
+%%%%
+You have finished your manual of %s and skilfully toss it away.
+你完成了%s手册的学习，熟练地将其丢掉了。
+%%%%
+You have finished your manual of %s and toss it away.
+你完成了%s手册的学习，将其丢掉了。
 %%%%
 %s blessed by the Shining One
 受到光辉者祝福的%s

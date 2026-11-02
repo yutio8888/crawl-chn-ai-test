@@ -760,7 +760,7 @@ public:
         instructions_text +=
             (T_("<white>[ctrl-p]</white> view rc file information and log"));
         if (recent_error_messages())
-            instructions_text += " (<red>Errors during initialization!</red>)";
+            instructions_text += T_(" (<red>Errors during initialization!</red>)");
 
         m_root->add_child(make_shared<Text>(
                         formatted_string::parse_string(instructions_text)));

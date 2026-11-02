@@ -81,18 +81,22 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "Issue 6 number vocabulary preserves grouping boundaries",
-                 "[zh-translation][issue-6][grammar]")
+                 "[zh-translation][issue-6][grammar][interface-rereview]")
 {
-    // Freeze existing grouping, including its established 110 and 10000 forms.
+    // A leading ten omits one; ten following hundreds/thousands retains it.
+    // Values beyond the finite zero..thousand vocabulary use whole digits.
     const pair<unsigned, const char *> cases[] =
     {
         { 0, "零" }, { 1, "一" }, { 9, "九" }, { 10, "十" },
         { 11, "十一" }, { 19, "十九" }, { 20, "二十" }, { 21, "二十一" },
         { 99, "九十九" }, { 100, "一百" }, { 101, "一百零一" },
-        { 109, "一百零九" }, { 110, "一百十" }, { 119, "一百十九" },
+        { 109, "一百零九" }, { 110, "一百一十" },
+        { 111, "一百一十一" }, { 119, "一百一十九" },
         { 120, "一百二十" }, { 999, "九百九十九" }, { 1000, "一千" },
-        { 1001, "一千零一" }, { 1010, "一千零十" },
-        { 1100, "一千一百" }, { 9999, "九千九百九十九" }, { 10000, "十千" },
+        { 1001, "一千零一" }, { 1010, "一千零一十" },
+        { 1011, "一千零一十一" }, { 1110, "一千一百一十" },
+        { 1100, "一千一百" }, { 9999, "九千九百九十九" },
+        { 10000, "10000" }, { 10010, "10010" }, { 123456, "123456" },
     };
     for (const auto &test : cases)
     {
@@ -102,6 +106,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         ScopedLangEn english;
         CHECK(number_in_words(test.first) == canonical);
     }
+    CHECK(number_in_words(~0U) == to_string(~0U));
     CHECK(number_in_words_en(8) == "eight");
     CHECK(number_in_words_en(20) == "twenty");
     CHECK(number_in_words_en(101) == "one hundred and one");
@@ -109,7 +114,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "Issue 6 skin display preserves canonical anatomy",
-                 "[zh-translation][issue-6][skin]")
+                 "[zh-translation][issue-6][skin][interface-rereview]")
 {
     struct skin_case
     {
@@ -121,7 +126,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     };
     const skin_case cases[] =
     {
-        { SP_HUMAN, "skin", "fleshy", "皮肤", "皮肤的" },
+        { SP_HUMAN, "skin", "fleshy", "皮肤", "肉质的" },
         { SP_RED_DRACONIAN, "scales", "scaled", "鳞片", "鳞片的" },
         { SP_NAGA, "scales", "scaled", "鳞片", "鳞片的" },
         { SP_TENGU, "feathers", "feathered", "羽毛", "羽毛的" },
@@ -131,6 +136,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         { SP_POLTERGEIST, "ectoplasm", "ectoplasmic", "灵质", "灵质的" },
         { SP_REVENANT, "bones", "bony", "骨头", "骨质的" },
     };
+    // Adjective accessors are retained compatibility/helper coverage; this
+    // table does not claim a current UI consumer uses every adjective.
     for (const auto &test : cases)
     {
         CHECK(species::skin_name(test.species) == test.noun_zh);
@@ -563,5 +570,30 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             CHECK(mon.props[MON_GENDER_KEY].get_int() == GENDER_NEUTRAL);
             CHECK(info.props[MON_GENDER_KEY].get_int() == GENDER_NEUTRAL);
         }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "interface rereview: actual item quantities use complete Chinese numeric groups and whole-digit fallback",
+                 "[zh-translation][interface-rereview][number-word-consumer]")
+{
+    item_def item;
+    item.base_type = OBJ_MISSILES;
+    item.sub_type = MI_STONE;
+    item.flags = ISFLAG_IDENTIFIED;
+    for (const auto& count : {std::make_pair(110, "一百一十"),
+                              std::make_pair(111, "一百一十一"),
+                              std::make_pair(1010, "一千零一十"),
+                              std::make_pair(10000, "10000")})
+    {
+        item.quantity = count.first;
+        CHECK(item.name(DESC_PLAIN, false, true, false, true).find(
+                  string(count.second) + " ") == 0);
+        {
+            ScopedLangEn canonical;
+            CHECK(item.name(DESC_PLAIN, false, true, false, true).find(
+                      number_in_words_en(count.first) + " ") == 0);
+        }
+        CHECK(item.quantity == count.first);
     }
 }

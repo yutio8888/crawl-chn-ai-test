@@ -47,7 +47,8 @@ values are translated. Preserve separators, format placeholders, control charact
 Serialization identities, Lua/JSON comparison keys, `.des` tags, enum
 identifiers, and TextDB lookup keys stay English. Translate only at a display
 boundary. Audited display snapshots include `Note::name` for `NOTE_MESSAGE`
-created by `crawl.take_note`, `NOTE_HP_CHANGE` created in `ouch()` from
+created by `crawl.take_note` and the three game-start producers below,
+`NOTE_HP_CHANGE` created in `ouch()` from
 `scorefile_entry::death_description(DDV_TERSE)`, and `NOTE_DEATH` from its
 `DDV_NORMAL` death display (`DDV_VERBOSE` in wizard simulation). The `name` and
 `desc` fields of the five item note types listed below also store display
@@ -58,6 +59,7 @@ cover other note types or fields. Their complete consumer boundary is:
 | Stage | Consumer | Contract |
 |---|---|---|
 | Message producer | `l-crawl.cc::crawl_take_note` | Constructs `NOTE_MESSAGE`; the complete template and string arguments translate together or the whole message remains English |
+| Game-start producers | `main.cc::_take_starting_note`, `_djinn_announce_spells`, `_wanderer_note_equipment` | Capture complete named identity and item/memorised/library spell displays in unmarked `NOTE_MESSAGE`; arbitrary actor/item names are preserved, while the separate `begin` milestone stays English |
 | Injury producer | `ouch()` | Constructs `NOTE_HP_CHANGE` from the current injury display; known beam/event causes translate at the display gate, unknown names remain verbatim |
 | Death producer | `ouch()` | Constructs `NOTE_DEATH` from the normal death display or wizard verbose simulation; the separate literal wizard-revival note is unchanged |
 | Item producers | `identify_item`, `bless_weapon`, `_check_note_item`, `_maybe_note_found_unrand`, acquirement selection, purchase | Capture current item names and origin/blessing descriptions in `NOTE_ID_ITEM`, `NOTE_GET_ITEM`, `NOTE_FOUND_UNRAND`, `NOTE_ACQUIRE_ITEM`, `NOTE_BUY_ITEM`; BUY has an empty description |
@@ -85,6 +87,14 @@ interpret these item strings. The existing `item_kind_by_name` and
 `get_item_by_exact_name` accessors resolve base/DB names, not arbitrary saved
 full item names with inscriptions, appearance, brands or artefact names. No
 parser, persistence schema, or numeric field is repurposed for retranslation.
+
+The three game-start message snapshots also predate this audit. Their private
+helpers assemble real inventory, memorised-spell and library lists in the same
+order and under the same conditions. `NOTE_MESSAGE` is always noteworthy;
+`Note::describe` returns these unmarked strings unchanged. Save/load, notes UI
+and chardump preserve the creation-language text. The independent `begin`
+milestone does not consume it. No parser, marker or schema is added, and the
+separate wizard-mode message is outside this exception.
 
 The protocol-facing Lua bindings `you.race()`,
 `you.species()`, `you.genus()`, `you.class()`, and `you.monster()` therefore
