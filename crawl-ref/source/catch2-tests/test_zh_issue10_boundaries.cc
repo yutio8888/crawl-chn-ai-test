@@ -1846,7 +1846,7 @@ TEST_CASE("magic rereview: actual LOS spell messages cover player visible and un
     };
     const auto old_animations = Options.use_animations;
     unwinder restore_animations([&] { Options.use_animations = old_animations; });
-    Options.use_animations = 0;
+    Options.use_animations = use_animations_type();
     // Real callers always supply a player/monster. Null global messages are
     // statically translated; null is not a supported damage/animation caster.
     for (const auto& family : families)
