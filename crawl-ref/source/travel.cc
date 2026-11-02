@@ -1130,9 +1130,9 @@ command_type travel()
             && you.props.exists(AUTO_REST_STATUS_POS)
             && you.props[AUTO_REST_STATUS_POS].get_coord() == you.pos())
         {
-            mprf(MSGCH_ERROR,
-                    "You appear to be waiting for the end of something which may "
-                    "never occur. Examine your explore_auto_rest_status option.");
+            mprf(MSGCH_ERROR, "%s",
+                 T_("You appear to be waiting for the end of something which may "
+                    "never occur. Examine your explore_auto_rest_status option."));
             stop_running();
             return CMD_NO_CMD;
         }
@@ -5047,6 +5047,8 @@ void explore_discoveries::found_feature(const coord_def &pos,
             string desc = env.markers.property_at(pos, MAT_ANY, "stop_explore");
             if (desc.empty())
                 desc = cleaned_feature_description(pos);
+            else
+                desc = T_(desc.c_str());
             runed_doors.emplace_back(desc, 1);
             es_flags |= ES_RUNED_DOOR;
         }
@@ -5072,6 +5074,8 @@ void explore_discoveries::found_feature(const coord_def &pos,
             string desc = env.markers.property_at(pos, MAT_ANY, "stop_explore");
             if (desc.empty())
                 desc = cleaned_feature_description(pos);
+            else
+                desc = T_(desc.c_str());
             transporters.emplace_back(desc, 1);
             es_flags |= ES_TRANSPORTER;
         }

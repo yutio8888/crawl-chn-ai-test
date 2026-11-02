@@ -177,7 +177,7 @@ static string _spell_extra_description(spell_type spell, bool transient)
     const string damagestring = spell_damage_string(spell, false, -1, true);
 
     desc << chop_string(spell_power_string(spell), 10)
-         << chop_string(damagestring.length() ? damagestring : "N/A", 10)
+         << chop_string(damagestring.length() ? damagestring : T_("N/A"), 10)
          << chop_string(rangestring, 8)
          << chop_string(spell_noise_string(spell, 10), 14);
 
@@ -3216,7 +3216,7 @@ static string _wizard_spell_power_numeric_string(spell_type spell)
 {
     const int cap = spell_power_cap(spell);
     if (cap == 0)
-        return "N/A";
+        return T_("N/A");
     const int power = min(calc_spell_power(spell), cap);
     return make_stringf("%d (%d)", power, cap);
 }
@@ -3678,7 +3678,7 @@ string spell_power_string(spell_type spell)
 
     const int percent = spell_power_percent(spell);
     if (percent < 0)
-        return "N/A";
+        return T_("N/A");
     else
         return make_stringf("%d%%", percent);
 }
@@ -3717,7 +3717,7 @@ string spell_range_string(spell_type spell)
 string range_string(int range, int maxrange, int minrange)
 {
     if (range <= 0)
-        return "N/A";
+        return T_("N/A");
 
     string ret = to_string(range);
     if (maxrange > -1)

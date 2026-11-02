@@ -3694,8 +3694,9 @@ void remove_bane(bane_type bane)
 
 // Calculate how many XLs worth of XP it would take for the player to remove a
 // specified bane. If they do not have the bane, this is calculated as if they
-// had it for its default duration (as affected by mult)
-int xl_to_remove_bane(bane_type bane, int mult)
+// had it for its default duration (as affected by mult). include_new previews
+// adding that duration to any existing bane, without changing player state.
+int xl_to_remove_bane(bane_type bane, int mult, bool include_new)
 {
     int progress = 0;
     int you_skill_cost_level = you.skill_cost_level;
@@ -3705,8 +3706,9 @@ int xl_to_remove_bane(bane_type bane, int mult)
         (you.has_mutation(MUT_ACCURSED) || you.undead_state() != US_ALIVE) ? 2
                                                                            : 1;
 
-    const int amount = you.banes[bane] > 0 ? you.banes[bane]
-                                           : bane_data[bane_index[bane]].duration * mult / 100;
+    const int new_amount = bane_data[bane_index[bane]].duration * mult / 100;
+    const int amount = include_new ? you.banes[bane] + new_amount
+                       : you.banes[bane] > 0 ? you.banes[bane] : new_amount;
     const int bane_xp = amount * cost_factor;
 
     while (progress < bane_xp)

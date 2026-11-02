@@ -565,7 +565,7 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
                       self.payload["input_sha256"])
 
     def test_complete_body_unions_bind_orphans_and_full_content(self):
-        for category in ("ability", "mutation"):
+        for category in ("ability", "mutation", "passive"):
             rows = MODULE.complete_description_rows(category, (
                 {"live": "First.\n\nSecond.", "old": "Historical."},
                 {"live": "第一。\n\n第二。", "orphan": "旧译。"},

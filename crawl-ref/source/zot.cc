@@ -281,12 +281,12 @@ static void _shatter_floor_gem(gem_type gem, bool quiet = false)
             if (was_mimic)
             {
                 mprf(T_("The power of Zot manifests... and reveals the %s gem was"
-                     " a mimic! It cackles and vanishes."), gem_adj(gem));
+                     " a mimic! It cackles and vanishes."), C_("gem appearance", gem_adj(gem)));
                 continue;
             }
 
             mprf(T_("With a frightful flash, the power of Zot shatters the %s"
-                 " gem into ten thousand fragments!"), gem_adj(gem));
+                 " gem into ten thousand fragments!"), C_("gem appearance", gem_adj(gem)));
             // Using UA_PICKUP here is dubious.
             flash_view_delay(UA_PICKUP, MAGENTA, 100);
             flash_view_delay(UA_PICKUP, LIGHTMAGENTA, 100);
@@ -320,14 +320,14 @@ void print_gem_warnings(int gem_int, int old_time_taken)
     if (old_time_taken + 2700 < limit && time_taken + 2700 >= limit)
     {
         mprf(T_("If you linger in this branch much longer, the power of Zot will "
-             "shatter your %s gem."), gem_adj(gem));
+             "shatter your %s gem."), C_("gem appearance", gem_adj(gem)));
     }
 
     if (old_time_taken + 1000 < limit && time_taken + 1000 >= limit)
     {
         mprf(T_("Zot senses the otherworldly energies of your %s gem, and will "
              "surely shatter it if you linger in this branch any longer!"),
-             gem_adj(gem));
+             C_("gem appearance", gem_adj(gem)));
     }
 }
 
@@ -365,7 +365,7 @@ void incr_gem_clock()
         if (Options.more_gem_info)
         {
             mprf(T_("With a frightful flash, the power of Zot shatters your %s gem "
-                 "into ten thousand fragments!"), gem_adj(gem));
+                 "into ten thousand fragments!"), C_("gem appearance", gem_adj(gem)));
             // Using UA_PICKUP here is dubious.
             flash_view_delay(UA_PICKUP, MAGENTA, 100);
             flash_view_delay(UA_PICKUP, LIGHTMAGENTA, 100);
@@ -407,5 +407,5 @@ string gem_status()
     const int turns_left = (time_left + 9) / 10; // round up
     return make_stringf(T_("If you linger in this branch for another %d turns, "
                         "the power of Zot will shatter your %s gem.\n"),
-                        turns_left, gem_adj(gem));
+                        turns_left, C_("gem appearance", gem_adj(gem)));
 }

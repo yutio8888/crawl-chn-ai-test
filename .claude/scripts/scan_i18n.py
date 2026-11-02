@@ -683,9 +683,16 @@ PROTOCOL_BOUNDARY_CONTRACTS = OrderedDict([
             'file': 'dat/dlua/lm_trove.lua',
             'start': r'function\s+TroveMarker:note_payed\s*\(',
             'end': r'function\s+trove_marker\s*\(',
-            'required': ((r'toll_desc\s*=\s*crawl\.t_\(self\.props\.toll_desc\)', 1),),
-            'forbidden': (r'toll_desc\s*=\s*self\.props\.toll_desc',),
-            'localized': 'toll_desc = self.props.toll_desc',
+            'required': (
+                (r'english_place\s*=\s*self\.props\.toll_desc', 1),
+                (r'display_place\s*=\s*crawl\.t_\(english_place\)', 1),
+                (r'crawl\.take_note\(trove_snapshot\(frame,\s*'
+                 r'\{english_item,\s*english_place\},\s*'
+                 r'\{display_item,\s*display_place\}\)\)', 1),
+            ),
+            'forbidden': (r'english_place\s*=\s*crawl\.t_',
+                          r'crawl\.take_note\(string\.format'),
+            'localized': 'english_place = crawl.t_(self.props.toll_desc)',
         },
     )),
 ])
@@ -4372,11 +4379,11 @@ def cmd_monster_compound_consistency(args):
     exact_rules = {
         # D-A-026 — sensed monster naming family
         "sensed monster": "感知到的怪物",
-        "trivial sensed monster": "微弱感知怪物",
-        "easy sensed monster": "简单感知怪物",
-        "tough sensed monster": "困难感知怪物",
-        "nasty sensed monster": "危险感知怪物",
-        "friendly sensed monster": "友善感知怪物",
+        "trivial sensed monster": "感知到的微不足道的怪物",
+        "easy sensed monster": "感知到的弱小怪物",
+        "tough sensed monster": "感知到的危险怪物",
+        "nasty sensed monster": "感知到的极危险怪物",
+        "friendly sensed monster": "感知到的友方怪物",
         # D-B-012 — monster orb naming pattern (entity names only)
         "great orb of eyes": "巨眼之球",
         "orb of entropy": "熵之球",

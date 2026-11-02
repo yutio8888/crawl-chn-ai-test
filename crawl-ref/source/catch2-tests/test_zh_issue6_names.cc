@@ -3,6 +3,9 @@
 #include "AppHdr.h"
 
 #include "database.h"
+#include "dlua.h"
+#include "files.h"
+#include <fstream>
 #include "directn.h"
 #include "describe.h"
 #include "mon-util.h"
@@ -12,6 +15,10 @@
 #include "transform.h"
 #include "english.h"
 #include "item-name.h"
+#include "hiscores.h"
+#include "message.h"
+#include "state.h"
+#include "zot.h"
 #include "item-prop.h"
 #include "item-status-flag-type.h"
 #include "lang-en-guard.h"
@@ -22,6 +29,7 @@
 #include "player.h"
 #include "random.h"
 #include "species.h"
+#include "spl-util.h"
 #include "stringutil.h"
 #include "tags.h"
 #include "test_zh_fixture.h"
@@ -573,6 +581,326 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     }
 }
 
+TEST_CASE("legacy dynamic display: jewellery materials and potion colours stay distinct",
+          "[zh-translation][legacy-rereview][jewellery-appearance]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH, lang_t::EN);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    struct appearance
+    {
+        int amulet_index;
+        int ring_index;
+        const char* english;
+        const char* material;
+        potion_description_colour_type potion_colour;
+        const char* colour;
+    };
+    const appearance variants[] = {
+        {0, 23, "sapphire", "蓝宝石", PDC_SAPPHIRE, "蓝宝石色"},
+        {3, 17, "emerald", "祖母绿", PDC_EMERALD, "祖母绿色"},
+        {8, 10, "ruby", "红宝石", PDC_RUBY, "红宝石色"},
+        {14, -1, "amethyst", "紫水晶", PDC_AMETHYST, "紫晶色"},
+        {1, -1, "zirconium", "锆", PDC_NCOLOURS, ""},
+    };
+    for (const auto& variant : variants)
+    {
+        CAPTURE(variant.english);
+        for (bool amulet : {true, false})
+        {
+            const int index = amulet ? variant.amulet_index : variant.ring_index;
+            if (index < 0)
+                continue;
+            item_def jewel;
+            jewel.base_type = OBJ_JEWELLERY;
+            jewel.sub_type = amulet ? AMU_REFLECTION : RING_PROTECTION;
+            jewel.quantity = 1;
+            jewel.rnd = 1;
+            jewel.subtype_rnd = index;
+            const string expected = language == lang_t::ZH
+                ? string(amulet ? "凹陷的" : "") + variant.material
+                    + (amulet ? "项链" : "戒指")
+                : string(amulet ? "dented " : "") + variant.english
+                    + (amulet ? " amulet" : " ring");
+            CHECK(jewel.name(DESC_PLAIN) == expected);
+            CHECK(jewel.subtype_rnd == index);
+            CHECK(jewel.sub_type == (amulet ? AMU_REFLECTION : RING_PROTECTION));
+            ScopedLangEn english;
+            CHECK(jewel.name(DESC_DBNAME, false, true)
+                  == (amulet ? "amulet of reflection" : "ring of protection"));
+        }
+        if (variant.potion_colour == PDC_NCOLOURS)
+            continue;
+        item_def potion;
+        potion.base_type = OBJ_POTIONS;
+        potion.sub_type = POT_MUTATION;
+        potion.quantity = 1;
+        potion.rnd = 1;
+        potion.subtype_rnd = PDESCQ(PDQ_NONE, variant.potion_colour);
+        CHECK(potion.name(DESC_PLAIN) == (language == lang_t::ZH
+              ? string(variant.colour) + "药水" : string(variant.english) + " potion"));
+        CHECK(potion.subtype_rnd == PDESCQ(PDQ_NONE, variant.potion_colour));
+    }
+    // Unambiguous appearance adjectives keep the existing unqualified fallback.
+    item_def jewel;
+    jewel.base_type = OBJ_JEWELLERY;
+    jewel.sub_type = RING_PROTECTION;
+    jewel.quantity = jewel.rnd = 1;
+    jewel.subtype_rnd = 0;
+    CHECK(jewel.name(DESC_PLAIN) == (language == lang_t::ZH ? "木戒指" : "wooden ring"));
+}
+
+
+TEST_CASE("legacy dynamic display: gem identity survives localized names and notes",
+          "[zh-translation][legacy-rereview][gem-appearance]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH, lang_t::EN);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    unwind_var<game_type> mode(crawl_state.type, GAME_TYPE_NORMAL);
+    unwind_var<bool> show_clock(Options.more_gem_info, true);
+    struct gem_appearance
+    {
+        gem_type type;
+        const char* english;
+        const char* chinese;
+    };
+    const gem_appearance gems[] = {
+        {GEM_DUNGEON, "smoky", "含烟"},
+#if TAG_MAJOR_VERSION == 34
+        {GEM_ORC, "glittering", "闪亮"},
+#endif
+        {GEM_ELF, "shimmering", "流光"},
+        {GEM_LAIR, "earthy", "土色"},
+        {GEM_SWAMP, "mossy", "覆苔"},
+        {GEM_SHOALS, "azure", "湛蓝"},
+        {GEM_SNAKE, "jade", "翠玉"},
+        {GEM_SPIDER, "milky-white", "乳白"},
+        {GEM_SLIME, "starry", "星辉"},
+        {GEM_VAULTS, "shining", "闪耀"},
+        {GEM_CRYPT, "ivory", "象牙色"},
+        {GEM_TOMB, "sanguine", "血红"},
+        {GEM_DEPTHS, "midnight", "午夜"},
+        {GEM_ZOT, "prismatic", "虹彩"},
+    };
+    REQUIRE(ARRAYSZ(gems) == NUM_GEM_TYPES);
+    for (const auto& gem : gems)
+    {
+        CAPTURE(gem.english);
+        const string adjective = language == lang_t::ZH ? gem.chinese : gem.english;
+        const string display = adjective + (language == lang_t::ZH ? "宝石" : " gem");
+        item_def item;
+        item.base_type = OBJ_GEMS;
+        item.sub_type = gem.type;
+        item.quantity = 1;
+        CHECK(item.name(DESC_PLAIN) == display);
+        CHECK(string(gem_adj(gem.type)) == gem.english);
+        CHECK(item.sub_type == gem.type);
+        Note note(NOTE_GEM_LOST, gem.type);
+        CHECK(note.describe(false, false).find(display) != string::npos);
+        CHECK(note.first == gem.type);
+        CHECK(note.name.empty());
+        CHECK(note.desc.empty());
+        {
+            ScopedLangEn canonical;
+            CHECK(item.name(DESC_DBNAME, false, true) == string(gem.english) + " gem");
+            CHECK(note.describe(false, false).find(string(gem.english) + " gem") != string::npos);
+        }
+        you.gems_found.set(gem.type);
+        const int limit = gem_time_limit(gem.type);
+        for (int threshold : {2700, 1000})
+        {
+            you.gem_time_spent[gem.type] = limit - threshold;
+            clear_messages(true);
+            print_gem_warnings(gem.type, limit - threshold - 1);
+            CHECK(get_last_messages(1, true).find(display) != string::npos);
+            CHECK(string(gem_adj(gem.type)) == gem.english);
+        }
+    }
+}
+
+TEST_CASE("legacy dynamic display: saved professions and species preserve xlog identities",
+          "[zh-translation][legacy-rereview][old-professions]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH, lang_t::EN);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    vector<pair<string, string>> identities;
+    for (const char* job : {"Thief", "Death Knight", "Paladin", "Reaver", "Stalker",
+                            "Jester", "Priest", "Healer", "Skald"})
+    {
+        identities.emplace_back("Human", job);
+    }
+    for (const char* race : {"Elf", "Hill Dwarf", "Ogre-Mage", "Grey Elf", "Gnome",
+                             "Mountain Dwarf", "Sludge Elf", "Djinni", "Lava Orc"})
+    {
+        identities.emplace_back(race, "Fighter");
+    }
+    // Same-name current entities deliberately use the parser's existing first
+    // match. Do not manufacture private negative enum fields to bypass it.
+    for (const auto& identity : identities)
+    {
+        const string& race = identity.first;
+        const string& job = identity.second;
+        CAPTURE(race, job);
+        const string raw = "v=0.15:name=Legacy:race=" + race + ":cls=" + job
+            + ":xl=1:sk=Fighting:title=Adventurer:br=D:lvl=1:god=No God:"
+              "ktyp=quitting:start=20140001000000S:end=20140001010000S";
+        scorefile_entry saved;
+        REQUIRE(saved.parse(raw));
+        const string display_job = T_(job.c_str());
+        const string display_race = T_(race.c_str());
+        if (language == lang_t::ZH)
+        {
+            REQUIRE(display_job != job);
+            REQUIRE(display_race != race);
+        }
+        for (auto verbosity : {scorefile_entry::DDV_NORMAL, scorefile_entry::DDV_VERBOSE})
+        {
+            const string output = saved.character_description(verbosity);
+            INFO(output);
+            CHECK(output.find(display_job) != string::npos);
+            CHECK(output.find(display_race) != string::npos);
+            if (language == lang_t::ZH)
+            {
+                CHECK(output.find(job) == string::npos);
+                CHECK(output.find(race) == string::npos);
+            }
+        }
+        CHECK(saved.get_fields().str_field("cls") == job);
+        CHECK(saved.get_fields().str_field("race") == race);
+        CHECK(saved.raw_string() == raw);
+        {
+            ScopedLangEn canonical;
+            const string output = saved.character_description(scorefile_entry::DDV_VERBOSE);
+            CHECK(output.find(job) != string::npos);
+            CHECK(output.find(race) != string::npos);
+        }
+        CHECK(Options.language == language);
+    }
+}
+
+TEST_CASE("legacy dynamic display: real automagic script formats messages after lookup",
+          "[zh-translation][legacy-rereview][automagic]")
+{
+    init_dungeon_lua();
+    init_spell_descs();
+    unwinder restore_spell_cache([] { init_spell_name_cache(); });
+    std::ifstream input(datafile_path("clua/automagic.lua"));
+    REQUIRE(input.good());
+    std::ostringstream contents;
+    contents << input.rdbuf();
+    const string source = contents.str();
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        init_spell_name_cache();
+        // Execute the production script in a private environment. Translation
+        // stays real; input, terminal output and game-state bindings are stubs.
+        const string script = R"lua(
+local spoken, options, commands = {}, {}, {}
+local spellbook = {a="Magic Dart"}
+local mana, key = 0, string.byte("a")
+local foe = {
+    name=function() return "orc" end,
+    attitude=function() return 0 end,
+    is_firewood=function() return false end,
+    is_safe=function() return false end,
+    is_constricting_you=function() return false end,
+    damage_level=function() return 0 end,
+    threat=function() return 1 end,
+}
+local env = setmetatable({
+    AUTOMAGIC_SPELL_SLOT="a", AUTOMAGIC_ACTIVE=true,
+    chk_lua_save={}, chk_lua_option={},
+    af_hp_is_low=function() return false end,
+    af_mp_is_low=function() return false end,
+    crawl=setmetatable({
+        mpr=function(text) spoken[#spoken+1]=text end,
+        getch=function() return key end,
+        clear_messages=function() end,
+        setopt=function(text) options[#options+1]=text end,
+        process_keys=function(text) commands[#commands+1]=text end,
+    }, {__index=crawl}),
+    you={
+        race=function() return "Human" end,
+        hp=function() return 100 end,
+        mp=function() return mana end,
+        confused=function() return false end,
+        los=function() return 1 end,
+        spell_table=function() return spellbook end,
+    },
+    monster={get_monster_at=function(x,y)
+        if x==1 and y==0 then return foe end
+    end},
+    spells=setmetatable({
+        range=function(name) assert(name==spellbook.a); return 1 end,
+        mana_cost=function(name) assert(name==spellbook.a); return 1 end,
+    }, {__index=spells}),
+}, {__index=_G})
+local function install(_ENV)
+)lua" + source + R"lua(
+end
+install(env)
+local function expected(template, ...)
+    local translated = crawl.t_(template)
+    if crawl.language()=="zh" then assert(translated~=template) end
+    return string.format(translated, ...)
+end
+for _, name in ipairs({"Magic Dart", "Sting", "Metal Splinters"}) do
+    spellbook.a=name
+    env.mag_attack(false)
+    assert(spoken[#spoken]==expected("You don't have enough magic to cast %s!",
+                                     spells.title(name)))
+    assert(spellbook.a==name and #commands==0)
+end
+if crawl.language()=="zh" then
+    assert(spells.title("Sting")=="毒刺")
+    assert(spells.title("Metal Splinters")=="金属碎片")
+end
+spellbook.a="Magic Dart"
+mana=100
+env.mag_attack(false)
+assert(commands[1]=="zarlf", "translated or changed spell command")
+for _, active in ipairs({true,false}) do
+    for _, slot in ipairs({"a","b"}) do
+        env.AUTOMAGIC_ACTIVE=active
+        key=string.byte(slot)
+        local before=#options
+        env.am_set_spell()
+        assert(env.AUTOMAGIC_SPELL_SLOT==slot)
+        local template=active and "Automagic will cast spell in slot %s (%s)."
+            or "Automagic enabled, will cast spell in slot %s (%s)."
+        assert(spoken[#spoken]==expected(template, slot,
+            spellbook[slot] and spells.title(spellbook[slot])
+                or crawl.t_("no spell currently")))
+        if active then assert(#options==before)
+        else assert(options[#options]=="automagic_enable = true") end
+        assert(env.chk_lua_save[1]()=="AUTOMAGIC_SPELL_SLOT = '"..slot.."'\n")
+    end
+end
+key=13
+env.am_set_spell()
+assert(options[#options]=="automagic_enable = false")
+assert(spoken[#spoken]==crawl.t_("Deactivated automagic."))
+local before=#options
+key=27
+env.am_set_spell()
+assert(spoken[#spoken]==crawl.t_("Cancelled.") and #options==before)
+key=string.byte("1")
+env.am_set_spell()
+assert(spoken[#spoken]==crawl.t_("Invalid spell slot.") and #options==before)
+assert(spellbook.a=="Magic Dart" and spellbook.b==nil)
+)lua";
+        const int result = dlua.execstring(script.c_str(), "automagic real consumer regression");
+        INFO(dlua.error);
+        REQUIRE(result == 0);
+    }
+}
+
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "interface rereview: actual item quantities use complete Chinese numeric groups and whole-digit fallback",
                  "[zh-translation][interface-rereview][number-word-consumer]")
@@ -595,5 +923,274 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                       number_in_words_en(count.first) + " ") == 0);
         }
         CHECK(item.quantity == count.first);
+    }
+}
+
+TEST_CASE("legacy Lua display: real autofight and delay scripts retain command identities",
+          "[zh-translation][legacy-rereview][lua-messages]")
+{
+    init_dungeon_lua();
+    for (const char* filename : {"clua/autofight.lua", "clua/delays.lua"})
+    {
+        std::ifstream input(datafile_path(filename));
+        REQUIRE(input.good());
+        std::ostringstream contents;
+        contents << input.rdbuf();
+        const string source = contents.str();
+        for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+        {
+            TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+            const string checks = string(filename) == "clua/autofight.lua" ? R"lua(
+for _, slot in ipairs({"a", "Z"}) do
+    env.AUTOMAGIC_SPELL_SLOT=slot
+    env.hit_magic()
+    assert(spoken[#spoken][1]==string.format(crawl.t_("No spell in slot %s!"),slot))
+    env.hit_magic_nomove()
+    assert(spoken[#spoken][1]==string.format(crawl.t_("No spell in slot %s!"),slot))
+    assert(env.AUTOMAGIC_SPELL_SLOT==slot)
+end
+book.a="Sting"
+env.AUTOMAGIC_SPELL_SLOT="a"
+env.hit_magic()
+env.hit_magic_nomove()
+assert(movement[1]==true and movement[2]==false and book.a=="Sting")
+)lua" : R"lua(
+local raw="invalid_channel:%s unchanged"
+env.rr_add_message(raw,true,1)
+assert(#env.g_rr_ignored==0)
+assert(spoken[#spoken][1]==string.format(
+    crawl.t_("Bad channel name '%s' for runrest: '%s'"), "invalid_channel",raw))
+assert(spoken[#spoken][2]=="error")
+env.rr_add_message("plain %s unchanged",true,1)
+assert(#env.g_rr_ignored==1)
+assert(env.g_rr_ignored[1].filter:matches("plain %s unchanged",-1))
+)lua";
+            const string script = R"lua(
+local spoken, movement, book = {}, {}, {}
+local env=setmetatable({
+    chk_lua_option={}, chk_lua_save={}, chk_interrupt_activity={},
+    crawl=setmetatable({mpr=function(text, channel)
+        spoken[#spoken+1]={text,channel}
+    end}, {__index=crawl}),
+    you={spell_table=function() return book end},
+    mag_attack=function(move) movement[#movement+1]=move end,
+}, {__index=_G})
+local function install(_ENV)
+)lua" + source + R"lua(
+end
+install(env)
+)lua" + checks;
+            const int result = dlua.execstring(script.c_str(), filename);
+            INFO(dlua.error);
+            REQUIRE(result == 0);
+        }
+    }
+}
+
+TEST_CASE("legacy Lua metadata: real stash script and item binding retain armour search tags",
+          "[zh-translation][legacy-rereview][stash-tags]")
+{
+    init_dungeon_lua();
+    std::ifstream input(datafile_path("clua/stash.lua"));
+    REQUIRE(input.good());
+    std::ostringstream contents;
+    contents << input.rdbuf();
+    const string source = contents.str();
+    const string script = R"lua(
+local env=setmetatable({}, {__index=_G})
+local function install(_ENV)
+)lua" + source + R"lua(
+end
+install(env)
+function legacy_stash_test(item)
+    return env.ch_stash_search_annotate_item(item)
+end
+)lua";
+    const int setup = dlua.execstring(script.c_str(), "stash setup");
+    INFO(dlua.error);
+    REQUIRE(setup == 0);
+    const pair<armour_type, const char*> armours[] = {
+        {ARM_TROLL_LEATHER_ARMOUR, "{Regen+}"},
+        {ARM_STEAM_DRAGON_ARMOUR, "{rSteam}"},
+        {ARM_ACID_DRAGON_ARMOUR, "{rCorr}"},
+        {ARM_QUICKSILVER_DRAGON_ARMOUR, "{Will+}"},
+        {ARM_SWAMP_DRAGON_ARMOUR, "{rPois}"},
+        {ARM_FIRE_DRAGON_ARMOUR, "{rF++ rC-}"},
+        {ARM_ICE_DRAGON_ARMOUR, "{rC++ rF-}"},
+        {ARM_PEARL_DRAGON_ARMOUR, "{rN+}"},
+        {ARM_STORM_DRAGON_ARMOUR, "{rElec}"},
+        {ARM_SHADOW_DRAGON_ARMOUR, "{Stlth+}"},
+        {ARM_GOLDEN_DRAGON_ARMOUR, "{rF+ rC+ rPois}"},
+        {ARM_ROBE, "{body armour}"},
+    };
+    for (const auto& armour : armours)
+    {
+        item_def item;
+        item.base_type = OBJ_ARMOUR;
+        item.sub_type = armour.first;
+        item.quantity = 1;
+        item.flags = ISFLAG_IDENTIFIED;
+        string first_annotation;
+        for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+        {
+            TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+            string annotation;
+            REQUIRE(dlua.callfn("legacy_stash_test", "i>s", &item, &annotation));
+            INFO(annotation);
+            CHECK(annotation.find(armour.second) != string::npos);
+            CHECK(annotation.find("{body armour}") != string::npos);
+            CHECK(annotation.find("{body armor}") != string::npos);
+            if (first_annotation.empty())
+                first_annotation = annotation;
+            else
+                CHECK(annotation == first_annotation);
+            CHECK(Options.language == language);
+            CHECK(item.sub_type == armour.first);
+            if (armour.first == ARM_FIRE_DRAGON_ARMOUR)
+                CHECK(annotation.find("{fire resistance}") != string::npos);
+        }
+    }
+    REQUIRE(dlua.execstring("legacy_stash_test=nil", "stash cleanup") == 0);
+}
+
+TEST_CASE("legacy Lua markers: real toll and message consumers retain canonical properties",
+          "[zh-translation][legacy-markers][lua-consumers]")
+{
+    init_dungeon_lua();
+    init_properties();
+    init_item_name_cache();
+    init_mut_index();
+    string sources;
+    for (const char *file : {"dlua/lm_trig.lua", "dlua/lm_fog.lua", "dlua/lm_monst.lua",
+                             "dlua/lm_trove.lua", "dlua/lm_timed.lua"})
+    {
+        std::ifstream input(datafile_path(file));
+        REQUIRE(input.good());
+        std::ostringstream contents;
+        contents << input.rdbuf();
+        sources += "\n" + contents.str() + "\n";
+    }
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string script = R"lua(
+local messages, notes, prompts = {}, {}, {}
+local visible, stairs, answer = true, false, false
+local player_x, player_y = 1, 1
+local removed = 0
+local env = setmetatable({
+  crawl=setmetatable({
+    mpr=function(text, channel) messages[#messages+1]={text,channel} end,
+    take_note=function(text) notes[#notes+1]=text end,
+    yesno=function(text) prompts[#prompts+1]=text; return answer end,
+  }, {__index=crawl}),
+  you=setmetatable({
+    pos=function() return player_x,player_y end,
+    see_cell=function() return visible end,
+    taking_stairs=function() return stairs end,
+    have_rune=function(n) assert(n==3); return true end,
+  }, {__index=you}),
+  dgn=setmetatable({
+    point=function(x,y) return {x=x,y=y} end,
+    mons_at=function() return nil end,
+    create_monster=function(x,y,s) assert(s=="iron golem"); return true end,
+    feature_desc_at=function() return crawl.t_("a portal") end,
+  }, {__index=dgn}),
+}, {__index=_G})
+local function install(_ENV)
+)lua" + sources + R"lua(
+end
+install(env)
+local marker={pos=function() return 10,10 end}
+local function translated(key)
+  local value=crawl.t_(key)
+  if crawl.language()=="zh" then assert(value~=key, "missing test key: "..key) end
+  return value
+end
+local function trove(item)
+  local toll={type="item",item=item}
+  return setmetatable({toll=toll,props={toll=toll,desc="a portal",
+    toll_desc="to enter a treasure trove"}},env.TroveMarker)
+end
+local item={base_type="scroll",sub_type="acquirement",quantity=2,plus1=false,ego_type=false}
+local gate=trove(item)
+local canonical=gate:item_name(false,true)
+local display=gate:item_name(false)
+assert(gate:overview_note()==string.format(translated("give %s"),display))
+assert(gate:fdesc_long():find(gate:item_name(),1,true))
+assert(gate:check_item_veto(marker)=="veto")
+assert(prompts[#prompts]==string.format(translated(
+  "This trove needs %s to function. Give it the items?"),gate:item_name()))
+assert(messages[#messages][1]==translated("Okay, then."))
+local original_t=env.crawl.t_
+env.crawl.t_=function(key) if key=="give %s" then return key end; return crawl.t_(key) end
+gate=trove(item)
+assert(gate:overview_note()=="give "..canonical)
+env.crawl.t_=original_t
+local offered={pluses=function() return 4 end}
+gate:note_payed(offered,true)
+assert(notes[#notes]==string.format(translated("You paid a toll of %s %s"),
+  gate:item_name(),translated("to enter a treasure trove")))
+assert(item.plus1==false and item.quantity==2 and item.sub_type=="acquirement")
+gate.props.toll_desc="unknown purpose %s"
+gate:note_payed(offered,true)
+assert(notes[#notes]=="You paid a toll of "..gate:item_name(nil,true).." unknown purpose %s")
+assert(item.plus1==false)
+gate.props.toll_desc=nil
+gate.props.desc="unknown arch %s"
+gate:note_payed(offered,true)
+assert(notes[#notes]=="You paid a toll of "..gate:item_name(nil,true).." at an unknown arch %s")
+local rune={base_type="miscellaneous",sub_type="rune of Zot",quantity=1,
+  plus1=3,ego_type="slimy rune of Zot"}
+gate=trove(rune)
+answer=true
+assert(gate:check_item_veto(marker)==nil)
+assert(notes[#notes]==string.format(translated("You showed %s %s"),
+  gate:item_name(),translated("to enter a treasure trove")))
+assert(rune.ego_type=="slimy rune of Zot" and rune.base_type=="miscellaneous" and rune.plus1==3)
+assert(messages[#messages][1]==translated(
+  "The portal draws power from the presence of the item and buzzes to life!"))
+
+local seen="The volcano comes to life with a roar!"
+local unseen="In the distance, the volcano erupts with a roar."
+local warn="The air gets thick with the scent of sulphur."
+local machine=env.tw_machine(3,warn,unseen,nil,seen)
+for _, cansee in ipairs({true,false}) do
+  visible=cansee
+  machine.see_function=function() return visible end
+  env.tw_machine_tw_func(machine,nil,{type="turn",sub_type="countdown"},marker)
+  assert(messages[#messages][1]==translated(cansee and seen or unseen))
+  env.tw_machine_tw_func(machine,nil,{type="turn",sub_type="tick",countdown=20},marker)
+  assert(messages[#messages][1]==translated(warn))
+end
+assert(machine.trigger_see_message==seen and machine.trigger_cantsee_message==unseen)
+local trigger={msg='You almost think you hear a voice: "Seek not undue power, mortal."',
+  channel="warning",repeated=false,remove=function() removed=removed+1 end}
+env.TriggerableMessage.on_trigger(trigger,nil,marker)
+assert(messages[#messages][1]==translated(trigger.msg) and messages[#messages][2]=="warning")
+assert(removed==1)
+local statue={props={},new_monster="iron golem",message_seen="The iron statue comes to life!",
+  message_unseen="You hear a grinding sound.",remove=function() removed=removed+1 end}
+for _, cansee in ipairs({true,false}) do
+  visible=cansee
+  env.MonsterOnTrigger.on_trigger(statue,nil,marker)
+  assert(messages[#messages][1]==translated(cansee and statue.message_seen or statue.message_unseen))
+end
+assert(statue.new_monster=="iron golem" and removed==3)
+local timed={props={},disappear=function() removed=removed+1 end}
+visible=true
+env.TimedMarker.timeout(timed,marker,true)
+assert(messages[#messages][1]==string.format(translated("%s disappears!"),crawl.t_("a portal")))
+assert(removed==4)
+player_x,player_y,stairs=10,10,true
+env.TimedMarker.timeout(timed,marker,true)
+assert(messages[#messages][1]==string.format(translated("%s vanishes just as you enter it!"),crawl.t_("a portal")))
+assert(removed==4)
+assert(crawl.language()==(crawl.t_("give %s")=="give %s" and "en" or "zh"))
+)lua";
+        const int result = dlua.execstring(script.c_str(), "actual marker consumers");
+        INFO(dlua.error);
+        REQUIRE(result == 0);
+        CHECK(Options.language == language);
     }
 }

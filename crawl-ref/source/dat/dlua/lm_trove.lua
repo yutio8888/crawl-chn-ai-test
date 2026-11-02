@@ -18,6 +18,21 @@ crawl_require('dlua/lm_1way.lua')
 TroveMarker = util.subclass(OneWayStair)
 TroveMarker.CLASS = "TroveMarker"
 
+-- Saved overview/Note text must use one language for the whole snapshot.
+-- Canonical toll properties remain unchanged. Display arguments come from
+-- actual item/bane renderers, not a parser for saved text.
+local function trove_snapshot(frame, english, translated)
+  local display = crawl.t_(frame)
+  local complete = display ~= frame
+  for i, value in ipairs(english) do
+    if translated[i] == value then complete = false end
+  end
+  if complete then
+    return string.format(display, table.unpack(translated))
+  end
+  return string.format(frame, table.unpack(english))
+end
+
 function TroveMarker:new(props)
   props = props or { }
 
@@ -84,35 +99,25 @@ function TroveMarker:activate(marker, verbose)
   self.super.activate(self, marker, verbose)
 end
 
-function TroveMarker:fdesc_long (marker)
+function TroveMarker:fdesc_long(marker)
   local state
   local toll = get_toll(self.props)
-
   if toll.item then
-    if self:showing_item() then
-      state = "This portal requires the presence of " ..
-              self:item_name() .. " to function.\n"
-    else
-      state = "This portal needs " ..
-              self:item_name() .. " to function.\n"
-    end
+    local frame = self:showing_item()
+      and crawl.t_("This portal requires the presence of %s to function.\n")
+      or crawl.t_("This portal needs %s to function.\n")
+    state = string.format(frame, self:item_name())
   elseif toll.type == "nopiety" then
-      state = "The portal is engraved with runes symbolizing the primacy of the "
-            .. "material over the divine. Those who enter it may find riches, "
-            .. "but when they return, they will find that whatever gods they "
-            .. "held dear have forgotten them in their absence.\n"
+    state = crawl.t_("The portal is engraved with runes symbolizing the primacy of the material over the divine. Those who enter it may find riches, but when they return, they will find that whatever gods they held dear have forgotten them in their absence.\n")
   elseif toll.type == "bane" then
-      state = "The portal is guarded from trespassers with a powerful curse. "
-            .. "All who enter will suffer the " .. crawl.bane_name(toll.bane) .. ":\n\n"
-            .. crawl.bane_description(toll.bane)
+    state = string.format(crawl.t_("The portal is guarded from trespassers with a powerful curse. All who enter will suffer the %s:\n\n%s"),
+      crawl.bane_name(toll.bane), crawl.bane_description(toll.bane))
   elseif toll.type == "drain" then
-      state = "The portal is warded with dark magic that will temporarily drain "
-            .. "a significant fraction of the maximum health of whoever enters it.\n"
+    state = crawl.t_("The portal is warded with dark magic that will temporarily drain a significant fraction of the maximum health of whoever enters it.\n")
   else
     error("\nThis portal is very buggy.")
   end
-  state = "\n" .. state .. "_________________\n"
-  return state
+  return "\n" .. state .. "_________________\n"
 end
 
 function TroveMarker:showing_item (marker)
@@ -125,47 +130,45 @@ function TroveMarker:showing_item (marker)
   return false
 end
 
-function TroveMarker:overview_note (marker)
+function TroveMarker:overview_note(marker)
   local toll = get_toll(self.props)
   if toll.item then
-    if self:showing_item() then
-      return "show " .. self:item_name(false)
-    else
-      return "give " .. self:item_name(false)
-    end
+    local frame = self:showing_item() and "show %s" or "give %s"
+    return trove_snapshot(frame, {self:item_name(false, true)},
+                          {self:item_name(false)})
   elseif toll.type == "nopiety" then
-    return "lose all piety"
+    return crawl.t_("become Ostracised")
   elseif toll.type == "bane" then
-    return "suffer the " .. crawl.bane_name(toll.bane)
+    return trove_snapshot("suffer the %s", {crawl.bane_name(toll.bane, true)},
+                          {crawl.bane_name(toll.bane)})
   elseif toll.type == "drain" then
-    return "suffer draining"
+    return crawl.t_("suffer draining")
   else
-    return "be buggy"
+    return crawl.t_("be buggy")
   end
 end
 
 function TroveMarker:debug_portal (marker)
   local _x, _y = marker:pos()
   local toll = get_toll(self)
-  if crawl.yesno("Try making this Trove use an item (or a different item)?", true, "n") then
+  if crawl.yesno(crawl.t_("Try making this Trove use an item (or a different item)?"), true, "n") then
     local _x, _y = marker:pos()
     if #dgn.items_at(_x, _y) ~= 0 then
       new_item = dgn.items_at(_x, _y)[1]
-      if crawl.yesno("Switch Trove to " .. new_item.name() .. " instead?",
+      if crawl.yesno(string.format(crawl.t_("Switch Trove to %s instead?"), new_item.name()),
                      true, "n") then
         self.toll = trove.get_trove_toll_with_item(
             trove.get_trove_item(nil, 0, new_item))
         init_item(self.toll.item)
         self.props.toll = self.toll
-        crawl.mpr("Switched to a new item.")
+        crawl.mpr(crawl.t_("Switched to a new item."))
       else
-        crawl.mpr("Ignoring " .. new_item.name())
+        crawl.mpr(string.format(crawl.t_("Ignoring %s"), new_item.name()))
       end
     else
-      crawl.mpr("To change the item the trove wants, first drop it "
-                .. "on the trove tile.")
+      crawl.mpr(crawl.t_("To change the item the trove wants, first drop it on the trove tile."))
     end
-  elseif crawl.yesno("Make this portal take your piety?", true, "n") then
+  elseif crawl.yesno(crawl.t_("Make this portal take your piety?"), true, "n") then
     self.toll = trove.get_toll_nopiety()
     self.props.toll = self.toll
   else
@@ -180,12 +183,12 @@ function TroveMarker:debug_diag (marker)
     return
   end
 
-  if crawl.yesno("Run diagnostic on inventory?", true, "n") then
+  if crawl.yesno(crawl.t_("Run diagnostic on inventory?"), true, "n") then
     self:search_for_rune(marker, nil, true)
     self:search_for_item(marker, nil, items.inventory(), true)
   end
 
-  if crawl.yesno("Run diagnostic on floor?", true, "n") then
+  if crawl.yesno(crawl.t_("Run diagnostic on floor?"), true, "n") then
     local _x, _y = marker:pos()
     self:search_for_item(marker, nil, dgn.items_at(_x, _y), true)
   end
@@ -298,13 +301,13 @@ end
 -- The toll is a persistent English protocol table, not a live item. Rebuild a
 -- temporary item in C++ only for display so comparisons and serialization
 -- never observe localized values.
-function TroveMarker:item_name(do_grammar)
+function TroveMarker:item_name(do_grammar, force_english)
   local item = get_toll(self).item
   if item == nil then
     error("item_name called on a toll without an item", 2)
   end
   return items.trove_name(item.base_type, item.sub_type, item.quantity,
-                          item.plus1, item.ego_type, do_grammar ~= false)
+                          item.plus1, item.ego_type, do_grammar ~= false, force_english)
 end
 
 function TroveMarker:search_for_rune(marker, pname, dry_run)
@@ -471,20 +474,19 @@ function TroveMarker:check_item_veto(marker, pname)
   local plus = 0
 
   local item = get_toll(self.props).item
+  local plural = item.quantity > 1
   -- The message is slightly different for items that aren't actually taken by
   -- the trove (runes, currently).
   if self:showing_item() then
-    if not crawl.yesno("This trove requires the presence of "
-                       .. self:item_name() .. " to function. Show it the item"
-                       .. self:plural() .. "?", true, "n") then
-      crawl.mpr("Okay, then.", "prompt")
+    if not crawl.yesno(string.format(plural and crawl.t_("This trove requires the presence of %s to function. Show it the items?")
+                       or crawl.t_("This trove requires the presence of %s to function. Show it the item?"), self:item_name()), true, "n") then
+      crawl.mpr(crawl.t_("Okay, then."), "prompt")
       return "veto"
     end
   else
-    if not crawl.yesno("This trove needs " .. self:item_name() ..
-                       " to function. Give it the item" ..
-                       self:plural() .. "?", true, "n") then
-      crawl.mpr("Okay, then.", "prompt")
+    if not crawl.yesno(string.format(plural and crawl.t_("This trove needs %s to function. Give it the items?")
+                       or crawl.t_("This trove needs %s to function. Give it the item?"), self:item_name()), true, "n") then
+      crawl.mpr(crawl.t_("Okay, then."), "prompt")
       return "veto"
     end
   end
@@ -492,12 +494,12 @@ function TroveMarker:check_item_veto(marker, pname)
   if item.sub_type == "rune of Zot" then
     -- Begin by checking for runes.
     if self:search_for_rune() then
-      crawl.mpr("The portal draws power from the presence of the item"
-                .. self:plural() .. " and buzzes to life!")
+      crawl.mpr(plural and crawl.t_("The portal draws power from the presence of the items and buzzes to life!")
+              or crawl.t_("The portal draws power from the presence of the item and buzzes to life!"))
       self:note_payed("rune", false, item.ego_type)
       return
     else
-      crawl.mpr("You don't have " .. self:item_name() .. " with you.")
+      crawl.mpr(string.format(crawl.t_("You don't have %s with you."), self:item_name()))
       return "veto"
     end
   end
@@ -508,9 +510,10 @@ function TroveMarker:check_item_veto(marker, pname)
   if #acceptable_items == 0 then
     -- Give a different message for items that are not taken away.
     if self:showing_item() then
-      crawl.mpr("You don't have " .. self:item_name() .. " with you.")
+      crawl.mpr(string.format(crawl.t_("You don't have %s with you."), self:item_name()))
     else
-      crawl.mpr("You don't have the item" .. self:plural() .. " to give!")
+      crawl.mpr(plural and crawl.t_("You don't have the items to give!")
+              or crawl.t_("You don't have the item to give!"))
     end
     return "veto"
   end
@@ -529,19 +532,20 @@ function TroveMarker:check_item_veto(marker, pname)
 
   -- Open the portal and maybe consume the item.
   if self:showing_item() then
-    crawl.mpr("The portal draws power from the presence of the item" ..
-              self:plural() .. " and buzzes to life!")
+    crawl.mpr(plural and crawl.t_("The portal draws power from the presence of the items and buzzes to life!")
+              or crawl.t_("The portal draws power from the presence of the item and buzzes to life!"))
     self:note_payed(titem, false)
   else
     -- We should not try to take equipped items, there are too many weird edge
     -- cases like distortion.
     if titem.equipped then
-      crawl.mpr("You must unequip the item" .. self:plural() .. " first!")
+      crawl.mpr(plural and crawl.t_("You must unequip the items first!")
+              or crawl.t_("You must unequip the item first!"))
       return "veto"
     end
     self:note_payed(titem, true)
-    crawl.mpr("The portal accepts the item" .. self:plural() ..
-              " and buzzes to life!")
+    crawl.mpr(plural and crawl.t_("The portal accepts the items and buzzes to life!")
+              or crawl.t_("The portal accepts the item and buzzes to life!"))
     titem.dec_quantity(item.quantity)
   end
   return
@@ -561,37 +565,27 @@ function TroveMarker:check_veto(marker, pname)
   if toll.item then
     return self:check_item_veto(marker, pname)
   elseif toll.type == "nopiety" then
-    local yesno_message = (
-      "This portal proclaims the superiority of the material over the divine; "
-      .. "entrants will become Ostracised and temporarily lose all standing "
-      .. "with their god.\nEnter anyway?")
-    if crawl.yesno(yesno_message, true, "n") then
+    if crawl.yesno(crawl.t_("This portal proclaims the superiority of the material over the divine; entrants will become Ostracised and temporarily lose all standing with their god.\nEnter anyway?"), true, "n") then
       self:accept_nopiety()
     else
       return "veto"
     end
   elseif toll.type == "bane" then
-    local yesno_message = (
-      "The portal is guarded from trespassers with a powerful curse. "
-      .. "All who enter will suffer the " .. crawl.bane_name(toll.bane)
-      .. " for " .. (you.xl_to_remove_bane(toll.bane, 200) / 10) .. " XL. Enter anyway?")
-    if crawl.yesno(yesno_message, true, "n") then
+    local message = string.format(crawl.t_("The portal is guarded from trespassers with a powerful curse. All who enter will suffer the %s for %s XL. Enter anyway?"),
+      crawl.bane_name(toll.bane), you.xl_to_remove_bane(toll.bane, 200, true) / 10)
+    if crawl.yesno(message, true, "n") then
       self:accept_bane()
     else
       return "veto"
     end
   elseif toll.type == "drain" then
-    local yesno_message = (
-      "The portal is warded with dark magic that will temporarily drain "
-      .. "a significant fraction of the maximum health of whoever enters it. "
-      .. "Enter anyway?")
-    if crawl.yesno(yesno_message, true, "n") then
+    if crawl.yesno(crawl.t_("The portal is warded with dark magic that will temporarily drain a significant fraction of the maximum health of whoever enters it. Enter anyway?"), true, "n") then
       self:accept_drain()
     else
       return "veto"
     end
   else
-    crawl.mpr("This trove is too buggy to enter!")
+    crawl.mpr(crawl.t_("This trove is too buggy to enter!"))
     return "veto"
   end
 end
@@ -609,40 +603,28 @@ function TroveMarker:accept_drain ()
 end
 
 function TroveMarker:note_payed(toll_item, item_taken, rune_name)
-  local toll_desc
+  local frame, english_place, display_place
   if self.props.toll_desc then
-    toll_desc = crawl.t_(self.props.toll_desc)
+    frame = item_taken and "You paid a toll of %s %s" or "You showed %s %s"
+    english_place = self.props.toll_desc
+    display_place = crawl.t_(english_place)
   else
-    toll_desc = "at " .. crawl.article_a(self.props.desc)
+    frame = item_taken and "You paid a toll of %s at %s" or "You showed %s at %s"
+    english_place = crawl.article_a(self.props.desc, true, true)
+    display_place = crawl.t_(self.props.desc)
+    if display_place == self.props.desc then display_place = english_place end
   end
 
-  local prefix
-  if item_taken then
-    prefix = "You paid a toll of "
-  else
-    prefix = "You showed "
-  end
-
-  -- Ugly special case. At this point in the code there is no rune item, so we
-  -- can not rely on any of the normal item naming code.
-  if toll_item == "rune" then
-    crawl.take_note(prefix .. "the " .. rune_name .. " " .. toll_desc)
-    return
-  end
-
-  -- XXX: The name of self.props.toll_item--the item the trove wants--is wrong,
-  -- because the pluses might be wrong. But the name of toll_item--the item the
-  -- player gave us--is also wrong, because the quantity might be wrong! So we
-  -- need to use a little of both.
-
-  local requested_item = get_toll(self).item
-  local target_plus1 = requested_item.plus1
-  local real_plus1 = toll_item.pluses()
-  requested_item.plus1 = real_plus1
-
-  crawl.take_note(prefix .. self:item_name() .. " " .. toll_desc)
-
-  requested_item.plus1 = target_plus1
+  -- The requested quantity and the actual offered enchantment form the toll
+  -- display. Runes have no live item and use the existing typed toll renderer.
+  local requested = get_toll(self).item
+  local original_plus = requested.plus1
+  if toll_item ~= "rune" then requested.plus1 = toll_item.pluses() end
+  local english_item = self:item_name(nil, true)
+  local display_item = self:item_name()
+  requested.plus1 = original_plus
+  crawl.take_note(trove_snapshot(frame, {english_item, english_place},
+                                {display_item, display_place}))
 end
 
 function trove_marker(pars)

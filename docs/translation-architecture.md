@@ -96,6 +96,18 @@ and chardump preserve the creation-language text. The independent `begin`
 milestone does not consume it. No parser, marker or schema is added, and the
 separate wizard-mode message is outside this exception.
 
+Trove overview tolls use a separate display snapshot in
+`portal_notes[level_pos]`. `dgn-overview.cc` records the computed
+`TroveMarker:overview_note` value on observation; overview UI and chardump
+append it without interpreting its contents. The remaining consumers copy or
+remove values by position, clear the map, and round-trip it through the
+`tags.cc` map serializer. No lookup, Lua comparison, gameplay decision or
+milestone consumes the text. The complete translated frame and its display
+arguments are captured together, with whole-English fallback. Existing
+snapshots retain their language until observation refreshes them. Raw toll
+properties and position keys stay canonical; no save schema or historical
+text parser is introduced.
+
 The protocol-facing Lua bindings `you.race()`,
 `you.species()`, `you.genus()`, `you.class()`, and `you.monster()` therefore
 produce canonical English identities (using raw or `_en` accessors); callers

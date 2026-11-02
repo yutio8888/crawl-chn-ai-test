@@ -705,7 +705,7 @@ spret deck_stack(bool fail, int piety_cost, int mp_cost, int hp_cost)
 {
     if (crawl_state.is_replaying_keys())
     {
-        crawl_state.cancel_cmd_all("You can't repeat Stack Five.");
+        crawl_state.cancel_cmd_all(T_("You can't repeat Stack Five."));
         return spret::abort;
     }
 
@@ -973,7 +973,7 @@ spret deck_triple_draw(bool fail, int piety_cost, int mp_cost, int hp_cost)
 {
     if (crawl_state.is_replaying_keys())
     {
-        crawl_state.cancel_cmd_all("You can't repeat Triple Draw.");
+        crawl_state.cancel_cmd_all(T_("You can't repeat Triple Draw."));
         return spret::abort;
     }
 

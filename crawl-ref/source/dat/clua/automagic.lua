@@ -260,8 +260,8 @@ function mag_attack(allow_movement)
     if AUTOMAGIC_FIGHT then
       attack(allow_movement)
     else
-      crawl.mpr(crawl.t_("You don't have enough magic to cast " ..
-          you.spell_table()[AUTOMAGIC_SPELL_SLOT] .. "!"))
+      crawl.mpr(string.format(crawl.t_("You don't have enough magic to cast %s!"),
+          spells.title(you.spell_table()[AUTOMAGIC_SPELL_SLOT])))
     end
   elseif mp_is_low() then
     if AUTOMAGIC_FIGHT then
@@ -280,7 +280,7 @@ end
 
 -- Set this as a macro to change which spell is cast, in game!
 function am_set_spell()
-  crawl.mpr("Which spell slot to assign to automagic? (Enter to disable, Esc to cancel)", "prompt")
+  crawl.mpr(crawl.t_("Which spell slot to assign to automagic? (Enter to disable, Esc to cancel)"), "prompt")
   local slot = getkey()
   crawl.clear_messages()
 
@@ -307,8 +307,12 @@ function am_set_spell()
     end
     AUTOMAGIC_SPELL_SLOT = slot
     spell_name = you.spell_table()[AUTOMAGIC_SPELL_SLOT] or "no spell currently"
-    crawl.mpr("Automagic" .. message .. " will cast spell in slot " .. slot .. " (" ..
-        spell_name .. ")" .. ".")
+    local template = message == ""
+        and crawl.t_("Automagic will cast spell in slot %s (%s).")
+        or crawl.t_("Automagic enabled, will cast spell in slot %s (%s).")
+    local spell_label = you.spell_table()[slot]
+        and spells.title(spell_name) or crawl.t_("no spell currently")
+    crawl.mpr(string.format(template, slot, spell_label))
     return false
 
   end

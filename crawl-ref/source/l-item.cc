@@ -42,6 +42,7 @@
 #include "stash.h"
 #include "stringutil.h"
 #include "throw.h"
+#include "unwind.h"
 
 struct item_wrapper
 {
@@ -1874,6 +1875,7 @@ LUAFN(l_item_pickable)
  * @tparam int|boolean plus requested enchantment, or false
  * @tparam string|boolean ego_type canonical English ego, or false
  * @tparam[opt=true] boolean grammar add the normal article when appropriate
+ * @tparam[opt=false] boolean english force canonical English for snapshot fallback
  * @treturn string localized display name
  * @function trove_name
  */
@@ -1888,6 +1890,7 @@ LUAFN(l_item_trove_name)
     const int plus = has_plus ? luaL_safe_checkint(ls, 4) : 0;
     const string ego_type = lua_isstring(ls, 5) ? lua_tostring(ls, 5) : "";
     const bool do_grammar = lua_isnoneornil(ls, 6) || lua_toboolean(ls, 6);
+    const bool force_english = lua_toboolean(ls, 7);
 
     if (quantity < 1)
         return luaL_error(ls, "Invalid trove item quantity: %d", quantity);
@@ -1910,6 +1913,8 @@ LUAFN(l_item_trove_name)
     // their display must remain generic rather than naming the generated one.
     if (is_demon_weapon)
     {
+        unwind_var<lang_t> language(Options.language,
+            force_english ? lang_t::EN : Options.language);
         string display = T_("demon weapon");
         if (has_plus)
             display = make_stringf("%+d %s", plus, display.c_str());
@@ -1976,6 +1981,10 @@ LUAFN(l_item_trove_name)
                               ego_type.c_str());
         }
     }
+
+    // Validation above may raise a Lua error; change language only after it.
+    unwind_var<lang_t> language(Options.language,
+        force_english ? lang_t::EN : Options.language);
 
     // A synthetic horn has no live evoker charge state. Use its database name
     // to avoid inventing an "inert" suffix, then apply only the requested

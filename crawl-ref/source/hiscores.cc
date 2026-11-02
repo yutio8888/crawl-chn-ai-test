@@ -2241,6 +2241,9 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
 
     bool verbose = verbosity == DDV_VERBOSE;
 
+    const string species_label = _species_name(race);
+    const string display_species = race < 0
+        ? T_(species_label.c_str()) : species_label;
     string desc;
     // Please excuse the following bit of mess in the name of flavour ;)
     if (verbose)
@@ -2252,8 +2255,8 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
     {
         desc = make_stringf(T_("%8d %s the %s %s (level %d"),
                   points, name.c_str(),
-                  _species_name(race).c_str(),
-                  _job_name(job), lvl);
+                  display_species.c_str(),
+                  (job < 0 ? T_(_job_name(job)) : _job_name(job)), lvl);
     }
 
     if (final_max_max_hp > 0)  // as the other two may be negative
@@ -2271,9 +2274,8 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
 
     if (verbose)
     {
-        string srace = _species_name(race);
-        desc += make_stringf(T_("Began as a %s %s"), srace.c_str(),
-                             _job_name(job));
+        desc += make_stringf(T_("Began as a %s %s"), display_species.c_str(),
+                             (job < 0 ? T_(_job_name(job)) : _job_name(job)));
 
         ASSERT(birth_time);
         desc += make_stringf(T_(" on %s"),

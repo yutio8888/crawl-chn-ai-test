@@ -1,7 +1,7 @@
 %%%%
 no teleportation passive
 
-你无法传送或闪现。
+你无法传送或闪烁。
 %%%%
 no spellcasting passive
 
@@ -25,11 +25,11 @@ harm passive
 %%%%
 mayhem passive
 
-当你杀死敌人时，有可能会让看得见的怪物变得疯狂。
+当你击杀敌人时，有可能使一个能看见你的其他怪物陷入狂乱。
 %%%%
 repel missiles passive
 
-你驱逐了飞弹，提升了躲开它们的几率。
+你会偏转飞弹，从而更容易避开它们。
 %%%%
 reflection passive
 
@@ -49,11 +49,12 @@ resist mutation passive
 %%%%
 guardian spirit passive
 
-你受到的任何伤害，都会被生命和魔力储备分摊承受。
+你受到的伤害会由生命值和法力储备分摊承受。
+中毒和剥皮造成的伤害不会如此分摊。
 %%%%
 rampage passive
 
-当你向敌人移动时，你会获得额外的一个自由步。
+当你向敌人移动时，你会额外前进一步，而且这一步不消耗额外时间。
 %%%%
 roll passive
 
@@ -61,7 +62,7 @@ roll passive
 %%%%
 faith passive
 
-神很快会眷顾你，但也会更容易察觉到你在信仰上的冒犯行为。
+你能更快获得神的眷顾，但神也会更加留意你在信仰上的冒犯行为。
 %%%%
 wizardry passive
 
@@ -78,5 +79,6 @@ channel magic passive
 %%%%
 infuse magic passive
 
-你每次近战攻击时都会消耗魔力，让你的攻击更有力量。
+近战命中时，你会消耗可用法力来增强这一击。若你以生命施法，则改为消耗生命，
+且不会因此使生命值低于1点。
 %%%%

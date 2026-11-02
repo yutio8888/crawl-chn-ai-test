@@ -58,6 +58,14 @@ This policy is the shared safety contract for DCSS Chinese i18n code.
   follow the current UI language. Do not
   extend these exceptions to other note types or fields without a new consumer
   audit and policy change.
+- `portal_notes[level_pos]` populated from `TroveMarker:overview_note` is a
+  separate audited display snapshot. Translate the complete toll frame and its
+  display arguments together, or retain the whole English result. Its only
+  value consumers are overview UI/chardump display, save/load, copying to a
+  new position, and removal; the `level_pos` identity and raw marker toll data
+  stay unchanged. The snapshot keeps its creation language until the portal
+  is observed again. Do not parse historical values or extend this exception
+  to other marker properties without auditing their consumers.
 - When a changed value may serve both identity and display, enumerate its
   producer, every intermediate consumer, and its final sinks. Identity and
   lookup paths use the original value or an English accessor (for example,

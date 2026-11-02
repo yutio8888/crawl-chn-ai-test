@@ -1649,7 +1649,7 @@ string get_ability_desc(const ability_type ability, bool need_title)
         lookup = getLongDescription(name + " ability");
 
     if (lookup.empty()) // Nothing found?
-        lookup = "No description found.\n";
+        lookup = T_("No description found.\n");
 
     switch (ability)
     {
@@ -1702,7 +1702,7 @@ string get_ability_desc(const ability_type ability, bool need_title)
 
     ostringstream res;
     if (need_title)
-        res << name << "\n\n";
+        res << ability_name(ability) << "\n\n";
     res << lookup << "\n" << _detailed_cost_description(ability);
 
     const string quote = getQuoteString(name + " ability");

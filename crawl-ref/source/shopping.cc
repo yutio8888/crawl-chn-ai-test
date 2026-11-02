@@ -1724,7 +1724,14 @@ string shop_name(const shop_struct& shop)
         return C_("shop name type", shop.shop_type_name.c_str());
 #endif
     if (!shop.shop_name.empty())
-        sh_name += apostrophise(shop.shop_name) + separator;
+    {
+        // Only these fixed vault owners name gods. Random/custom keepers and
+        // the saved shop_name itself retain their original identity.
+        string keeper = shop.shop_name;
+        if (keeper == "Gozag" || keeper == "Cheibriados" || keeper == "Zin")
+            keeper = T_(keeper.c_str());
+        sh_name += apostrophise(keeper) + separator;
+    }
     else
     {
         uint32_t seed = static_cast<uint32_t>(shop.keeper_name[0])

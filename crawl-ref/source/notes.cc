@@ -782,7 +782,11 @@ string Note::describe(bool when, bool where, bool what) const
             result << T_("Gained bane: ")
                    << bane_name(static_cast<bane_type>(first));
             if (!name.empty())
-                result << " [" << god_wrath_display_name(name) << "]";
+            {
+                const string reason = name == "Entering a Trove"
+                    ? T_("Entering a Trove") : god_wrath_display_name(name);
+                result << " [" << reason << "]";
+            }
             break;
         case NOTE_LOSE_BANE:
             result << T_("Lost bane: ")
@@ -869,7 +873,7 @@ string Note::describe(bool when, bool where, bool what) const
             break;
         case NOTE_GEM_LOST:
             result << T_("Lost the ")
-                   << gem_adj(static_cast<gem_type>(first))
+                   << C_("gem appearance", gem_adj(static_cast<gem_type>(first)))
                    << T_(" gem through the power of Zot.");
             break;
         case NOTE_GAIN_LIFE:

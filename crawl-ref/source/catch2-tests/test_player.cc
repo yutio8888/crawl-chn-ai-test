@@ -1,6 +1,7 @@
 #include "catch_amalgamated.hpp"
 
 #include "AppHdr.h"
+#include "database.h"
 #include "melee-attack.h"
 #include "mutation.h"
 #include "player.h"
@@ -112,6 +113,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     REQUIRE(mutate(MUT_FANGS, "testing"));
 
     const vector<string> names = get_player_aux_names();
-    CHECK(std::find(names.begin(), names.end(), "咬") != names.end());
+    CHECK(std::find(names.begin(), names.end(),
+                    C_("auxiliary attack name", "bite")) != names.end());
     CHECK(std::find(names.begin(), names.end(), "bite") == names.end());
 }

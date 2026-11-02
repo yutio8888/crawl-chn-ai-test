@@ -899,7 +899,7 @@ spret controlled_blink(bool safe_cancel, dist *target)
 {
     if (crawl_state.is_replaying_keys())
     {
-        crawl_state.cancel_cmd_all("You can't repeat controlled blinks.");
+        crawl_state.cancel_cmd_all(T_("You can't repeat controlled blinks."));
         return spret::abort;
     }
 

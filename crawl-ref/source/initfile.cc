@@ -192,7 +192,7 @@ colour_remapping::colour_remapping(const string &s)
     if ((scolour >= 16 || scolour < 0) && (thesplit.size() > 1 && !thesplit[0].empty()))
     {
         mprf(MSGCH_ERROR, T_("Options error: Bad custom_text_colours key: '%s'"),
-            thesplit[1].c_str());
+            thesplit[0].c_str());
         return;
     }
 

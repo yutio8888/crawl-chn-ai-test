@@ -6672,39 +6672,20 @@ static void _describe_aux_hit_chance(ostringstream &result, vector<string>& auxe
     ostringstream attacks;
     ostream &names = zh ? static_cast<ostream &>(attacks) : result;
 
-    // Translate common aux attack names via T_()
-    const map<string, string> aux_names = {
-        { "off-hand punch",    T_("off-hand punch") },
-        { "kick",              T_("kick") },
-        { "headbutt",          T_("headbutt") },
-        { "bite",              T_("bite") },
-        { "tail slap",         T_("tail slap") },
-        { "peck",              T_("peck") },
-        { "tentacle slap",     T_("tentacle slap") },
-        { "pseudopods",        T_("pseudopods") },
-        { "talons",            T_("talons") },
-        { "hooves",            T_("hooves") },
-        { "horns",             T_("horns") },
-        { "constriction",      T_("constriction") },
-    };
-
+    // Names already pass through the finite auxiliary-attack display accessor.
     for (size_t i = 0; i < auxes.size(); ++i)
     {
         if (i > 0 && auxes.size() > 2)
         {
             if (i < auxes.size() - 1)
-                names << (T_(", "));
+                names << C_("auxiliary attack list", ", ");
             else
-                names << (T_(", and "));
+                names << C_("auxiliary attack list", ", and ");
         }
         else if (i == 1 && auxes.size() == 2)
-            names << (T_(" and "));
+            names << C_("auxiliary attack list", " and ");
 
-        auto it = aux_names.find(auxes[i]);
-        if (it != aux_names.end())
-            names << it->second;
-        else
-            names << auxes[i];
+        names << auxes[i];
     }
     if (zh)
     {
@@ -7739,8 +7720,8 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
 
         if (you.wizard)
         {
-            result << " (Recite power:" << zin_recite_power()
-                   << ", Hit dice:" << mi.hd << ")";
+            result << make_stringf(T_(" (Recite power:%d, Hit dice:%d)"),
+                                   zin_recite_power(), mi.hd);
         }
         result << "\n";
     }

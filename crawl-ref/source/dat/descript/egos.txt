@@ -230,7 +230,8 @@ It enhances your Ice magic.
 %%%%
 infusion (Infuse) armour ego
 
-It empowers each of your melee hits with a small part of your magic.
+Your melee hits spend available magic to empower the blow. If you cast spells
+with health, they use health instead, without reducing it below 1.
 %%%%
 intelligence (Int+3) armour ego
 

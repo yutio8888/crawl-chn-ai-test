@@ -175,7 +175,7 @@ void game_state::cancel_cmd_all(string reason)
 void game_state::cant_cmd_repeat(string reason)
 {
     if (reason.empty())
-        reason = "Can't repeat that command.";
+        reason = T_("Can't repeat that command.");
 
     cancel_cmd_repeat(reason);
 }
@@ -183,7 +183,7 @@ void game_state::cant_cmd_repeat(string reason)
 void game_state::cant_cmd_again(string reason)
 {
     if (reason.empty())
-        reason = "Can't redo that command.";
+        reason = T_("Can't redo that command.");
 
     cancel_cmd_again(reason);
 }
@@ -220,7 +220,7 @@ bool interrupt_cmd_repeat(activity_interrupt ai,
     case activity_interrupt::hp_loss:
     case activity_interrupt::monster_attacks:
     case activity_interrupt::mimic:
-        crawl_state.cancel_cmd_repeat("Command repetition interrupted.");
+        crawl_state.cancel_cmd_repeat(T_("Command repetition interrupted."));
         return true;
 
     default:
@@ -270,7 +270,7 @@ bool interrupt_cmd_repeat(activity_interrupt ai,
         else if (ai == activity_interrupt::full_hp)
             crawl_state.cancel_cmd_repeat(T_("HP restored"));
         else
-            crawl_state.cancel_cmd_repeat("Command repetition interrupted.");
+            crawl_state.cancel_cmd_repeat(T_("Command repetition interrupted."));
 
         return true;
     }
@@ -288,7 +288,7 @@ bool interrupt_cmd_repeat(activity_interrupt ai,
         if (!mons_is_threatening(*mon) && mon->visible_to(&you))
             return false;
 
-        crawl_state.cancel_cmd_repeat("Command repetition interrupted.");
+        crawl_state.cancel_cmd_repeat(T_("Command repetition interrupted."));
         return true;
     }
 

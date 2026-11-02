@@ -372,3 +372,27 @@ TEST_CASE("residual rereview: malformed rc macro diagnostics do not treat input 
         CHECK_FALSE(has_pending_input());
     }
 }
+
+#ifdef USE_TILE
+TEST_CASE("legacy concat: actual custom text colour parser reports the rejected key not its value",
+          "[initfile][zh-translation][legacy-concat][invalid-colour-key]")
+{
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        game_options options;
+        clear_message_store();
+        options.read_option_line("custom_text_colours = invalid_key_37:red");
+        const string output = get_last_messages(10, true);
+        CHECK(output.find(make_stringf(T_("Options error: Bad custom_text_colours key: '%s'"),
+                                      "invalid_key_37")) != string::npos);
+        CHECK(output.find("'red'") == string::npos);
+        REQUIRE(options.custom_text_colours.size() == 1);
+        CHECK_FALSE(options.custom_text_colours.front().valid());
+        CHECK(options.custom_text_colours.front().colour_index == NUM_TERM_COLOURS);
+        options.read_option_line("custom_text_colours = white:red");
+        REQUIRE(options.custom_text_colours.size() == 1);
+        CHECK(options.custom_text_colours.front().colour_index == WHITE);
+    }
+}
+#endif

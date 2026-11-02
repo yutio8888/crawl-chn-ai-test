@@ -316,7 +316,7 @@ static void _SINGING_SWORD_equip(item_def *item, bool *show_msgs, bool /*unmeld*
 static void _SINGING_SWORD_unequip(item_def *item, bool *show_msgs)
 {
     set_artefact_name(*item, "Singing Sword");
-    _equip_mpr(show_msgs, "The Singing Sword sighs.", MSGCH_TALK);
+    _equip_mpr(show_msgs, T_("The Singing Sword sighs."), MSGCH_TALK);
 }
 
 static void _SINGING_SWORD_world_reacts(item_def *item)
@@ -589,8 +589,8 @@ static void _WYRMBANE_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/
     _equip_mpr(show_msgs,
                species::is_draconian(you.species)
                 || you.form == transformation::dragon
-                   ? "You feel an uncomfortable desire to slay dragons."
-                   : "You feel an overwhelming desire to slay dragons!");
+                   ? T_("You feel an uncomfortable desire to slay dragons.")
+                   : T_("You feel an overwhelming desire to slay dragons!"));
 }
 
 static void _WYRMBANE_melee_effects(item_def* weapon, actor* /*attacker*/,
@@ -669,7 +669,7 @@ static void _UNDEADHUNTER_melee_effects(item_def* /*item*/, actor* /*attacker*/,
 static void _DEVASTATOR_equip(item_def */*item*/, bool *show_msgs,
                               bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "Time to lay down the shillelagh law.");
+    _equip_mpr(show_msgs, T_("Time to lay down the shillelagh law."));
 }
 
 static void _DEVASTATOR_melee_effects(item_def* /*item*/, actor* attacker,
@@ -682,25 +682,25 @@ static void _DEVASTATOR_melee_effects(item_def* /*item*/, actor* attacker,
 ///////////////////////////////////////////////////
 static void _DRAGONSKIN_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "You feel oddly protected from the elements.");
+    _equip_mpr(show_msgs, T_("You feel oddly protected from the elements."));
 }
 
 static void _DRAGONSKIN_unequip(item_def */*item*/, bool *show_msgs)
 {
-    _equip_mpr(show_msgs, "You no longer feel protected from the elements.");
+    _equip_mpr(show_msgs, T_("You no longer feel protected from the elements."));
 }
 
 ///////////////////////////////////////////////////
 static void _NIGHT_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/)
 {
     update_vision_range();
-    _equip_mpr(show_msgs, "The light fades from your surroundings.");
+    _equip_mpr(show_msgs, T_("The light fades from your surroundings."));
 }
 
 static void _NIGHT_unequip(item_def */*item*/, bool *show_msgs)
 {
     update_vision_range();
-    _equip_mpr(show_msgs, "The light returns to your surroundings.");
+    _equip_mpr(show_msgs, T_("The light returns to your surroundings."));
 }
 
 ///////////////////////////////////////////////////
@@ -854,12 +854,12 @@ static void _DAMNATION_launch(bolt* beam)
 
 static void _ZEPHYR_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "You feel the wind guiding your aim.");
+    _equip_mpr(show_msgs, T_("You feel the wind guiding your aim."));
 }
 
 static void _ZEPHYR_unequip(item_def */*item*/, bool *show_msgs)
 {
-    _equip_mpr(show_msgs, "The winds around you sigh wistfully and grow still.");
+    _equip_mpr(show_msgs, T_("The winds around you sigh wistfully and grow still."));
 }
 
 /**
@@ -1164,7 +1164,7 @@ static void _MAJIN_unequip(item_def */*item*/, bool *show_msgs)
     if (you.max_magic_points)
     {
         _equip_mpr(show_msgs,
-                   "The darkness slowly releases its grasp on your magic.");
+                   T_("The darkness slowly releases its grasp on your magic."));
     }
 }
 
@@ -1555,8 +1555,8 @@ static void _WUCAD_MU_equip(item_def */*item*/, bool *show_msgs,
 {
     if (you.has_mutation(MUT_HP_CASTING))
     {
-        _equip_mpr(show_msgs, "The crystal ball is unable to connect with your "
-                              "magical essence.");
+        _equip_mpr(show_msgs, T_("The crystal ball is unable to connect with your "
+                              "magical essence."));
     }
 }
 
@@ -1867,7 +1867,7 @@ static void _VAINGLORY_equip(item_def */*item*/, bool *show_msgs, bool unmeld)
 static void _SWAMP_WITCH_SCALES_equip(item_def */*item*/, bool *show_msgs, bool unmeld)
 {
     if (!unmeld)
-        _equip_mpr(show_msgs, "The air around you shimmers with cruel toxic glee.");
+        _equip_mpr(show_msgs, T_("The air around you shimmers with cruel toxic glee."));
 }
 
 /////////////////////////////////////////////////////
