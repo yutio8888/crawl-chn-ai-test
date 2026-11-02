@@ -30553,7 +30553,7 @@ slick, slippery,
 滑溜，滑溜，
 %%%%
 spectral,
-幻影，
+幽魂，
 %%%%
 spellvamp,
 法术吸血，
@@ -40924,7 +40924,7 @@ status|flayed
 剥皮
 %%%%
 status|flooded lungs
-肺部积水
+肺部被淹
 %%%%
 status|flying
 飞行中
@@ -47256,7 +47256,7 @@ shop name type|Spherical
 %%%%
 
 shop name type|Staff
-长杖
+法杖
 %%%%
 
 shop name type|Store
@@ -52155,3 +52155,264 @@ Praying here may force you to leave your current form. Pray anyway?
 %%%%
 Praying here may force you to remove some of your equipment. Pray anyway?
 在此祈祷可能迫使你卸下部分装备。仍要祈祷吗？
+%%%%
+The Singing Sword sighs.
+歌唱之剑叹了口气。
+%%%%
+You feel an uncomfortable desire to slay dragons.
+你感到一股令人不安的屠龙欲望。
+%%%%
+You feel an overwhelming desire to slay dragons!
+你感到一股难以抑制的屠龙欲望！
+%%%%
+Time to lay down the shillelagh law.
+是时候用棍棒立规矩了。
+%%%%
+You feel oddly protected from the elements.
+你感到自己受到奇异的庇护，免遭元素侵袭。
+%%%%
+You no longer feel protected from the elements.
+你不再感到自己受到抵御元素侵袭的庇护。
+%%%%
+The light fades from your surroundings.
+你周围的光线渐渐消逝。
+%%%%
+The light returns to your surroundings.
+光线重返你的周围。
+%%%%
+You feel the wind guiding your aim.
+你感到风正引导你瞄准。
+%%%%
+The winds around you sigh wistfully and grow still.
+你周围的风惆怅地叹息，随后归于平静。
+%%%%
+The darkness slowly releases its grasp on your magic.
+黑暗缓缓松开了对你魔力的掌控。
+%%%%
+The crystal ball is unable to connect with your magical essence.
+水晶球无法与你的魔法本源相连。
+%%%%
+The air around you shimmers with cruel toxic glee.
+你周围的空气闪烁着残酷而恶毒的欢愉。
+%%%%
+ (Recite power:%d, Hit dice:%d)
+（吟诵威力：%d，生命骰：%d）
+%%%%
+You are forever immune to Zot's power.
+你永远免受佐特之力的影响。
+%%%%
+You have unlimited time to explore this branch.
+你可以不限时地探索这个分支。
+%%%%
+Couldn't open %s for writing!
+无法打开%s进行写入！
+%%%%
+ (fellow slime)
+（史莱姆同伴）
+%%%%
+Your god
+你的神祇
+%%%%
+speech god copula|%s are
+%s是
+%%%%
+speech god copula|%s is
+%s是
+%%%%
+ crowns %s victorious!
+宣布%s获胜！
+%%%%
+You appear to be waiting for the end of something which may never occur. Examine your explore_auto_rest_status option.
+你似乎正在等待某种可能永远不会结束的状态消退。请检查你的explore_auto_rest_status选项。
+%%%%
+auxiliary attack list| and 
+和
+%%%%
+auxiliary attack list|, 
+、
+%%%%
+auxiliary attack list|, and 
+和
+%%%%
+No spell in slot %s!
+%s栏位中没有法术！
+%%%%
+Missing channel name for runrest: '%s'
+自动行走/休息设置缺少消息频道名：“%s”
+%%%%
+Bad channel name '%s' for runrest: '%s'
+自动行走/休息设置中的频道名“%s”无效：“%s”
+%%%%
+Strange Monsters
+特殊怪物
+%%%%
+Uniques
+独特怪物
+%%%%
+Holy Monsters
+神圣怪物
+%%%%
+Natural Monsters
+自然生物
+%%%%
+Undead Monsters
+亡灵怪物
+%%%%
+Demonic Monsters
+恶魔
+%%%%
+Non-Living Monsters
+非生命怪物
+%%%%
+Monster Nature
+怪物类别
+%%%%
+Ascending Order
+按击杀数量升序
+%%%%
+Monster Symbol
+按怪物符号分组
+%%%%
+All '%s'
+所有“%s”
+%%%%
+collateral kills
+友军击杀
+%%%%
+others
+其他来源
+%%%%
+The 3-digit Club
+击杀数达到三位数的怪物
+%%%%
+%u creature vanquished.
+已消灭%u只生物。
+%%%%
+%u creatures vanquished.
+已消灭%u只生物。
+%%%%
+Grand Total: %d creatures vanquished
+总计：已消灭%d只生物
+%%%%
+auxiliary attack name|constrict
+绞缠
+%%%%
+auxiliary attack name|kick
+踢击
+%%%%
+auxiliary attack name|tentacle spike
+触手尖刺
+%%%%
+auxiliary attack name|headbutt
+头槌
+%%%%
+auxiliary attack name|peck
+啄击
+%%%%
+auxiliary attack name|sting
+螫刺
+%%%%
+auxiliary attack name|tail-slap
+尾击
+%%%%
+auxiliary attack name|touch
+触碰
+%%%%
+auxiliary attack name|off-hand punch
+副手拳击
+%%%%
+auxiliary attack name|off-hand claw
+副手爪击
+%%%%
+auxiliary attack name|off-hand eel-slap
+副手鳗击
+%%%%
+auxiliary attack name|tentacle-slap
+触手拍击
+%%%%
+auxiliary attack name|eel-slap
+鳗击
+%%%%
+auxiliary attack name|bite
+咬击
+%%%%
+auxiliary attack name|pseudopods
+伪足
+%%%%
+auxiliary attack name|squeeze
+挤压
+%%%%
+auxiliary attack name|chomp
+啃咬
+%%%%
+auxiliary attack name|whirl of blades
+刀刃旋舞
+%%%%
+auxiliary attack name|shroompunch
+蘑菇拳
+%%%%
+auxiliary attack name|slice
+切割
+%%%%
+auxiliary attack verb|constrict
+绞缠
+%%%%
+auxiliary attack verb|kick
+踢击
+%%%%
+auxiliary attack verb|claw
+抓挠
+%%%%
+auxiliary attack verb|pierce
+刺穿
+%%%%
+auxiliary attack verb|headbutt
+用头槌撞击
+%%%%
+auxiliary attack verb|peck
+啄击
+%%%%
+auxiliary attack verb|sting
+螫刺
+%%%%
+auxiliary attack verb|tail-slap
+用尾巴拍击
+%%%%
+auxiliary attack verb|touch
+触碰
+%%%%
+auxiliary attack verb|punch
+拳击
+%%%%
+auxiliary attack verb|eel-slap
+用鳗鱼拍击
+%%%%
+auxiliary attack verb|tentacle-slap
+用触手拍击
+%%%%
+auxiliary attack verb|bite
+咬
+%%%%
+auxiliary attack verb|bludgeon
+重击
+%%%%
+auxiliary attack verb|squeeze
+挤压
+%%%%
+auxiliary attack verb|chomp
+啃咬
+%%%%
+auxiliary attack verb|shred
+撕碎
+%%%%
+auxiliary attack verb|shroompunch
+用蘑菇拳击
+%%%%
+auxiliary attack verb|slice
+切割
+%%%%
+Key pressed, interrupting command repetition.
+检测到按键，正在中断命令重复。
+%%%%
+Cannot control self, cancelling command repetition.
+无法控制自身，正在取消命令重复。

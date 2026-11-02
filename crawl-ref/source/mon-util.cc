@@ -4173,9 +4173,9 @@ static string _replace_god_name(god_type god, bool need_verb = false,
     string result;
 
     if (god == GOD_NO_GOD)
-        result = capital ? "You" : "you";
+        result = capital ? T_("You") : T_("you");
     else if (god == GOD_NAMELESS)
-        result = capital ? "Your god" : "your god";
+        result = capital ? T_("Your god") : T_("your god");
     else
     {
         const string godname = god_name(god, false);
@@ -4184,8 +4184,9 @@ static string _replace_god_name(god_type god, bool need_verb = false,
 
     if (need_verb)
     {
-        result += ' ';
-        result += conjugate_verb("be", god == GOD_NO_GOD);
+        result = make_stringf(god == GOD_NO_GOD
+            ? C_("speech god copula", "%s are")
+            : C_("speech god copula", "%s is"), result.c_str());
     }
 
     return result;

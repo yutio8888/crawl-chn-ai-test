@@ -78,6 +78,8 @@
 #include <tuple>
 
 #ifdef UNIX
+#include <sys/stat.h>
+#include <unistd.h>
 #include <sys/wait.h>
 #endif
 
@@ -103,6 +105,10 @@
 #include "religion.h"
 #include "shopping.h"
 #include "stash.h"
+#include "ability.h"
+#include "god-abil.h"
+#include "kills.h"
+#include "files.h"
 #include "dgn-shoals.h"
 #include "wiz-fsim.h"
 #include "wiz-item.h"
@@ -3775,3 +3781,380 @@ TEST_CASE("residual rereview: burstshroom stats retain damage while localizing t
         CHECK(spore.hd == 6);
     }
 }
+
+TEST_CASE("legacy concat: ability description localizes title while looking up the canonical key",
+          "[zh-translation][legacy-concat][ability-title]")
+{
+    issue10_world world;
+    const ability_type ability = ABIL_ZIN_RECITE;
+    const string canonical = ability_name(ability, true);
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        you.religion = GOD_ZIN;
+        you.raw_piety = 100;
+        const string body = getLongDescription(canonical + " ability");
+        REQUIRE_FALSE(body.empty());
+        const string output = get_ability_desc(ability, true);
+        CHECK(starts_with(output, ability_name(ability) + "\n\n"));
+        CHECK(output.find(body) != string::npos);
+        CHECK(ability_name(ability, true) == canonical);
+        if (language == lang_t::ZH)
+            CHECK_FALSE(starts_with(output, canonical + "\n\n"));
+    }
+}
+
+TEST_CASE("legacy concat: real unrand callbacks translate the complete literal message group",
+          "[zh-translation][legacy-concat][equip-callbacks]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    init_mut_index();
+    struct callback_case { int unrand; bool remove; const char *key; };
+    const callback_case cases[] = {
+        {UNRAND_WUCAD_MU, false, "The crystal ball is unable to connect with your magical essence."},
+        {UNRAND_DEVASTATOR, false, "Time to lay down the shillelagh law."},
+        {UNRAND_DRAGONSKIN, false, "You feel oddly protected from the elements."},
+        {UNRAND_DRAGONSKIN, true, "You no longer feel protected from the elements."},
+        {UNRAND_ZEPHYR, false, "You feel the wind guiding your aim."},
+        {UNRAND_ZEPHYR, true, "The winds around you sigh wistfully and grow still."},
+        {UNRAND_WYRMBANE, false, "You feel an overwhelming desire to slay dragons!"}
+    };
+    you.mutation[MUT_HP_CASTING] = 1;
+    for (const auto &entry : cases)
+    {
+        const auto *unrand = get_unrand_entry(entry.unrand);
+        bool show_messages = true;
+        const string output = observe_message([&]
+        {
+            if (entry.remove)
+            {
+                REQUIRE(unrand->unequip_func);
+                unrand->unequip_func(nullptr, &show_messages);
+            }
+            else
+            {
+                REQUIRE(unrand->equip_func);
+                unrand->equip_func(nullptr, &show_messages, false);
+            }
+        });
+        CHECK(output.find(T_(entry.key)) != string::npos);
+        CHECK_FALSE(show_messages);
+        if (language == lang_t::ZH)
+            CHECK(output.find(entry.key) == string::npos);
+    }
+}
+
+namespace
+{
+struct legacy_aux_accuracy : melee_attack
+{
+    legacy_aux_accuracy(actor *source, actor *target, bool hit)
+        : melee_attack(source, target), adjustment(hit ? 100000 : -100000) { }
+    int post_roll_to_hit_modifiers(int, bool) override { return adjustment; }
+    const int adjustment;
+};
+}
+
+TEST_CASE("legacy concat: actual auxiliary hit miss and list consumers translate their finite actions",
+          "[zh-translation][legacy-concat][aux-actions]")
+{
+    const bool claws = GENERATE(false, true);
+    const bool hit = GENERATE(false, true);
+    vector<tuple<int, int, int>> results;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        bool observed = false;
+        // The real miss path has an independent 1/30 auto-hit. Select a seed
+        // by observing the actual consumer, without reproducing its RNG formula.
+        for (int seed = 1; seed <= 64 && !observed; ++seed)
+        {
+            issue10_world world;
+            no_notes suppress_notes;
+            init_mut_index();
+            you.base_stats.init(10);
+            you.experience_level = 10;
+            you.mutation[MUT_CLAWS] = claws ? 3 : 0;
+            monster *target = world.place(MONS_ORC, coord_def(21, 20));
+            target->hit_points = target->max_hit_points = 10000;
+            legacy_aux_accuracy attack(&you, target, hit);
+            const char *name = claws ? "off-hand claw" : "off-hand punch";
+            const char *verb = claws ? "claw" : "punch";
+            rng::subgenerator random(seed, 0x4a415558414354ULL);
+            const string output = observe_message([&] { attack.player_do_aux_attack(UNAT_PUNCH); });
+            if (attack.did_hit != hit)
+                continue;
+            observed = true;
+            CHECK(attack.aux_attack == C_("auxiliary attack name", name));
+            CHECK(attack.aux_verb == C_("auxiliary attack verb", verb));
+            const vector<string> names = get_player_aux_names();
+            CHECK(std::find(names.begin(), names.end(), attack.aux_attack) != names.end());
+            if (hit)
+                CHECK(output.find(attack.aux_verb) != string::npos);
+            else
+            {
+                CHECK(output.find(make_stringf(T_("Your %s misses %s."),
+                    attack.aux_attack.c_str(), target->name(DESC_THE).c_str())) != string::npos);
+            }
+            if (language == lang_t::ZH)
+            {
+                CHECK(attack.aux_attack != name);
+                CHECK(attack.aux_verb != verb);
+            }
+            results.emplace_back(seed, target->hit_points, random2(1000000));
+        }
+        REQUIRE(observed);
+    }
+    REQUIRE(results.size() == 2);
+    CHECK(results[0] == results[1]);
+}
+
+TEST_CASE("legacy concat: actual speech tokens localize atheists nameless and named gods",
+          "[zh-translation][legacy-concat][speech-gods]")
+{
+    const god_type god = GENERATE(GOD_NO_GOD, GOD_NAMELESS, GOD_ZIN);
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        issue10_world world;
+        monster *speaker = world.place(MONS_ORC, coord_def(21, 20));
+        monster *foe = world.place(MONS_ORC, coord_def(22, 20));
+        foe->god = god;
+        speaker->foe = foe->mindex();
+        const string name = god == GOD_NO_GOD ? T_("you")
+            : god == GOD_NAMELESS ? T_("your god") : god_name(god, false);
+        const string capital = god == GOD_NO_GOD ? T_("You")
+            : god == GOD_NAMELESS ? T_("Your god") : uppercase_first(name);
+        CHECK(do_mon_str_replacements("@foe_god@", *speaker) == name);
+        CHECK(do_mon_str_replacements("@Foe_god@", *speaker) == capital);
+        const char *frame = god == GOD_NO_GOD ? "%s are" : "%s is";
+        CHECK(do_mon_str_replacements("@god_is@", *speaker)
+              == make_stringf(C_("speech god copula", frame), name.c_str()));
+        CHECK(do_mon_str_replacements("@God_is@", *speaker)
+              == make_stringf(C_("speech god copula", frame), capital.c_str()));
+        CHECK(foe->god == god);
+        if (language == lang_t::ZH)
+            CHECK(do_mon_str_replacements("@god_is@", *speaker).find("be") == string::npos);
+    }
+}
+
+TEST_CASE("legacy concat: fixed god shop owners translate only at the display boundary",
+          "[zh-translation][legacy-concat][shop-owners]")
+{
+    for (const char *owner : {"Gozag", "Cheibriados", "Zin", "Ada Custom", "zin"})
+    {
+        shop_struct shop;
+        shop.type = SHOP_GENERAL;
+        shop.pos = coord_def(21, 20);
+        shop.shop_name = owner;
+        shop.shop_type_name = "General";
+        shop.shop_suffix_name = "Store";
+        const string canonical = shop.shop_name;
+        for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+        {
+            TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+            const bool fixed = canonical == "Gozag" || canonical == "Cheibriados" || canonical == "Zin";
+            const string name = fixed ? T_(canonical.c_str()) : canonical;
+            const string prefix = apostrophise(name) + (language == lang_t::ZH ? "" : " ");
+            CHECK(starts_with(shop_name(shop), prefix));
+            CHECK(shop.shop_name == canonical);
+            CHECK(shop.shop_type_name == "General");
+            CHECK(shop.shop_suffix_name == "Store");
+        }
+    }
+}
+
+TEST_CASE("legacy concat: real monster list slime tag and recite diagnostic use display templates",
+          "[zh-translation][legacy-concat][monster-details]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    you.religion = GOD_JIYVA;
+    you.raw_piety = 200;
+    monster_info slime(MONS_JELLY);
+    slime.attitude = ATT_GOOD_NEUTRAL;
+    REQUIRE(slime.fellow_slime());
+    string line;
+    int colour;
+    slime.to_string(1, line, colour, true, nullptr, false);
+    CHECK(line.find(T_(" (fellow slime)")) != string::npos);
+    you.religion = GOD_ZIN;
+    you.wizard = true;
+    monster_info orc(MONS_ORC);
+    orc.hd = 10;
+    describe_info description;
+    bool has_stats = false;
+    get_monster_db_desc(orc, description, has_stats);
+    REQUIRE(has_stats);
+    CHECK(description.body.str().find(make_stringf(T_(" (Recite power:%d, Hit dice:%d)"),
+          zin_recite_power(), orc.hd)) != string::npos);
+}
+
+TEST_CASE("legacy concat: real Lua spell-title binding preserves canonical lookup and errors",
+          "[zh-translation][legacy-concat][spell-title-binding]")
+{
+    issue10_world world;
+    lua_State *ls = clua.state();
+    unwinder restore_spell_cache([] { init_spell_name_cache(); });
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        init_spell_name_cache();
+        for (const char *canonical : {"Sting", "Metal Splinters"})
+        {
+            lua_stack_cleaner stack(ls);
+            lua_getglobal(ls, "spells");
+            lua_getfield(ls, -1, "title");
+            REQUIRE(lua_isfunction(ls, -1));
+            lua_pushstring(ls, canonical);
+            REQUIRE(lua_pcall(ls, 1, 1, 0) == LUA_OK);
+            REQUIRE(lua_isstring(ls, -1));
+            const spell_type spell = spell_by_name(canonical, false);
+            REQUIRE(is_valid_spell(spell));
+            CHECK(string(lua_tostring(ls, -1)) == spell_title(spell));
+            CHECK(string(spell_english_name(spell)) == canonical);
+        }
+        lua_stack_cleaner stack(ls);
+        lua_getglobal(ls, "spells");
+        lua_getfield(ls, -1, "title");
+        lua_pushstring(ls, "not a real spell %s");
+        CHECK(lua_pcall(ls, 1, 1, 0) != LUA_OK);
+        REQUIRE(lua_isstring(ls, -1));
+        CHECK(string(lua_tostring(ls, -1)).find("Invalid spell: not a real spell %s") != string::npos);
+    }
+}
+
+TEST_CASE("legacy concat: actual numeric spell display helpers localize only the unavailable marker",
+          "[zh-translation][legacy-concat][not-applicable]")
+{
+    issue10_world world;
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        CHECK(range_string(0) == T_("N/A"));
+        CHECK(range_string(3, 5) == "3/5");
+        CHECK(range_string(3, 5, 2) == "2-3/5");
+        if (language == lang_t::ZH)
+            CHECK(range_string(0) != "N/A");
+    }
+}
+
+TEST_CASE("legacy concat: real detailed kill dump preserves canonical selectors and saved counts",
+          "[zh-translation][legacy-concat][kill-dump]")
+{
+    issue10_world world;
+    lua_State *ls = clua.state();
+    lua_stack_cleaner stack(ls);
+    const char *globals[] = {"kill_filter", "show_sorted_list", "group_kills", "holiness_list",
+        "count_list", "symbol_list", "classic_list", "separator", "newline", "c_kill_list",
+        "DUMP_KILL_BREAKDOWNS", "chk_lua_option"};
+    vector<pair<const char *, int>> saved;
+    for (const char *name : globals)
+    {
+        lua_getglobal(ls, name);
+        saved.emplace_back(name, luaL_ref(ls, LUA_REGISTRYINDEX));
+    }
+    unwinder restore_globals([&]
+    {
+        for (const auto &entry : saved)
+        {
+            lua_rawgeti(ls, LUA_REGISTRYINDEX, entry.second);
+            lua_setglobal(ls, entry.first);
+            luaL_unref(ls, LUA_REGISTRYINDEX, entry.second);
+        }
+    });
+    lua_newtable(ls);
+    lua_setglobal(ls, "chk_lua_option");
+    REQUIRE(CLua::loadfile(ls, "clua/kills.lua", true, false) == 0);
+    REQUIRE(clua.pcall(0, 0) == 0);
+    // Observe canonical category/holiness arguments, then delegate to the
+    // actual loaded script. No kill list/header/summary implementation is mocked.
+    REQUIRE(clua.execstring(R"(
+        local actual = c_kill_list
+        c_kill_list = function(a, who, needsep)
+            if a then
+                assert(who == nil or who == "collateral kills" or who == "others")
+                for _, k in ipairs(a) do assert(kills.holiness(k) == "natural") end
+            end
+            return actual(a, who, needsep)
+        end
+    )", "legacy-real-kill-dump") == 0);
+    int old_map[KC_NCATEGORIES];
+    for (int i = 0; i < KC_NCATEGORIES; ++i)
+    {
+        old_map[i] = Options.kill_map[i];
+        Options.kill_map[i] = i;
+    }
+    unwinder restore_map([&]
+    {
+        for (int i = 0; i < KC_NCATEGORIES; ++i)
+            Options.kill_map[i] = old_map[i];
+    });
+    monster *orc = world.place(MONS_ORC, coord_def(21, 20));
+    you.kills.record_kill(orc, KILL_YOU, false);
+    you.kills.record_kill(orc, KILL_YOU, false);
+    you.kills.record_kill(orc, KILL_MON, false);
+    vector<unsigned char> before;
+    writer save_before(&before);
+    you.kills.save(save_before);
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (bool detailed : {false, true})
+        {
+            lua_pushboolean(ls, detailed);
+            lua_setglobal(ls, "DUMP_KILL_BREAKDOWNS");
+            // _sdump_kills directly appends this exact service result.
+            const string output = you.kills.kill_info();
+            CHECK(output.find(make_stringf(T_("Grand Total: %d creatures vanquished"), 3)) != string::npos);
+            if (detailed)
+            {
+                CHECK(output.find(make_stringf(T_("%u creatures vanquished."), 2u)) != string::npos);
+                CHECK(output.find(make_stringf(T_("%u creature vanquished."), 1u)) != string::npos);
+                CHECK(output.find(T_("Monster Nature")) != string::npos);
+                CHECK(output.find(T_("Natural Monsters")) != string::npos);
+            }
+            else
+            {
+                CHECK(output.find(make_stringf(T_("%s (%s)"), T_("Vanquished Creatures"),
+                      T_("others"))) != string::npos);
+            }
+            CHECK(you.kills.total_kills() == 3);
+            CHECK(clua.error.empty());
+            vector<unsigned char> after;
+            writer save_after(&after);
+            you.kills.save(save_after);
+            CHECK(after == before);
+        }
+    }
+}
+
+#if defined(UNIX) && !defined(DGL_MACRO_ABSOLUTE_PATH) && !defined(DGL_NAMED_MACRO_FILE)
+TEST_CASE("legacy concat: actual macro save failure localizes only its message frame",
+          "[zh-translation][legacy-concat][macro-save-error]")
+{
+    char pattern[] = "catch2-legacy-macro-XXXXXX";
+    char *created = mkdtemp(pattern);
+    REQUIRE(created);
+    const string directory = created;
+    const string blocked_file = directory + "/macro.txt";
+    REQUIRE(mkdir(blocked_file.c_str(), 0700) == 0);
+    unwinder cleanup([&]
+    {
+        rmdir(blocked_file.c_str());
+        rmdir(directory.c_str());
+    });
+    unwind_var<string> macro_directory(Options.macro_dir, directory);
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string output = observe_message([] { macro_save(); });
+        CHECK(output.find(make_stringf(T_("Couldn't open %s for writing!"),
+                                      blocked_file.c_str())) != string::npos);
+        CHECK(Options.macro_dir == directory);
+    }
+}
+#endif

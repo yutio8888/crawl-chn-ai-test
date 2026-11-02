@@ -1149,8 +1149,8 @@ static void _input()
     {
         // User pressed a key, so stop repeating commands and discard
         // the keypress.
-        crawl_state.cancel_cmd_repeat("Key pressed, interrupting command "
-                                      "repetition.");
+        crawl_state.cancel_cmd_repeat(T_("Key pressed, interrupting command "
+                                      "repetition."));
         crawl_state.prev_cmd = CMD_NO_CMD;
         flush_prev_message();
         return;
@@ -1178,8 +1178,8 @@ static void _input()
     {
         if (crawl_state.repeat_cmd != CMD_WIZARD)
         {
-            crawl_state.cancel_cmd_repeat("Cannot control self, cancelling command "
-                                          "repetition.");
+            crawl_state.cancel_cmd_repeat(T_("Cannot control self, cancelling command "
+                                          "repetition."));
         }
 
         // If the player has enough Vexed time left to make a proper attack, do
@@ -1836,9 +1836,9 @@ static void _experience_check()
     if (!crawl_state.game_is_sprint())
     {
         if (zot_immune())
-            msg::stream << "You are forever immune to Zot's power.";
+            msg::stream << T_("You are forever immune to Zot's power.");
         else if (player_in_branch(BRANCH_ABYSS))
-            msg::stream << "You have unlimited time to explore this branch.";
+            msg::stream << T_("You have unlimited time to explore this branch.");
         else
         {
             msg::stream << make_stringf(T_("If you stay in this area without exploring new floors, Zot will find you after %d turns."),

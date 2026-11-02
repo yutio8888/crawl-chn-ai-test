@@ -1130,9 +1130,9 @@ command_type travel()
             && you.props.exists(AUTO_REST_STATUS_POS)
             && you.props[AUTO_REST_STATUS_POS].get_coord() == you.pos())
         {
-            mprf(MSGCH_ERROR,
-                    "You appear to be waiting for the end of something which may "
-                    "never occur. Examine your explore_auto_rest_status option.");
+            mprf(MSGCH_ERROR, "%s",
+                 T_("You appear to be waiting for the end of something which may "
+                    "never occur. Examine your explore_auto_rest_status option."));
             stop_running();
             return CMD_NO_CMD;
         }

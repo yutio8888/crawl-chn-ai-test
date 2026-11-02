@@ -104,10 +104,12 @@ function rr_add_message(s, v, mode)
         if chi < 1 then
             -- I think this shouldn't be reachable? channel should be -1 if
             -- unset
-            crawl.mpr("Missing channel name for runrest: '" .. s .. "'", "error")
+            crawl.mpr(string.format(crawl.t_("Missing channel name for runrest: '%s'"),
+                s), "error")
         else
             local chstr = string.sub(s, 1, chi - 1)
-            crawl.mpr("Bad channel name '" .. chstr .. "' for runrest: '" .. s .. "'", "error")
+            crawl.mpr(string.format(crawl.t_("Bad channel name '%s' for runrest: '%s'"),
+                chstr, s), "error")
         end
         return -- skip entirely
     end

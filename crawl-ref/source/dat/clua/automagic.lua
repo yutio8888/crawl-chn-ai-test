@@ -261,7 +261,7 @@ function mag_attack(allow_movement)
       attack(allow_movement)
     else
       crawl.mpr(string.format(crawl.t_("You don't have enough magic to cast %s!"),
-          crawl.t_(you.spell_table()[AUTOMAGIC_SPELL_SLOT])))
+          spells.title(you.spell_table()[AUTOMAGIC_SPELL_SLOT])))
     end
   elseif mp_is_low() then
     if AUTOMAGIC_FIGHT then
@@ -310,7 +310,9 @@ function am_set_spell()
     local template = message == ""
         and crawl.t_("Automagic will cast spell in slot %s (%s).")
         or crawl.t_("Automagic enabled, will cast spell in slot %s (%s).")
-    crawl.mpr(string.format(template, slot, crawl.t_(spell_name)))
+    local spell_label = you.spell_table()[slot]
+        and spells.title(spell_name) or crawl.t_("no spell currently")
+    crawl.mpr(string.format(template, slot, spell_label))
     return false
 
   end

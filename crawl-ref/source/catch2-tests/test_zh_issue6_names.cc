@@ -29,6 +29,7 @@
 #include "player.h"
 #include "random.h"
 #include "species.h"
+#include "spl-util.h"
 #include "stringutil.h"
 #include "tags.h"
 #include "test_zh_fixture.h"
@@ -786,6 +787,8 @@ TEST_CASE("legacy dynamic display: real automagic script formats messages after 
           "[zh-translation][legacy-rereview][automagic]")
 {
     init_dungeon_lua();
+    init_spell_descs();
+    unwinder restore_spell_cache([] { init_spell_name_cache(); });
     std::ifstream input(datafile_path("clua/automagic.lua"));
     REQUIRE(input.good());
     std::ostringstream contents;
@@ -795,6 +798,7 @@ TEST_CASE("legacy dynamic display: real automagic script formats messages after 
     for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
     {
         TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        init_spell_name_cache();
         // Execute the production script in a private environment. Translation
         // stays real; input, terminal output and game-state bindings are stubs.
         const string script = R"lua(
@@ -833,10 +837,10 @@ local env = setmetatable({
     monster={get_monster_at=function(x,y)
         if x==1 and y==0 then return foe end
     end},
-    spells={
-        range=function(name) assert(name=="Magic Dart"); return 1 end,
-        mana_cost=function(name) assert(name=="Magic Dart"); return 1 end,
-    },
+    spells=setmetatable({
+        range=function(name) assert(name==spellbook.a); return 1 end,
+        mana_cost=function(name) assert(name==spellbook.a); return 1 end,
+    }, {__index=spells}),
 }, {__index=_G})
 local chunk = assert(load([====[
 )lua" + source + R"lua(
@@ -847,10 +851,18 @@ local function expected(template, ...)
     if crawl.language()=="zh" then assert(translated~=template) end
     return string.format(translated, ...)
 end
-env.mag_attack(false)
-assert(spoken[#spoken]==expected("You don't have enough magic to cast %s!",
-                                 crawl.t_("Magic Dart")))
-assert(spellbook.a=="Magic Dart" and #commands==0)
+for _, name in ipairs({"Magic Dart", "Sting", "Metal Splinters"}) do
+    spellbook.a=name
+    env.mag_attack(false)
+    assert(spoken[#spoken]==expected("You don't have enough magic to cast %s!",
+                                     spells.title(name)))
+    assert(spellbook.a==name and #commands==0)
+end
+if crawl.language()=="zh" then
+    assert(spells.title("Sting")=="毒刺")
+    assert(spells.title("Metal Splinters")=="金属碎片")
+end
+spellbook.a="Magic Dart"
 mana=100
 env.mag_attack(false)
 assert(commands[1]=="zarlf", "translated or changed spell command")
@@ -864,7 +876,8 @@ for _, active in ipairs({true,false}) do
         local template=active and "Automagic will cast spell in slot %s (%s)."
             or "Automagic enabled, will cast spell in slot %s (%s)."
         assert(spoken[#spoken]==expected(template, slot,
-            crawl.t_(spellbook[slot] or "no spell currently")))
+            spellbook[slot] and spells.title(spellbook[slot])
+                or crawl.t_("no spell currently")))
         if active then assert(#options==before)
         else assert(options[#options]=="automagic_enable = true") end
         assert(env.chk_lua_save[1]()=="AUTOMAGIC_SPELL_SLOT = '"..slot.."'\n")
@@ -912,4 +925,129 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         }
         CHECK(item.quantity == count.first);
     }
+}
+
+TEST_CASE("legacy Lua display: real autofight and delay scripts retain command identities",
+          "[zh-translation][legacy-rereview][lua-messages]")
+{
+    init_dungeon_lua();
+    for (const char* filename : {"clua/autofight.lua", "clua/delays.lua"})
+    {
+        std::ifstream input(datafile_path(filename));
+        REQUIRE(input.good());
+        std::ostringstream contents;
+        contents << input.rdbuf();
+        const string source = contents.str();
+        REQUIRE(source.find("]====]") == string::npos);
+        for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+        {
+            TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+            const string checks = string(filename) == "clua/autofight.lua" ? R"lua(
+for _, slot in ipairs({"a", "Z"}) do
+    env.AUTOMAGIC_SPELL_SLOT=slot
+    env.hit_magic()
+    assert(spoken[#spoken][1]==string.format(crawl.t_("No spell in slot %s!"),slot))
+    env.hit_magic_nomove()
+    assert(spoken[#spoken][1]==string.format(crawl.t_("No spell in slot %s!"),slot))
+    assert(env.AUTOMAGIC_SPELL_SLOT==slot)
+end
+book.a="Sting"
+env.AUTOMAGIC_SPELL_SLOT="a"
+env.hit_magic()
+env.hit_magic_nomove()
+assert(movement[1]==true and movement[2]==false and book.a=="Sting")
+)lua" : R"lua(
+local raw="invalid_channel:%s unchanged"
+env.rr_add_message(raw,true,1)
+assert(#env.g_rr_ignored==0)
+assert(spoken[#spoken][1]==string.format(
+    crawl.t_("Bad channel name '%s' for runrest: '%s'"), "invalid_channel",raw))
+assert(spoken[#spoken][2]=="error")
+env.rr_add_message("plain %s unchanged",true,1)
+assert(#env.g_rr_ignored==1)
+assert(env.g_rr_ignored[1].filter:matches("plain %s unchanged",-1))
+)lua";
+            const string script = R"lua(
+local spoken, movement, book = {}, {}, {}
+local env=setmetatable({
+    chk_lua_option={}, chk_lua_save={}, chk_interrupt_activity={},
+    crawl=setmetatable({mpr=function(text, channel)
+        spoken[#spoken+1]={text,channel}
+    end}, {__index=crawl}),
+    you={spell_table=function() return book end},
+    mag_attack=function(move) movement[#movement+1]=move end,
+}, {__index=_G})
+assert(load([====[
+)lua" + source + R"lua(
+]====], "real built-in Lua consumer", "t", env))()
+)lua" + checks;
+            const int result = dlua.execstring(script.c_str(), filename);
+            INFO(dlua.error);
+            REQUIRE(result == 0);
+        }
+    }
+}
+
+TEST_CASE("legacy Lua metadata: real stash script and item binding retain armour search tags",
+          "[zh-translation][legacy-rereview][stash-tags]")
+{
+    init_dungeon_lua();
+    std::ifstream input(datafile_path("clua/stash.lua"));
+    REQUIRE(input.good());
+    std::ostringstream contents;
+    contents << input.rdbuf();
+    const string source = contents.str();
+    REQUIRE(source.find("]====]") == string::npos);
+    const string script = R"lua(
+local env=setmetatable({}, {__index=_G})
+assert(load([====[
+)lua" + source + R"lua(
+]====], "real stash annotation", "t", env))()
+function legacy_stash_test(item)
+    return env.ch_stash_search_annotate_item(item)
+end
+)lua";
+    REQUIRE(dlua.execstring(script.c_str(), "stash setup") == 0);
+    const pair<armour_type, const char*> armours[] = {
+        {ARM_TROLL_LEATHER_ARMOUR, "{Regen+}"},
+        {ARM_STEAM_DRAGON_ARMOUR, "{rSteam}"},
+        {ARM_ACID_DRAGON_ARMOUR, "{rCorr}"},
+        {ARM_QUICKSILVER_DRAGON_ARMOUR, "{Will+}"},
+        {ARM_SWAMP_DRAGON_ARMOUR, "{rPois}"},
+        {ARM_FIRE_DRAGON_ARMOUR, "{rF++ rC-}"},
+        {ARM_ICE_DRAGON_ARMOUR, "{rC++ rF-}"},
+        {ARM_PEARL_DRAGON_ARMOUR, "{rN+}"},
+        {ARM_STORM_DRAGON_ARMOUR, "{rElec}"},
+        {ARM_SHADOW_DRAGON_ARMOUR, "{Stlth+}"},
+        {ARM_GOLDEN_DRAGON_ARMOUR, "{rF+ rC+ rPois}"},
+        {ARM_ROBE, "{body armour}"},
+    };
+    for (const auto& armour : armours)
+    {
+        item_def item;
+        item.base_type = OBJ_ARMOUR;
+        item.sub_type = armour.first;
+        item.quantity = 1;
+        item.flags = ISFLAG_IDENTIFIED;
+        string first_annotation;
+        for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+        {
+            TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+            string annotation;
+            REQUIRE(dlua.callfn("legacy_stash_test", "i>s", &item, &annotation));
+            INFO(annotation);
+            CHECK(annotation.find(armour.second) != string::npos);
+            CHECK(annotation.find("{body armour}") != string::npos);
+            CHECK(annotation.find("{body armor}") != string::npos);
+            if (first_annotation.empty())
+                first_annotation = annotation;
+            else
+                CHECK(annotation == first_annotation);
+            CHECK(Options.language == language);
+            CHECK(item.sub_type == armour.first);
+            if (armour.first == ARM_FIRE_DRAGON_ARMOUR)
+                CHECK(annotation.find("{fire resistance}") != string::npos);
+        }
+    }
+    REQUIRE(dlua.execstring("legacy_stash_test=nil", "stash cleanup") == 0);
 }

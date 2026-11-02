@@ -790,7 +790,7 @@ void macro_save()
     f = fopen_u(macrofile.c_str(), "w");
     if (!f)
     {
-        mprf(MSGCH_ERROR, "Couldn't open %s for writing!", macrofile.c_str());
+        mprf(MSGCH_ERROR, T_("Couldn't open %s for writing!"), macrofile.c_str());
         return;
     }
 

@@ -1638,7 +1638,7 @@ void monster_info::to_string(int count, string& desc, int& desc_colour,
     case ATT_OLD_STRICT_NEUTRAL:
 #endif
         if (fellow_slime())
-            out << " (fellow slime)";
+            out << T_(" (fellow slime)");
         colour_type = MLC_GOOD_NEUTRAL;
         break;
     case ATT_NEUTRAL:

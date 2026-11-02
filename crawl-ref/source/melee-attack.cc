@@ -2164,7 +2164,7 @@ public:
     : AuxAttackType(0, 100, "constrict") { };
     bool xl_based_chance() const override { return false; }
 
-    string get_name() const override { return T_("constrict"); }
+    string get_name() const override { return "constrict"; }
 
     bool is_usable() const override
     {
@@ -2203,17 +2203,17 @@ public:
     string get_verb() const override
     {
         if (you.has_usable_talons())
-            return T_("claw");
+            return "claw";
         if (you.get_mutation_level(MUT_TENTACLE_SPIKE))
-            return T_("pierce");
-        return T_("kick");
+            return "pierce";
+        return "kick";
     }
 
     string get_name() const override
     {
         if (you.get_mutation_level(MUT_TENTACLE_SPIKE))
-            return T_("tentacle spike");
-        return T_("kick");
+            return "tentacle spike";
+        return "kick";
     }
 
     bool is_usable() const override
@@ -2230,7 +2230,7 @@ public:
     AuxHeadbutt()
     : AuxAttackType(5, 67, "headbutt") { };
 
-    string get_name() const override { return T_("headbutt"); }
+    string get_name() const override { return "headbutt"; }
 
     int get_damage(bool /*random*/) const override
     {
@@ -2249,7 +2249,7 @@ public:
     AuxPeck()
     : AuxAttackType(6, 67, "peck") { };
 
-    string get_name() const override { return T_("peck"); }
+    string get_name() const override { return "peck"; }
 
     bool is_usable() const override
     {
@@ -2338,7 +2338,7 @@ public:
             return "eel-slap";
 
         if (you.has_usable_claws())
-            return T_("claw");
+            return "claw";
 
         if (you.has_usable_tentacles())
             return "tentacle-slap";
@@ -2371,7 +2371,7 @@ public:
     AuxBite()
     : AuxAttackType(1, 40, "bite") { };
 
-    string get_name() const override { return T_("bite"); }
+    string get_name() const override { return "bite"; }
 
     int get_damage(bool random) const override
     {
@@ -2620,8 +2620,10 @@ void melee_attack::player_aux_setup(unarmed_attack_type atk)
 
     aux_damage = aux->get_damage(true);
     damage_brand = (brand_type)aux->get_brand();
-    aux_attack = aux->get_name();
-    aux_verb = aux->get_verb();
+    // These owned fields are consumed only by combat messages; the attack
+    // subtype/counting and mechanics continue to use the canonical enum.
+    aux_attack = C_("auxiliary attack name", aux->get_name().c_str());
+    aux_verb = C_("auxiliary attack verb", aux->get_verb().c_str());
 
     if (wu_jian_attack != WU_JIAN_ATTACK_NONE)
         wu_jian_attack = WU_JIAN_ATTACK_TRIGGERED_AUX;
@@ -5599,7 +5601,7 @@ vector<string> get_player_aux_names()
     {
         const AuxAttackType* const aux = aux_attack_types[i - 1];
         if (aux->is_usable())
-            names.push_back(aux->get_name());
+            names.push_back(C_("auxiliary attack name", aux->get_name().c_str()));
     }
 
     return names;

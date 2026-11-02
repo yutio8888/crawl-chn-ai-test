@@ -1300,8 +1300,8 @@ static void _god_death_messages(kill_method_type death_type,
         // after abandoning.
         if (killer->props.exists(OKAWARU_DUEL_TARGET_KEY))
         {
-            const string msg = " crowns " + killer->name(DESC_THE, true)
-                                + " victorious!";
+            const string msg = make_stringf(T_(" crowns %s victorious!"),
+                                            killer->name(DESC_THE, true).c_str());
             simple_god_message(msg.c_str(), false, GOD_OKAWARU);
         }
     }
