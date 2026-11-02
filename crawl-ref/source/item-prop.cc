@@ -2294,8 +2294,10 @@ string projectile_display_name(const string& canonical)
     if (display.empty())
         return canonical;
     if (wind_blessed)
+    {
         return make_stringf_p(C_("projectile prefix", "%1$s %2$s"),
                              T_("wind-blessed"), display.c_str());
+    }
     return display;
 }
 
