@@ -1369,8 +1369,8 @@ string origin_desc(const item_def &item)
             default:
                 if (iorig > GOD_NO_GOD && iorig < NUM_GODS)
                 {
-                    desc += god_name(static_cast<god_type>(iorig))
-                        + (T_(" gifted ") + _article_it(item) + T_(" to you "));
+                    return make_stringf_p(T_("%1$s gifted it to you %2$s"),
+                        god_name(static_cast<god_type>(iorig)).c_str(), place.c_str());
                 }
                 else
                 {
@@ -5105,8 +5105,8 @@ void maybe_name_weapon(item_def &item, bool silent)
     string full_name = get_weapon_name(item, true);
 
     // TODO: variant messages? (in the database?)
-    mprf(T_("You welcome %s%s into your grasp."), full_name.c_str(),
-         new_name ? "" : " back");
+    mprf(new_name ? T_("You welcome %s into your grasp.")
+                  : T_("You welcome %s back into your grasp."), full_name.c_str());
 }
 
 void say_farewell_to_weapon(const item_def &item)

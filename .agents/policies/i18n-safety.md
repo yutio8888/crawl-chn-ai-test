@@ -19,8 +19,8 @@ This policy is the shared safety contract for DCSS Chinese i18n code.
   Translate them with `translated_move_phrase()` and the applicable grammar
   context; update `move_i18n_manifest.json` and require exact-key coverage.
 - Keep protocol, lookup, serialization identities, Lua comparison, and TextDB
-  key values in English. Three audited `Note::name` cases are localized display
-  snapshots, not identities:
+  key values in English. The following audited Note fields are localized
+  display snapshots, not identities:
   - `NOTE_MESSAGE` created through `crawl.take_note` may use the current display
     language only when the complete template and every string parameter
     translate; otherwise the whole note remains English.
@@ -32,11 +32,22 @@ This policy is the shared safety contract for DCSS Chinese i18n code.
     (or `DDV_VERBOSE` in wizard death simulation) stores the death display at
     creation. The separate literal wizard-revival note remains unchanged.
     Logging helpers generate canonical English independently of this snapshot.
+  - `name` and `desc` of `NOTE_ID_ITEM`, `NOTE_GET_ITEM`, `NOTE_FOUND_UNRAND`,
+    `NOTE_ACQUIRE_ITEM`, and `NOTE_BUY_ITEM` retain the item and origin/blessing
+    display captured by the audited C++ producers. Translate complete known
+    templates and their display arguments; preserve arbitrary saved names.
+    These fields have no identity, lookup, Lua comparison, or milestone
+    consumers. Separate collectible milestone producers remain English.
+    Only `NOTE_ID_ITEM` currently displays `desc`; the other stored origin
+    strings still round-trip unchanged. Do not reconstruct them with a generic
+    item-name parser or repurpose the numeric price/time fields.
   `Note::save/load` round-trips these snapshots. Their only text consumers are
   `Note::describe`, the notes UI, and chardump/morgue; injury noteworthiness uses
   numeric HP and turn fields, not the name; death notes are always noteworthy.
-  All three snapshots are language-locked:
-  changing the UI language does not retroactively retranslate them. Do not
+  Item notes are always noteworthy without comparing these strings.
+  All these snapshots are language-locked: changing the UI language does not
+  retroactively retranslate their payloads; existing `Note::describe` wrappers
+  follow the current UI language. Do not
   extend these exceptions to other note types or fields without a new consumer
   audit and policy change.
 - When a changed value may serve both identity and display, enumerate its

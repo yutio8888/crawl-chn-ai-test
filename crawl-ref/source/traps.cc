@@ -416,7 +416,12 @@ void trigger_trap(actor& triggerer)
                                                                    pos, buff_time);
 
         if (buffed_mons.size() == 0)
-           mprf(MSGCH_WARN, T_("Your power is siphoned away!"));
+        {
+            if (drain > 0)
+                mprf(MSGCH_WARN, T_("Your power is siphoned away!"));
+            else
+                canned_msg(MSG_NOTHING_HAPPENS);
+        }
         else
         {
             string m_list = describe_monsters_condensed(buffed_mons);

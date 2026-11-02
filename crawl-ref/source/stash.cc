@@ -728,7 +728,7 @@ string ShopInfo::shop_item_name(const item_def &it) const
 {
     return make_stringf(T_("%s%s (%d gold)"),
                         Stash::stash_item_name(it).c_str(),
-                        shop_item_unknown(it) ? " (unknown)" : "",
+                        shop_item_unknown(it) ? T_(" (unknown)") : "",
                         item_price(it, shop));
 }
 

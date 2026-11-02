@@ -2356,10 +2356,8 @@ static void _player_on_kill_effects(monster& mons, killer_type killer,
                         ? (T_("poison"))
                         : (T_("negative energy")));
 
-            mprf_p(T_("%1$s feeds on the fading %2$s of %3$s!"),
-                   mons.name(DESC_THE).c_str(),
-                   energy_name,
-                   mons.pronoun(PRONOUN_OBJECTIVE).c_str());
+            mprf_p(T_("You feed on the fading %1$s of %2$s!"),
+                   energy_name, mons.name(DESC_THE).c_str());
         }
 
         if (healing)
@@ -4180,11 +4178,16 @@ void hogs_to_humans()
     string final_msg;
     if (any > 0 && you.num_turns > 0)
     {
-        final_msg = make_stringf(T_("No longer under Kirke's spell, the %s %s %s!"),
-                                 any > 1 ? "hogs return to their"
-                                         : "hog returns to its",
-                                 any == human ? "human" : "original",
-                                 any > 1 ? "forms" : "form");
+        if (any > 1)
+        {
+            final_msg = any == human
+                ? T_("No longer under Kirke's spell, the hogs return to their human forms!")
+                : T_("No longer under Kirke's spell, the hogs return to their original forms!");
+        }
+        else
+            final_msg = any == human
+                ? T_("No longer under Kirke's spell, the hog returns to its human form!")
+                : T_("No longer under Kirke's spell, the hog returns to its original form!");
     }
     schedule_kirke_death_fineff(final_msg);
 }

@@ -2370,12 +2370,17 @@ string scorefile_entry::death_place(death_desc_verbosity verbosity) const
 // indirect-effect producers. Unrecognized saved values remain verbatim.
 static string _death_beam_display_name(const string &cause)
 {
+    const string orb = orb_beam_name_display(cause);
+    if (orb != cause)
+        return orb;
     const string fragment = fragmentation_name_display(cause);
     if (fragment != cause)
         return fragment;
     const string projectile = projectile_display_name(cause);
     if (projectile != cause)
         return projectile;
+    if (cause == "electric aura" || cause == "shield")
+        return C_("shock discharge source", cause.c_str());
     if (is_known_beam_name(cause))
         return T_(cause.c_str());
 
@@ -2622,7 +2627,10 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                 if (!beam.empty())
                 {
                     desc += make_stringf(T_(" (%s)"),
-                        (chinese ? _death_beam_display_name(beam) : beam).c_str());
+                        (chinese ? (starts_with(auxkilldata, "Hit by ")
+                            && projectile_display_name(beam) == beam
+                                ? death_source_display_name(beam)
+                                : _death_beam_display_name(beam)) : beam).c_str());
                 }
             }
         }
@@ -2633,16 +2641,26 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             if (chinese)
             {
                 const string missile = terse_missile_name();
-                const string missile_display = projectile_display_name(missile);
+                string missile_display = projectile_display_name(missile);
+                const bool thrown_monster = starts_with(auxkilldata, "Hit by ")
+                    && missile_display == missile;
+                if (thrown_monster)
+                    missile_display = death_source_display_name(missile);
                 if (!terse && !missile.empty() && missile_display != missile
                     && !death_source_display_desc().empty()
                     && (starts_with(auxkilldata, "Hit by ")
                         || starts_with(auxkilldata, "Shot with ")))
                 {
-                    desc += make_stringf_p(starts_with(auxkilldata, "Hit by ")
-                        ? T_("Hit by a%s %s thrown by %s")
-                        : T_("Shot with a%s %s by %s"),
-                        "", missile_display.c_str(), death_source_display_desc().c_str());
+                    if (thrown_monster)
+                    {
+                        desc += make_stringf_p(T_("Hit by %1$s thrown by %2$s"),
+                            missile_display.c_str(), death_source_display_desc().c_str());
+                    }
+                    else
+                        desc += make_stringf_p(starts_with(auxkilldata, "Hit by ")
+                            ? T_("Hit by a%s %s thrown by %s")
+                            : T_("Shot with a%s %s by %s"),
+                            "", missile_display.c_str(), death_source_display_desc().c_str());
                 }
                 else if (death_source_name == "you")
                 {
@@ -3629,7 +3647,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                 if (you.props.exists(DISABLED_BY_KEY))
                 {
                     const string disabled_source =
-                        god_wrath_display_name(you.props[DISABLED_BY_KEY].get_string());
+                        death_source_display_name(you.props[DISABLED_BY_KEY].get_string());
                     disabled_by = make_stringf_p(
                         T_(" by %1$s"),
                         disabled_source.c_str());

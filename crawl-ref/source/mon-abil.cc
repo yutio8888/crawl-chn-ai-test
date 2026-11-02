@@ -885,8 +885,7 @@ bool lost_soul_revive(monster& mons, killer_type killer)
                 mprf(T_("%s assumes the form of %s%s!"),
                      mi->name(DESC_THE).c_str(),
                      revivee_name.c_str(),
-                     (mi->is_summoned() ? " and becomes anchored to this"
-                      " world" : ""));
+                     (mi->is_summoned() ? T_(" and becomes anchored to this world") : ""));
             }
         }
 
@@ -1428,10 +1427,12 @@ bool pyrrhic_recollection(monster& nobody)
 
     if (can_see)
     {
-        mprf(MSGCH_MONSTER_SPELL, T_("%s ignites a memory of %s%s."),
-                nobody.name(DESC_THE).c_str(),
-                comma_separated_line(spell_names.begin(), spell_names.end()).c_str(),
-                was_injured ? " to re-knit themselves" : "");
+        const string spells = comma_separated_line(spell_names.begin(), spell_names.end(),
+            C_("recollection spell list", " and "), C_("recollection spell list", ", "));
+        mprf(MSGCH_MONSTER_SPELL, was_injured
+                ? T_("%s ignites a memory of %s to re-knit themselves.")
+                : T_("%s ignites a memory of %s."),
+             nobody.name(DESC_THE).c_str(), spells.c_str());
         string speech = make_stringf(T_("\"We remember... %s...\""),
                             getSpeakString("nobody_recollection " + recollection.key).c_str());
         mons_speaks_msg(&nobody, speech, MSGCH_TALK);
@@ -1529,7 +1530,7 @@ void solar_ember_blast()
         flash_tile(mon->pos(), RED, 0);
         const int damage_done = mons_adjust_flavoured(mon, beam, mon->apply_ac(dmg.roll()));
         mprf(T_("The solar flare engulfs %s%s."), mon->name(DESC_THE).c_str(),
-                damage_done ? "" : " but does no damage");
+                damage_done ? "" : T_(" but does no damage"));
         mon->hurt(&you, damage_done, BEAM_FIRE);
     }
 

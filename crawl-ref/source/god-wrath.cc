@@ -749,7 +749,7 @@ static bool _trog_retribution()
         simple_god_message(T_(" tears away your strength and self-control!"), false, god);
         int vex_max = max(4, you.experience_level / 4);
         you.weaken(nullptr, 25);
-        you.vex(nullptr, random_range(3, vex_max), "Trog's wrath");
+        you.vex(nullptr, random_range(3, vex_max), N_("Trog's wrath"));
     }
     else
     {

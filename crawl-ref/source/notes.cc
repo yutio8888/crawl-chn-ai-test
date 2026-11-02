@@ -538,6 +538,54 @@ static string _abyss_entry_note_display(const string& text)
     return make_stringf(format.c_str(), depth, cause.c_str());
 }
 
+// Only the two C++ theft producers mark these canonical NOTE_MESSAGE records.
+// Legacy and crawl.take_note snapshots never enter this display conversion.
+static string _theft_note_display(const Note& note)
+{
+    if (Options.language != lang_t::ZH)
+        return note.name;
+    string thief, item;
+    if (note.desc == "gold theft" && note.first > 0)
+    {
+        const string suffix = make_stringf(" stole %d gold", note.first);
+        if (!ends_with(note.name, suffix) || note.name.size() <= suffix.size())
+            return note.name;
+        thief = note.name.substr(0, note.name.size() - suffix.size());
+    }
+    else if (note.desc == "item theft")
+    {
+        const string separator = " stole ";
+        const size_t split = note.name.find(separator);
+        if (split == string::npos || split == 0 || split + separator.size() >= note.name.size())
+            return note.name;
+        thief = note.name.substr(0, split);
+        const string canonical_item = note.name.substr(split + separator.size());
+        item = T_(canonical_item.c_str());
+        // Arbitrary saved full item names have no reversible item accessor.
+        // An exact existing catalog hit is the only supported item conversion.
+        if (item.empty() || item == canonical_item)
+            return note.name;
+    }
+    else
+        return note.name;
+
+    string source = thief;
+    if (starts_with(source, "A ") || starts_with(source, "An ") || starts_with(source, "The "))
+        source[0] = tolower_safe(source[0]);
+    const string display = death_source_display_name(source);
+    if (display.empty() || display == source)
+        return note.name;
+    if (note.desc == "gold theft")
+    {
+        const string format = T_("%1$s stole %2$d gold");
+        return format == "%1$s stole %2$d gold" ? note.name
+            : make_stringf_p(format.c_str(), display.c_str(), note.first);
+    }
+    const string format = T_("%1$s stole %2$s");
+    return format == "%1$s stole %2$s" ? note.name
+        : make_stringf_p(format.c_str(), display.c_str(), item.c_str());
+}
+
 string Note::describe(bool when, bool where, bool what) const
 {
     ostringstream result;
@@ -724,7 +772,8 @@ string Note::describe(bool when, bool where, bool what) const
             result << Options.user_note_prefix << name;
             break;
         case NOTE_MESSAGE:
-            result << (desc == "abyss entry" ? _abyss_entry_note_display(name) : name);
+            result << (desc == "abyss entry" ? _abyss_entry_note_display(name)
+                       : _theft_note_display(*this));
             break;
         case NOTE_SEEN_FEAT:
             result << T_("Found ") << name;
@@ -755,7 +804,7 @@ string Note::describe(bool when, bool where, bool what) const
             break;
         case NOTE_VEXED:
             result << make_stringf(T_("Vexed by %s for %d turns"),
-                                   name.c_str(), first);
+                                   death_source_display_name(name).c_str(), first);
             break;
         case NOTE_RECRUITED_APOSTLE:
             result << T_("Anointed ") << name << T_(" the ") << desc << T_(" as your apostle");

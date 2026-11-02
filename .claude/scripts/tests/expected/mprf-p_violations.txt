@@ -1,6 +1,30 @@
 === Positional format in source.txt but code doesn't use _p variant ===
 
+local_returns.cc:15  T_("you offer a %sprayer to %s.")
+  source.txt has %n$s: "你向%2$s献上了%1$s祈祷。..." → needs mprf_p or make_stringf_p
+
+local_returns.cc:21  T_("you offer a %sprayer to %s.")
+  source.txt has %n$s: "你向%2$s献上了%1$s祈祷。..." → needs mprf_p or make_stringf_p
+
+local_returns.cc:26  T_("you offer a %sprayer to %s.")
+  source.txt has %n$s: "你向%2$s献上了%1$s祈祷。..." → needs mprf_p or make_stringf_p
+
+local_returns.cc:32  T_("you offer a %sprayer to %s.")
+  source.txt has %n$s: "你向%2$s献上了%1$s祈祷。..." → needs mprf_p or make_stringf_p
+
+local_returns.cc:38  T_("you offer a %sprayer to %s.")
+  source.txt has %n$s: "你向%2$s献上了%1$s祈祷。..." → needs mprf_p or make_stringf_p
+
+local_returns.cc:44  T_("you offer a %sprayer to %s.")
+  source.txt has %n$s: "你向%2$s献上了%1$s祈祷。..." → needs mprf_p or make_stringf_p
+
+local_returns.cc:50  T_("you offer a %sprayer to %s.")
+  source.txt has %n$s: "你向%2$s献上了%1$s祈祷。..." → needs mprf_p or make_stringf_p
+
+local_returns.cc:55  T_("you offer a %sprayer to %s.")
+  source.txt has %n$s: "你向%2$s献上了%1$s祈祷。..." → needs mprf_p or make_stringf_p
+
 missing_mprf_p.cc:4  T_("you cannot shoot with your %s while %s.")
   source.txt has %n$s: "你在%2$s时无法用你的%1$s射击。..." → needs mprf_p or make_stringf_p
 
-Summary: 1 violations
+Summary: 9 violations

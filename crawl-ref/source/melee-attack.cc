@@ -664,7 +664,7 @@ void melee_attack::handle_concussion_brand(bool unrand)
 {
     const coord_def old_pos = defender->pos();
     bool did_move = false;
-    if (defender->stumble_away_from(attack_position, T_("concussive force")))
+    if (defender->stumble_away_from(attack_position, N_("concussive force")))
     {
         did_move = true;
         if (monster* mon = defender->as_monster())

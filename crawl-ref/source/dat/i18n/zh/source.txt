@@ -1104,7 +1104,7 @@ mimic reveal plural|%s are mimics!
 %d个符文！这足够进入佐特的领域了。
 %%%%
 %d slime creatures are ejected from %s body as it begins to warp and change.
-%d只粘液生物从%s开始扭曲变化的身体中被排出。
+%d只史莱姆生物从%s开始扭曲变化的身体中被排出。
 %%%%
 %s %s %s but do no damage.
 %s%s了%s，但没有造成伤害。
@@ -1173,10 +1173,10 @@ The alarm trap emits a blaring wail!
 %s放弃了%s追击。
 %%%%
 %s absorbs %d nearby slime creatures and %s.
-%s吸收了附近的%d只粘液生物和%s。
+%s吸收了附近的%d只史莱姆生物，并%s。
 %%%%
 %s absorbs a nearby slime creature and %s.
-%s吸收了附近的一只粘液生物和%s。
+%s吸收了附近的一只史莱姆生物，并%s。
 %%%%
 %s absorbs the %s as it strikes your slime.
 %s在%s击中你的粘液时将其吸收了。
@@ -1323,7 +1323,7 @@ The alarm trap emits a blaring wail!
 %s腐蚀性神器
 %%%%
 %s corrupts the dungeon around %s!
-%s腐化了%s周围的地城！
+%s腐化了%s周围的地牢！
 %%%%
 %s crackles with electricity.
 %s噼啪作响，电光四射。
@@ -1377,7 +1377,7 @@ You grip the centipede bauble in your %s and it winds around your %s and fuses w
 %s丢下了%s。
 %%%%
 %s effortlessly oozes through the net!
-%s毫不费力地穿过了网！
+%s毫不费力地从网眼间流淌而过！
 %%%%
 %s emerges from the mists of memory!
 %s从记忆之雾中浮现！
@@ -1547,7 +1547,7 @@ The potion decomposes into %s within you.
 %s被驱散了%s
 %%%%
 %s is drained!
-%s被吸取了！
+%s的生命力被汲取了！
 %%%%
 %s is engulfed in flames!
 %s被火焰吞没了！
@@ -1556,7 +1556,7 @@ The potion decomposes into %s within you.
 %s 被孢子吞没了。
 %%%%
 %s is filled with an inner flame.
-%s被内在火焰充满了。
+%s体内燃起了内焰。
 %%%%
 %s is flash-frozen.
 %s被瞬间冻结了。
@@ -1826,10 +1826,10 @@ barrage of energy
 %s从%s身边溜过！
 %%%%
 %s smites you!
-%s重击了你！
+%s惩击了你！
 %%%%
 %s snaps out of %s daze.
-%s从%s晕眩中清醒过来。
+%s从%s眩晕中清醒过来。
 %%%%
 %s softly glows with a divine radiance!
 %s散发出柔和的神圣光辉！
@@ -1841,7 +1841,7 @@ barrage of energy
 %s灵魂不再被束缚。
 %%%%
 %s spells grow weaker yet longer.
-%s法术变弱了，但持续时间更长了。
+%s法术被削弱的时间延长了。
 %%%%
 %s spells grow weaker.
 %s法术变弱了。
@@ -1916,7 +1916,7 @@ barrage of energy
 %s被撕裂了，%s从它的位置长了出来。
 %%%%
 %s the attacks of %s are laced with chaos!
-%s%s的攻击被注入了混乱！
+%s%s的攻击被注入了混沌！
 %%%%
 %s thirsts for the lives of mortals!
 %s渴求凡人的生命！
@@ -1967,7 +1967,7 @@ You feel the abyssal rune grow more distant.
 %s一直都是%s，你相当确定。
 %%%%
 %s watery aura covers %s.
-%s的水灵光环笼罩了%s。
+%s水灵光环笼罩了%s。
 %%%%
 %s webs catch fire!
 %s个蛛网燃起了火焰！
@@ -2054,7 +2054,7 @@ You feel the abyssal rune grow more distant.
 （敌对）
 %%%%
  (inert)
-（惰性）
+（充能耗尽）
 %%%%
  (installed)
 （已安装）
@@ -2549,7 +2549,7 @@ A being of your status worships no god.
 像你这样的存在不崇拜任何神祇。
 %%%%
 A blast of power from the earth%s strikes %s!
-一股来自大地的力量%s击中了%s！
+一股来自大地%s的力量击中了%s！
 %%%%
 A blizzard blasts the area with ice!
 暴风雪以冰霜轰击了这片区域！
@@ -2564,7 +2564,7 @@ a chunk of
 一大块
 %%%%
 A chunk of your corpse armour falls away.
-一块你的尸体盔甲脱落了。
+你的尸体护甲脱落了一块。
 %%%%
 A cloud of jellies burst out of %s as the current ripples through it%s
 一团胶质怪从%s中爆出，电流在其表面泛起涟漪%s
@@ -2633,13 +2633,13 @@ A root smacks @foe@ from below
 一条根须从下方抽打@foe@
 %%%%
 A forgotten god smites @The_monster@
-一位被遗忘的神祇重击了@The_monster@
+一位被遗忘的神祇惩击了@The_monster@
 %%%%
 A forgotten god smites something
-一位被遗忘的神祇重击了某个东西
+一位被遗忘的神祇惩击了某个东西
 %%%%
 A forgotten god smites you
-一位被遗忘的神祇重击了你
+一位被遗忘的神祇惩击了你
 %%%%
 A fragment of %s is already outside their body!
 %s的灵魂碎片已经在其体外了！
@@ -2735,7 +2735,7 @@ A shower of butterflies erupts from you!
 一群蝴蝶从你体内爆发出来！
 %%%%
 A slime creature is ejected from %s body as it begins to warp and change.
-一只粘液生物从%s开始扭曲变化的身体中被排出。
+一只史莱姆生物从%s开始扭曲变化的身体中被排出。
 %%%%
 A spider bursts forth from the wound!
 一只蜘蛛从伤口中爆出！
@@ -3133,7 +3133,7 @@ Autopickup is now %s.
 自动拾取已%s。
 %%%%
  averts the curse.
-转移了诅咒。
+化解了诅咒。
 %%%%
 aware of your devotion
 注意到你的虔诚
@@ -3202,7 +3202,7 @@ Beep! Your pager goes off! Use _ to check your messages.
 开始在你移动减慢时支撑你的属性。
 %%%%
 Being near %s leaves you feeling lethargic.
-靠近%s让你感到昏昏欲睡。
+靠近%s让你感到倦怠。
 %%%%
  believes you are ready to make a new sacrifice.
  相信你已经准备好进行新的献祭。
@@ -3250,7 +3250,7 @@ Blasting
  用净化之焰轰击你！
 %%%%
  blaze of memory is extinguished!
-的记忆之火熄灭了！
+记忆之火熄灭了！
 %%%%
  blazes with a fierce heat.
  散发出炽热的光芒。
@@ -3647,10 +3647,10 @@ Control
 控制
 %%%%
  core flares to life once more.
- 的核心再次亮起。
+核心再次亮起。
 %%%%
  core grows cold and it stops moving.
- 的核心变冷，停止了移动。
+核心变冷，停止了移动。
 %%%%
 corpse
 尸体
@@ -3794,10 +3794,10 @@ Decks of power:\n
 力量牌组：\n
 %%%%
 deep water and drowns
-深水并溺水了
+深水并溺毙了
 %%%%
 deeply drained
-被深度吸取
+严重衰竭
 %%%%
 defenestrate
 
@@ -3960,7 +3960,7 @@ Drive defenders into a frenzy
  驱使%s陷入舞蹈狂热！
 %%%%
  drops a net on you.
-向你丢出了一张网。
+让一张网落向你。
 %%%%
 drown
 溺亡
@@ -4622,7 +4622,7 @@ Innate Abilities, Weirdness & Mutations
 先天能力、怪异特征与变异
 %%%%
  inner flame fades away.
-内在的火焰消散了。
+内焰消散了。
 %%%%
 intelligence
 智力
@@ -4679,7 +4679,7 @@ is covered in magical glow
 被施加了预示剧痛的诅咒。
 %%%%
  is dazed by the mutagenic energy.
-被变异能量弄得晕眩。
+被变异能量弄得眩晕。
 %%%%
  is dazed by the spores.
  被孢子弄得晕头转向。
@@ -4754,7 +4754,7 @@ is lit by a halo
 被光环照亮
 %%%%
  is no longer being sapped.
-不再被削弱。
+魔法不再被削弱。
 %%%%
  is no longer berserk.
 不再狂暴。
@@ -4841,7 +4841,7 @@ is no longer touched by paradox.
 不再异常敏捷。
 %%%%
  is no longer unusually resistant.
-不再异常坚韧。
+不再具有异常强大的抗性。
 %%%%
  is no longer weakened.
 不再虚弱。
@@ -5603,7 +5603,7 @@ ooze
 软泥
 %%%%
  oozes through a web.
-缓缓穿过了蛛网。
+从蛛网间流淌而过。
 %%%%
 Open the help screen.
 打开帮助屏幕
@@ -5651,7 +5651,7 @@ partially
 部分
 %%%%
  partially averts the curse.
-部分转移了诅咒。
+部分化解了诅咒。
 %%%%
  partially resists.
 部分抵抗了。
@@ -6099,7 +6099,7 @@ Returning to the game...
 返回游戏……
 %%%%
 returns to the deep
-返回了深渊
+回归了水底
 %%%%
 returns to the grave
 返回了坟墓
@@ -6300,10 +6300,10 @@ Game saved, see you later!
 看起来不那么闪耀了。
 %%%%
  seems less confused.
-看起来不那么困惑了。
+看起来不那么混乱了。
 %%%%
  seems less drained.
-看起来不那么枯竭了。
+衰竭似乎减轻了。
 %%%%
  seems less interested in you.
 似乎对你不再那么感兴趣了。
@@ -6381,7 +6381,7 @@ Setting a skill training target for %s at %d.%d.
 正在为%s设定%d.%d的技能训练目标。
 %%%%
 Shadowy forms rise from the deep at %s song!
-暗影形体在%s歌声中从深渊中升起！
+暗影形体随着%s歌声从深水中升起！
 %%%%
  shakes eagerly.
  急切地摇晃着。
@@ -6559,7 +6559,7 @@ Something interferes with your magic!
 有什么东西干扰了你的魔力！
 %%%%
 Something invisible is squirming in the web.
-有什么东西在网中扭动。
+有什么看不见的东西在网中扭动。
 %%%%
 Something is engulfed in negative energy!
 某个东西被负能量吞没了！
@@ -6940,7 +6940,7 @@ Terrible wounds open up all over %s body!
 可怕的伤口遍布了%s全身！
 %%%%
 Terrible wounds spread across more of %s body!
-可怕的伤口在%s身上蔓延了更多！
+可怕的伤口在%s身上进一步蔓延！
 %%%%
 Thank you for shopping at %s!
 感谢你在%s购物！
@@ -7117,7 +7117,7 @@ The air sparks with electricity, shocking %s%s
 空气中电光闪烁，电击了%s%s
 %%%%
 The arc blade crackles.
-电弧刀噼啪作响。
+电弧之刃噼啪作响。
 %%%%
 The barbed spikes dig painfully into your body as you move.
 你移动时，倒刺扎入你的身体，令你疼痛。
@@ -7408,7 +7408,7 @@ The long-dead rise up around you.
 久死的亡者在你周围爬了起来。
 %%%%
 The mace of Variability scintillates.
-变幻之槌闪烁着。
+无常巨锤闪烁着。
 %%%%
 The magic binding %s to this plane unravels!
 将%s束缚在此位面的魔法瓦解了！
@@ -7459,7 +7459,7 @@ The net rips apart, and %s comes free!
 网撕裂了，%s挣脱了出来！
 %%%%
 The now-empty wand crumbles to dust.
-现在空了的魔杖碎成了灰烬。
+耗尽充能的魔杖碎成了粉尘。
 %%%%
 the Orb
 法球
@@ -7570,7 +7570,7 @@ The shadows disperse without effect.
 暗影毫无效果地消散了。
 %%%%
 The shadowy forms in the deep grow still as others approach.
-随着其他人的靠近，深渊中的暗影形体静止了下来。
+随着其他人的靠近，深水中的暗影形体静止了下来。
 %%%%
 The shaft crumbles and collapses.
 竖井碎裂坍塌了。
@@ -7627,10 +7627,10 @@ the Swine
 猪
 %%%%
 The sword of Cerebov burns away %s fire resistance.
-塞雷博夫之剑烧毁了%s的火焰抗性。
+塞雷波夫之剑烧去了%s火焰抗性。
 %%%%
 The sword of Cerebov burns away your fire resistance.
-塞雷博夫之剑烧毁了你的火焰抗性。
+塞雷波夫之剑烧去了你的火焰抗性。
 %%%%
 The sword says, "Hi! I'm the Singing Sword!"
 剑说道："嗨！我是歌唱之剑！"
@@ -8196,7 +8196,7 @@ turns back into a lifeless stick
 扭曲变形了。
 %%%%
 Two slime creatures merge to form %s.
-两个黏泥生物融合成了%s。
+两个史莱姆生物融合成了%s。
 %%%%
 Type
 学派
@@ -8590,10 +8590,10 @@ You %s %s%s peal%s of thunder!
 你%s了%s%s雷声%s
 %%%%
 You %s a %s peal of thunder!
-你%s到一声%s的雷鸣！
+你%s一声%s的雷鸣！
 %%%%
 You %s %s peals of thunder!
-你%s到阵阵%s的雷鸣！
+你%s阵阵%s的雷鸣！
 %%%%
 You %s %s%s.
 你%3$s%1$s%2$s。
@@ -9386,7 +9386,7 @@ You can't wield any weapon.
 你无法持握任何武器。
 %%%%
 You can't zap that!
-你无法电击那个！
+你不能用它发射魔法！
 %%%%
 You cannot %s away from %s!
 你不能通过%s远离%s！
@@ -9650,7 +9650,7 @@ You create some orbs of lightning!
 你制造了一些球形闪电！
 %%%%
 You crush the flux bauble in your %s and feel its energy flooding your body.
-你的%s捏碎了通量小玩意，能量涌遍全身！
+你用%s捏碎了变形球，感到它的能量涌遍全身。
 %%%%
 You currently need %d gold to open negotiations with a merchant.
 你目前需要%d金币来与商人开始谈判。
@@ -9986,7 +9986,7 @@ You feel haunted.
 你感到被鬼魂缠身。
 %%%%
 You feel horribly lethargic.
-你感到极度昏昏欲睡。
+你感到极度倦怠。
 %%%%
 You feel hot and cold all over.
 你感到全身忽冷忽热。
@@ -10100,7 +10100,7 @@ You feel potentially powerful.
 你觉得自己蕴藏着强大的力量。
 %%%%
 You feel a bit dim.
-你觉得有些黯淡。
+你觉得脑子有些不灵光。
 %%%%
 You feel a strange surge of divine displeasure.
 你感到一股奇异的神怒涌来。
@@ -10235,7 +10235,7 @@ You feel the power of the Abyss delaying your translocation!
 你感到深渊的力量在延缓你的传送！
 %%%%
 You feel the power of Zot begin to gather its forces!
-你感到佐特的力量开始聚集！
+你感到佐特的力量开始集结兵力！
 %%%%
 You feel the presence of a powerless spirit.
 你感到一个无力之灵的存在。
@@ -10307,7 +10307,7 @@ You feel your power drawn to a protective spirit.
 你感到你的力量被引向一个保护之灵。
 %%%%
 You feel your power leaking away.
-你感到力量在流失。
+你感到法力在流失。
 %%%%
 You feel your power returning.
 你感到你的力量正在恢复。
@@ -10445,7 +10445,7 @@ You have harvested enough death to cast Grave Claw an additional time.
 你已经收割了足够多的死亡来额外施放一次墓爪。
 %%%%
 You have identified the last %s.
-你已经鉴定了最后一件%s。
+你鉴定出了最后一种%s。
 %%%%
 You have lingered too long. Zot senses you. Dive deeper or flee this branch before you suffer!
 你逗留太久了。佐特感知到了你。在遭受苦难之前潜得更深或逃离这个分支吧！
@@ -10565,7 +10565,7 @@ You hear Kikubaaqudgha cackling.
 你听到奇库巴库哈咯咯地笑。
 %%%%
 You hear strange and distant voices.
-你听到了一阵奇怪而遥远的声音。
+你听到了一阵奇怪而遥远的人声。
 %%%%
 You hear the crackle of electricity.
 你听到了电流的噼啪声。
@@ -10880,7 +10880,7 @@ You return to the normal flow of time.
 你回到了正常的时间流动中。
 %%%%
 You reveal a symbol of torment!
-你揭示了折磨的符号！
+你亮出了折磨之符！
 %%%%
 You reveal the great annihilating truth to your foes!
 你向敌人揭示了伟大的湮灭真理！
@@ -11428,7 +11428,7 @@ Your condensation shield dissipates!
 你的凝结护盾消散了！
 %%%%
 Your confusion fades away as the thirst for blood takes over your mind.
-你的困惑消散了，嗜血的欲望占据了你的心智。
+你的混乱消散了，嗜血的欲望占据了你的心智。
 %%%%
 Your curses shatter.
 你的诅咒破碎了。
@@ -11656,10 +11656,10 @@ Your performance comes to an abrupt end.
 你的表演突然结束了。
 %%%%
 Your power is siphoned away as the spells of %s are empowered!
-你的力量被吸走，%s的法术被强化了！
+你的法力被吸走，%s的法术被强化了！
 %%%%
 Your power is siphoned away!
-你的力量被吸走了！
+你的法力被吸走了！
 %%%%
 Your projectile teleports!
 你的投射物被传送了！
@@ -11710,7 +11710,7 @@ Your slime covering ruptures, deflecting the attack, %s attack away%s
 你的软泥覆盖层破裂，偏转并弹开了%s攻击%s
 %%%%
 Your spectral weapon shares its damage with you!
-你的幽魂武器与你分担了伤害！
+你的幽魂武器将自身受到的伤害分担给了你！
 %%%%
 Your spellmotor activates!
 你的法术引擎启动了！
@@ -12633,8 +12633,7 @@ Error opening file '%s'.
 打开文件'%s'出错。
 %%%%
 Something unseen %s
-
-某物悄然%s
+有什么看不见的东西%s
 %%%%
 %s festers in the toxic bog%s
 
@@ -14249,13 +14248,13 @@ The staff's sickly green glow vanishes.
 法杖的病态绿光消失了。
 %%%%
 You struggle to resist the curse of the Prune...
-你挣扎着抵抗梅干长柄刀的诅咒……
+你努力抵抗梅干阔头枪的诅咒……
 %%%%
 The curse of the Prune has no hold on the dead.
-梅干长柄刀的诅咒对亡者无效。
+梅干阔头枪的诅咒对亡者无效。
 %%%%
 The curse of the Prune lifts from you.
-梅干长柄刀的诅咒从你身上解除了。
+梅干阔头枪的诅咒从你身上解除了。
 %%%%
 You feel lightning quick.
 你感到迅如闪电。
@@ -14342,7 +14341,7 @@ Your ring of flames gutters out.
 你的火焰之环熄灭了。
 %%%%
 Your spectral weapon disappears.
-你的幽灵武器消失了。
+你的幽魂武器消失了。
 %%%%
 You feel ready to stride towards your foes.
 你感到准备好大步迈向敌人。
@@ -16322,7 +16321,7 @@ no longer
 %1$s将注意力转回你身上。
 %%%%
  is no longer sharing %1$s pain.
-不再分担%1$s痛苦。
+不再把%1$s痛苦传给他者。
 %%%%
 charmed
 被魅惑
@@ -23785,7 +23784,7 @@ You feel an ambush approaching...
 你感到一场伏击正在逼近……
 %%%%
 The amulet of bloodlust glows a violent red.
-嗜血项链发出了暴力的红光。
+嗜血项链发出了狂烈的红光。
 %%%%
 You feel the ancient rage of your axe.
 你感受到了你斧头的古老愤怒。
@@ -23863,7 +23862,7 @@ You feel your strength returning.
 你感到你的力量正在恢复。
 %%%%
 Your magic returns to you!
-你的魔法回到了你的身上！
+你的法力回来了！
 %%%%
 Plague seeps from the dead %s.
 瘟疫从死去的%s身上渗出。
@@ -28379,7 +28378,7 @@ much
 极
 %%%%
 less
-不
+简略
 %%%%
 more
 更多
@@ -29306,7 +29305,6 @@ carrying
 （显示）    
 %%%%
 -headed 
-
 头
 %%%%
 </w> or 
@@ -29402,7 +29400,6 @@ Skills reduced by
 被削弱的技能
 %%%%
 Speed: 
-
 速度：
 %%%%
 The silver sears 
@@ -29426,27 +29423,22 @@ a chunk of
 一大块
 %%%%
 active 
-
-激活
+活跃的
 %%%%
 attack 
 
 攻击
 %%%%
 bound 
-
 束缚
 %%%%
 chaotic 
-
-混乱的
+混沌的
 %%%%
 constricted by 
-
 被束缚——
 %%%%
 constricting 
-
 束缚着
 %%%%
 cursed 
@@ -29464,7 +29456,6 @@ fire in %s direction
 向%s的方向射击
 %%%%
 ghostly 
-
 鬼魅
 %%%%
 half of 
@@ -29501,12 +29492,10 @@ replica
 复制品
 %%%%
 sensed 
-
-被感知
+感知到的
 %%%%
 spectral 
-
-幻影
+幽灵
 %%%%
 stealthily 
 
@@ -29848,7 +29837,7 @@ Really rest while Zot is near?
 佐特就在附近，确定要休息吗？
 %%%%
 You can't see anything, release a tremorstone anyway?
-你什么也看不见，仍然释放震动石吗？
+你什么也看不见，仍然释放震颤石吗？
 %%%%
 You can't see anything. Try to condense clouds anyway?
 你什么也看不见。仍然尝试凝结云雾吗？
@@ -29938,7 +29927,7 @@ Choose to examine item
 ：
 %%%%
  (unknown)
-（未知）
+（未鉴定）
 %%%%
  (owned: %d)
  （已拥有：%d）
@@ -30163,7 +30152,7 @@ Clar
 清明
 %%%%
 Wiz
-巫师
+施法辅助
 %%%%
 BAcc
 基础命中
@@ -30361,7 +30350,7 @@ Invo=14 Evo=0
 祈神=14 魔力释放=0
 %%%%
 MP+9
-魔力+9
+法力+9
 %%%%
 Majesty Ring++
 威严 戒指++
@@ -30400,7 +30389,7 @@ RegenMP+
 回魔+
 %%%%
 RevGuard
-反转卫士
+热机护卫
 %%%%
 Ring+
 戒指+
@@ -31200,7 +31189,7 @@ draw
 抽牌
 %%%%
 mighty
-雷鸣
+强劲
 %%%%
 violent
 猛烈
@@ -31246,7 +31235,7 @@ kneel at
 啪的一声内爆了。
 %%%%
  invokes %s protection!
-祈求了%s的庇护！
+祈求了%s庇护！
 %%%%
  is filled with unearthly specular energy.
 被超凡的镜面能量充满。
@@ -31288,7 +31277,7 @@ release
 %s%s了%s%s
 %%%%
 %s animating energy erupts into ghostly fire!
-%s的活化能量爆发成幽灵之火！
+%s活化能量爆发成幽灵之火！
 %%%%
 %s collapses into a mass of ice!
 %s崩塌成了一堆冰块！
@@ -31324,10 +31313,10 @@ The residue of %s spell condenses into glimmer.
 %s发动了反击。
 %%%%
 %s shimmers and seems to become %s!
-%s闪烁了一下，似乎变成了%s！
+%s闪烁了一下，似乎分成了%s个！
 %%%%
 %s spells are empowered by the prayer of brilliance!
-%s法术被光辉祈祷强化了！
+%s法术被聪慧祈祷强化了！
 %%%%
 a nearby %s withers and dies.
 附近的%s枯萎而死。
@@ -31381,7 +31370,7 @@ the %s is presently inert.
 %s目前处于休眠状态。
 %%%%
 the dream sheep ruffle%s wool and motes of dream dust sparkle, to no effect.
-梦境羊抖了抖羊毛，梦境尘埃闪烁，但毫无效果。
+梦羊抖了抖羊毛，梦境尘埃闪烁，但毫无效果。
 %%%%
 the dream sheep shake%s wool and sparkle%s.
 梦境羊抖了抖羊毛，闪闪发光。
@@ -32473,7 +32462,7 @@ verb|fire
  你感到昏昏欲睡……
 %%%%
  allies begin to heal rapidly.
- 的盟友开始快速自愈。
+盟友开始快速自愈。
 %%%%
  begins deflecting missiles!
  开始偏转飞弹！
@@ -32488,7 +32477,7 @@ verb|fire
  束缚了附近怪物的灵魂。
 %%%%
  blinks into view!
- 闪现在视野中！
+闪烁进入了视野！
 %%%%
  channels a blast of cleansing flame!
  引导了一波净化之焰！
@@ -32545,7 +32534,7 @@ verb|fire
  布满眼睛和触手
 %%%%
  is drained!
- 被吸取了生命力！
+陷入了衰竭！
 %%%%
  is healed.
  被治愈了。
@@ -32557,7 +32546,7 @@ verb|fire
  身形晃动了片刻。
 %%%%
  is smitten.
- 被重击了。
+被惩击了。
 %%%%
  launches a sporangium.
  发射了一颗孢子囊。
@@ -32566,13 +32555,13 @@ verb|fire
  液化成一团血雾！
 %%%%
  mind is gnawed upon.
- 的心智受到了侵蚀。
+心智受到了侵蚀。
 %%%%
  mind is heavily gnawed upon.
- 的心智受到了严重侵蚀。
+心智受到了严重侵蚀。
 %%%%
  movement is quickened by the wind!
- 的移动被风加快了！
+移动被风加快了！
 %%%%
  potion.
  药水。
@@ -32611,7 +32600,7 @@ verb|fire
  强烈反对你训练这项技能。
 %%%%
  stumbles on the uneven ground.
- 在崎岖的地面上绊倒了。
+在凹凸的地面上踉跄了一下。
 %%%%
  supports the use of this spell.\n
  赞成使用这个法术。\n
@@ -32629,7 +32618,7 @@ verb|fire
  被摧毁时会对%s敌人施加强大的死灵诅咒。\n
 %%%%
  wounds begin to rapidly close.
- 的伤口开始快速愈合。
+伤口开始快速愈合。
 %%%%
  yields 
  产生 
@@ -32878,10 +32867,10 @@ Zin's power protects your fellow warrior from evil magic!
 \n你已收割了足够的死亡能量，可以施放此法术%d次。（最多%d次。）
 %%%%
 a haunting
-一曲幽魂
+一曲摄人心魄
 %%%%
 a haunting song
-一曲幽魂之歌
+一曲摄人心魄的歌
 %%%%
 a luring song
 一曲诱惑之歌
@@ -35701,13 +35690,13 @@ Generating dungeon map stats
 正在生成地城地图统计
 %%%%
 %s put%s %s out of %s misery!
-%1$s将%3$s从%4$s的痛苦中解脱了出来！
+%1$s将%3$s从%4$s痛苦中解脱了出来！
 %%%%
 %s behead%s %s%s!
 %1$s斩首了%3$s%4$s！
 %%%%
 %s %s blasted by disruptive energy%s
-%1$s被干扰能量轰击了%3$s！
+%1$s被干扰能量轰击了%3$s
 %%%%
 You can only abyss_teleport() inside the Abyss.
 你只能在深渊内使用 abyss_teleport()。
@@ -35723,10 +35712,10 @@ s are
  is
 %%%%
 dealt
-造成了
+发出
 %%%%
 drawn
-抽到了
+抽到
 %%%%
 Unknown species: %s
 未知种族：%s
@@ -35946,7 +35935,7 @@ You hear a squelching noise.
 你听到一阵咕唧声。
 %%%%
 %s rages.
-%s陷入了狂暴！
+%s狂怒不已。
 %%%%
 You hear a sizzling splash.
 你听到一阵嘶嘶的溅水声。
@@ -36678,7 +36667,7 @@ Stack %s
 %s（%s）
 %%%%
 %s blazes out!
-%s迸发而出！
+%s迸出了烈焰！
 %%%%
 %s charge
 %s充能
@@ -36825,7 +36814,7 @@ AC (x3)
 <w>%1$s</w>\n为%3$s输入新%2$s：
 %%%%
 <white>Gems (%d collected
-<white>宝石（已收集%d
+<white>宝石(已收集%d
 %%%%
 <white>[enter]</white>: %s
 <white>[回车]</white>：%s
@@ -37140,7 +37129,7 @@ weapon of %s
 组装了%s！
 %%%%
  discards %s horn.
-丢弃了%s角。
+丢弃了%s号角。
 %%%%
  donates %s equipment to the cause.
 将%s装备捐献给了事业。
@@ -37413,10 +37402,10 @@ Round %d of %d
 第%d回合，共%d回合
 %%%%
 The Sanctuary denies your attempt to harm %s.
-圣域阻止了你伤害%s的企图。
+庇护所阻止了你伤害%s的企图。
 %%%%
 The Sanctuary protects %s from harm.
-圣域保护了%s免受伤害。
+庇护所保护了%s免受伤害。
 %%%%
 The game lasted %s (%d turns).
 游戏持续了%s（%d回合）。
@@ -39553,10 +39542,10 @@ It is found in decks of
 出现于以下牌组：
 %%%%
 , or in Nemelex Xobeh's deck of punishment
-，或奈米勒·佐柏的惩罚牌组
+，或尼姆雷斯·索布的惩罚牌组
 %%%%
 It is only found in Nemelex Xobeh's deck of punishment.
-仅出现于奈米勒·佐柏的惩罚牌组。
+仅出现于尼姆雷斯·索布的惩罚牌组。
 %%%%
 It is normally not part of any deck.
 通常不属于任何牌组。
@@ -42307,7 +42296,7 @@ Describe which deck?    Cards available
  可在牌组选择与说明之间切换。
 %%%%
 disappears without a trace.
-无声无息地消失了。
+不留痕迹地消失了。
 %%%%
 glows slightly and disappears.
 微微发光后消失了。
@@ -45163,7 +45152,7 @@ job group|Mage
 法师
 %%%%
 wound adjective|almost destroyed
-奄奄一息
+几近毁坏
 %%%%
 wound adjective|almost dead
 奄奄一息
@@ -45193,7 +45182,7 @@ wound adjective|lightly wounded
 轻度受伤
 %%%%
 wound adjective|not damaged
-未受伤
+未受损
 %%%%
 wound adjective|not wounded
 未受伤
@@ -50877,3 +50866,222 @@ flood substance|water
 flood substance|ooze
 软泥
 %%%%
+%%%%
+%1$s thoroughly behead%2$s %3$s!
+%1$s彻底斩首了%3$s！
+%%%%
+%1$s behead%2$s %3$s!
+%1$s斩首了%3$s！
+%%%%
+Your limbs ache and wobble like jelly.
+你的四肢疼痛，像果冻般颤动。
+%%%%
+Your body is flooded with magical radiation.
+魔法辐射涌遍了你的全身。
+%%%%
+The gloves are unable to connect with your magical essence.
+手套无法与你的魔法本源相连。
+%%%%
+%s glows brightly.
+%s发出了明亮的光芒。
+%%%%
+%s glows.
+%s发出了光芒。
+%%%%
+You deal a card...
+你发出了一张牌……
+%%%%
+You draw a card...
+你抽出了一张牌……
+%%%%
+%1$s gifted it to you %2$s
+%1$s%2$s将它赐予了你
+%%%%
+You no longer feel ready to stride towards your foes.
+你不再感觉已准备好大步迈向敌人。
+%%%%
+You welcome %s into your grasp.
+你欣然握住了%s。
+%%%%
+You welcome %s back into your grasp.
+你再次欣然握住了%s。
+%%%%
+%s violently stops moving%s
+%s猛然停住了%s
+%%%%
+shock discharge source|shield
+盾牌
+%%%%
+shock discharge source|electric aura
+电流光环
+%%%%
+orb beam name|orb of destruction
+毁灭法球
+%%%%
+orb beam name|wavering orb of destruction
+摇曳的毁灭法球
+%%%%
+orb beam name|annihilating fire
+湮灭火焰
+%%%%
+orb beam name|annihilating cold
+湮灭寒气
+%%%%
+orb beam name|annihilating electricity
+湮灭电流
+%%%%
+orb beam name|annihilating negative energy
+湮灭负能量
+%%%%
+orb beam name|annihilating magma
+湮灭岩浆
+%%%%
+orb beam name|annihilating ice
+湮灭寒冰
+%%%%
+orb beam name|annihilating devastation
+湮灭毁灭能量
+%%%%
+orb beam name|annihilating acid
+湮灭酸液
+%%%%
+orb beam name|annihilating fragments
+湮灭碎片
+%%%%
+%1$s %2$s discharges%3$s, shocking %4$s%5$s
+%1$s%2$s%3$s放电，电击了%4$s%5$s
+%%%%
+ and becomes anchored to this world
+，并被锚定在这个世界
+%%%%
+recollection spell list| and 
+和
+%%%%
+recollection spell list|, 
+、
+%%%%
+%s ignites a memory of %s to re-knit themselves.
+%s点燃了关于%s的记忆，以重新拼合自身。
+%%%%
+%s ignites a memory of %s.
+%s点燃了关于%s的记忆。
+%%%%
+ goes up the escape hatch.
+沿逃生口向上离开了。
+%%%%
+ goes down the escape hatch.
+沿逃生口向下离开了。
+%%%%
+ takes the escape hatch.
+通过逃生口离开了。
+%%%%
+ goes up the stairs.
+走上了楼梯。
+%%%%
+ goes down the stairs.
+走下了楼梯。
+%%%%
+ takes the stairs.
+沿楼梯离开了。
+%%%%
+ goes down the shaft.
+沿竖井向下离开了。
+%%%%
+ jumps into the shaft.
+跳进了竖井。
+%%%%
+ but does no damage.
+，却未造成伤害。
+%%%%
+cast a spell
+施法
+%%%%
+As the sheep sparkle%1$s and sway%2$s, %3$s falls asleep.
+随着绵羊闪烁摇摆，%3$s陷入了沉睡。
+%%%%
+A freezing vortex appears around %s!
+一股冰冻漩涡出现在%s周围！
+%%%%
+A freezing vortex appears and lifts %s up!
+一股冰冻漩涡出现，将%s托举起来！
+%%%%
+the blast
+冲击波
+%%%%
+You feed on the fading %1$s of %2$s!
+你从%2$s渐散的%1$s中汲取了力量！
+%%%%
+bound soul name|bound 
+缚魂
+%%%%
+%1$s blocks %2$s with %3$s %4$s... and reflects it back!
+%1$s用%3$s%4$s挡住了%2$s……并将其反弹了回去！
+%%%%
+%s steals %s from you!
+%s从你这里偷走了%s！
+%%%%
+%1$s stole %2$d gold
+%1$s偷走了%2$d枚金币
+%%%%
+%1$s stole %2$s
+%1$s偷走了%2$s
+%%%%
+You %1$s wildly%2$s!
+你疯狂地%1$s%2$s！
+%%%%
+You %1$s for attention%2$s!
+你%1$s以引起注意%2$s！
+%%%%
+Mule's kick
+“骡子”的后坐力
+%%%%
+Trog's wrath
+特洛格的神怒
+%%%%
+Hit by %1$s thrown by %2$s
+被%2$s投掷的%1$s击中
+%%%%
+Chaos surges forth from the pile of flesh, awakening new unlife!
+混沌从这堆血肉中涌出，唤醒了新的亡灵！
+%%%%
+Chaos surges forth from piles of flesh, awakening new unlife!
+混沌从多堆血肉中涌出，唤醒了新的亡灵！
+%%%%
+You are overwhelmed by glittering dream dust!
+闪烁的梦境尘埃将你淹没！
+%%%%
+The dream sheep are wreathed in dream dust.
+梦羊被梦境尘埃笼罩。
+%%%%
+The dream sheep attempt%1$s to lull %2$s to sleep.
+梦羊尝试催眠%2$s。
+%%%%
+rises up
+升腾而起
+%%%%
+swirls
+旋转起来
+%%%%
+No longer under Kirke's spell, the hogs return to their human forms!
+不再受喀耳刻的法术影响，猪群恢复了人形！
+%%%%
+No longer under Kirke's spell, the hogs return to their original forms!
+不再受喀耳刻的法术影响，猪群恢复了原形！
+%%%%
+No longer under Kirke's spell, the hog returns to its human form!
+不再受喀耳刻的法术影响，这头猪恢复了人形！
+%%%%
+No longer under Kirke's spell, the hog returns to its original form!
+不再受喀耳刻的法术影响，这头猪恢复了原形！
+%%%%
+%s blessed by the Shining One
+受到光辉者祝福的%s
+%%%%
+%s corrupted by Lugonu
+受到卢格努腐化的%s
+%%%%
+%s bloodied by Kikubaaqudgha
+被奇库巴库哈染血的%s
+%%%%
+%s touched by the gods
+受到诸神触碰的%s

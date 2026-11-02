@@ -8004,10 +8004,14 @@ bool player::vex(const actor* who, int dur, string source, string special_msg)
 
     const bool use_actor_name = source.empty() && who != nullptr;
     if (use_actor_name)
+    {
+        ScopedLangEn canonical_language;
         source = who->name(DESC_A);
+    }
     if (!source.empty())
     {
         take_note(Note(NOTE_VEXED, dur, 0, source));
+        ScopedLangEn canonical_language;
         props[DISABLED_BY_KEY] = use_actor_name ? who->name(DESC_A, true)
                                                : source;
     }
