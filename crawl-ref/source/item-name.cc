@@ -213,7 +213,9 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
         switch (descrip)
         {
         case DESC_THE:
-            buff << (T_("the ")); break;
+            if (Options.language != lang_t::ZH)
+                buff << "the ";
+            break;
         case DESC_YOUR:
             buff << (T_("your ")); break;
         case DESC_ITS:
@@ -240,7 +242,9 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
         switch (descrip)
         {
         case DESC_THE:
-            buff << (T_("the ")); break;
+            if (Options.language != lang_t::ZH)
+                buff << "the ";
+            break;
         case DESC_YOUR:
             buff << (T_("your ")); break;
         case DESC_ITS:
@@ -1784,7 +1788,7 @@ static string _name_weapon(const item_def &weap, description_level_type desc,
         : base_name;
     const string curse_suffix
         = weap.cursed() && terse && !dbname && !qualname
-          ? T_(" (curse)") :  "";
+          ? T_(" (bound)") :  "";
     return curse_prefix + plus_text + cosmetic_text
            + name_with_ego + curse_suffix;
 }
@@ -1926,7 +1930,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         }
 
         if (cursed() && terse && !dbname && !qualname)
-            buff << (T_(" (curse)"));
+            buff << (T_(" (bound)"));
         break;
 
     case OBJ_WANDS:
@@ -2122,7 +2126,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
             }
         }
         if (cursed() && terse && !dbname && !qualname)
-            buff << (T_(" (curse)"));
+            buff << (T_(" (bound)"));
         break;
     }
     case OBJ_MISCELLANY:
@@ -2211,7 +2215,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         }
 
         if (cursed() && terse && !dbname && !qualname)
-            buff << (T_(" (curse)"));
+            buff << (T_(" (bound)"));
         break;
 
     // rearranged 15 Apr 2000 {dlb}:

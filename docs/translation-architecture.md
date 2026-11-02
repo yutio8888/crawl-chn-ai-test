@@ -46,22 +46,25 @@ values are translated. Preserve separators, format placeholders, control charact
 
 Serialization identities, Lua/JSON comparison keys, `.des` tags, enum
 identifiers, and TextDB lookup keys stay English. Translate only at a display
-boundary. Three audited `Note::name` cases are language-locked display snapshots:
-`NOTE_MESSAGE` created by `crawl.take_note`, `NOTE_HP_CHANGE` created in
-`ouch()` from `scorefile_entry::death_description(DDV_TERSE)`, and `NOTE_DEATH`
-from its `DDV_NORMAL` death display (`DDV_VERBOSE` in wizard simulation). They are not
-retranslated after a language change. The exceptions do not cover other note
-types or fields. Their complete consumer boundary is:
+boundary. Audited display snapshots include `Note::name` for `NOTE_MESSAGE`
+created by `crawl.take_note`, `NOTE_HP_CHANGE` created in `ouch()` from
+`scorefile_entry::death_description(DDV_TERSE)`, and `NOTE_DEATH` from its
+`DDV_NORMAL` death display (`DDV_VERBOSE` in wizard simulation). The `name` and
+`desc` fields of the five item note types listed below also store display
+snapshots. Their payloads are not retranslated after a language change; existing
+`Note::describe` wrappers follow the current UI language. The exceptions do not
+cover other note types or fields. Their complete consumer boundary is:
 
 | Stage | Consumer | Contract |
 |---|---|---|
 | Message producer | `l-crawl.cc::crawl_take_note` | Constructs `NOTE_MESSAGE`; the complete template and string arguments translate together or the whole message remains English |
 | Injury producer | `ouch()` | Constructs `NOTE_HP_CHANGE` from the current injury display; known beam/event causes translate at the display gate, unknown names remain verbatim |
 | Death producer | `ouch()` | Constructs `NOTE_DEATH` from the normal death display or wizard verbose simulation; the separate literal wizard-revival note is unchanged |
-| Persistence | `Note::save` / `Note::load` | Round-trips `Note::name` without interpreting it |
+| Item producers | `identify_item`, `bless_weapon`, `_check_note_item`, `_maybe_note_found_unrand`, acquirement selection, purchase | Capture current item names and origin/blessing descriptions in `NOTE_ID_ITEM`, `NOTE_GET_ITEM`, `NOTE_FOUND_UNRAND`, `NOTE_ACQUIRE_ITEM`, `NOTE_BUY_ITEM`; BUY has an empty description |
+| Persistence | `Note::save` / `Note::load` | Round-trips the audited `name` / `desc` strings without interpreting them |
 | Display | `Note::describe`, notes UI, chardump/morgue | Emits the stored snapshot |
 | Injury selection | `_is_noteworthy`, `is_noteworthy_hp` | Reads numeric HP, maximum HP and turns, never the name |
-| Death selection | `_is_noteworthy` | Always accepts `NOTE_DEATH`, without inspecting its name |
+| Death/item selection | `_is_noteworthy` | Always accepts `NOTE_DEATH` and the five item types, without inspecting their strings |
 | Excluded logic | milestone handling, xlog, Lua comparisons, lookup, gameplay | Does not consume these snapshots' names; `check_milestone` handles only `NOTE_DUNGEON_LEVEL_CHANGE` |
 
 The injury exception documents an existing display snapshot: its source already
@@ -72,6 +75,16 @@ Death snapshots already used localized descriptions before this audit. Extended
 xlog `tmsg`/`vmsg` and death milestones instead use `short_kill_message` /
 `long_kill_message`, which scope their generation to English and restore the UI
 language afterward; the saved note is not their input.
+
+Item snapshots also predate this audit: item names and origins were already
+rendered when their notes were created. Only `NOTE_ID_ITEM` currently displays
+its saved `desc`; the other origin strings still round-trip. Item note fields
+never feed `collectible_milestone`, whose real producer separately generates
+English. `Note::hidden`, skill-gain reconstruction and milestone handling do not
+interpret these item strings. The existing `item_kind_by_name` and
+`get_item_by_exact_name` accessors resolve base/DB names, not arbitrary saved
+full item names with inscriptions, appearance, brands or artefact names. No
+parser, persistence schema, or numeric field is repurposed for retranslation.
 
 The protocol-facing Lua bindings `you.race()`,
 `you.species()`, `you.genus()`, `you.class()`, and `you.monster()` therefore

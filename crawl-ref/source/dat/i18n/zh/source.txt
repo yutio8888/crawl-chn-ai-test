@@ -1377,7 +1377,7 @@ You grip the centipede bauble in your %s and it winds around your %s and fuses w
 %s丢下了%s。
 %%%%
 %s effortlessly oozes through the net!
-%s毫不费力地穿过了网！
+%s毫不费力地从网眼间流淌而过！
 %%%%
 %s emerges from the mists of memory!
 %s从记忆之雾中浮现！
@@ -1556,7 +1556,7 @@ The potion decomposes into %s within you.
 %s 被孢子吞没了。
 %%%%
 %s is filled with an inner flame.
-%s被内在火焰充满了。
+%s体内燃起了内焰。
 %%%%
 %s is flash-frozen.
 %s被瞬间冻结了。
@@ -1916,7 +1916,7 @@ barrage of energy
 %s被撕裂了，%s从它的位置长了出来。
 %%%%
 %s the attacks of %s are laced with chaos!
-%s%s的攻击被注入了混乱！
+%s%s的攻击被注入了混沌！
 %%%%
 %s thirsts for the lives of mortals!
 %s渴求凡人的生命！
@@ -2054,7 +2054,7 @@ You feel the abyssal rune grow more distant.
 （敌对）
 %%%%
  (inert)
-（惰性）
+（充能耗尽）
 %%%%
  (installed)
 （已安装）
@@ -2564,7 +2564,7 @@ a chunk of
 一大块
 %%%%
 A chunk of your corpse armour falls away.
-一块你的尸体盔甲脱落了。
+你的尸体护甲脱落了一块。
 %%%%
 A cloud of jellies burst out of %s as the current ripples through it%s
 一团胶质怪从%s中爆出，电流在其表面泛起涟漪%s
@@ -3960,7 +3960,7 @@ Drive defenders into a frenzy
  驱使%s陷入舞蹈狂热！
 %%%%
  drops a net on you.
-向你丢出了一张网。
+让一张网落向你。
 %%%%
 drown
 溺亡
@@ -4679,7 +4679,7 @@ is covered in magical glow
 被施加了预示剧痛的诅咒。
 %%%%
  is dazed by the mutagenic energy.
-被变异能量弄得晕眩。
+被变异能量弄得眩晕。
 %%%%
  is dazed by the spores.
  被孢子弄得晕头转向。
@@ -5603,7 +5603,7 @@ ooze
 软泥
 %%%%
  oozes through a web.
-缓缓穿过了蛛网。
+从蛛网间流淌而过。
 %%%%
 Open the help screen.
 打开帮助屏幕
@@ -7117,7 +7117,7 @@ The air sparks with electricity, shocking %s%s
 空气中电光闪烁，电击了%s%s
 %%%%
 The arc blade crackles.
-电弧刀噼啪作响。
+电弧之刃噼啪作响。
 %%%%
 The barbed spikes dig painfully into your body as you move.
 你移动时，倒刺扎入你的身体，令你疼痛。
@@ -7408,7 +7408,7 @@ The long-dead rise up around you.
 久死的亡者在你周围爬了起来。
 %%%%
 The mace of Variability scintillates.
-变幻之槌闪烁着。
+无常巨锤闪烁着。
 %%%%
 The magic binding %s to this plane unravels!
 将%s束缚在此位面的魔法瓦解了！
@@ -7459,7 +7459,7 @@ The net rips apart, and %s comes free!
 网撕裂了，%s挣脱了出来！
 %%%%
 The now-empty wand crumbles to dust.
-现在空了的魔杖碎成了灰烬。
+耗尽充能的魔杖碎成了粉尘。
 %%%%
 the Orb
 法球
@@ -7627,10 +7627,10 @@ the Swine
 猪
 %%%%
 The sword of Cerebov burns away %s fire resistance.
-塞雷博夫之剑烧毁了%s的火焰抗性。
+塞雷波夫之剑烧去了%s火焰抗性。
 %%%%
 The sword of Cerebov burns away your fire resistance.
-塞雷博夫之剑烧毁了你的火焰抗性。
+塞雷波夫之剑烧去了你的火焰抗性。
 %%%%
 The sword says, "Hi! I'm the Singing Sword!"
 剑说道："嗨！我是歌唱之剑！"
@@ -8590,10 +8590,10 @@ You %s %s%s peal%s of thunder!
 你%s了%s%s雷声%s
 %%%%
 You %s a %s peal of thunder!
-你%s到一声%s的雷鸣！
+你%s一声%s的雷鸣！
 %%%%
 You %s %s peals of thunder!
-你%s到阵阵%s的雷鸣！
+你%s阵阵%s的雷鸣！
 %%%%
 You %s %s%s.
 你%3$s%1$s%2$s。
@@ -9386,7 +9386,7 @@ You can't wield any weapon.
 你无法持握任何武器。
 %%%%
 You can't zap that!
-你无法电击那个！
+你不能用它发射魔法！
 %%%%
 You cannot %s away from %s!
 你不能通过%s远离%s！
@@ -9650,7 +9650,7 @@ You create some orbs of lightning!
 你制造了一些球形闪电！
 %%%%
 You crush the flux bauble in your %s and feel its energy flooding your body.
-你的%s捏碎了通量小玩意，能量涌遍全身！
+你用%s捏碎了变形球，感到它的能量涌遍全身。
 %%%%
 You currently need %d gold to open negotiations with a merchant.
 你目前需要%d金币来与商人开始谈判。
@@ -10100,7 +10100,7 @@ You feel potentially powerful.
 你觉得自己蕴藏着强大的力量。
 %%%%
 You feel a bit dim.
-你觉得有些黯淡。
+你觉得脑子有些不灵光。
 %%%%
 You feel a strange surge of divine displeasure.
 你感到一股奇异的神怒涌来。
@@ -10445,7 +10445,7 @@ You have harvested enough death to cast Grave Claw an additional time.
 你已经收割了足够多的死亡来额外施放一次墓爪。
 %%%%
 You have identified the last %s.
-你已经鉴定了最后一件%s。
+你鉴定出了最后一种%s。
 %%%%
 You have lingered too long. Zot senses you. Dive deeper or flee this branch before you suffer!
 你逗留太久了。佐特感知到了你。在遭受苦难之前潜得更深或逃离这个分支吧！
@@ -10880,7 +10880,7 @@ You return to the normal flow of time.
 你回到了正常的时间流动中。
 %%%%
 You reveal a symbol of torment!
-你揭示了折磨的符号！
+你亮出了折磨之符！
 %%%%
 You reveal the great annihilating truth to your foes!
 你向敌人揭示了伟大的湮灭真理！
@@ -11428,7 +11428,7 @@ Your condensation shield dissipates!
 你的凝结护盾消散了！
 %%%%
 Your confusion fades away as the thirst for blood takes over your mind.
-你的困惑消散了，嗜血的欲望占据了你的心智。
+你的混乱消散了，嗜血的欲望占据了你的心智。
 %%%%
 Your curses shatter.
 你的诅咒破碎了。
@@ -11656,10 +11656,10 @@ Your performance comes to an abrupt end.
 你的表演突然结束了。
 %%%%
 Your power is siphoned away as the spells of %s are empowered!
-你的力量被吸走，%s的法术被强化了！
+你的法力被吸走，%s的法术被强化了！
 %%%%
 Your power is siphoned away!
-你的力量被吸走了！
+你的法力被吸走了！
 %%%%
 Your projectile teleports!
 你的投射物被传送了！
@@ -14251,13 +14251,13 @@ The staff's sickly green glow vanishes.
 法杖的病态绿光消失了。
 %%%%
 You struggle to resist the curse of the Prune...
-你挣扎着抵抗梅干长柄刀的诅咒……
+你努力抵抗梅干阔头枪的诅咒……
 %%%%
 The curse of the Prune has no hold on the dead.
-梅干长柄刀的诅咒对亡者无效。
+梅干阔头枪的诅咒对亡者无效。
 %%%%
 The curse of the Prune lifts from you.
-梅干长柄刀的诅咒从你身上解除了。
+梅干阔头枪的诅咒从你身上解除了。
 %%%%
 You feel lightning quick.
 你感到迅如闪电。
@@ -14344,7 +14344,7 @@ Your ring of flames gutters out.
 你的火焰之环熄灭了。
 %%%%
 Your spectral weapon disappears.
-你的幽灵武器消失了。
+你的幽魂武器消失了。
 %%%%
 You feel ready to stride towards your foes.
 你感到准备好大步迈向敌人。
@@ -28381,7 +28381,7 @@ much
 极
 %%%%
 less
-不
+简略
 %%%%
 more
 更
@@ -29444,8 +29444,7 @@ bound
 束缚
 %%%%
 chaotic 
-
-混乱的
+混沌的
 %%%%
 constricted by 
 
@@ -29854,7 +29853,7 @@ Really rest while Zot is near?
 佐特就在附近，确定要休息吗？
 %%%%
 You can't see anything, release a tremorstone anyway?
-你什么也看不见，仍然释放震动石吗？
+你什么也看不见，仍然释放震颤石吗？
 %%%%
 You can't see anything. Try to condense clouds anyway?
 你什么也看不见。仍然尝试凝结云雾吗？
@@ -29944,7 +29943,7 @@ Choose to examine item
 ：
 %%%%
  (unknown)
-（未知）
+（未鉴定）
 %%%%
  (owned: %d)
  （已拥有：%d）
@@ -30169,7 +30168,7 @@ Clar
 清明
 %%%%
 Wiz
-巫师
+施法辅助
 %%%%
 BAcc
 基础命中
@@ -30367,7 +30366,7 @@ Invo=14 Evo=0
 祈神=14 魔力释放=0
 %%%%
 MP+9
-魔力+9
+法力+9
 %%%%
 Majesty Ring++
 威严 戒指++
@@ -30406,7 +30405,7 @@ RegenMP+
 回魔+
 %%%%
 RevGuard
-反转卫士
+热机护卫
 %%%%
 Ring+
 戒指+
@@ -31206,7 +31205,7 @@ draw
 抽牌
 %%%%
 mighty
-雷鸣
+强劲
 %%%%
 violent
 猛烈
@@ -35707,13 +35706,13 @@ Generating dungeon map stats
 正在生成地城地图统计
 %%%%
 %s put%s %s out of %s misery!
-%1$s将%3$s从%4$s的痛苦中解脱了出来！
+%1$s将%3$s从%4$s痛苦中解脱了出来！
 %%%%
 %s behead%s %s%s!
 %1$s斩首了%3$s%4$s！
 %%%%
 %s %s blasted by disruptive energy%s
-%1$s被干扰能量轰击了%3$s！
+%1$s被干扰能量轰击了%3$s
 %%%%
 You can only abyss_teleport() inside the Abyss.
 你只能在深渊内使用 abyss_teleport()。
@@ -35729,10 +35728,10 @@ s are
  is
 %%%%
 dealt
-造成了
+发出
 %%%%
 drawn
-抽到了
+抽到
 %%%%
 Unknown species: %s
 未知种族：%s
@@ -36831,7 +36830,7 @@ AC (x3)
 <w>%1$s</w>\n为%3$s输入新%2$s：
 %%%%
 <white>Gems (%d collected
-<white>宝石（已收集%d
+<white>宝石(已收集%d
 %%%%
 <white>[enter]</white>: %s
 <white>[回车]</white>：%s
@@ -39559,10 +39558,10 @@ It is found in decks of
 出现于以下牌组：
 %%%%
 , or in Nemelex Xobeh's deck of punishment
-，或奈米勒·佐柏的惩罚牌组
+，或尼姆雷斯·索布的惩罚牌组
 %%%%
 It is only found in Nemelex Xobeh's deck of punishment.
-仅出现于奈米勒·佐柏的惩罚牌组。
+仅出现于尼姆雷斯·索布的惩罚牌组。
 %%%%
 It is normally not part of any deck.
 通常不属于任何牌组。
@@ -42313,7 +42312,7 @@ Describe which deck?    Cards available
  可在牌组选择与说明之间切换。
 %%%%
 disappears without a trace.
-无声无息地消失了。
+不留痕迹地消失了。
 %%%%
 glows slightly and disappears.
 微微发光后消失了。
@@ -50712,3 +50711,42 @@ flood substance|water
 flood substance|ooze
 软泥
 %%%%
+%%%%
+%1$s thoroughly behead%2$s %3$s!
+%1$s彻底斩首了%3$s！
+%%%%
+%1$s behead%2$s %3$s!
+%1$s斩首了%3$s！
+%%%%
+Your limbs ache and wobble like jelly.
+你的四肢疼痛，像果冻般颤动。
+%%%%
+Your body is flooded with magical radiation.
+魔法辐射涌遍了你的全身。
+%%%%
+The gloves are unable to connect with your magical essence.
+手套无法与你的魔法本源相连。
+%%%%
+%s glows brightly.
+%s发出了明亮的光芒。
+%%%%
+%s glows.
+%s发出了光芒。
+%%%%
+You deal a card...
+你发出了一张牌……
+%%%%
+You draw a card...
+你抽出了一张牌……
+%%%%
+%1$s gifted it to you %2$s
+%1$s%2$s将它赐予了你
+%%%%
+You no longer feel ready to stride towards your foes.
+你不再感觉已准备好大步迈向敌人。
+%%%%
+You welcome %s into your grasp.
+你欣然握住了%s。
+%%%%
+You welcome %s back into your grasp.
+你再次欣然握住了%s。

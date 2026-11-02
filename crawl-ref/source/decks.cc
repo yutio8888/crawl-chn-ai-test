@@ -419,13 +419,14 @@ string which_decks(card_type card)
         if (deck_data.first == DECK_OF_PUNISHMENT)
             punishment = true;
         else
-            decks.push_back(deck_data.second.name);
+            decks.push_back(T_(deck_data.second.name.c_str()));
     }
 
     if (!decks.empty())
     {
         output += T_("It is found in decks of ")
-               +  comma_separated_line(decks.begin(), decks.end());
+               +  comma_separated_line(decks.begin(), decks.end(),
+                     C_("deck summary list", " and "), C_("deck summary list", ", "));
         if (punishment)
             output += T_(", or in Nemelex Xobeh's deck of punishment");
         output += ".";
@@ -668,7 +669,7 @@ static void _evoke_deck(deck_type deck, bool dealt = false)
 {
     ASSERT(deck_cards(deck) > 0);
 
-    mprf(T_("You %s a card..."), dealt ? T_("deal") : T_("draw"));
+    mpr(dealt ? T_("You deal a card...") : T_("You draw a card..."));
 
     if (deck == DECK_STACK)
     {
@@ -1070,7 +1071,7 @@ void draw_from_deck_of_punishment(bool deal)
 {
     card_type card = _random_card(DECK_OF_PUNISHMENT);
 
-    mprf(T_("You %s a card..."), deal ? T_("deal") : T_("draw"));
+    mpr(deal ? T_("You deal a card...") : T_("You draw a card..."));
     card_effect(card, deal, true);
 }
 
