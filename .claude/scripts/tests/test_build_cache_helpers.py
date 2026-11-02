@@ -3,6 +3,7 @@
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -16,7 +17,7 @@ class BuildCacheHelpersTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.directory = Path(self.temp.name)
+        self.directory = Path(self.temp.name).resolve()
         self.repo = self.directory / "repo"
         self.repo.mkdir()
         self.git("init", "-q")
@@ -82,6 +83,8 @@ with open(os.environ['HELPER_TEST_LOG'],'a') as handle:
         (self.binary / "make").chmod(0o755)
         self.env["HELPER_TEST_LOG"] = str(self.log)
 
+    @unittest.skipIf(sys.platform == "darwin" and not shutil.which("flock"),
+                     "cross-build shell helpers require flock; covered on Ubuntu")
     def test_windows_helper_builds_caller_head_and_caps_parallelism(self):
         self.fake_make()
         main_head = self.git("rev-parse", "HEAD")
@@ -105,6 +108,8 @@ with open(os.environ['HELPER_TEST_LOG'],'a') as handle:
         self.assertTrue((build / "unsafe.h").exists())
         self.assertEqual(len(self.log.read_text().splitlines()), 1)
 
+    @unittest.skipIf(sys.platform == "darwin" and not shutil.which("flock"),
+                     "cross-build shell helpers require flock; covered on Ubuntu")
     def test_android_helper_uses_tracked_wrapper_and_separate_host_ndk_caches(self):
         self.fake_make()
         project = self.source / "android-project"
