@@ -5909,7 +5909,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         const char* en_damaged;
     };
     static const wound_case cases[] = {
-        { MDAM_ALMOST_DEAD,         "奄奄一息", "奄奄一息",
+        { MDAM_ALMOST_DEAD,         "奄奄一息", "几近毁坏",
           "almost dead",       "almost destroyed" },
         { MDAM_SEVERELY_DAMAGED,    "严重受伤", "严重受损",
           "severely wounded",  "severely damaged" },
@@ -5919,7 +5919,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
           "moderately wounded", "moderately damaged" },
         { MDAM_LIGHTLY_DAMAGED,     "轻度受伤", "轻度受损",
           "lightly wounded",   "lightly damaged" },
-        { MDAM_OKAY,                "未受伤",   "未受伤",
+        { MDAM_OKAY,                "未受伤",   "未受损",
           "not wounded",       "not damaged" },
     };
     for (const wound_case& c : cases)
@@ -8725,7 +8725,7 @@ TEST_CASE("grouped: last unidentified item message localizes category only",
         const string text = messages.get_store();
         if (language == lang_t::ZH)
         {
-            CHECK(text.find("你已经鉴定了最后一件") != string::npos);
+            CHECK(text.find("你鉴定出了最后一种") != string::npos);
             for (const char* raw : {"wand", "potion", "scroll", "ring"})
                 CHECK(text.find(raw) == string::npos);
         }
