@@ -1,8 +1,10 @@
+> 稳定版回补核验：本轮源码快照为 `21177ce3de59c2811d53fa4a0268a8a9640a8bb0`。机读证据字段已按对应工具更新；下方旧批次的基线、措辞和裁决叙述保留为历史记录。历史基线与当前候选分别校验。
+
 # Issue #24 怪物翻译全量复审结果
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`799190851dcb02e289e1a1d159d3e4c91b306276523d30dd2f573c100a514350`
-- 清单 SHA-256：`96a57aab5065e62333787c162bd8e49c230bc09b17b157ff520e413b37dc0c82`
+- 清单 SHA-256：`ba0c0789f9e8bb5bab96d5b05b656bbb6a8f1451c6ddb0d19c02f4e95f5c227f`
 - 身份总数：795（现行 671；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -294,7 +296,7 @@
 | `monster:MONS_DRACONIAN_STORMCALLER` | current; exposure=ordinary; name=draconian stormcaller→龙人风暴召唤者; genus=MONS_DRACONIAN; species=MONS_DRACONIAN; data=crawl-ref/source/dat/mons/draconian-stormcaller.yaml; desc=EN/ZH | keep |
 | `monster:MONS_DRACONIAN_MONK` | current; exposure=ordinary; name=draconian monk→龙人武僧; genus=MONS_DRACONIAN; species=MONS_DRACONIAN; data=crawl-ref/source/dat/mons/draconian-monk.yaml; desc=EN/ZH | keep |
 | `monster:MONS_DRACONIAN_ZEALOT` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
-| `monster:MONS_DRACONIAN_SHIFTER` | current; exposure=ordinary; name=draconian shifter→龙人变形者; genus=MONS_DRACONIAN; species=MONS_DRACONIAN; data=crawl-ref/source/dat/mons/draconian-shifter.yaml; desc=EN/ZH | keep |
+| `monster:MONS_DRACONIAN_SHIFTER` | current; exposure=ordinary; name=draconian shifter→龙人移位者; genus=MONS_DRACONIAN; species=MONS_DRACONIAN; data=crawl-ref/source/dat/mons/draconian-shifter.yaml; desc=EN/ZH | adjust: display name corrected |
 | `monster:MONS_DRACONIAN_ANNIHILATOR` | current; exposure=ordinary; name=draconian annihilator→龙人湮灭者; genus=MONS_DRACONIAN; species=MONS_DRACONIAN; data=crawl-ref/source/dat/mons/draconian-annihilator.yaml; desc=EN/ZH | keep |
 | `monster:MONS_DRACONIAN_KNIGHT` | current; exposure=ordinary; name=draconian knight→龙人骑士; genus=MONS_DRACONIAN; species=MONS_DRACONIAN; data=crawl-ref/source/dat/mons/draconian-knight.yaml; desc=EN/ZH | keep |
 | `monster:MONS_DRACONIAN_SCORCHER` | current; exposure=ordinary; name=draconian scorcher→龙人灼烧者; genus=MONS_DRACONIAN; species=MONS_DRACONIAN; data=crawl-ref/source/dat/mons/draconian-scorcher.yaml; desc=EN/ZH | keep |

@@ -816,8 +816,12 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         # Refreshed with the miscellany producer split (_misc_type_name_en +
         # N_ identity table): the identity set is unchanged (390 rows, 31
         # miscellany) but the row facts now carry the canonical English table.
+        # Refreshed after the 250-identity residual wording batch and the
+        # complete-key backports changed SourceDB values: the ordinary-v1 row
+        # facts changed while the identity set stayed at 390 rows / 31
+        # miscellany.
         self.assertEqual(
-            "73f81ee55aecbf43c97e06a68fc274338c687a745aea97e5475ac6ae53e8bc9d",
+            "c1c772f0598c1a05f472167644b0488ec1ecc4526ca5af1ffe4a14e310ce49ca",
             payload["inventory_sha256"],
         )
         self.assertEqual(payload["count"], len(payload["rows"]))
