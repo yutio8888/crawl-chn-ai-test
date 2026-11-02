@@ -943,24 +943,24 @@ struct gem_def
 static int Gem_index[NUM_GEM_TYPES];
 static const gem_def Gem_prop[] =
 {
-    { GEM_DUNGEON, "smoky",       BRANCH_DUNGEON, 6000 },
+    { GEM_DUNGEON, NC_("gem appearance", "smoky"),       BRANCH_DUNGEON, 6000 },
 #if TAG_MAJOR_VERSION == 34
-    { GEM_ORC,     "glittering",  BRANCH_ORC,     6000 },
+    { GEM_ORC,     NC_("gem appearance", "glittering"),  BRANCH_ORC,     6000 },
 #endif
-    { GEM_ELF,     "shimmering",  BRANCH_ELF,     6000 },
-    { GEM_LAIR,    "earthy",      BRANCH_LAIR,    7500 }, // travel time
+    { GEM_ELF,     NC_("gem appearance", "shimmering"),  BRANCH_ELF,     6000 },
+    { GEM_LAIR,    NC_("gem appearance", "earthy"),      BRANCH_LAIR,    7500 }, // travel time
 
-    { GEM_SWAMP,   "mossy",       BRANCH_SWAMP,   4500 }, // small layouts
-    { GEM_SHOALS,  "azure",       BRANCH_SHOALS,  4500 }, // seems faster
-    { GEM_SNAKE,   "jade",        BRANCH_SNAKE,   6000 },
-    { GEM_SPIDER,  "milky-white", BRANCH_SPIDER,  6000 },
+    { GEM_SWAMP,   NC_("gem appearance", "mossy"),       BRANCH_SWAMP,   4500 }, // small layouts
+    { GEM_SHOALS,  NC_("gem appearance", "azure"),       BRANCH_SHOALS,  4500 }, // seems faster
+    { GEM_SNAKE,   NC_("gem appearance", "jade"),        BRANCH_SNAKE,   6000 },
+    { GEM_SPIDER,  NC_("gem appearance", "milky-white"), BRANCH_SPIDER,  6000 },
 
-    { GEM_SLIME,   "starry",      BRANCH_SLIME,   1500 }, // usually dived fast
-    { GEM_VAULTS,  "shining",     BRANCH_VAULTS,  7500 }, // big, travel time
-    { GEM_CRYPT,   "ivory",       BRANCH_CRYPT,   6000 },
-    { GEM_TOMB,    "sanguine",    BRANCH_TOMB,    6000 },
-    { GEM_DEPTHS,  "midnight",    BRANCH_DEPTHS,  7500 }, // big, travel time
-    { GEM_ZOT,     "prismatic",   BRANCH_ZOT,     2000 }, // often dived
+    { GEM_SLIME,   NC_("gem appearance", "starry"),      BRANCH_SLIME,   1500 }, // usually dived fast
+    { GEM_VAULTS,  NC_("gem appearance", "shining"),     BRANCH_VAULTS,  7500 }, // big, travel time
+    { GEM_CRYPT,   NC_("gem appearance", "ivory"),       BRANCH_CRYPT,   6000 },
+    { GEM_TOMB,    NC_("gem appearance", "sanguine"),    BRANCH_TOMB,    6000 },
+    { GEM_DEPTHS,  NC_("gem appearance", "midnight"),    BRANCH_DEPTHS,  7500 }, // big, travel time
+    { GEM_ZOT,     NC_("gem appearance", "prismatic"),   BRANCH_ZOT,     2000 }, // often dived
 };
 
 struct item_set_def
@@ -2055,7 +2055,7 @@ const char* staff_type_name(stave_type s)
     if (s == NUM_STAVES)
         return "bugginess"; // used for known items
     ASSERT_RANGE(s, 0, NUM_STAVES);
-    return T_(Staff_prop[Staff_index[s]].name);
+    return C_("staff type", Staff_prop[Staff_index[s]].name);
 }
 
 skill_type staff_skill(stave_type s)
@@ -2187,6 +2187,43 @@ bool is_crossbow(const item_def &item)
 bool is_slowed_by_armour(const item_def *item)
 {
     return item && is_range_weapon(*item);
+}
+
+string projectile_display_name(const string& canonical)
+{
+    if (Options.language != lang_t::ZH || canonical.empty())
+        return canonical;
+
+    const string& root = canonical;
+
+    string display;
+    for (int i = 0; i < NUM_MISSILES; ++i)
+    {
+        string english;
+        {
+            ScopedLangEn en;
+            english = missile_name(static_cast<missile_type>(i));
+        }
+        if (root == english)
+        {
+            display = missile_name(static_cast<missile_type>(i));
+            break;
+        }
+    }
+    static const char* const launcher_projectiles[] = {
+        N_("damnation bolt"), N_("sling bullet"), N_("arrow"), N_("bolt"),
+        N_("slug"), N_("eggplant")
+    };
+    if (display.empty())
+        for (const char* key : launcher_projectiles)
+            if (root == key)
+            {
+                display = T_(key);
+                break;
+            }
+    if (display.empty())
+        return canonical;
+    return display;
 }
 
 const char *missile_name(missile_type ammo)

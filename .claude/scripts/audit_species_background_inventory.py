@@ -195,9 +195,40 @@ def translated_form(db, english, key=None):
     }
 
 
+def species_display_defaults(path=SRC / "species.cc"):
+    """Read raw fallbacks from the accessors consumed by divine displays."""
+    text = active_source(path)
+    defaults = {}
+    for field in ("child_name", "orc_name", "orcification_msg"):
+        body = function_body(text, field)
+        match = re.search(r':\s*"([^"\n]*)"\s*;', body)
+        if not match:
+            raise RuntimeError(f"unparsed species {field} fallback")
+        defaults[field] = match.group(1)
+    return defaults
+
+
+def species_dynamic_display(data, db, defaults):
+    """Bind translated values separately from their raw lookup identities."""
+    display = {
+        field: translated_form(db, data.get(field, default))
+        for field, default in defaults.items()
+    }
+    display["fake_mutations"] = [
+        {
+            form: translated_form(db, value)
+            for form in ("short", "long")
+            if (value := mutation.get(form))
+        }
+        for mutation in data.get("fake_mutations", [])
+    ]
+    return display
+
+
 def species_rows(db, descriptions):
     en_desc, zh_desc = descriptions
     overrides = species_context_overrides()
+    defaults = species_display_defaults()
     rows = []
     for path, data in load_yaml_rows(SPECIES_DIR, "SP_"):
         identity = data["enum"]
@@ -223,6 +254,7 @@ def species_rows(db, descriptions):
             "current_chinese_name": forms["plain"]["chinese"],
             "short_name": data.get("short_name", name[:2]),
             "forms": forms,
+            "dynamic_display": species_dynamic_display(data, db, defaults),
             "description_key": name if desc_key else None,
             "english_description": en_desc.get(desc_key) if desc_key else None,
             "chinese_description": zh_desc.get(desc_key) if desc_key else None,
@@ -275,6 +307,19 @@ def expected_identities():
     }
 
 
+def missing_dynamic_translations(value, path=""):
+    missing = []
+    if isinstance(value, dict):
+        if value.get("english") and not value.get("translation_present", True):
+            missing.append(path)
+        for key, child in value.items():
+            missing.extend(missing_dynamic_translations(child, f"{path}.{key}"))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            missing.extend(missing_dynamic_translations(child, f"{path}[{index}]"))
+    return missing
+
+
 def inventory_violations(
     rows,
     expected=None,
@@ -315,6 +360,13 @@ def inventory_violations(
             for row in rows
             for form, value in row.get("forms", {}).items()
             if not value.get("translation_present")
+        ),
+        "missing_chinese_dynamic_display": sorted(
+            path
+            for row in rows
+            for path in missing_dynamic_translations(
+                row.get("dynamic_display", {}), row["identity"]
+            )
         ),
         "missing_english_descriptions": sorted(
             row["identity"] for row in current
@@ -405,6 +457,7 @@ def build_inventory():
                 "active current and TAG compatibility species identities",
                 "active current and TAG compatibility background identities",
                 "species plain/adjective/genus display forms",
+                "species child/orc names, orcification messages and fake mutations",
                 "background display names",
                 "current playable species/background descriptions",
                 "species aptitudes, stats, size, restrictions and mutations",
@@ -444,6 +497,7 @@ def has_violations(payload):
         "unexpected_identities",
         "missing_chinese_names",
         "missing_chinese_forms",
+        "missing_chinese_dynamic_display",
         "missing_english_descriptions",
         "missing_chinese_descriptions",
         "duplicate_description_keys",
@@ -816,6 +870,7 @@ def review_artifact_summary(payload):
         "unexpected_identities",
         "missing_chinese_names",
         "missing_chinese_forms",
+        "missing_chinese_dynamic_display",
         "missing_english_descriptions",
         "missing_chinese_descriptions",
         "duplicate_description_keys",
@@ -976,6 +1031,7 @@ def main(argv=None):
         "unexpected_identities",
         "missing_chinese_names",
         "missing_chinese_forms",
+        "missing_chinese_dynamic_display",
         "missing_english_descriptions",
         "missing_chinese_descriptions",
         "duplicate_description_keys",

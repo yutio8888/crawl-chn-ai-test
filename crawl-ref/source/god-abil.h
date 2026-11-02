@@ -163,6 +163,9 @@ bool ashenzari_uncurse_item();
 string desc_curse_skills(const CrawlStoreValue& curse);
 string curse_abbr(const CrawlStoreValue& curse);
 string curse_name(const CrawlStoreValue& curse);
+
+// Display-only rendering of a curse name. Identity/storage keeps curse_name().
+string curse_display_name(const CrawlStoreValue& curse);
 const vector<skill_type>& curse_skills(const CrawlStoreValue& curse);
 
 bool can_convert_to_beogh();

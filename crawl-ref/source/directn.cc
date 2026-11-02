@@ -1736,7 +1736,7 @@ void direction_chooser::print_target_description(bool &did_cloud) const
     if (!in_range(target()))
     {
         mprf(MSGCH_EXAMINE_FILTER, "%s",
-             hitfunc ? hitfunc->why_not.c_str() : "Out of range.");
+             hitfunc ? hitfunc->why_not.c_str() : T_("Out of range."));
     }
 }
 
@@ -3168,7 +3168,7 @@ static string _base_feature_desc(dungeon_feature_type grid, trap_type trap,
         return full_trap_name(trap);
 
     if (grid == DNGN_ROCK_WALL && place.branch == BRANCH_PANDEMONIUM)
-        return "wall of the weird stuff which makes up Pandemonium";
+        return T_("wall of the weird stuff which makes up Pandemonium");
     else if (feat_is_stone_stair_down(grid) && place.branch == BRANCH_VAULTS
              && place.depth == branches[BRANCH_VAULTS].numlevels - 1)
     {
@@ -3416,9 +3416,19 @@ static string _describe_monster_weapon(const monster_info& mi)
 
     if (name1 == name2 && weap && !name1.empty())
     {
-        item_def dup = *weap;
-        ++dup.quantity;
-        name1 = dup.name(DESC_A, false, false, true, true);
+        if (Options.language == lang_t::ZH)
+        {
+            // ZH has no plural inflection: describe the pair explicitly instead
+            // of letting the English quantity path produce "2 x <weapon>".
+            name1 = make_stringf(C_("dual wield", "a pair of %s"),
+                weap->name(DESC_PLAIN, false, false, true).c_str());
+        }
+        else
+        {
+            item_def dup = *weap;
+            ++dup.quantity;
+            name1 = dup.name(DESC_A, false, false, true, true);
+        }
         name2.clear();
     }
 

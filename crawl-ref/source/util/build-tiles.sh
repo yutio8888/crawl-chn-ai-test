@@ -13,7 +13,9 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")"/.. && pwd)"
-REPO_ROOT="$(cd "$HERE/../.." && pwd)"
+CALLER_ROOT="$(git -C "$HERE" rev-parse --show-toplevel)"
+GIT_COMMON_DIR="$(git -C "$HERE" rev-parse --path-format=absolute --git-common-dir)"
+REPO_ROOT="${GIT_COMMON_DIR%/.git}"
 WT="$REPO_ROOT/.worktrees/mingw-tiles"
 WT_SOURCE="$WT/crawl-ref/source"
 
@@ -23,10 +25,29 @@ if [ ! -d "$WT_SOURCE" ]; then
     exit 1
 fi
 
-# Sync worktree to main worktree HEAD (local only)
-MAIN_HEAD="$(cd "$REPO_ROOT" && git rev-parse HEAD)"
+# Sync the detached build worktree to the caller HEAD (local only).
+MAIN_HEAD="$(git -C "$CALLER_ROOT" rev-parse HEAD)"
 echo "[1/3] Syncing mingw-tiles worktree to $MAIN_HEAD..."
+command -v flock >/dev/null 2>&1 || {
+    echo "ERROR: flock is required to serialize the mingw-tiles build." >&2
+    exit 1
+}
+exec 9>"$GIT_COMMON_DIR/local-build-mingw-tiles.lock"
+flock -n 9 || { echo "ERROR: mingw-tiles build is already active." >&2; exit 1; }
 cd "$WT"
+if [ "$(git rev-parse --show-toplevel)" != "$WT" ]; then
+    echo "ERROR: build directory must be the dedicated worktree, not a plain directory:" >&2
+    echo "       $WT" >&2
+    exit 1
+fi
+if [ "$(git rev-parse --path-format=absolute --git-common-dir)" != "$GIT_COMMON_DIR" ]; then
+    echo "ERROR: build worktree must belong to the caller repository: $WT" >&2
+    exit 1
+fi
+if git symbolic-ref -q HEAD >/dev/null; then
+    echo "ERROR: build worktree must have a detached HEAD: $WT" >&2
+    exit 1
+fi
 if [ -n "$(git status --porcelain --untracked-files=all)" ]; then
     echo "ERROR: $WT has local changes; refusing destructive sync." >&2
     echo "Commit, stash, or remove them explicitly, then retry." >&2

@@ -11,6 +11,7 @@
 #include "feature.h"
 #include "initfile.h"
 #include "losglobal.h"
+#include "viewchar.h"
 #include "mon-cast.h"
 #include "mon-cast-target.h"
 #include "mon-ench.h"
@@ -2516,4 +2517,89 @@ TEST_CASE("structured localized body cannot select a message channel",
         legacy, legacy_channel, true, false));
     CHECK(legacy == " legacy protocol body");
     CHECK(legacy_channel == MSGCH_ERROR);
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "monspell ZH target binding resolves direction tokens in the "
+                 "real speech consumer",
+                 "[single-file][mon-cast-target][monspell-binding][zh]")
+{
+    // Load the ZH translation DB; scoped_test_language only flips the enum, so
+    // without this the ZH catalog lookups fall back to the English keys.
+    scoped_zh_database localized_database;
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+
+    // Drive the production monspell entry with a *real* geometry per relation.
+    // The beam must be visible so the production key recipe selects the
+    // catchall "throws @beam@ @at@ @target@" template; no assertion depends on
+    // a random SpeakDB variant.
+    struct binding_geometry
+    {
+        coord_def target;
+        bool aimed_at_spot;
+        speech_target_relation want;
+    };
+    // Real geometries on the fixture's own monsters:
+    //  AT      -> the beam points straight at a visible monster;
+    //  NEXT_TO -> aimed_at_spot at a floor cell next to a visible monster;
+    //  PAST    -> thrown at empty floor while the visible foe is the aim.
+    const binding_geometry geometries[] =
+    {
+        { world.placed_candidates()[0]->pos(), false, speech_target_relation::AT },
+        { coord_def(24, 22), true,  speech_target_relation::NEXT_TO },
+        { coord_def(22, 26), false, speech_target_relation::PAST },
+    };
+
+    // The ZH phrases are catalog values; compare as strings (a const char*
+    // comparison would compare pointers) inside the matching language guard.
+    string zh_at;
+    string en_at;
+    {
+        const scoped_test_language zh(lang_t::ZH);
+        zh_at = C_("monspell raw direction", "at %s");
+    }
+    {
+        const scoped_test_language en(lang_t::EN);
+        en_at = C_("monspell raw direction", "at %s");
+    }
+    CHECK(zh_at != en_at);
+
+    for (const binding_geometry &geometry : geometries)
+    {
+        bolt cast = make_target_beam(geometry.target);
+        cast.source = source.pos();
+        cast.source_id = source.mid;
+        cast.short_name = "phase two bolt";
+        cast.aimed_at_spot = geometry.aimed_at_spot;
+        // A visible beam is what makes the production key recipe emit the
+        // targeted catchall template instead of a plain gesture line.
+        cast.glyph = U'*';   // visible beam: production key recipe then uses the catchall template
+        source.foe = MHITYOU;
+
+        for (const lang_t language : { lang_t::ZH, lang_t::EN })
+        {
+            const scoped_test_language guard(language);
+            // Resolve inside the language scope: the display name and the
+            // relation phrase are language dependent.
+            const resolved_speech_target resolved =
+                resolve_speech_target(&source, cast, false);
+            CHECK(resolved.relation == geometry.want);
+            REQUIRE(resolved.display != "nothing");
+
+            vector<mon_speech_final_emission> emissions;
+            const mon_speech_emission_observer observer =
+                { observe_cast_emission, &emissions };
+            const mons_cast_noise_diagnostics diagnostics(nullptr, &observer);
+            mons_cast_noise(&source, cast, SPELL_MAGIC_DART,
+                            MON_SPELL_MAGICAL, &diagnostics);
+            REQUIRE(emissions.size() == 1);
+            const string &line = emissions[0].line;
+            // Real binding: no protocol token survives, and the target the
+            // seam resolved is present in the rendered line.
+            CHECK(line.find('@') == string::npos);
+            CHECK(line.find(resolved.display) != string::npos);
+        }
+    }
 }

@@ -24,6 +24,7 @@
 #include "mutation.h"
 #include "options.h"
 #include "output.h"
+#include "positional_format.h"
 #include "playable.h"
 #include "player-stats.h"
 #include "prompt.h"
@@ -438,7 +439,7 @@ void wizard_set_skill_level(skill_type skill)
 
     mpr(skill_name(skill));
     const double old_amount = you.skill(skill, 10, true) * 0.1;
-    string prompt = make_stringf("To what level? (current = %.1f) ",
+    string prompt = make_stringf(T_("To what level? (current = %.1f) "),
                                  old_amount);
     double amount = prompt_for_float(prompt.c_str());
 
@@ -460,10 +461,10 @@ void wizard_set_skill_level(skill_type skill)
 
     redraw_skill(skill);
 
-    mprf_p(T_("%s %s to skill level %.1f."), (old_amount < amount ? "Increased" :
-                                      old_amount > amount ? "Lowered"
-                                                          : "Reset"),
-         skill_name(skill), amount);
+    mprf_p(old_amount < amount ? T_("Increased %1$s to skill level %2$.1f.")
+        : old_amount > amount ? T_("Lowered %1$s to skill level %2$.1f.")
+                              : T_("Reset %1$s to skill level %2$.1f."),
+        skill_name(skill), amount);
 }
 
 void wizard_set_all_skills()
@@ -544,11 +545,12 @@ bool wizard_add_mutation()
                 matches.emplace_back(mutname);
             }
 
-            string prefix = make_stringf("No exact match for mutation '%s', possible matches are: ", specs);
+            string prefix = make_stringf(T_("No exact match for mutation '%s', possible matches are: "), specs);
 
             // Use mpr_comma_separated_list() because the list
             // might be *LONG*.
-            mpr_comma_separated_list(prefix, matches, T_(" and "), ", ",
+            mpr_comma_separated_list(prefix, matches, C_("wizard name matches", " and "),
+                                     C_("wizard name matches", ", "),
                                      MSGCH_DIAGNOSTICS);
         }
 
@@ -619,11 +621,12 @@ bool wizard_toggle_bane()
                 matches.emplace_back(banname);
             }
 
-            string prefix = make_stringf("No exact match for bane '%s', possible matches are: ", specs);
+            string prefix = make_stringf(T_("No exact match for bane '%s', possible matches are: "), specs);
 
             // Use mpr_comma_separated_list() because the list
             // might be *LONG*.
-            mpr_comma_separated_list(prefix, matches, T_(" and "), ", ",
+            mpr_comma_separated_list(prefix, matches, C_("wizard name matches", " and "),
+                                     C_("wizard name matches", ", "),
                                      MSGCH_DIAGNOSTICS);
         }
 
@@ -798,7 +801,7 @@ void wizard_set_hud_test_state()
 {
     char buf[16];
     mprf(MSGCH_PROMPT,
-         "Top HUD test state: (n)ormal, (s)tress, (c)lear? ");
+         T_("Top HUD test state: (n)ormal, (s)tress, (c)lear? "));
     if (cancellable_get_line_autohist(buf, sizeof buf) || !buf[0])
     {
         canned_msg(MSG_OK);
@@ -810,16 +813,16 @@ void wizard_set_hud_test_state()
     {
         if (!_hud_test_snapshot.valid)
         {
-            mpr("No saved top HUD test state to restore.");
+            mpr(T_("No saved top HUD test state to restore."));
             return;
         }
         _restore_hud_test_state();
-        mpr("Restored the pre-test HUD state.");
+        mpr(T_("Restored the pre-test HUD state."));
         return;
     }
     if (mode != 'n' && mode != 's')
     {
-        mpr("Unknown top HUD test state; use n, s, or c.");
+        mpr(T_("Unknown top HUD test state; use n, s, or c."));
         return;
     }
 
@@ -868,8 +871,8 @@ void wizard_set_hud_test_state()
 
     notify_stat_change();
     _redraw_hud_test_state();
-    mpr(mode == 's' ? "Applied top HUD stress state."
-                    : "Applied top HUD normal state.");
+    mpr(mode == 's' ? T_("Applied top HUD stress state.")
+                    : T_("Applied top HUD normal state."));
 }
 
 // Let the user type in a duration name.
@@ -1117,7 +1120,8 @@ void wizard_get_god_gift()
 void wizard_toggle_xray_vision()
 {
     you.wizard_vision = !you.wizard_vision;
-    mprf(T_("X-ray vision %s."), you.wizard_vision ? "enabled" : "disabled");
+    mpr(you.wizard_vision ? T_("X-ray vision enabled.")
+                          : T_("X-ray vision disabled."));
     viewwindow(true);
     update_screen();
 }
@@ -1241,7 +1245,7 @@ void wizard_get_god_tension()
     god_type god = choose_god(you.religion);
     int tension = get_tension(god);
     mprf(T_("%s tension value: %d"), !(god == GOD_NO_GOD) ? god_name(god).c_str()
-                                                      : "General", tension);
+                                                      : T_("General"), tension);
 }
 
 void wizard_xom_acts()
@@ -1281,8 +1285,8 @@ void wizard_set_zot_clock()
 {
     const int max_zot_clock = MAX_ZOT_CLOCK / BASELINE_DELAY;
 
-    string prompt = make_stringf("Enter new Zot clock value "
-                                 "(current = %d, from 0 to %d): ",
+    string prompt = make_stringf(T_("Enter new Zot clock value "
+                                  "(current = %d, from 0 to %d): "),
                                  turns_until_zot(), max_zot_clock);
     int turns_left = prompt_for_int(prompt.c_str(), true);
 

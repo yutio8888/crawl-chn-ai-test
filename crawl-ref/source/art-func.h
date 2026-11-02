@@ -217,11 +217,11 @@ static void _THROATCUTTER_melee_effects(item_def* /*weapon*/, actor* attacker,
                      mons->pronoun(PRONOUN_POSSESSIVE).c_str());
                 break;
             default: // yes, even fungi have heads :)
-                mprf_p(T_("%s behead%s %s%s!"),
+                mprf_p(mons->heads() > 1
+                     ? T_("%1$s thoroughly behead%2$s %3$s!")
+                     : T_("%1$s behead%2$s %3$s!"),
                      attacker->name(DESC_THE).c_str(),
-                     plural ? "s" : "",
-                     mons->name(DESC_THE).c_str(),
-                     mons->heads() > 1 ? " thoroughly" : "");
+                     plural ? "s" : "", mons->name(DESC_THE).c_str());
             }
         }
         if (mons->num_heads > 1)
@@ -319,7 +319,7 @@ static void _SINGING_SWORD_equip(item_def *item, bool *show_msgs, bool /*unmeld*
 static void _SINGING_SWORD_unequip(item_def *item, bool *show_msgs)
 {
     set_artefact_name(*item, "Singing Sword");
-    _equip_mpr(show_msgs, "The Singing Sword sighs.", MSGCH_TALK);
+    _equip_mpr(show_msgs, T_("The Singing Sword sighs."), MSGCH_TALK);
 }
 
 static void _SINGING_SWORD_world_reacts(item_def *item)
@@ -500,7 +500,7 @@ static void _STORM_QUEEN_melee_effects(item_def* /*item*/, actor* wearer,
     if (!attacker || !one_chance_in(3)) return;
     schedule_shock_discharge_fineff(wearer, *attacker,
                                     wearer->pos(), 3,
-                                    "shield");
+                                    NC_("shock discharge source", "shield"));
 
 }
 
@@ -604,8 +604,8 @@ static void _WYRMBANE_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/
     _equip_mpr(show_msgs,
                species::is_draconian(you.species)
                 || you.form == transformation::dragon
-                   ? "You feel an uncomfortable desire to slay dragons."
-                   : "You feel an overwhelming desire to slay dragons!");
+                   ? T_("You feel an uncomfortable desire to slay dragons.")
+                   : T_("You feel an overwhelming desire to slay dragons!"));
 }
 
 static void _WYRMBANE_melee_effects(item_def* weapon, actor* attacker,
@@ -718,7 +718,7 @@ static void _SHADOWS_unequip(item_def */*item*/, bool */*show_msgs*/)
 static void _DEVASTATOR_equip(item_def */*item*/, bool *show_msgs,
                               bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "Time to lay down the shillelagh law.");
+    _equip_mpr(show_msgs, T_("Time to lay down the shillelagh law."));
 }
 
 static void _DEVASTATOR_melee_effects(item_def* /*item*/, actor* attacker,
@@ -732,12 +732,12 @@ static void _DEVASTATOR_melee_effects(item_def* /*item*/, actor* attacker,
 ///////////////////////////////////////////////////
 static void _DRAGONSKIN_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "You feel oddly protected from the elements.");
+    _equip_mpr(show_msgs, T_("You feel oddly protected from the elements."));
 }
 
 static void _DRAGONSKIN_unequip(item_def */*item*/, bool *show_msgs)
 {
-    _equip_mpr(show_msgs, "You no longer feel protected from the elements.");
+    _equip_mpr(show_msgs, T_("You no longer feel protected from the elements."));
 }
 
 ///////////////////////////////////////////////////
@@ -751,13 +751,13 @@ static void _BLACK_KNIGHT_HORSE_world_reacts(item_def */*item*/)
 static void _NIGHT_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/)
 {
     update_vision_range();
-    _equip_mpr(show_msgs, "The light fades from your surroundings.");
+    _equip_mpr(show_msgs, T_("The light fades from your surroundings."));
 }
 
 static void _NIGHT_unequip(item_def */*item*/, bool *show_msgs)
 {
     update_vision_range();
-    _equip_mpr(show_msgs, "The light returns to your surroundings.");
+    _equip_mpr(show_msgs, T_("The light returns to your surroundings."));
 }
 
 ///////////////////////////////////////////////////
@@ -791,8 +791,8 @@ static void _PLUTONIUM_SWORD_melee_effects(item_def* weapon,
         else
         {
             mpr(random_choose(T_("Your body deforms painfully."),
-                              "Your limbs ache and wobble like jelly.",
-                              "Your body is flooded with magical radiation."));
+                              T_("Your limbs ache and wobble like jelly."),
+                              T_("Your body is flooded with magical radiation.")));
             contaminate_player(random_range(700, 1350));
         }
         defender->hurt(attacker, random_range(5, 25));
@@ -1217,7 +1217,7 @@ static void _MAJIN_unequip(item_def */*item*/, bool *show_msgs)
     if (you.max_magic_points)
     {
         _equip_mpr(show_msgs,
-                   "The darkness slowly releases its grasp on your magic.");
+                   T_("The darkness slowly releases its grasp on your magic."));
     }
 }
 
@@ -1620,8 +1620,8 @@ static void _WUCAD_MU_equip(item_def */*item*/, bool *show_msgs,
 {
     if (you.has_mutation(MUT_HP_CASTING))
     {
-        _equip_mpr(show_msgs, "The crystal ball is unable to connect with your "
-                              "magical essence.");
+        _equip_mpr(show_msgs, T_("The crystal ball is unable to connect "
+                                "with your magical essence."));
     }
 }
 
@@ -1635,8 +1635,8 @@ static void _SEVEN_LEAGUE_BOOTS_equip(item_def * /*item*/, bool *show_msgs,
 
 static void _SEVEN_LEAGUE_BOOTS_unequip(item_def * /*item*/, bool *show_msgs)
 {
-    _equip_mpr(show_msgs, "You no longer feel ready to stride towards your "
-                          "foes.");
+    _equip_mpr(show_msgs, T_("You no longer feel ready to stride towards "
+                            "your foes."));
 }
 
 ////////////////////////////////////////////////////
@@ -1662,8 +1662,8 @@ static void _POWER_GLOVES_equip(item_def * /*item*/, bool *show_msgs,
 {
     if (you.has_mutation(MUT_HP_CASTING))
     {
-        _equip_mpr(show_msgs, "The gloves are unable to connect with your "
-                              "magical essence.");
+        _equip_mpr(show_msgs, T_("The gloves are unable to connect "
+                                "with your magical essence."));
     }
     else
         _equip_mpr(show_msgs, T_("You feel an incredible surge of magic."), MSGCH_PLAIN);
@@ -1772,9 +1772,9 @@ static void _VICTORY_death_effects(item_def *item, monster* mons,
             artefact_set_property(*item, ARTP_SLAYING, bonus_stats);
             artefact_set_property(*item, ARTP_INTELLIGENCE, bonus_stats);
             you.equipment.update();
-            mprf(MSGCH_GOD, GOD_OKAWARU, T_("%s glows%s."),
-                 item->name(DESC_THE, false, true, false).c_str(),
-                 bonus_stats == VICTORY_STAT_CAP ? " brightly" : "");
+            mprf(MSGCH_GOD, GOD_OKAWARU, bonus_stats == VICTORY_STAT_CAP
+                 ? T_("%s glows brightly.") : T_("%s glows."),
+                 item->name(DESC_THE, false, true, false).c_str());
 
             you.redraw_armour_class = true;
             notify_stat_change();

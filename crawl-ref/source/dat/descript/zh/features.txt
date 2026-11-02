@@ -67,7 +67,7 @@ An ancient bone altar of Kikubaaqudgha
 A corrupted altar of Lugonu
 
 无形之神卢格努的祭坛，
-这祭坛也许曾供奉过别的神祗，但现在已经不可逆转地被腐化了。
+这祭坛也许曾供奉过别的神祇，但现在已经不可逆转地被腐化了。
 %%%%
 A burning altar of Makhleb
 
@@ -117,7 +117,7 @@ An ornate altar of the Wu Jian Council
 A shimmering altar of Xom
 
 这座祭坛不断闪现着各色光芒，甚至可能还有不可见光，
-和这座祭坛所供奉的神祗无常之主佐姆一样，变幻莫测。
+和这座祭坛所供奉的神祇无常之主佐姆一样，变幻莫测。
 %%%%
 A basalt altar of Yredelemnul
 
@@ -244,7 +244,7 @@ A mangrove
 %%%%
 A demonic tree
 
-一棵被混乱的恶魔力量扭曲的树。
+一棵被混沌的恶魔力量扭曲的树。
 尽管外形怪异，偶尔还会有令人不安的动作，但它似乎是无害的。
 %%%%
 An abandoned shop
@@ -257,7 +257,8 @@ An orcish idol
 %%%%
 An iron grate
 
-一个生锈的铁门，可以用法术或法杖轻易破坏。但徒手还是不行。
+一扇生锈的铁栅栏，质地脆弱，用法术或魔杖便可轻易破坏。
+但它仍然坚固得无法徒手打破。
 %%%%
 An escape hatch in the floor
 
@@ -364,7 +365,7 @@ A one-way gate leading to the halls of Pandemonium
 %%%%
 A staircase to the Depths
 
-一个通往地底的楼梯。
+一个通往深处的楼梯。
 %%%%
 A gate to the Realm of Zot
 
@@ -400,7 +401,7 @@ A gateway to Hell
 %%%%
 A gateway to the Iron City of Dis
 
-一个通往狄斯铁城的入口。
+一个通往迪斯铁城的入口。
 %%%%
 A gateway leading out of Dis
 
@@ -433,7 +434,7 @@ A one-way gate to the infinite horrors of the Abyss
 %%%%
 A crawl-hole back to the Lair
 
-一个返回兽穴的出口。
+一个返回兽巢的出口。
 %%%%
 An exit through the horrors of the Abyss
 
@@ -445,11 +446,11 @@ A staircase back to the Dungeon
 %%%%
 A staircase back to the Lair
 
-一个返回兽穴的楼梯。
+一个返回兽巢的楼梯。
 %%%%
 A staircase back to the Mines
 
-一个返回兽人矿井的楼梯。
+一个返回兽人矿坑的楼梯。
 %%%%
 A staircase back to the Vaults
 
@@ -463,15 +464,15 @@ A staircase leading out of the dungeon
 %%%%
 A staircase back to the Crypt
 
-一个返回墓室的楼梯。
+一个返回墓穴的楼梯。
 %%%%
 A staircase to the Crypt
 
-一个通往墓室的楼梯。
+一个通往墓穴的楼梯。
 %%%%
 A staircase to the Ecumenical Temple
 
-一个通往众神庙的楼梯。
+一个通往普世神殿的楼梯。
 %%%%
 A staircase to the Elven Halls
 
@@ -479,15 +480,15 @@ A staircase to the Elven Halls
 %%%%
 A staircase to the Lair
 
-一个通往兽穴的楼梯。
+一个通往兽巢的楼梯。
 %%%%
 A staircase to the Orcish Mines
 
-一个通往兽人矿井的楼梯。
+一个通往兽人矿坑的楼梯。
 %%%%
 A staircase to the Shoals
 
-一个通往海滩的楼梯。
+一个通往浅滩的楼梯。
 %%%%
 A staircase to the Slime Pits
 
@@ -523,11 +524,13 @@ A transporter landing site
 ########################################################################
 An open door
 
-一扇打开的木门。如果被怪物重新打开，它可能会破裂。
+一扇打开的木门。若再次被关上，所有能使用装备的怪物，以及部分不能使用装备的怪物，
+都可能再次把它打开。若它被关上后由已经察觉到你的怪物重新打开，就有一定几率破裂。
 %%%%
 A closed door
 
-一扇关闭的木门。如果被怪物打开，它可能会破裂。
+一扇关闭的木门。所有能使用装备的怪物，以及部分不能使用装备的怪物，都可能把它打开。
+若开门的怪物已经察觉到你的存在，门就有一定几率破裂。
 %%%%
 A broken door
 
@@ -535,7 +538,9 @@ A broken door
 %%%%
 An open translucent door
 
-这扇打开的门由神奇的半透明木材制成。如果被怪物重新打开，它可能会破裂。
+一扇用施了魔法的半透明木材制成的打开的门。若再次被关上，
+所有能使用装备的怪物，以及部分不能使用装备的怪物，都可能再次把它打开。
+若它被关上后由已经察觉到你的怪物重新打开，就有一定几率破裂。
 %%%%
 A closed translucent door
 
@@ -708,7 +713,7 @@ A flagged portal
 %%%%
 A gauntlet entrance
 
-一个通往竞技场的门户。
+一个通往试炼场的门户。
 %%%%
 # 限时的集市
 A flickering gateway to a bazaar
@@ -920,7 +925,7 @@ A silver statue
 # 佐姆、尼姆雷斯和小丑宝库。
 A scintillating statue
 
-一座神奇的变幻着的雕塑，似乎满足于在此为难以言喻的宇宙混乱游戏献上微光和舞蹈。
+一座神奇的变幻着的雕塑，似乎满足于在此为难以言喻的宇宙混沌游戏献上微光和舞蹈。
 %%%%
 # 以魔法为主题的分支／门户／宝库。
 An arcane conduit
@@ -1092,8 +1097,8 @@ An exit from the tutorial
 ########################################################################
 haloed
 
-这片区域被神圣光环照亮，会削弱你的潜行能力，且阻止隐身，
-并增加任何被照亮的生物的攻击精度。
+这片区域被神圣光环照亮，会降低你的潜行能力、阻止隐形，
+并使针对任何被照亮生物的攻击更容易命中。
 %%%%
 umbraed
 
@@ -1138,7 +1143,7 @@ mangrove burning
 demonic tree burning
 
 它容易受到闪电和足够强烈的火源的影响。
-这棵树燃烧会释放出纯粹的混乱云而不是火焰云。
+这棵树燃烧会释放出纯粹的混沌云而不是火焰云。
 %%%%
 A bloodied mop and bucket
 
@@ -1386,7 +1391,7 @@ An unnaturally hard bloodstone wall
 %%%%
 The orb dais
 
-一个高高升起的基座，上面放着传说中的佐特之球。它甚至比地牢本身还要古老，
+一个高高升起的基座，上面放着传说中的佐特宝珠。它甚至比地牢本身还要古老，
 无法以任何方式被摧毁或变形。
 %%%%
 a skull pike

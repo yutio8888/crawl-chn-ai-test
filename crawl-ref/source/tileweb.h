@@ -46,7 +46,9 @@ struct player_info
     bool wizard;
     bool explore;
     string species;
+    string species_display_name;
     string god;
+    string god_display_name;
     bool under_penance;
     int piety_rank;
     int ostracism_pips;
@@ -76,7 +78,7 @@ struct player_info
     string doom_desc;
 
     int experience_level;
-    int8_t exp_progress;
+    int exp_progress;
     int gold;
     int zot_points;
     int elapsed_time;
@@ -84,6 +86,7 @@ struct player_info
     int lives, deaths;
 
     string place;
+    string place_display_name;
     int depth;
     coord_def position;
 

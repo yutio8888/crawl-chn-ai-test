@@ -31,6 +31,7 @@
 #include "item-prop.h" // is_weapon()
 #include "json.h"
 #include "json-wrapper.h"
+#include "lang-en-guard.h"
 #include "lang-fake.h"
 #include "libutil.h"
 #include "macro.h"
@@ -43,11 +44,14 @@
 #include "options.h"
 #include "player.h"
 #include "player-equip.h"
+#include "player-stats.h" // stat_desc() for WebTiles status identities
 #include "religion.h"
 #include "scroller.h"
 #include "showsymb.h"
 #include "skills.h"
+#include "species.h"
 #include "state.h"
+#include "status.h"
 #include "stringutil.h"
 #include "throw.h"
 #include "tile-flags.h"
@@ -1054,6 +1058,86 @@ template<class T> static bool _update_int(bool force, T& current, T next,
         return false;
 }
 
+// Status identities the WebTiles client queries in player.js. Only English
+// protocol keys belong here: status_info display text is localized, so the
+// client must never match against it. Extend this list together with the new
+// client query and its producer audit in status.cc.
+static string _web_status_key(int status, const status_info& inf)
+{
+    switch (status)
+    {
+    case DUR_BERSERK:
+    case DUR_DIVINE_STAMINA:
+    case DUR_DIVINE_VIGOUR:
+    case DUR_CONF:
+    case DUR_PARALYSIS:
+    case DUR_PETRIFIED:
+    case DUR_SLEEP:
+    case DUR_SILENCE:
+    case DUR_GOZAG_GOLD_AURA:
+    case DUR_CORROSION:
+        return inf.short_db_key;
+    case STATUS_SILENCE:
+        // The producer only sets an untranslated literal here; pin the
+        // identity so the client query cannot drift with that branch.
+        return "silenced";
+    case STATUS_NET:
+        return "held";
+    case STATUS_STAT_ZERO:
+    {
+        // The Crippled branch publishes no English identity. Rebuild the
+        // "lost <stat>" key from the same state the client asks about.
+        vector<string> keys;
+        for (int i = STAT_STR; i <= STAT_DEX; ++i)
+        {
+            const stat_type stat = static_cast<stat_type>(i);
+            if (you.stat(stat, false) <= 0)
+            {
+                ScopedLangEn en;
+                keys.emplace_back(stat_desc(stat, SD_NAME));
+            }
+        }
+        if (keys.empty())
+            return "";
+        return "lost " + comma_separated_line(keys.begin(), keys.end());
+    }
+    default:
+        return "";
+    }
+}
+
+// Resolve one status light's long description from its English TextDB stem.
+// status_info::light_text is display text, so querying it localized the key
+// and every Chinese description degraded to "No description found".
+static string _status_light_description(const status_info& inf)
+{
+    string dbname = inf.db_key;
+    if (dbname.empty())
+    {
+        // Statuses without a TextDB stem keep the previous derivation from the
+        // light text; this is the only remaining non-English lookup path.
+        dbname = split_string(" ", inf.light_text, true, true, 1)[0];
+    }
+    // Don't claim Zot is impending when it's not near.
+    if (dbname == "Zot" && inf.light_colour == WHITE)
+        dbname = "Zot count";
+    string dbdesc = getLongDescription(dbname + " status");
+    trim_string_right(dbdesc);
+
+    if (dbdesc.empty())
+        return T_("No description found");
+
+    // _mark_expiring() appends the translated suffix to short_text, so compare
+    // against that same producer value instead of the English literal: once
+    // the " (expiring)" key is translated, an English-only check would silently
+    // stop marking expiring statuses.
+    const string expiring_suffix = T_(" (expiring)");
+    if (!expiring_suffix.empty() && ends_with(inf.short_text, expiring_suffix))
+        dbdesc += expiring_suffix;
+
+    return dbdesc;
+}
+
 static bool _update_statuses(player_info& c)
 {
     bool changed = false;
@@ -1064,6 +1148,8 @@ static bool _update_statuses(player_info& c)
         if (!fill_status_info(status, inf)) // this will reset inf itself
             continue;
 
+        inf.short_db_key = _web_status_key((int)status, inf);
+
         if (!inf.light_text.empty() || !inf.short_text.empty())
         {
             if (!changed)
@@ -1073,7 +1159,8 @@ static bool _update_statuses(player_info& c)
                 if (counter >= c.status.size()
                     || inf.light_text != c.status[counter].light_text
                     || inf.light_colour != c.status[counter].light_colour
-                    || inf.short_text != c.status[counter].short_text)
+                    || inf.short_text != c.status[counter].short_text
+                    || inf.short_db_key != c.status[counter].short_db_key)
                 {
                     changed = true;
                 }
@@ -1137,19 +1224,51 @@ void TilesFramework::_send_player(bool force_full)
     json_write_string("msg", "player");
     json_treat_as_empty();
 
+    if (force_full)
+    {
+        // The browser owns the HUD layout, but its display text follows the
+        // game's language. Keys stay English so client lookups are stable.
+        static const char * const captions[] = {
+            N_("HP:"), N_("Health:"), N_("Magic:"),
+            N_("AC:"), N_("EV:"), N_("SH:"), N_("XL:"), N_("Next:"),
+            N_("Str:"), N_("Int:"), N_("Dex:"), N_("Place:"),
+            N_("Time:"), N_("Turn:"), N_("Noise:"), N_("Gold:"),
+            N_("Doom:"), N_("Contam:"),
+            N_("*WIZARD*"), N_("*EXPLORE*"),
+            N_(" of "),
+        };
+        json_open_object("hud_labels");
+        for (const char *caption : captions)
+            json_write_string(caption, T_(caption));
+        json_write_string("Silenced", C_("webtiles_hud", "Silenced"));
+        json_close_object();
+    }
+
     _update_string(force_full, c.name, you.your_name, "name");
     _update_string(force_full, c.job_title, filtered_lang(player_title()),
                    "title");
     _update_int(force_full, c.wizard, you.wizard, "wizard");
     _update_int(force_full, c.explore, you.explore, "explore");
-    _update_string(force_full, c.species, player_species_name(),
+    // Keep "species" canonical for client-side keys/CSS; the HUD text uses
+    // the translated name (Beogh orcs keep the orc-specific display form).
+    _update_string(force_full, c.species,
+                   species::name(you.species, species::SPNAME_PLAIN, true),
                    "species");
+    _update_string(force_full, c.species_display_name, player_species_name(),
+                   "species_display_name");
     string god = "";
     if (you_worship(GOD_JIYVA))
-        god = god_name_jiyva(true);
+        god = string(_god_name_en(GOD_JIYVA)) + " " + you.jiyva_second_name;
     else if (!you_worship(GOD_NO_GOD))
         god = _god_name_en(you.religion);
     _update_string(force_full, c.god, god, "god");
+    // Keep "god" canonical for protocol lookups; the HUD text uses the
+    // translated god name (Jiyva keeps its per-game second name).
+    const string display_god = you_worship(GOD_NO_GOD) ? ""
+        : you_worship(GOD_JIYVA) ? god_name_jiyva(true)
+                                 : god_name(you.religion);
+    _update_string(force_full, c.god_display_name, display_god,
+                   "god_display_name");
     _update_int(force_full, c.under_penance, (bool) player_under_penance(), "penance");
     int prank = 0;
     if (you_worship(GOD_XOM))
@@ -1210,7 +1329,7 @@ void TilesFramework::_send_player(bool force_full)
     }
 
     _update_int(force_full, c.experience_level, you.experience_level, "xl");
-    _update_int(force_full, c.exp_progress, (int8_t) get_exp_progress(), "progress");
+    _update_int(force_full, c.exp_progress, get_exp_progress(), "progress");
     _update_int(force_full, c.gold, you.gold, "gold");
     _update_int(force_full, c.noise,
                 (you.wizard ? you.get_noise_perception(false) : -1), "noise");
@@ -1245,6 +1364,12 @@ void TilesFramework::_send_player(bool force_full)
         }
     }
     _update_string(force_full, c.place, short_name, "place");
+    // Keep the original place value for protocol consumers. The display name
+    // uses the existing branch translation, without English articles in ZH.
+    const string place_display_name = Options.language == lang_t::ZH
+        ? place.short_name() : short_name;
+    _update_string(force_full, c.place_display_name, place_display_name,
+                   "place_display_name");
     _update_int(force_full, c.depth, brdepth[place.branch] > 1 ? you.depth : 0, "depth");
 
     if (m_origin.equals(-1, -1))
@@ -1259,28 +1384,18 @@ void TilesFramework::_send_player(bool force_full)
         c.position = pos;
     }
 
-    if (force_full || _update_statuses(c))
+    if (_update_statuses(c) || force_full)
     {
         json_open_array("status");
         for (const status_info &status : c.status)
         {
             json_open_object();
+            // An empty key explicitly means no client-queryable identity.
+            json_write_string("key", status.short_db_key);
             if (!status.light_text.empty())
             {
                 json_write_string("light", status.light_text);
-                // split off any extra info, e.g. counts for things like Zot
-                // and Flay. (Status db descriptions never have spaces.)
-                string dbname = split_string(" ", status.light_text, true, true, 1)[0];
-                // Don't claim Zot is impending when it's not near.
-                if (dbname == "Zot" && status.light_colour == WHITE)
-                    dbname = "Zot count";
-                string dbdesc = getLongDescription(dbname + " status");
-
-                // add expiring description
-                if (status.short_text.find(" (expiring)") != std::string::npos)
-                    dbdesc += " (expiring)";
-
-                json_write_string("desc", dbdesc.size() ? dbdesc : "No description found");
+                json_write_string("desc", _status_light_description(status));
             }
             if (!status.short_text.empty())
                 json_write_string("text", status.short_text);
@@ -2030,6 +2145,17 @@ void TilesFramework::_send_map(bool spectator_only)
     m_monster_locs = new_monster_locs;
 }
 
+// Preserve the English list exceptions using monster identity. Names are
+// localized, so the client could not match /tentacle$/ in Chinese.
+static bool _monster_list_excluded(const monster_info& m)
+{
+    const bool exception = (m.type == MONS_BALLISTOMYCETE && m.is_active)
+                           || m.type == MONS_KRAKEN_TENTACLE
+                           || m.type == MONS_STARSPAWN_TENTACLE
+                           || m.type == MONS_ELDRITCH_TENTACLE;
+    return !mons_class_gives_xp(m.type) && !exception;
+}
+
 void TilesFramework::_send_monster(const coord_def &gc, const monster_info* m,
                                    map<uint32_t, coord_def>& new_monster_locs,
                                    bool force_full)
@@ -2067,6 +2193,9 @@ void TilesFramework::_send_monster(const coord_def &gc, const monster_info* m,
 
     if (force_full || (last->pluralised_name() != m->pluralised_name()))
         json_write_string("plural", m->pluralised_name());
+
+    if (force_full || _monster_list_excluded(*last) != _monster_list_excluded(*m))
+        json_write_bool("list_excluded", _monster_list_excluded(*m));
 
     if (force_full || last->type != m->type)
     {
@@ -2440,36 +2569,8 @@ void TilesFramework::put_ucs_string(char32_t *str)
     if (m_print_area == nullptr)
         return;
 
-    while (*str)
-    {
-        if (*str == '\r')
-            continue;
-
-        if (*str == '\n')
-        {
-            m_print_x = 0;
-            m_print_y++;
-            // TODO: Clear end of line?
-        }
-        else
-        {
-            if (m_print_x >= m_print_area->mx)
-            {
-                m_print_x = 0;
-                m_print_y++;
-            }
-
-            if (m_print_y < m_print_area->my)
-            {
-                m_print_area->put_character(*str, m_print_fg, m_print_bg,
-                                            m_print_x, m_print_y);
-            }
-
-            m_print_x++;
-        }
-
-        str++;
-    }
+    m_print_area->put_string(str, m_print_fg, m_print_bg,
+                             m_print_x, m_print_y);
 }
 
 void TilesFramework::clear_to_end_of_line()

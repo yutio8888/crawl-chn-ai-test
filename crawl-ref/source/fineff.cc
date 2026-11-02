@@ -26,6 +26,7 @@
 #include "god-companions.h"
 #include "god-wrath.h" // lucy_check_meddling
 #include "libutil.h"
+#include "lang-en-guard.h"
 #include "losglobal.h"
 #include "melee-attack.h"
 #include "message.h"
@@ -1311,10 +1312,10 @@ void shock_discharge_fineff::fire()
     const actor *serpent = defender();
     if (serpent && you.can_see(*serpent))
     {
-        mprf(T_("%s %s discharges%s, shocking %s%s"),
+        mprf_p(T_("%1$s %2$s discharges%3$s, shocking %4$s%5$s"),
              serpent->name(DESC_ITS).c_str(),
-             shock_source.c_str(),
-             power < 4 ? "" : " violently",
+             C_("shock discharge source", shock_source.c_str()),
+             power < 4 ? "" : T_(" violently"),
              oppressor.name(DESC_THE).c_str(),
              attack_strength_punctuation(final_dmg).c_str());
     }
@@ -1327,9 +1328,12 @@ void shock_discharge_fineff::fire()
 
     bolt beam;
     beam.flavour = BEAM_ELECTRICITY;
-    const string name = serpent && serpent->alive_or_reviving() ?
-                        serpent->name(DESC_A, true) :
-                        "a shock serpent"; // dubious
+    string name;
+    {
+        ScopedLangEn canonical_language;
+        name = serpent && serpent->alive_or_reviving()
+            ? serpent->name(DESC_A, true) : "a shock serpent"; // dubious
+    }
     oppressor.hurt(serpent, final_dmg, beam.flavour, KILLED_BY_BEAM,
                    name.c_str(), shock_source.c_str());
 

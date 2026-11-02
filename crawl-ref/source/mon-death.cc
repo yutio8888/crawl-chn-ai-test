@@ -42,6 +42,7 @@
 #include "item-status-flag-type.h"
 #include "items.h"
 #include "kills.h"
+#include "lang-en-guard.h"
 #include "libutil.h"
 #include "mapdef.h"
 #include "mapmark.h"
@@ -605,18 +606,25 @@ void record_monster_defeat(const monster* mons, killer_type killer)
     if (mons->type == MONS_PLAYER_GHOST)
     {
         monster_info mi(mons);
-        string milestone = _milestone_kill_verb(killer) + " the ghost of ";
-        milestone += get_ghost_description(mi, true);
-        milestone += ".";
+        // Milestone text is protocol data: build it canonically.
+        string milestone;
+        {
+            const ScopedLangEn canonical_language;
+            milestone = _milestone_kill_verb(killer) + " the ghost of ";
+            milestone += get_ghost_description(mi, true);
+            milestone += ".";
+        }
         mark_milestone("ghost", milestone);
     }
     if (mons_is_or_was_unique(*mons) && !testbits(mons->flags, MF_SPECTRALISED))
     {
-        mark_milestone("uniq",
-                       _milestone_kill_verb(killer)
-                       + " "
-                       + mons->name(DESC_THE, true)
-                       + ".");
+        string milestone;
+        {
+            const ScopedLangEn canonical_language;
+            milestone = _milestone_kill_verb(killer) + " "
+                        + mons->name(DESC_THE, true) + ".";
+        }
+        mark_milestone("uniq", milestone);
     }
 }
 
@@ -2372,10 +2380,8 @@ static void _player_on_kill_effects(monster& mons, killer_type killer,
                         ? (T_("poison"))
                         : (T_("negative energy")));
 
-            mprf_p(T_("%1$s feeds on the fading %2$s of %3$s!"),
-                   mons.name(DESC_THE).c_str(),
-                   energy_name,
-                   mons.pronoun(PRONOUN_OBJECTIVE).c_str());
+            mprf_p(T_("You feed on the fading %1$s of %2$s!"),
+                   energy_name, mons.name(DESC_THE).c_str());
         }
 
         if (healing)
@@ -4116,11 +4122,16 @@ void hogs_to_humans()
     string final_msg;
     if (any > 0 && you.num_turns > 0)
     {
-        final_msg = make_stringf(T_("No longer under Kirke's spell, the %s %s %s!"),
-                                 any > 1 ? "hogs return to their"
-                                         : "hog returns to its",
-                                 any == human ? "human" : "original",
-                                 any > 1 ? "forms" : "form");
+        if (any > 1)
+        {
+            final_msg = any == human
+                ? T_("No longer under Kirke's spell, the hogs return to their human forms!")
+                : T_("No longer under Kirke's spell, the hogs return to their original forms!");
+        }
+        else
+            final_msg = any == human
+                ? T_("No longer under Kirke's spell, the hog returns to its human form!")
+                : T_("No longer under Kirke's spell, the hog returns to its original form!");
     }
     schedule_kirke_death_fineff(final_msg);
 }

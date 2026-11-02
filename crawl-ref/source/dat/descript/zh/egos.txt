@@ -75,13 +75,13 @@ holy wrath (holy) weapon ego
 %%%%
 pain (pain) weapon ego
 
-它对活着的生物造成与你的死灵术技能成比例的额外伤害。{{
+它对活着的生物造成与你的死灵系技能成比例的额外伤害。{{
     if you.god() == "Trog" then
         return "特洛格阻止你释放此效果。";
     end
 }}{{
     if you.is_useless_skill("necromancy") then
-        return "你无法学习死灵术，因此无法发挥这把武器的全部力量。";
+        return "你无法学习死灵系，因此无法发挥这把武器的全部力量。";
     end
 }}
 %%%%
@@ -158,7 +158,7 @@ corrosion resistance (rCorr) armour ego
 %%%%
 death (Death) armour ego
 
-它可以增强你的死灵术法术并提高其成功率，但会为其他魔法施加生命值消耗。
+它可以增强你的死灵系法术并提高其成功率，但会为其他魔法施加生命值消耗。
 %%%%
 dexterity (Dex+3) armour ego
 
@@ -280,7 +280,7 @@ resistance (rC+ rF+) armour ego
 %%%%
 resonance (Resonance) armour ego
 
-它可以提高你的锻造法术的成功率，并根据你的锻造术技能比例增强
+它可以提高你的锻造系法术的成功率，并根据你的锻造系技能比例增强
 你的近战攻击。
 %%%%
 see invisible (SInv) armour ego
@@ -294,7 +294,7 @@ shadows (Shadows) armour ego
 sniping (Snipe) armour ego
 
 它对失去行动能力的目标使用远程和投掷武器时，伤害增加50%。
-失去行动能力的目标包括：睡眠、麻痹、石化、困惑或被网住的目标。
+失去行动能力的目标包括：睡眠、麻痹、石化、混乱或被网住的目标。
 %%%%
 spirit shield (Spirit) armour ego
 
@@ -328,7 +328,7 @@ wrath (*Rage) armour ego
 %%%%
 atropa-tipped (atropa) missile ego
 
-它的尖端涂有一种能导致失明和短暂困惑的物质。
+它的尖端涂有一种能导致失明和短暂混乱的物质。
 
 成功施加效果的概率随你的投掷和潜行技能提升。
 %%%%
@@ -364,6 +364,6 @@ poisoned (poison) missile ego
 %%%%
 silver (silver) missile ego
 
-它比普通弹药造成更高的伤害，并对混乱和魔法变形生物造成大幅增加的伤害。
+它比普通弹药造成更高的伤害，并对混沌生物和经魔法变形的生物造成大幅增加的伤害。
 它还会根据变异程度对变异生物造成额外伤害。
 %%%%

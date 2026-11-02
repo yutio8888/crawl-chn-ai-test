@@ -695,21 +695,21 @@ static const char* _jewellery_base_ability_description(int subtype)
     {
 #if TAG_MAJOR_VERSION == 34
     case RING_SUSTAIN_ATTRIBUTES:
-        return "It sustains your strength, intelligence and dexterity.";
+        return T_("It sustains your strength, intelligence and dexterity.");
     case RING_TELEPORTATION:
-        return "It may teleport you next to monsters.";
+        return T_("It may teleport you next to monsters.");
     case RING_TELEPORT_CONTROL:
-        return "It can be evoked for teleport control.";
+        return T_("It can be evoked for teleport control.");
     case AMU_THE_GOURMAND:
-        return "It allows you to eat raw meat even when not hungry.";
+        return T_("It allows you to eat raw meat even when not hungry.");
     case AMU_HARM:
         return "It increases damage dealt and taken.";
     case AMU_CONSERVATION:
-        return "It protects your inventory from destruction.";
+        return T_("It protects your inventory from destruction.");
     case AMU_CONTROLLED_FLIGHT:
-        return "It allows you to control your flight when levitating.";
+        return T_("It allows you to control your flight when levitating.");
     case AMU_INACCURACY:
-        return "It reduces the accuracy of all your attacks.";
+        return T_("It reduces the accuracy of all your attacks.");
 #endif
     case AMU_GUARDIAN_SPIRIT:
         return T_("It causes incoming damage to be divided between your reserves of health and magic.");
@@ -775,18 +775,25 @@ void desc_randart_props(const item_def &item, vector<string> &lines)
         // these two have some custom string replacement
         if (prop == ARTP_WILLPOWER)
         {
-            lines.push_back(make_stringf(T_("%sIt %s%s your willpower."),
-                     _padded_artp_name(ARTP_WILLPOWER, stval).c_str(),
-                     (stval < -1 || stval > 1) ? T_("greatly ") : "",
-                     (stval < 0) ? T_("decreases") : T_("increases")));
+            // Complete sentences: the degree and direction are part of the key.
+            const string description = stval < -1
+                ? T_("%sIt greatly decreases your willpower.")
+                : stval < 0 ? T_("%sIt decreases your willpower.")
+                : stval > 1 ? T_("%sIt greatly increases your willpower.")
+                            : T_("%sIt increases your willpower.");
+            lines.push_back(make_stringf(description.c_str(),
+                     _padded_artp_name(ARTP_WILLPOWER, stval).c_str()));
             continue;
         }
         else if (prop == ARTP_STEALTH)
         {
-            lines.push_back(make_stringf_p(T_("%1$sIt makes you %2$s%3$s stealthy."),
-                     _padded_artp_name(ARTP_STEALTH, stval).c_str(),
-                     (stval < -1 || stval > 1) ? T_("much ") : "",
-                     (stval < 0) ? T_("less") : T_("more")));
+            const string description = stval < -1
+                ? T_("%sIt makes you much less stealthy.")
+                : stval < 0 ? T_("%sIt makes you less stealthy.")
+                : stval > 1 ? T_("%sIt makes you much more stealthy.")
+                            : T_("%sIt makes you more stealthy.");
+            lines.push_back(make_stringf(description.c_str(),
+                     _padded_artp_name(ARTP_STEALTH, stval).c_str()));
             continue;
         }
 
@@ -809,17 +816,28 @@ void desc_randart_props(const item_def &item, vector<string> &lines)
             // to fill in to get a complete sentence
             const int idx = max(min(stval + 3, 6), 0);
 
-            const char* prefixes[] =
+            // Weak-resistance props use complete sentences so the resist name
+            // can be placed by the translation; the protection prefixes stay
+            // as fragments (no complete sentence needed there).
+            if (idx < 3)
             {
-                T_("It makes you extremely vulnerable to "),
-                T_("It makes you very vulnerable to "),
-                T_("It makes you vulnerable to "),
-                "Buggy descriptor!",
-                T_("It protects you from "),
-                T_("It greatly protects you from "),
-                T_("It renders you almost immune to ")
-            };
-            sdesc = prefixes[idx] + sdesc + '.';
+                const char *sentence = idx == 0
+                    ? N_("It makes you extremely vulnerable to %1$s.")
+                    : idx == 1 ? N_("It makes you very vulnerable to %1$s.")
+                               : N_("It makes you vulnerable to %1$s.");
+                sdesc = make_stringf_p(T_(sentence), sdesc.c_str());
+            }
+            else
+            {
+                const char *const prefixes[] =
+                {
+                    N_("Buggy descriptor!"),
+                    N_("It protects you from "),
+                    N_("It greatly protects you from "),
+                    N_("It renders you almost immune to ")
+                };
+                sdesc = string(T_(prefixes[idx - 3])) + sdesc + '.';
+            }
         }
 
         lines.push_back(_format_prop_desc(_padded_artp_name(desc.property, stval), sdesc.c_str()));
@@ -2077,14 +2095,18 @@ static string _equipment_property_change_description(const item_def &item,
 
     if (fail_change != 0)
     {
-        description += T_("\nYour spell failure would ");
-        description += (fail_change > 0) ? T_("worsen") : T_("improve");
         if (visible_fail_change == 0)
-            description += T_(" trivially.");
+        {
+            description += fail_change > 0
+                ? T_("\nYour spell failure would worsen trivially.")
+                : T_("\nYour spell failure would improve trivially.");
+        }
         else
         {
-            description += make_stringf(T_(" by up to %d%% (press '!' for details)."),
-                                    abs(visible_fail_change)).c_str();
+            description += make_stringf(fail_change > 0
+                ? T_("\nYour spell failure would worsen by up to %d%% (press '!' for details).")
+                : T_("\nYour spell failure would improve by up to %d%% (press '!' for details)."),
+                abs(visible_fail_change));
         }
     }
 
@@ -3056,8 +3078,18 @@ string get_item_description(const item_def &item,
                     description << "\n\n" + _describe_lignify_ac();
                 else if (item.sub_type == POT_CANCELLATION)
                 {
-                    description << "\n\n" << T_("If you drink this now, you will no longer be ") <<
-                        describe_player_cancellation() << ".";
+                    const string effects = describe_player_cancellation();
+                    if (!effects.empty())
+                    {
+                        description << "\n\n" << make_stringf(
+                            T_("If you drink this now, you will no longer be %s."),
+                            effects.c_str());
+                    }
+                    if (you.magic_contamination > 0)
+                    {
+                        description << "\n\n" << T_(
+                            "Drinking this will reduce your magical contamination.");
+                    }
                 }
             }
             description << "\n\n"
@@ -3235,7 +3267,7 @@ static vector<extra_feature_desc> _get_feature_extra_descs(const coord_def &pos)
     if (feat_is_tree(feat) && env.forest_awoken_until)
     {
         ret.push_back({
-            "Awoken.",
+            T_("Awoken."),
             getLongDescription("awoken"),
             tile_def(TILE_AWOKEN_OVERLAY)
         });
@@ -3243,7 +3275,7 @@ static vector<extra_feature_desc> _get_feature_extra_descs(const coord_def &pos)
     if (feat_is_wall(feat) && env.map_knowledge(pos).flags & MAP_ICY)
     {
         ret.push_back({
-            "A covering of ice.",
+            T_("A covering of ice."),
             getLongDescription("ice covered"),
             tile_def(TILE_FLOOR_ICY)
         });
@@ -3253,7 +3285,7 @@ static vector<extra_feature_desc> _get_feature_extra_descs(const coord_def &pos)
         if (haloed(pos) && !umbraed(pos))
         {
             ret.push_back({
-                "A halo.",
+                T_("A halo."),
                 getLongDescription("haloed"),
                 tile_def(TILE_HALO_RANGE)
             });
@@ -3261,7 +3293,7 @@ static vector<extra_feature_desc> _get_feature_extra_descs(const coord_def &pos)
         if (umbraed(pos) && !haloed(pos))
         {
             ret.push_back({
-                "An umbra.",
+                T_("An umbra."),
                 getLongDescription("umbraed"),
                 tile_def(TILE_UMBRA)
             });
@@ -3269,7 +3301,7 @@ static vector<extra_feature_desc> _get_feature_extra_descs(const coord_def &pos)
         if (liquefied(pos, true))
         {
             ret.push_back({
-                "Liquefied ground.",
+                T_("Liquefied ground."),
                 getLongDescription("liquefied"),
                 tile_def(TILE_LIQUEFACTION)
             });
@@ -3297,14 +3329,14 @@ static vector<extra_feature_desc> _get_feature_extra_descs(const coord_def &pos)
 static string _feat_action_desc(const vector<command_type>& actions,
                                                 dungeon_feature_type feat)
 {
-    static const map<command_type, string> act_str =
+    static const map<command_type, const char*> act_str =
     {
-        { CMD_GO_UPSTAIRS,      "(<)go up" },
-        { CMD_GO_DOWNSTAIRS,    "(>)go down" },
-        { CMD_MAP_PREV_LEVEL,   "([)view destination" },
-        { CMD_MAP_NEXT_LEVEL,   "(])view destination" },
-        { CMD_OPEN_DOOR,        "(O)pen" },
-        { CMD_CLOSE_DOOR,       "(C)lose" },
+        { CMD_GO_UPSTAIRS,      N_("(<)go up") },
+        { CMD_GO_DOWNSTAIRS,    N_("(>)go down") },
+        { CMD_MAP_PREV_LEVEL,   N_("([)view destination") },
+        { CMD_MAP_NEXT_LEVEL,   N_("(])view destination") },
+        { CMD_OPEN_DOOR,        N_("(O)pen") },
+        { CMD_CLOSE_DOOR,       N_("(C)lose") },
 
     };
     return comma_separated_fn(begin(actions), end(actions),
@@ -3324,7 +3356,7 @@ static string _feat_action_desc(const vector<command_type>& actions,
             else if (cmd == CMD_GO_UPSTAIRS && feat_is_gate(feat))
                 return string(T_("(<)exit"));
             else
-                return act_str.at(cmd);
+                return string(T_(act_str.at(cmd)));
         },
         T_(", or ")) + ".";
 }
@@ -3497,27 +3529,38 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
         else if (feat_is_portal(feat)
             || feat == DNGN_ENTER_ZIGGURAT) // augh this is technically a gate
         {
-            long_desc += make_stringf(
-                    T_("\nWhile standing here, you can %senter %s "
-                    "with the <w>%s</w> key; it will vanish after you do so."),
+            long_desc += make_stringf_p(
+                    T_("\nWhile standing here, you can %1$senter %2$s with the <w>%3$s</w> key; it will vanish "
+                    "after you do so."),
                     feat == DNGN_ENTER_TROVE ? T_("try to ") : "",
                     desc_the.c_str(),
                     _esc_cmd_to_str(stair_dir).c_str());
         }
         else if (feat_is_gate(feat))
         {
-            // it's just special case after special case with these descs
-            const string how = feat == DNGN_ENTER_HELL
-                ? (stair_dir == CMD_GO_UPSTAIRS ? "to Hell" : "Hell")
-                : make_stringf(T_("through %s"), desc_the.c_str());
-            long_desc += make_stringf(
-                    T_("\nWhile standing here, you can %s %s "
-                    "with the <w>%s</w> key%s."),
-                    stair_dir == CMD_GO_DOWNSTAIRS ? T_("enter") : T_("exit"),
-                    how.c_str(),
-                    _esc_cmd_to_str(stair_dir).c_str(),
+            const string key = _esc_cmd_to_str(stair_dir);
+            if (feat == DNGN_ENTER_HELL)
+            {
+                const char *sentence = stair_dir == CMD_GO_UPSTAIRS
+                    ? N_("\nWhile standing here, you can exit to Hell with the <w>%1$s</w> key.")
+                    : N_("\nWhile standing here, you can enter Hell with the <w>%1$s</w> key.");
+                long_desc += make_stringf_p(T_(sentence), key.c_str());
+            }
+            else
+            {
+                const string action = stair_dir == CMD_GO_DOWNSTAIRS
+                                      ? T_("enter") : T_("exit");
+                const string condition =
                     (feat == DNGN_ENTER_ZOT || feat == DNGN_EXIT_VAULTS)
-                        ? T_(" if you have enough runes") : "");
+                    ? T_(" if you have enough runes") : "";
+                // Keep the route inside the complete sentence so the localized
+                // action keeps its own word order.
+                long_desc += make_stringf_p(
+                    T_("\nWhile standing here, you can %1$s through %2$s "
+                       "with the <w>%3$s</w> key%4$s."),
+                    action.c_str(), desc_the.c_str(), key.c_str(),
+                    condition.c_str());
+            }
         }
     }
     else if (feat_is_altar(feat))
@@ -3536,9 +3579,8 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
     }
     else if (feat == DNGN_TRANSPORTER)
     {
-        long_desc += make_stringf(
-                T_("\nWhile standing here, you can enter %s with "
-                "with the <w>%s</w> key."),
+        long_desc += make_stringf_p(
+                T_("\nWhile standing here, you can enter %1$s with the <w>%2$s</w> key."),
                 desc_the.c_str(),
                 command_to_string(CMD_GO_DOWNSTAIRS).c_str());
     }
@@ -4746,18 +4788,17 @@ static string _player_spell_desc(spell_type spell)
     if (spell == SPELL_BATTLESPHERE)
     {
         vector<spell_type> battlesphere_spells = player_battlesphere_spells();
-        description << T_("Your battlesphere");
         if (battlesphere_spells.empty())
-            description << T_(" is not activated by any of your spells");
+            description << T_("Your battlesphere is not activated by any of your spells.\n");
         else
         {
-            description << T_(" fires when you cast ")
-                        << comma_separated_fn(battlesphere_spells.begin(),
-                                              battlesphere_spells.end(),
-                                              spell_title,
-                                              T_(" or "));
+            description << make_stringf(T_("Your battlesphere fires when you cast %s.\n"),
+                                        comma_separated_fn(
+                                            battlesphere_spells.begin(),
+                                            battlesphere_spells.end(),
+                                            spell_title,
+                                            T_(" or ")).c_str());
         }
-        description << T_(".\n");
     }
 
     if (spell == SPELL_SPELLSPARK_SERVITOR)
@@ -4795,11 +4836,16 @@ static string _player_spell_desc(spell_type spell)
     const int limit = summons_limit(spell, true);
     if (limit)
     {
-        description << T_("You can sustain at most ") + number_in_words(limit)
-                    // Attempt to clarify that flayed ghosts are NOT included in the cap
-                    << (spell == SPELL_MARTYRS_KNELL ? T_(" martyred shade") : T_(" creature"))
-                    << (limit > 1 ? T_("s") : "")
-                    << T_(" summoned by this spell.\n");
+        // Keep the cap in one complete sentence: the singular/plural and the
+        // martyred-shade distinction are display facts, not fragments.
+        const char *cap = spell == SPELL_MARTYRS_KNELL
+            ? (limit == 1
+                ? T_("You can sustain at most %s martyred shade summoned by this spell.\n")
+                : T_("You can sustain at most %s martyred shades summoned by this spell.\n"))
+            : (limit == 1
+                ? T_("You can sustain at most %s creature summoned by this spell.\n")
+                : T_("You can sustain at most %s creatures summoned by this spell.\n"));
+        description << make_stringf(cap, number_in_words(limit).c_str());
     }
 
     if (god_hates_spell(spell, you.religion))
@@ -4913,7 +4959,7 @@ static void _get_spell_description(const spell_type spell,
             {
                 description += make_stringf(T_("\nIf you are struck by this,"
                                             " you will no longer be %s.\n"),
-                                            describe_player_cancellation(true).c_str());
+                                            describe_player_cancellation().c_str());
             }
             else
                 description += T_("\nYou currently have no enchantments that could be"
@@ -4940,7 +4986,7 @@ static void _get_spell_description(const spell_type spell,
             else if (spell_has_marionette_override(spell))
             {
                 description += T_("\n\n<magenta>When cast via Aphotic Marionette, "
-                               "this spell will affect the player instead.");
+                               "this spell will affect the player instead.</magenta>\n");
             }
         }
 
@@ -7068,8 +7114,8 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
 
         if (you.wizard)
         {
-            result << " (Recite power:" << zin_recite_power()
-                   << ", Hit dice:" << mi.hd << ")";
+            result << make_stringf(T_(" (Recite power:%d, Hit dice:%d)"),
+                                   zin_recite_power(), mi.hd);
         }
         result << "\n";
     }
@@ -7846,7 +7892,7 @@ string get_ghost_description(const monster_info &mi, bool concise)
 
     const species_type gspecies = mi.i_ghost.species;
 
-    string title = mi.i_ghost.title;
+    string title = translated_ghost_title(mi.i_ghost.title, gspecies);
 #if TAG_MAJOR_VERSION == 34
     if (title.empty())
     {
@@ -8263,7 +8309,7 @@ static string _describe_talisman_form(transformation form_type)
     else if (form_type == transformation::sphinx)
     {
         if (!you.has_mutation(MUT_NO_ARMOUR))
-            pr.AddCell(T_("Barding"), "Yes");
+            pr.AddCell(T_("Barding"), T_("Yes"));
         pr.AddCell(T_("Will"), "+");
     }
     else if (form_type == transformation::werewolf)
@@ -8295,15 +8341,15 @@ static string _describe_talisman_form(transformation form_type)
     // Mutation suppression info
     vector<string> changes;
     if (form->changes_anatomy)
-        changes.emplace_back("Anatomy");
+        changes.emplace_back(C_("form mutation suppression", "Anatomy"));
     if (form->changes_substance)
-        changes.emplace_back("Substance");
+        changes.emplace_back(C_("form mutation suppression", "Substance"));
     if (form->has_blood == FC_FORBID)
-        changes.emplace_back("Blood");
+        changes.emplace_back(C_("form mutation suppression", "Blood"));
     if (form->has_bones == FC_FORBID)
-        changes.emplace_back("Bones");
+        changes.emplace_back(C_("form mutation suppression", "Bones"));
     if (form_type == transformation::eel_hands)
-        changes.emplace_back("Hands");
+        changes.emplace_back(C_("form mutation suppression", "Hands"));
 
     if (!changes.empty())
     {
@@ -8372,6 +8418,6 @@ string extra_cloud_info(cloud_type cloud_type)
 string player_species_name()
 {
     if (you_worship(GOD_BEOGH))
-        return species::orc_name(you.species);
+        return T_(species::orc_name(you.species).c_str());
     return species::name(you.species);
 }

@@ -2081,8 +2081,13 @@ string mon_attack_name_short(attack_type attack)
     case AT_TAIL_SLAP:     return T_("tail");
     case AT_TRUNK_SLAP:    return T_("trunk");
     case AT_POUNCE:        return T_("pounce");
+    case AT_HIT:
+    case AT_WEAP_ONLY:
+#if TAG_MAJOR_VERSION == 34
+    case AT_SHOOT:
+#endif
     case AT_CHERUB:
-    case AT_RANDOM:        return T_("hit"); // eh
+    case AT_RANDOM:        return C_("melee action", "hit"); // eh
     default:
         return mon_attack_name(attack, false);
     }
@@ -3151,6 +3156,22 @@ string mons_type_name_en(monster_type mc, description_level_type desc)
     return _mons_type_name(mc, desc, true);
 }
 
+string mons_name_with_suffix(const string& base, const string& suffix)
+{
+    if (Options.language == lang_t::ZH)
+    {
+        if (suffix == "shaped Royal Jelly")
+            return make_stringf(T_("%s shaped Royal Jelly"), base.c_str());
+        if (suffix == "shaped Lernaean hydra")
+            return make_stringf(T_("%s shaped Lernaean hydra"), base.c_str());
+        if (suffix == "shaped Enchantress")
+            return make_stringf(T_("%s shaped Enchantress"), base.c_str());
+        if (suffix == "shaped Serpent of Hell")
+            return make_stringf(T_("%s shaped Serpent of Hell"), base.c_str());
+    }
+    return base + " " + suffix;
+}
+
 static string _get_proper_monster_name(const monster& mon)
 {
     const monsterentry *me = mon.find_monsterentry();
@@ -4046,9 +4067,9 @@ static string _replace_god_name(god_type god, bool need_verb = false,
     string result;
 
     if (god == GOD_NO_GOD)
-        result = capital ? "You" : "you";
+        result = capital ? T_("You") : T_("you");
     else if (god == GOD_NAMELESS)
-        result = capital ? "Your god" : "your god";
+        result = capital ? T_("Your god") : T_("your god");
     else
     {
         const string godname = god_name(god, false);
@@ -4057,8 +4078,9 @@ static string _replace_god_name(god_type god, bool need_verb = false,
 
     if (need_verb)
     {
-        result += ' ';
-        result += conjugate_verb("be", god == GOD_NO_GOD);
+        result = make_stringf(god == GOD_NO_GOD
+            ? C_("speech god copula", "%s are")
+            : C_("speech god copula", "%s is"), result.c_str());
     }
 
     return result;
@@ -4358,6 +4380,19 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
         s_type = mons_shouts(mons.type);
 
     msg = maybe_pick_random_substring(msg);
+
+    // This alternative describes the whole gaze predicate in Chinese. The
+    // English preposition/alternative path below stays unchanged, so ordinary
+    // @to_foe@/@at_foe@ markers keep their legacy behaviour.
+    if (Options.language == lang_t::ZH
+        && msg.find("@at_foe/around@") != string::npos)
+    {
+        const string gaze = foe && !foe->is_player()
+            ? make_stringf(C_("monster speech gaze", "looks at %s"),
+                           foe->name(DESC_THE).c_str())
+            : C_("monster speech gaze", "looks around");
+        msg = replace_all(msg, "@at_foe/around@", gaze);
+    }
 
     // FIXME: Handle player_genus in case it was not generalised to foe_genus.
     msg = replace_all(msg, "@a_player_genus@",

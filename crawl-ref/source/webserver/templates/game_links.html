@@ -1,4 +1,4 @@
-Play now:
+开始游戏：
 {% try %}
     {% set rcs = set() %}
     {% for id in games %}
@@ -10,12 +10,12 @@ Play now:
             {% if not save_info[id] %}<a href="#play-{{ id }}">{% end %}
                 {{ games[id]["name"] }}{% if not save_info[id] %}</a>{% end %}
             {% if save_info[id] %}
-                <span>{% if not disabled(save_info[id]) %}<a href="#play-{{ id }}">{% end %}{{ save_info[id] }}{% if not disabled(save_info[id]) %}</a>{% end %}</span>
+                <span>{% if not disabled(save_info[id]) %}<a href="#play-{{ id }}">{% end %}{{ {"[slot full]": "[存档位已占用]", "[playing]": "[游戏进行中]"}.get(save_info[id], save_info[id]) }}{% if not disabled(save_info[id]) %}</a>{% end %}</span>
             {% end %}
             {% set rcs.add(games[id]["rcfile_path"]) %}
             <a href="javascript:"
                class="edit_rc_link"
-               data-game_id="{{ id }}">(edit rc)</a>
+               data-game_id="{{ id }}">（编辑配置）</a>
         {% else %}
             {% if "separator" in games[id] %}
               {% raw games[id]["separator"] %}
@@ -23,7 +23,7 @@ Play now:
             {% if not save_info[id] %}<a href="#play-{{ id }}">{% end %}
                 {{ games[id]["name"] }}{% if not save_info[id] %}</a>{% end %}
             {% if save_info[id] %}
-                <span>{% if not disabled(save_info[id]) %}<a href="#play-{{ id }}">{% end %}{{ save_info[id] }}{% if not disabled(save_info[id]) %}</a>{% end %}</span>
+                <span>{% if not disabled(save_info[id]) %}<a href="#play-{{ id }}">{% end %}{{ {"[slot full]": "[存档位已占用]", "[playing]": "[游戏进行中]"}.get(save_info[id], save_info[id]) }}{% if not disabled(save_info[id]) %}</a>{% end %}</span>
             {% end %}
         {% end %}
         </span>
@@ -40,7 +40,7 @@ Play now:
     {% set rcs.add(games[id]["rcfile_path"]) %}
     <a href="javascript:"
        class="edit_rc_link"
-       data-game_id="{{ id }}">(edit rc)</a>
+       data-game_id="{{ id }}">（编辑配置）</a>
     {% else %}
     {% if "separator" in games[id] %}
     {% raw games[id]["separator"] %}

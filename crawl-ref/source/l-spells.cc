@@ -335,6 +335,24 @@ static int l_spells_cast(lua_State *ls)
     PLUARET(boolean, you.turn_is_over);
 }
 
+/*** The display title of a spell, using the current UI language.
+ * The input uses the same exact spell-name lookup as the other spell APIs.
+ * @tparam string spell name
+ * @treturn string localized spell title
+ * @function title
+ */
+static int l_spells_title(lua_State *ls)
+{
+    const string spell_name = luaL_checkstring(ls, 1);
+    const spell_type spell = spell_by_name(spell_name, false);
+    if (!is_valid_spell(spell))
+    {
+        luaL_argerror(ls, 1, ("Invalid spell: " + spell_name).c_str());
+        return 0;
+    }
+    PLUARET(string, spell_title(spell));
+}
+
 /*** Describe a spell.
  * Provide the complete text description of a spell as displayed in the
  * game UI
@@ -378,6 +396,7 @@ static const struct luaL_Reg spells_clib[] =
     { "god_hates"     , l_spells_god_hates },
     { "cast"          , l_spells_cast },
     { "describe"      , l_spells_describe },
+    { "title"         , l_spells_title },
     { nullptr, nullptr }
 };
 

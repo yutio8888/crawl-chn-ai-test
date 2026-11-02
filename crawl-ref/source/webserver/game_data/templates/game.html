@@ -35,7 +35,7 @@
         autocapitalize="off"
         spellcheck="false"
         type="text"
-        placeholder="Tap here for keyboard input"
+        placeholder="轻点此处使用键盘输入"
       />
     </div>
     <canvas
@@ -71,7 +71,7 @@
       <div id="stats_mpline">
         <!-- These <span>s must be on the same logical line to prevent rendering bugs -->
         <span id="stats_mp_bar" class="bar" style="float: right; width: 55%; height: 1em"><span id="stats_mp_bar_full"></span><span id="stats_mp_bar_decrease"></span><span id="stats_mp_bar_increase"></span></span>
-        <span class="stats_caption">Magic:</span>
+        <span class="stats_caption" data-caption="Magic:">Magic:</span>
         <!-- These <span>s must be on the same logical line to prevent rendering bugs -->
         <span id="stats_mp"></span><span id="stats_mp_separator">/</span><span id="stats_mp_max"></span>
         <span id="stats_dd_real_mp_max"></span>
@@ -79,18 +79,18 @@
       <div>
         <div id="stats_leftcolumn" style="float: left; width: 45%">
           <div>
-            <span class="stats_caption">AC:</span> <span id="stats_ac"></span>
+            <span class="stats_caption" data-caption="AC:">AC:</span> <span id="stats_ac"></span>
           </div>
           <div>
-            <span class="stats_caption">EV:</span> <span id="stats_ev"></span>
+            <span class="stats_caption" data-caption="EV:">EV:</span> <span id="stats_ev"></span>
           </div>
           <div>
-            <span class="stats_caption">SH:</span> <span id="stats_sh"></span>
+            <span class="stats_caption" data-caption="SH:">SH:</span> <span id="stats_sh"></span>
           </div>
           <div>
-            <span class="stats_caption">XL:</span>
+            <span class="stats_caption" data-caption="XL:">XL:</span>
             <span id="stats_xl"></span>
-            <span class="stats_caption">Next:</span>
+            <span class="stats_caption" data-caption="Next:">Next:</span>
             <span id="stats_progress"></span>%
           </div>
           <div id="stats_noise" style="float: left; width: 95%">
@@ -108,24 +108,24 @@
               id="stats_noise_status"
               style="float: right; width: 0%"
             ></span>
-            <span class="stats_caption">Noise:</span>
+            <span class="stats_caption" data-caption="Noise:">Noise:</span>
             <span id="stats_noise_num"></span>
           </div>
         </div>
         <div id="stats_rightcolumn" style="float: right; width: 55%">
           <div>
-            <span class="stats_caption">Str:</span> <span id="stats_str"></span>
-            <span id="stats_doom_ui"><span class="stats_caption" style="margin-left:2.2em">Doom:</span><span id="stats_doom"></span></span>
+            <span class="stats_caption" data-caption="Str:">Str:</span> <span id="stats_str"></span>
+            <span id="stats_doom_ui"><span class="stats_caption" data-caption="Doom:">Doom:</span><span id="stats_doom"></span></span>
           </div>
           <div>
-            <span class="stats_caption">Int:</span> <span id="stats_int"></span>
-            <span id="stats_contam_ui"><span class="stats_caption" style="margin-left:1.1em">Contam:</span><span id="stats_contam"></span></span>
+            <span class="stats_caption" data-caption="Int:">Int:</span> <span id="stats_int"></span>
+            <span id="stats_contam_ui"><span class="stats_caption" data-caption="Contam:">Contam:</span><span id="stats_contam"></span></span>
           </div>
           <div>
-            <span class="stats_caption">Dex:</span> <span id="stats_dex"></span>
+            <span class="stats_caption" data-caption="Dex:">Dex:</span> <span id="stats_dex"></span>
           </div>
           <div>
-            <span class="stats_caption">Place:</span>
+            <span class="stats_caption" data-caption="Place:">Place:</span>
             <span id="stats_place"></span>
           </div>
           <div>
@@ -207,7 +207,7 @@
       <span></span>
     </div>
     <div class="body fg7"></div>
-    <div class="actions hidden">(M)emorise this spell.</div>
+    <div class="actions hidden">(M) 记忆此法术。</div>
   </div>
 
   <div class="describe-cards"></div>
@@ -222,20 +222,20 @@
         <div class="desc"></div>
         <table class="god-favour">
           <tr>
-            <td>Title</td>
+            <td>称号</td>
             <td>-</td>
             <td class="title"></td>
           </tr>
           <tr>
-            <td>Favour</td>
+            <td>神眷</td>
             <td>-</td>
             <td class="favour"></td>
           </tr>
         </table>
         <div class="god-powers">
           <div class="power">
-            <div>Granted powers</div>
-            <div>(Cost)</div>
+            <div>神授能力</div>
+            <div>（消耗）</div>
           </div>
         </div>
       </div>
@@ -246,24 +246,24 @@
       <div><b class="fg3">!</b>/<b class="fg3">^</b>:&nbsp;</div>
       <div class="paneset">
         <div class="pane">
-          <b class="fg15">Overview</b> | Powers | Wrath
+          <b class="fg15">概览</b> | 权能 | 神怒
           <span class="join-keyhelp"
-            >&nbsp;&nbsp;<b class="fg3">J</b>/<b class="fg3">Enter</b>: join
-            religion</span
+            >&nbsp;&nbsp;<b class="fg3">J</b>/<b class="fg3">Enter</b>：皈依此神
+            </span
           >
         </div>
         <div class="pane">
-          Overview | <b class="fg15">Powers</b> | Wrath
+          概览 | <b class="fg15">权能</b> | 神怒
           <span class="join-keyhelp"
-            >&nbsp;&nbsp;<b class="fg3">J</b>/<b class="fg3">Enter</b>: join
-            religion</span
+            >&nbsp;&nbsp;<b class="fg3">J</b>/<b class="fg3">Enter</b>：皈依此神
+            </span
           >
         </div>
         <div class="pane">
-          Overview | Powers | <b class="fg15">Wrath</b>
+          概览 | 权能 | <b class="fg15">神怒</b>
           <span class="join-keyhelp"
-            >&nbsp;&nbsp;<b class="fg3">J</b>/<b class="fg3">Enter</b>: join
-            religion</span
+            >&nbsp;&nbsp;<b class="fg3">J</b>/<b class="fg3">Enter</b>：皈依此神
+            </span
           >
         </div>
       </div>
@@ -279,20 +279,20 @@
         <div class="desc"></div>
         <table class="god-favour">
           <tr>
-            <td>Title</td>
+            <td>称号</td>
             <td>-</td>
             <td class="title"></td>
           </tr>
           <tr>
-            <td>Favour</td>
+            <td>神眷</td>
             <td>-</td>
             <td class="favour"></td>
           </tr>
         </table>
         <div class="god-powers">
           <div class="power">
-            <div>Granted powers</div>
-            <div>(Cost)</div>
+            <div>神授能力</div>
+            <div>（消耗）</div>
           </div>
         </div>
       </div>
@@ -304,31 +304,31 @@
       <div><b class="fg3">!</b>/<b class="fg3">^</b>:&nbsp;</div>
       <div class="paneset">
         <div class="pane">
-          <b class="fg15">Overview</b> | Powers | Wrath | Extra
+          <b class="fg15">概览</b> | 权能 | 神怒 | 其他
           <span class="join-keyhelp"
-            >&nbsp;&nbsp;<b class="fg3">J</b>/<b class="fg3">Enter</b>: join
-            religion</span
+            >&nbsp;&nbsp;<b class="fg3">J</b>/<b class="fg3">Enter</b>：皈依此神
+            </span
           >
         </div>
         <div class="pane">
-          Overview | <b class="fg15">Powers</b> | Wrath | Extra
+          概览 | <b class="fg15">权能</b> | 神怒 | 其他
           <span class="join-keyhelp"
-            >&nbsp;&nbsp;<b class="fg3">J</b>/<b class="fg3">Enter</b>: join
-            religion</span
+            >&nbsp;&nbsp;<b class="fg3">J</b>/<b class="fg3">Enter</b>：皈依此神
+            </span
           >
         </div>
         <div class="pane">
-          Overview | Powers | <b class="fg15">Wrath</b> | Extra
+          概览 | 权能 | <b class="fg15">神怒</b> | 其他
           <span class="join-keyhelp"
-            >&nbsp;&nbsp;<b class="fg3">J</b>/<b class="fg3">Enter</b>: join
-            religion</span
+            >&nbsp;&nbsp;<b class="fg3">J</b>/<b class="fg3">Enter</b>：皈依此神
+            </span
           >
         </div>
         <div class="pane">
-          Overview | Powers | Wrath | <b class="fg15">Extra</b>
+          概览 | 权能 | 神怒 | <b class="fg15">其他</b>
           <span class="join-keyhelp"
-            >&nbsp;&nbsp;<b class="fg3">J</b>/<b class="fg3">Enter</b>: join
-            religion</span
+            >&nbsp;&nbsp;<b class="fg3">J</b>/<b class="fg3">Enter</b>：皈依此神
+            </span
           >
         </div>
       </div>
@@ -387,26 +387,26 @@
     <div class="body fg7">
       <p class="body-text"></p>
       <div class="seed-input">
-        <span>Enter seed: </span>
+        <span>输入种子：</span>
         <input type="text" data-sync-id="seed" />
         <button data-hotkey="-" data-sync-id="btn-clear">
-          <span>[-] Clear</span>
+          <span>[-] 清空</span>
         </button>
         <button data-hotkey="d" data-sync-id="btn-daily">
-          <span>[d] Today's daily seed</span>
+          <span>[d] 今日种子</span>
         </button>
       </div>
       <p class="footer"></p>
       <div class="pregen-toggle">
         <label>
           <input type="checkbox" data-sync-id="pregenerate" />
-          <span>Fully pregenerate the Dungeon</span>
+          <span>完整预生成地牢</span>
         </label>
       </div>
     </div>
     <div class="button-bar">
       <button data-hotkey="Enter" data-sync-id="btn-begin">
-        <span>[Enter] Begin!</span>
+        <span>[Enter] 开始！</span>
       </button>
     </div>
   </div>
@@ -415,7 +415,7 @@
 <div id="action-panel-tooltip" style="display: none"></div>
 <div id="action-panel-settings" style="display: none">
   <fieldset>
-    <legend>Orientation:</legend>
+    <legend>方向：</legend>
     <div>
       <input
         type="radio"
@@ -424,7 +424,7 @@
         name="action_panel_orientation"
         value="horizontal"
       />
-      <label for="action-orient-horizontal">horizontal</label>
+      <label for="action-orient-horizontal">横向</label>
     </div>
     <div>
       <input
@@ -434,11 +434,11 @@
         name="action_panel_orientation"
         value="vertical"
       />
-      <label for="action-orient-vertical">vertical</label>
+      <label for="action-orient-vertical">纵向</label>
     </div>
   </fieldset>
   <fieldset id="scale-set" class="option">
-    <legend>Scale, %:</legend>
+    <legend>缩放（%）：</legend>
     <input
       type="number"
       class="text"
@@ -448,10 +448,10 @@
       name="action_panel_scale"
       required
     />
-    <button class="reset" type="button" tabindex="-1">reset</button>
+    <button class="reset" type="button" tabindex="-1">重置</button>
   </fieldset>
   <fieldset id="font-size-set" class="option">
-    <legend>Font size, px:</legend>
+    <legend>字号（px）：</legend>
     <input
       type="number"
       class="text"
@@ -461,11 +461,11 @@
       name="action_panel_font_size"
       required
     />
-    <button class="reset" type="button" tabindex="-1">reset</button>
+    <button class="reset" type="button" tabindex="-1">重置</button>
   </fieldset>
   <div class="settings-buttons">
-    <button id="minimize-panel" type="button" tabindex="-1">Minimize</button>
-    <button id="close-settings" type="button" tabindex="-1">Close</button>
+    <button id="minimize-panel" type="button" tabindex="-1">最小化</button>
+    <button id="close-settings" type="button" tabindex="-1">关闭</button>
   </div>
 </div>
 <div

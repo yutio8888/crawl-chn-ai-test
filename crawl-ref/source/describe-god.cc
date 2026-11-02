@@ -14,6 +14,7 @@
 #include "branch.h"
 #include "cio.h"
 #include "database.h"
+#include "lang-en-guard.h"
 #include "decks.h"
 #include "describe.h"
 #include "english.h"
@@ -248,17 +249,9 @@ static const char *divine_title[][8] =
 };
 COMPILE_CHECK(ARRAYSZ(divine_title) == NUM_GODS);
 
-string god_title(god_type which_god, species_type which_species, int piety)
+static string _render_god_title(const char* key, species_type which_species)
 {
-    string title;
-    if (player_under_penance(which_god))
-        title = C_("god title", divine_title[which_god][0]);
-    else if (which_god == GOD_USKAYAW)
-        title = C_("god title", divine_title[which_god][_invocations_level()]);
-    else if (which_god == GOD_GOZAG)
-        title = C_("god title", divine_title[which_god][_gold_level()]);
-    else
-        title = C_("god title", divine_title[which_god][_piety_level(piety)]);
+    string title = C_("god title", key);
 
     const map<string, string> replacements =
     {
@@ -272,11 +265,44 @@ string god_title(god_type which_god, species_type which_species, int piety)
         { "Walker", Options.language == lang_t::ZH
                         ? C_("god title walker suffix", "Walker")
                                                    : species::walking_title(which_species) + "er" },
-        { "Child", species::child_name(which_species) },
-        { "Orc", species::orc_name(which_species) },
+        { "Child", T_(species::child_name(which_species).c_str()) },
+        { "Orc", T_(species::orc_name(which_species).c_str()) },
     };
 
     return replace_keys(title, replacements);
+}
+
+string god_title(god_type which_god, species_type which_species, int piety)
+{
+    const char* title;
+    if (player_under_penance(which_god))
+        title = divine_title[which_god][0];
+    else if (which_god == GOD_USKAYAW)
+        title = divine_title[which_god][_invocations_level()];
+    else if (which_god == GOD_GOZAG)
+        title = divine_title[which_god][_gold_level()];
+    else
+        title = divine_title[which_god][_piety_level(piety)];
+
+    return _render_god_title(title, which_species);
+}
+
+vector<pair<string, string>> god_title_translation_pairs(species_type which_species)
+{
+    vector<pair<string, string>> titles;
+    // Render the finite table directly, never selecting a title from the live
+    // player's piety, penance, gold, skill, or conduct state.
+    for (const auto& god : divine_title)
+        for (const char* key : god)
+        {
+            string english;
+            {
+                const ScopedLangEn protocol_language;
+                english = _render_god_title(key, which_species);
+            }
+            titles.emplace_back(english, _render_god_title(key, which_species));
+        }
+    return titles;
 }
 
 static string _describe_item_curse(const item_def& item)
@@ -290,7 +316,7 @@ static string _describe_item_curse(const item_def& item)
         return T_("None");
 
     return comma_separated_fn(curses.begin(), curses.end(),
-            curse_name, ", ", ", ");
+            curse_display_name, ", ", ", ");
 }
 
 static string _describe_ash_skill_boost()

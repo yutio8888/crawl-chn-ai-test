@@ -1,7 +1,7 @@
 %%%%
 no teleportation passive
 
-你无法传送或闪现。
+你无法传送或闪烁。
 %%%%
 no spellcasting passive
 
@@ -29,7 +29,7 @@ mayhem passive
 %%%%
 repel missiles passive
 
-你驱逐了飞弹，提升了躲开它们的几率。
+你会偏转飞弹，提升了躲开它们的几率。
 %%%%
 reflection passive
 

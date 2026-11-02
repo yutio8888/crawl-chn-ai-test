@@ -118,9 +118,9 @@ int count = 0;
             NO_SLOT(T_("You can't haunt something so large."))
         if (species::is_draconian(you.species))
         {
-            NO_SLOT(make_stringf(T_("Your wings%s won't fit in that."),
-                                    you.has_mutation(MUT_BIG_WINGS)
-                                    ? "" : ", even vestigial as they are,"))
+            NO_SLOT(you.has_mutation(MUT_BIG_WINGS)
+                    ? T_("Your wings won't fit in that.")
+                    : T_("Your wings, even vestigial as they are, won't fit in that."))
         }
         else if (you.species == SP_OCTOPODE || you.has_mutation(MUT_NO_ARMOUR))
             NO_SLOT(T_("You can't wear armour!"));
@@ -514,7 +514,8 @@ bool can_equip_item(const item_def& item, bool include_form, string* veto_reason
             if (bad_size != 0)
             {
                 NO_EQUIP(make_stringf(T_("That is too %s for you to equip!"),
-                                            (bad_size > 0) ? "large" : "small"))
+                                            (bad_size > 0) ? T_("large")
+                                                           : T_("small")))
             }
         }
 
@@ -2330,8 +2331,9 @@ static void _equip_armour_effect(item_def& arm, bool unmeld)
             {
                 bool can_plural = false;
                 const string hands = you.hand_name(true, &can_plural);
-                mprf(T_("Your %s feel%s oddly empty."),
-                     hands.c_str(), can_plural ? "" : "s");
+                mprf(can_plural ? T_("Your %s feel oddly empty.")
+                                : T_("Your %s feels oddly empty."),
+                     hands.c_str());
             }
             break;
 
@@ -2396,8 +2398,9 @@ static void _unequip_armour_effect(item_def& item, bool meld)
     case SPARM_PONDEROUSNESS:
     {
         // XX can the noun here be derived from the species walking verb?
-        const string noun = you.species == SP_NAGA ? "slither" : "step";
-        mprf(T_("That put a bit of spring back into your %s."), noun.c_str());
+        mpr(you.species == SP_NAGA
+            ? T_("That put a bit of spring back into your slither.")
+            : T_("That put a bit of spring back into your step."));
         break;
     }
 
@@ -2684,8 +2687,9 @@ static void _equip_jewellery_effect(item_def &item, bool unmeld)
             simple_god_message(ignore_reason.c_str());
         else
         {
-            mprf(MSGCH_GOD, T_("You feel a %ssurge of divine interest."),
-                            you_worship(GOD_NO_GOD) ? "strange " : "");
+            mprf(MSGCH_GOD, "%s", you_worship(GOD_NO_GOD)
+                ? T_("You feel a strange surge of divine interest.")
+                : T_("You feel a surge of divine interest."));
         }
     }
 
@@ -2843,9 +2847,11 @@ void unwield_distortion(bool brand)
     }
     else if (coinflip())
     {
+        // Canonical banish cause: the reason is stored in the death/xlog
+        // fields and re-rendered for display.
         you.banish(nullptr,
-                   make_stringf(T_("%sing a weapon of distortion"),
-                                brand ? "rebrand" : "unwield").c_str(),
+                   brand ? "rebranding a weapon of distortion"
+                         : "unwielding a weapon of distortion",
                    true);
     }
     else

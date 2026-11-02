@@ -613,7 +613,7 @@ _powerful_caster_
 术士
 
 w:5
-暗精灵典籍守护者
+精灵典籍守护者
 
 w:5
 奥术天才
@@ -631,7 +631,7 @@ w:1
 盲眼预言者
 
 w:1
-议会圣统
+议会圣统领袖
 
 w:1
 大贤者
@@ -674,7 +674,7 @@ w:1
 赫耳墨斯·特里斯墨吉斯忒斯
 
 w:1
-叶哈雅
+贾比尔
 
 w:1
 梅林
@@ -849,7 +849,7 @@ Air
 
 雨云
 
-六焰妖
+六翼魔
 
 天空
 
@@ -938,7 +938,8 @@ Conjuration
 
 创伤
 
-创伤术     (w:2)
+w:2
+创伤术
 
 暴力
 
@@ -1128,7 +1129,8 @@ Fire
 
 火花
 
-热力学     (w:2)
+w:2
+热力学
 
 野火
 
@@ -1247,7 +1249,8 @@ Hexes
 
 斯芬克斯
 
-霉运     (w:2)
+w:2
+霉运
 
 命运
 %%%%
@@ -2444,7 +2447,7 @@ Hexes adj
 
 可怕的
 
-命定的
+劫数难逃的
 
 被附魔的
 
@@ -2633,7 +2636,7 @@ w:2
 
 阴沉的
 
-命定的
+劫数难逃的
 
 邪恶的
 
@@ -3066,7 +3069,7 @@ forgecraft adj
 
 叮咚响的
 
-机器的
+机械加工的
 
 制造的
 
@@ -3096,7 +3099,7 @@ forgecraft adj
 
 法术锻造的
 
-法术铁匠的
+法术锻造的
 
 钢铁的
 
@@ -3146,7 +3149,7 @@ __NONE
 %%%%
 highlevel Conjuration Fire owner
 
-阿斯蒙蒂斯
+阿斯摩蒂斯
 
 塞雷波夫
 
@@ -3160,7 +3163,7 @@ __NONE
 %%%%
 highlevel Conjuration Summoning owner
 
-阿斯蒙蒂斯
+阿斯摩蒂斯
 
 迪斯帕特
 
@@ -3180,13 +3183,13 @@ __NONE
 %%%%
 highlevel Fire Summoning owner
 
-阿斯蒙蒂斯
+阿斯摩蒂斯
 
 __NONE
 %%%%
 Fire Ice owner
 
-维芙
+芙芙
 
 __NONE
 %%%%
@@ -3198,13 +3201,13 @@ __NONE
 %%%%
 Alchemy Necromancy owner
 
-齐戈图维
+西格图维
 
 __NONE
 %%%%
 highlevel Conjuration owner
 
-阿斯蒙蒂斯
+阿斯摩蒂斯
 
 埃列什基伽勒
 
@@ -3253,7 +3256,7 @@ __NONE
 %%%%
 highlevel Fire owner
 
-阿斯蒙蒂斯
+阿斯摩蒂斯
 
 塞雷波夫
 
@@ -3291,9 +3294,9 @@ w:40
 %%%%
 Necromancy owner
 
-博恩约尔
+博格尼尔
 
-齐戈图维
+西格图维
 
 胡夫
 
@@ -3312,21 +3315,21 @@ Alchemy owner
 
 阿利斯泰尔
 
-齐戈图维
+西格图维
 
 奥尔格雷布
 
-埃林亚
+埃林吉亚
 
 __NONE
 %%%%
 highlevel Summoning owner
 
-阿斯蒙蒂斯
+阿斯摩蒂斯
 
 迪斯帕特
 
-姆诺列格
+姆诺雷格
 
 @Summoning owner@
 %%%%
@@ -3353,7 +3356,7 @@ __NONE
 %%%%
 Hexes owner
 
-雅拉
+亚拉
 
 w:5
 忒耳普西科瑞

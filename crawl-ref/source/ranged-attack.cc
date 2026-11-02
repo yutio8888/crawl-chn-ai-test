@@ -20,6 +20,7 @@
 #include "mon-behv.h"
 #include "mon-util.h"
 #include "monster.h"
+#include "lang-en-guard.h"
 #include "player.h"
 #include "stringutil.h"
 #include "teleport.h"
@@ -46,24 +47,25 @@ ranged_attack::ranged_attack(actor *attk, actor *defn,
 
     proj_name = launched_projectile_name(*weapon);
 
+    // These complete English identities are parsed by scorefile_entry's
+    // terse_missile_name/cause and persisted through hurt()/xlog.
     // [dshaligram] When changing bolt names here, you must edit
     // hiscores.cc (scorefile_entry::terse_missile_cause()) to match.
-    if (attacker->is_player())
     {
-        kill_type = KILLED_BY_SELF_AIMED;
-        aux_source = proj_name;
-    }
-    else if (throwing())
-    {
-        aux_source = make_stringf_p(T_("Hit by a%s %s thrown by %s"),
-                 (is_vowel(proj_name[0]) ? "n" : ""), proj_name.c_str(),
-                 attacker->name(DESC_A).c_str());
-    }
-    else
-    {
-        aux_source = make_stringf_p(T_("Shot with a%s %s by %s"),
-                 (is_vowel(proj_name[0]) ? "n" : ""), proj_name.c_str(),
-                 attacker->name(DESC_A).c_str());
+        const ScopedLangEn canonical_language;
+        proj_name_en = launched_projectile_name(*weapon);
+        if (attacker->is_player())
+        {
+            kill_type = KILLED_BY_SELF_AIMED;
+            aux_source = proj_name_en;
+        }
+        else
+        {
+            aux_source = make_stringf(throwing()
+                ? "Hit by a%s %s thrown by %s" : "Shot with a%s %s by %s",
+                is_vowel(proj_name_en[0]) ? "n" : "", proj_name_en.c_str(),
+                attacker->name(DESC_A).c_str());
+        }
     }
 
     needs_message = defender_visible;
@@ -701,8 +703,12 @@ bool ranged_attack::apply_missile_brand()
         {
             mprf(MSGCH_WARN, T_("You become untethered in space!"));
             you.duration[DUR_BLINKITIS] = random_range(30, 40);
-            you.props[BLINKITIS_SOURCE_KEY] = attacker->name(DESC_A, true);
-            you.props[BLINKITIS_AUX_KEY] = proj_name;
+            {
+                // Persistent props are protocol: store canonical English.
+                const ScopedLangEn canonical_language;
+                you.props[BLINKITIS_SOURCE_KEY] = attacker->name(DESC_A, true);
+                you.props[BLINKITIS_AUX_KEY] = proj_name_en;
+            }
         }
         else
         {

@@ -31,6 +31,10 @@ function ($, map_knowledge, cr, dungeon_renderer, options, util) {
 
     function is_excluded(monster)
     {
+        // The server decides this from monster identity. Names are localized,
+        // so the English-name fallback below only serves older servers.
+        if (Object.prototype.hasOwnProperty.call(monster, "list_excluded"))
+            return monster.list_excluded;
         return (monster.typedata.no_exp &&
                 !(monster.name == "active ballistomycete"
                   || monster.name.match(/tentacle$/)));

@@ -1432,7 +1432,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(std::string(brand_type_name(SPWPN_DRAINING, true)) == "汲取");
     REQUIRE(std::string(brand_type_adj(SPWPN_DRAINING)) == "汲取");
     REQUIRE(std::string(T_("drain")) == "吸血");
-    REQUIRE(std::string(T_("draining")) == "吸取");
+    REQUIRE(std::string(T_("draining")) == "汲取");
 
     init_spell_descs();
     init_spell_name_cache();
@@ -4920,7 +4920,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         const char* en_damaged;
     };
     static const wound_case cases[] = {
-        { MDAM_ALMOST_DEAD,         "奄奄一息", "奄奄一息",
+        { MDAM_ALMOST_DEAD,         "奄奄一息", "几近毁坏",
           "almost dead",       "almost destroyed" },
         { MDAM_SEVERELY_DAMAGED,    "严重受伤", "严重受损",
           "severely wounded",  "severely damaged" },
@@ -4930,7 +4930,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
           "moderately wounded", "moderately damaged" },
         { MDAM_LIGHTLY_DAMAGED,     "轻度受伤", "轻度受损",
           "lightly wounded",   "lightly damaged" },
-        { MDAM_OKAY,                "未受伤",   "未受伤",
+        { MDAM_OKAY,                "未受伤",   "未受损",
           "not wounded",       "not damaged" },
     };
     for (const wound_case& c : cases)
@@ -5314,8 +5314,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             CHECK(species::fake_mutations(species, false) == original_long);
         }
     }
-    // An untranslated draconian entry still uses English fallback in both
-    // normal and anatomy-changing forms; annotations stay display-only.
+    // The species identity remains canonical while both normal and changed
+    // anatomy descriptions use the translated display text.
     you = player();
     you.species = SP_GREY_DRACONIAN;
     you.set_position(coord_def(20, 20));
@@ -5329,9 +5329,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     {
         you.form = form;
         const string described = describe_mutations(true);
-        CHECK(described.find("You are unimpeded by mud.") != string::npos);
+        CHECK(described.find("泥浆不会阻碍你的行动。") != string::npos);
+        CHECK(described.find("You are unimpeded by mud.") == string::npos);
         if (form == transformation::pig)
-            CHECK(described.find("<darkgrey>((You are unimpeded by mud.))</darkgrey>") != string::npos);
+            CHECK(described.find("<darkgrey>((泥浆不会阻碍你的行动。))</darkgrey>") != string::npos);
     }
 }
 
@@ -5829,10 +5830,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(emitted.find(language == lang_t::ZH ? "你击中了" : "You hit ") != string::npos);
         CHECK(emitted.find(target.name(DESC_THE)) != string::npos);
         CHECK(mon_attack_name(AT_HIT, false)
-              == (language == lang_t::ZH ? "攻击" : "hit"));
+              == (language == lang_t::ZH ? "击中" : "hit"));
         const auto action = quiver::get_primary_action();
         REQUIRE(action);
-        CHECK(action->quiver_verb() == (language == lang_t::ZH ? "攻击" : "hit"));
+        CHECK(action->quiver_verb() == (language == lang_t::ZH ? "击打" : "hit"));
         CHECK(weapon.base_type == OBJ_WEAPONS);
         CHECK(weapon.sub_type == WPN_DAGGER);
         CHECK(swing.attk_type == AT_HIT);

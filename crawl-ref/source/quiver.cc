@@ -121,7 +121,7 @@ namespace quiver
                && !clua.callfn("af_mp_is_low", ">b", &af_mp_check))
         {
             if (!clua.error.empty())
-                mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
+                mprf(MSGCH_ERROR, T_("Lua error: %s"), clua.error.c_str());
             return true;
         }
         if (af_hp_check)
@@ -484,7 +484,7 @@ namespace quiver
             else if (attack_cleaves(you))
                 return T_("cleave");
             else
-                return T_("hit"); // could use more subtype flavor Vs?
+                return C_("melee action", "hit"); // could use more subtype flavor Vs?
         }
 
         formatted_string quiver_description(bool short_desc=false) const override

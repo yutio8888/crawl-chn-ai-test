@@ -143,6 +143,13 @@ python3 .claude/scripts/audit_item_name_inventory.py \
     --output /tmp/item-name-inventory.json
 ```
 
+未知外观数组按 `C_` 上下文取键：`item-name.cc` 的 ring/amulet 材质现在经
+`C_("jewellery appearance", …)` 显示，数组内 `NC_("jewellery appearance", …)`
+条目由 `array_entries()` 连同上下文一起读取。清单记录每条的
+`source_context`、运行期查找键 `jewellery appearance|<材质>` 与
+`context_row_present`；当前值按运行语义先查上下文行、再回退到无上下文键，
+因此上下文行缺失时账本显示的是真实 fallback，而不是假定已译。
+
 同一入口也负责 `item-description:*` 翻译质量 M1 实验的确定性 bundle。生成模式要求
 已经通过双向覆盖检查的 Issue 29 review artifact，以及冻结的 evaluator prompt 和术语
 context；输出只能位于 `.artifacts/i18n/quality/`。bundle 保留 canonical truth bytes，
@@ -620,6 +627,52 @@ Makefile 导出器仍拒绝 header 和不属于所选构建目标的条目。头
 
 完整替换的剩余语法、header 上下文和平台覆盖边界见
 `docs/issue120-scanner-preproc-report.md` 的显式实验记录。
+
+### post-coder 的显式 TU 预处理路由
+
+`post-coder.sh`（包括 `verify_zh.sh` 调用它时）接受两项必须配对的环境变量，
+均以换行分隔，不以空格或冒号拆路径：
+
+- `ZH_VERIFY_CPP_PREPROCESS_FILES`：需要严格展开检查的仓库相对 `.cc` 路径。
+  changed scope 下每项必须属于当前 changed C++ 集合；不存在或越界立即失败。
+- `ZH_VERIFY_CPP_COMPILE_COMMANDS`：一个或多个现有标准编译数据库路径。
+  三个 AST 扫描器均收到完整列表；任何配置缺少目标、CPP 失败或展开后解析失败
+  都阻断，不能退回 raw-only 通过。
+
+changed scope 将这些 TU 单独交给扫描器已有的 raw + strict-expanded 路径；
+其余变更（包括 header）仍执行原始检查。full scope 保留全库 raw 扫描，并额外
+检查显式目标的全部配置。默认未设置两项时行为不变；静态 CI 不因此新增 make。
+
+例如，旧存档读取器 `tags.cc` 的原始条件编译结构不是完整 C++ 语法树，可在
+已经按正常构建流程准备依赖和生成头的工作树中导出 TAG34/TAG35 与普通/调试
+四种配置，再运行同一个 code profile。导出目标本身不编译 C++；每个数据库须
+显式选定一个 `I18N_BUILD_GOAL`，配置只放临时目录：
+
+```bash
+cpp_scan_dir=$(mktemp -d)
+trap 'rm -rf "$cpp_scan_dir"' EXIT
+for major in 34 35; do
+  for debug in normal diagnostics; do
+    cpp_flags="-DTAG_MAJOR_VERSION=$major"
+    if [[ "$debug" == diagnostics ]]; then
+      cpp_flags+=" -DDEBUG_DIAGNOSTICS="
+    fi
+    make -C crawl-ref/source i18n-compile-commands FORCE_CXX=clang++ \
+      STDFLAG=-std=c++14 PYTHON=python3 I18N_BUILD_GOAL=crawl \
+      "EXTRA_FLAGS=$cpp_flags" I18N_SCAN_FILES=tags.cc \
+      "I18N_COMPILE_COMMANDS=$cpp_scan_dir/tags-$major-$debug.json"
+  done
+done
+export ZH_VERIFY_CPP_PREPROCESS_FILES='crawl-ref/source/tags.cc'
+ZH_VERIFY_CPP_COMPILE_COMMANDS=$(printf '%s\n' "$cpp_scan_dir"/*.json)
+bash .claude/scripts/run_isolated.sh env \
+  "ZH_VERIFY_CPP_PREPROCESS_FILES=$ZH_VERIFY_CPP_PREPROCESS_FILES" \
+  "ZH_VERIFY_CPP_COMPILE_COMMANDS=$ZH_VERIFY_CPP_COMPILE_COMMANDS" \
+  bash .claude/scripts/verify_zh.sh --profile code
+```
+
+这些配置只声明该次显式范围；不声称覆盖其他平台、tiles 或任意宏组合。
+旧存档 TAG34 分支与非兼容 TAG35 分支不能只任选其一充当完整证据。
 
 ### TextDB 生产 dump 与消息 overlay
 

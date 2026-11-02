@@ -584,8 +584,9 @@ void wizard_toggle_dprf()
 
         int diag = keyin - '0';
         Options.quiet_debug_messages.set(diag, !Options.quiet_debug_messages[diag]);
-        mprf(T_("%s messages will be %s."), diag_names[diag],
-             Options.quiet_debug_messages[diag] ? "suppressed" : "printed");
+        mprf(Options.quiet_debug_messages[diag]
+             ? T_("%s messages will be suppressed.")
+             : T_("%s messages will be printed."), diag_names[diag]);
         return;
     }
 }

@@ -34,6 +34,7 @@
 #include "item-status-flag-type.h"
 #include "items.h"
 #include "libutil.h"
+#include "lang-en-guard.h"
 #include "losglobal.h"
 #include "mapmark.h"
 #include "maps.h"
@@ -330,7 +331,7 @@ static void _update_abyssal_map_knowledge()
     {
         mprf_p(T_("The abyss shimmers again as the detected "
               "abyssal rune vanishes from your memory%1$s."),
-              detected ? " and reappears" : "");
+              detected ? T_(" and reappears") : "");
     }
     else if (detected)
     {
@@ -423,9 +424,11 @@ void banished(const string &who)
                      level_id(BRANCH_ABYSS), true);
     // This is an honest abyss entry, mark milestone and take note
     // floor_transition will determine our final destination in the abyss
-    const string what = make_stringf(T_("Cast into level %d of the Abyss"),
+    // NOTE_MESSAGE names are language-locked snapshots: keep the note text
+    // canonical English and let the notes display re-render the known forms.
+    const string what = make_stringf("Cast into level %d of the Abyss",
                                      you.depth) + _who_banished(who);
-    take_note(Note(NOTE_MESSAGE, 0, 0, what), true);
+    take_note(Note(NOTE_MESSAGE, 0, 0, what, "abyss entry"), true);
     mark_milestone("abyss.enter",
         "was cast into the Abyss!" + _who_banished(who), "parent");
 
@@ -2315,8 +2318,12 @@ void lugonu_corrupt_level(int power)
         return;
 
     simple_god_message(T_(" Hand of Corruption reaches out!"), true);
-    take_note(Note(NOTE_MESSAGE, 0, 0, make_stringf(T_("Corrupted %s"),
-              level_id::current().describe().c_str()).c_str()));
+    string note_name;
+    {
+        ScopedLangEn canonical_language;
+        note_name = make_stringf("Corrupted %s", level_id::current().describe().c_str());
+    }
+    take_note(Note(NOTE_MESSAGE, 0, 0, note_name, "corrupted level"));
     mark_corrupted_level(level_id::current());
 
     flash_view(UA_PLAYER, MAGENTA);

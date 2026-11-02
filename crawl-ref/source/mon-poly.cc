@@ -662,7 +662,7 @@ bool monster_polymorph(monster* mons, monster_type targetc,
     if (need_note || could_see && can_see && mons_is_notable(*mons))
     {
         string new_name = can_see ? mons->full_name(DESC_A)
-                                  : "something unseen";
+                                  : T_("something unseen");
 
         take_note(Note(NOTE_POLY_MONSTER, 0, 0, old_name_a, new_name));
     }

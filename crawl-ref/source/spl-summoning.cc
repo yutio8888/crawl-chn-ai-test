@@ -400,8 +400,9 @@ spret cast_monstrous_menagerie(monster* caster, int pow)
 
     if (you.can_see(*beast))
     {
-        mprf_p(T_("%1$s %2$s %3$s!"), caster->name(DESC_THE).c_str(),
-               caster->conj_verb("summon").c_str(),
+        mprf_p(C_("summoning action", "%1$s %2$s %3$s!"),
+               caster->name(DESC_THE).c_str(),
+               caster->verb_for_display(N_("summon")).c_str(),
                mons_type_name(type, DESC_A).c_str());
     }
     else
@@ -1778,9 +1779,10 @@ void init_servitor(monster* servitor, actor* caster, int pow)
 
     if (you.can_see(*caster))
     {
-        mprf(T_("%s %s a servant imbued with %s destructive magic!"),
+        mprf_p(C_("servitor creation",
+                  "%1$s %2$s a servant imbued with %3$s destructive magic!"),
              caster->name(DESC_THE).c_str(),
-             T_("forge"),
+             caster->verb_for_display(NC_("servitor creation verb", "forge")),
              caster->pronoun(PRONOUN_POSSESSIVE).c_str());
     }
     else
@@ -3120,10 +3122,10 @@ spret summon_spiders(monster &agent, int pow)
 
     if (created && you.see_cell(agent.pos()))
     {
-        mprf_p(T_("%1$s %2$s %3$s!"),
+        mprf_p(C_("summoning action", "%1$s %2$s %3$s!"),
                agent.name(DESC_THE).c_str(),
-               agent.conj_verb("summon").c_str(),
-               created > 1 ? "spiders" : "a spider");
+               agent.verb_for_display(N_("summon")).c_str(),
+               created > 1 ? T_("spiders") : T_("a spider"));
     }
 
     return spret::success;

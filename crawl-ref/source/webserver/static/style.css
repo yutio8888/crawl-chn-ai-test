@@ -72,6 +72,10 @@ body {
     line-height: 1.1em;
 }
 
+#player_list th {
+    white-space: nowrap;
+}
+
 #player_list th.header {
     cursor: pointer;
     padding-left: 1px;

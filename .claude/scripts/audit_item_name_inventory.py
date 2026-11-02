@@ -45,6 +45,9 @@ UNRAND_REVIEWED_CHANGED_NAMES = {
     "sword of cerebov", "amulet of the air",
     # PR #194 translation review (Ready): lance/Wyrmbane terminology.
     'lance "wyrmbane"',
+    # Asset batch fix: Talos (the bronze giant) is not Tartarus; the ZH
+    # SourceDB value moved from 塔耳塔洛斯之甲 to 塔洛斯之甲.
+    "armour of talos",
 }
 QUALITY_M1_RUN_ID = "m1-item-description-v1"
 QUALITY_M1_SEED = "dcss-zh-quality-m0-item-description-v1"
@@ -381,15 +384,22 @@ def active_source(path, snapshot=None):
 
 
 def function_body(text, name):
-    match = re.search(r"\b" + re.escape(name) + r"\s*\([^;]*?\)\s*\{", text, re.S)
-    if not match:
-        raise RuntimeError(f"function not found: {name}")
-    start = match.end() - 1
+    from scan_i18n import CPP_LITERAL_RE, _mask_cpp_comments
+    code = _mask_cpp_comments(text, raw_strings=True)
+    code = CPP_LITERAL_RE.sub(
+        lambda match: re.sub(r"[^\n]", " ", match.group()), code,
+    )
+    matches = list(re.finditer(
+        r"\b" + re.escape(name) + r"\s*\([^;{}()]*\)\s*\{", code, re.S,
+    ))
+    if len(matches) != 1:
+        raise RuntimeError(f"function missing or duplicate: {name}")
+    start = matches[0].end() - 1
     depth = 0
-    for i in range(start, len(text)):
-        if text[i] == "{":
+    for i in range(start, len(code)):
+        if code[i] == "{":
             depth += 1
-        elif text[i] == "}":
+        elif code[i] == "}":
             depth -= 1
             if depth == 0:
                 return text[start + 1:i]
@@ -400,11 +410,13 @@ def switch_literals(text, name):
     body = function_body(text, name)
     pattern = re.compile(
         r"case\s+([A-Z][A-Z0-9_]+)\s*:\s*"
-        r"return\s+(?:(T_|C_)\()?"
-        r"(?:\"([^\"]+)\"\s*,\s*)?\"([^\"]*)\"\)?\s*;"
+        r"return\s+(?:(T_|C_|N_)\(\s*)?"
+        r"(?:\"([^\"]+)\"\s*,\s*)?\"([^\"]*)\"(?(2)\s*\))\s*;"
     )
     rows = {}
     for identity, wrapper, context, literal in pattern.findall(body):
+        if bool(context) != (wrapper == "C_"):
+            continue
         key = f"{context}|{literal}" if wrapper == "C_" else literal
         rows[identity] = {
             "key": key, "en": literal, "runtime_lookup": bool(wrapper),
@@ -770,7 +782,23 @@ def build_inventory():
     add(rows, "staff", current(staff, "OBJ_STAVES"), db,
         lambda en, zh, _: f"{zh}法杖" if zh else None)
 
-    misc = switch_literals(item_name, "misc_type_name")
+    # The producer was split into an English identity table plus a translated
+    # display wrapper. Historical snapshots (review bases) only have the
+    # original single function, so accept both shapes and verify the consumer
+    # only when the split exists.
+    if re.search(r"\b_misc_type_name_en\s*\(", item_name):
+        misc_producer = "_misc_type_name_en"
+        if not re.search(r'return\s+T_\(_misc_type_name_en\(type\)\)',
+                         function_body(item_name, "misc_type_name")):
+            raise RuntimeError(
+                "miscellany display translation consumer changed")
+    else:
+        misc_producer = "misc_type_name"
+    misc = switch_literals(item_name, misc_producer)
+    for data in misc.values():
+        # N_ marks the deferred English identity table; the display sink still
+        # performs the lookup, so these stay translation-checked.
+        data["runtime_lookup"] = True
     for identity, value in enums["misc_item_type"]:
         if identity.startswith("MISC_DECK_OF_") and identity not in misc:
             misc[identity] = {
@@ -1224,14 +1252,66 @@ def changed_textdb_keys(path, review_base):
     }
 
 
-def array_literals(text, array_name):
-    match = re.search(
-        r"\b" + re.escape(array_name)
-        + r"\s*\[\]\s*=\s*\{(.*?)\};", text, re.S,
+def code_matches(pattern, source):
+    from scan_i18n import CPP_LITERAL_RE
+    literals = list(CPP_LITERAL_RE.finditer(source))
+    return [match for match in re.finditer(pattern, source, re.S)
+            if not any(literal.start() <= match.start() < literal.end()
+                       for literal in literals)]
+
+
+def literal_array_entries(body, array_name):
+    """Consume literal/NC_ entries in order, rejecting unsupported syntax."""
+    literal = r'"(?:\\.|[^"\\])*"'
+    trivia = r"\s*"
+    entry_pattern = re.compile(
+        trivia + r"(?:NC_" + trivia + r"\(" + trivia + "(" + literal + ")"
+        + trivia + "," + trivia + "(" + literal + ")" + trivia + r"\)|("
+        + literal + "))" + trivia + r"(,|$)", re.S,
     )
-    if not match:
-        raise RuntimeError(f"array not found: {array_name}")
-    return re.findall(r'"([^"]*)"', match.group(1))
+    values = []
+    offset = 0
+    while offset < len(body):
+        if re.fullmatch(trivia, body[offset:], re.S):
+            break
+        match = entry_pattern.match(body, offset)
+        if match is None:
+            raise RuntimeError(f"unsupported array entry: {array_name}")
+        raw_context, raw_key, raw_literal, _ = match.groups()
+        values.append((json.loads(raw_context) if raw_context else None,
+                       json.loads(raw_key or raw_literal)))
+        offset = match.end()
+    return values
+
+
+def array_entries(text, array_name, context=None):
+    """Return ``(context, value)`` entries of a literal array.
+
+    ``context`` is the C_/NC_ context the array is displayed under. Entries
+    wrapped in ``NC_(context, ...)`` are accepted only when they carry exactly
+    that context; plain literals always carry ``None``.
+    """
+    from scan_i18n import _mask_cpp_comments
+    text = _mask_cpp_comments(text, raw_strings=True)
+    # TAG_MAJOR_VERSION wrappers still contribute their literals, as before;
+    # only the directive lines themselves are dropped.
+    text = re.sub(r"(?m)^[ \t]*#[ \t]*"
+                  r"(?:if|ifdef|ifndef|elif|else|endif)\b.*$", "", text)
+    matches = code_matches(
+        r"\b" + re.escape(array_name)
+        + r"\s*\[\]\s*=\s*\{(.*?)\};", text,
+    )
+    if len(matches) != 1:
+        raise RuntimeError(f"array missing or duplicate: {array_name}")
+    values = literal_array_entries(matches[0].group(1), array_name)
+    if any(entry_context is not None and entry_context != context
+           for entry_context, _ in values):
+        raise RuntimeError(f"array context drift: {array_name}")
+    return values
+
+
+def array_literals(text, array_name, context=None):
+    return [value for _, value in array_entries(text, array_name, context)]
 
 
 def unrand_enum_identity(name, block):
@@ -1522,31 +1602,38 @@ def scroll_appearance_rows(source_db, base_source_db, review_base):
 def unidentified_appearance_rows(source_db, base_source_db,
                                  review_base=ISSUE29_REVIEW_BASE):
     item_name = active_source(SRC / "item-name.cc")
+    # Ring/amulet materials are displayed through C_("jewellery appearance", …)
+    # and several entries are authored as NC_ keys of that context. Keep the
+    # per-entry context so the inventory records the runtime lookup key
+    # ("jewellery appearance|<material>") with its plain-key fallback.
+    jewellery = "jewellery appearance"
     specs = [
-        ("wand-primary", array_literals(item_name, "primary_strings")[:12]),
+        ("wand-primary",
+         array_entries(function_body(item_name, "wand_primary_string"),
+                       "primary_strings")),
         ("wand-secondary",
-         array_literals(function_body(item_name, "wand_secondary_string"),
-                        "secondary_strings")),
+         array_entries(function_body(item_name, "wand_secondary_string"),
+                       "secondary_strings")),
         ("ring-primary",
-         array_literals(function_body(item_name, "ring_primary_string"),
-                        "primary_strings")),
+         array_entries(function_body(item_name, "ring_primary_string"),
+                       "primary_strings", jewellery)),
         ("ring-secondary",
-         array_literals(function_body(item_name, "ring_secondary_string"),
-                        "secondary_strings")),
+         array_entries(function_body(item_name, "ring_secondary_string"),
+                       "secondary_strings")),
         ("amulet-primary",
-         array_literals(function_body(item_name, "amulet_primary_string"),
-                        "primary_strings")),
+         array_entries(function_body(item_name, "amulet_primary_string"),
+                       "primary_strings", jewellery)),
         ("amulet-secondary",
-         array_literals(function_body(item_name, "amulet_secondary_string"),
-                        "secondary_strings")),
+         array_entries(function_body(item_name, "amulet_secondary_string"),
+                       "secondary_strings")),
         ("staff-primary",
-         array_literals(function_body(item_name, "staff_primary_string"),
-                        "primary_strings")),
+         array_entries(function_body(item_name, "staff_primary_string"),
+                       "primary_strings")),
         ("staff-secondary",
-         array_literals(function_body(item_name, "staff_secondary_string"),
-                        "secondary_strings")),
-        ("potion-colour", array_literals(item_name, "potion_colours")),
-        ("potion-qualifier", array_literals(item_name, "potion_qualifiers")),
+         array_entries(function_body(item_name, "staff_secondary_string"),
+                       "secondary_strings")),
+        ("potion-colour", array_entries(item_name, "potion_colours")),
+        ("potion-qualifier", array_entries(item_name, "potion_qualifiers")),
     ]
     expected = {
         "wand-primary": 12, "wand-secondary": 16,
@@ -1560,25 +1647,56 @@ def unidentified_appearance_rows(source_db, base_source_db,
         raise RuntimeError(f"unidentified appearance drift: {counts}")
     rows = []
     for family, values in specs:
-        for ordinal, value in enumerate(values):
+        for ordinal, (context, value) in enumerate(values):
             english = value.strip()
-            current_chinese = source_db.get(english.lower(), english)
+            plain_key = english.lower()
+            if context:
+                lookup_key = f"{context}|{english}".lower()
+                # C_() tries "ctx|key" first and then falls back to the
+                # unqualified key; record the value the runtime would show.
+                current_chinese = source_db.get(
+                    lookup_key, source_db.get(plain_key, english)
+                )
+                pre_review_chinese = base_source_db.get(
+                    lookup_key, base_source_db.get(plain_key, english)
+                )
+                producer = (
+                    "item-name.cc unidentified appearance array with "
+                    f"NC_ context {context!r}"
+                )
+                consumer = (
+                    f'item_def::name unidentified display grammar via '
+                    f'C_("{context}", …); a missing context row falls back to '
+                    "the unqualified key"
+                )
+            else:
+                current_chinese = source_db.get(plain_key, english)
+                pre_review_chinese = base_source_db.get(plain_key, english)
+                producer = "item-name.cc unidentified appearance arrays"
+                consumer = "item_def::name unidentified display grammar"
+            metadata = {
+                "family": family,
+                "physical_ordinal": ordinal,
+            }
+            if context:
+                metadata["source_context"] = context
+                metadata["translation_key"] = (
+                    f"{context}|{english}".lower()
+                )
+                metadata["context_row_present"] = (
+                    f"{context}|{english}".lower() in source_db
+                )
             rows.append({
                 "identity": f"appearance:{family}:{ordinal:03d}",
                 "category": "appearance",
                 "lifecycle": "current",
                 "english_source": english or "(empty component)",
-                "_pre_review_chinese": (
-                    base_source_db.get(english.lower(), english)
-                ),
+                "_pre_review_chinese": pre_review_chinese,
                 "current_chinese": current_chinese,
-                "producer": "item-name.cc unidentified appearance arrays",
-                "consumer": "item_def::name unidentified display grammar",
+                "producer": producer,
+                "consumer": consumer,
                 "input": "crawl-ref/source/item-name.cc",
-                "_metadata": {
-                    "family": family,
-                    "physical_ordinal": ordinal,
-                },
+                "_metadata": metadata,
                 "_conclusion": "keep",
             })
     rows.extend(scroll_appearance_rows(source_db, base_source_db, review_base))

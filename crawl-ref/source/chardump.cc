@@ -209,11 +209,12 @@ string seed_description()
 
 static void _sdump_header(dump_params &par)
 {
+    // The stored game type is an identity; the dump header is display text.
     string type = crawl_state.game_type_name();
     if (type.empty())
         type = CRAWL;
     else
-        type += " DCSS";
+        type = string(T_(type.c_str())) + " DCSS";
 
     string platform;
 #ifdef USE_TILE_LOCAL

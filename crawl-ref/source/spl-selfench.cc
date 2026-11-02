@@ -153,7 +153,7 @@ int cast_selective_amnesia(const string &pre_msg)
                 spell_title(spell), levels_freed,
                 levels_freed != 1 ? "s" : "",
                 total_after,
-                in_library ? "" : " This spell is not in your library!");
+                in_library ? "" : T_(" This spell is not in your library!"));
 
             if (yesno(prompt.c_str(), in_library, 'n', false))
             {

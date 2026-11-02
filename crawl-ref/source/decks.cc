@@ -118,22 +118,22 @@ struct deck_type_data
 static map<deck_type, deck_type_data> all_decks =
 {
     { DECK_OF_ESCAPE, {
-        "escape", "which may bring the user to safety or impede their foes.",
+        "escape", N_("which may bring the user to safety or impede their foes."),
         deck_of_escape,
         13,
     } },
     { DECK_OF_DESTRUCTION, {
-        "destruction", "which hurl death and destruction with wild abandon.",
+        "destruction", N_("which hurl death and destruction with wild abandon."),
         deck_of_destruction,
         26,
     } },
     { DECK_OF_SUMMONING, {
-        "summoning", "depicting a range of weird and wonderful creatures.",
+        "summoning", N_("depicting a range of weird and wonderful creatures."),
         deck_of_summoning,
         13,
     } },
     { DECK_OF_PUNISHMENT, {
-        "punishment", "which wreak havoc on the user.", deck_of_punishment,
+        "punishment", N_("which wreak havoc on the user."), deck_of_punishment,
         0, // Not a user deck
     } },
 };
@@ -294,9 +294,8 @@ const string stack_top()
 const string deck_contents(deck_type deck)
 {
     if (deck == DECK_STACK)
-        return "Remaining cards: " + stack_contents();
+        return make_stringf(T_("Remaining cards: %s"), stack_contents().c_str());
 
-    string output = "It may contain the following cards: ";
 
     // This way of doing things is intended to prevent a card
     // that appears in multiple subdecks from showing up twice in the
@@ -306,21 +305,20 @@ const string deck_contents(deck_type deck)
     for (const auto& cww : pdeck)
         cards.insert(cww.first);
 
-    output += comma_separated_fn(cards.begin(), cards.end(), card_name);
-    output += ".";
-
-    return output;
+    const string names = comma_separated_fn(cards.begin(), cards.end(), card_name);
+    return make_stringf(T_("It may contain the following cards: %s."),
+                        names.c_str());
 }
 
 const string deck_flavour(deck_type deck)
 {
     if (deck == DECK_STACK)
-        return "set aside for later.";
+        return T_("set aside for later.");
 
     deck_type_data* deck_data = map_find(all_decks, deck);
 
     if (deck_data)
-        return deck_data->flavour;
+        return T_(deck_data->flavour.c_str());
 
     return "";
 }
@@ -363,12 +361,14 @@ bool gift_cards()
         for (deck_type deck : sufficiency)
         {
             const deck_type_data *deck_data = map_find(all_decks, deck);
-            deck_names.push_back(deck_data ? deck_data->name : "bugginess");
+            deck_names.push_back(deck_data ? T_(deck_data->name.c_str()) : T_("bugginess"));
         }
         mprf(MSGCH_GOD, you.religion,
              T_("%s goes to deal, but finds you have enough %s cards."),
              god_name(you.religion).c_str(),
-             join_strings(deck_names.begin(), deck_names.end(), " and ").c_str());
+             comma_separated_line(deck_names.begin(), deck_names.end(),
+                                  C_("deck summary list", " and "),
+                                  C_("deck summary list", ", ")).c_str());
     }
 
     return dealt_cards;
@@ -388,7 +388,7 @@ string deck_summary()
     {
         int cards = deck_cards((deck_type) i);
         const deck_type_data *deck_data = map_find(all_decks, (deck_type) i);
-        const string name = deck_data ? deck_data->name : "bugginess";
+        const string name = deck_data ? T_(deck_data->name.c_str()) : T_("bugginess");
         if (cards)
         {
             if (cards == 1)
@@ -403,7 +403,9 @@ string deck_summary()
             }
         }
     }
-    return comma_separated_line(stats.begin(), stats.end());
+    return comma_separated_line(stats.begin(), stats.end(),
+                                C_("deck summary list", " and "),
+                                C_("deck summary list", ", "));
 }
 
 string which_decks(card_type card)
@@ -419,13 +421,14 @@ string which_decks(card_type card)
         if (deck_data.first == DECK_OF_PUNISHMENT)
             punishment = true;
         else
-            decks.push_back(deck_data.second.name);
+            decks.push_back(T_(deck_data.second.name.c_str()));
     }
 
     if (!decks.empty())
     {
         output += T_("It is found in decks of ")
-               +  comma_separated_line(decks.begin(), decks.end());
+               +  comma_separated_line(decks.begin(), decks.end(),
+                     C_("deck summary list", " and "), C_("deck summary list", ", "));
         if (punishment)
             output += T_(", or in Nemelex Xobeh's deck of punishment");
         output += ".";
@@ -668,7 +671,7 @@ static void _evoke_deck(deck_type deck, bool dealt = false)
 {
     ASSERT(deck_cards(deck) > 0);
 
-    mprf(T_("You %s a card..."), dealt ? T_("deal") : T_("draw"));
+    mpr(dealt ? T_("You deal a card...") : T_("You draw a card..."));
 
     if (deck == DECK_STACK)
     {
@@ -704,7 +707,7 @@ spret deck_stack(bool fail)
 {
     if (crawl_state.is_replaying_keys())
     {
-        crawl_state.cancel_cmd_all("You can't repeat Stack Five.");
+        crawl_state.cancel_cmd_all(T_("You can't repeat Stack Five."));
         return spret::abort;
     }
 
@@ -955,7 +958,7 @@ spret deck_triple_draw(bool fail)
 {
     if (crawl_state.is_replaying_keys())
     {
-        crawl_state.cancel_cmd_all("You can't repeat Triple Draw.");
+        crawl_state.cancel_cmd_all(T_("You can't repeat Triple Draw."));
         return spret::abort;
     }
 
@@ -1054,7 +1057,7 @@ void draw_from_deck_of_punishment(bool deal)
 {
     card_type card = _random_card(DECK_OF_PUNISHMENT);
 
-    mprf(T_("You %s a card..."), deal ? T_("deal") : T_("draw"));
+    mpr(deal ? T_("You deal a card...") : T_("You draw a card..."));
     card_effect(card, deal, true);
 }
 

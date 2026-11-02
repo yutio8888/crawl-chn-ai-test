@@ -886,7 +886,11 @@ void explore_pickup_event(int did_pickup, int tried_pickup)
                         }
 
                         set_item_autopickup(*si, AP_FORCE_OFF);
-                        ap_disabled.push_back(pluralise(si->name(DESC_DBNAME)));
+                        // Miscellany keeps its database name in English; use
+                        // its translated display subtype for this message.
+                        const string name = si->base_type == OBJ_MISCELLANY
+                            ? sub_type_string(*si) : si->name(DESC_DBNAME);
+                        ap_disabled.push_back(pluralise(name));
                     }
 
                     if (!ap_disabled.empty())
@@ -1091,9 +1095,9 @@ command_type travel()
             && you.props.exists(AUTO_REST_STATUS_POS)
             && you.props[AUTO_REST_STATUS_POS].get_coord() == you.pos())
         {
-            mprf(MSGCH_ERROR,
-                    "You appear to be waiting for the end of something which may "
-                    "never occur. Examine your explore_auto_rest_status option.");
+            mprf(MSGCH_ERROR, "%s",
+                 T_("You appear to be waiting for the end of something which may "
+                    "never occur. Examine your explore_auto_rest_status option."));
             stop_running();
             return CMD_NO_CMD;
         }
@@ -4419,7 +4423,7 @@ void TravelCache::add_waypoint(int x, int y)
     else if (!is_connected_branch(you.where_are_you))
         mprf(MSGCH_PROMPT, T_("Waypoints will disappear once you leave this level."));
     mprf(MSGCH_PROMPT, T_("Assign waypoint to what number? (0-9%s) "),
-         waypoints_exist? ", D - delete waypoint" : "");
+         waypoints_exist ? T_(", D - delete waypoint") : "");
 
     int keyin = toalower(get_ch());
 
@@ -4966,6 +4970,8 @@ void explore_discoveries::found_feature(const coord_def &pos,
             string desc = env.markers.property_at(pos, MAT_ANY, "stop_explore");
             if (desc.empty())
                 desc = cleaned_feature_description(pos);
+            else
+                desc = T_(desc.c_str());
             runed_doors.emplace_back(desc, 1);
             es_flags |= ES_RUNED_DOOR;
         }
@@ -4991,6 +4997,8 @@ void explore_discoveries::found_feature(const coord_def &pos,
             string desc = env.markers.property_at(pos, MAT_ANY, "stop_explore");
             if (desc.empty())
                 desc = cleaned_feature_description(pos);
+            else
+                desc = T_(desc.c_str());
             transporters.emplace_back(desc, 1);
             es_flags |= ES_TRANSPORTER;
         }
@@ -5078,9 +5086,9 @@ void explore_discoveries::add_item(const item_def &i)
     string itemname = menu_colour_item_name(i, DESC_A);
     monster* mon = monster_at(i.pos);
     if (mon && mons_species(mon->type) == MONS_BUSH)
-        itemname += " (under bush)";
+        itemname += T_(" (under bush)");
     else if (mon && mon->type == MONS_PLANT)
-        itemname += " (under plant)";
+        itemname += T_(" (under plant)");
 
     items.emplace_back(itemname, i);
 

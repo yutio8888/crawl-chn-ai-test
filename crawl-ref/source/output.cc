@@ -42,6 +42,7 @@
 #include "ouch.h"
 #include "player-equip.h"
 #include "player-stats.h"
+#include "positional_format.h"
 #include "prompt.h"
 #include "religion.h"
 #include "scroller.h"
@@ -776,10 +777,9 @@ static void _print_stats_equip(int x, int y)
     for (int i = SLOT_FIRST_STANDARD; i < NUM_EQUIP_SLOTS; ++i)
         total_slots += you.equipment.num_slots[i];
 
-    const char *equip_caption = _uses_top_bar() ? T_("Eq: ")
-                                                : total_slots > 8 ? "Eq: "
-                                                                  : T_("Eq: ");
-    cprintf("%s", equip_caption);
+    const string equip_caption = !_uses_top_bar() && total_slots > 8
+        ? C_("compact equipment caption", "Eq: ") : T_("Eq: ");
+    cprintf("%s", equip_caption.c_str());
     textcolour(LIGHTGREY);
     for (equipment_slot slot : slot_order)
     {
@@ -3534,7 +3534,7 @@ static string _status_mut_rune_list(int sw)
             runes.emplace_back(rune_type_name(i));
     if (!runes.empty())
     {
-        text += make_stringf(T_("\n<w>%s:</w> %d/%d rune%s: %s"),
+        text += make_stringf_p(T_("\n<w>%1$s:</w> %2$d/%3$d rune%4$s: %5$s"),
                 command_to_string(CMD_DISPLAY_RUNES).c_str(),
                 (int)runes.size(), you.obtainable_runes,
                 you.obtainable_runes == 1 ? "" : "s",

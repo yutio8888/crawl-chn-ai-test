@@ -6,6 +6,7 @@
 **/
 
 #include "AppHdr.h"
+#include "god-wrath.h"
 
 #include "mon-info.h"
 
@@ -21,6 +22,7 @@
 #include "env.h"
 #include "fight.h"
 #include "ghost.h"
+#include "god-wrath.h"
 #include "god-abil.h"
 #include "god-passive.h" // passive_t::neutral_slimes
 #include "item-prop.h"
@@ -1073,7 +1075,18 @@ string monster_info::_core_name() const
     string s;
 
     if (is(MB_NAME_REPLACE))
-        s = mname;
+    {
+        // Wrath avatars carry a canonical English wrath identity; the
+        // elementalist ladders have finite canonical display names.
+        if (type == MONS_GOD_WRATH_AVATAR)
+            s = god_wrath_display_name(mname);
+        else if (mname == "master elementalist")
+            s = T_("master elementalist");
+        else if (mname == "grandmaster elementalist")
+            s = T_("grandmaster elementalist");
+        else
+            s = mname;
+    }
     else if (invalid_monster_type(nametype) && nametype != MONS_PROGRAM_BUG)
         s = "INVALID MONSTER";
     else
@@ -1234,7 +1247,7 @@ string monster_info::common_name(description_level_type desc) const
         ss << (T_("spectral "));
 
     if (type == MONS_BOUND_SOUL && !is(MB_NAME_ZOMBIE) && !nocore)
-        ss << (T_("bound "));
+        ss << C_("bound soul name", "bound ");
 
     if (is(MB_SPECTRALISED))
         ss << (T_("ghostly "));
@@ -1566,7 +1579,7 @@ void monster_info::to_string(int count, string& desc, int& desc_colour,
     case ATT_OLD_STRICT_NEUTRAL:
 #endif
         if (fellow_slime())
-            out << " (fellow slime)";
+            out << T_(" (fellow slime)");
         colour_type = MLC_GOOD_NEUTRAL;
         break;
     case ATT_NEUTRAL:

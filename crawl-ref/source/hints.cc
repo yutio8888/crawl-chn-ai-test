@@ -1237,8 +1237,8 @@ void learned_something_new(hints_event_type seen_what, coord_def gc)
 #else
         {
             tiles.place_cursor(CURSOR_TUTORIAL, gc);
-            string altar = T_("An altar to ");
-            altar += god_name(feat_altar_god(env.grid(gc)));
+            const string altar = make_stringf(T_("An altar to %s"),
+                god_name(feat_altar_god(env.grid(gc))).c_str());
             tiles.add_text_tag(TAG_TUTORIAL, altar, gc);
         }
 #endif
@@ -1894,27 +1894,28 @@ string hints_skills_description_info()
 // A short explanation of Crawl's target mode and its most important commands.
 static string _hints_target_mode(bool spells = false)
 {
-    string result;
-    result = T_("then be taken to target mode with the nearest monster or "
-             "previous target already targeted. You can also cycle through "
-             "all hostile monsters in sight with <w>+</w> or <w>-</w>. "
-             "Once you're aiming at the correct monster, simply hit "
-             "<w>f</w>, <w>Enter</w> or <w>.</w> to shoot at it. "
-             "If you miss, <w>");
-
+    // The throw variant uses the item-menu fire command: reusing the quiver
+    // fire command here re-entered quiver firing instead of the item menu.
     command_type cmd;
-    if (spells)
-    {
-        result += "%ap";
-        cmd = CMD_CAST_SPELL;
-    }
-    else
-    {
-        result += "%f";
-        cmd = CMD_FIRE;
-    }
+    const char *key = spells ? "%ap" : "%";
+    cmd = spells ? CMD_CAST_SPELL : CMD_FIRE_ITEM_NO_QUIVER;
 
-    result += T_("</w> fires at the same target again.");
+    string result = spells
+        ? make_stringf(T_("You'll then be taken to target mode with the nearest "
+                          "monster or previous target already targeted. You can "
+                          "also cycle through all hostile monsters in sight with "
+                          "<w>+</w> or <w>-</w>. Once you're aiming at the correct "
+                          "monster, simply hit <w>f</w>, <w>Enter</w> or <w>.</w> "
+                          "to shoot at it. If you miss, <w>%s</w> fires at the same "
+                          "target again."), key)
+        : make_stringf(T_("You'll then be taken to target mode with the nearest "
+                          "monster or previous target already targeted. You can "
+                          "also cycle through all hostile monsters in sight with "
+                          "<w>+</w> or <w>-</w>. Once you're aiming at the correct "
+                          "monster, simply hit <w>f</w>, <w>Enter</w> or <w>.</w> "
+                          "to shoot at it. To throw this item again, press <w>%s</w> "
+                          "to reopen the item menu, select the item, then select a "
+                          "target."), key);
     insert_commands(result, { cmd });
 
     return result;
@@ -1930,37 +1931,42 @@ string hints_memorise_info()
     string m = T_("This screen shows the spells in your spell library. From here "
                "you can memorise spells by selecting them, as well as view "
                "spell descriptions, search for them, and organize them. As a "
-               "conjurer, you start with five memorisable spells, and one "
-               "already memorised: Magic Dart. (To view memorised spells, you "
-               "can exit this menu and select <w>I</w>.)");
+               "conjurer, you start with Magic Dart already memorised and three "
+               "other spells in your library, which you can memorise when you "
+               "meet their requirements. (To view memorised spells, you can "
+               "exit this menu and select <w>I</w>.)");
 
     if (player_has_available_spells())
     {
         m += T_("\n\nA spell that isn't <darkgray>grayed out</darkgray> or "
-             "<lightred>forbidden</lightred> can be "
-             "memorised right away by selecting it at this menu.");
+             "<lightred>forbidden</lightred> can be memorised right away by "
+             "selecting it at this menu.");
+    }
+    else if (you.spell_no)
+    {
+        m += T_("\n\nYou cannot memorise any more spells right now. This will "
+             "change as you grow in levels and Spellcasting proficiency.");
     }
     else
     {
-        m += T_("\n\nYou cannot memorise any ");
-        m += (you.spell_no ? T_("more ") : "");
-        m += T_("spells right now. This will change as you grow in levels and "
-             "Spellcasting proficiency. ");
+        m += T_("\n\nYou cannot memorise any spells right now. This will change "
+             "as you grow in levels and Spellcasting proficiency.");
     }
 
     if (you.spell_no)
     {
-        m += T_("\n\nTo use magic, ");
 #ifdef USE_TILE
-        m += T_("you can <w>left mouse click</w> on the monster you wish to "
-             "target (or on your player character to cast a spell on "
-             "yourself) while pressing the <w>Control key</w>, and then select "
-             "a spell from the menu. Or you can switch to the spellcasting "
-             "display by <w>clicking on the</w> corresponding <w>tab</w>."
-             "\n\nAlternatively, ");
+        m += T_("\n\nTo use magic, you can <w>left mouse click</w> on the monster "
+             "you wish to target (or on your player character to cast a spell on "
+             "yourself) while pressing the <w>Control key</w>, and then select a "
+             "spell from the menu. Or you can switch to the spellcasting display "
+             "by <w>clicking on the</w> corresponding <w>tab</w>.\n\n"
+             "Alternatively, press <w>%</w> and choose a spell, e.g. <w>a</w> "
+             "(check with <w>?</w>). For attack spells: ");
+#else
+        m += T_("\n\nTo use magic, press <w>%</w> and choose a spell, e.g. "
+             "<w>a</w> (check with <w>?</w>). For attack spells: ");
 #endif
-        m += T_("you can press <w>%</w> and choose a spell, e.g. <w>a</w> (check "
-             "with <w>?</w>). For attack spells you'll ");
         cmd.push_back(CMD_CAST_SPELL);
     }
 
@@ -2014,26 +2020,29 @@ static string _hints_throw_stuff(const item_def &item)
 {
     string result;
 
-    result  = T_("To do this, press <w>%</w> to fire, then ");
+    // The command is FIRE_ITEM_NO_QUIVER: reusing CMD_FIRE here re-entered
+    // quiver firing instead of opening the item menu.
+    const string name = item.quantity > 1
+        ? pluralise(item_base_name(item))
+        : item_base_name(item);
     if (item.slot)
     {
-        result += "<w>";
-        result += item.slot;
-        result += T_("</w> for");
+        result = make_stringf(T_("To do this, press <w>%%</w>, then "
+                                 "<w>%s</w> to select %s."),
+                              string(1, (char)item.slot).c_str(),
+                              name.c_str());
     }
     else
     {
-        // you don't have this/these stuff(s) at present
-        result += T_("select ");
+        // you don't have this item at present
+        result = make_stringf(T_("To do this, first pick up %s, then press "
+                                 "<w>%%</w> and select it from the item menu."),
+                              name.c_str());
     }
-    result += (item.quantity > 1 ? T_("these") : T_("this"));
     result += " ";
-    result += item_base_name(item);
-    result += (item.quantity > 1? "s" : "");
-    result += T_(". You'll ");
     result += _hints_target_mode();
 
-    insert_commands(result, { CMD_FIRE });
+    insert_commands(result, { CMD_FIRE_ITEM_NO_QUIVER });
     return result;
 }
 
@@ -2138,7 +2147,7 @@ string hints_describe_item(const item_def &item)
                     ostr << T_("<w>left mouse click</w> on the monster.\n\n");
                     ostr << T_("To fire a ranged weapon using the keyboard, ");
 #endif
-                    ostr << T_("press <w>%</w>. You'll ");
+                    ostr << T_("press <w>%</w>. ");
                     ostr << _hints_target_mode();
                     cmd.push_back(CMD_PRIMARY_ATTACK);
                 }
@@ -2152,8 +2161,9 @@ string hints_describe_item(const item_def &item)
         case OBJ_MISSILES:
             if (is_throwable(&you, item))
             {
-                ostr << item.name(DESC_YOUR)
-                     << T_(" can be <w>%</w>ired without the use of a launcher. ");
+                ostr << make_stringf(T_("%s can be thrown without the use of a "
+                                       "launcher."), item.name(DESC_YOUR).c_str());
+                ostr << " ";
                 ostr << _hints_throw_stuff(item);
                 cmd.push_back(CMD_FIRE);
             }
@@ -2774,14 +2784,15 @@ string hints_describe_monster(const monster_info& mi, bool has_stat_desc)
     {
         if (!Hints.hints_explored && (mi.is(MB_WANDERING) || mi.is(MB_UNAWARE)))
         {
-            ostr << T_("You can easily mark its square as dangerous to avoid "
-                    "accidentally entering into its field of view when using "
-                    "auto-explore or auto-travel. To do so, enter targeting "
-                    "mode with <w>x</w> and then press <w>e</w> when your "
-                    "cursor is hovering over the monster's grid. Doing so will "
-                    "mark this grid and all surrounding ones within a radius "
-                    "of 8 as \"excluded\" ones that explore or travel modes "
-                    "won't enter.");
+            string exclude_tip = T_("You can easily mark its square as dangerous "
+                    "to avoid accidentally entering into its field of view when "
+                    "using auto-explore or auto-travel. To do so, enter targeting "
+                    "mode with <w>%</w> and then press <w>%</w> when your cursor "
+                    "is hovering over the monster's grid. Doing so will mark this "
+                    "grid and all surrounding ones within a radius of 8 as "
+                    "\"excluded\" ones that explore or travel modes won't enter.");
+            insert_commands(exclude_tip, { CMD_LOOK_AROUND, CMD_TARGET_EXCLUDE });
+            ostr << exclude_tip;
         }
         else
         {

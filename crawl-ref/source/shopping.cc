@@ -1688,7 +1688,14 @@ string shop_name(const shop_struct& shop)
         return shop.shop_type_name;
 #endif
     if (!shop.shop_name.empty())
-        sh_name += apostrophise(shop.shop_name) + " ";
+    {
+        // Only these fixed vault owners name gods. Random/custom keepers and
+        // the saved shop_name itself retain their original identity.
+        string keeper = shop.shop_name;
+        if (keeper == "Gozag" || keeper == "Cheibriados" || keeper == "Zin")
+            keeper = T_(keeper.c_str());
+        sh_name += apostrophise(keeper) + " ";
+    }
     else
     {
         uint32_t seed = static_cast<uint32_t>(shop.keeper_name[0])
@@ -2413,10 +2420,10 @@ formatted_string ShoppingListMenu::calc_title()
     const int total_cost = you.props[SHOPPING_LIST_COST_KEY];
 
     fs.textcolour(title->colour);
-    fs.cprintf(make_stringf_p(T_("Shopping list: %1$d %2$s%3$s, total cost %4$d gold pieces"),
-                title->quantity, title->text.c_str(),
-                title->quantity > 1 ? "s" : "",
-                total_cost));
+    fs.cprintf(make_stringf(title->quantity > 1
+                ? T_("Shopping list: %d items, total cost %d gold pieces")
+                : T_("Shopping list: %d item, total cost %d gold pieces"),
+                title->quantity, total_cost));
 
     return fs;
 }

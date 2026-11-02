@@ -258,7 +258,7 @@ def release_rules(tag: str, source_root: Path) -> tuple[ArtifactRule, ...]:
 
 def _validate_member_names(
     names: list[str], *, root: str | None, archive_name: str,
-    case_sensitive_prefix: str | None = None,
+    apk_resource_files: set[str] | None = None,
 ) -> None:
     seen: set[str] = set()
     seen_casefolded: dict[str, str] = {}
@@ -284,18 +284,23 @@ def _validate_member_names(
             )
         folded = canonical.casefold()
         previous = seen_casefolded.get(folded)
-        # AAPT2 shortens compiled APK resource paths using case-sensitive names.
-        # Keep desktop archives and APK runtime assets/native libraries strict.
-        if previous is not None and not (
-            case_sensitive_prefix is not None
-            and canonical.startswith(case_sensitive_prefix)
-            and previous.startswith(case_sensitive_prefix)
-        ):
+        # AAPT2 shortens compiled APK resource paths using both upper- and
+        # lower-case names. Android reads those files by exact path from
+        # resources.arsc; they are not extracted onto the host's
+        # case-insensitive filesystem. Only plain resource files take part in
+        # the exception: exact duplicates, directory/symlink/special members,
+        # res/ namespace mismatches and desktop archive roots stay strict.
+        resource_variants = (
+            apk_resource_files is not None
+            and previous in apk_resource_files
+            and name in apk_resource_files
+        )
+        if previous is not None and not resource_variants:
             raise ReleaseArtifactError(
                 f"{archive_name}: case-insensitive member collision {canonical!r}"
             )
         seen.add(canonical)
-        seen_casefolded[folded] = canonical
+        seen_casefolded[folded] = name
         if (
             root is not None
             and canonical != root
@@ -410,7 +415,13 @@ def _validate_apk(path: Path, rule: ArtifactRule, source_root: Path) -> None:
                 [info.filename for info in infos],
                 root=None,
                 archive_name=path.name,
-                case_sensitive_prefix="res/",
+                apk_resource_files={
+                    info.filename for info in infos
+                    if info.filename.startswith("res/")
+                    and not info.is_dir()
+                    and stat.S_IFMT(info.external_attr >> 16)
+                    in (0, stat.S_IFREG)
+                },
             )
             _validate_zh_member_set(
                 path.name,

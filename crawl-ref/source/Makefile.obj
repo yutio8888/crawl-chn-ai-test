@@ -342,6 +342,7 @@ catch2-tests/test_tilecell.o \
 catch2-tests/test_tilefont.o \
 catch2-tests/test_ui.o \
 catch2-tests/test_viewmap.o \
+catch2-tests/test_webtext.o \
 catch2-tests/test_spl-util.o \
 catch2-tests/test_positional_format.o \
 catch2-tests/test_zh_bilingual_search.o \
@@ -351,6 +352,8 @@ catch2-tests/test_zh_issue10_boundaries.o \
 catch2-tests/test_zh_issue6_names.o \
 catch2-tests/test_zh_issue6_descriptions.o \
 catch2-tests/test_zh_issue6_messages.o \
+catch2-tests/test_zh_stable_backport_core.o \
+catch2-tests/test_zh_stable_backport_ui.o \
 catch2-tests/test_zh_translation.o \
 catch2-tests/test_zh_enumerators.o \
 catch2-tests/test_zh_help.o

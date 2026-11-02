@@ -813,8 +813,11 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertEqual("dcss-item-name-review-inventory-v1",
                          payload["schema"])
         self.assertEqual(390, payload["count"])
+        # Refreshed with the miscellany producer split (_misc_type_name_en +
+        # N_ identity table): the identity set is unchanged (390 rows, 31
+        # miscellany) but the row facts now carry the canonical English table.
         self.assertEqual(
-            "63f0eb9c721654284401130123b6149af5cb2a46cbe2a2fe0b74979223b113d2",
+            "73f81ee55aecbf43c97e06a68fc274338c687a745aea97e5475ac6ae53e8bc9d",
             payload["inventory_sha256"],
         )
         self.assertEqual(payload["count"], len(payload["rows"]))
@@ -1018,6 +1021,9 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             "sword of cerebov": "修订丙",
             "amulet of the air": "修订丁",
             'lance "wyrmbane"': '骑枪"屠龙者"',
+            # Talos is the bronze giant, not Tartarus (塔耳塔洛斯); the asset
+            # batch corrected the ZH SourceDB value to 塔洛斯之甲.
+            "armour of talos": "塔洛斯之甲",
         }
         with mock.patch.object(MODULE, "active_source", return_value=art), \
                 mock.patch.object(MODULE, "changed_textdb_keys", return_value=set()):

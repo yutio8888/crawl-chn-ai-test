@@ -173,6 +173,10 @@ public:
     virtual vector<pair<string, string>> get_bad_fakemuts() const;
 
 public:
+    /// Display form of the status-light name, translated for the current
+    /// language. Identity callers keep using the raw short_name member.
+    string get_short_name() const;
+
     /// Status light ("Foo"); "" for none
     const string short_name;
     /// "foo"; used for wizmode transformation dialogue

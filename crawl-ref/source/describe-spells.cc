@@ -499,7 +499,9 @@ static string _describe_living_spells(const monster_info &mon_owner)
     const spell_type spell = living_spell_type_for(mon_owner.type);
     const int n = living_spell_count(spell, false);
     const string base_desc = _effect_string(spell, &mon_owner);
-    const string desc = base_desc[0] == '(' ? base_desc : make_stringf(T_("(%s)"),
+    // Both supported display languages may return an already bracketed effect.
+    const bool bracketed = starts_with(base_desc, "(") || starts_with(base_desc, "（");
+    const string desc = bracketed ? base_desc : make_stringf(T_("(%s)"),
             base_desc.c_str());
     return make_stringf(T_("%dx%s"), n, desc.c_str());
 }
@@ -530,7 +532,7 @@ static string _effect_string(spell_type spell, const monster_info *mon_owner,
             return "";
         }
         if (you.immune_to_hex(spell))
-            return "(immune)";
+            return T_("(immune)");
 
         const string hex_str = make_stringf(T_("%d%%"), hex_chance(spell, mon_owner, is_wand));
 
@@ -597,10 +599,13 @@ static string _effect_string(spell_type spell, const monster_info *mon_owner,
         mult = "3x";
     else if (spell == SPELL_ELECTROLUNGE)
         mult = "+";
-    const char* suffix = spell == SPELL_LRD ? "*"
-                       : spell == SPELL_PYRE_ARROW || spell == SPELL_STICKY_FLAME ? "/turn"
-                       : "";
-    return make_stringf(T_("(%s%dd%d%s)"), mult.c_str(), dam.num, dam.size, suffix);
+    // T_() returns a borrowed pointer; materialise the translated suffix.
+    const string suffix = spell == SPELL_LRD ? "*"
+                       : spell == SPELL_PYRE_ARROW || spell == SPELL_STICKY_FLAME
+                            ? T_("/turn")
+                            : "";
+    return make_stringf(T_("(%s%dd%d%s)"), mult.c_str(), dam.num, dam.size,
+                        suffix.c_str());
 }
 
 /**

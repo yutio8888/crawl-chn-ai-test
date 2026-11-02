@@ -192,9 +192,12 @@ string replace_name_parts(const string &name_in, const item_def& item)
         else
         {
             // Simply overwrite the name with one of type "God's Favour".
-            name = "of ";
-            name += apostrophise(god_name(god_gift, false));
-            name += getRandNameString("divine_esteem");
+            // One key for the whole phrase so Chinese can order it correctly.
+            const string god = apostrophise(god_name(god_gift, false));
+            const string esteem = getRandNameString("divine_esteem");
+            name = make_stringf_p(
+                C_("artefact divine esteem", "of %1$s %2$s"),
+                god.c_str(), esteem.c_str());
         }
     }
     name = replace_all(name, "@player_name@", you.your_name);
@@ -1648,7 +1651,7 @@ string make_artefact_name(const item_def &item, bool appearance)
         {
             appear = getRandNameString("general appearance");
             if (appear.empty()) // still nothing found?
-                appear = "non-descript";
+                appear = T_("non-descript");
         }
 
         return make_stringf_p(C_("artefact appearance", "%1$s %2$s"),

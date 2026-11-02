@@ -3122,8 +3122,9 @@ TEST_CASE("Phase 0 legacy EN and ZH database traces expose known drift",
         "unseen spit acid cast",
         "unseen spit poison cast",
     };
-    set<string> expected_different = guardian_roots;
-    expected_different.insert(unseen_roots.begin(), unseen_roots.end());
+    // Guardian serpent variants now preserve the English weighted topology.
+    // The seven historical unseen recursive differences remain explicit.
+    const set<string> expected_different = unseen_roots;
 
     set<string> dynamic_different;
     set<string> guardian_top_difference;
@@ -3186,7 +3187,7 @@ TEST_CASE("Phase 0 legacy EN and ZH database traces expose known drift",
     }
 
     CHECK(dynamic_different == expected_different);
-    CHECK(guardian_top_difference == guardian_roots);
+    CHECK(guardian_top_difference.empty());
     CHECK(unseen_recursive_rng_difference == unseen_roots);
     // The seed range is accepted only if every statically selectable key in
     // the complete recursive closure was observed, with every ordinal hit.

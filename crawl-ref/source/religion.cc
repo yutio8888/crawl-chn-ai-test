@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "positional_format.h"
 
 #include "religion.h"
 
@@ -1814,7 +1815,7 @@ static string _item_ego_name(object_class_type base_type, int brand)
     }
     case OBJ_ARMOUR:
         // XXX: hack
-        return "reflection";
+        return T_("reflection");
     default:
         die("unsupported object type");
     }
@@ -1835,9 +1836,8 @@ static void _regain_item_memory(const monster &ancestor,
 
     const string ego_name = _item_ego_name(base_type, brand);
     const string item_name
-        = make_stringf(T_("%s of %s"),
-                       item_base_name(base_type, sub_type).c_str(),
-                       ego_name.c_str());
+        = make_stringf_p(C_("weapon brand full name", "%1$s of %2$s"),
+                         base_name.c_str(), ego_name.c_str());
     _regain_memory(ancestor, item_name);
 }
 
@@ -2815,25 +2815,6 @@ bool fedhas_neutralises(const monster& target)
            && target.type != MONS_SNAPLASHER_VINE_SEGMENT;
 }
 
-static string _god_hates_your_god_reaction(god_type god, god_type your_god)
-{
-    if (god_hates_your_god(god, your_god))
-    {
-        // Non-good gods always hate your current god.
-        if (!is_good_god(god))
-            return "";
-
-        // Zin hates chaotic gods.
-        if (god == GOD_ZIN && is_chaotic_god(your_god))
-            return T_(" for chaos");
-
-        if (is_evil_god(your_god))
-            return T_(" for evil");
-    }
-
-    return "";
-}
-
 /**
  * When you abandon this god, how much penance do you gain? (How long does the
  * wrath last?
@@ -2997,10 +2978,12 @@ void excommunication(bool voluntary, god_type new_god)
         simple_god_message(T_(" blazes with a vengeful fury!"), false, old_god);
     else if (god_hates_your_god(old_god, new_god))
     {
-        simple_god_message(
-            make_stringf(T_(" does not appreciate desertion%s!"),
-                         _god_hates_your_god_reaction(old_god, new_god).c_str()).c_str(),
-            false, old_god);
+        const char* reaction = old_god == GOD_ZIN && is_chaotic_god(new_god)
+            ? N_(" does not appreciate desertion for chaos!")
+            : is_good_god(old_god) && is_evil_god(new_god)
+                ? N_(" does not appreciate desertion for evil!")
+                : N_(" does not appreciate desertion!");
+        simple_god_message(T_(reaction), false, old_god);
     }
 
     if (had_halo)
@@ -4151,9 +4134,9 @@ god_type choose_god(god_type def_god)
 {
     char specs[80];
 
-    string help = def_god == NUM_GODS ? "by name"
-                                      : "default " + god_name(def_god);
-    string prompt = make_stringf(T_("Which god (%s)? "), help.c_str());
+    const string prompt = def_god == NUM_GODS
+        ? T_("Which god (by name)? ")
+        : make_stringf(T_("Which god (default %s)? "), god_name(def_god).c_str());
 
     if (msgwin_get_line(prompt, specs, sizeof(specs)) != 0)
         return NUM_GODS; // FIXME: distinguish cancellation from no match

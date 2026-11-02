@@ -1,4 +1,4 @@
-The server is shutting down.
+服务器正在关闭。
 {% if game.is_running() %}
-Your game has been saved.
+你的游戏已保存。
 {% end %}

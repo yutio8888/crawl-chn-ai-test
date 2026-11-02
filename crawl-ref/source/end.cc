@@ -378,8 +378,9 @@ NORETURN void end_game(scorefile_entry &se)
 
     goodbye_msg += hiscore;
 
-    goodbye_msg += make_stringf(T_("\nBest Crawlers - %s\n"),
-            crawl_state.game_type_name().c_str());
+    const string game_type = crawl_state.game_type_name();
+    const string type_display = game_type.empty() ? "" : T_(game_type.c_str());
+    goodbye_msg += make_stringf(T_("\nBest Crawlers - %s\n"), type_display.c_str());
 
 #ifdef USE_TILE_LOCAL
         const int line_height = in_headless_mode() ? 1 : tiles.get_crt_font()->char_height();

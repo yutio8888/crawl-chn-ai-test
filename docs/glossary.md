@@ -69,16 +69,37 @@
 | Conjuration / Conjurations | 咒法系 |
 | Hexes | 诅咒系 |
 | Summoning / Summonings | 召唤系 |
-| Necromancy | 死灵术 |
+| Necromancy | 死灵系 |
 | Translocation | 传送系 |
-| Forgecraft | 锻造术 |
-| Fire Magic | 火焰魔法 |
-| Ice Magic | 寒冰魔法 |
-| Air Magic | 空气魔法 |
-| Earth Magic | 大地魔法 |
+| Forgecraft | 锻造系 |
+| Fire Magic | 火焰系 |
+| Ice Magic | 寒冰系 |
+| Air Magic | 空气系 |
+| Earth Magic | 大地系 |
 | Poison Magic | 毒素魔法 |
-| Alchemy | 炼金术 |
+| Alchemy | 炼金系 |
 | Shapeshifting | 变形术 |
+
+学派全称统一为“××系”（D-C-101）：现行学派及对应技能为咒法系、诅咒系、召唤系、死灵系、传送系、
+锻造系、火焰系、寒冰系、空气系、大地系、炼金系。法术列表复用既有两字简称，法术详情仍用全称。
+
+| EN | ZH | 作用域 |
+|----|----|--------|
+| Conj | 咒法 | 学派简称；法术列表；D-C-101 |
+| Hex | 诅咒 | 学派简称；法术列表；D-C-101 |
+| Summ | 召唤 | 学派简称；法术列表；D-C-101 |
+| Necr | 死灵 | 学派简称；法术列表；D-C-101 |
+| Tloc | 传送 | 学派简称；法术列表；D-C-101 |
+| Frge | 锻造 | 学派简称；法术列表；D-C-101 |
+| Fire | 火焰 | 学派简称；法术列表；D-C-101 |
+| Ice | 寒冰 | 学派简称；法术列表；D-C-101 |
+| Air | 空气 | 学派简称；法术列表；D-C-101 |
+| Erth | 大地 | 学派简称；法术列表；D-C-101 |
+| Alch | 炼金 | 学派简称；法术列表；D-C-101 |
+
+例外（不做机械替换，D-C-101）：`Poison Magic → 毒素魔法`（已移除学派，保留旧译）、
+`Shapeshifting → 变形术`（非学派技能）、`book full name|Necromancy → 死灵术`（书名上下文键）、
+法杖类型名、职业名与泛指魔法技艺的叙述。
 
 ### 法术命名高频词根
 
@@ -169,6 +190,27 @@
 | Teleport | 传送 | 位移效果 |
 | Invisibility | 隐形 | 不可被看见 |
 | Silence | 沉默 | 禁止施法/阅读卷轴 |
+
+---
+
+### 地狱领域与迪斯专名（D-C-103）
+
+四个地狱领域与迪斯同时出现在分支、出入口、领主称号、地狱巨蛇与吐息、毁灭能力与变异、神器与
+具名台词中，使用可互相辨认的词根：
+
+| EN | ZH | 作用域 |
+|----|----|--------|
+| Gehenna | 欣嫩谷 | 游戏领域名；D-C-103 |
+| Cocytus | 悲叹河 | 游戏领域名；D-C-103 |
+| Tartarus | 塔尔塔罗斯 | 游戏领域名；D-C-103 |
+| Dis | 迪斯 | 游戏领域名；D-C-103 |
+| the Iron City of Dis | 迪斯铁城 | 城市全名；D-C-103 |
+| Iron City | 铁城 | 单独出现时的城市通名；D-C-103 |
+
+- 地名不代替地貌与力量说明：灰烬谷地、极寒荒原、腐朽冥界，以及烈火、寒冰、哀叹各自保留。
+- 文学例外：`dat/descript/zh/quotes.txt` 中 `cacodemon` 的“科塞特斯河”与 `titan` 的
+  “塔耳塔罗斯”保留原样；`Dispater` 指人物，作“迪斯帕特”，不加城市词根。
+- 英文查询键、Lua 比较值、枚举与存档身份保持英文；只翻译显示端。
 
 ---
 
@@ -460,11 +502,11 @@
 | Spellcasting | 施法能力 | skill; source=source.txt; decision=D-C-001 |
 | Summonings | 召唤系 | skill; source=source.txt; decision=D-C-001 |
 | Translocations | 传送系 | skill; source=source.txt; decision=D-C-001 |
-| Forgecraft | 锻造术 | skill; source=source.txt; decision=D-C-001 |
-| Fire Magic | 火焰魔法 | skill; source=source.txt; decision=D-C-001 |
-| Ice Magic | 寒冰魔法 | skill; source=source.txt; decision=D-C-001 |
-| Air Magic | 空气魔法 | skill; source=source.txt; decision=D-C-001 |
-| Earth Magic | 大地魔法 | skill; source=source.txt; decision=D-C-001 |
+| Forgecraft | 锻造系 | skill; source=source.txt; decision=D-C-101 |
+| Fire Magic | 火焰系 | skill; source=source.txt; decision=D-C-101 |
+| Ice Magic | 寒冰系 | skill; source=source.txt; decision=D-C-101 |
+| Air Magic | 空气系 | skill; source=source.txt; decision=D-C-101 |
+| Earth Magic | 大地系 | skill; source=source.txt; decision=D-C-101 |
 | Invocations | 祈神 | skill; source=source.txt; decision=D-C-001 |
 | Evocations | 魔力释放 | skill; source=source.txt; decision=D-A-052 |
 | Shapeshifting | 变形术 | skill; source=source.txt; decision=D-C-001 |
@@ -700,7 +742,7 @@
 | Serpent of Hell | 地狱巨蛇 | monster; source=source.txt; shared display name |
 | Serpent of Hell gehenna | 欣嫩谷地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name |
 | Serpent of Hell cocytus | 悲叹河地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name |
-| Serpent of Hell dis | 铁城地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name |
+| Serpent of Hell dis | 迪斯地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name; decision=D-C-103 |
 | Serpent of Hell tartarus | 塔尔塔罗斯地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name |
 
 <!-- domain:unique-monsters -->
@@ -1032,7 +1074,7 @@
 | Searing Breath | 灼热吐息 | 📝 |
 | Steam Breath | 蒸汽吐息 | ✅ |
 | cocytus serpent of hell breath | 悲叹河地狱巨蛇吐息 | ✅；复用分支限定实体名 |
-| dis serpent of hell breath | 铁城地狱巨蛇吐息 | ✅；复用分支限定实体名 |
+| dis serpent of hell breath | 迪斯地狱巨蛇吐息 | ✅；复用分支限定实体名；decision=D-C-103 |
 | gehenna serpent of hell breath | 欣嫩谷地狱巨蛇吐息 | ✅；复用分支限定实体名 |
 | tartarus serpent of hell breath | 塔尔塔罗斯地狱巨蛇吐息 | ✅；复用分支限定实体名 |
 

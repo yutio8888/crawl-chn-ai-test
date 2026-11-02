@@ -105,12 +105,20 @@ end
 -- "Volcano" functions. While the sizes may appear extreme, they are carefully
 -- weighted and balanced and have been tested extensively.
 function callback.volcano_in_radius_12(x, y)
-  return dgn.point_in_radius(dgn.point(x, y), dgn.point(you.pos()), 12)
+  local px, py = you.pos()
+  -- May run during off-level catchup when the player is not placed.
+  if not dgn.in_bounds(px, py) then
+    return false
+  end
+  return dgn.point_in_radius(dgn.point(x, y), dgn.point(px, py), 12)
 end
 
+-- tw_machine(warn_turns, warn_cantsee, trig_cantsee, trig_channel,
+--            trig_see, warn_see, see_func): the triggering message is the
+--            5th argument, so the channel slot must stay nil.
 local large_warning = tw_machine(3, "The air gets thick with the scent of sulphur.",
                                  "In the distance, the volcano erupts with a roar.",
-                                 "The volcano comes to life with a roar!")
+                                 nil, "The volcano comes to life with a roar!")
 
 local small_warning = tw_machine(3, nil, nil, nil, "The volcano roars to life, " ..
                                  "belching forth lava!", "The air gets thick with " ..

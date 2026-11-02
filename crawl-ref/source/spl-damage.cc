@@ -126,8 +126,9 @@ spret cast_fire_storm(int pow, bolt &beam, bool fail)
 
     if (cell_is_solid(beam.target))
     {
-        const char *feat = feat_type_name(env.grid(beam.target));
-        mprf(T_("You can't place the storm on %s."), article_a(feat).c_str());
+        const string feat = feature_description(env.grid(beam.target),
+                                                NUM_TRAPS, "", DESC_A);
+        mprf(T_("You can't place the storm on %s."), feat.c_str());
         return spret::abort;
     }
 
@@ -450,7 +451,7 @@ spret cast_chain_spell(spell_type spell_cast, int pow,
         if (target.x == -1)
         {
             if (see_source)
-                mprf(T_("The %s grounds out."), beam.name.c_str());
+                mprf(T_("The %s grounds out."), T_(beam.name.c_str()));
 
             break;
         }
@@ -462,9 +463,9 @@ spret cast_chain_spell(spell_type spell_cast, int pow,
         first = false;
 
         if (see_source && !see_targ)
-            mprf(T_("The %s arcs out of your line of sight!"), beam.name.c_str());
+            mprf(T_("The %s arcs out of your line of sight!"), T_(beam.name.c_str()));
         else if (!see_source && see_targ)
-            mprf(T_("The %s suddenly appears!"), beam.name.c_str());
+            mprf(T_("The %s suddenly appears!"), T_(beam.name.c_str()));
 
         beam.source = source;
         beam.target = target;
@@ -709,11 +710,11 @@ static spret _cast_los_attack_spell(spell_type spell, int pow,
     switch (spell)
     {
         case SPELL_OZOCUBUS_REFRIGERATION:
-            player_msg = "The heat is drained from your surroundings.";
-            global_msg = "Something drains the heat from around you.";
-            mons_vis_msg = T_(" drains the heat from the surrounding"
+            player_msg = N_("The heat is drained from your surroundings.");
+            global_msg = N_("Something drains the heat from around you.");
+            mons_vis_msg = N_(" drains the heat from the surrounding"
                             " environment!");
-            mons_invis_msg = "The ambient heat is drained!";
+            mons_invis_msg = N_("The ambient heat is drained!");
             prompt_verb = "refrigerate";
             vulnerable = [](const actor *caster, const actor *act) {
                 return act != caster
@@ -725,20 +726,20 @@ static spret _cast_los_attack_spell(spell_type spell, int pow,
             break;
 
         case SPELL_DRAIN_LIFE:
-            player_msg = "You draw life from your surroundings.";
-            global_msg = T_("Something draws the life force from your"
+            player_msg = N_("You draw life from your surroundings.");
+            global_msg = N_("Something draws the life force from your"
                             " surroundings.");
-            mons_vis_msg = " draws from the surrounding life force!";
-            mons_invis_msg = "The surrounding life force dissipates!";
+            mons_vis_msg = N_(" draws from the surrounding life force!");
+            mons_invis_msg = N_("The surrounding life force dissipates!");
             prompt_verb = "drain life";
             vulnerable = &_drain_lifeable;
             break;
 
         case SPELL_SONIC_WAVE:
-            player_msg = "You send a blast of sound all around you.";
-            global_msg = "Something sends a blast of sound all around you.";
-            mons_vis_msg = " sends a blast of sound all around you!";
-            mons_invis_msg = "Sound blasts the surrounding area!";
+            player_msg = N_("You send a blast of sound all around you.");
+            global_msg = N_("Something sends a blast of sound all around you.");
+            mons_vis_msg = N_(" sends a blast of sound all around you!");
+            mons_invis_msg = N_("Sound blasts the surrounding area!");
             // prompt_verb = "sing" The singing sword prompts in melee-attack
             vulnerable = [](const actor *caster, const actor *act) {
                 return act != caster && could_harm(caster, act);
@@ -768,17 +769,17 @@ static spret _cast_los_attack_spell(spell_type spell, int pow,
                 fail_check();
             }
 
-            mpr(player_msg);
+            mpr(T_(player_msg));
             flash_view_delay(UA_PLAYER, beam.colour, 300, &hitfunc);
         }
         else
         {
             if (!agent)
-                mpr(global_msg);
+                mpr(T_(global_msg));
             else if (you.can_see(*agent))
-                simple_monster_message(*mons, mons_vis_msg);
+                simple_monster_message(*mons, T_(mons_vis_msg));
             else if (you.see_cell(agent->pos()))
-                mpr(mons_invis_msg);
+                mpr(T_(mons_invis_msg));
 
             if (!agent || you.see_cell(agent->pos()))
                 flash_view_delay(UA_MONSTER, beam.colour, 300);
@@ -899,7 +900,7 @@ spret cast_freeze(int pow, monster* mons, bool fail)
     int hurted = mons_adjust_flavoured(mons, beam, orig_hurted, false);
     mprf(T_("You freeze %s%s%s"),
          mons->name(DESC_THE).c_str(),
-         hurted ? "" : " but do no damage",
+         hurted ? "" : T_(" but do no damage"),
          attack_strength_punctuation(hurted).c_str());
 
     // print the resist message and expose to the cold
@@ -1321,8 +1322,10 @@ static bool _init_frag_monster(frag_effect &effect, const monster &mon)
         const monster_frag &frag = frag_f->second;
         effect.damage = frag.damage;
         const bool crystal = frag.damage == frag_damage_type::crystal;
-        effect.name = make_stringf_p(T_("blast of %s %s"), frag.type,
-                                   crystal ? T_("shards") : T_("fragments"));
+        // Canonical English identity; display goes through
+        // fragmentation_name_display().
+        effect.name = make_stringf("blast of %s %s", frag.type,
+                                   crystal ? "shards" : "fragments");
         effect.colour = frag.colour;
         return true;
     }
@@ -1409,8 +1412,8 @@ static bool _init_frag_grid(frag_effect &effect,
 
     effect.damage = frag.damage;
     const bool crystal = frag.damage == frag_damage_type::crystal;
-    effect.name = make_stringf_p(T_("blast of %s %s"), frag.type,
-                               crystal ? T_("shards") : T_("fragments"));
+    effect.name = make_stringf("blast of %s %s", frag.type,
+                               crystal ? "shards" : "fragments");
     if (what)
         *what = frag.what;
 
@@ -1448,6 +1451,58 @@ static bool _init_frag_effect(frag_effect &effect, const actor &caster,
     }
 
     return _init_frag_grid(effect, target, what);
+}
+
+// Canonical blast identity for one fragment material, produced exactly like
+// _init_frag_monster()/_init_frag_grid() do (crystal materials shatter).
+static string _frag_blast_identity(const char* type, frag_damage_type damage)
+{
+    return make_stringf("blast of %s %s", type,
+                        damage == frag_damage_type::crystal ? "shards"
+                                                            : "fragments");
+}
+
+static bool _is_frag_blast_identity(const string& canonical)
+{
+    // Finite set: the same tables and type+damage rule as the producers, plus
+    // the hardcoded player/petrified/icy cases.
+    for (const auto& entry : fraggable_monsters)
+        if (canonical == _frag_blast_identity(entry.second.type,
+                                              entry.second.damage))
+        {
+            return true;
+        }
+    for (const auto& entry : fraggable_terrain)
+        if (canonical == _frag_blast_identity(entry.second.type,
+                                              entry.second.damage))
+        {
+            return true;
+        }
+    static const char* const special_names[] = {
+        NC_("fragmentation blast", "blast of rock fragments"),
+        NC_("fragmentation blast", "blast of jade fragments"),
+        NC_("fragmentation blast", "blast of bone shards"),
+        NC_("fragmentation blast", "blast of petrified fragments"),
+        NC_("fragmentation blast", "icy blast")
+    };
+    for (const char* name : special_names)
+        if (canonical == name)
+            return true;
+    return false;
+}
+
+// Display-only: map a canonical fragmentation blast identity to the current
+// language. Identity and death-cause fields keep the canonical English value.
+// Only the finite producer set is recognised: arbitrary "blast of <material>"
+// strings are never translated.
+string fragmentation_name_display(const string& canonical)
+{
+    if (Options.language != lang_t::ZH || canonical.empty())
+        return canonical;
+    if (!_is_frag_blast_identity(canonical))
+        return canonical;
+    const string translated = C_("fragmentation blast", canonical.c_str());
+    return translated == canonical ? canonical : translated;
 }
 
 bool setup_fragmentation_beam(bolt &beam, int pow, const actor *caster,
@@ -1758,7 +1813,7 @@ static int _shatter_player(int pow, actor *wielder, bool devastator = false)
     if (damage > 0)
     {
         mprf(damage > 15 ? T_("You shudder from the earth-shattering force%s")
-                        : "You shudder%s",
+                        : T_("You shudder%s"),
              attack_strength_punctuation(damage).c_str());
         if (devastator)
             ouch(damage, KILLED_BY_MONSTER, wielder->mid);
@@ -1917,7 +1972,7 @@ spret cast_scorch(const actor& agent, int pow, bool fail)
     const int post_ac_dam = max(0, targ->apply_ac(base_dam));
 
     mprf(T_("Flames lash %s%s."), targ->name(DESC_THE).c_str(),
-         post_ac_dam ? "" : " but do no damage");
+         post_ac_dam ? "" : T_(" but do no damage"));
     const coord_def p = targ->pos();
     noisy(spell_effect_noise(SPELL_SCORCH), p);
 
@@ -2784,10 +2839,8 @@ static void _discharge_message(int dam)
         else
         {
             const bool plural = coinflip();
-            mprf_p(T_("%1$s blue arc%2$s harmlessly ground%3$s."),
-                plural ? "Some" : "A",
-                plural ? "s" : "",
-                plural ? " themselves" : "s itself");
+            mpr(plural ? T_("Some blue arcs harmlessly ground themselves.")
+                       : T_("A blue arc harmlessly grounds itself."));
         }
     }
 }
@@ -5239,16 +5292,17 @@ void unleash_fortress_blast(actor& caster)
 
     if (caster.is_player())
     {
-        string desc = "a";
+        string desc = NC_("fortress blast strength", "a");
         if (power < 30)
-            desc = "a weak";
+            desc = NC_("fortress blast strength", "a weak");
         else if (power > 180)
-            desc = "an overpowering";
+            desc = NC_("fortress blast strength", "an overpowering");
         else if (power > 135)
-            desc = "a very strong";
+            desc = NC_("fortress blast strength", "a very strong");
         else if (power > 80)
-            desc = "a strong";
-        mprf(MSGCH_DURATION, T_("You unleash %s concussive blast!"), desc.c_str());
+            desc = NC_("fortress blast strength", "a strong");
+        mprf(MSGCH_DURATION, T_("You unleash %s concussive blast!"),
+             C_("fortress blast strength", desc.c_str()));
     }
 
     bolt blast;

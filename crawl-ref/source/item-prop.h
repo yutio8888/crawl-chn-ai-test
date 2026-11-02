@@ -179,6 +179,11 @@ bool is_range_weapon(const item_def &item) PURE;
 bool is_crossbow(const item_def &item) PURE;
 bool is_slowed_by_armour(const item_def *item) PURE;
 const char *missile_name(missile_type ammo) IMMUTABLE;
+
+// Display-only rendering of a canonical projectile identity: the finite stable
+// missile/launcher set is translated, anything else is returned unchanged.
+// Identity/xlog fields keep the canonical string.
+string projectile_display_name(const string& canonical);
 string launched_projectile_name(const item_def &item);
 bool is_throwable(const actor *actor, const item_def &wpn) PURE;
 

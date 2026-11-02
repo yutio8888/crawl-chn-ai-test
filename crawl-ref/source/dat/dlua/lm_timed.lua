@@ -81,8 +81,8 @@ function TimedMarker:timeout(marker, verbose)
 
   if x == yx and y == yy and you.taking_stairs() then
     if verbose then
-      crawl.mpr( dgn.feature_desc_at(x, y, "The") .. " vanishes " ..
-                "just as you enter it!")
+      crawl.mpr( string.format(crawl.t_("%s vanishes just as you enter it!"),
+                dgn.feature_desc_at(x, y, "The")))
       return
     end
   end
@@ -94,7 +94,8 @@ function TimedMarker:timeout(marker, verbose)
         disappear = crawl.t_(disappear)
       end
       crawl.mpr( util.expand_entity(self.props.entity, disappear) or
-                 dgn.feature_desc_at(x, y, "The") .. " disappears!")
+                 string.format(crawl.t_("%s disappears!"),
+                   dgn.feature_desc_at(x, y, "The")))
     else
       crawl.mpr(crawl.t_("The walls and floor vibrate strangely for a moment."))
     end

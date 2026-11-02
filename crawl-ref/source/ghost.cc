@@ -6,6 +6,7 @@
 #include "AppHdr.h"
 
 #include "ghost.h"
+#include "lang-en-guard.h"
 
 #include <vector>
 
@@ -525,7 +526,11 @@ void ghost_demon::init_player_ghost()
     best_skill = ::best_skill(SK_FIRST_SKILL, SK_LAST_SKILL);
     best_skill_level = you.skills[best_skill];
     xl = you.experience_level;
-    title = player_title();
+    // Saved ghost data is protocol: keep the title canonical English.
+    {
+        const ScopedLangEn canonical_language;
+        title = player_title();
+    }
 
     flies = true;
 

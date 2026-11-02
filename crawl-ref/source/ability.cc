@@ -1475,14 +1475,12 @@ static string _sacrifice_desc(const ability_type ability)
 
 static string _nemelex_desc(ability_type ability)
 {
-    ostringstream desc;
-    deck_type deck = ability_deck(ability);
-
-    desc << T_("Draw a card from ") << (deck == DECK_STACK ? T_("your ") : T_("the "));
-    desc << deck_display_name(deck) << T_("; ")
-         << lowercase_first(deck_description(deck));
-
-    return desc.str();
+    const deck_type deck = ability_deck(ability);
+    return make_stringf_p(deck == DECK_STACK
+                ? T_("Draw a card from your %1$s; %2$s")
+                : T_("Draw a card from the %1$s; %2$s"),
+            deck_display_name(deck).c_str(),
+            lowercase_first(deck_description(deck)).c_str());
 }
 
 static int _tso_cleansing_flame_power(bool allow_random = true)
@@ -1618,7 +1616,7 @@ string get_ability_desc(const ability_type ability, bool need_title)
         lookup = getLongDescription(name + " ability");
 
     if (lookup.empty()) // Nothing found?
-        lookup = "No description found.\n";
+        lookup = T_("No description found.\n");
 
     switch (ability)
     {
@@ -1663,7 +1661,7 @@ string get_ability_desc(const ability_type ability, bool need_title)
 
     ostringstream res;
     if (need_title)
-        res << name << "\n\n";
+        res << ability_name(ability) << "\n\n";
     res << lookup << "\n" << _detailed_cost_description(ability);
 
     const string quote = getQuoteString(name + " ability");
@@ -2311,7 +2309,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false,
 
     case ABIL_YRED_FATHOMLESS_SHACKLES:
         if (you.duration[DUR_FATHOMLESS_SHACKLES])
-            return fail(T_("You are already invoking Yredulemnul's grip!"));
+            return fail(T_("You are already invoking Yredelemnul's grip!"));
         return true;
 
     case ABIL_BEOGH_RECRUIT_APOSTLE:

@@ -1070,6 +1070,8 @@ void webtiles_send_messages()
     if (_more != _last_more)
     {
         tiles.json_write_bool("more", _more);
+        if (_more)
+            tiles.json_write_string("more_text", T_("--more--"));
         _last_more = _more;
     }
     buffer.send();
@@ -2181,16 +2183,17 @@ void canned_msg(canned_message_type which_message)
         case MSG_EMPTY_HANDED_ALREADY:
         case MSG_EMPTY_HANDED_NOW:
         {
-            const char* when =
-            (which_message == MSG_EMPTY_HANDED_ALREADY ? "already" : "now");
+            const string when = which_message == MSG_EMPTY_HANDED_ALREADY
+                ? C_("empty-handed timing", "already")
+                : C_("empty-handed timing", "now");
             if (you.has_mutation(MUT_NO_GRASPING))
-                mprf(T_("Your mouth is %s empty."), when);
+                mprf(T_("Your mouth is %s empty."), when.c_str());
             else if (you.has_usable_claws(true))
-                mprf(T_("You are %s empty-clawed."), when);
+                mprf(T_("You are %s empty-clawed."), when.c_str());
             else if (you.has_usable_tentacles(true))
-                mprf(T_("You are %s empty-tentacled."), when);
+                mprf(T_("You are %s empty-tentacled."), when.c_str());
             else
-                mprf(T_("You are %s empty-handed."), when);
+                mprf(T_("You are %s empty-handed."), when.c_str());
             break;
         }
         case MSG_YOU_BLINK:
@@ -2290,7 +2293,7 @@ bool simple_monster_message(const monster& mons, const char *event,
 string god_speaker(god_type which_deity)
 {
     if (which_deity == GOD_WU_JIAN)
-       return "The Council";
+       return T_("The Council");
     else
        return uppercase_first(god_name(which_deity));
 }
@@ -2310,7 +2313,9 @@ void simple_god_message(const char *event, bool need_possessive,
 void wu_jian_sifu_message(const char *event)
 {
     string msg;
-    msg = uppercase_first(string("Sifu ") + wu_jian_random_sifu_name() + event);
+    const string name = wu_jian_random_sifu_name();
+    msg = make_stringf_p(C_("Wu Jian speaker", "Sifu %1$s%2$s"),
+                         name.c_str(), event);
     god_speaks(GOD_WU_JIAN, msg.c_str());
 }
 

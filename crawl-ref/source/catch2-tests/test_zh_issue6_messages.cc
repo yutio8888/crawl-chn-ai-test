@@ -80,9 +80,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                        "欢迎", "Ada", "人类", "战士")
           == "<yellow>欢迎，Ada（人类 战士）。</yellow>");
     CHECK(make_stringf(C_("game start", "%s set off with %s%s%s."),
-                       "Ada", "甲", "乙", "丙") == "Ada携带甲乙丙出发了。");
+                       "Ada", "携带甲", "，", "已记忆乙")
+          == "Ada出发时携带甲，已记忆乙。");
     CHECK(make_stringf(C_("game start", "%s set off with %s%s%s."),
-                       "Ada", "", "", "") == "Ada携带出发了。");
+                       "Ada", "", "", "已记忆乙") == "Ada出发时已记忆乙。");
     CHECK(make_stringf(C_("game start", "%s the %s %s began the quest for the Orb."),
                        "Ada", "人类", "战士")
           == "Ada（人类 战士）开始了寻找宝珠的征程。");

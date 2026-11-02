@@ -91,10 +91,9 @@ default fountain_blood
 微小的蚊子醉醺醺地蜂拥在喷泉表面。
 
 w:3
-你在血泉中的倒影以沉默的[审判|恐怖]回望着你。
+你在血泉中的倒影默默地以[审判|惊恐]的目光回望着你。
 
 w:3
-# 波特莱尔《血泉》诗句的混译
 血泉脉动着，发出低语的啜泣声。
 
 w:1
@@ -189,7 +188,7 @@ Hepliaklqana fountain_blue
 %%%%
 Hepliaklqana dry_fountain
 
-你发誓永远不会忘记你的传承，正如这座喷泉的建造者们已被遗忘。
+这座喷泉的建造者们已被遗忘；你发誓永远不忘自己的传承。
 %%%%
 Hepliaklqana peaceful fountain_blood
 
@@ -266,7 +265,7 @@ Makhleb peaceful fountain_blood
 
 你的思绪短暂地被在这座喷泉中沐浴的念头吞噬了。
 
-你用喷泉的血为自己涂油。
+你以泉中的鲜血为自己行涂抹之礼。
 
 你以仪式般的狂热短暂地在喷泉中洗了洗@your_weapon@。
 
@@ -413,12 +412,9 @@ Zin fountain_sparkling
 %%%%
 _baked_good_and_reaction_
 
-# 大多数是为了保持爬行世界风味而调整的老偏好，
-# 平均可以追溯到几百年前。
 w:24
 一些小精灵[面包|果馅饼|岩石面包|司康饼|饼干|硬面饼]。美味。
 
-# 高度普及的选择，匹配多样化的兽人背景。
 w:14
 一个兽人[馅饼|蛋挞|海绵蛋糕]。好吃。
 
@@ -427,9 +423,8 @@ w:14
 
 一些人鱼[果仁蜜饼|复活节面包]。奢侈。
 
-一个填充纳迦饼。非凡。
+一个纳迦夹馅烙饼。非凡。
 
-# 如果能找到长面包的更早法语名称就好了……
 一根龙人法棍。暖心暖胃。
 
 w:6
@@ -559,7 +554,7 @@ baked goods cache
 %%%%
 bat baked goods cache
 
-你俯冲下来，啄食着@_baked_good_and_reaction_@
+你俯冲下来，小口啃着@_baked_good_and_reaction_@
 
 %%%%
 bat fruit cache
@@ -584,8 +579,7 @@ blade meat cache
 %%%%
 carnivore baked goods cache
 
-# 当然，狗头人当然会做蛋糕三明治。
-你浏览了一下那堆东西，用@_baked_good_and_reaction_@做了一个肉三明治。
+你翻看了一下那堆食品，做了一个肉三明治，用的是@_baked_good_and_reaction_@
 
 %%%%
 carnivore fruit cache
@@ -733,12 +727,12 @@ mummy meat cache
 %%%%
 oni baked goods cache
 
-你弯下腰，抓起@_baked_good_and_reaction_@，吃完又拿了一份。
+你弯下腰，抓起@_baked_good_and_reaction_@吃完又拿了一份。
 
 %%%%
 oni fruit cache
 
-你弯下腰，抓起@_fruit_and_reaction_@，吃完又拿了一份。
+你弯下腰，抓起@_fruit_and_reaction_@吃完又拿了一份。
 
 %%%%
 pig baked goods cache
@@ -893,7 +887,7 @@ troll fruit cache
 %%%%
 vampire baked goods cache
 
-你弯下腰，品尝了@_baked_good_and_reaction_@，可惜不顶饱。
+你弯下腰，品尝了@_baked_good_and_reaction_@可惜不顶饱。
 
 %%%%
 vampire fruit cache

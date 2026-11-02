@@ -453,6 +453,39 @@ class ReleaseArtifactTest(unittest.TestCase):
                     ])
                 self.assert_rejected(expected)
 
+    def test_apk_resource_exception_rejects_directory_symlink_and_special_variants(self) -> None:
+        # Only plain res/ files take part in the AAPT2 case exception. A
+        # directory, symlink, special member or differently-cased namespace
+        # entry must not ride along on a regular resource file's exemption.
+        rule = next(item for item in self.rules if item.archive_type == "apk")
+        payloads = self._payloads(rule) | {"res/2F.xml": b"first resource"}
+        mutations = (
+            ("res/2F.xml", None, "duplicate archive member"),
+            ("res/2F.xml/", stat.S_IFDIR | 0o755, "duplicate archive member"),
+            ("res/2f.xml/", stat.S_IFDIR | 0o755, "case-insensitive member collision"),
+            ("RES/2f.xml", None, "case-insensitive member collision"),
+            ("res//2f.xml", None, "invalid archive member path"),
+            ("res/2f.xml", stat.S_IFDIR | 0o755, "case-insensitive member collision"),
+            ("res/2f.xml", stat.S_IFLNK | 0o777, "case-insensitive member collision"),
+            ("res/2f.xml", stat.S_IFIFO | 0o644, "case-insensitive member collision"),
+        )
+        for name, mode, expected in mutations:
+            with self.subTest(member=name, mode=mode):
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore", UserWarning)
+                    self._rewrite(rule, payloads, zip_extra=[(name, b"x", mode)])
+                self.assert_rejected(expected)
+
+    def test_apk_plain_resource_case_variants_remain_valid(self) -> None:
+        rule = next(item for item in self.rules if item.archive_type == "apk")
+        self._rewrite(rule, self._payloads(rule), zip_extra=[
+            ("res/2F.xml", b"first resource", stat.S_IFREG | 0o644),
+            ("res/2f.xml", b"second resource", stat.S_IFREG | 0o644),
+            ("res/BT.xml", b"third resource", None),
+            ("res/bT.xml", b"fourth resource", None),
+        ])
+        self._validate()
+
     def test_desktop_zips_reject_case_distinct_resource_paths(self) -> None:
         for rule in self.rules:
             if rule.archive_type != "zip":

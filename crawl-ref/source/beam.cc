@@ -3900,8 +3900,9 @@ void bolt::affect_player_enchantment(bool resistible)
         break;
 
     case BEAM_DIMENSION_ANCHOR:
-        mprf(T_("You feel %sfirmly anchored in space."),
-             you.duration[DUR_DIMENSION_ANCHOR] ? "more " : "");
+        mpr(you.duration[DUR_DIMENSION_ANCHOR]
+            ? T_("You feel more firmly anchored in space.")
+            : T_("You feel firmly anchored in space."));
         you.increase_duration(DUR_DIMENSION_ANCHOR, 12 + random2(15), 50);
         if (you.duration[DUR_TELEPORT])
         {
@@ -3997,8 +3998,9 @@ void bolt::affect_player_enchantment(bool resistible)
         break;
 
     case BEAM_SAP_MAGIC:
-        mprf(MSGCH_WARN, T_("Your magic feels %stainted."),
-             you.duration[DUR_SAP_MAGIC] ? "more " : "");
+        mprf(MSGCH_WARN, "%s", you.duration[DUR_SAP_MAGIC]
+             ? T_("Your magic feels more tainted.")
+             : T_("Your magic feels tainted."));
         flash_tile(you.pos(), GREEN, 120, TILE_BOLT_SAP_MAGIC);
         you.increase_duration(DUR_SAP_MAGIC, random_range(20, 30), 50);
         break;
@@ -4234,10 +4236,51 @@ static pie_effect _random_pie_effect(const actor &defender)
 
     return *random_choose_weighted(weights);
 }
+bool is_known_beam_name(const string &name)
+{
+    if (name.empty())
+        return false;
+    for (const zap_info &zap : zap_data)
+        if (zap.name && name == zap.name)
+            return true;
+    return false;
+}
+
+// Complete display names produced by the two slow-orb setups. No arbitrary
+// prefix parsing: unknown historical beam identities remain unchanged.
+string orb_beam_name_display(const string& canonical)
+{
+    static const char* const names[] = {
+        NC_("orb beam name", "orb of destruction"),
+        NC_("orb beam name", "wavering orb of destruction"),
+        NC_("orb beam name", "annihilating fire"),
+        NC_("orb beam name", "annihilating cold"),
+        NC_("orb beam name", "annihilating electricity"),
+        NC_("orb beam name", "annihilating negative energy"),
+        NC_("orb beam name", "annihilating magma"),
+        NC_("orb beam name", "annihilating ice"),
+        NC_("orb beam name", "annihilating devastation"),
+        NC_("orb beam name", "annihilating acid"),
+        NC_("orb beam name", "annihilating fragments")
+    };
+    for (const char* name : names)
+        if (canonical == name)
+            return C_("orb beam name", name);
+    return canonical;
+}
+
 // Get the display name for a beam. For spell beams in Chinese mode,
 // use the translated spell title instead of the English zap name.
 static string _beam_display_name(const bolt &beam)
 {
+    if (beam.origin_spell == SPELL_IOOD
+        || beam.origin_spell == SPELL_UNLEASH_DESTRUCTION
+           && starts_with(beam.name, "annihilating "))
+    {
+        return orb_beam_name_display(beam.name);
+    }
+    if (beam.origin_spell == SPELL_LRD)
+        return fragmentation_name_display(beam.name);
     if (Options.language == lang_t::ZH && beam.origin_spell != SPELL_NO_SPELL)
         return spell_title(beam.origin_spell);
     return T_(beam.name.c_str());
@@ -5392,7 +5435,7 @@ void bolt::knockback_actor(actor *act, int dam)
 
 void bolt::pull_actor(actor *act, int dam)
 {
-    if (!act || !can_pull(*act, dam) || act->resists_dislodge("being pulled"))
+    if (!act || !can_pull(*act, dam) || act->resists_dislodge(NC_("dislodge event", "being pulled")))
         return;
 
     // How far we'll try to pull the actor to make them adjacent to the source.
@@ -5467,7 +5510,7 @@ bool bolt::attempt_block(monster* mon)
         {
             if (shield && shield_reflects(*shield))
             {
-                mprf_p(T_("%s blocks the %s with %s %s... and reflects it back!"),
+                mprf_p(T_("%1$s blocks the %2$s with %3$s %4$s... and reflects it back!"),
                      mon->name(DESC_THE).c_str(),
                      beam_name.c_str(),
                      mon->pronoun(PRONOUN_POSSESSIVE).c_str(),
@@ -7552,7 +7595,7 @@ static string _beam_type_name(beam_type type)
     case BEAM_MMISSILE:                  return T_("magic missile");
     case BEAM_FIRE:                  return T_("fire");
     case BEAM_COLD:                  return T_("cold");
-    case BEAM_WATER:                  return T_("water");
+    case BEAM_WATER:                  return C_("beam flavour", "water");
     case BEAM_MAGIC:                  return T_("magic");
     case BEAM_ELECTRICITY:                  return T_("electricity");
     case BEAM_MEPHITIC:                  return T_("noxious fumes");
@@ -7974,13 +8017,18 @@ bool cancel_beam_prompt(const bolt& beam, const player_beam_tracer& tracer,
             }
             else
             {
+                const string direction = Options.language == lang_t::ZH
+                    ? mon_name : apostrophise(mon_name);
                 verb = make_stringf(T_("fire in %s direction"),
-                                    mon_name.c_str());
+                                    direction.c_str());
                 mon_name = "";
             }
         }
         else
-            verb = "fire towards ";
+        {
+            verb = make_stringf(T_("fire towards %s"), mon_name.c_str());
+            mon_name.clear();
+        }
         const bool penance = victims.penance();
 
         const string prompt = make_stringf(T_("Really %s%s%s?%s"),

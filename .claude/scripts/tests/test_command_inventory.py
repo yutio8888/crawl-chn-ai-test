@@ -331,6 +331,8 @@ def make_repo(root: Path, command_type_h: str = COMMAND_TYPE_H,
         command_type_h, encoding="utf-8")
     (root / "crawl-ref/source/macro.cc").write_text(macro_cc,
                                                     encoding="utf-8")
+    (root / "crawl-ref/source/topbar-drawer.cc").write_text(
+        "// Fixture Android command menu consumer.\n", encoding="utf-8")
     (root / "crawl-ref/source/dat/descript/commands.txt").write_text(
         commands_txt, encoding="utf-8")
     (root / "crawl-ref/source/dat/descript/zh/commands.txt").write_text(
@@ -842,6 +844,62 @@ class CommandInventoryToolTest(unittest.TestCase):
             self.assertIn(needle, result.stderr + result.stdout)
 
     # -- Positive fixtures ------------------------------------------------
+
+    def test_extra_descriptions_are_bound_and_require_review(self):
+        """Language-only and overridden menu keys cannot disappear behind
+        the enum inventory or keep stale body evidence."""
+        en_extra = ("%%%%\nandroid command menu|Map\n\nOld map\n"
+                    "%%%%\nandroid command menu|Map\n\nMap\n"
+                    "%%%%\nandroid command menu|English only\n\nEnglish\n")
+        zh_extra = ("%%%%\nandroid command menu|Map\n\n地图\n"
+                    "%%%%\nandroid command menu|Chinese only\n\n保留\n")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            make_repo(root, commands_txt=COMMANDS_TXT + en_extra,
+                      zh_commands_txt=ZH_COMMANDS_TXT + zh_extra)
+            output = fresh_output_path()
+            try:
+                result = run_tool(root, output)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                payload = json.loads(output.read_text(encoding="utf-8"))
+            finally:
+                if output.exists():
+                    output.unlink()
+            extras = {r["identity"]: r for r in payload["inventory"]
+                      if r["identity"].startswith("command-extra:")}
+            self.assertEqual(set(extras), {
+                "command-extra:android command menu|Map",
+                "command-extra:android command menu|English only",
+                "command-extra:android command menu|Chinese only",
+            })
+            self.assertEqual(extras["command-extra:android command menu|Map"]
+                             ["terse_en"], "Map\n")
+            self.assertEqual(extras["command-extra:android command menu|English only"]
+                             ["missing_t"], ["terse_zh"])
+            self.assertIsNone(extras["command-extra:android command menu|Chinese only"]
+                              ["terse_en"])
+            self.assertIn("topbar-drawer.cc", payload["inputs"])
+            cards = valid_review_cards(payload)
+            ledger = root / "docs/command-review-results.md"
+            for mutation in ("valid", "missing", "stale"):
+                edited = json.loads(json.dumps(cards))
+                if mutation == "missing":
+                    edited = [c for c in edited
+                              if c["identity"] not in extras]
+                elif mutation == "stale":
+                    edited[-1]["current_chinese"]["terse_zh"] = "旧正文"
+                ledger.write_text(render_review_ledger(payload, edited),
+                                  encoding="utf-8")
+                checked = fresh_output_path()
+                try:
+                    result = run_tool(root, checked,
+                                      Path("docs/command-review-results.md"))
+                    self.assertEqual(result.returncode,
+                                     0 if mutation == "valid" else 1,
+                                     result.stderr)
+                finally:
+                    if checked.exists():
+                        checked.unlink()
 
     def test_system_python_can_load_cli_with_postponed_annotations(self):
         source = TOOL.read_text(encoding="utf-8")

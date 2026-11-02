@@ -127,9 +127,70 @@ class ScannerCompletenessTests(unittest.TestCase):
         self.assertEqual(len(source), tree.root_node.end_byte)
         self.assertEqual(expected, tree.root_node.text)
 
+    def test_trailing_purity_annotations_keep_offsets_and_nearby_findings(self):
+        sys.path.insert(0, str(SCRIPTS))
+        from i18n_shared import parse_cpp_annotations
+        import tree_sitter_cpp
+        from tree_sitter import Language, Parser
+        parser = Parser(Language(tree_sitter_cpp.language()))
+        source = (b'// PURE in a comment\n'
+                  b'#define PURE __attribute__((pure))\n'
+                  b'const char* text = "cost() const PURE;";\n'
+                  b'const char* raw = R"x(cost() const PURE;)x";\n'
+                  b'struct S { int PURE; int cost() const PURE; };\n'
+                  b'bool free_cost(int n) IMMUTABLE;\n'
+                  b'void f() { int value = PURE; mprf("%s", std::string("bad")); }\n')
+        expected = source.replace(b'cost() const PURE; };',
+                                  b'cost() const ' + b' ' * 4 + b'; };')
+        expected = expected.replace(b'free_cost(int n) IMMUTABLE;',
+                                    b'free_cost(int n) ' + b' ' * 9 + b';')
+        tree = parse_cpp_annotations(parser, source)
+        self.assertFalse(tree.root_node.has_error)
+        self.assertEqual(len(source), tree.root_node.end_byte)
+        self.assertEqual(expected, tree.root_node.text)
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "purity.cc"
+            for scanner, body in (
+                    ("scan_varargs_string.py", b'mprf("%s", std::string("bad"));'),
+                    ("scan_string_concat.py", b'auto label = std::string("visible ") + value;')):
+                path.write_bytes('// 中文偏移\n'.encode() + source.replace(
+                    b'mprf("%s", std::string("bad"));', body))
+                proc = self.run_scanner(scanner, "--files", path,
+                                        "--format", "json", "--require-parser")
+                self.assertEqual(1, proc.returncode, proc.stderr)
+                data = json.loads(proc.stdout)
+                self.assertEqual({"discovered": 1, "scanned": 1, "failed": []},
+                                 _coverage(data))
+                self.assertTrue(data["findings"])
+                self.assertTrue(all(f["line"] == 8 for f in data["findings"]))
+
+    def test_repository_purity_annotations_are_scannable(self):
+        sys.path.insert(0, str(SCRIPTS))
+        from i18n_shared import parse_cpp_annotations, has_relevant_parse_error
+        import tree_sitter_cpp
+        from tree_sitter import Language, Parser
+        parser = Parser(Language(tree_sitter_cpp.language()))
+        for name in ("ability.cc", "mon-util.h"):
+            with self.subTest(name=name):
+                data = (ROOT / "crawl-ref/source" / name).read_bytes()
+                tree = parse_cpp_annotations(parser, data)
+                self.assertFalse(
+                    has_relevant_parse_error(tree.root_node, data, name), name)
+
     def test_annotation_normalization_does_not_hide_unknown_or_broken_syntax(self):
         cases = (
             'UNKNOWN void f() {}',
+            'struct S { int cost() const UNKNOWN; };',
+            'struct S { int cost() const PUREX; };',
+            'struct S { int cost() const PURE UNKNOWN; };',
+            'struct S { int cost() const PURE };',
+            'struct S { int cost( const PURE; };',
+            'struct S { int value PURE; };',
+            'struct S { int cost() const PURE; void f() { int x = ; } };',
+            # tree-sitter reads an empty-argument declaration as a call-shaped
+            # init_declarator; the annotation is not lowered there, so the
+            # file stays fail-closed instead of being guessed as a prototype.
+            'int empty_parens() IMMUTABLE;',
             'NORETURN UNKNOWN void f() {}',
             'extern "C" JNIEXPORT void UNKNOWN f() {}',
             'JNIEXPORT void JNICALL f() {}',

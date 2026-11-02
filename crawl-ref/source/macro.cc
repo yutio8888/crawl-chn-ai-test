@@ -790,7 +790,7 @@ void macro_save()
     f = fopen_u(macrofile.c_str(), "w");
     if (!f)
     {
-        mprf(MSGCH_ERROR, "Couldn't open %s for writing!", macrofile.c_str());
+        mprf(MSGCH_ERROR, T_("Couldn't open %s for writing!"), macrofile.c_str());
         return;
     }
 
@@ -1017,12 +1017,12 @@ class MacroEditMenu : public Menu
 {
 private:
     const vector<pair<KeymapContext,string>> modes =
-        { { KMC_NONE, "macros" }, // not actually what KMC_NONE means
-          { KMC_DEFAULT, "default" },
-          { KMC_MENU, "menu" },
-          { KMC_LEVELMAP, "level" },
-          { KMC_TARGETING, "targeting" },
-          { KMC_CONFIRM, "confirmation" }
+        { { KMC_NONE, NC_("macro cycle mode", "macros") }, // not actually what KMC_NONE means
+          { KMC_DEFAULT, NC_("macro cycle mode", "default") },
+          { KMC_MENU, NC_("macro cycle mode", "menu") },
+          { KMC_LEVELMAP, NC_("macro cycle mode", "level") },
+          { KMC_TARGETING, NC_("macro cycle mode", "targeting") },
+          { KMC_CONFIRM, NC_("macro cycle mode", "confirmation") }
         };
 
 public:
@@ -1047,9 +1047,7 @@ public:
         // have no idea how to use that class with a Menu
         clear();
         add_entry(new MenuEntry(
-            (T_("Create/edit "))
-                + mode_name()
-                + (T_(" from key")), '~',
+            make_stringf(T_("Create/edit %s from key"), mode_name().c_str()), '~',
             [this](const MenuEntry &)
                 {
                     edit_mapping(keyseq());
@@ -1058,8 +1056,7 @@ public:
         if (get_map().size())
         {
             MenuEntry *clear_entry = new MenuEntry(
-                (T_("Clear all "))
-                    + mode_name() + "s", '-',
+                make_stringf(T_("Clear all %s"), mode_name(true).c_str()), '-',
                 [this](const MenuEntry &)
                     {
                         status_msg = "";
@@ -1074,8 +1071,7 @@ public:
 
             add_entry(clear_entry);
             add_entry(new MenuEntry(
-                (T_("Current "))
-                    + mode_name() + "s", MEL_SUBTITLE));
+                make_stringf(T_("Current %s"), mode_name(true).c_str()), MEL_SUBTITLE));
             for (auto &mapping : get_map())
             {
                 // TODO: indicate if macro is from rc file somehow?
@@ -1135,9 +1131,9 @@ public:
         vector<string> result;
         for (auto m : modes)
             if (keymc == m.first)
-                result.push_back("<w>" + m.second + "</w>");
+                result.push_back("<w>" + string(C_("macro cycle mode", m.second.c_str())) + "</w>");
             else
-                result.push_back(m.second);
+                result.push_back(C_("macro cycle mode", m.second.c_str()));
 
         string hint;
         if (keymc != KMC_NONE)
@@ -1146,8 +1142,9 @@ public:
         // there's much less use-case for editing keymaps in-game, so hide the
         // details by default
         string mode_hint = edited_keymaps
-            ? " cycle mode: " + join_strings(result.begin(), result.end(), "|")
-            : " edit keymaps";
+            ? make_stringf(T_(" cycle mode: %s"),
+                join_strings(result.begin(), result.end(), "|").c_str())
+            : T_(" edit keymaps");
 
         set_more(formatted_string::parse_string(
             status_msg + "\n"
@@ -1157,35 +1154,49 @@ public:
 
     }
 
-    string mode_name()
+    // This is a UI noun only; mapping identities remain keymc/Keymaps/Macros.
+    string mode_name(bool plural = false)
     {
-        // XX less stupid implementation
         switch (keymc)
         {
-        case KMC_NONE: return "macro";
-        case KMC_DEFAULT: return "regular keymap";
-        case KMC_MENU: return "menu keymap";
-        case KMC_TARGETING: return "targeting keymap";
-        case KMC_LEVELMAP: return "level map keymap";
-        case KMC_CONFIRM: return "confirmation keymap";
-        default: return "buggy keymap";
+        case KMC_NONE:
+            return plural ? C_("macro mapping mode", "macros")
+                          : C_("macro mapping mode", "macro");
+        case KMC_DEFAULT:
+            return plural ? C_("macro mapping mode", "regular keymaps")
+                          : C_("macro mapping mode", "regular keymap");
+        case KMC_MENU:
+            return plural ? C_("macro mapping mode", "menu keymaps")
+                          : C_("macro mapping mode", "menu keymap");
+        case KMC_TARGETING:
+            return plural ? C_("macro mapping mode", "targeting keymaps")
+                          : C_("macro mapping mode", "targeting keymap");
+        case KMC_LEVELMAP:
+            return plural ? C_("macro mapping mode", "level map keymaps")
+                          : C_("macro mapping mode", "level map keymap");
+        case KMC_CONFIRM:
+            return plural ? C_("macro mapping mode", "confirmation keymaps")
+                          : C_("macro mapping mode", "confirmation keymap");
+        default:
+            return plural ? C_("macro mapping mode", "buggy keymaps")
+                          : C_("macro mapping mode", "buggy keymap");
         }
     }
 
     virtual formatted_string calc_title() override
     {
         return formatted_string::parse_string(
-            "Editing <w>" + mode_name() + "s</w>.");
+            make_stringf(T_("Editing <w>%s</w>."), mode_name(true).c_str()));
     }
 
     void clear_all()
     {
-        const string clear_prompt = make_stringf(T_("Really clear all %ss?"),
-                mode_name().c_str());
+        const string clear_prompt = make_stringf(T_("Really clear all %s?"),
+                mode_name(true).c_str());
         if (yesno(clear_prompt.c_str(), true, 'N'))
         {
             get_map() = macromap();
-            status_msg = "All " + mode_name() + "s cleared!";
+            status_msg = make_stringf(T_("All %s cleared!"), mode_name(true).c_str());
             crawl_state.unsaved_macros = true;
             fill_entries();
         }
@@ -1556,8 +1567,9 @@ public:
                 && (!get_map().count(pop.key) || get_map()[pop.key] != pop.action))
             {
                 macro_add(get_map(), pop.key, pop.action);
-                status_msg = make_stringf(T_("%s %s '%s' => '%s'."),
-                    existed ? "Redefined" : "Created",
+                status_msg = make_stringf_p(existed
+                    ? T_("Redefined %1$s '%2$s' => '%3$s'.")
+                    : T_("Created %1$s '%2$s' => '%3$s'."),
                     mode_name().c_str(),
                     _keyseq_desc(pop.key).c_str(),
                     _keyseq_action_desc(pop.key, get_map()).c_str());
@@ -1749,7 +1761,7 @@ static void _read_macros_from(const char* filename)
  * bit after "macros +=")
  *
  * @return The string of any errors which occurred, or "" if no error.
- * %s is the field argument.
+ * Errors are complete display strings; callers must not use them as formats.
  */
 
 string read_rc_file_macro(const string& field)
@@ -1757,7 +1769,10 @@ string read_rc_file_macro(const string& field)
     const int first_space = field.find(' ');
 
     if (first_space < 0)
-        return "Cannot parse marcos += %s , there is only one argument";
+    {
+        return make_stringf(T_("Cannot parse macros += %s, there is only one argument"),
+                            field.c_str());
+    }
 
     // Start by deciding what context the macro/keymap is in
     const string context = field.substr(0, first_space);
@@ -1784,8 +1799,8 @@ string read_rc_file_macro(const string& field)
     else if (context == "M")
         keymap = false;
     else
-        return "'" + context
-                   + "' is not a valid macro or keymap context (macros += %s)";
+        return make_stringf(T_("'%s' is not a valid macro or keymap context (macros += %s)"),
+                            context.c_str(), field.c_str());
 
     // Now grab the key and action to be performed
     const string key_and_action = field.substr((first_space + 1));
@@ -1793,7 +1808,10 @@ string read_rc_file_macro(const string& field)
     const int second_space = key_and_action.find(' ');
 
     if (second_space < 0)
-        return "Cannot parse macros += %s , there are only two arguments";
+    {
+        return make_stringf(T_("Cannot parse macros += %s, there are only two arguments"),
+                            field.c_str());
+    }
 
     const string macro_key_string = key_and_action.substr(0, second_space);
     const string action_string = key_and_action.substr((second_space + 1));

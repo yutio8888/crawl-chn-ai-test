@@ -130,9 +130,9 @@ spret cast_polar_vortex(int powc, bool fail, bool no_prompt)
 
     fail_check();
 
-    mprf(T_("A great freezing vortex %s."),
-         (you.airborne() || get_form()->forbids_flight()) ?
-         "appears around you" : "appears and lifts you up");
+    mpr(you.airborne() || get_form()->forbids_flight()
+        ? T_("A great freezing vortex appears around you.")
+        : T_("A great freezing vortex appears and lifts you up."));
 
     if (you.fishtail)
         merfolk_stop_swimming();
@@ -391,7 +391,7 @@ void polar_vortex_damage(actor *caster, int dur)
                 if (victim->alive()
                     && !leda
                     && dur > 0
-                    && !victim->resists_dislodge("being moved by the vortex"))
+                    && !victim->resists_dislodge(NC_("dislodge event", "being moved by the vortex")))
                 {
                     move_dest[victim->mid] = victim->pos();
                 }

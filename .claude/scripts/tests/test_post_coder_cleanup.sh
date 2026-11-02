@@ -34,6 +34,12 @@ done <<< "$CPP_AST_SCAN_SKIP_COMPONENTS"
 
 cat > "$FAKEBIN/python3" <<'SH'
 #!/bin/bash
+if [[ -n "${LOG_SCANNER_CALLS:-}" ]]; then
+    case "$*" in
+        *scan_varargs_string.py*|*scan_i18n_lifetime.py*|*scan_string_concat.py*)
+            printf '%s\n' "$*" >> "$LOG_SCANNER_CALLS" ;;
+    esac
+fi
 if [[ "$*" == *CPP_AST_SCAN_SKIP_DIRS* ]]; then
     case "${CLEANUP_MODE:-normal}" in
         import_fail) exit 42 ;;
@@ -179,6 +185,106 @@ run_mode abnormal
 [[ "$MODE_RC" -ne 0 ]] && pass "unexpected arithmetic error exits nonzero" \
     || fail "unexpected arithmetic error should fail"
 assert_clean "unexpected set -e-style exit removes advisory temp"
+
+echo ""
+# --- F6: explicit preprocessed TU routing stays opt-in and fail-closed ---
+DB="$TMP_ROOT/tags.json"
+printf '[]\n' > "$DB"
+CALL_LOG="$TMP_ROOT/scanner-calls.log"
+
+run_cpp() {
+    local label="$1"
+    shift
+    : > "$CALL_LOG"
+    rm -f "$REPO"/.claude/metrics/verify/coder-*.log
+    set +e
+    (cd "$REPO" && TMPDIR="$TEMPDIR" PATH="$FAKEBIN:$PATH" \
+        LOG_SCANNER_CALLS="$CALL_LOG" env "$@" \
+        /bin/bash .claude/scripts/post-coder.sh) \
+        >"$TMP_ROOT/cpp.out" 2>"$TMP_ROOT/cpp.err"
+    CPP_RC=$?
+    set -e
+    CPP_LOG=$(ls -t "$REPO"/.claude/metrics/verify/coder-*.log 2>/dev/null | head -1) \
+        || CPP_LOG=""
+    [[ -n "$CPP_LOG" ]] || CPP_LOG=/dev/null
+}
+
+run_cpp pairing \
+    ZH_VERIFY_SCOPE=full \
+    ZH_VERIFY_CPP_PREPROCESS_FILES=crawl-ref/source/sample.cc
+[[ "$CPP_RC" -eq 2 ]] \
+    && pass "unpaired CPP_PREPROCESS_FILES fails closed" \
+    || fail "unpaired CPP_PREPROCESS_FILES (expected 2, got $CPP_RC)"
+grep -q "must be supplied together" "$TMP_ROOT/cpp.err" \
+    && pass "pairing error names both required variables" \
+    || fail "pairing error message missing"
+[[ ! -s "$CALL_LOG" ]] \
+    && pass "pairing error stops before any scanner runs" \
+    || fail "pairing error ran scanners"
+
+run_cpp commands_only \
+    ZH_VERIFY_SCOPE=full \
+    ZH_VERIFY_CPP_COMPILE_COMMANDS="$DB"
+[[ "$CPP_RC" -eq 2 ]] \
+    && pass "unpaired CPP_COMPILE_COMMANDS fails closed" \
+    || fail "unpaired CPP_COMPILE_COMMANDS (expected 2, got $CPP_RC)"
+
+run_cpp missing_target \
+    ZH_VERIFY_SCOPE=full \
+    ZH_VERIFY_CPP_PREPROCESS_FILES=crawl-ref/source/missing.cc \
+    ZH_VERIFY_CPP_COMPILE_COMMANDS="$DB"
+[[ "$CPP_RC" -eq 2 ]] \
+    && pass "missing preprocessing target fails closed" \
+    || fail "missing preprocessing target (expected 2, got $CPP_RC)"
+
+run_cpp missing_database \
+    ZH_VERIFY_SCOPE=full \
+    ZH_VERIFY_CPP_PREPROCESS_FILES=crawl-ref/source/sample.cc \
+    ZH_VERIFY_CPP_COMPILE_COMMANDS="$TMP_ROOT/absent.json"
+[[ "$CPP_RC" -eq 2 ]] \
+    && pass "missing compilation database fails closed" \
+    || fail "missing compilation database (expected 2, got $CPP_RC)"
+
+run_cpp outside_changed_scope \
+    ZH_VERIFY_SCOPE=changed ZH_VERIFY_CHANGED_FILES="" \
+    ZH_VERIFY_CPP_PREPROCESS_FILES=crawl-ref/source/sample.cc \
+    ZH_VERIFY_CPP_COMPILE_COMMANDS="$DB"
+[[ "$CPP_RC" -eq 2 ]] \
+    && pass "changed scope rejects an unlisted preprocessing target" \
+    || fail "changed scope unlisted target (expected 2, got $CPP_RC)"
+grep -q "outside changed scope" "$TMP_ROOT/cpp.err" \
+    && pass "unlisted target diagnostic is explicit" \
+    || fail "unlisted target diagnostic missing"
+
+run_cpp explicit_full_scope \
+    ZH_VERIFY_SCOPE=full \
+    ZH_VERIFY_CPP_PREPROCESS_FILES=crawl-ref/source/sample.cc \
+    ZH_VERIFY_CPP_COMPILE_COMMANDS="$DB"
+[[ "$CPP_RC" -eq 0 ]] \
+    && pass "explicit targets keep the run green in full scope" \
+    || fail "explicit full-scope run (rc=$CPP_RC)"
+[[ "$(grep -c -- '--compile-commands' "$CALL_LOG")" -eq 3 ]] \
+    && pass "all three AST scanners receive the compilation database" \
+    || fail "compilation database did not reach every scanner"
+[[ "$(grep -c 'sample.cc' "$CALL_LOG")" -eq 3 ]] \
+    && pass "explicit group scans only the requested target" \
+    || fail "explicit group target selection wrong"
+grep -q "Target: crawl-ref/source/sample.cc" "$CPP_LOG" \
+    && pass "explicit target is reported in the evidence log" \
+    || fail "explicit target evidence missing"
+
+run_cpp explicit_changed_scope \
+    ZH_VERIFY_SCOPE=changed \
+    ZH_VERIFY_CHANGED_FILES='crawl-ref/source/sample.cc' \
+    ZH_VERIFY_CPP_PREPROCESS_FILES=crawl-ref/source/sample.cc \
+    ZH_VERIFY_CPP_COMPILE_COMMANDS="$DB"
+[[ "$CPP_RC" -eq 0 ]] \
+    && pass "changed scope accepts a listed preprocessing target" \
+    || fail "explicit changed-scope run (rc=$CPP_RC)"
+[[ "$(wc -l < "$CALL_LOG")" -eq 3 ]] \
+    && pass "raw group skips the configured target instead of double-scanning" \
+    || fail "raw group double-scanned the configured target"
+assert_clean "explicit TU routing removes advisory temp"
 
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="

@@ -46,17 +46,23 @@ values are translated. Preserve separators, format placeholders, control charact
 
 Serialization identities, Lua/JSON comparison keys, `.des` tags, enum
 identifiers, and TextDB lookup keys stay English. Translate only at a display
-boundary. The one approved save-file exception is `Note::name` for
-`NOTE_MESSAGE` values created by `crawl.take_note`: it is a language-locked
-display snapshot and is not retranslated after a language change. The exception
-does not cover other note types or fields. Its complete consumer boundary is:
+boundary. Audited display snapshots may retain the language used at creation;
+changing the UI language does not retroactively retranslate their payloads.
+The exact exceptions live in `.agents/policies/i18n-safety.md`:
 
-| Stage | Consumer | Contract |
+| Producer | Persistence and display consumers | Boundary |
 |---|---|---|
-| Producer | `l-crawl.cc::crawl_take_note` | Constructs only `NOTE_MESSAGE` from the supplied display string |
-| Persistence | `Note::save` / `Note::load` | Round-trips `Note::name` without interpreting it |
-| Display | `Note::describe`, notes UI, chardump/morgue | Emits the stored snapshot |
-| Excluded logic | milestone handling, xlog, Lua comparisons, lookup, gameplay | Does not consume `NOTE_MESSAGE.name` |
+| `l-crawl.cc::crawl_take_note` | `Note::save/load`, `Note::describe`, notes UI and chardump/morgue | Complete translated `NOTE_MESSAGE.name`, or a wholly English fallback |
+| `ouch()` injury/death descriptions | Same Note persistence and display consumers | `NOTE_HP_CHANGE.name` and `NOTE_DEATH.name` capture display; noteworthiness uses HP/turn or type, never these strings |
+| `_djinn_announce_spells()` / `_wanderer_note_equipment()` | Same Note persistence and display consumers; noteworthy by type | Only their `NOTE_MESSAGE.name` game-start display, including unchanged player names and localized item/spell labels |
+| `bless_weapon()` | Same Note persistence and display consumers; noteworthy by type, no identity or milestone consumers | Its `NOTE_ID_ITEM.name` and `.desc` capture the identified item and full blessing description at creation |
+| `TroveMarker:overview_note` via `_seen_portal` | `portal_notes`, `tags.cc` save/load, `_print_portals`, position copying and removal | Only the value is a display snapshot; `level_pos` and marker toll properties remain canonical |
+
+Death logging uses `short_kill_message` and `long_kill_message` in English
+independently of injury/death Note display. The raw auxiliary cause and score
+fields remain canonical. Unknown historical display names remain verbatim;
+these exceptions do not authorize a generic parser for saved text or changes
+to other Note fields or marker properties.
 
 The protocol-facing Lua bindings `you.race()`,
 `you.species()`, `you.genus()`, `you.class()`, and `you.monster()` therefore

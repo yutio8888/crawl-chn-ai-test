@@ -20,7 +20,9 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")"/.. && pwd)"
-REPO_ROOT="$(cd "$HERE/../.." && pwd)"
+CALLER_ROOT="$(git -C "$HERE" rev-parse --show-toplevel)"
+GIT_COMMON_DIR="$(git -C "$HERE" rev-parse --path-format=absolute --git-common-dir)"
+REPO_ROOT="${GIT_COMMON_DIR%/.git}"
 WT="$REPO_ROOT/.worktrees/android-tiles"
 WT_SOURCE="$WT/crawl-ref/source"
 SDK_ROOT="${ANDROID_SDK_ROOT:-$HOME/Android}"
@@ -87,9 +89,28 @@ else
 fi
 
 # 1. Sync worktree to main worktree HEAD (local only)
-MAIN_HEAD="$(cd "$REPO_ROOT" && git rev-parse HEAD)"
+MAIN_HEAD="$(git -C "$CALLER_ROOT" rev-parse HEAD)"
 echo "=== [1/4] Syncing android-tiles worktree to $MAIN_HEAD ==="
+command -v flock >/dev/null 2>&1 || {
+    echo "ERROR: flock is required to serialize the android-tiles build." >&2
+    exit 1
+}
+exec 9>"$GIT_COMMON_DIR/local-build-android-tiles.lock"
+flock -n 9 || { echo "ERROR: android-tiles build is already active." >&2; exit 1; }
 cd "$WT"
+if [ "$(git rev-parse --show-toplevel)" != "$WT" ]; then
+    echo "ERROR: build directory must be the dedicated worktree, not a plain directory:" >&2
+    echo "       $WT" >&2
+    exit 1
+fi
+if [ "$(git rev-parse --path-format=absolute --git-common-dir)" != "$GIT_COMMON_DIR" ]; then
+    echo "ERROR: build worktree must belong to the caller repository: $WT" >&2
+    exit 1
+fi
+if git symbolic-ref -q HEAD >/dev/null; then
+    echo "ERROR: build worktree must have a detached HEAD: $WT" >&2
+    exit 1
+fi
 if [ -n "$(git status --porcelain --untracked-files=all)" ]; then
     echo "ERROR: $WT has local changes; refusing destructive sync." >&2
     echo "Commit, stash, or remove them explicitly, then retry." >&2
@@ -131,9 +152,10 @@ APK_DIR="$WT_SOURCE/android-project/app/build/outputs/apk/$VARIANT"
 if [ -d "$APK_DIR" ]; then
     find "$APK_DIR" -maxdepth 1 -type f -name "app-${VARIANT}*.apk" -delete
 fi
-# Generate gradle wrapper if missing (e.g. after clean worktree sync)
+# The tracked wrapper is the single Gradle version source for local builds.
 if [ ! -x gradlew ]; then
-    gradle wrapper --gradle-version 8.13
+    echo "ERROR: tracked Gradle wrapper is missing or not executable." >&2
+    exit 1
 fi
 case "$VARIANT" in
     buildTest) GRADLE_TASK="assembleBuildTest" ;;

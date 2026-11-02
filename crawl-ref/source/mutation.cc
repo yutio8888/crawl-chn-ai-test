@@ -389,9 +389,17 @@ static string _badmut(string desc, bool terse=false)
 
 static pair<string, string> _annotate_form_based(pair<string, string> desc, bool suppressed)
 {
+    // An empty form (possible when a species description provides only one of
+    // the short/long slots, since the generator keeps index alignment) must
+    // stay empty rather than becoming a bare colour tag that the mutations
+    // list would render as a blank entry.
     if (suppressed)
-        return {_suppressedmut(desc.first, true), _suppressedmut(desc.second, false)};
-    return {_innatemut(desc.first, true), _innatemut(desc.second, false)};
+    {
+        return {desc.first.empty() ? "" : _suppressedmut(desc.first, true),
+                desc.second.empty() ? "" : _suppressedmut(desc.second, false)};
+    }
+    return {desc.first.empty() ? "" : _innatemut(desc.first, true),
+            desc.second.empty() ? "" : _innatemut(desc.second, false)};
 }
 
 tileidx_t get_mutation_tile(mutation_type mut)
@@ -714,9 +722,9 @@ static vector<pair<string,string>> _get_form_fakemuts()
         {
             result.push_back({"blade armour",
                     _badmut(make_stringf(T_("Your body armour is %s at protecting you."),
-                          penalty_percent <=  -45 ? "much less effective"
-                        : penalty_percent <   -20 ? "less effective"
-                                                  : "slightly less effective"
+                          penalty_percent <=  -45 ? T_("much less effective")
+                        : penalty_percent <   -20 ? T_("less effective")
+                                                  : T_("slightly less effective")
             ))});
         }
     }
@@ -783,15 +791,19 @@ static vector<pair<string, string>> _get_fakemuts()
     vector<string> long_fakemut = species::fake_mutations(you.species, false);
     for (size_t i = 0; i < long_fakemut.size(); ++i)
     {
+        // Display-only path: both forms are catalog keys; the mutation
+        // identity is the enum, never these strings.
+        const string short_description = T_(short_fakemut[i].c_str());
+        const string long_description = T_(long_fakemut[i].c_str());
         if (species::is_draconian(you.species))
         {
-            result.push_back(_annotate_form_based({short_fakemut[i], T_(long_fakemut[i].c_str())},
+            result.push_back(_annotate_form_based({short_description, long_description},
                                 form_changes_anatomy() && you.form != transformation::dragon));
         }
         else
         {
-            result.push_back({_innatemut(short_fakemut[i], true),
-                              _innatemut(T_(long_fakemut[i].c_str()), false)});
+            result.push_back({_innatemut(short_description, true),
+                              _innatemut(long_description, false)});
         }
     }
 
@@ -799,14 +811,12 @@ static vector<pair<string, string>> _get_fakemuts()
     {
         const int ac = you.racial_ac(false) / 100;
 
-        // XX generalize this code somehow?
-        const string scale_clause = string(species::scale_type(you.species))
-                  + " scales are hard";
-
-        string ac_str = make_stringf(T_("Your %s. (AC +%d)"), you.species == SP_NAGA
-                                        ? "serpentine skin is tough"
-                                        : scale_clause.c_str(),
-                                        ac);
+        // Complete sentences: the colour name is a catalog key translated at
+        // display, never concatenated into an English clause.
+        const string ac_str = you.species == SP_NAGA
+            ? make_stringf(T_("Your serpentine skin is tough. (AC +%d)"), ac)
+            : make_stringf(T_("Your %s scales are hard. (AC +%d)"),
+                           T_(species::scale_type(you.species)), ac);
         result.push_back(_annotate_form_based({"AC +" + to_string(ac), ac_str},
                             (form_changes_anatomy() || form_changes_substance())
                                 && !(species::is_draconian(you.species)
@@ -1401,21 +1411,23 @@ static void _maybe_remove_equipment(mutation_type mut)
         if (mut == MUT_MISSING_HAND)
         {
             mprf(T_("You can no longer %s %s!"),
-                    item->base_type == OBJ_JEWELLERY ? "wear" : "hold",
+                    item->base_type == OBJ_JEWELLERY ? T_("wear") : T_("hold"),
                     item->name(DESC_YOUR).c_str());
         }
         else
         {
             if (item_is_melded(*item))
             {
-                mprf(T_("%s is forcibly removed from your body%s!"),
-                        item->name(DESC_YOUR).c_str(),
-                        item->cursed() ? ", shattering the curse!" : "");
+                mprf(item->cursed()
+                     ? T_("%s is forcibly removed from your body, breaking its binding!")
+                     : T_("%s is forcibly removed from your body!"),
+                     item->name(DESC_YOUR).c_str());
             }
             else
             {
-                mprf(T_("%s%s falls off!"), item->name(DESC_YOUR).c_str(),
-                        item->cursed() ? ", shattering the curse!" : "");
+                mprf(item->cursed() ? T_("%s falls off, breaking its binding!")
+                                    : T_("%s falls off!"),
+                     item->name(DESC_YOUR).c_str());
             }
 
             // A mutation made us not only lose an equipment slot
@@ -2109,8 +2121,8 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
         if (you.hp <= 0)
         {
             ouch(0, KILLED_BY_FRAILTY, MID_NOBODY,
-                 make_stringf(T_("gaining the %s mutation"),
-                              mutation_name(mutat)).c_str());
+                 make_stringf("gaining the %s mutation",
+                              mutation_name_en(mutat)).c_str());
         }
     }
 
@@ -2271,7 +2283,8 @@ bool _delete_single_mutation_level(mutation_type mutat,
     if (you.hp <= 0)
     {
         ouch(0, KILLED_BY_FRAILTY, MID_NOBODY,
-             make_stringf(T_("losing the %s mutation"), mutation_name(mutat)).c_str());
+             make_stringf("losing the %s mutation",
+                          mutation_name_en(mutat)).c_str());
     }
 
     return true;
@@ -2530,18 +2543,20 @@ string get_mutation_tags(mutation_type mut)
 }
 
 
+const char* mutation_name_en(mutation_type mut, bool allow_category)
+{
+    if (allow_category && mut >= CATEGORY_MUTATIONS && mut < MUT_NON_MUTATION)
+        return _get_category_mutation_def(mut).short_desc;
+    // note -- this can produce crashes if fed invalid mutations, e.g. if allow_category is false and mut is a category mutation
+    if (!_is_valid_mutation(mut))
+        return nullptr;
+    return _get_mutation_def(mut).short_desc;
+}
+
 const char* mutation_name(mutation_type mut, bool allow_category)
 {
-    const char* en;
-    if (allow_category && mut >= CATEGORY_MUTATIONS && mut < MUT_NON_MUTATION)
-        en = _get_category_mutation_def(mut).short_desc;
-    // note -- this can produce crashes if fed invalid mutations, e.g. if allow_category is false and mut is a category mutation
-    else if (!_is_valid_mutation(mut))
-        return nullptr;
-    else
-        en = _get_mutation_def(mut).short_desc;
-
-    return C_("mutation", en);
+    const char* en = mutation_name_en(mut, allow_category);
+    return en ? C_("mutation", en) : nullptr;
 }
 
 const char* category_mutation_name(mutation_type mut)
@@ -3129,8 +3144,9 @@ bool temp_mutation_wanes()
 
     const int num_remove = min(starting_tmuts, random_range(2, 3));
 
-    mprf(MSGCH_DURATION, T_("You feel the corruptions in your body subside %s."),
-        (num_remove >= starting_tmuts ? "completely" : "somewhat"));
+    mprf(MSGCH_DURATION, "%s", num_remove >= starting_tmuts
+        ? T_("You feel the corruptions in your body subside completely.")
+        : T_("You feel the corruptions in your body subside somewhat."));
 
     for (int i = 0; i < num_remove; ++i)
         delete_temp_mutation(); // chooses randomly
@@ -3569,8 +3585,9 @@ void remove_bane(bane_type bane)
 
 // Calculate how many XLs worth of XP it would take for the player to remove a
 // specified bane. If they do not have the bane, this is calculated as if they
-// had it for its default duration (as affected by mult)
-int xl_to_remove_bane(bane_type bane, int mult)
+// had it for its default duration (as affected by mult). include_new previews
+// adding that duration to any existing bane, without changing player state.
+int xl_to_remove_bane(bane_type bane, int mult, bool include_new)
 {
     int progress = 0;
     int you_skill_cost_level = you.skill_cost_level;
@@ -3580,8 +3597,9 @@ int xl_to_remove_bane(bane_type bane, int mult)
         (you.has_mutation(MUT_ACCURSED) || you.undead_state() != US_ALIVE) ? 2
                                                                            : 1;
 
-    const int amount = you.banes[bane] > 0 ? you.banes[bane]
-                                           : bane_data[bane_index[bane]].duration * mult / 100;
+    const int new_amount = bane_data[bane_index[bane]].duration * mult / 100;
+    const int amount = include_new ? you.banes[bane] + new_amount
+                       : you.banes[bane] > 0 ? you.banes[bane] : new_amount;
     const int bane_xp = amount * cost_factor;
 
     while (progress < bane_xp)
