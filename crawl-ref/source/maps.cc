@@ -535,7 +535,7 @@ static bool _connected_minivault_place(const coord_def &c,
 
     for (rectangle_iterator ri(c, c + place.size - 1); ri; ++ri)
     {
-        const coord_def &ci(*ri);
+        const coord_def &ci = *ri;
 
         if (lines[ci.y - c.y][ci.x - c.x] == ' ')
             continue;
@@ -1061,7 +1061,7 @@ public:
     vault_chance_roll_iterator operator ++ (int)
     {
         vault_chance_roll_iterator copy(*this);
-        operator ++ ();
+        ++*this;
         return copy;
     }
 

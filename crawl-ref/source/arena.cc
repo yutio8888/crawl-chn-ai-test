@@ -1376,7 +1376,7 @@ int arena_cull_items()
     for (int i = 0; i < MAX_ITEMS; i++)
     {
         // All items in env.item[] are valid when we're called.
-        const item_def &item(env.item[i]);
+        const item_def &item = env.item[i];
 
         // We want floor items.
         if (!in_bounds(item.pos))
@@ -1395,7 +1395,7 @@ int arena_cull_items()
 
     for (int idx : items)
     {
-        const item_def &item(env.item[idx]);
+        const item_def &item = env.item[idx];
 
         // If the drop time is 0 then this is probably thrown ammo.
         if (arena::item_drop_times[idx] == 0)

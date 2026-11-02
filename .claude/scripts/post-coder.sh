@@ -94,8 +94,8 @@ CPP_CONFIG_ARGS=()
 while IFS= read -r path; do
     [[ -n "$path" ]] || continue
     case "$path" in
-        crawl-ref/source/*.cc) ;;
-        *) echo "ERROR: preprocessing target must be a core source .cc: $path" >&2; exit 2 ;;
+        crawl-ref/source/*.cc|crawl-ref/source/*.h) ;;
+        *) echo "ERROR: preprocessing target must be a core source .cc or .h: $path" >&2; exit 2 ;;
     esac
     [[ -f "$path" ]] || { echo "ERROR: missing preprocessing target: $path" >&2; exit 2; }
     if [[ "$SCOPE" == changed ]]; then

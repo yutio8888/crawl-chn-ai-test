@@ -459,7 +459,7 @@ void wizard_value_item()
     if (prompt_failed(i))
         return;
 
-    const item_def& item(you.inv[i]);
+    const item_def& item = you.inv[i];
     const int real_value = item_value(item, true);
     const int known_value = item_value(item, false);
     if (real_value != known_value)

@@ -228,7 +228,7 @@ dungeon_feature_type wizard_select_feature(bool mimic, bool allow_fprop)
                 if (fprop != FPROP_NONE && allow_fprop)
                 {
                     env.pgrid(you.pos()) |= fprop;
-                    mprf(T_("Set fprops \"%s\" at (%d,%d)"),
+                    mprf_p(T_("Set fprops \"%s\" at (%d,%d)"),
                          name.c_str(), you.pos().x, you.pos().y);
                 }
                 else

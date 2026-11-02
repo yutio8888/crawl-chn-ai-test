@@ -413,6 +413,18 @@ void f() {
                         parse_preprocessed_cpp(parser, source)
             missing = b'void f(){ int x = __builtin_va_arg(ap, int) }'
             self.assertTrue(parse_preprocessed_cpp(parser, missing).root_node.has_error)
+            # The type argument can initially resemble a function declaration
+            # or cast when the intrinsic result is assigned through a pointer.
+            for expression in (b'*(__builtin_va_arg(ap, int*)) = value',
+                               b'*__builtin_va_arg(ap, void**) = value'):
+                source = b'void f(){ ' + expression + b'; }'
+                adapted = parse_preprocessed_cpp(parser, source)
+                self.assertFalse(adapted.root_node.has_error)
+                self.assertEqual(adapted.root_node.end_byte, len(source))
+                self.assertIn('assignment_expression', str(adapted.root_node))
+            bad = b'void f(){ *(__builtin_va_arg(ap +, int*)) = value; }'
+            with self.assertRaises(ValueError):
+                parse_preprocessed_cpp(parser, bad)
 
     def test_deleted_free_function_adapter_preserves_signature_and_risk_nodes(self):
         if PARSER_IMPORT_ERROR is not None:
@@ -439,6 +451,68 @@ void f() {
                 except ValueError:
                     continue
                 self.assertTrue(tree.root_node.has_error)
+
+    def test_member_function_cast_preserves_operand_offsets_and_risks(self):
+        import scan_varargs_string
+        parser = Parser(Language(tree_sitter_cpp.language()))
+        cast = b'(result (bag::*)(const text &)) &bag::insert'
+        source = (b'void f(){ use(\n' + cast
+                  + b', mprf("%s", std::string("bad"))); }\n')
+        tree = parse_preprocessed_cpp(parser, source)
+        self.assertFalse(tree.root_node.has_error)
+        self.assertEqual(tree.root_node.end_byte, len(source))
+        self.assertEqual(tree.root_node.text.count(b'\n'), source.count(b'\n'))
+        self.assertIn(b'&bag::insert', tree.root_node.text)
+        self.assertIn(b'const text &', tree.root_node.text)
+        findings = []
+        scan_varargs_string._walk(tree.root_node, source, findings, [])
+        self.assertTrue(any(f['risk'] == 'HIGH'
+                            and f['arg'] == 'std::string("bad")'
+                            for f in findings))
+        # Real compiler accepts the member overload selection before adapting
+        # its parser representation; no source or type semantics are changed.
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / 'member.cc'
+            multiline_cast = cast.replace(b') &', b')\n &')
+            path.write_text('struct text {}; using result = int;\n'
+                            'struct bag { result insert(const text &); '
+                            'result insert(int); };\n'
+                            'void f(){ auto p = ' + multiline_cast.decode() + '; }\n')
+            compiled = subprocess.run([self.compiler, '-std=c++11', '-fsyntax-only',
+                                       str(path)], capture_output=True, text=True)
+            self.assertEqual(compiled.returncode, 0, compiled.stderr)
+            expanded = preprocess_cpp(path, self.compiler)
+            parsed = parse_preprocessed_cpp(
+                parser, expanded.source, preprocessed=expanded,
+                filepath=path)
+            self.assertFalse(parsed.root_node.has_error)
+            pending = [parsed.root_node]
+            addresses = []
+            while pending:
+                node = pending.pop()
+                if node.type == 'pointer_expression' and node.text == b'&bag::insert':
+                    addresses.append(expanded.original_line(node.start_point[0]))
+                pending.extend(node.children)
+            self.assertEqual(addresses, [4])
+        for invalid in (
+                cast.replace(b'const text &', b'const text &, '),
+                cast.replace(b'const text &', b'text = broken()'),
+                cast.replace(b'bag::*', b'bag::+'),
+                cast.replace(b'&bag::insert', b'&other::insert'),
+                cast + b' + ',
+        ):
+            with self.subTest(invalid=invalid):
+                self.assertTrue(parse_preprocessed_cpp(
+                    parser, b'void f(){ use(' + invalid + b'); }').root_node.has_error)
+        for broken in (b'void f(){ use(' + cast + b'; }',
+                       b'void f(){ use(' + cast + b') }'):
+            self.assertTrue(parse_preprocessed_cpp(parser, broken).root_node.has_error)
+        for literal in (b'R"x(' + cast + b')x"', b'"' + cast + b'"'):
+            original = b'void f(){ auto text = ' + literal + b'; }'
+            self.assertEqual(parse_preprocessed_cpp(parser, original).root_node.text,
+                             original)
+        comment = b'/* ' + cast + b' */\nvoid f(){}'
+        self.assertEqual(parse_preprocessed_cpp(parser, comment).root_node.text, comment)
 
     def test_utf8_and_space_paths_use_real_clang_filename_decoding(self):
         with tempfile.TemporaryDirectory(prefix='issue120-路径 space-') as td:

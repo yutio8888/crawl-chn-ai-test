@@ -1405,6 +1405,12 @@ def parse_preprocessed_cpp(parser, source: bytes, *, preprocessed=None, filepath
     Catch2 emits diagnostic push/pop between an if condition and its body.
     Only actual clang/GCC warning-control directives become equal-length
     whitespace; executable tokens and physical offsets remain intact.
+
+    The grammar also misreads an abstract pointer-to-member function type
+    in a C-style cast. For a complete cast of an addressed member only,
+    erase the type's class qualifier, giving the parser an ordinary function
+    pointer type. The operand, parameter types and enclosing calls survive.
+    This is a syntax adapter, not C++ type checking or an ERROR exemption.
     """
     def fail(message, node):
         if preprocessed is not None:
@@ -1419,8 +1425,13 @@ def parse_preprocessed_cpp(parser, source: bytes, *, preprocessed=None, filepath
     normalized = bytearray(source)
     changed = False
     stack = [tree.root_node]
+    protected = []
     while stack:
         node = stack.pop()
+        if node.type in {"comment", "string_literal", "raw_string_literal",
+                         "char_literal", "preproc_arg"}:
+            protected.append((node.start_byte, node.end_byte))
+            continue
         if node.type == "init_declarator":
             declarator = node.child_by_field_name("declarator")
             value = node.child_by_field_name("value")
@@ -1450,9 +1461,22 @@ def parse_preprocessed_cpp(parser, source: bytes, *, preprocessed=None, filepath
             normalized[node.start_byte:node.end_byte] = bytes(
                 char if char in (10, 13) else 32 for char in node.text)
             changed = True
-        if node.type == "call_expression":
+        if node.type in {"call_expression", "function_declarator", "type_descriptor"}:
             function = node.child_by_field_name("function")
             args = node.child_by_field_name("arguments")
+            # In a dereferenced va_arg assignment the unadapted type operand
+            # can make the grammar prefer a declaration/cast over a call.
+            # These are the same intrinsic tokens and parameter boundaries;
+            # apply the same checked operand adaptation in either parse shape.
+            if node.type == "function_declarator":
+                function = node.child_by_field_name("declarator")
+                args = node.child_by_field_name("parameters")
+            elif node.type == "type_descriptor":
+                function = node.child_by_field_name("type")
+                declarator = node.child_by_field_name("declarator")
+                args = (declarator.child_by_field_name("parameters")
+                        if declarator is not None
+                        and declarator.type == "abstract_function_declarator" else None)
             if (function is not None and function.text == b"__builtin_va_arg"
                     and args is not None):
                 comma = source.rfind(b",", args.start_byte, args.end_byte)
@@ -1481,6 +1505,30 @@ def parse_preprocessed_cpp(parser, source: bytes, *, preprocessed=None, filepath
                 normalized[comma + 1:args.end_byte - 1] = b"0" + b" " * (len(operand) - 1)
                 changed = True
         stack.extend(node.children)
+    # Restrict the adapter to a complete type and a matching &Class::member
+    # operand. No calls, arbitrary expressions, defaults or template arguments
+    # can occur inside this supported type spelling. Parsing the lowered cast
+    # separately rejects malformed parameter/type syntax before normalization.
+    member_cast = re.compile(
+        rb"\(\s*[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*"
+        rb"(?:[ \t]+[A-Za-z_]\w*)*\s*[*&]*\s*"
+        rb"\(\s*(?P<qualifier>(?P<class>[A-Za-z_]\w*(?:::[A-Za-z_]\w*)*)::)"
+        rb"\s*\*\s*\)\s*\([A-Za-z0-9_:,\s*&]*\)\s*\)"
+        rb"\s*&\s*(?P=class)::[A-Za-z_]\w*\b")
+    for match in member_cast.finditer(source):
+        if any(start < match.end() and match.start() < end
+               for start, end in protected):
+            continue
+        start, end = match.span("qualifier")
+        replacement = bytes(10 if byte == 10 else 32
+                            for byte in source[start:end])
+        candidate = (source[match.start():start] + replacement
+                     + source[end:match.end()])
+        probe = parser.parse(b"void __member_cast_probe(){ auto p = "
+                             + candidate + b"; }")
+        if not probe.root_node.has_error:
+            normalized[start:end] = replacement
+            changed = True
     tree = parser.parse(bytes(normalized)) if changed else tree
     if preprocessed is not None and tree.root_node.has_error:
         pending = [tree.root_node]

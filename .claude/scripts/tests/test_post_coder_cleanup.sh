@@ -286,6 +286,28 @@ run_cpp explicit_changed_scope \
     || fail "raw group double-scanned the configured target"
 assert_clean "explicit TU routing removes advisory temp"
 
+# Headers use the scanners' existing real inclusion contexts, not synthetic
+# standalone header compilation. The router must forward the target unchanged.
+printf 'struct Sample {};\n' > "$REPO/crawl-ref/source/sample.h"
+run_cpp explicit_header \
+    ZH_VERIFY_SCOPE=changed \
+    ZH_VERIFY_CHANGED_FILES='crawl-ref/source/sample.h' \
+    ZH_VERIFY_CPP_PREPROCESS_FILES=crawl-ref/source/sample.h \
+    ZH_VERIFY_CPP_COMPILE_COMMANDS="$DB"
+[[ "$CPP_RC" -eq 0 && "$(wc -l < "$CALL_LOG")" -eq 3 ]] \
+    && pass "header target routes once through all configured scanners" \
+    || fail "header target routing (rc=$CPP_RC)"
+[[ "$(grep -c 'sample.h' "$CALL_LOG")" -eq 3 ]] \
+    && pass "header inclusion target is preserved" \
+    || fail "header target was replaced or omitted"
+run_cpp unlisted_header \
+    ZH_VERIFY_SCOPE=changed ZH_VERIFY_CHANGED_FILES='' \
+    ZH_VERIFY_CPP_PREPROCESS_FILES=crawl-ref/source/sample.h \
+    ZH_VERIFY_CPP_COMPILE_COMMANDS="$DB"
+[[ "$CPP_RC" -eq 2 && ! -s "$CALL_LOG" ]] \
+    && pass "unlisted header fails before scanner execution" \
+    || fail "unlisted header escaped scope validation"
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 [[ "$FAIL" -eq 0 ]]

@@ -5009,7 +5009,7 @@ void bolt::enchantment_affect_monster(monster* mon)
     int res_margin = 0;
     const mon_resist_type ench_result = mon->alive()
                                       ? try_enchant_monster(mon, res_margin)
-                                      : (obvious_effect = true, MON_OTHER);
+                                      : ((obvious_effect = true), MON_OTHER);
 
     if (mon->alive())           // Aftereffects.
     {

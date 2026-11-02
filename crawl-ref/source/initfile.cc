@@ -3987,7 +3987,8 @@ bool game_options::read_custom_option(opt_parse_state &state, bool runscripts)
         autopickups.reset();
 
         char32_t c;
-        for (const char* tp = state.field.c_str(); int s = utf8towc(&c, tp); tp += s)
+        int s;
+        for (const char* tp = state.field.c_str(); (s = utf8towc(&c, tp)); tp += s)
         {
             object_class_type type = item_class_by_sym(c);
 

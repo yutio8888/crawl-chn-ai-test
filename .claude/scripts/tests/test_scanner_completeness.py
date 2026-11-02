@@ -1818,6 +1818,112 @@ int main() { return 0; }
                          {"discovered": 1, "scanned": 1, "failed": []})
 
 
+    def _mprf_p_fixture(self, root, body):
+        src = Path(root) / "src"
+        src.mkdir()
+        (src / "sample.cc").write_text(body, encoding="utf-8")
+        source_txt = Path(root) / "source.txt"
+        source_txt.write_text(
+            "%%%%\n%1$s %2$s\n%2$s%1$s\n%%%%\n"
+            "ctx|%1$s %2$s\n%2$s%1$s\n%%%%\n"
+            "ctxplain|%1$s %2$s\n纯模板文本\n%%%%\n"
+            "%1$s %2$s.\n%2$s%1$s\n%%%%\n",
+            encoding="utf-8")
+        return src, source_txt
+
+    def test_mprf_p_classifies_real_consumers_not_lines(self):
+        cases = [
+            # const-bound C_ context key, read-only fallback check, then _p
+            ('const string format = C_("ctx", "%1$s %2$s");\n'
+             'if (format == "%1$s %2$s") return;\n'
+             'return make_stringf_p(format.c_str(), a, b);\n', 0),
+            # mprf_p with an explicit message channel
+            ('mprf_p(MSGCH_WARN, T_("%1$s %2$s"), a, b);\n', 0),
+            # mprf_p with a declared message-channel variable
+            ('const auto chan = MSGCH_MONSTER_SPELL;\n'
+             'mprf_p(chan, T_("%1$s %2$s"), a, b);\n', 0),
+            # the production conditional channel declaration
+            ('const auto chan = cond ? MSGCH_MONSTER_SPELL\n'
+             '                      : MSGCH_FRIEND_SPELL;\n'
+             'mprf_p(chan, T_("%1$s %2$s"), a, b);\n', 0),
+            # a non-channel variable in the first position is not a channel
+            ('void f(){ const char *fmt = "%s";\n'
+             '  mprf_p(fmt, T_("%1$s %2$s")); }\n', 1),
+            # a nested non-positional wrapper must still be reported
+            ('void f(){ make_stringf_p(\n'
+             '  make_stringf(T_("%1$s %2$s"), "a", "b").c_str()); }\n', 1),
+            # adjacent string literals are one runtime key
+            ('mprf_p(T_("%1$s " "%2$s"), a, b);\n', 0),
+            # bound template that is only compared: not a format consumer
+            ('const string tpl = T_("%1$s %2$s.");\n'
+             'CHECK(tpl.find("%1$s") != string::npos);\n', 0),
+            # non-positional printf consumer: real violation
+            ('mpr(T_("%1$s %2$s"), a, b);\n', 1),
+            # reassigned local no longer proves safety
+            ('string f = T_("%1$s %2$s");\n'
+             'f = other;\n'
+             'mprf_p(f.c_str(), a, b);\n', 1),
+            # literal in a non-format argument position
+            ('mprf_p("%s", T_("%1$s %2$s"));\n', 1),
+            # an unrelated _p call on the previous line proves nothing
+            ('make_stringf_p(ok, a);\n'
+             'mpr(T_("%1$s %2$s"), a, b);\n', 1),
+            # the same format also forwarded to a plain printf consumer
+            ('const string f = T_("%1$s %2$s");\n'
+             'make_stringf_p(f.c_str(), a, b);\n'
+             'mprf(f.c_str(), a, b);\n', 1),
+            # unknown escape/alias helper on the bound format
+            ('const string f = T_("%1$s %2$s");\n'
+             'escape_html(f);\n'
+             'make_stringf_p(f.c_str(), a, b);\n', 1),
+            # returning the raw bound template
+            ('const string f = T_("%1$s %2$s");\n'
+             'return f;\n', 1),
+            # an inner block shadows the name, so the outer use is unknown
+            ('const string f = T_("%1$s %2$s");\n'
+             'if (x) {\n'
+             '  const string f = other;\n'
+             '  make_stringf_p(f.c_str(), a, b);\n'
+             '}\n', 1),
+            # pseudo-code inside a string literal is not a call
+            ('const char *doc = "mprf_p(T_(\"%1$s %2$s\"), a, b);";\n', 0),
+            # a present non-positional context entry owns the lookup
+            ('mpr(C_("ctxplain", "%1$s %2$s"), a, b);\n', 0),
+            # same-name nested _p calls cannot borrow the outer format span
+            ('make_stringf_p(make_stringf_p("%s", T_("%1$s %2$s")));', 1),
+            # a channel declaration in another function supplies no type proof
+            ('void f(){ const auto fmt = MSGCH_WARN; }\n'
+             'void g(){ const char *fmt = "%s"; '
+             'mprf_p(fmt, T_("%1$s %2$s")); }', 1),
+            # channel-like text is still a string, not an enum
+            ('void f(){ const auto fmt = "MSGCH_WARN"; '
+             'mprf_p(fmt, T_("%1$s %2$s")); }', 1),
+            # a local shadow cancels the outer channel proof
+            ('void f(){ const auto fmt = MSGCH_WARN; '
+             '{ const char *fmt = "%s"; '
+             'mprf_p(fmt, T_("%1$s %2$s")); }}', 1),
+            # before the shadow declaration this is still the outer binding
+            ('void f(){ const string fmt = T_("%1$s %2$s"); '
+             '{ mprf(fmt.c_str(), a, b); const string fmt = other; } '
+             'make_stringf_p(fmt.c_str(), a, b); }', 1),
+            # braces and escaped quotes in data do not change block/call scope
+            ('void f(){ const char *doc = R"x(} ") {")x"; '
+             'const string fmt = T_("%1$s %2$s"); '
+             'return make_stringf_p(fmt.c_str(), a, b); }', 0),
+        ]
+        for body, expected in cases:
+            with self.subTest(body=body.splitlines()[0]):
+                with tempfile.TemporaryDirectory() as td:
+                    src, source_txt = self._mprf_p_fixture(td, body)
+                    proc = subprocess.run(
+                        [sys.executable, str(SCRIPTS / "scan_i18n.py"),
+                         "mprf-p", str(src),
+                         "--source-txt", str(source_txt)],
+                        text=True, capture_output=True, check=False)
+                    self.assertEqual(expected, proc.returncode,
+                                     proc.stdout + proc.stderr)
+
+
 class CjkInventoryTests(unittest.TestCase):
     """Exercise the production inventory parser and CLI in a real Git fixture."""
 
