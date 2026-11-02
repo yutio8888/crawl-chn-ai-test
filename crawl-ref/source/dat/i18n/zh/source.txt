@@ -8406,7 +8406,7 @@ Which rune (ESC to exit)?
  低语道：这些会让你开口的！
 %%%%
 Whoops, nicked a vault in slime connectivity fixup
-哎呀，在黏液连接修复中碰到了保险库
+哎呀，修复黏液区域连通性时挖到了地图模板。
 %%%%
 Why would you want to do that?
 你为什么要那样做？

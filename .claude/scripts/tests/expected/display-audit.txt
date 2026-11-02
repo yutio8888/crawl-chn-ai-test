@@ -1,5 +1,6 @@
 === I18n display-contract violations ===
 
+[DISPLAY] beam.cc:5  "DISPLAY003 orb_beam_name_display return: orb of destruction"
 [DISPLAY] evoke.cc:4  "DISPLAY003 cannot_evoke_item_reason return: Cannot evoke %s."
 [DISPLAY] evoke.cc:6  "DISPLAY003 cannot_evoke_item_reason return: Bare producer reason."
 [DISPLAY] god-abil.cc:5  "DISPLAY003 wu_jian_can_wall_jump error_ret: No room to jump."
@@ -17,13 +18,13 @@
 [DISPLAY] tilereg-inv.cc:7  "DISPLAY004 update_tip_text tip_prefix: Initializer prefix"
 
 --- scan_i18n.py missing-t ---
-Files scanned: 5
+Files scanned: 6
 
   MSG: 0 candidates
   UI: 0 candidates
   STR: 0 candidates
   SMM: 0 candidates
-  DISPLAY: 15 candidates
+  DISPLAY: 16 candidates
   DYNKEY: 0 candidates
 
   (debug/#if0 blocks excluded; use --strict to include)
@@ -33,4 +34,5 @@ Per-file candidate breakdown:
   tilereg-inv.cc: DISPLAY:3
   evoke.cc: DISPLAY:2
   tilereg-doll.cc: DISPLAY:2
+  beam.cc: DISPLAY:1
   god-abil.cc: DISPLAY:1

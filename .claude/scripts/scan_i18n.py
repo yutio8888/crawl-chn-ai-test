@@ -79,6 +79,9 @@ DIRECT_DISPLAY_SINKS = {
 # display text. Return expressions are always checked. These are zero-debt,
 # blocking contracts; keep the registry explicit to avoid guessing from names.
 DISPLAY_TEXT_PRODUCERS = {
+    'beam.cc': {
+        'orb_beam_name_display': (),
+    },
     'evoke.cc': {
         'cannot_evoke_item_reason': (),
     },
@@ -117,10 +120,6 @@ DISPLAY_TEXT_PRODUCERS = {
 DISPLAY_TEXT_BUILDERS = {
     'dgn-overview.cc': {
         '_get_seen_branches': ('zclock_desc',),
-    },
-    'mon-project.cc': {
-        '_iood_hit_setup': ('beam.name',),
-        '_annihilation_explode_setup': ('beam.name',),
     },
     'throw.cc': {
         '_throw_noise': ('msg',),
@@ -1739,6 +1738,46 @@ def cmd_missing_t(args):
 # Subcommand: mprf-p
 # ══════════════════════════════════════════════════════════════════════════════
 
+def _bounded_local_positional_return(lines, line_index):
+    """Recognize one const local format followed immediately by its return.
+
+    This deliberately accepts only make_stringf_p(format.c_str(), ...) and
+    the existing exact-key fallback ternary. Other statements, reassignment,
+    escaping/capturing the variable, or unknown calls remain findings.
+    """
+    declaration = re.fullmatch(
+        r'\s+const\s+(?:std::)?string\s+(\w+)\s*=\s*T_\(\s*'
+        r'("(?:[^"\\]|\\.)*")\s*\)\s*;\s*', lines[line_index])
+    if not declaration:
+        return False
+    variable, key = declaration.groups()
+    # A bounded, immediate statement only: no cross-block data-flow guesses.
+    following = _mask_cpp_comments(''.join(lines[line_index + 1:line_index + 13]))
+    end = _find_statement_end(following, 0, min(len(following), 2048))
+    if end is None:
+        return False
+    statement = following[:end + 1]
+    if CPP_RAW_STRING_RE.search(statement):
+        return False
+    name = re.escape(variable)
+    guard = (rf'{name}\s*==\s*{re.escape(key)}\s*\?\s*'
+             r'[A-Za-z_]\w*(?:\.\w+)*\s*:\s*')
+    prefix = re.match(rf'\s*return\s+(?:{guard})?make_stringf_p\s*\(', statement)
+    if not prefix:
+        return False
+    open_pos = statement.rfind('(', 0, prefix.end())
+    close_pos = _find_matching_paren(statement, open_pos)
+    if close_pos is None or statement[close_pos + 1:].strip() != ';':
+        return False
+    arguments = _split_call_args(statement, open_pos + 1, close_pos)
+    if not arguments or not re.fullmatch(rf'\s*{name}\.c_str\(\)\s*', arguments[0][0]):
+        return False
+    code = CPP_LITERAL_RE.sub(' ', statement)
+    uses = len(re.findall(rf'\b{name}\b', code))
+    expected = 2 if re.match(rf'\s*return\s+{name}\s*==', code) else 1
+    return uses == expected
+
+
 def cmd_mprf_p(args):
     """Check that source.txt entries with positional %n$s use mprf_p in code."""
     entries = parse_source_txt(args.source_txt)
@@ -1786,6 +1825,10 @@ def cmd_mprf_p(args):
                         pos_call = POSITIONAL_CALL_RE.search(lines[lineno - 2])
                     if not pos_call and lineno > 2:
                         pos_call = POSITIONAL_CALL_RE.search(lines[lineno - 3])
+                    if re.match(r'\s*(?:const\s+)?(?:std::)?string\s+\w+\s*=\s*T_\(', line):
+                        # A nearby unrelated _p call cannot prove the later
+                        # use of an owned format declaration is safe.
+                        pos_call = _bounded_local_positional_return(lines, lineno - 1)
                     if not pos_call:
                         findings.append((filepath, lineno, en_key, cn_val[:60]))
 
