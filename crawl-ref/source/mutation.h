@@ -112,7 +112,8 @@ bane_type bane_from_name(string name, vector<bane_type> *partial_matches = nullp
 bool add_bane(bane_type bane = NUM_BANES, string reason = "Doom",
               int duration = 0, int mult = 100);
 void remove_bane(bane_type bane);
-int xl_to_remove_bane(bane_type bane, int mult = 100);
+int xl_to_remove_bane(bane_type bane, int mult = 100,
+                      bool include_new = false);
 
 bool skill_has_dilettante_penalty(skill_type skill);
 

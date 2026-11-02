@@ -794,7 +794,6 @@ TEST_CASE("legacy dynamic display: real automagic script formats messages after 
     std::ostringstream contents;
     contents << input.rdbuf();
     const string source = contents.str();
-    REQUIRE(source.find("]====]") == string::npos);
     for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
     {
         TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
@@ -842,10 +841,10 @@ local env = setmetatable({
         mana_cost=function(name) assert(name==spellbook.a); return 1 end,
     }, {__index=spells}),
 }, {__index=_G})
-local chunk = assert(load([====[
+local function install(_ENV)
 )lua" + source + R"lua(
-]====], "automagic real consumer", "t", env))
-chunk()
+end
+install(env)
 local function expected(template, ...)
     local translated = crawl.t_(template)
     if crawl.language()=="zh" then assert(translated~=template) end
@@ -938,7 +937,6 @@ TEST_CASE("legacy Lua display: real autofight and delay scripts retain command i
         std::ostringstream contents;
         contents << input.rdbuf();
         const string source = contents.str();
-        REQUIRE(source.find("]====]") == string::npos);
         for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
         {
             TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
@@ -977,9 +975,10 @@ local env=setmetatable({
     you={spell_table=function() return book end},
     mag_attack=function(move) movement[#movement+1]=move end,
 }, {__index=_G})
-assert(load([====[
+local function install(_ENV)
 )lua" + source + R"lua(
-]====], "real built-in Lua consumer", "t", env))()
+end
+install(env)
 )lua" + checks;
             const int result = dlua.execstring(script.c_str(), filename);
             INFO(dlua.error);
@@ -997,17 +996,19 @@ TEST_CASE("legacy Lua metadata: real stash script and item binding retain armour
     std::ostringstream contents;
     contents << input.rdbuf();
     const string source = contents.str();
-    REQUIRE(source.find("]====]") == string::npos);
     const string script = R"lua(
 local env=setmetatable({}, {__index=_G})
-assert(load([====[
+local function install(_ENV)
 )lua" + source + R"lua(
-]====], "real stash annotation", "t", env))()
+end
+install(env)
 function legacy_stash_test(item)
     return env.ch_stash_search_annotate_item(item)
 end
 )lua";
-    REQUIRE(dlua.execstring(script.c_str(), "stash setup") == 0);
+    const int setup = dlua.execstring(script.c_str(), "stash setup");
+    INFO(dlua.error);
+    REQUIRE(setup == 0);
     const pair<armour_type, const char*> armours[] = {
         {ARM_TROLL_LEATHER_ARMOUR, "{Regen+}"},
         {ARM_STEAM_DRAGON_ARMOUR, "{rSteam}"},
@@ -1050,4 +1051,146 @@ end
         }
     }
     REQUIRE(dlua.execstring("legacy_stash_test=nil", "stash cleanup") == 0);
+}
+
+TEST_CASE("legacy Lua markers: real toll and message consumers retain canonical properties",
+          "[zh-translation][legacy-markers][lua-consumers]")
+{
+    init_dungeon_lua();
+    init_properties();
+    init_item_name_cache();
+    init_mut_index();
+    string sources;
+    for (const char *file : {"dlua/lm_trig.lua", "dlua/lm_fog.lua", "dlua/lm_monst.lua",
+                             "dlua/lm_trove.lua", "dlua/lm_timed.lua"})
+    {
+        std::ifstream input(datafile_path(file));
+        REQUIRE(input.good());
+        std::ostringstream contents;
+        contents << input.rdbuf();
+        sources += "\n" + contents.str() + "\n";
+    }
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string script = R"lua(
+local messages, notes, prompts = {}, {}, {}
+local visible, stairs, answer = true, false, false
+local player_x, player_y = 1, 1
+local removed = 0
+local env = setmetatable({
+  crawl=setmetatable({
+    mpr=function(text, channel) messages[#messages+1]={text,channel} end,
+    take_note=function(text) notes[#notes+1]=text end,
+    yesno=function(text) prompts[#prompts+1]=text; return answer end,
+  }, {__index=crawl}),
+  you=setmetatable({
+    pos=function() return player_x,player_y end,
+    see_cell=function() return visible end,
+    taking_stairs=function() return stairs end,
+    have_rune=function(n) assert(n==3); return true end,
+  }, {__index=you}),
+  dgn=setmetatable({
+    point=function(x,y) return {x=x,y=y} end,
+    mons_at=function() return nil end,
+    create_monster=function(x,y,s) assert(s=="iron golem"); return true end,
+    feature_desc_at=function() return crawl.t_("a portal") end,
+  }, {__index=dgn}),
+}, {__index=_G})
+local function install(_ENV)
+)lua" + sources + R"lua(
+end
+install(env)
+local marker={pos=function() return 10,10 end}
+local function translated(key)
+  local value=crawl.t_(key)
+  if crawl.language()=="zh" then assert(value~=key, "missing test key: "..key) end
+  return value
+end
+local function trove(item)
+  local toll={type="item",item=item}
+  return setmetatable({toll=toll,props={toll=toll,desc="a portal",
+    toll_desc="to enter a treasure trove"}},env.TroveMarker)
+end
+local item={base_type="scroll",sub_type="acquirement",quantity=2,plus1=false,ego_type=false}
+local gate=trove(item)
+local canonical=gate:item_name(false,true)
+local display=gate:item_name(false)
+assert(gate:overview_note()==string.format(translated("give %s"),display))
+assert(gate:fdesc_long():find(gate:item_name(),1,true))
+assert(gate:check_item_veto(marker)=="veto")
+assert(prompts[#prompts]==string.format(translated(
+  "This trove needs %s to function. Give it the items?"),gate:item_name()))
+assert(messages[#messages][1]==translated("Okay, then."))
+local original_t=env.crawl.t_
+env.crawl.t_=function(key) if key=="give %s" then return key end; return crawl.t_(key) end
+gate=trove(item)
+assert(gate:overview_note()=="give "..canonical)
+env.crawl.t_=original_t
+local offered={pluses=function() return 4 end}
+gate:note_payed(offered,true)
+assert(notes[#notes]==string.format(translated("You paid a toll of %s %s"),
+  gate:item_name(),translated("to enter a treasure trove")))
+assert(item.plus1==false and item.quantity==2 and item.sub_type=="acquirement")
+gate.props.toll_desc="unknown purpose %s"
+gate:note_payed(offered,true)
+assert(notes[#notes]=="You paid a toll of "..gate:item_name(nil,true).." unknown purpose %s")
+assert(item.plus1==false)
+gate.props.toll_desc=nil
+gate.props.desc="unknown arch %s"
+gate:note_payed(offered,true)
+assert(notes[#notes]=="You paid a toll of "..gate:item_name(nil,true).." at an unknown arch %s")
+local rune={base_type="miscellaneous",sub_type="rune of Zot",quantity=1,
+  plus1=3,ego_type="slimy rune of Zot"}
+gate=trove(rune)
+answer=true
+assert(gate:check_item_veto(marker)==nil)
+assert(notes[#notes]==string.format(translated("You showed %s %s"),
+  gate:item_name(),translated("to enter a treasure trove")))
+assert(rune.ego_type=="slimy rune of Zot" and rune.base_type=="miscellaneous" and rune.plus1==3)
+assert(messages[#messages][1]==translated(
+  "The portal draws power from the presence of the item and buzzes to life!"))
+
+local seen="The volcano comes to life with a roar!"
+local unseen="In the distance, the volcano erupts with a roar."
+local warn="The air gets thick with the scent of sulphur."
+local machine=env.tw_machine(3,warn,unseen,nil,seen)
+for _, cansee in ipairs({true,false}) do
+  visible=cansee
+  machine.see_function=function() return visible end
+  env.tw_machine_tw_func(machine,nil,{type="turn",sub_type="countdown"},marker)
+  assert(messages[#messages][1]==translated(cansee and seen or unseen))
+  env.tw_machine_tw_func(machine,nil,{type="turn",sub_type="tick",countdown=20},marker)
+  assert(messages[#messages][1]==translated(warn))
+end
+assert(machine.trigger_see_message==seen and machine.trigger_cantsee_message==unseen)
+local trigger={msg='You almost think you hear a voice: "Seek not undue power, mortal."',
+  channel="warning",repeated=false,remove=function() removed=removed+1 end}
+env.TriggerableMessage.on_trigger(trigger,nil,marker)
+assert(messages[#messages][1]==translated(trigger.msg) and messages[#messages][2]=="warning")
+assert(removed==1)
+local statue={props={},new_monster="iron golem",message_seen="The iron statue comes to life!",
+  message_unseen="You hear a grinding sound.",remove=function() removed=removed+1 end}
+for _, cansee in ipairs({true,false}) do
+  visible=cansee
+  env.MonsterOnTrigger.on_trigger(statue,nil,marker)
+  assert(messages[#messages][1]==translated(cansee and statue.message_seen or statue.message_unseen))
+end
+assert(statue.new_monster=="iron golem" and removed==3)
+local timed={props={},disappear=function() removed=removed+1 end}
+visible=true
+env.TimedMarker.timeout(timed,marker,true)
+assert(messages[#messages][1]==string.format(translated("%s disappears!"),crawl.t_("a portal")))
+assert(removed==4)
+player_x,player_y,stairs=10,10,true
+env.TimedMarker.timeout(timed,marker,true)
+assert(messages[#messages][1]==string.format(translated("%s vanishes just as you enter it!"),crawl.t_("a portal")))
+assert(removed==4)
+assert(crawl.language()==(crawl.t_("give %s")=="give %s" and "en" or "zh"))
+)lua";
+        const int result = dlua.execstring(script.c_str(), "actual marker consumers");
+        INFO(dlua.error);
+        REQUIRE(result == 0);
+        CHECK(Options.language == language);
+    }
 }

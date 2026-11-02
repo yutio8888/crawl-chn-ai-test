@@ -2977,13 +2977,13 @@ static void _check_cmd_repeat(int last_turn)
         // it does take zero turns, to cancel command repetition
         // before we reach here.
 #ifdef WIZARD
-        crawl_state.cant_cmd_repeat("Can't repeat a command which "
+        crawl_state.cant_cmd_repeat(T_("Can't repeat a command which "
                                     "takes no turns (unless it's a "
-                                    "wizard command), cancelling ");
+                                    "wizard command), cancelling repetitions."));
 #else
-        crawl_state.cant_cmd_repeat("Can't repeat a command which "
+        crawl_state.cant_cmd_repeat(T_("Can't repeat a command which "
                                     "takes no turns, cancelling "
-                                    "repetitions.");
+                                    "repetitions."));
 #endif
         crawl_state.cancel_cmd_repeat();
         return;
@@ -3134,7 +3134,7 @@ static void _do_prev_cmd_again()
 
     if (crawl_state.prev_cmd == CMD_NO_CMD || crawl_state.prev_cmd_keys.empty())
     {
-        crawl_state.cancel_cmd_again("No previous command to re-do.", true);
+        crawl_state.cancel_cmd_again(T_("No previous command to re-do."), true);
         crawl_state.cancel_cmd_repeat();
         repeat_again_rec.clear();
         return;

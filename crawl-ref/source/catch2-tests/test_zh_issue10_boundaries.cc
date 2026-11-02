@@ -3877,6 +3877,8 @@ TEST_CASE("legacy concat: actual auxiliary hit miss and list consumers translate
             you.base_stats.init(10);
             you.experience_level = 10;
             you.mutation[MUT_CLAWS] = claws ? 3 : 0;
+            you.equipment.update();
+            REQUIRE(you.has_usable_offhand());
             monster *target = world.place(MONS_ORC, coord_def(21, 20));
             target->hit_points = target->max_hit_points = 10000;
             legacy_aux_accuracy attack(&you, target, hit);
@@ -3983,8 +3985,9 @@ TEST_CASE("legacy concat: real monster list slime tag and recite diagnostic use 
     CHECK(line.find(T_(" (fellow slime)")) != string::npos);
     you.religion = GOD_ZIN;
     you.wizard = true;
-    monster_info orc(MONS_ORC);
-    orc.hd = 10;
+    monster *target = world.place(MONS_ORC, coord_def(21, 20));
+    target->set_hit_dice(10);
+    monster_info orc(target);
     describe_info description;
     bool has_stats = false;
     get_monster_db_desc(orc, description, has_stats);
@@ -4158,3 +4161,68 @@ TEST_CASE("legacy concat: actual macro save failure localizes only its message f
     }
 }
 #endif
+
+TEST_CASE("legacy markers: bane preview agrees with actual addition without changing current state",
+          "[zh-translation][legacy-markers][bane-preview]")
+{
+    const bool existing = GENERATE(false, true);
+    const bool accursed = GENERATE(false, true);
+    issue10_world world;
+    no_notes suppress_notes;
+    init_mut_index();
+    you.experience_level = 10;
+    you.max_level = 10;
+    you.experience = exp_needed(10);
+    you.total_experience = 10000;
+    you.skill_cost_level = calc_skill_cost_level(you.total_experience, 1);
+    you.mutation[MUT_ACCURSED] = accursed ? 1 : 0;
+    if (existing)
+        REQUIRE(add_bane(BANE_LETHARGY, "test", 0, 100));
+    const int before = you.banes[BANE_LETHARGY];
+    const int old_preview = xl_to_remove_bane(BANE_LETHARGY);
+    const int preview = xl_to_remove_bane(BANE_LETHARGY, 200, true);
+    CHECK(you.banes[BANE_LETHARGY] == before);
+    CHECK(xl_to_remove_bane(BANE_LETHARGY) == old_preview);
+    REQUIRE(add_bane(BANE_LETHARGY, "Entering a Trove", 0, 200));
+    CHECK(preview == xl_to_remove_bane(BANE_LETHARGY));
+    CHECK(you.banes[BANE_LETHARGY] > before);
+    if (existing)
+        CHECK(preview > old_preview);
+
+    Note original(NOTE_GET_BANE, BANE_LETHARGY, 0, "Entering a Trove");
+    vector<unsigned char> bytes;
+    writer output(&bytes);
+    original.save(output);
+    reader input(bytes);
+    input.setMinorVersion(TAG_MINOR_VERSION);
+    Note loaded;
+    loaded.load(input);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        CHECK(loaded.name == "Entering a Trove");
+        CHECK(loaded.describe(false, false, true).find(T_("Entering a Trove")) != string::npos);
+        vector<unsigned char> after;
+        writer saved(&after);
+        loaded.save(saved);
+        CHECK(after == bytes);
+    }
+}
+
+TEST_CASE("legacy markers: fixed elementalist names preserve raw and arbitrary name identities",
+          "[zh-translation][legacy-markers][fixed-monster-names]")
+{
+    for (const char *name : {"master elementalist", "grandmaster elementalist", "Ada %s Custom"})
+    {
+        monster_info monster(MONS_OCCULTIST);
+        monster.mname = name;
+        monster.mb.set(MB_NAME_REPLACE);
+        for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+        {
+            TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+            CHECK(monster.full_name(DESC_PLAIN) == T_(name));
+            CHECK(monster.mname == name);
+            CHECK(monster.db_name() == "occultist");
+        }
+    }
+}

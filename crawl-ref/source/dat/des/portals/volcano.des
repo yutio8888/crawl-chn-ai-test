@@ -115,7 +115,7 @@ end
 
 local large_warning = tw_machine(3, "The air gets thick with the scent of sulphur.",
                                  "In the distance, the volcano erupts with a roar.",
-                                 "The volcano comes to life with a roar!")
+                                 nil, "The volcano comes to life with a roar!")
 
 local small_warning = tw_machine(3, nil, nil, nil, "The volcano roars to life, " ..
                                  "belching forth lava!", "The air gets thick with " ..

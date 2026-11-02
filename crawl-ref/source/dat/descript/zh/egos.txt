@@ -214,7 +214,8 @@ ice (Ice) armour ego
 %%%%
 infusion (Infuse) armour ego
 
-它用你的一小部分魔法来增强你的每次近战攻击。
+近战命中时，你会消耗可用法力来增强这一击。若你以生命施法，则改为消耗生命，
+且不会因此使生命值低于1点。
 %%%%
 intelligence (Int+3) armour ego
 

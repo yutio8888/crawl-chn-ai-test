@@ -25,8 +25,8 @@ Any damage you deal or take is increased.
 %%%%
 mayhem passive
 
-You have a chance of causing visible monsters to go into a frenzy when you kill
-a foe.
+When you kill a foe, you have a chance to cause another monster that can see you
+to go into a frenzy.
 %%%%
 repel missiles passive
 
@@ -50,7 +50,8 @@ You are partially protected from mutation.
 %%%%
 guardian spirit passive
 
-Any damage you take is divided between your reserves of health and magic.
+Damage you take is divided between your reserves of health and magic.
+Poison and flaying damage are not divided this way.
 %%%%
 rampage passive
 
@@ -80,5 +81,6 @@ spell, and always regain the magic spent when you miscast a spell.
 %%%%
 infuse magic passive
 
-You spend magic each time you make a melee attack, empowering your blows.
+Your melee hits spend available magic to empower the blow. If you cast spells
+with health, they use health instead, without reducing it below 1.
 %%%%

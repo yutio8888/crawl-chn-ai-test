@@ -13,8 +13,8 @@ amulet of faith
 %%%%
 amulet of guardian spirit
 
-这条项链含有守护之灵，能将佩戴者受到的任何伤害
-分摊到其生命值和法力储备上。
+这条项链含有守护之灵，能将佩戴者受到的伤害
+分摊到其生命值和法力储备上。中毒和剥皮造成的伤害不会如此分摊。
 %%%%
 amulet of magic regeneration
 

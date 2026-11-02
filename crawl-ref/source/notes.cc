@@ -782,7 +782,11 @@ string Note::describe(bool when, bool where, bool what) const
             result << T_("Gained bane: ")
                    << bane_name(static_cast<bane_type>(first));
             if (!name.empty())
-                result << " [" << god_wrath_display_name(name) << "]";
+            {
+                const string reason = name == "Entering a Trove"
+                    ? T_("Entering a Trove") : god_wrath_display_name(name);
+                result << " [" << reason << "]";
+            }
             break;
         case NOTE_LOSE_BANE:
             result << T_("Lost bane: ")

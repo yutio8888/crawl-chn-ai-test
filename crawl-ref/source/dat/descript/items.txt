@@ -27,8 +27,9 @@ when removed.
 %%%%
 amulet of guardian spirit
 
-An amulet containing a protective spirit which will cause any damage taken to
-be divided between the wearer's reserves of health and magic.
+An amulet containing a protective spirit which will cause damage taken to
+be divided between the wearer's reserves of health and magic. Poison and
+flaying damage are not divided this way.
 %%%%
 amulet of magic regeneration
 

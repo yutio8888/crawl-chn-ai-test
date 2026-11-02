@@ -5635,7 +5635,7 @@ bool ru_power_leap()
 
     if (crawl_state.is_replaying_keys())
     {
-        crawl_state.cancel_cmd_all("You can't repeat Power Leap.");
+        crawl_state.cancel_cmd_all(T_("You can't repeat Power Leap."));
         return false;
     }
     if (you.is_nervous())
@@ -5929,7 +5929,7 @@ bool uskayaw_line_pass()
 
     if (crawl_state.is_replaying_keys())
     {
-        crawl_state.cancel_cmd_all("You can't repeat Line Pass.");
+        crawl_state.cancel_cmd_all(T_("You can't repeat Line Pass."));
         return false;
     }
 
@@ -6061,7 +6061,7 @@ spret uskayaw_grand_finale(bool fail)
 
     if (crawl_state.is_replaying_keys())
     {
-        crawl_state.cancel_cmd_all("No encores!");
+        crawl_state.cancel_cmd_all(T_("No encores!"));
         return spret::abort;
     }
 
@@ -6532,7 +6532,7 @@ spret wu_jian_wall_jump_ability()
 
     if (crawl_state.is_replaying_keys())
     {
-        crawl_state.cancel_cmd_all("You can't repeat a wall jump.");
+        crawl_state.cancel_cmd_all(T_("You can't repeat a wall jump."));
         return spret::abort;
     }
 

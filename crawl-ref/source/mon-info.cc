@@ -1131,7 +1131,16 @@ string monster_info::_core_name() const
     string s;
 
     if (is(MB_NAME_REPLACE))
-        s = type == MONS_GOD_WRATH_AVATAR ? god_wrath_display_name(mname) : mname;
+    {
+        if (type == MONS_GOD_WRATH_AVATAR)
+            s = god_wrath_display_name(mname);
+        else if (mname == "master elementalist")
+            s = T_("master elementalist");
+        else if (mname == "grandmaster elementalist")
+            s = T_("grandmaster elementalist");
+        else
+            s = mname;
+    }
     else if (invalid_monster_type(nametype) && nametype != MONS_PROGRAM_BUG)
         s = "INVALID MONSTER";
     else

@@ -292,8 +292,8 @@ void handle_wizard_command()
         update_screen();
         if (crawl_state.cmd_repeat_start)
         {
-            crawl_state.cancel_cmd_repeat("Can't repeat re-activating wizard "
-                                          "mode.");
+            crawl_state.cancel_cmd_repeat(T_("Can't repeat re-activating wizard "
+                                          "mode."));
         }
         return;
     }
@@ -329,8 +329,8 @@ void handle_wizard_command()
 
         if (crawl_state.cmd_repeat_start)
         {
-            crawl_state.cancel_cmd_repeat("Can't repeat entering wizard "
-                                          "mode.");
+            crawl_state.cancel_cmd_repeat(T_("Can't repeat entering wizard "
+                                          "mode."));
             return;
         }
     }
@@ -366,8 +366,8 @@ void handle_wizard_command()
             break;
 
         default:
-            crawl_state.cant_cmd_repeat("You cannot repeat that "
-                                        "wizard command.");
+            crawl_state.cant_cmd_repeat(T_("You cannot repeat that "
+                                        "wizard command."));
             return;
         }
     }
@@ -414,7 +414,7 @@ void enter_explore_mode()
 
         if (crawl_state.cmd_repeat_start)
         {
-            crawl_state.cancel_cmd_repeat("Can't repeat entering explore mode");
+            crawl_state.cancel_cmd_repeat(T_("Can't repeat entering explore mode"));
             return;
         }
     }

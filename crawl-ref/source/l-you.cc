@@ -1926,7 +1926,9 @@ LUAFN(you_xl_to_remove_bane)
     if (bane != NUM_BANES)
     {
         int mult = luaL_safe_checkint(ls, 2);
-        PLUARET(integer, xl_to_remove_bane(bane, mult > 0 ? mult : 100));
+        const bool include_new = lua_toboolean(ls, 3);
+        PLUARET(integer, xl_to_remove_bane(bane, mult > 0 ? mult : 100,
+                                         include_new));
     }
 
     string err = make_stringf("No such bane: '%s'.", banename.c_str());

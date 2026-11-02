@@ -52416,3 +52416,213 @@ Key pressed, interrupting command repetition.
 %%%%
 Cannot control self, cancelling command repetition.
 无法控制自身，正在取消命令重复。
+%%%%
+You can't repeat Stack Five.
+你不能重复执行“堆五张”。
+%%%%
+You can't repeat Triple Draw.
+你不能重复执行“三连抽”。
+%%%%
+You can't repeat Power Leap.
+你不能重复执行“强力跳跃”。
+%%%%
+You can't repeat Line Pass.
+你不能重复执行“穿行”。
+%%%%
+No encores!
+不许返场！
+%%%%
+You can't repeat a wall jump.
+你不能重复执行蹬墙跳。
+%%%%
+You can't repeat controlled blinks.
+你不能重复进行受控闪烁。
+%%%%
+Can't repeat a command which takes no turns (unless it's a wizard command), cancelling repetitions.
+不能重复不消耗回合的命令（巫师命令除外），正在取消命令重复。
+%%%%
+Can't repeat a command which takes no turns, cancelling repetitions.
+不能重复不消耗回合的命令，正在取消命令重复。
+%%%%
+No previous command to re-do.
+没有可再次执行的上一条命令。
+%%%%
+Command repetition interrupted.
+命令重复已中断。
+%%%%
+Can't repeat re-activating wizard mode.
+不能重复执行重新启用巫师模式的操作。
+%%%%
+Can't repeat entering wizard mode.
+不能重复执行进入巫师模式的操作。
+%%%%
+You cannot repeat that wizard command.
+你不能重复该巫师命令。
+%%%%
+Can't repeat entering explore mode
+不能重复执行进入探索模式的操作。
+%%%%
+Can't repeat that command.
+不能重复该命令。
+%%%%
+Can't redo that command.
+不能再次执行该命令。
+%%%%
+strange structure made of doors
+由门组成的奇异构造
+%%%%
+master elementalist
+元素大师
+%%%%
+grandmaster elementalist
+元素宗师
+%%%%
+The air gets thick with the scent of sulphur.
+空气中弥漫着浓重的硫磺气味。
+%%%%
+In the distance, the volcano erupts with a roar.
+远处，火山轰鸣着喷发了。
+%%%%
+The volcano comes to life with a roar!
+火山轰鸣着苏醒了！
+%%%%
+The volcano roars to life, belching forth lava!
+火山轰鸣着苏醒，喷涌出熔岩！
+%%%%
+The iron statue comes to life!
+铁雕像活过来了！
+%%%%
+You hear a grinding sound.
+你听到一阵摩擦声。
+%%%%
+You almost think you hear a voice: "Seek not undue power, mortal."
+你恍惚间似乎听到一个声音：“凡人，莫要追求不应拥有的力量。”
+%%%%
+Entering a Trove
+进入宝藏库
+%%%%
+%s vanishes just as you enter it!
+就在你踏入时，%s消失了！
+%%%%
+%s disappears!
+%s消失了！
+%%%%
+This portal requires the presence of %s to function.\n
+这座传送门需要%s在场才能运作。\n
+%%%%
+This portal needs %s to function.\n
+这座传送门需要%s才能运作。\n
+%%%%
+The portal is engraved with runes symbolizing the primacy of the material over the divine. Those who enter it may find riches, but when they return, they will find that whatever gods they held dear have forgotten them in their absence.\n
+传送门上刻着符文，宣示物质凌驾于神明之上。进入者或许能寻得财富，但归来时会发现，他们曾敬仰的神祇已在他们离去期间将其遗忘。\n
+%%%%
+The portal is guarded from trespassers with a powerful curse. All who enter will suffer the %s:\n\n%s
+强大的诅咒守护着这座传送门，阻止外人闯入。所有进入者都将遭受%s：\n\n%s
+%%%%
+The portal is warded with dark magic that will temporarily drain a significant fraction of the maximum health of whoever enters it.\n
+黑暗魔法守护着这座传送门，会使所有进入者暂时损失大量生命值上限。\n
+%%%%
+Try making this Trove use an item (or a different item)?
+尝试让这座宝藏库改为索取一件物品（或另一件物品）吗？
+%%%%
+Switch Trove to %s instead?
+改为让宝藏库索取%s吗？
+%%%%
+Switched to a new item.
+已改为索取新的物品。
+%%%%
+Ignoring %s
+不采用%s
+%%%%
+To change the item the trove wants, first drop it on the trove tile.
+要更改宝藏库索取的物品，请先把新物品放到宝藏库入口所在的格子上。
+%%%%
+Make this portal take your piety?
+让这座传送门以失去虔诚值作为代价吗？
+%%%%
+Run diagnostic on inventory?
+对背包中的物品运行诊断吗？
+%%%%
+Run diagnostic on floor?
+对地上的物品运行诊断吗？
+%%%%
+This trove requires the presence of %s to function. Show it the item?
+这座宝藏库需要%s在场才能运作。要出示所需物品吗？
+%%%%
+This trove requires the presence of %s to function. Show it the items?
+这座宝藏库需要%s在场才能运作。要出示所需物品吗？
+%%%%
+This trove needs %s to function. Give it the item?
+这座宝藏库需要%s才能运作。要交出所需物品吗？
+%%%%
+This trove needs %s to function. Give it the items?
+这座宝藏库需要%s才能运作。要交出所需物品吗？
+%%%%
+The portal draws power from the presence of the item and buzzes to life!
+传送门从所需物品的存在中汲取力量，嗡鸣着启动了！
+%%%%
+The portal draws power from the presence of the items and buzzes to life!
+传送门从所需物品的存在中汲取力量，嗡鸣着启动了！
+%%%%
+You don't have %s with you.
+你身上没有%s。
+%%%%
+You don't have the item to give!
+你没有所需的物品可交！
+%%%%
+You don't have the items to give!
+你没有所需的物品可交！
+%%%%
+You must unequip the item first!
+你必须先卸下所需的物品！
+%%%%
+You must unequip the items first!
+你必须先卸下所需的物品！
+%%%%
+The portal accepts the item and buzzes to life!
+传送门收下物品，嗡鸣着启动了！
+%%%%
+The portal accepts the items and buzzes to life!
+传送门收下物品，嗡鸣着启动了！
+%%%%
+This portal proclaims the superiority of the material over the divine; entrants will become Ostracised and temporarily lose all standing with their god.\nEnter anyway?
+这座传送门宣扬物质凌驾于神明之上；进入者将被神祇排斥，暂时失去所有神眷。\n仍要进入吗？
+%%%%
+The portal is guarded from trespassers with a powerful curse. All who enter will suffer the %s for %s XL. Enter anyway?
+强大的诅咒守护着这座传送门，阻止外人闯入。所有进入者都将遭受%s，需再获得相当于%s级的经验值才能解除。仍要进入吗？
+%%%%
+The portal is warded with dark magic that will temporarily drain a significant fraction of the maximum health of whoever enters it. Enter anyway?
+黑暗魔法守护着这座传送门，会使所有进入者暂时损失大量生命值上限。仍要进入吗？
+%%%%
+This trove is too buggy to enter!
+这座宝藏库出了严重故障，无法进入！
+%%%%
+You paid a toll of %s at %s
+你支付了%s，地点是%s。
+%%%%
+You showed %s at %s
+你出示了%s，地点是%s。
+%%%%
+You paid a toll of %s %s
+你支付了%s（%s）。
+%%%%
+You showed %s %s
+你出示了%s（%s）。
+%%%%
+show %s
+出示%s
+%%%%
+give %s
+交出%s
+%%%%
+suffer the %s
+遭受%s
+%%%%
+suffer draining
+遭受衰竭
+%%%%
+be buggy
+发生故障
+%%%%
+become Ostracised
+被神祇排斥

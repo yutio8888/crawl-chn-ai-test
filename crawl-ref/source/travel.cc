@@ -5047,6 +5047,8 @@ void explore_discoveries::found_feature(const coord_def &pos,
             string desc = env.markers.property_at(pos, MAT_ANY, "stop_explore");
             if (desc.empty())
                 desc = cleaned_feature_description(pos);
+            else
+                desc = T_(desc.c_str());
             runed_doors.emplace_back(desc, 1);
             es_flags |= ES_RUNED_DOOR;
         }
@@ -5072,6 +5074,8 @@ void explore_discoveries::found_feature(const coord_def &pos,
             string desc = env.markers.property_at(pos, MAT_ANY, "stop_explore");
             if (desc.empty())
                 desc = cleaned_feature_description(pos);
+            else
+                desc = T_(desc.c_str());
             transporters.emplace_back(desc, 1);
             es_flags |= ES_TRANSPORTER;
         }
