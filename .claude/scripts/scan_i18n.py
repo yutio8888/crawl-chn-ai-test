@@ -1865,7 +1865,10 @@ def _mprf_declared_channel(masked: str, before: int, name: str) -> bool:
         # Any later declaration/rebinding of this name cancels this proof.
         # This deliberately rejects uncertain shadowing rather than inferring
         # types from names across blocks or functions.
-        if re.search(rf'\b{re.escape(name)}\s*=(?!=)', code[match.end():before]):
+        intervening = code[match.end():before]
+        if (re.search(rf'\b{re.escape(name)}\s*=(?!=)', intervening)
+                or re.search(rf'\b[A-Za-z_]\w*(?:\s+|\s*[*&]+\s*)'
+                             rf'{re.escape(name)}\b', intervening)):
             return False
         return True
     return False

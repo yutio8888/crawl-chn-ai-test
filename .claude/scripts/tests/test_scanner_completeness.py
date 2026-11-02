@@ -1902,6 +1902,11 @@ int main() { return 0; }
             ('void f(){ const auto fmt = MSGCH_WARN; '
              '{ const char *fmt = "%s"; '
              'mprf_p(fmt, T_("%1$s %2$s")); }}', 1),
+            # uninitialized locals and parameters also shadow an outer channel
+            ('void f(){ const auto fmt = MSGCH_WARN; '
+             '{ char *fmt; mprf_p(fmt, T_("%1$s %2$s")); }}', 1),
+            ('const auto fmt = MSGCH_WARN; '
+             'void f(const char *fmt){ mprf_p(fmt, T_("%1$s %2$s")); }', 1),
             # before the shadow declaration this is still the outer binding
             ('void f(){ const string fmt = T_("%1$s %2$s"); '
              '{ mprf(fmt.c_str(), a, b); const string fmt = other; } '
