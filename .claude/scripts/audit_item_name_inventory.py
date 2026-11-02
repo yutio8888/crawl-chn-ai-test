@@ -381,7 +381,7 @@ def function_body(text, name):
         lambda match: re.sub(r"[^\n]", " ", match.group()), code,
     )
     matches = list(re.finditer(
-        r"\b" + re.escape(name) + r"\s*\([^;{}]*?\)\s*\{", code, re.S,
+        r"\b" + re.escape(name) + r"\s*\([^;{}()]*\)\s*\{", code, re.S,
     ))
     if len(matches) != 1:
         raise RuntimeError(f"function missing or duplicate: {name}")

@@ -159,6 +159,18 @@ def quality_m1_fixture():
 
 
 class ItemNameInventoryAuditTest(unittest.TestCase):
+    def test_function_body_distinguishes_definition_from_loop_calls(self):
+        declaration = 'const vector<vector<power>> & powers() { return table; }'
+        calls = '''void use() {
+            for (const auto& power : powers()[god]) { consume(power); }
+            if (ready(powers())) { consume_more(); }
+        }'''
+        source = calls + declaration + calls
+        self.assertEqual(' return table; ', MODULE.function_body(source, 'powers'))
+        for changed in (calls, source + declaration):
+            with self.subTest(source=changed), self.assertRaises(RuntimeError):
+                MODULE.function_body(changed, 'powers')
+
     def test_appearance_arrays_preserve_order_and_context_without_extra_slots(self):
         source = '''const char* entries[] = {
             "wooden", NC_("material", "ruby"), /* trivia */ "blue",
