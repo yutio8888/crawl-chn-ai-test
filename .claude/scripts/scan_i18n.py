@@ -685,9 +685,16 @@ PROTOCOL_BOUNDARY_CONTRACTS = OrderedDict([
             'file': 'dat/dlua/lm_trove.lua',
             'start': r'function\s+TroveMarker:note_payed\s*\(',
             'end': r'function\s+trove_marker\s*\(',
-            'required': ((r'toll_desc\s*=\s*crawl\.t_\(self\.props\.toll_desc\)', 1),),
-            'forbidden': (r'toll_desc\s*=\s*self\.props\.toll_desc',),
-            'localized': 'toll_desc = self.props.toll_desc',
+            'required': (
+                (r'english_place\s*=\s*self\.props\.toll_desc', 1),
+                (r'display_place\s*=\s*crawl\.t_\(english_place\)', 1),
+                (r'crawl\.take_note\(trove_snapshot\(frame,\s*'
+                 r'\{english_item,\s*english_place\},\s*'
+                 r'\{display_item,\s*display_place\}\)\)', 1),
+            ),
+            'forbidden': (r'english_place\s*=\s*crawl\.t_',
+                          r'crawl\.take_note\(string\.format'),
+            'localized': 'english_place = crawl.t_(self.props.toll_desc)',
         },
     )),
 ])
@@ -1737,8 +1744,44 @@ def cmd_missing_t(args):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Subcommand: mprf-p
-# ══════════════════════════════════════════════════════════════════════════════
+def _bounded_local_positional_return(lines, line_index):
+    """Recognize one const local format followed immediately by its return.
+
+    This deliberately accepts only make_stringf_p(format.c_str(), ...) and
+    the existing exact-key fallback ternary. Other statements, reassignment,
+    escaping/capturing the variable, or unknown calls remain findings.
+    """
+    declaration = re.fullmatch(
+        r'\s+const\s+(?:std::)?string\s+(\w+)\s*=\s*T_\(\s*'
+        r'("(?:[^"\\]|\\.)*")\s*\)\s*;\s*', lines[line_index])
+    if not declaration:
+        return False
+    variable, key = declaration.groups()
+    # A bounded, immediate statement only: no cross-block data-flow guesses.
+    following = _mask_cpp_comments(''.join(lines[line_index + 1:line_index + 13]))
+    end = _find_statement_end(following, 0, min(len(following), 2048))
+    if end is None:
+        return False
+    statement = following[:end + 1]
+    if CPP_RAW_STRING_RE.search(statement):
+        return False
+    name = re.escape(variable)
+    guard = (rf'{name}\s*==\s*{re.escape(key)}\s*\?\s*'
+             r'[A-Za-z_]\w*(?:\.\w+)*\s*:\s*')
+    prefix = re.match(rf'\s*return\s+(?:{guard})?make_stringf_p\s*\(', statement)
+    if not prefix:
+        return False
+    open_pos = statement.rfind('(', 0, prefix.end())
+    close_pos = _find_matching_paren(statement, open_pos)
+    if close_pos is None or statement[close_pos + 1:].strip() != ';':
+        return False
+    arguments = _split_call_args(statement, open_pos + 1, close_pos)
+    if not arguments or not re.fullmatch(rf'\s*{name}\.c_str\(\)\s*', arguments[0][0]):
+        return False
+    code = CPP_LITERAL_RE.sub(' ', statement)
+    uses = len(re.findall(rf'\b{name}\b', code))
+    expected = 2 if re.match(rf'\s*return\s+{name}\s*==', code) else 1
+    return uses == expected
 
 def cmd_mprf_p(args):
     """Check that source.txt entries with positional %n$s use mprf_p in code."""
@@ -1787,6 +1830,10 @@ def cmd_mprf_p(args):
                         pos_call = POSITIONAL_CALL_RE.search(lines[lineno - 2])
                     if not pos_call and lineno > 2:
                         pos_call = POSITIONAL_CALL_RE.search(lines[lineno - 3])
+                    if re.match(r'\s*(?:const\s+)?(?:std::)?string\s+\w+\s*=\s*T_\(', line):
+                        # A nearby unrelated _p call cannot prove the later
+                        # use of an owned format declaration is safe.
+                        pos_call = _bounded_local_positional_return(lines, lineno - 1)
                     if not pos_call:
                         findings.append((filepath, lineno, en_key, cn_val[:60]))
 
@@ -4328,13 +4375,15 @@ def cmd_monster_compound_consistency(args):
     ]
 
     exact_rules = {
-        # D-A-026 — sensed monster naming family
+        # D-A-026 — sensed monster naming family, as realised by the reviewed
+        # asset batch (base form keeps 的; the subtype forms are the reviewed
+        # 感知到的 <difficulty> 怪物 renderings).
         "sensed monster": "感知到的怪物",
-        "trivial sensed monster": "微弱感知怪物",
-        "easy sensed monster": "简单感知怪物",
-        "tough sensed monster": "困难感知怪物",
-        "nasty sensed monster": "危险感知怪物",
-        "friendly sensed monster": "友善感知怪物",
+        "trivial sensed monster": "感知到的微不足道的怪物",
+        "easy sensed monster": "感知到的弱小怪物",
+        "tough sensed monster": "感知到的危险怪物",
+        "nasty sensed monster": "感知到的极危险怪物",
+        "friendly sensed monster": "感知到的友方怪物",
         # D-B-012 — monster orb naming pattern (entity names only)
         "great orb of eyes": "巨眼之球",
         "orb of entropy": "熵之球",
