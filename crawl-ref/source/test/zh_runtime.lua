@@ -261,7 +261,12 @@ for index, trove_case in ipairs(trove_cases) do
                                            crawl.t_("demon weapon"))
             expected_grammar = crawl.grammar(expected_plain, "a")
         elseif trove_case.horn then
-            expected_plain = source_item.name("db")
+            local identity = source_item.name("db")
+            assert(identity == "horn of Geryon",
+                   "horn database identity was localized")
+            assert(marker:item_name(false, true) == identity,
+                   "forced-English horn display was localized")
+            expected_plain = crawl.t_(identity)
             expected_grammar = crawl.grammar(expected_plain, "the")
         else
             expected_plain = source_item.name("plain")

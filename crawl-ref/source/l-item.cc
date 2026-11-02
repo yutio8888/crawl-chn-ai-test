@@ -1993,6 +1993,7 @@ LUAFN(l_item_trove_name)
     if (is_horn)
     {
         display = item.name(DESC_DBNAME, false, true, false);
+        display = T_(display.c_str());
         if (do_grammar)
             display = thing_do_grammar(DESC_THE, display);
     }

@@ -29,7 +29,7 @@ PANEL_CASES = [
     ('panel:inventory', b'i', ('装备：', '匕首', '长袍'), (), True),
     ('panel:skills', b'm', ('技能', '施法能力', '咒法系'), (), True),
     ('panel:abilities', b'a', ('能力', '失败率'), (), True),
-    ('panel:overview', bytes([15]), ('地城总览', '分支'), (), True),
+    ('panel:overview', bytes([15]), ('地牢总览', '分支'), (), True),
     ('panel:messages', bytes([16]), ('欢迎', '游戏种子'), (), True),
     ('panel:spells', b'I', ('你的法术', '魔法飞弹'), (), True),
     ('panel:resists', b'%', ('火抗', '冰抗', '毒抗'), (), True),
@@ -565,11 +565,11 @@ def run_workflows(bot: PtyBot) -> None:
                     ('标注哪个分支？',))
     annotation_prompt = bot.send(b'.', 1.0)
     evidence.record('workflow:annotation:text', annotation_prompt,
-                    ('为D:1添加新注释',))
+                    ('为地牢:1添加新注释',))
     bot.send('危险测试!\r'.encode('utf-8'), 1.0)
     overview = bot.send(bytes([15]), 2.0)
     evidence.record('workflow:annotation:overview', overview,
-                    ('地城总览', 'D:1', '危险测试!', '佐姆'), ('Dungeon (',))
+                    ('地牢总览', '地牢:1', '危险测试!', '佐姆'), ('Dungeon (',))
     evidence.finish()
 
 
