@@ -2620,8 +2620,10 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                     beam = terse_beam_cause();
                 trim_string(beam);
                 if (!beam.empty())
+                {
                     desc += make_stringf(T_(" (%s)"),
                         (chinese ? _death_beam_display_name(beam) : beam).c_str());
+                }
             }
         }
         else if (isupper(auxkilldata[0]))  // already made (ie shot arrows)
