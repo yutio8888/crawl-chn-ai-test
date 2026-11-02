@@ -1572,6 +1572,9 @@ TEST_CASE("combat rereview: real anchor and sap enchantments distinguish initial
     issue10_world world;
     init_duration_index();
     no_notes suppress_notes;
+    const auto old_animations = Options.use_animations;
+    unwinder restore_animations([&] { Options.use_animations = old_animations; });
+    Options.use_animations = use_animations_type();
     for (bool renewal : {false, true})
     {
         you.duration[DUR_DIMENSION_ANCHOR] = renewal ? 1 : 0;
@@ -1580,6 +1583,8 @@ TEST_CASE("combat rereview: real anchor and sap enchantments distinguish initial
         {
             bolt beam;
             beam.flavour = flavour;
+            // Test the real duration/message path without uninitialized UI animations.
+            beam.animate = false;
             beam.thrower = KILL_YOU;
             beam.source_id = MID_PLAYER;
             const char* key = flavour == BEAM_DIMENSION_ANCHOR
