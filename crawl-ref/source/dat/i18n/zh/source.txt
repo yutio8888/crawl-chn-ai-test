@@ -51438,3 +51438,15 @@ You have finished your manual of %s and skilfully toss it away.
 %%%%
 You have finished your manual of %s and toss it away.
 你完成了%s手册的学习，将其丢掉了。
+%%%%
+%s blessed by the Shining One
+受到光辉者祝福的%s
+%%%%
+%s corrupted by Lugonu
+受到卢格努腐化的%s
+%%%%
+%s bloodied by Kikubaaqudgha
+被奇库巴库哈染血的%s
+%%%%
+%s touched by the gods
+受到诸神触碰的%s
