@@ -58,7 +58,7 @@ static const char* _tsv_title_line =
 string fight_damage_stats::summary(const string prefix, bool tsv)
 {
     if (hits == 0 && !tsv)
-        return make_stringf("%s%6s | No hits", prefix.c_str(), attacker.c_str());
+        return make_stringf(T_("%s%6s | No hits"), prefix.c_str(), attacker.c_str());
     return make_stringf(tsv ? "%s%s\t%.1f\t%d\t%d%%\t%.1f\t%d\t%.2f\t%.1f"
                             : "%s%6s |    %5.1f |    %3d | %3d%% |"
                               " %5.1f |   %3d  | %5.2f |    %5.1f",

@@ -1424,6 +1424,6 @@ void wizard_unobtain_unrands()
     for (int i = UNRAND_START + 1; i < UNRAND_LAST; ++i)
         you.unique_items[i - UNRAND_START] = UNIQ_NOT_EXISTS;
 
-    mpr("All unrands are now eligible to generate once again.");
+    mpr(T_("All unrands are now eligible to generate once again."));
 }
 #endif

@@ -1761,7 +1761,7 @@ static void _read_macros_from(const char* filename)
  * bit after "macros +=")
  *
  * @return The string of any errors which occurred, or "" if no error.
- * %s is the field argument.
+ * Errors are complete display strings; callers must not use them as formats.
  */
 
 string read_rc_file_macro(const string& field)
@@ -1769,7 +1769,10 @@ string read_rc_file_macro(const string& field)
     const int first_space = field.find(' ');
 
     if (first_space < 0)
-        return "Cannot parse marcos += %s , there is only one argument";
+    {
+        return make_stringf(T_("Cannot parse macros += %s, there is only one argument"),
+                            field.c_str());
+    }
 
     // Start by deciding what context the macro/keymap is in
     const string context = field.substr(0, first_space);
@@ -1796,8 +1799,8 @@ string read_rc_file_macro(const string& field)
     else if (context == "M")
         keymap = false;
     else
-        return "'" + context
-                   + "' is not a valid macro or keymap context (macros += %s)";
+        return make_stringf(T_("'%s' is not a valid macro or keymap context (macros += %s)"),
+                            context.c_str(), field.c_str());
 
     // Now grab the key and action to be performed
     const string key_and_action = field.substr((first_space + 1));
@@ -1805,7 +1808,10 @@ string read_rc_file_macro(const string& field)
     const int second_space = key_and_action.find(' ');
 
     if (second_space < 0)
-        return "Cannot parse macros += %s , there are only two arguments";
+    {
+        return make_stringf(T_("Cannot parse macros += %s, there are only two arguments"),
+                            field.c_str());
+    }
 
     const string macro_key_string = key_and_action.substr(0, second_space);
     const string action_string = key_and_action.substr((second_space + 1));

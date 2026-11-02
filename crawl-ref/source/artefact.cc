@@ -1652,7 +1652,7 @@ string make_artefact_name(const item_def &item, bool appearance)
         {
             appear = getRandNameString("general appearance");
             if (appear.empty()) // still nothing found?
-                appear = "non-descript";
+                appear = T_("non-descript");
         }
 
         return make_stringf_p(C_("artefact appearance", "%1$s %2$s"),

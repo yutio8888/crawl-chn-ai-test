@@ -107,7 +107,7 @@ public:
         // not actually called in automatic code
         if (on_set)
             on_set();
-        return make_stringf("disabled option");
+        return make_stringf(T_("disabled option"));
     }
 
     virtual string loadFromParseState(const opt_parse_state &state) override;
@@ -511,7 +511,7 @@ public:
         string normalized = field;
         if (!choices.size())
         {
-            return make_stringf("Option '%s' is disabled in this build.",
+            return make_stringf(T_("Option '%s' is disabled in this build."),
                 name().c_str());
         }
         if (normalize_bools)
@@ -528,8 +528,8 @@ public:
 
             string all_choices = comma_separated_fn(choices.begin(),
                 choices.end(), [] (const pair<string, T> &p) {return p.first;},
-                " or ");
-            return make_stringf("Bad %s value: %s (should be %s)",
+                C_("rc option choices", " or "), C_("rc option choices", ", "));
+            return make_stringf(T_("Bad %s value: %s (should be %s)"),
                                 name().c_str(), field.c_str(),
                                 all_choices.c_str());
         }

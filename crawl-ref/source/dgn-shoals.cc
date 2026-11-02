@@ -1214,7 +1214,7 @@ void wizard_mod_tide()
 {
     if (!player_in_branch(BRANCH_SHOALS) || !env.heightmap)
     {
-        mprf(MSGCH_WARN, "Not in Shoals or no heightmap; tide not available.");
+        mprf(MSGCH_WARN, T_("Not in Shoals or no heightmap; tide not available."));
         return;
     }
 
@@ -1222,8 +1222,8 @@ void wizard_mod_tide()
     while (true)
     {
         mprf(MSGCH_PROMPT,
-             "Tide inertia: %d. New value "
-             "(smaller = faster tide) or use +/- to change tide: ",
+             T_("Tide inertia: %d. New value "
+                "(smaller = faster tide) or use +/- to change tide: "),
              TIDE_MULTIPLIER);
         mpr("");
         const int res =

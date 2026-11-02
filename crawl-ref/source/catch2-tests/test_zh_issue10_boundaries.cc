@@ -102,6 +102,9 @@
 #include "religion.h"
 #include "shopping.h"
 #include "stash.h"
+#include "dgn-shoals.h"
+#include "wiz-fsim.h"
+#include "wiz-item.h"
 #include <cstdio>
 #include <utility>
 
@@ -3644,3 +3647,91 @@ TEST_CASE("interface rereview: real manual exhaustion keeps the Throwing joke an
     REQUIRE(results.size() == 2);
     CHECK(results[0] == results[1]);
 }
+
+TEST_CASE("residual rereview: actual immune and living spell effects use one display wrapper",
+          "[zh-translation][residual-rereview][spell-immune]")
+{
+    issue10_world world;
+    unwind_var<bool> saving(crawl_state.need_save, true);
+    init_zap_index();
+    monster_info owner(MONS_EARTHEN_TOME);
+    owner.attitude = ATT_HOSTILE;
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        you.form = transformation::statue;
+        REQUIRE(you.immune_to_hex(SPELL_PETRIFY));
+        const string immune = spell_effect_string(SPELL_PETRIFY, &owner);
+        CHECK(immune == T_("(immune)"));
+        if (language == lang_t::ZH)
+            CHECK(immune != "(immune)");
+        else
+            CHECK(immune == "(immune)");
+        const int count = living_spell_count(SPELL_PETRIFY, false);
+        CHECK(spell_effect_string(SPELL_CONJURE_LIVING_SPELLS, &owner)
+              == make_stringf(T_("%dx%s"), count, immune.c_str()));
+
+        you.form = transformation::none;
+        REQUIRE_FALSE(you.immune_to_hex(SPELL_PETRIFY));
+        const string chance = spell_effect_string(SPELL_PETRIFY, &owner);
+        REQUIRE_FALSE(chance.empty());
+        CHECK(spell_effect_string(SPELL_CONJURE_LIVING_SPELLS, &owner)
+              == make_stringf(T_("%dx%s"), count, chance.c_str()));
+        CHECK(spell_effect_string(SPELL_PETRIFY, nullptr).empty());
+    }
+}
+
+#ifdef WIZARD
+TEST_CASE("residual rereview: actual fsim human summary localizes without changing TSV",
+          "[zh-translation][residual-rereview][fsim]")
+{
+    string canonical_tsv;
+    string canonical_hit_summary;
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        fight_damage_stats stats("Player");
+        const string human = stats.summary("A: ", false);
+        CHECK(human == make_stringf(T_("%s%6s | No hits"), "A: ", "Player"));
+        if (language == lang_t::ZH)
+            CHECK(human.find("No hits") == string::npos);
+        const string tsv = stats.summary("A:\t", true);
+        CHECK(tsv == "A:\tPlayer\t0.0\t0\t0%\t0.0\t0\t0.00\t0.0");
+        if (canonical_tsv.empty())
+            canonical_tsv = tsv;
+        CHECK(tsv == canonical_tsv);
+        CHECK(fight_data::header(true)
+              == "Damage source\tAvHitDam\tMaxDam\tAccuracy\tAvDam\tAvTime\tAvSpeed\tAvEffDam");
+        stats.hits = 1;
+        stats.av_hit_dam = 2.0;
+        const string hit_summary = stats.summary("A: ", false);
+        if (canonical_hit_summary.empty())
+            canonical_hit_summary = hit_summary;
+        CHECK(hit_summary == canonical_hit_summary);
+    }
+}
+
+TEST_CASE("residual rereview: noninteractive wizard consumers retain their state contracts",
+          "[zh-translation][residual-rereview][wizard]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    for (int i = UNRAND_START + 1; i < UNRAND_LAST; ++i)
+        you.unique_items[i - UNRAND_START] = UNIQ_EXISTS;
+    const string unrands = observe_message([] { wizard_unobtain_unrands(); });
+    CHECK(unrands.find(T_("All unrands are now eligible to generate once again."))
+          != string::npos);
+    for (int i = UNRAND_START + 1; i < UNRAND_LAST; ++i)
+        CHECK(you.unique_items[i - UNRAND_START] == UNIQ_NOT_EXISTS);
+    unwind_var<branch_type> branch(you.where_are_you, BRANCH_DUNGEON);
+    const string tide = observe_message([] { wizard_mod_tide(); });
+    CHECK(tide.find(T_("Not in Shoals or no heightmap; tide not available."))
+          != string::npos);
+    if (language == lang_t::ZH)
+    {
+        CHECK(unrands.find("All unrands") == string::npos);
+        CHECK(tide.find("Not in Shoals") == string::npos);
+    }
+}
+#endif
