@@ -7819,10 +7819,12 @@ bool player::resists_dislodge(string event, const actor* puller) const
 
 bool player::corrode(const actor* /*source*/, const char* corrosion_msg, int amount)
 {
+    // The canonical source is also used in persistent cause fields elsewhere.
+    const string display_source = god_wrath_display_name(corrosion_msg);
     // always increase duration, but...
     increase_duration(DUR_CORROSION, 10 + roll_dice(2, 4), 50,
                       make_stringf(T_("%s corrodes you!"),
-                                   T_(corrosion_msg)).c_str());
+                                   T_(display_source.c_str())).c_str());
 
     // Reduce corrosion amount by 50% if you have resistance.
     if (res_corr())

@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "god-wrath.h"
 
 #include <cmath>
 #include <algorithm>
@@ -4227,7 +4228,10 @@ bool monster::corrode(const actor* source, const char* corrosion_msg, int amount
     if (you.see_cell(pos()))
     {
         if (!has_ench(ENCH_CORROSION))
-            mprf(T_("%s corrodes %s!"), T_(corrosion_msg), name(DESC_THE).c_str());
+        {
+            const string display_source = god_wrath_display_name(corrosion_msg);
+            mprf(T_("%s corrodes %s!"), T_(display_source.c_str()), name(DESC_THE).c_str());
+        }
         else
             mprf(T_("%s seems to be corroded for longer."), name(DESC_THE).c_str());
     }

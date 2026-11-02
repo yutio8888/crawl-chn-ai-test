@@ -28,7 +28,7 @@ static const sacrifice_def sac_data[] =
 {
 
 { ABIL_RU_SACRIFICE_PURITY, MUT_NON_MUTATION,
-  "corrupt yourself such that",
+  NC_("Ru sacrifice offer", "corrupt yourself such that"),
   "sacrificed purity",
 
   0,
@@ -38,7 +38,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_WORDS, MUT_RENOUNCE_SCROLLS,
-  "sacrifice your ability to read unless badly injured",
+  NC_("Ru sacrifice offer", "sacrifice your ability to read unless badly injured"),
   "sacrificed words",
 
   30,
@@ -48,7 +48,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_DRINK, MUT_RENOUNCE_POTIONS,
-  "sacrifice your ability to drink unless badly injured",
+  NC_("Ru sacrifice offer", "sacrifice your ability to drink unless badly injured"),
   "sacrificed drink",
 
   30,
@@ -58,7 +58,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_ESSENCE, MUT_NON_MUTATION,
-  "corrupt yourself such that",
+  NC_("Ru sacrifice offer", "corrupt yourself such that"),
   "sacrificed essence",
 
   0,
@@ -68,7 +68,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_HEALTH, MUT_NON_MUTATION,
-  "corrupt yourself such that",
+  NC_("Ru sacrifice offer", "corrupt yourself such that"),
   "sacrificed health",
 
   25,
@@ -78,7 +78,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_STEALTH, MUT_NO_STEALTH,
-  "sacrifice your ability to go unnoticed",
+  NC_("Ru sacrifice offer", "sacrifice your ability to go unnoticed"),
   "sacrificed stealth",
 
   15,
@@ -88,7 +88,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_ARTIFICE, MUT_NO_ARTIFICE,
-  "sacrifice all use of magical tools",
+  NC_("Ru sacrifice offer", "sacrifice all use of magical tools"),
   "sacrificed evocations",
 
   55,
@@ -98,7 +98,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_LOVE, MUT_NO_LOVE,
-  "sacrifice your ability to be loved",
+  NC_("Ru sacrifice offer", "sacrifice your ability to be loved"),
   "sacrificed love",
 
   40,
@@ -108,7 +108,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_COURAGE, MUT_COWARDICE,
-  "sacrifice your courage",
+  NC_("Ru sacrifice offer", "sacrifice your courage"),
   "sacrificed courage",
 
   25,
@@ -118,7 +118,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_ARCANA, MUT_NON_MUTATION,
-  "sacrifice all use of",
+  NC_("Ru sacrifice offer", "sacrifice all use of"),
   "sacrificed arcana",
 
   25,
@@ -128,7 +128,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_NIMBLENESS, MUT_NO_DODGING,
-  "sacrifice your Dodging skill",
+  NC_("Ru sacrifice offer", "sacrifice your Dodging skill"),
   "sacrificed dodging",
 
   30,
@@ -138,7 +138,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_DURABILITY, MUT_NO_ARMOUR_SKILL,
-  "sacrifice your Armour skill",
+  NC_("Ru sacrifice offer", "sacrifice your Armour skill"),
   "sacrificed armour",
 
   30,
@@ -148,7 +148,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_HAND, MUT_MISSING_HAND,
-  "sacrifice one of your ",
+  NC_("Ru sacrifice offer", "sacrifice one of your %s"),
   "sacrificed a hand",
 
   65,
@@ -158,7 +158,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_EXPERIENCE, MUT_INEXPERIENCED,
-  "sacrifice your experiences",
+  NC_("Ru sacrifice offer", "sacrifice your experiences"),
   "sacrificed experience",
 
   35,
@@ -168,7 +168,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_SKILL, MUT_UNSKILLED,
-  "sacrifice your skill",
+  NC_("Ru sacrifice offer", "sacrifice your skill"),
   "sacrificed skill",
 
   30,
@@ -178,7 +178,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_EYE, MUT_MISSING_EYE,
-  "sacrifice an eye",
+  NC_("Ru sacrifice offer", "sacrifice an eye"),
   "sacrificed an eye",
 
   25,
@@ -188,7 +188,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_RESISTANCE, MUT_TEMPERATURE_SENSITIVITY,
-  "sacrifice your resistance to extreme temperatures",
+  NC_("Ru sacrifice offer", "sacrifice your resistance to extreme temperatures"),
   "sacrificed resistance",
 
   50,
@@ -198,7 +198,7 @@ static const sacrifice_def sac_data[] =
 },
 
 { ABIL_RU_SACRIFICE_FORMS, MUT_NO_FORMS,
-  "sacrifice your ability to change forms",
+  NC_("Ru sacrifice offer", "sacrifice your ability to change forms"),
   "sacrificed forms",
 
   7,
