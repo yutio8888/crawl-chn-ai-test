@@ -45,6 +45,7 @@
 #include "nearby-danger.h"
 #include "orb.h"
 #include "output.h"
+#include "positional_format.h"
 #include "prompt.h"
 #include "religion.h"
 #include "shout.h"
