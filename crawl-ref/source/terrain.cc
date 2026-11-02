@@ -1043,9 +1043,10 @@ void slime_wall_damage(actor* act, int delay)
     const int dam = resist_adjust_damage(act, BEAM_ACID, base_dam);
     if (dam > 0 && you.see_cell_no_trans(act->pos()))
     {
-        const char *verb = act->is_icy() ? "melt" : "burn";
-        mprf((walls > 1) ? T_("The walls %s %s!") : T_("The wall %ss %s!"),
-              verb, act->name(DESC_THE).c_str());
+        const char* message = act->is_icy()
+            ? (walls > 1 ? N_("The walls melt %s!") : N_("The wall melts %s!"))
+            : (walls > 1 ? N_("The walls burn %s!") : N_("The wall burns %s!"));
+        mprf(T_(message), act->name(DESC_THE).c_str());
         act->hurt(&you, dam, BEAM_ACID);
         if (act->alive())
             behaviour_event(act->as_monster(), ME_WHACK, &you, you.pos());
@@ -2748,8 +2749,8 @@ void ice_thorns_trigger(actor& victim, const coord_def& pos)
     {
         if (you.see_cell(pos))
         {
-            mprf(T_("%s icy thorns crumble before %s."),
-                 owner->is_player() ? T_("Your") : T_("The"),
+            mprf(owner->is_player() ? T_("Your icy thorns crumble before %s.")
+                                   : T_("The icy thorns crumble before %s."),
                  owner->name(DESC_THE).c_str());
         }
         revert_terrain_change(pos, TERRAIN_CHANGE_ICE_THORNS);

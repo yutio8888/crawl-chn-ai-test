@@ -538,6 +538,29 @@ static string _abyss_entry_note_display(const string& text)
     return make_stringf(format.c_str(), depth, cause.c_str());
 }
 
+// This producer already stores the actual affected level in Note::place.
+// Validate its complete English name before using that typed display accessor;
+// historical and Lua snapshots without this marker remain language-locked.
+static string _corrupted_level_note_display(const Note& note)
+{
+    if (Options.language != lang_t::ZH || note.desc != "corrupted level"
+        || note.place.branch < 0 || !note.place.is_valid())
+    {
+        return note.name;
+    }
+    string canonical;
+    {
+        ScopedLangEn canonical_language;
+        canonical = make_stringf("Corrupted %s", note.place.describe().c_str());
+    }
+    if (note.name != canonical)
+        return note.name;
+    const string format = T_("Corrupted %s");
+    if (format == "Corrupted %s")
+        return note.name;
+    return make_stringf(format.c_str(), note.place.describe(true, true).c_str());
+}
+
 // Only the two C++ theft producers mark these canonical NOTE_MESSAGE records.
 // Legacy and crawl.take_note snapshots never enter this display conversion.
 static string _theft_note_display(const Note& note)
@@ -772,8 +795,12 @@ string Note::describe(bool when, bool where, bool what) const
             result << Options.user_note_prefix << name;
             break;
         case NOTE_MESSAGE:
-            result << (desc == "abyss entry" ? _abyss_entry_note_display(name)
-                       : _theft_note_display(*this));
+            if (desc == "abyss entry")
+                result << _abyss_entry_note_display(name);
+            else if (desc == "corrupted level")
+                result << _corrupted_level_note_display(*this);
+            else
+                result << _theft_note_display(*this);
             break;
         case NOTE_SEEN_FEAT:
             result << T_("Found ") << name;

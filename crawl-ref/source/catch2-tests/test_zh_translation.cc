@@ -433,9 +433,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         for (const auto& example : examples)
         {
             INFO("action=" << example.action << "; level=" << example.level);
-            // Match wizard_set_skill's actual variadic call: two const char*
-            // arguments followed by a double. This exercises the catalog and
-            // positional formatter without reimplementing the skill setter.
+            // Retain this legacy catalog format's numeric ABI regression.
+            // The current setter uses complete action-specific frames; this
+            // case does not claim to exercise its interactive producer.
             const string displayed = make_stringf_p(
                 T_("%s %s to skill level %.1f."), example.action,
                 skill_name(SK_STAVES), example.level);
@@ -518,7 +518,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: save summaries localize character display fields",
-                 "[zh-translation][android-playtest][save-menu]")
+                 "[zh-translation][android-playtest][save-menu][interface-rereview]")
 {
     player_save_info info;
     info.name = "i";
@@ -532,6 +532,24 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     info.species_name = "Minotaur";
     info.class_name = "Berserker";
     info.god_name = "Trog";
+
+    for (game_type mode : {GAME_TYPE_CUSTOM_SEED, GAME_TYPE_TUTORIAL,
+                           GAME_TYPE_ARENA, GAME_TYPE_SPRINT, GAME_TYPE_DESCENT,
+                           NUM_GAME_TYPE})
+    {
+        info.saved_game_type = mode;
+        const string canonical = game_state::game_type_name_for(mode);
+        const string without_qualifier = info.short_desc(false);
+        const string translated = T_(canonical.c_str());
+        REQUIRE(translated != canonical);
+        CHECK(info.short_desc() == "[" + translated + "] " + without_qualifier);
+        {
+            EnTranslationFixture english;
+            CHECK(info.short_desc() == "[" + canonical + "] " + info.short_desc(false));
+            CHECK(game_state::game_type_name_for(mode) == canonical);
+        }
+        CHECK(info.saved_game_type == mode);
+    }
 
     CHECK(info.really_short_desc() == "i（牛头人 狂战士）");
     CHECK(info.short_desc(false) == "i，第1级牛头人 狂战士，信仰特洛格");
@@ -5891,7 +5909,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         const char* en_damaged;
     };
     static const wound_case cases[] = {
-        { MDAM_ALMOST_DEAD,         "奄奄一息", "奄奄一息",
+        { MDAM_ALMOST_DEAD,         "奄奄一息", "几近毁坏",
           "almost dead",       "almost destroyed" },
         { MDAM_SEVERELY_DAMAGED,    "严重受伤", "严重受损",
           "severely wounded",  "severely damaged" },
@@ -5901,7 +5919,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
           "moderately wounded", "moderately damaged" },
         { MDAM_LIGHTLY_DAMAGED,     "轻度受伤", "轻度受损",
           "lightly wounded",   "lightly damaged" },
-        { MDAM_OKAY,                "未受伤",   "未受伤",
+        { MDAM_OKAY,                "未受伤",   "未受损",
           "not wounded",       "not damaged" },
     };
     for (const wound_case& c : cases)
@@ -8707,7 +8725,7 @@ TEST_CASE("grouped: last unidentified item message localizes category only",
         const string text = messages.get_store();
         if (language == lang_t::ZH)
         {
-            CHECK(text.find("你已经鉴定了最后一件") != string::npos);
+            CHECK(text.find("你鉴定出了最后一种") != string::npos);
             for (const char* raw : {"wand", "potion", "scroll", "ring"})
                 CHECK(text.find(raw) == string::npos);
         }

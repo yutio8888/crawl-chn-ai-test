@@ -215,7 +215,7 @@ static void _sdump_header(dump_params &par)
     if (type.empty())
         type = CRAWL;
     else
-        type += " DCSS";
+        type = string(T_(type.c_str())) + " DCSS";
 
     string platform;
 #ifdef USE_TILE_LOCAL

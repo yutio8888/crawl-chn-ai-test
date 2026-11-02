@@ -74,15 +74,15 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: starting display templates preserve parameter order",
-                 "[zh-translation][issue6][start-notes]")
+                 "[zh-translation][issue6][start-notes][interface-rereview]")
 {
     CHECK(make_stringf(C_("game start", "<yellow>%s, %s the %s %s.</yellow>"),
                        "欢迎", "Ada", "人类", "战士")
           == "<yellow>欢迎，Ada（人类 战士）。</yellow>");
     CHECK(make_stringf(C_("game start", "%s set off with %s%s%s."),
-                       "Ada", "甲", "乙", "丙") == "Ada携带甲乙丙出发了。");
+                       "Ada", "甲", "乙", "丙") == "Ada出发时甲乙丙。");
     CHECK(make_stringf(C_("game start", "%s set off with %s%s%s."),
-                       "Ada", "", "", "") == "Ada携带出发了。");
+                       "Ada", "", "", "") == "Ada出发时。");
     CHECK(make_stringf(C_("game start", "%s the %s %s began the quest for the Orb."),
                        "Ada", "人类", "战士")
           == "Ada（人类 战士）开始了寻找宝珠的征程。");

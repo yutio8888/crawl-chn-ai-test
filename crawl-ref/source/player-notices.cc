@@ -377,31 +377,29 @@ static string _abyss_monster_creation_message(const monster* mon)
 {
     if (mon->type == MONS_DEATH_COB)
     {
-        return coinflip() ? " appears in a burst of microwaves!"
-                          : " pops from nullspace!";
+        return coinflip() ? T_(" appears in a burst of microwaves!")
+                          : T_(" pops from nullspace!");
     }
 
     // You may ask: "Why these weights?" So would I!
     const vector<pair<string, int>> messages = {
-        { " appears in a shower of translocational energy.", 17 },
-        { " appears in a shower of sparks.", 34 },
-        { " materialises.", 45 },
-        { " emerges from chaos.", 13 },
-        { " emerges from the beyond.", 26 },
+        { T_(" appears in a shower of translocational energy."), 17 },
+        { T_(" appears in a shower of sparks."), 34 },
+        { T_(" materialises."), 45 },
+        { T_(" emerges from chaos."), 13 },
+        { T_(" emerges from the beyond."), 26 },
         { make_stringf(T_(" assembles %s!"),
                        mon->pronoun(PRONOUN_REFLEXIVE).c_str()), 33 },
-        { " erupts from nowhere.", 9 },
-        { " bursts from nowhere.", 18 },
-        { " is cast out of space.", 7 },
-        { " is cast out of reality.", 14 },
-        { " coalesces out of pure chaos.", 5 },
-        { " coalesces out of seething chaos.", 10 },
-        { " punctures the fabric of time!", 2 },
-        { " punctures the fabric of the universe.", 7 },
-        { make_stringf(T_(" manifests%s!"),
-                       silenced(you.pos()) ? "" : " with a bang"), 3 },
-
-
+        { T_(" erupts from nowhere."), 9 },
+        { T_(" bursts from nowhere."), 18 },
+        { T_(" is cast out of space."), 7 },
+        { T_(" is cast out of reality."), 14 },
+        { T_(" coalesces out of pure chaos."), 5 },
+        { T_(" coalesces out of seething chaos."), 10 },
+        { T_(" punctures the fabric of time!"), 2 },
+        { T_(" punctures the fabric of the universe."), 7 },
+        { silenced(you.pos()) ? T_(" manifests!")
+                             : T_(" manifests with a bang!"), 3 },
     };
 
     return *random_choose_weighted(messages);
@@ -715,9 +713,10 @@ void seen_monster(monster* mons, bool do_encounter_message)
         && !(mons->flags & MF_KNOWN_SHIFTER)
         && have_passive(passive_t::warn_shapeshifter))
     {
-        string msg = make_stringf(T_(" warns you: %s is a foul%s shapeshifter."),
-                                    uppercase_first(mons->name(DESC_THE)).c_str(),
-                                    mons->has_ench(ENCH_GLOWING_SHAPESHIFTER) ? " glowing" : "");
+        string msg = make_stringf(mons->has_ench(ENCH_GLOWING_SHAPESHIFTER)
+            ? T_(" warns you: %s is a foul glowing shapeshifter.")
+            : T_(" warns you: %s is a foul shapeshifter."),
+            uppercase_first(mons->name(DESC_THE)).c_str());
         simple_god_message(msg.c_str());
         discover_shifter(*mons);
 #ifndef USE_TILE_LOCAL

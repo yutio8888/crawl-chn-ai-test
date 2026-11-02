@@ -4251,7 +4251,7 @@ static bool _awaken_vines(monster* mon, bool test_only = false)
 {
     if (_is_wiz_cast())
     {
-        mpr("Sorry, this spell isn't supported for dummies!"); //mons dummy
+        mpr(T_("Sorry, this spell isn't supported for dummies!")); //mons dummy
         return false;
     }
 

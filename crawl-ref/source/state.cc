@@ -623,17 +623,17 @@ string game_state::game_type_name_for(game_type _type)
         // No explicit game type name for default game.
         return "";
     case GAME_TYPE_CUSTOM_SEED:
-        return "Seeded";
+        return N_("Seeded");
     case GAME_TYPE_TUTORIAL:
-        return "Tutorial";
+        return N_("Tutorial");
     case GAME_TYPE_ARENA:
-        return "Arena";
+        return N_("Arena");
     case GAME_TYPE_SPRINT:
-        return "Dungeon Sprint";
+        return N_("Dungeon Sprint");
     case GAME_TYPE_DESCENT:
-        return "Dungeon Descent";
+        return N_("Dungeon Descent");
     case NUM_GAME_TYPE:
-        return "Unknown";
+        return N_("Unknown");
     }
 }
 

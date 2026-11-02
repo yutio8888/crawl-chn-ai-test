@@ -128,6 +128,8 @@ assert_output "missing-t: sinks, producers, and builders block by default" \
     /tmp/actual_display_audit.txt "$EXPECTED/display-audit.txt"
 assert_status "missing-t: every registered display contract blocks" \
     1 "$DISPLAY_AUDIT_RC"
+assert_contains "orb names: final display producer still rejects raw literal mutation" \
+    "DISPLAY003 orb_beam_name_display return: orb of destruction" /tmp/actual_display_audit.txt
 
 # ── ranged weapon noise display builder ──
 RANGED_NOISE_FIXTURES="$FIXTURES/display-ranged-noise"
@@ -182,6 +184,8 @@ python3 "$SCAN_I18N" missing-t "$PRESENCE_FIXTURES/pass/" \
     --source-txt "$PRESENCE_FIXTURES/pass/source.txt" \
     > /tmp/actual_contract_presence_pass.txt 2>&1
 assert_contains "display registry: one producer/builder definition passes" \
+    "DISPLAY: 0 candidates" /tmp/actual_contract_presence_pass.txt
+assert_contains "orb names: canonical identity builders and translated final producer pass" \
     "DISPLAY: 0 candidates" /tmp/actual_contract_presence_pass.txt
 
 for contract_case in missing-producer missing-builder \
@@ -637,7 +641,7 @@ assert_contains "i18n extract: plural XP evoker recharge key" \
 # ── mprf-p ──
 echo "--- mprf-p ---"
 python3 "$SCAN_I18N" mprf-p "$FIXTURES/mprf-p/" --source-txt "$FIXTURES/mprf-p/source.txt" > /tmp/actual_mprfp.txt 2>&1 || true
-assert_output "mprf-p: finds missing mprf_p" \
+assert_output "mprf-p: bounded local returns pass and unsafe consumers still block" \
     /tmp/actual_mprfp.txt "$EXPECTED/mprf-p_violations.txt"
 
 # ── arg-mismatch ──

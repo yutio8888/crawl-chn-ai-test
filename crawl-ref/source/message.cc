@@ -2183,16 +2183,17 @@ void canned_msg(canned_message_type which_message)
         case MSG_EMPTY_HANDED_ALREADY:
         case MSG_EMPTY_HANDED_NOW:
         {
-            const char* when =
-            (which_message == MSG_EMPTY_HANDED_ALREADY ? "already" : "now");
+            const string when = which_message == MSG_EMPTY_HANDED_ALREADY
+                ? C_("empty-handed timing", "already")
+                : C_("empty-handed timing", "now");
             if (you.has_mutation(MUT_NO_GRASPING))
-                mprf(T_("Your mouth is %s empty."), when);
+                mprf(T_("Your mouth is %s empty."), when.c_str());
             else if (you.has_usable_claws(true))
-                mprf(T_("You are %s empty-clawed."), when);
+                mprf(T_("You are %s empty-clawed."), when.c_str());
             else if (you.has_usable_tentacles(true))
-                mprf(T_("You are %s empty-tentacled."), when);
+                mprf(T_("You are %s empty-tentacled."), when.c_str());
             else
-                mprf(T_("You are %s empty-handed."), when);
+                mprf(T_("You are %s empty-handed."), when.c_str());
             break;
         }
         case MSG_YOU_BLINK:

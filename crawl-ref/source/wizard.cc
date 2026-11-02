@@ -424,127 +424,126 @@ int list_wizard_commands(bool do_redraw_screen)
 {
     // 2 columns
     column_composer cols(2, 44);
-    cols.add_formatted(0,
-                       "<yellow>Player stats</yellow>\n"
-                       "<w>A</w>      set all skills to level\n"
-                       "<w>Ctrl-D</w> change enchantments/durations\n"
-                       "<w>g</w>      exercise a skill\n"
-                       "<w>k</w>      change experience level and skills\n"
-                       "<w>l</w>      change experience level\n"
-                       "<w>Ctrl-P</w> list props\n"
-                       "<w>r</w>      change character's species\n"
-                       "<w>s</w>      set skill to level\n"
-                       "<w>x</w>      gain an experience level\n"
-                       "<w>$</w>      set gold to a specified value\n"
-                       "<w>]</w>      get a mutation\n"
-                       "<w>}</w>      toggle a bane\n"
-                       "<w>_</w>      gain religion\n"
-                       "<w>^</w>      set piety to a value\n"
-                       + string(T_("<w>q</w>      set god gift timeout\n"))
-                       +
-                       "<w>@</w>      set Str Int Dex\n"
-                       "<w>Q</w>      set/reset top HUD test state\n"
-                       "<w>#</w>      load character from a dump file\n"
-                       "<w>&</w>      list all divine followers\n"
-                       "<w>=</w>      show info about skill points\n"
-                       "<w>n</w>      set Zot clock to a value\n"
-                       "<w>N</w>      get current tension value\n"
-                       "<w>j</w>      reset single-use god abilities\n"
-                       "\n"
-                       "<yellow>Dungeon features</yellow>\n"
-                       "<w>,</w>/<w>.</w>    create up/down staircase\n"
-                       "<w>(</w>      turn cell into feature\n"
-                       "<w>\\</w>      make a shop\n"
-                       "\n"
-                       "<yellow>Builder debugging</yellow>\n"
-                       "<w>L</w>      place a vault by name\n"
-                       "<w>P</w>      create a level based on a vault\n"
-                       "<w>R</w>      regenerate current level\n"
-                       "<w>Ctrl-A</w> generate new Abyss area\n"
-                       "<w>K</w>      mark all vaults as unused\n"
-                       "<w>:</w>      find branches and overflow\n"
-                       "       temples in the dungeon\n"
-                       "<w>;</w>      list known levels and counters\n"
-                       "<w>Ctrl-E</w> dump level builder information\n"
+    string player_help;
+    player_help += T_("<yellow>Player stats</yellow>\n");
+    player_help += T_("<w>A</w>      set all skills to level\n");
+    player_help += T_("<w>Ctrl-D</w> change enchantments/durations\n");
+    player_help += T_("<w>g</w>      exercise a skill\n");
+    player_help += T_("<w>k</w>      change experience level and skills\n");
+    player_help += T_("<w>l</w>      change experience level\n");
+    player_help += T_("<w>Ctrl-P</w> list props\n");
+    player_help += T_("<w>r</w>      change character's species\n");
+    player_help += T_("<w>s</w>      set skill to level\n");
+    player_help += T_("<w>x</w>      gain an experience level\n");
+    player_help += T_("<w>$</w>      set gold to a specified value\n");
+    player_help += T_("<w>]</w>      get a mutation\n");
+    player_help += T_("<w>}</w>      toggle a bane\n");
+    player_help += T_("<w>_</w>      gain religion\n");
+    player_help += T_("<w>^</w>      set piety to a value\n");
+    player_help += T_("<w>q</w>      set god gift timeout\n");
+    player_help += T_("<w>@</w>      set Str Int Dex\n");
+    player_help += T_("<w>Q</w>      set/reset top HUD test state\n");
+    player_help += T_("<w>#</w>      load character from a dump file\n");
+    player_help += T_("<w>&</w>      list all divine followers\n");
+    player_help += T_("<w>=</w>      show info about skill points\n");
+    player_help += T_("<w>n</w>      set Zot clock to a value\n");
+    player_help += T_("<w>N</w>      get current tension value\n");
+    player_help += T_("<w>j</w>      reset single-use god abilities\n");
+    player_help += "\n";
+    player_help += T_("<yellow>Dungeon features</yellow>\n");
+    player_help += T_("<w>,</w>/<w>.</w>    create up/down staircase\n");
+    player_help += T_("<w>(</w>      turn cell into feature\n");
+    player_help += T_("<w>\\</w>      make a shop\n");
+    player_help += "\n";
+    player_help += T_("<yellow>Builder debugging</yellow>\n");
+    player_help += T_("<w>L</w>      place a vault by name\n");
+    player_help += T_("<w>P</w>      create a level based on a vault\n");
+    player_help += T_("<w>R</w>      regenerate current level\n");
+    player_help += T_("<w>Ctrl-A</w> generate new Abyss area\n");
+    player_help += T_("<w>K</w>      mark all vaults as unused\n");
+    player_help += T_("<w>:</w>      find branches and overflow\n"
+                    "       temples in the dungeon\n");
+    player_help += T_("<w>;</w>      list known levels and counters\n");
+    player_help += T_("<w>Ctrl-E</w> dump level builder information\n");
 #ifdef DEBUG
-                       // might be present in any save, but only generated
-                       // in debug builds; hide this for regular wizmode so as
-                       // to not confuse non-devs. The command will still work.
-                       "<w>Ctrl-L</w> show builder logs for level\n"
+    // might be present in any save, but only generated
+    // in debug builds; hide this for regular wizmode so as
+    // to not confuse non-devs. The command will still work.
+    player_help += T_("<w>Ctrl-L</w> show builder logs for level\n");
 #endif
-                       "\n"
-                       "<yellow>Other level related commands</yellow>\n"
-                       "<w>{</w>      magic mapping\n"
-                       "<w>b</w>      controlled blink\n"
-                       "<w>B</w>      controlled teleport\n"
-                       "<w>~</w>      go to a specific level\n"
-                       "<w>u</w>/<w>d</w>    shift up/down one level\n"
-                       "<w>e</w>      trigger explore traps\n"
-                       "<w>Ctrl-B</w> banish yourself to the Abyss\n"
-                       "<w>Ctrl-S</w> change Abyss speed\n"
-                       "<w>Ctrl-W</w> change Shoals' tide speed\n",
-                       true);
+    player_help += "\n";
+    player_help += T_("<yellow>Other level related commands</yellow>\n");
+    player_help += T_("<w>{</w>      magic mapping\n");
+    player_help += T_("<w>b</w>      controlled blink\n");
+    player_help += T_("<w>B</w>      controlled teleport\n");
+    player_help += T_("<w>~</w>      go to a specific level\n");
+    player_help += T_("<w>u</w>/<w>d</w>    shift up/down one level\n");
+    player_help += T_("<w>e</w>      trigger explore traps\n");
+    player_help += T_("<w>Ctrl-B</w> banish yourself to the Abyss\n");
+    player_help += T_("<w>Ctrl-S</w> change Abyss speed\n");
+    player_help += T_("<w>Ctrl-W</w> change Shoals' tide speed\n");
+    cols.add_formatted(0, player_help, true);
 
-    cols.add_formatted(1,
-                       "<yellow>Other player related effects</yellow>\n"
-                       "<w>c</w>      card effect\n"
+    string other_help;
+    other_help += T_("<yellow>Other player related effects</yellow>\n");
+    other_help += T_("<w>c</w>      card effect\n");
 #ifdef DEBUG_BONES
-                       "<w>Ctrl-G</w> save/load ghost (bones file)\n"
+    other_help += T_("<w>Ctrl-G</w> save/load ghost (bones file)\n");
 #endif
-                       "<w>h</w>/<w>H</w>    heal yourself (super-Heal)\n"
-                       "<w>X</w>      make Xom do something now\n"
-                       "<w>z</w>      cast spell by number/name\n"
-                       "<w>!</w>      memorise spell\n"
-                       "<w>W</w>      god wrath\n"
-                       "<w>w</w>      god mollification\n"
-                       "<w>p</w>      polymorph into a form\n"
-                       "<w>V</w>      toggle xray vision\n"
-                       "<w>E</w>      (un)freeze time\n"
-                       "\n"
-                       "<yellow>Monster related commands</yellow>\n"
-                       "<w>m</w>/<w>M</w>    create specified monster\n"
-                       "<w>D</w>      detect all monsters\n"
-                       "<w>G</w>      dismiss all monsters\n"
-                       "<w>\"</w>      list monsters\n"
-                       "\n"
-                       "<yellow>Item related commands</yellow>\n"
-                       "<w>a</w>      acquirement\n"
-                       "<w>i</w>/<w>I</w>    identify/unidentify inventory\n"
-                       "<w>y</w>/<w>Y</w>    id/unid item types+level items\n"
-                       "<w>o</w>/<w>%</w>    create an object\n"
-                       "<w>t</w>      tweak object properties\n"
-                       "<w>v</w>      recharge all XP evokers\n"
-                       "<w>Ctrl-V</w> show gold value of an item\n"
-                       "<w>-</w>      get a god gift\n"
-                       "<w>|</w>      create all unrand artefacts\n"
-                       "<w>Ctrl-\\</w> create all unrands / fallbacks\n"
-                       "<w>+</w>      make randart from item\n"
-                       "<w>'</w>      list items\n"
-                       "<w>J</w>      Jiyva off-level sacrifice\n"
-                       "<w>U</w>      mark all unrands as never generated\n"
-                       "<w>Z</w>      Unobtain runes and Orb of Zot\n"
-                       "\n"
-                       "<yellow>Debugging commands</yellow>\n"
-                       "<w>f</w>      quick fight simulation\n"
-                       "<w>F</w>      single scale fsim\n"
-                       "<w>Ctrl-F</w> double scale fsim\n"
-                       "<w>Ctrl-I</w> item generation stats\n"
-                       "<w>O</w>      measure exploration time\n"
-                       "<w>Ctrl-T</w> dungeon (D)Lua interpreter\n"
-                       "<w>Ctrl-U</w> client (C)Lua interpreter\n"
-                       "<w>Ctrl-X</w> Xom effect stats\n"
+    other_help += T_("<w>h</w>/<w>H</w>    heal yourself (super-Heal)\n");
+    other_help += T_("<w>X</w>      make Xom do something now\n");
+    other_help += T_("<w>z</w>      cast spell by number/name\n");
+    other_help += T_("<w>!</w>      memorise spell\n");
+    other_help += T_("<w>W</w>      god wrath\n");
+    other_help += T_("<w>w</w>      god mollification\n");
+    other_help += T_("<w>p</w>      polymorph into a form\n");
+    other_help += T_("<w>V</w>      toggle xray vision\n");
+    other_help += T_("<w>E</w>      (un)freeze time\n");
+    other_help += "\n";
+    other_help += T_("<yellow>Monster related commands</yellow>\n");
+    other_help += T_("<w>m</w>/<w>M</w>    create specified monster\n");
+    other_help += T_("<w>D</w>      detect all monsters\n");
+    other_help += T_("<w>G</w>      dismiss all monsters\n");
+    other_help += T_("<w>\"</w>      list monsters\n");
+    other_help += "\n";
+    other_help += T_("<yellow>Item related commands</yellow>\n");
+    other_help += T_("<w>a</w>      acquirement\n");
+    other_help += T_("<w>i</w>/<w>I</w>    identify/unidentify inventory\n");
+    other_help += T_("<w>y</w>/<w>Y</w>    id/unid item types+level items\n");
+    other_help += T_("<w>o</w>/<w>%</w>    create an object\n");
+    other_help += T_("<w>t</w>      tweak object properties\n");
+    other_help += T_("<w>v</w>      recharge all XP evokers\n");
+    other_help += T_("<w>Ctrl-V</w> show gold value of an item\n");
+    other_help += T_("<w>-</w>      get a god gift\n");
+    other_help += T_("<w>|</w>      create all unrand artefacts\n");
+    other_help += T_("<w>Ctrl-\\</w> create all unrands / fallbacks\n");
+    other_help += T_("<w>+</w>      make randart from item\n");
+    other_help += T_("<w>'</w>      list items\n");
+    other_help += T_("<w>J</w>      Jiyva off-level sacrifice\n");
+    other_help += T_("<w>U</w>      mark all unrands as never generated\n");
+    other_help += T_("<w>Z</w>      Unobtain runes and Orb of Zot\n");
+    other_help += "\n";
+    other_help += T_("<yellow>Debugging commands</yellow>\n");
+    other_help += T_("<w>f</w>      quick fight simulation\n");
+    other_help += T_("<w>F</w>      single scale fsim\n");
+    other_help += T_("<w>Ctrl-F</w> double scale fsim\n");
+    other_help += T_("<w>Ctrl-I</w> item generation stats\n");
+    other_help += T_("<w>O</w>      measure exploration time\n");
+    other_help += T_("<w>Ctrl-T</w> dungeon (D)Lua interpreter\n");
+    other_help += T_("<w>Ctrl-U</w> client (C)Lua interpreter\n");
+    other_help += T_("<w>Ctrl-X</w> Xom effect stats\n");
 #ifdef DEBUG_DIAGNOSTICS
-                       "<w>Ctrl-Q</w> make some debug messages quiet\n"
+    other_help += T_("<w>Ctrl-Q</w> make some debug messages quiet\n");
 #endif
-                       "<w>Ctrl-Y</w> temporarily suppress wizmode\n"
-                       "<w>Ctrl-C</w> force a crash\n"
-                       "<w>`</w>      list unassigned command keys\n"
-                       "\n"
-                       "<yellow>Other wizard commands</yellow>\n"
-                       "(not prefixed with <w>&</w>!)\n"
-                       "<w>x?</w>     list targeted commands\n"
-                       "<w>X?</w>     list map-mode commands\n",
-                       true);
+    other_help += T_("<w>Ctrl-Y</w> temporarily suppress wizmode\n");
+    other_help += T_("<w>Ctrl-C</w> force a crash\n");
+    other_help += T_("<w>`</w>      list unassigned command keys\n");
+    other_help += "\n";
+    other_help += T_("<yellow>Other wizard commands</yellow>\n");
+    other_help += T_("(not prefixed with <w>&</w>!)\n");
+    other_help += T_("<w>x?</w>     list targeted commands\n");
+    other_help += T_("<w>X?</w>     list map-mode commands\n");
+    cols.add_formatted(1, other_help, true);
 
     int key = show_keyhelp_menu(cols.formatted_lines());
     if (do_redraw_screen)
