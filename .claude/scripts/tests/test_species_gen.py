@@ -5,6 +5,7 @@
 description that provides only one form must keep an empty slot instead of
 shrinking one array.  Regression for the mottled draconian out-of-bounds read.
 """
+import os
 import re
 import subprocess
 import sys
@@ -27,11 +28,17 @@ class SpeciesFakeMutationPairingTest(unittest.TestCase):
     def setUpClass(cls):
         cls.temporary = tempfile.TemporaryDirectory()
         cls.output = Path(cls.temporary.name)
+        # Match CI's safe-path mode and explicitly expose the generator's
+        # sibling genutil module to the subprocess.
+        env = os.environ.copy()
+        env["PYTHONSAFEPATH"] = "1"
+        env["PYTHONPATH"] = str(GENERATOR.parent) + (
+            os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
         cls.proc = subprocess.run(
             [sys.executable, str(GENERATOR), str(SPECIES_DIR), str(TEMPLATES),
              str(cls.output / "species-data.h"), str(cls.output / "aptitudes.h"),
              str(cls.output / "species-groups.h"), str(cls.output / "species-type.h")],
-            text=True, capture_output=True, check=False)
+            env=env, text=True, capture_output=True, check=False)
         cls.addClassCleanup(cls.temporary.cleanup)
 
     def test_generator_succeeds(self):

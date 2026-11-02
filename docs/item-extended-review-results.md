@@ -1,5 +1,3 @@
-> 稳定版回补核验：本轮源码快照为 `21177ce3de59c2811d53fa4a0268a8a9640a8bb0`。机读证据字段已按对应工具更新；下方旧批次的基线、措辞和裁决叙述保留为历史记录。历史基线与当前候选分别校验。
-
 # Item translation review decisions
 
 <!-- BEGIN ITEM REVIEW ARTIFACT v3 -->
