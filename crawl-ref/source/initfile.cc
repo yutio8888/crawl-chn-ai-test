@@ -2199,7 +2199,7 @@ void game_options::add_feature_override(const string &text, bool /*prepend*/)
         SYM(0, symbol);
         SYM(1, magic_symbol);
 #undef SYM
-        feature_def &fov(feature_colour_overrides[feat]);
+        feature_def &fov = feature_colour_overrides[feat];
 #define COL(n, field) if (colour_t c = str_to_colour(iprops[n], BLACK)) \
                           fov.field = c;
         COL(2, dcolour);
@@ -3851,7 +3851,7 @@ void game_options::split_parse(const opt_parse_state &state,
         _base_split_parse(s, separator,
             [this, remove](const string &x, bool)
             {
-                (this->*remove)(x);
+                ((*this).*remove)(x);
             });
     }
 
@@ -3860,7 +3860,7 @@ void game_options::split_parse(const opt_parse_state &state,
         _base_split_parse(s, separator,
             [this, add](const string &x, bool b)
             {
-                (this->*add)(x, b);
+                ((*this).*add)(x, b);
             },
             state.caret_equal());
     }
@@ -4035,7 +4035,8 @@ bool game_options::read_custom_option(opt_parse_state &state, bool runscripts)
         autopickups.reset();
 
         char32_t c;
-        for (const char* tp = state.field.c_str(); int s = utf8towc(&c, tp); tp += s)
+        int s;
+        for (const char* tp = state.field.c_str(); (s = utf8towc(&c, tp)); tp += s)
         {
             object_class_type type = item_class_by_sym(c);
 
@@ -4430,7 +4431,8 @@ bool game_options::read_custom_option(opt_parse_state &state, bool runscripts)
         action_panel.clear();
 
         char32_t c;
-        for (const char* tp = state.raw_field.c_str(); int s = utf8towc(&c, tp); tp += s)
+        int s;
+        for (const char* tp = state.raw_field.c_str(); (s = utf8towc(&c, tp)); tp += s)
         {
             object_class_type type = item_class_by_sym(c);
 
