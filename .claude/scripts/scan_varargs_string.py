@@ -100,7 +100,8 @@ CONST_CHAR_FUNCS = {
 
 # Known std::string returners. A bare call in a %s slot is always UB and should
 # block even though generic, unresolved calls remain advisory warnings.
-STRING_RETURN_FUNCS = {"god_name", "conj_verb", "uppercase_first"}
+STRING_RETURN_FUNCS = {"god_name", "conj_verb", "uppercase_first",
+                       "conjugate_verb_for_display"}
 
 # Methods whose return type depends on the receiver class.  These must never be
 # folded into the simple-name sets above: DCSS has same-name methods with
@@ -127,6 +128,7 @@ STRING_RETURN_METHODS = {
         "AuxFisticloak", "AuxMedusaStinger", "AuxTalismanBlade",
     },
     "pronoun": {"actor", "monster", "player"},
+    "verb_for_display": {"actor", "monster", "player"},
 }
 
 

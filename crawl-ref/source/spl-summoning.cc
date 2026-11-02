@@ -1779,10 +1779,11 @@ void init_servitor(monster* servitor, actor* caster, int pow)
 
     if (you.can_see(*caster))
     {
+        const string creation_verb = caster->verb_for_display(
+            NC_("servitor creation verb", "forge"), "servitor creation verb");
         mprf_p(C_("servitor creation",
                   "%1$s %2$s a servant imbued with %3$s destructive magic!"),
-             caster->name(DESC_THE).c_str(),
-             caster->verb_for_display(NC_("servitor creation verb", "forge")),
+             caster->name(DESC_THE).c_str(), creation_verb.c_str(),
              caster->pronoun(PRONOUN_POSSESSIVE).c_str());
     }
     else

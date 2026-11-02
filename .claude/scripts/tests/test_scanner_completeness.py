@@ -1818,6 +1818,29 @@ int main() { return 0; }
                          {"discovered": 1, "scanned": 1, "failed": []})
 
 
+    def test_varargs_display_verb_return_types(self):
+        with tempfile.TemporaryDirectory() as td:
+            source = Path(td) / "sample.cc"
+            source.write_text(r'''
+                void f(actor *caster, monster &mon, other &unrelated) {
+                    mprf_p(T_("%s"), caster->verb_for_display(N_("forge")));
+                    mprf("%s", mon.verb_for_display("forge"));
+                    mprf("%s", conjugate_verb_for_display("forge", false));
+                    mprf_p(T_("%s"), caster->verb_for_display("forge").c_str());
+                    mprf("%s", unrelated.verb_for_display("forge"));
+                }
+            ''', encoding="utf-8")
+            proc = self.run_scanner(
+                "scan_varargs_string.py", "--files", source,
+                "--format", "json")
+        self.assertEqual(1, proc.returncode, proc.stderr)
+        findings = json.loads(proc.stdout)["findings"]
+        high = [item for item in findings if item["risk"] == "HIGH"]
+        self.assertEqual([item["rule"] for item in high],
+                         ["STRING_RETURN_CALL"] * 3)
+        self.assertFalse(any(".c_str()" in item["arg"] for item in findings))
+        self.assertFalse(any("unrelated" in item["arg"] for item in high))
+
     def _mprf_p_fixture(self, root, body):
         src = Path(root) / "src"
         src.mkdir()
