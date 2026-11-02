@@ -6,6 +6,9 @@
 #include "areas.h"
 #include "beam.h"
 #include "cloud.h"
+#include "libutil.h"
+#include "syscalls.h"
+#include "viewgeom.h"
 #include "clua.h"
 #include "database.h"
 #include "describe.h"
@@ -52,6 +55,7 @@
 #include "spl-util.h"
 #include "state.h"
 #include "status.h"
+#include "skills.h"
 #include "random.h"
 #include "stringutil.h"
 #include "test_zh_fixture.h"
@@ -61,6 +65,10 @@
 
 #include <functional>
 #include <tuple>
+
+#ifdef UNIX
+#include <sys/wait.h>
+#endif
 
 #include "fprop.h"
 #include "describe-spells.h"
@@ -1762,9 +1770,12 @@ TEST_CASE("magic rereview: real fragmentation tables keep canonical beam and sco
     unwind_var<coord_def> sanctuary_pos(env.sanctuary_pos, victim->pos());
     const auto old_properties = env.pgrid(victim->pos());
     unwinder restore_properties([&] { env.pgrid(victim->pos()) = old_properties; });
-    env.pgrid(victim->pos()) |= FPROP_SANCTUARY_1;
     for (const auto& material : materials)
     {
+        CAPTURE(material.name);
+        // Target eligibility must be checked before sanctuary protects it.
+        // Sanctuary is enabled only for the real final explosion display.
+        env.pgrid(victim->pos()) &= ~(FPROP_SANCTUARY_1 | FPROP_SANCTUARY_2);
         victim->type = material.type;
         bolt beam;
         REQUIRE(setup_fragmentation_beam(beam, 50, &you, victim->pos(), true, nullptr));
@@ -1775,6 +1786,7 @@ TEST_CASE("magic rereview: real fragmentation tables keep canonical beam and sco
         // noise or terrain changes, so the fixture tests presentation only.
         beam.target = victim->pos();
         beam.use_target_as_pos = true;
+        env.pgrid(victim->pos()) |= FPROP_SANCTUARY_1;
         const string output = observe_message([&] { CHECK(beam.explode(false)); });
         CHECK(output.find(display) != string::npos);
         CHECK(beam.name == material.name);
@@ -1798,6 +1810,9 @@ TEST_CASE("magic rereview: real fragmentation tables keep canonical beam and sco
     for (dungeon_feature_type feature : {DNGN_ROCK_WALL, DNGN_METAL_WALL, DNGN_CRYSTAL_WALL})
     {
         const coord_def target(22, 20);
+        // Use the real recoloured-terrain path: this name test has no UI
+        // element-colour registry, and must not initialize that global twice.
+        unwind_var<unsigned short> colour(env.grid_colours(target), LIGHTGREY);
         env.grid(target) = feature;
         bolt beam;
         REQUIRE(setup_fragmentation_beam(beam, 50, &you, target, true, nullptr));
@@ -1830,10 +1845,28 @@ TEST_CASE("magic rereview: cleansing flame sources remain canonical through scor
     }
 }
 
+#if defined(UNIX) && !defined(USE_TILE)
 TEST_CASE("magic rereview: actual LOS spell messages cover player visible and unseen caster",
           "[zh-translation][magic-rereview][los-messages]")
 {
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    // Ring animation refreshes the console even with animations disabled.
+    // The existing headless backend has no teardown; isolate it in a child.
+    const pid_t child = fork();
+    REQUIRE(child >= 0);
+    if (child != 0)
+    {
+        int status = 0;
+        REQUIRE(waitpid(child, &status, 0) == child);
+        REQUIRE(WIFEXITED(status));
+        REQUIRE(WEXITSTATUS(status) == 0);
+        return;
+    }
+    unwinder fail_child([]() { fflush(nullptr); _exit(1); });
+    enter_headless_mode();
+    crawl_view.init_geometry();
+    cgotoxy(1, 1, GOTO_CRT);
+    unwind_var<int> delay(Options.view_delay, 0);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
     init_zap_index();
     init_duration_index();
@@ -1857,6 +1890,11 @@ TEST_CASE("magic rereview: actual LOS spell messages cover player visible and un
     for (const auto& family : families)
     for (int mode : {0, 2, 3})
     {
+        // Drain Life has no player zap/to-hit definition in this branch.
+        // Its player/global text is source-covered, not a legal runtime cast.
+        if (family.spell == SPELL_DRAIN_LIFE && mode == 0)
+            continue;
+        CAPTURE(family.spell, mode);
         issue10_world world;
         no_notes suppress_notes;
         you.hp = you.hp_max = 10000;
@@ -1873,13 +1911,16 @@ TEST_CASE("magic rereview: actual LOS spell messages cover player visible and un
         const char* key = mode == 0 ? family.player : mode == 1 ? family.global
                           : mode == 2 ? family.visible : family.unseen;
         const string output = observe_message([&] {
-            CHECK(fire_los_attack_spell(family.spell, 1, agent) == spret::success);
+            REQUIRE(fire_los_attack_spell(family.spell, 1, agent) == spret::success);
         });
         CAPTURE(family.spell, mode, output);
-        CHECK(output.find(T_(key)) != string::npos);
-        if (language == lang_t::ZH) CHECK(output.find(key) == string::npos);
+        REQUIRE(output.find(T_(key)) != string::npos);
+        if (language == lang_t::ZH) REQUIRE(output.find(key) == string::npos);
     }
+    fflush(nullptr);
+    _exit(0);
 }
+#endif
 
 TEST_CASE("magic rereview: real enhancement consumer covers six complete degrees and zero silence",
           "[zh-translation][magic-rereview][surge]")
@@ -1935,6 +1976,10 @@ TEST_CASE("magic rereview: real direction consumer translates each compass direc
     for (int i = 0; i < 8; ++i)
     {
         issue10_world world;
+        // A stationary caster still emits the real direction message without
+        // invoking unrelated player-movement viewport updates.
+        you.species = SP_FORMICID;
+        REQUIRE(you.stasis());
         const string output = observe_message([&] { CHECK(cast_gavotte(0, directions[i], false) == spret::success); });
         CHECK(output.find(make_stringf(T_("Gravity reorients to the %s!"), T_(keys[i]))) != string::npos);
         if (language == lang_t::ZH) CHECK(output.find(keys[i]) == string::npos);
@@ -1965,7 +2010,7 @@ TEST_CASE("magic rereview: real target rejection keeps known unseen and absent t
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
     issue10_world world;
-    monster* target = world.place(MONS_ORC, coord_def(20, 21));
+    monster* target = world.place(MONS_ORC, coord_def(23, 20));
     target->add_ench(mon_enchant(ENCH_INVIS, target, 100));
     target->flags |= MF_KNOWN_INVISIBLE;
     REQUIRE(you.aware_of(*target));
@@ -2060,7 +2105,10 @@ TEST_CASE("magic rereview: real servitor initialization uses one forge action fo
             you.base_stats.init(30);
             you.experience_level = 27;
             for (skill_type skill = SK_FIRST_SKILL; skill < NUM_SKILLS; ++skill)
+            {
                 you.skills[skill] = 27;
+                you.skill_points[skill] = skill_exp_needed(27, skill);
+            }
             REQUIRE(add_spell_to_memory(SPELL_STONE_ARROW));
             REQUIRE(player_servitor_spell() == SPELL_STONE_ARROW);
         }
