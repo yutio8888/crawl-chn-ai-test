@@ -26,7 +26,7 @@ class LocalBuildTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
-        self.repo = Path(self.temporary.name) / "repository"
+        self.repo = Path(self.temporary.name).resolve() / "repository"
         self.repo.mkdir()
         self.git("init", "-q")
         self.git("config", "user.name", "Local build test")

@@ -197,7 +197,10 @@ def grep_producers(ref: str, enum: str) -> list[str]:
     # only the object ID already returned by resolve_commit instead.
     if not re.fullmatch(r"[0-9a-f]{40}", ref):
         raise ValueError("cloud producer search requires a resolved commit SHA")
-    pats = [rf"place_cloud\s*\(\s*{enum}\b", rf"big_cloud\s*\(\s*{enum}\b"]
+    # git grep uses the host's POSIX ERE engine; \s and \b are GNU
+    # extensions and do not have the same meaning on macOS.
+    pats = [rf"{producer}[[:space:]]*\([[:space:]]*{enum}([^[:alnum:]_]|$)"
+            for producer in ("place_cloud", "big_cloud")]
     hits = []
     for pat in pats:
         r = subprocess.run(

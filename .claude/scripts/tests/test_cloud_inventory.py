@@ -53,7 +53,9 @@ class CloudProducerSearchTest(unittest.TestCase):
         self.producer.write_text(
             "place_cloud(CLOUD_FIRE, pos);\n"
             "big_cloud( CLOUD_FIRE, pos);\n"
-            "place_cloud(CLOUD_FIRE_OTHER, pos);\n",
+            "place_cloud(CLOUD_FIRE_OTHER, pos);\n"
+            "big_cloud\t(\tCLOUD_FIRE, pos);\n"
+            "place_cloud(CLOUD_FIRE2, pos);\n",
             encoding="utf-8",
         )
         (source / "cloud.cc").write_text("place_cloud(CLOUD_FIRE, pos);\n")
@@ -69,6 +71,7 @@ class CloudProducerSearchTest(unittest.TestCase):
         self.assertEqual([
             "spell.cc:1:place_cloud(CLOUD_FIRE, pos);",
             "spell.cc:2:big_cloud( CLOUD_FIRE, pos);",
+            "spell.cc:4:big_cloud\t(\tCLOUD_FIRE, pos);",
         ], MODULE.grep_producers(self.commit, "CLOUD_FIRE"))
         self.assertEqual([], MODULE.grep_producers(self.commit, "CLOUD_COLD"))
 
