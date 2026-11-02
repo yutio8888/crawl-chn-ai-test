@@ -11266,6 +11266,16 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 {
     init_monsters();
     init_properties();
+    rng::subgenerator test_rng(0x5752415448ULL, 0x54455354ULL);
+    const uint64_t rng_state = rng::current_generator().get_state();
+    const uint64_t rng_count = rng::current_generator().get_count();
+    for (const char *source : {"the enmity of Fedhas Madash",
+                              "the rancor of the Wu Jian Council",
+                              "the fiery vengeance of Ignis"})
+    {
+        CHECK(god_wrath_display_name(source) != source);
+        CHECK(death_source_display_name(source) == god_wrath_display_name(source));
+    }
     const string canonical = "the fiery rage of Trog";
     const string expected = make_stringf_p(C_("god wrath", "the %1$s of %2$s"),
         C_("god wrath noun", "fiery rage"), god_name(GOD_TROG).c_str());
@@ -11290,6 +11300,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(paralysis.describe(false, false, true)
           == make_stringf(T_("Paralysed by %s for %.2g turns"), expected.c_str(), 2.5));
     CHECK(paralysis.name == canonical);
+    CHECK(rng::current_generator().get_state() == rng_state);
+    CHECK(rng::current_generator().get_count() == rng_count);
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

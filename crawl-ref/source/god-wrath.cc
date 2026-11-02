@@ -120,14 +120,23 @@ static string _god_wrath_name(god_type god)
                                || god == GOD_WU_JIAN; // apparently.
 
     const ScopedLangEn english;
-    return make_stringf("the %s of %s", _god_wrath_adjectives[god],
-                        god_name(god, use_full_name).c_str());
+    // ScopedLangEn does not replace an already opened MiscDB translation.
+    // Select the same weighted long-name entry from the English base database.
+    const string full_name = use_full_name
+        ? selectMiscStringRecipe(string(_god_name_en(god)) + " lastname").english
+        : "";
+    const string deity = full_name.empty() ? god_name(god, false) : full_name;
+    return make_stringf("the %s of %s", _god_wrath_adjectives[god], deity.c_str());
 }
 
 string god_wrath_display_name(const string& canonical)
 {
     if (Options.language != lang_t::ZH)
         return canonical;
+    // Full Fedhas/Wu Jian names use the weighted TextDB reader, even for a
+    // single variant. Display-only matching must not advance gameplay RNG.
+    // Both arguments are explicit: the one-argument constructor draws a seed.
+    rng::subgenerator display_rng(0x5752415448ULL, 0x444953504c4159ULL);
     for (int i = GOD_NO_GOD; i < NUM_GODS; ++i)
     {
         const god_type god = static_cast<god_type>(i);
