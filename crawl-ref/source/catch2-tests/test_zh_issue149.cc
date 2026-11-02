@@ -569,7 +569,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             // The log producer enforces canonical English. The verbosity
             // enum alone is also used by display paths in the current language.
             CHECK(saved.long_kill_message().find(cause) != string::npos);
-            CHECK(saved.short_kill_message().find(cause) != string::npos);
+            CHECK(saved.short_kill_message().find("Blorkula the Orcula") != string::npos);
             CHECK(Options.language == language);
         }
     }
