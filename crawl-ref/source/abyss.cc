@@ -34,6 +34,7 @@
 #include "item-status-flag-type.h"
 #include "items.h"
 #include "libutil.h"
+#include "lang-en-guard.h"
 #include "losglobal.h"
 #include "mapmark.h"
 #include "maps.h"
@@ -339,7 +340,7 @@ static void _update_abyssal_map_knowledge(coord_def map_shift = coord_def(0, 0))
     {
         mprf_p(T_("The abyss shimmers again as the detected "
               "abyssal rune vanishes from your memory%1$s."),
-              detected ? " and reappears" : "");
+              detected ? T_(" and reappears") : "");
     }
     else if (detected)
     {
@@ -2317,8 +2318,12 @@ void lugonu_corrupt_level(int power)
         return;
 
     simple_god_message(T_(" Hand of Corruption reaches out!"), true);
-    take_note(Note(NOTE_MESSAGE, 0, 0, make_stringf(T_("Corrupted %s"),
-              level_id::current().describe().c_str()).c_str()));
+    string note_name;
+    {
+        ScopedLangEn canonical_language;
+        note_name = make_stringf("Corrupted %s", level_id::current().describe().c_str());
+    }
+    take_note(Note(NOTE_MESSAGE, 0, 0, note_name, "corrupted level"));
     mark_corrupted_level(level_id::current());
 
     flash_view(UA_PLAYER, MAGENTA);

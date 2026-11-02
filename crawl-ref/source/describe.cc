@@ -3826,26 +3826,21 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
     {
         if (you.religion == GOD_ZIN)
         {
-            long_desc += make_stringf(
-            "\nYour adherence to the laws of Zin forbids you from using "
-              "such a device.");
+            long_desc += T_("\nYour adherence to the laws of Zin forbids you from using "
+                            "such a device.");
         }
         else if (you.form == transformation::death)
-        {
-            long_desc += make_stringf(
-            "\nYou must first come back to life before you may mutate.");
-        }
+            long_desc += T_("\nYou must first come back to life before you may mutate.");
         else if (you.is_lifeless_undead()
              || you.get_mutation_level(MUT_MUTATION_RESISTANCE) == 3)
         {
-            long_desc += make_stringf(
-            "\nThis is completely useless to you, as you cannot mutate.");
+            long_desc += T_("\nThis is completely useless to you, as you cannot mutate.");
         }
         else
         {
-            long_desc += make_stringf(
-                      "<w>\nWhile standing here, you can crack open %s with "
-                      "the</w> <cyan>%s</cyan> <w>key</w>.", desc_the.c_str(),
+            long_desc += make_stringf_p(
+                      T_("<w>\nWhile standing here, you can crack open %1$s with "
+                         "the</w> <cyan>%2$s</cyan> <w>key</w>."), desc_the.c_str(),
                        command_to_string(CMD_GO_DOWNSTAIRS).c_str());
         }
     }

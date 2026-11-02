@@ -33,6 +33,14 @@ This policy is the shared safety contract for DCSS Chinese i18n code.
   - `NOTE_MESSAGE` created through `crawl.take_note` may use the current display
     language only when the complete template and every string parameter
     translate; otherwise the whole note remains English.
+  - `NOTE_MESSAGE` created by `main.cc::_take_starting_note`,
+    `_djinn_announce_spells`, and `_wanderer_note_equipment` captures the
+    complete game-start identity, item and spell display at creation. Translate
+    the complete known frames and category headings; preserve arbitrary actor
+    and item names. These three unmarked payloads have no identity, lookup,
+    script comparison or milestone consumers. The separate `begin` milestone
+    remains canonical English. Historical records stay language-locked; do not
+    add a parser or extend this exception to other C++ message producers.
   - `NOTE_HP_CHANGE` created in `ouch()` from `death_description(DDV_TERSE)`
     stores the injury display at creation. Known beam/event causes may translate
     through the audited display gate; unknown names remain verbatim. The

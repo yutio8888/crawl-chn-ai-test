@@ -1183,8 +1183,8 @@ void learned_something_new(hints_event_type seen_what, coord_def gc)
 #else
         {
             tiles.place_cursor(CURSOR_TUTORIAL, gc);
-            string altar = T_("An altar to ");
-            altar += god_name(feat_altar_god(env.grid(gc)));
+            string altar = make_stringf(T_("An altar to %s"),
+                god_name(feat_altar_god(env.grid(gc))).c_str());
             tiles.add_text_tag(TAG_TUTORIAL, altar, gc);
         }
 #endif

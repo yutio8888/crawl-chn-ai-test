@@ -455,7 +455,7 @@ NORETURN static void _launch_game()
         {
             const string type_name = crawl_state.game_type_name();
             if (!type_name.empty())
-                msg::stream << "<white> [" << type_name << "]</white>";
+                msg::stream << "<white> [" << T_(type_name.c_str()) << "]</white>";
         }
         msg::stream << endl;
     }
@@ -628,7 +628,7 @@ static void _show_commandline_options_help()
 
 static string _wanderer_equip_str()
 {
-    return "the following items: "
+    return string(T_("the following items: "))
         + comma_separated_fn(begin(you.inv), end(you.inv),
                          [] (const item_def &item) -> string
                          {
@@ -662,18 +662,23 @@ static string _get_equip_str()
 
 static void _djinn_announce_spells()
 {
-    const string equip_str =_get_equip_str();
+    const string equip_str = _get_equip_str();
     const string spell_str = you.spell_no ?
                                 T_("the following spells memorised: ") + _wanderer_spell_str() :
                                 "";
     if (spell_str.empty() && equip_str.empty())
         return;
 
-    const string spacer = spell_str.empty() || equip_str.empty() ? "" : "; and ";
+    const string spacer = spell_str.empty() || equip_str.empty()
+        ? "" : T_("; and ");
     mprf(T_("You begin with %s%s%s."), equip_str.c_str(), spacer.c_str(), spell_str.c_str());
 
-    take_note(Note(NOTE_MESSAGE, 0, 0, you.your_name + " set off with " +
-                                       equip_str + spacer + spell_str + "."));
+    // Audited game-start display snapshot; the separate begin milestone
+    // remains canonical English. Historical notes are not reconstructed.
+    const string note = make_stringf(
+        C_("game start", "%s set off with %s%s%s."), you.your_name.c_str(),
+        equip_str.c_str(), spacer.c_str(), spell_str.c_str());
+    take_note(Note(NOTE_MESSAGE, 0, 0, note));
 }
 
 // Announce to the message log and make a note of the player's starting items,
@@ -682,7 +687,7 @@ static void _wanderer_note_equipment()
 {
     const string equip_str = inv_count() > 0 ? _wanderer_equip_str() : "";
 
-    const string eq_spacer = equip_str.empty() ? "" : "; and ";
+    const string eq_spacer = equip_str.empty() ? "" : T_("; and ");
 
     // Wanderers start with at most 1 spell memorised.
     const string spell_str =
@@ -690,7 +695,8 @@ static void _wanderer_note_equipment()
         eq_spacer + T_("the following spell memorised: ")
         + _wanderer_spell_str();
 
-    const string spell_spacer = spell_str.empty() && equip_str.empty() ? "" : "; and ";
+    const string spell_spacer = spell_str.empty() && equip_str.empty()
+        ? "" : T_("; and ");
 
     auto const library = get_sorted_spell_list(true, true);
     const string library_str =
@@ -1395,8 +1401,12 @@ static bool _can_take_stairs(dungeon_feature_type ftype, bool down,
     {
         if (crawl_state.doing_prev_cmd_again)
         {
-            mprf(T_("You can't repeat %s actions."),
-                ftype == DNGN_ENTER_SHOP ? "shop" : "altar");
+            const char* message = ftype == DNGN_ENTER_SHOP
+                ? N_("You can't repeat shop actions.")
+                : ftype == DNGN_PURIFIED_MUTATION_CATALYST
+                ? N_("You can't repeat mutation catalyst actions.")
+                : N_("You can't repeat altar actions.");
+            mpr(T_(message));
             crawl_state.cancel_cmd_all();
         }
         else if (you.berserk())
@@ -2235,7 +2245,8 @@ void process_command(command_type cmd, command_type prev_cmd)
 #ifdef USE_SOUND
     case CMD_TOGGLE_SOUND:
         Options.sounds_on = !Options.sounds_on;
-        mprf(T_("Sound effects are now %s."), Options.sounds_on ? T_("on") : T_("off"));
+        mprf(T_("Sound effects are now %s."), Options.sounds_on
+            ? C_("sound state", "on") : C_("sound state", "off"));
         break;
 #endif
 

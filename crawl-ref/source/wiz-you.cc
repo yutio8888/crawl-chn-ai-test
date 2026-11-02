@@ -476,7 +476,7 @@ void wizard_set_skill_level(skill_type skill)
 
     mpr(skill_name(skill));
     const double old_amount = you.skill(skill, 10, true) * 0.1;
-    string prompt = make_stringf("To what level? (current = %.1f) ",
+    string prompt = make_stringf(T_("To what level? (current = %.1f) "),
                                  old_amount);
     double amount = prompt_for_float(prompt.c_str());
 
@@ -498,10 +498,10 @@ void wizard_set_skill_level(skill_type skill)
 
     redraw_skill(skill);
 
-    mprf_p(T_("%s %s to skill level %.1f."), (old_amount < amount ? "Increased" :
-                                      old_amount > amount ? "Lowered"
-                                                          : "Reset"),
-         skill_name(skill), amount);
+    mprf_p(old_amount < amount ? T_("Increased %1$s to skill level %2$.1f.")
+        : old_amount > amount ? T_("Lowered %1$s to skill level %2$.1f.")
+                              : T_("Reset %1$s to skill level %2$.1f."),
+        skill_name(skill), amount);
 
     update_four_winds(true);
 }
@@ -1187,7 +1187,8 @@ void wizard_get_god_gift()
 void wizard_toggle_xray_vision()
 {
     you.wizard_vision = !you.wizard_vision;
-    mprf(T_("X-ray vision %s."), you.wizard_vision ? "enabled" : "disabled");
+    mpr(you.wizard_vision ? T_("X-ray vision enabled.")
+                          : T_("X-ray vision disabled."));
     viewwindow(true);
     update_screen();
 }
@@ -1311,7 +1312,7 @@ void wizard_get_god_tension()
     god_type god = choose_god(you.religion);
     int tension = get_tension(god);
     mprf(T_("%s tension value: %d"), !(god == GOD_NO_GOD) ? god_name(god).c_str()
-                                                      : "General", tension);
+                                                      : T_("General"), tension);
 }
 
 void wizard_xom_acts()

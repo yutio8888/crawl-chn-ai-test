@@ -1196,8 +1196,8 @@ public:
         descriptions = make_shared<Switcher>();
 
         m_main_items = make_shared<OuterMenu>(true, 3, 20);
-        m_main_items->menu_id = m_choice_type == C_JOB ?
-            (T_("Job-main")) : (T_("Species-main"));
+        m_main_items->menu_id = m_choice_type == C_JOB
+            ? "Job-main" : "Species-main";
         m_main_items->set_margin_for_crt(1, 0);
         m_main_items->set_margin_for_sdl(15, 0);
         m_main_items->descriptions = descriptions;
@@ -1220,8 +1220,7 @@ public:
 
         m_sub_items = make_shared<OuterMenu>(false, 2, 4);
         m_sub_items->menu_id = m_choice_type == C_JOB
-            ? (T_("Job-sub"))
-            : (T_("Species-sub"));
+            ? "Job-sub" : "Species-sub";
         m_sub_items->descriptions = descriptions;
         m_vbox->add_child(m_sub_items);
         _add_choice_menu_options(m_choice_type, m_ng, m_defaults);
@@ -2251,9 +2250,8 @@ static void _prompt_gamemode_map(newgame_def& ng, newgame_def& ng_choice,
     }
 
     welcome.textcolour(CYAN);
-    welcome.cprintf(
-        T_("\nYou can choose %s:"),
-            ng_choice.type == GAME_TYPE_TUTORIAL ? "lessons" : "maps");
+    welcome.cprintf(ng_choice.type == GAME_TYPE_TUTORIAL
+        ? T_("\nYou can choose lessons:") : T_("\nYou can choose maps:"));
 
     auto vbox = make_shared<Box>(Box::VERT);
     vbox->set_cross_alignment(Widget::Align::STRETCH);

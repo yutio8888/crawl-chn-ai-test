@@ -1071,15 +1071,16 @@ namespace arena
                  ties);
             if (contest_cancelled)
             {
-                outcome += make_stringf(T_("\n(Cancelled after %d trial%s)"),
-                    trials_done, trials_done > 1 ? "s" : "");
+                outcome += make_stringf(trials_done > 1
+                    ? T_("\n(Cancelled after %d trials)")
+                    : T_("\n(Cancelled after %d trial)"), trials_done);
             }
 
             mpr(T_("---- Contest finished ----\n") + outcome);
             if (!skipped_arena_ui)
             {
-                ui::message(outcome, "Arena results:",
-                    "<cyan>Hit any key to continue, ctrl-p for the full log.</cyan>");
+                ui::message(outcome, T_("Arena results:"),
+                    T_("<cyan>Hit any key to continue, ctrl-p for the full log.</cyan>"));
             }
         }
 
@@ -1469,7 +1470,7 @@ static void _choose_arena_teams(newgame_def& choice,
     arena::skipped_arena_ui = false;
     clear_message_store();
 
-    auto text = make_shared<Text>("Enter your choice of teams:\n ");
+    auto text = make_shared<Text>(T_("Enter your choice of teams:\n "));
     auto vbox = make_shared<Box>(ui::Widget::VERT);
     vbox->add_child(text);
     vbox->set_cross_alignment(Widget::Align::STRETCH);

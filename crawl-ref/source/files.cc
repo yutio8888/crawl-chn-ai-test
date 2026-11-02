@@ -1315,16 +1315,26 @@ static void _grab_followers_and_expire_summons()
         // Summons won't follow and will time out.
         if (non_stair_using_summons > 0)
         {
-            mprf(T_("Your summoned %s left behind."),
-                 non_stair_using_allies > 1 ? T_("allies are") : T_("ally is"));
+            mpr(non_stair_using_allies > 1
+                ? T_("Your summoned allies are left behind.")
+                : T_("Your summoned ally is left behind."));
         }
         else
         {
             const bool all_dead = non_stair_using_undead == non_stair_using_allies;
             // Permanent undead are left behind but stay.
-            mprf(T_("Your mindless puppet%s behind%s."),
-                 non_stair_using_allies > 1 ? T_("s stay") : T_(" stays"),
-                 all_dead ? T_(" to rot") : "");
+            if (all_dead)
+            {
+                mpr(non_stair_using_allies > 1
+                    ? T_("Your mindless puppets stay behind to rot.")
+                    : T_("Your mindless puppet stays behind to rot."));
+            }
+            else
+            {
+                mpr(non_stair_using_allies > 1
+                    ? T_("Your mindless puppets stay behind.")
+                    : T_("Your mindless puppet stays behind."));
+            }
         }
     }
 

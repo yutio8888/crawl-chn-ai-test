@@ -4,6 +4,15 @@
 
 #include "act-iter.h"
 #include "areas.h"
+#include "abyss.h"
+#include "branch.h"
+#include "dgn-overview.h"
+#include "mapmark.h"
+#include "map-knowledge.h"
+#include "macro.h"
+#include "terrain.h"
+#include "output.h"
+#include "view.h"
 #include "beam.h"
 #include "cloud.h"
 #include "clua.h"
@@ -51,6 +60,7 @@
 #include "spl-summoning.h"
 #include "spl-util.h"
 #include "state.h"
+#include "skills.h"
 #include "status.h"
 #include "random.h"
 #include "stringutil.h"
@@ -3076,4 +3086,513 @@ TEST_CASE("item effects rereview: actual archmage trap reports real drain and ev
         CHECK(mage->has_ench(ENCH_EMPOWERED_SPELLS));
     if (!initial_mp && !empower)
         CHECK(output.find(T_("Your power is siphoned away!")) == string::npos);
+}
+
+TEST_CASE("interface rereview: real corruption producer stores English and marked typed note displays across locales",
+          "[zh-translation][interface-rereview][corruption-note]")
+{
+    vector<int> continuation;
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        issue10_world world;
+        unwind_var<vector<Note>> saved_notes(note_list);
+        const bool active = notes_are_active();
+        activate_notes(true);
+        unwinder restore_active([&] { activate_notes(active); });
+        note_list.clear();
+        you.where_are_you = BRANCH_DUNGEON;
+        you.depth = 3;
+        you.religion = GOD_LUGONU;
+        you.base_stats.init(10);
+        const level_id place = level_id::current();
+        REQUIRE(get_level_annotation(place).empty());
+        unwinder clear_annotation([&] { clear_level_annotations(place); });
+        unwind_var<decltype(env.grid)> grid(env.grid);
+        unwind_var<decltype(env.mgrid)> mgrid(env.mgrid);
+        unwind_var<decltype(env.mons)> monsters(env.mons);
+        unwind_var<map_markers> markers(env.markers);
+        unwind_var<int> delay(Options.view_delay, 0);
+        env.grid.init(DNGN_PERMAROCK_WALL);
+        env.mgrid.init(NON_MONSTER);
+        env.markers.clear();
+        // The real full producer runs. Permanent rock prevents terrain/item
+        // movement and servant placement; it does not bypass any caller draw.
+        {
+            rng::subgenerator random(19, 0x4b434f5252555054ULL);
+            observe_message([&] { lugonu_corrupt_level(0); });
+            continuation.push_back(random2(1000000));
+        }
+        REQUIRE(note_list.size() == 1);
+        const Note original = note_list.back();
+        CHECK(original.name == "Corrupted D:3");
+        CHECK(original.desc == "corrupted level");
+        CHECK(original.place == place);
+        vector<unsigned char> bytes;
+        writer output(&bytes);
+        original.save(output);
+        reader input(bytes);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        Note loaded;
+        loaded.load(input);
+        for (lang_t display_language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+        {
+            unwind_var<lang_t> mode(Options.language, display_language);
+            const string display = loaded.describe(false, false, true);
+            CHECK(display == (display_language == lang_t::ZH
+                ? make_stringf(T_("Corrupted %s"), place.describe(true, true).c_str())
+                : loaded.name));
+            CHECK(loaded.name == original.name);
+            CHECK(loaded.desc == original.desc);
+            CHECK(loaded.place == original.place);
+            vector<unsigned char> after;
+            writer output_after(&after);
+            loaded.save(output_after);
+            CHECK(after == bytes);
+            Note unmarked = loaded;
+            unmarked.desc.clear();
+            CHECK(unmarked.describe(false, false, true) == original.name);
+            Note unknown_marker = loaded;
+            unknown_marker.desc = "unknown marker";
+            CHECK(unknown_marker.describe(false, false, true) == original.name);
+            Note malformed = loaded;
+            malformed.name += " extra";
+            CHECK(malformed.describe(false, false, true) == malformed.name);
+            Note invalid = loaded;
+            invalid.place = level_id();
+            CHECK(invalid.describe(false, false, true) == invalid.name);
+            invalid.place = level_id(NUM_BRANCHES, 1);
+            CHECK(invalid.describe(false, false, true) == invalid.name);
+        }
+    }
+    REQUIRE(continuation.size() == 3);
+    CHECK(continuation[0] == continuation[1]);
+    CHECK(continuation[1] == continuation[2]);
+}
+
+TEST_CASE("interface rereview: real abyss encounter selects every original weighted display leaf",
+          "[zh-translation][interface-rereview][abyss-encounter]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const int variant = GENERATE(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    no_notes suppress_notes;
+    monster* mon = world.place(MONS_ORC, coord_def(20, 21));
+    mon->flags |= MF_WAS_IN_VIEW;
+    const int weights[] = {17, 34, 45, 13, 26, 33, 9, 18, 7, 14, 5, 10, 2, 7, 3};
+    const char* messages[] = {
+        " appears in a shower of translocational energy.", " appears in a shower of sparks.",
+        " materialises.", " emerges from chaos.", " emerges from the beyond.",
+        " assembles %s!", " erupts from nowhere.", " bursts from nowhere.",
+        " is cast out of space.", " is cast out of reality.",
+        " coalesces out of pure chaos.", " coalesces out of seething chaos.",
+        " punctures the fabric of time!", " punctures the fabric of the universe.",
+        " manifests with a bang!"
+    };
+    int total = 0, low = 0;
+    for (int i = 0; i < 15; ++i)
+    {
+        total += weights[i];
+        if (i < variant)
+            low += weights[i];
+    }
+    unsigned int seed = 0;
+    for (; seed < 8192; ++seed)
+    {
+        rng::subgenerator random(seed, 0x4b4142595353ULL);
+        const int choice = random2(total);
+        if (choice >= low && choice < low + weights[variant])
+            break;
+    }
+    REQUIRE(seed < 8192);
+    vector<monster*> none, announced = {mon};
+    string output;
+    {
+        rng::subgenerator random(seed, 0x4b4142595353ULL);
+        output = observe_message([&] { notice_new_monsters(none, announced, SC_ABYSS); });
+    }
+    const string expected = variant == 5
+        ? make_stringf(T_(messages[variant]), mon->pronoun(PRONOUN_REFLEXIVE).c_str())
+        : T_(messages[variant]);
+    CHECK(output.find(expected) != string::npos);
+    CHECK(output.find(mon->name(DESC_A)) != string::npos);
+    if (language == lang_t::ZH)
+        CHECK(output.find(messages[variant]) == string::npos);
+}
+
+TEST_CASE("interface rereview: real abyss encounter preserves death cob and silent manifestation branches",
+          "[zh-translation][interface-rereview][abyss-special]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const int variant = GENERATE(0, 1, 2);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    no_notes suppress_notes;
+    monster* mon = world.place(variant ? MONS_DEATH_COB : MONS_ORC, coord_def(20, 21));
+    mon->flags |= MF_WAS_IN_VIEW;
+    if (!variant)
+    {
+        you.duration[DUR_SILENCE] = 100;
+        invalidate_agrid();
+        REQUIRE(silenced(you.pos()));
+    }
+    unsigned int seed = 0;
+    for (; seed < 8192; ++seed)
+    {
+        rng::subgenerator random(seed, 0x4b414253504543ULL);
+        if ((!variant && random2(243) >= 240)
+            || (variant && coinflip() == (variant == 1)))
+        {
+            break;
+        }
+    }
+    REQUIRE(seed < 8192);
+    vector<monster*> none, announced = {mon};
+    string output;
+    {
+        rng::subgenerator random(seed, 0x4b414253504543ULL);
+        output = observe_message([&] { notice_new_monsters(none, announced, SC_ABYSS); });
+    }
+    const char* key = !variant ? " manifests!" : variant == 1
+        ? " appears in a burst of microwaves!" : " pops from nullspace!";
+    CHECK(output.find(T_(key)) != string::npos);
+    if (!variant)
+        CHECK(output.find(T_(" manifests with a bang!")) == string::npos);
+    if (language == lang_t::ZH)
+        CHECK(output.find(key) == string::npos);
+}
+
+TEST_CASE("interface rereview: actual catalyst description covers every permission and use-key paragraph",
+          "[zh-translation][interface-rereview][catalyst]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const int branch = GENERATE(0, 1, 2, 3, 4);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    const coord_def pos(21, 20);
+    unwind_var<map_cell> knowledge(env.map_knowledge(pos));
+    env.grid(pos) = DNGN_PURIFIED_MUTATION_CATALYST;
+    env.map_knowledge(pos).set_feature(DNGN_PURIFIED_MUTATION_CATALYST);
+    const char* key = nullptr;
+    if (branch == 0)
+    {
+        you.religion = GOD_ZIN;
+        key = "\nYour adherence to the laws of Zin forbids you from using such a device.";
+    }
+    else if (branch == 1)
+    {
+        you.form = transformation::death;
+        key = "\nYou must first come back to life before you may mutate.";
+    }
+    else if (branch == 2)
+    {
+        you.species = SP_MUMMY;
+        REQUIRE(you.is_lifeless_undead());
+        key = "\nThis is completely useless to you, as you cannot mutate.";
+    }
+    else if (branch == 3)
+    {
+        you.mutation[MUT_MUTATION_RESISTANCE] = 3;
+        key = "\nThis is completely useless to you, as you cannot mutate.";
+    }
+    describe_info description;
+    get_feature_desc(pos, description, false);
+    const string body = description.body.str();
+    if (key)
+        CHECK(body.find(T_(key)) != string::npos);
+    else
+    {
+        const string feature = feature_description_at(pos, false, DESC_THE);
+        const string command = command_to_string(CMD_GO_DOWNSTAIRS);
+        const string expected = make_stringf_p(T_("<w>\nWhile standing here, you can crack open %1$s with "
+                                                 "the</w> <cyan>%2$s</cyan> <w>key</w>."),
+                                               feature.c_str(), command.c_str());
+        CHECK(body.find(expected) != string::npos);
+        CHECK(body.find("<cyan>" + command + "</cyan>") != string::npos);
+    }
+    CHECK(env.grid(pos) == DNGN_PURIFIED_MUTATION_CATALYST);
+}
+
+TEST_CASE("interface rereview: actual ice-thorns owner trigger uses complete player and monster frames",
+          "[zh-translation][interface-rereview][ice-thorns]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const bool player_owner = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    no_notes suppress_notes;
+    unwind_var<map_markers> markers(env.markers);
+    env.markers.clear();
+    actor* owner = &you;
+    if (!player_owner)
+        owner = world.place(MONS_ORC, coord_def(20, 21));
+    const coord_def pos = owner->pos();
+    unwind_var<map_cell> knowledge(env.map_knowledge(pos));
+    const auto old_properties = env.pgrid(pos);
+    unwinder restore_properties([&] { env.pgrid(pos) = old_properties; });
+    REQUIRE_FALSE(owner->airborne());
+    temp_change_terrain(pos, DNGN_ICE_THORNS, 50,
+                        TERRAIN_CHANGE_ICE_THORNS, owner->mid, 10);
+    REQUIRE(env.markers.get_terrain_change_at(pos, TERRAIN_CHANGE_ICE_THORNS));
+    const string expected = make_stringf(player_owner
+        ? T_("Your icy thorns crumble before %s.")
+        : T_("The icy thorns crumble before %s."), owner->name(DESC_THE).c_str());
+    const string output = observe_message([&] { ice_thorns_trigger(*owner, pos); });
+    CHECK(output.find(expected) != string::npos);
+    CHECK(env.grid(pos) == DNGN_FLOOR);
+    CHECK_FALSE(env.markers.get_terrain_change_at(pos, TERRAIN_CHANGE_ICE_THORNS));
+    if (language == lang_t::ZH)
+        CHECK(output.find("The") == string::npos);
+}
+
+TEST_CASE("interface rereview: actual overview rune row retains real command counts and full rune list",
+          "[zh-translation][interface-rereview][rune-overview]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const int count = GENERATE(1, 2);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    you.base_stats.init(10);
+    you.experience_level = 1;
+    you.runes.reset();
+    you.runes[RUNE_SWAMP] = true;
+    if (count == 2)
+        you.runes[RUNE_SNAKE] = true;
+    you.obtainable_runes = 3;
+    const auto before = you.runes;
+    vector<string> runes;
+    for (int i = 0; i < NUM_RUNE_TYPES; ++i)
+        if (you.runes[i])
+            runes.emplace_back(rune_type_name(i));
+    const string list = comma_separated_line(runes.begin(), runes.end(), ", ", ", ");
+    const string expected = formatted_string::parse_string(make_stringf_p(
+        T_("\n<w>%1$s:</w> %2$d/%3$d rune%4$s: %5$s"),
+        command_to_string(CMD_DISPLAY_RUNES).c_str(), count, 3, "s", list.c_str())).tostring();
+    const string output = dump_overview_screen();
+    CHECK(output.find(expected) != string::npos);
+    for (const string& rune : runes)
+        CHECK(output.find(rune) != string::npos);
+    CHECK(you.runes == before);
+    CHECK(you.obtainable_runes == 3);
+}
+
+TEST_CASE("interface rereview: audited game-start note snapshots preserve actual display values across save load and locales",
+          "[zh-translation][interface-rereview][game-start-snapshot]")
+{
+    const lang_t creation_language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(creation_language,
+        creation_language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    item_def item;
+    item.base_type = OBJ_WEAPONS;
+    item.sub_type = WPN_DAGGER;
+    item.quantity = 1;
+    item.flags = ISFLAG_IDENTIFIED;
+    const string actor_name = "Ada%custom";
+    const string items = string(T_("the following items: ")) + item.name(DESC_A);
+    const string spells = string(T_("the following spell memorised: "))
+        + spell_title(SPELL_MAGIC_DART);
+    const string library = string(T_("the following spells available to memorise: "))
+        + spell_title(SPELL_BLINK);
+    const string separator = T_("; and ");
+    // The startup producers are private to main.o (not linked into Catch2).
+    // This covers the actual Note serialization/display boundary with real
+    // catalog/item/spell accessors; it does not execute a startup producer.
+    for (const string& payload : {
+        make_stringf(C_("game start", "%s the %s %s began the quest for the Orb."),
+            actor_name.c_str(), T_("Human"), T_("Fighter")),
+        make_stringf(C_("game start", "%s set off with %s%s%s."),
+            actor_name.c_str(), "", "", spells.c_str()),
+        make_stringf(C_("game start", "%s set off with %s%s%s."),
+            actor_name.c_str(), items.c_str(), (separator + spells).c_str(),
+            (separator + library).c_str())})
+    {
+        const Note original(NOTE_MESSAGE, 0, 0, payload);
+        vector<unsigned char> bytes;
+        writer output(&bytes);
+        original.save(output);
+        reader input(bytes);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        Note loaded;
+        loaded.load(input);
+        for (lang_t display_language : {lang_t::ZH, lang_t::EN, lang_t::ZH})
+        {
+            unwind_var<lang_t> mode(Options.language, display_language);
+            CHECK(loaded.describe(false, false, true) == payload);
+            CHECK(loaded.name == original.name);
+            CHECK(loaded.desc.empty());
+            CHECK(loaded.name.find(actor_name) != string::npos);
+            vector<unsigned char> after;
+            writer second_output(&after);
+            loaded.save(second_output);
+            CHECK(after == bytes);
+        }
+    }
+}
+
+TEST_CASE("interface rereview: actual branch rune descriptions preserve all remaining names and omit English plural morphology",
+          "[zh-translation][interface-rereview][branch-runes]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const branch_type branch = GENERATE(BRANCH_DUNGEON, BRANCH_SWAMP,
+                                        BRANCH_PANDEMONIUM);
+    const bool remaining_only = GENERATE(false, true);
+    const int collected = GENERATE(0, 1, 5);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    you.runes.reset();
+    int index = 0;
+    for (rune_type rune : branches[branch].runes)
+        if (index++ < collected)
+            you.runes[rune] = true;
+    const auto before = you.runes;
+    vector<string> names;
+    for (rune_type rune : branches[branch].runes)
+        if (!(remaining_only && you.runes[rune]))
+            names.emplace_back(rune_type_name(rune));
+    const string output = branch_rune_desc(branch, remaining_only);
+    if (names.empty())
+        CHECK(output.empty());
+    else
+    {
+        const string list = comma_separated_line(names.begin(), names.end());
+        const string expected = language == lang_t::ZH
+            ? "这个分支包含" + list + "佐特符文。"
+            : "This branch contains the " + list + " rune"
+                + (names.size() > 1 ? "s" : "") + " of Zot.";
+        CHECK(output == expected);
+        for (const string& name : names)
+            CHECK(output.find(name) != string::npos);
+    }
+    CHECK(you.runes == before);
+}
+
+TEST_CASE("interface rereview: actual slime wall damage localizes all wall counts and icy victim predicates",
+          "[zh-translation][interface-rereview][slime-walls]")
+{
+    const bool icy = GENERATE(false, true);
+    const int walls = GENERATE(1, 2);
+    vector<pair<int, int>> results;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        issue10_world world;
+        no_notes suppress_notes;
+        you.base_stats.init(10);
+        monster* victim = world.place(icy ? MONS_ICE_BEAST : MONS_ORC,
+                                       coord_def(21, 20));
+        victim->hit_points = victim->max_hit_points = 1000;
+        REQUIRE(victim->is_icy() == icy);
+        REQUIRE_FALSE(actor_slime_wall_immune(victim));
+        const coord_def first(22, 20), second(22, 21);
+        env.grid(first) = DNGN_SLIMY_WALL;
+        if (walls > 1)
+            env.grid(second) = DNGN_SLIMY_WALL;
+        invalidate_los();
+        REQUIRE(count_adjacent_slime_walls(victim->pos()) == walls);
+        REQUIRE(you.see_cell_no_trans(victim->pos()));
+        const char* key = icy
+            ? (walls > 1 ? "The walls melt %s!" : "The wall melts %s!")
+            : (walls > 1 ? "The walls burn %s!" : "The wall burns %s!");
+        const string expected = make_stringf(T_(key), victim->name(DESC_THE).c_str());
+        {
+            rng::subgenerator random(17, 0x4b534c494d45ULL);
+            const string output = observe_message([&] {
+                slime_wall_damage(victim, BASELINE_DELAY);
+            });
+            CHECK(output.find(expected) != string::npos);
+            results.emplace_back(victim->hit_points, random2(1000000));
+        }
+        CHECK(victim->hit_points < 1000);
+        CHECK(victim->alive());
+        CHECK(env.grid(first) == DNGN_SLIMY_WALL);
+        CHECK(env.grid(second) == (walls > 1 ? DNGN_SLIMY_WALL : DNGN_FLOOR));
+    }
+    REQUIRE(results.size() == 2);
+    CHECK(results[0] == results[1]);
+}
+
+TEST_CASE("interface rereview: real canned empty-grasp messages preserve all body parts and already versus now",
+          "[zh-translation][interface-rereview][empty-grasp]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const int body = GENERATE(0, 1, 2, 3);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    you.base_stats.init(10);
+    if (body == 1)
+        you.mutation[MUT_CLAWS] = 3;
+    else if (body == 2)
+        you.mutation[MUT_TENTACLE_ARMS] = 1;
+    else if (body == 3)
+        you.mutation[MUT_NO_GRASPING] = 1;
+    you.equipment.update();
+    REQUIRE(you.has_mutation(MUT_NO_GRASPING) == (body == 3));
+    REQUIRE(bool(you.has_usable_claws(true)) == (body == 1));
+    REQUIRE(bool(you.has_usable_tentacles(true)) == (body == 2));
+    const char* frames[] = {
+        "You are %s empty-handed.", "You are %s empty-clawed.",
+        "You are %s empty-tentacled.", "Your mouth is %s empty."
+    };
+    vector<string> outputs;
+    for (bool already : {false, true})
+    {
+        const string when = already ? C_("empty-handed timing", "already")
+                                    : C_("empty-handed timing", "now");
+        const string expected = make_stringf(T_(frames[body]), when.c_str());
+        const string output = observe_message([&] {
+            canned_msg(already ? MSG_EMPTY_HANDED_ALREADY : MSG_EMPTY_HANDED_NOW);
+        });
+        CHECK(output.find(expected) != string::npos);
+        if (language == lang_t::ZH)
+        {
+            CHECK(output.find("already") == string::npos);
+            CHECK(output.find("now") == string::npos);
+        }
+        outputs.push_back(output);
+    }
+    REQUIRE(outputs.size() == 2);
+    CHECK(outputs[0] != outputs[1]);
+}
+
+TEST_CASE("interface rereview: real manual exhaustion keeps the Throwing joke and actual training cost",
+          "[zh-translation][interface-rereview][manual-exhaustion]")
+{
+    const skill_type skill = GENERATE(SK_FIGHTING, SK_THROWING);
+    vector<pair<unsigned int, int>> results;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        issue10_world world;
+        no_notes suppress_notes;
+        unwind_var<bool> simulation(crawl_state.simulating_xp_gain, false);
+        you.base_stats.init(10);
+        you.experience_level = 1;
+        you.skill_cost_level = 1;
+        you.total_experience = 0;
+        you.exp_available = calc_skill_cost(1);
+        you.auto_training = false;
+        you.train.init(TRAINING_DISABLED);
+        you.train[skill] = TRAINING_ENABLED;
+        you.training.init(0);
+        you.training[skill] = 100;
+        you.skill_manual_points[skill] = 1;
+        const char* key = skill == SK_THROWING
+            ? "You have finished your manual of %s and skilfully toss it away."
+            : "You have finished your manual of %s and toss it away.";
+        const string expected = make_stringf(T_(key), skill_name(skill));
+        {
+            rng::subgenerator random(23, 0x4b4d414e55414cULL);
+            const string output = observe_message([] { train_skills(); });
+            CHECK(output.find(expected) != string::npos);
+            results.emplace_back(you.skill_points[skill], random2(1000000));
+        }
+        CHECK(you.skill_manual_points[skill] == 0);
+        CHECK(you.exp_available == 0);
+        CHECK(you.total_experience == calc_skill_cost(1));
+        CHECK(you.skill_points[skill] == 2);
+    }
+    REQUIRE(results.size() == 2);
+    CHECK(results[0] == results[1]);
 }

@@ -443,13 +443,17 @@ static string _number_in_words(unsigned num, unsigned period)
 }
 
 static string _chinese_number_in_words(unsigned num,
-                                       const vector<string> &words)
+                                       const vector<string> &words,
+                                       bool leading = true)
 {
     if (num < 10)
         return words[num];
 
     if (num < 20)
-        return words[10] + (num % 10 ? words[num % 10] : "");
+    {
+        return (leading ? "" : words[1]) + words[10]
+            + (num % 10 ? words[num % 10] : "");
+    }
 
     if (num < 100)
     {
@@ -468,12 +472,12 @@ static string _chinese_number_in_words(unsigned num,
             if (rest < 10)
                 result += words[0] + words[rest];
             else
-                result += _chinese_number_in_words(rest, words);
+                result += _chinese_number_in_words(rest, words, false);
         }
         return result;
     }
 
-    // 1000+
+    // The public entry point limits this vocabulary to 0..9999.
     unsigned thousands = num / 1000;
     unsigned rest = num % 1000;
     string result = _chinese_number_in_words(thousands, words) + words[12];
@@ -481,7 +485,7 @@ static string _chinese_number_in_words(unsigned num,
     {
         if (rest < 100)
             result += words[0];
-        result += _chinese_number_in_words(rest, words);
+        result += _chinese_number_in_words(rest, words, false);
     }
     return result;
 }
@@ -495,6 +499,12 @@ string number_in_words(unsigned num)
 {
     if (Options.language == lang_t::ZH)
     {
+        // This finite vocabulary has no ten-thousand grouping word. Retain
+        // the whole numeric value rather than producing forms such as ten
+        // thousand with Chinese digit/thousand words in English grouping.
+        if (num >= 10000)
+            return to_string(num);
+
         static const char * const keys[] =
         {
             NC_("number word", "zero"),
