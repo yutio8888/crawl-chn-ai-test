@@ -11628,6 +11628,9 @@ Your orb has finished recharging its magic.
 Your orcish features manifest fully.
 你的兽人特征完全显现出来了。
 %%%%
+Your pack is full.
+你的背包已满。
+%%%%
 Your pain echoes through the poison around you!
 你的痛苦在周围毒素中回荡！
 %%%%
@@ -26676,7 +26679,7 @@ You are divinely vitalised.
 你被神圣力量注入了活力。
 %%%%
 You are enlightened. (Will+)
-你处于顿悟状态。（意志+）
+你处于启迪状态。（意志+）
 %%%%
 You are enveloped in primordial darkness.
 你被原初黑暗包围了。
@@ -26757,7 +26760,7 @@ You are reciting Zin's Axioms of Law.
 你正在诵读辛的法律公理。
 %%%%
 You are regenerating under the effects of ambrosia.
-你正在仙酿的作用下再生。
+你正在神食的作用下再生。
 %%%%
 You are resistant to the elements.
 你对元素有抗性。
@@ -36875,6 +36878,9 @@ Parsing error in key sequence '%s'
 Phobia (-%d)
 恐惧症（-%d）
 %%%%
+Pick up %s? ((y)es/(n)o/(a)ll/(m)enu/*?g,/q)
+拾取%s？是（y）/否（n）/全部（a）/菜单（m）/*?g,/q
+%%%%
 Pick up how many of %s (; or enter for all)? 
 拾取多少%s（按;或回车全取）？
 %%%%
@@ -40189,7 +40195,7 @@ status|Agi
 敏捷
 %%%%
 status|Ambros
-仙酒
+神食
 %%%%
 status|Aqua
 水灵
@@ -40816,7 +40822,7 @@ status|agile
 敏捷
 %%%%
 status|ambrosia-drunk
-仙酒醉
+神食酣醉
 %%%%
 status|animating dead
 复活死者
@@ -40861,7 +40867,7 @@ status|cleaving
 横扫中
 %%%%
 status|confused
-困惑
+混乱
 %%%%
 status|confusing by touch
 触之迷惑
