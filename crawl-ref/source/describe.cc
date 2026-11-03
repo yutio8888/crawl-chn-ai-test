@@ -7203,9 +7203,11 @@ public:
         for (const auto &row : rows)
             for (size_t col = 0; col < row.size(); ++col)
                 if (!row[col].label.empty())
+                {
                     minimum_widths[col] = max(minimum_widths[col],
                         labels_widths_by_col[col] + 2
                         + _str_display_width(row[col].value) + 1);
+                }
         vector<int> widths(columns);
         int total = 0;
         for (int col = 0; col < columns; ++col)

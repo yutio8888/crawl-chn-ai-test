@@ -382,5 +382,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     while (std::getline(lines, line))
         if (line.find("负能量抗性:") != string::npos
             || line.find("护甲:") != string::npos)
+        {
             CHECK(strwidth(line) <= 80);
+        }
 }
