@@ -4,6 +4,7 @@
 
 #include "loading-screen.h"
 #include "files.h"
+#include "i18n.h"
 #include "options.h"
 #include "random.h"
 #include "state.h"
@@ -53,7 +54,8 @@ void UIShrinkableImage::_allocate_region()
 
 static shared_ptr<Text> loading_text;
 static shared_ptr<ui::Popup> popup;
-static string load_complete_msg = "Loading complete, press any key to start.";
+static const char *const load_complete_msg =
+    N_("Loading complete, press any key to start.");
 
 static const string _get_title_image()
 {
@@ -73,7 +75,9 @@ void loading_screen_open()
     vbox->add_child(std::move(splash));
     vbox->add_child(loading_text);
     FontWrapper *font = tiles.get_crt_font();
-    vbox->min_size().width = font->string_width(load_complete_msg.c_str());
+    // SourceDB is not initialized yet: reserve the English minimum without
+    // caching a translation fallback before loading_screen_close().
+    vbox->min_size().width = font->string_width(load_complete_msg);
     popup = make_shared<ui::Popup>(std::move(vbox));
     ui::push_layout(popup);
 }
@@ -86,7 +90,7 @@ void loading_screen_close()
         || crawl_state.test || crawl_state.script;
     popup->on_keydown_event([&](const KeyEvent&) { return done = true; });
     if (!done)
-        loading_screen_update_msg(load_complete_msg);
+        loading_screen_update_msg(T_(load_complete_msg));
     while (!done && !crawl_state.seen_hups)
         ui::pump_events();
     ui::pop_layout();

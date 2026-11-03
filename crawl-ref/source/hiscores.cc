@@ -2274,15 +2274,24 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
 
     if (verbose)
     {
-        desc += make_stringf(T_("Began as a %s %s"), display_species.c_str(),
-                             (job < 0 ? T_(_job_name(job)) : _job_name(job)));
-
         ASSERT(birth_time);
-        desc += make_stringf(T_(" on %s"),
-                             _hiscore_date_string(birth_time).c_str());
+        if (Options.language == lang_t::ZH)
+        {
+            const string date = _hiscore_date_string(birth_time);
+            desc += make_stringf_p(
+                C_("score birth", "Began as a %1$s %2$s on %3$s."),
+                display_species.c_str(),
+                (job < 0 ? T_(_job_name(job)) : _job_name(job)), date.c_str());
+        }
+        else
+        {
+            desc += make_stringf(T_("Began as a %s %s"), display_species.c_str(),
+                                 (job < 0 ? T_(_job_name(job)) : _job_name(job)));
+            desc += make_stringf(T_(" on %s"),
+                                 _hiscore_date_string(birth_time).c_str());
+            desc = _append_sentence_delimiter(desc, ".");
+        }
         // TODO: show seed here?
-
-        desc = _append_sentence_delimiter(desc, ".");
         desc += _hiscore_newline_string();
 
         if (god != GOD_NO_GOD
@@ -2346,10 +2355,11 @@ string scorefile_entry::death_place(death_desc_verbosity verbosity) const
         return " (" + level_id(branch, dlvl).describe() + ")";
 
     if (verbose && !_very_boring_death_type(death_type))
-        place += "...";
+        place += C_("score death place", "...");
 
     // where did we die?
-    place += " " + prep_branch_level_name(level_id(branch, dlvl));
+    place += (Options.language == lang_t::ZH ? "" : " ")
+        + prep_branch_level_name(level_id(branch, dlvl));
 
     if (!mapdesc.empty())
         place += make_stringf(T_(" (%s)"), mapdesc.c_str());
@@ -2361,7 +2371,7 @@ string scorefile_entry::death_place(death_desc_verbosity verbosity) const
                               _hiscore_date_string(death_time).c_str());
     }
 
-    place = _append_sentence_delimiter(place, ".");
+    place = _append_sentence_delimiter(place, C_("score sentence", "."));
     place += _hiscore_newline_string();
 
     return place;

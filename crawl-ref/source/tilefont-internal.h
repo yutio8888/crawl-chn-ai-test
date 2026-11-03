@@ -13,6 +13,17 @@
 namespace tilefont_internal
 {
 
+// Resolve the original codepoint before considering a compatibility glyph.
+// Keep the caller's codepoint unchanged: layout still uses its Unicode width.
+template <typename Lookup>
+unsigned int lookup_glyph(char32_t ch, Lookup lookup)
+{
+    unsigned int index = lookup(ch);
+    if (!index && ch >= 0xff01 && ch <= 0xff5e)
+        index = lookup(ch - 0xfee0);
+    return index;
+}
+
 struct tooltip_position
 {
     int x;

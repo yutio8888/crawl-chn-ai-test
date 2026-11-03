@@ -807,7 +807,15 @@ string Note::describe(bool when, bool where, bool what) const
                 result << _theft_note_display(*this);
             break;
         case NOTE_SEEN_FEAT:
-            result << T_("Found ") << name;
+            // The discovery producer stored a display snapshot with an ASCII
+            // period. Localize only its frame; never rewrite the saved name.
+            if (ends_with(name, "."))
+            {
+                const string feature = name.substr(0, name.size() - 1);
+                result << make_stringf(C_("feature note", "Found %s."), feature.c_str());
+            }
+            else
+                result << T_("Found ") << name;
             break;
         case NOTE_FEAT_MIMIC:
             result << name << T_(" was a mimic.");

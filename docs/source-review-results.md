@@ -18604,3 +18604,81 @@ Gemini 4 Argon 负责纯文本译文，Codex 验收并接入。复核范围为 7
 | source: hp<br>EN:  HP | — | 点生命上限 | adjust | 本键仅是自身削命的点数单位，显式生命上限消歧；英文首空格原样保留，中文以量词直接连接数字。 | crawl-ref/source/spl-cast.cc:effect_description; catch2-tests/test_zh_issue6_descriptions.cc:upstream-spell-effects |
 | source:%d-%d%%, avg ~%.1f%%<br>EN: %d-%d%%, avg ~%.1f%% | — | %d-%d%%，平均 ~%.1f%% | adjust | 保留两个整数、一个一位小数、两个百分号及顺序，平均值仍为近似值。 | crawl-ref/source/spl-selfench.cc:revivification_loss_description; catch2-tests/test_zh_issue6_descriptions.cc:upstream-spell-effects |
 | source: (max power: %s)<br>EN:  (max power: %s) | — | （法术威力最大时：%s） | adjust | 明确最大法术威力时的效果值条件，避免把插入值误读为法术威力数值或最大伤害；保留英文首空格与 %s。 | crawl-ref/source/describe.cc:_player_spell_stats; catch2-tests/test_zh_issue6_descriptions.cc:upstream-spell-effects |
+
+## Linux Tiles 004 playtest targeted follow-up
+
+仅记录已确认问题的有限显示修订，不重做或覆盖历史全量审阅。术语依据：`docs/glossary.md` SHA-256 `8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`。
+
+| Identity / English key | Pre-review Chinese | Adopted Chinese | Decision | Rationale | Evidence |
+|---|---|---|---|---|---|
+| source:you can't see any susceptible monsters within range! (use <w>Z</w> to cast anyway.)<br>EN: You can't see any susceptible monsters within range! (Use <w>Z</w> to cast anyway.) | 你在范围内看不到任何可受影响怪物！（按<w>Z</w>强制施放） | 你在范围内看不到任何可受影响的怪物！（按<w>Z</w>强制施放） | adjust | PT-11；只补结构助词“的”；保留视野及射程内无可受影响怪物的前提、仍可强制施放的提示与 <w>Z</w> 标记。 | crawl-ref/source/spl-cast.cc:_spellcasting_aborted; dat/i18n/zh/source.txt 同名键；游玩报告 PT-11。 |
+| source:loading complete, press any key to start.<br>EN: <code>Loading complete, press any key to start.</code> | — | <code>载入完成，按任意键开始。</code> | adjust | PT-01；保留载入阶段对象及完成后的按任意键操作。普通本地化仅在数据库就绪后使用；首个预数据库进度不在此迁移。 | loading-screen.cc / startup.cc；SourceDB 同名键 |
+| source:loading spells and features...<br>EN: <code>Loading spells and features...</code> | — | <code>正在载入法术和地形……</code> | adjust | PT-01；保留正在载入法术和地形的进度对象；在数据库就绪后使用普通本地化。 | loading-screen.cc / startup.cc；SourceDB 同名键 |
+| source:loading maps...<br>EN: <code>Loading maps...</code> | — | <code>正在载入地图……</code> | adjust | PT-01；保留正在载入地图的进度对象；在数据库就绪后使用普通本地化。 | loading-screen.cc / startup.cc；SourceDB 同名键 |
+| source:[l-click] move<br>EN: <code>[L-Click] Move</code> | — | <code>[左键] 移动</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[l-click] attack<br>EN: <code>[L-Click] Attack</code> | — | <code>[左键] 攻击</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[l-click] move towards<br>EN: <code>[L-Click] Move towards</code> | — | <code>[左键] 向此处移动</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[l-click] travel<br>EN: <code>[L-Click] Travel</code> | — | <code>[左键] 旅行</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[l-click] open door (%)<br>EN: <code>[L-Click] Open door (%)</code> | — | <code>[左键] 开门 (%)</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[l-click] pick up items (%)<br>EN: <code>[L-Click] Pick up items (%)</code> | — | <code>[左键] 拾取物品 (%)</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[l-click] use stairs (%)<br>EN: <code>[L-Click] Use stairs (%)</code> | — | <code>[左键] 使用楼梯 (%)</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[l-click] pray at altar (%)<br>EN: <code>[L-Click] Pray at altar (%)</code> | — | <code>[左键] 在祭坛前祈祷 (%)</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[l-click] wait one turn (%)<br>EN: <code>[L-Click] Wait one turn (%)</code> | — | <code>[左键] 等待一回合 (%)</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[shift + l-click] close (%)<br>EN: <code>[Shift + L-Click] Close (%)</code> | — | <code>[Shift + 左键] 关门 (%)</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[r-click] overview (%)<br>EN: <code>[R-Click] Overview (%)</code> | — | <code>[右键] 角色概览 (%)</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[r-click] describe<br>EN: <code>[R-Click] Describe</code> | — | <code>[右键] 查看描述</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[shift + r-click] religion (%)<br>EN: <code>[Shift + R-Click] Religion (%)</code> | — | <code>[Shift + 右键] 宗教 (%)</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[l-click] <br>EN: <code>[L-Click] </code> | — | <code>[左键] </code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。英文键及中文值的末尾 ASCII 空格用于连接动态动作，不得删除。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[l-click / shift + l-click] <br>EN: <code>[L-Click / Shift + L-Click] </code> | — | <code>[左键 / Shift + 左键] </code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。英文键及中文值的末尾 ASCII 空格用于连接动态动作，不得删除。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[shift + l-click] <br>EN: <code>[Shift + L-Click] </code> | — | <code>[Shift + 左键] </code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。英文键及中文值的末尾 ASCII 空格用于连接动态动作，不得删除。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[shift + l-click] enter shop (%)<br>EN: <code>[Shift + L-Click] enter shop (%)</code> | — | <code>[Shift + 左键] 进入商店 (%)</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[shift + l-click] pray at altar (%)<br>EN: <code>[Shift + L-Click] pray at altar (%)</code> | — | <code>[Shift + 左键] 在祭坛前祈祷 (%)</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[shift + l-click] enter gate (%)<br>EN: <code>[Shift + L-Click] enter gate (%)</code> | — | <code>[Shift + 左键] 进入大门 (%)</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。feat_is_gate 包含分支大门，不收窄为仅传送门。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:[shift + l-click] use stairs (%)<br>EN: <code>[Shift + L-Click] use stairs (%)</code> | — | <code>[Shift + 左键] 使用楼梯 (%)</code> | adjust | PT-02；完整保留鼠标按键、修饰键和动作；(%) 是 insert_commands 的快捷键槽，非 printf 转换，原样保留。 | tilereg-dgn.cc:tile_dungeon_tip；SourceDB 同名键 |
+| source:unarmed hit chance&#124;you have about %1$d%% chance to hit with %2$s<br>EN: <code>unarmed hit chance&#124;You have about %1$d%% chance to hit with %2$s</code> | — | <code>你用%2$s攻击的命中率约为%1$d%%</code> | adjust | PT-07；独立徒手上下文保留命中百分比与形态肢体参数；“用手／爪／触手攻击”修正“使用手”的语病，武器原模板不变；%1$d%%、%2$s 原样。 | describe.cc:describe_hit_chance；SourceDB 上下文键 |
+| source:stone stack quantity&#124;%s <br>EN: <code>stone stack quantity&#124;%s </code> | — | <code>%s块</code> | adjust | PT-05；仅石块／巨石的已限定数值堆叠语境采用“块”，保留 %s 数量字符串：数字模式采用十进制数值，quantity_in_words 模式复用既有中文数字分组，两种模式均不改变数量语义；不把量词套到其他物品或英文数据库／查找身份。 | item-name.cc:item_def::name；SourceDB 上下文键 |
+
+本节为文本与生产者核对记录，完整 profile 及运行时验证由整体验证另行提供，不据此声称已测通过。
+
+## Linux Tiles 004 remaining playtest wording follow-up
+
+本轮采纳有限措辞建议，不将它们重新标为强制语义缺陷，不重写历史全量审阅；涉及已批准的武器评级、武器命中率、商店交互用词，以及死亡／发现地貌笔记的完整显示句。PT-22“这是瓶……”可作正常口语省略，保持不变；PT-32 的变形装备前置“融入”和后缀“融合”各有句法作用，保持不变；未扩展品牌、背景、羊皮纸命名、施法动词或共享免疫列表连接词，也未增加其他物品量词。
+术语依据：`docs/glossary.md` SHA-256 `8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`。
+
+| Identity / English key | Pre-review Chinese | Adopted Chinese | Decision | Rationale | Evidence |
+|---|---|---|---|---|---|
+| source:your damage rating with %s is about %s.<br>EN: <code>Your damage rating with %s is about %s.</code> | <code>你用%s的伤害评级约为%s</code> | <code>%s的伤害评级约为%s</code> | adjust | PT-06；首参为带所有格的武器显示名或徒手，移除模板多余的“你用”，保留约数和两个 %s 槽。 | player.cc:_display_damage_rating；SourceDB 同名键。 |
+| source:hit chance&#124;you have about %1$d%% chance to hit with %2$s<br>EN: <code>hit chance&#124;You have about %1$d%% chance to hit with %2$s</code> | <code>你使用%2$s的命中率约为%1$d%%</code> | <code>%2$s的命中率约为%1$d%%</code> | adjust | PT-26；武器参数已经带“你的”，去掉外层“你使用”；保留武器身份、近似百分比及两个位置参数，徒手上下文不变。 | describe.cc:describe_hit_chance；SourceDB 同名键。 |
+| source:examine item             <br>EN: <code>examine item             </code> | <code>检查物品                 </code> | <code>检视物品                 </code> | adjust | PT-12；商店同一交互中的检查／检视统一为检视，原键与显示对齐尾空格不变。 | shopping.cc:ShopMenu::update_help；SourceDB 同名键。 |
+| source:choose to examine item  <br>EN: <code>Choose to examine item  </code> | <code>选择检查物品        </code> | <code>选择检视物品        </code> | adjust | PT-12；购物清单提示与商店检视模式、检视物品提示一致，英文键与显示对齐尾空格不变。 | shopping.cc:ShoppingListMenu::get_keyhelp；SourceDB 同名键。 |
+| source:you die...<br>EN: <code>You die...</code> | <code>你死了...</code> | <code>你死了……</code> | adjust | PT-30；仅将同一死亡段落中的省略号改为中文省略号，保留死亡结论。 | message.cc:canned_msg；SourceDB 同名键。 |
+| source:score birth&#124;began as a %1$s %2$s on %3$s.<br>EN: <code>score birth&#124;Began as a %1$s %2$s on %3$s.</code> | — | <code>%3$s以%1$s%2$s开始冒险。</code> | adjust | PT-31；日期前置的完整句保留初始种族、职业及日期三个位置参数；不更改生涯事实或日期值。 | hiscores.cc:scorefile_entry::character_description；SourceDB 上下文键。 |
+| source:score death place&#124;...<br>EN: <code>score death place&#124;...</code> | — | <code>……</code> | adjust | PT-30；只本地化死亡地点行的省略号前缀，地点层数由原生产者生成。 | hiscores.cc:scorefile_entry::death_place；SourceDB 上下文键。 |
+| source:score sentence&#124;.<br>EN: <code>score sentence&#124;.</code> | — | <code>。</code> | adjust | PT-30；只本地化死亡地点行句末标点，不修改地点身份。 | hiscores.cc:scorefile_entry::death_place；SourceDB 上下文键。 |
+| source:feature note&#124;found %s.<br>EN: <code>feature note&#124;Found %s.</code> | — | <code>发现了%s。</code> | adjust | PT-13f；NOTE_SEEN_FEAT 只在 Note::describe 显示层去除名称末尾恰好一个 ASCII 句点后放入完整句；持久化 Note.name 不变，无该句点的历史值保留原分支。 | notes.cc:Note::describe；SourceDB 上下文键。 |
+| source:<%s>%s</%s>; <%s>%s</%s> risk of failure<br>EN: <code><%s>%s</%s>; <%s>%s</%s> risk of failure</code> | <code><%s>%s</%s>; <%s>%s</%s> 失败风险</code> | <code><%s>%s</%s>；失败率 <%s>%s</%s></code> | adjust | PT-13a；中文分号并把“失败率”前置，保留安全等级、六个 %s、两组着色标记和失败数值，不把安全描述改写为无失败风险。 | spl-cast.cc:_spell_failure_rate_description |
+| source:, or <br>EN: <code>, or </code> | <code>、或 </code> | <code>或</code> | adjust | PT-19；共享择一列表连接词不再叠加顿号和“或”，英文键首尾字符不变。四个消费者分别为地形动作、物品动作、可购买清单提示和法术变形结果列表，均仍保留择一关系。 | describe.cc:_feat_action_desc / _actions_desc；shopping.cc:ShoppingList::gold_changed；spl-cast.cc:desc_wl_success_chance |
+| source: please select your <br>EN: <code> Please select your </code> | <code> 请选择你的</code> | <code>请选择你的</code> | adjust | PT-24；只去中文提示开头的多余空格；英文键首尾空格原样保留，种族／背景选择内容不变。 | newgame.cc；SourceDB 同名键 |
+
+以上为有限文本与消费者核对；整体验证由父代理统一执行，本节不声称运行时或 profile 已通过。
+
+
+## Linux Tiles PT37–PT43 follow-up (Gemini 3.8 Flash patch)
+
+本轮游戏补丁由 Gemini 3.8 Flash 以纯文本交付，父代理核对实际消费者和资产格式后落盘；测试另按现有真实消费者夹具补充。首稿的 context 分行格式、wizard mode 用词及遗漏的最终装备列表连接已退回并由 Gemini 修订，本节仅记录采用的版本，不把未执行的 GUI 或整体验证写成已通过。
+术语依据：`docs/glossary.md` SHA-256 `8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`。
+
+| Identity / English key | Pre-review Chinese | Adopted Chinese | Decision | Rationale | Evidence |
+|---|---|---|---|---|---|
+| source:%s leaves your view.<br>EN: <code>%s leaves your view.</code> | <code>%s 离开了你的视野。</code> | <code>%s离开了你的视野。</code> | adjust | PT39；仅去姓名与中文谓语间空格，保留名称参数和事件。 | SourceDB 同名键；试玩报告 PT39。 |
+| source:%s has about %d%% to hit you.\n<br>EN: <code>%s has about %d%% to hit you.\n</code> | <code>%s有约%d%% 几率命中你。\n</code> | <code>%s有约%d%%几率命中你。\n</code> | adjust | PT40；保留近似概率、主语及源文件原有换行转义字节，仅去概率后空格。 | SourceDB 单数同名键；describe.cc 消费。 |
+| source:%s have about %d%% to hit you.\n<br>EN: <code>%s have about %d%% to hit you.\n</code> | <code>%s有约%d%% 几率命中你。\n</code> | <code>%s有约%d%%几率命中你。\n</code> | adjust | PT40；复数帧与单数帧采用同一有限格式修正，参数和换行不变。 | SourceDB 复数同名键；describe.cc 消费。 |
+| source:monster equipment&#124; armed with <br>EN: <code>monster equipment&#124; armed with </code> | — | <code>装备着</code> | adjust | PT38；仅怪物装备描述去连接处空格，保留装备从句；不改共享 plain 键。 | directn.cc:_describe_monster_weapon。 |
+| source:monster equipment&#124; wielding <br>EN: <code>monster equipment&#124; wielding </code> | — | <code>持握着</code> | adjust | PT38；仅怪物武器描述去边空格，保留持握语义和后接物品。 | directn.cc:_describe_monster_weapon。 |
+| source:monster equipment&#124; and <br>EN: <code>monster equipment&#124; and </code> | — | <code>以及</code> | adjust | PT38；同一装备列表三个连接点统一去边空格，保留所有武器、携带物和弹药；不改其他 plain and 消费者。 | directn.cc 武器、携带物及最终 item_description 列表。 |
+| source:monster equipment&#124;carrying <br>EN: <code>monster equipment&#124;carrying </code> | — | <code>携带着</code> | adjust | PT38；装备描述携带物前缀的局部中文接合，英文键尾空格保留。 | directn.cc:get_monster_equipment_desc。 |
+| source:do you really want to enter wizard mode?<br>EN: <code>Do you really want to enter wizard mode?</code> | — | <code>你真的想进入巫师模式吗？</code> | adjust | PT42；翻译完整确认问题，保留输入令牌 wiz 和通用大小写不敏感校验。 | wizard.cc；prompt.cc:confirm_prompt。 |
+| source:make which kind of shop?<br>EN: <code>Make which kind of shop?</code> | — | <code>创造哪种商店？</code> | adjust | PT42；只翻译建店选择标题；原英文过滤、排序和字母快捷键分配先后不变。 | wiz-dgn.cc:debug_make_shop；WizardMenu。 |
+| source:shop type&#124;any<br>EN: <code>shop type&#124;any</code> | — | <code>任意类型</code> | adjust | PT42；限定建店上下文，固定 * 快捷键及 SHOP_RANDOM 输出不变，不新增通用 any 译义。 | wiz-dgn.cc:debug_make_shop。 |
+
+PT37、PT41、PT43 仅修中文显示接缝，没有新术语或源键：衍生怪物后缀复用原译名，投掷物前缀复用原铭印，造物来源保留原主体、指代与地点。英文分隔、DBNAME/枚举或保存身份不改。以上项目来自有限试玩样本，不以原报告的百分百复现描述代替完整覆盖证据。完整运行结果由父代理的本轮实施记录提供。

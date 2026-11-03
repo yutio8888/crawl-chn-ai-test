@@ -916,7 +916,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     {
         item.quantity = count.first;
         CHECK(item.name(DESC_PLAIN, false, true, false, true).find(
-                  string(count.second) + " ") == 0);
+                  string(count.second) + "块") == 0);
         {
             ScopedLangEn canonical;
             CHECK(item.name(DESC_PLAIN, false, true, false, true).find(

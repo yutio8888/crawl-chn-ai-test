@@ -135,6 +135,7 @@ protected:
         bool valid;
     };
     vector<GlyphInfo> m_glyphs;
+    FT_Face glyph_face(char32_t ch, FT_UInt &index) const;
     GlyphInfo& get_glyph_info(char32_t ch);
 
     struct FontAtlasEntry

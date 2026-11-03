@@ -1364,7 +1364,8 @@ string origin_desc(const item_def &item)
                 break;
 #endif
             case AQ_WIZMODE:
-                desc += (T_("Your wizardly powers created ")+ _article_it(item)+ " ");
+                desc += (T_("Your wizardly powers created ") + _article_it(item)
+                         + (Options.language == lang_t::ZH ? "" : " "));
                 break;
             default:
                 if (iorig > GOD_NO_GOD && iorig < NUM_GODS)

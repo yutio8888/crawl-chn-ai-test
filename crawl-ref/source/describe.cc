@@ -6789,7 +6789,9 @@ void describe_hit_chance(int hit_chance, ostringstream &result, const item_def *
             ? weapon->name(DESC_YOUR, false, false, false)
             : you.hand_name(true);
         result << make_stringf_p(
-            C_("hit chance", "You have about %1$d%% chance to hit with %2$s"),
+            weapon
+                ? C_("hit chance", "You have about %1$d%% chance to hit with %2$s")
+                : C_("unarmed hit chance", "You have about %1$d%% chance to hit with %2$s"),
             hit_chance, attack_name.c_str());
         if (you.duration[DUR_BLIND])
         {
