@@ -424,8 +424,10 @@ TEST_CASE("upstream spell effect details localize all seven spells and align col
         you.base_stats.init(capped ? 100 : 10);
         you.skills.init(capped ? 27 : 0);
         for (int sk = 0; sk < NUM_SKILLS; ++sk)
+        {
             you.skill_points[sk] = capped
                 ? skill_exp_needed(27, static_cast<skill_type>(sk)) : 0;
+        }
         you.mutation[MUT_WILD_MAGIC] = capped ? 3 : 0;
         you.duration[DUR_BRILLIANCE] = capped ? 10 : 0;
         you.equipment.update();
