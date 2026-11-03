@@ -9296,7 +9296,7 @@ You can't see any susceptible monsters within range!
 你在范围内看不到任何可受影响的怪物！
 %%%%
 You can't see any susceptible monsters within range! (Use <w>Z</w> to cast anyway.)
-你在范围内看不到任何可受影响怪物！（按<w>Z</w>强制施放）
+你在范围内看不到任何可受影响的怪物！（按<w>Z</w>强制施放）
 %%%%
 You can't see anything there to clone.
 你看不到任何可以克隆的东西。
@@ -52662,3 +52662,103 @@ Self drain
 %%%%
  (max power: %s)
 （法术威力最大时：%s）
+
+%%%%
+Loading complete, press any key to start.
+载入完成，按任意键开始。
+
+%%%%
+Loading spells and features...
+正在载入法术和地形……
+
+%%%%
+Loading maps...
+正在载入地图……
+
+%%%%
+[L-Click] Move
+[左键] 移动
+
+%%%%
+[L-Click] Attack
+[左键] 攻击
+
+%%%%
+[L-Click] Move towards
+[左键] 向此处移动
+
+%%%%
+[L-Click] Travel
+[左键] 旅行
+
+%%%%
+[L-Click] Open door (%)
+[左键] 开门 (%)
+
+%%%%
+[L-Click] Pick up items (%)
+[左键] 拾取物品 (%)
+
+%%%%
+[L-Click] Use stairs (%)
+[左键] 使用楼梯 (%)
+
+%%%%
+[L-Click] Pray at altar (%)
+[左键] 在祭坛前祈祷 (%)
+
+%%%%
+[L-Click] Wait one turn (%)
+[左键] 等待一回合 (%)
+
+%%%%
+[Shift + L-Click] Close (%)
+[Shift + 左键] 关门 (%)
+
+%%%%
+[R-Click] Overview (%)
+[右键] 角色概览 (%)
+
+%%%%
+[R-Click] Describe
+[右键] 查看描述
+
+%%%%
+[Shift + R-Click] Religion (%)
+[Shift + 右键] 宗教 (%)
+
+%%%%
+[L-Click] 
+[左键] 
+
+%%%%
+[L-Click / Shift + L-Click] 
+[左键 / Shift + 左键] 
+
+%%%%
+[Shift + L-Click] 
+[Shift + 左键] 
+
+%%%%
+[Shift + L-Click] enter shop (%)
+[Shift + 左键] 进入商店 (%)
+
+%%%%
+[Shift + L-Click] pray at altar (%)
+[Shift + 左键] 在祭坛前祈祷 (%)
+
+%%%%
+[Shift + L-Click] enter gate (%)
+[Shift + 左键] 进入大门 (%)
+
+%%%%
+[Shift + L-Click] use stairs (%)
+[Shift + 左键] 使用楼梯 (%)
+
+%%%%
+unarmed hit chance|You have about %1$d%% chance to hit with %2$s
+你用%2$s攻击的命中率约为%1$d%%
+
+%%%%
+stone stack quantity|%s 
+%s块

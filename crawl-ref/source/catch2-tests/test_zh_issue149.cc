@@ -1883,3 +1883,112 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(string(T_(skewer)) == skewer);
     CHECK(getLongDescription(key).find("An enchanted lance") != string::npos);
 }
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "stone stack display counts preserve identity and English quantities",
+                 "[zh-translation][playtest-004][items]")
+{
+    init_properties();
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (missile_type subtype : {MI_STONE, MI_LARGE_ROCK})
+        {
+            item_def item;
+            item.base_type = OBJ_MISSILES;
+            item.sub_type = subtype;
+            item.quantity = 1;
+            item.flags = ISFLAG_IDENTIFIED;
+            const string basename = item.name(DESC_BASENAME);
+            const string dbname = item.name(DESC_DBNAME);
+            const string qualname = item.name(DESC_QUALNAME);
+            item.quantity = 5;
+            CHECK(item.name(DESC_DBNAME) == dbname);
+            CHECK(item.name(DESC_BASENAME) == basename);
+            CHECK(item.name(DESC_QUALNAME) == qualname);
+            const string displayed = item.name(DESC_A);
+            if (language == lang_t::ZH)
+            {
+                CHECK(displayed == "5块" + basename);
+                CHECK(make_stringf(T_("Found %s."), displayed.c_str())
+                      == "发现了5块" + basename + "。");
+                CHECK(make_stringf(T_("You see here %s."), displayed.c_str())
+                      == "你在这里看到5块" + basename + "。");
+                CHECK(item.name(DESC_A, false, false, false, true)
+                      == "五块" + basename);
+            }
+            else
+            {
+                CHECK(displayed == (subtype == MI_STONE ? "5 stones" : "5 large rocks"));
+                CHECK(item.name(DESC_A, false, false, false, true)
+                      == (subtype == MI_STONE ? "five stones" : "five large rocks"));
+            }
+            ScopedLangEn english_identity;
+            CHECK(item.name(DESC_DBNAME)
+                  == (subtype == MI_STONE ? "stone" : "large rock"));
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "unarmed hit chance describes body parts independently of weapon phrasing",
+                 "[zh-translation][playtest-004][descriptions]")
+{
+    init_properties();
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (species_type species : {SP_HUMAN, SP_FELID, SP_OCTOPODE})
+        {
+            issue149_player();
+            you.species = species;
+            you.duration[DUR_BLIND] = 1;
+            ostringstream displayed;
+            describe_hit_chance(73, displayed, nullptr, true, 2);
+            const string text = displayed.str();
+            CHECK(text.find("73%") != string::npos);
+            CHECK(text.find(you.hand_name(true)) != string::npos);
+            if (language == lang_t::ZH)
+            {
+                CHECK(text.find("你用" + you.hand_name(true) + "攻击的命中率") != string::npos);
+                CHECK(text.find("使用手") == string::npos);
+            }
+            else
+                CHECK(text.find("% to hit with your ") != string::npos);
+        }
+    }
+}
+
+#ifdef USE_TILE_LOCAL
+#include "tilereg-dgn.h"
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "local tiles dungeon tooltip translates movement and description actions",
+                 "[zh-translation][playtest-004][tiles]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    issue149_player();
+    you.on_current_level = true;
+    you.wizard_vision = true;
+    you.current_vision = 8;
+    you.equipment.update();
+    const coord_def target = you.pos() + coord_def(1, 0);
+    unwind_var<dungeon_feature_type> restore_floor(env.grid(target), DNGN_FLOOR);
+    unwind_var<unsigned short> restore_monster(env.mgrid(target), NON_MONSTER);
+    unwind_var<map_cell> restore_map(env.map_knowledge(target), map_cell());
+    env.map_knowledge(target).set_feature(DNGN_FLOOR);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        string displayed;
+        REQUIRE(tile_dungeon_tip(target, displayed));
+        CHECK(displayed == string(T_("[L-Click] Move")) + "\n" + T_("[R-Click] Describe"));
+        CHECK(displayed.find(language == lang_t::ZH ? "[左键]" : "[L-Click]") != string::npos);
+        if (language == lang_t::ZH)
+            CHECK(displayed.find("Describe") == string::npos);
+    }
+}
+#endif

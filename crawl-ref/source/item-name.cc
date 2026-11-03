@@ -231,7 +231,14 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
         if (descrip != DESC_BASENAME && descrip != DESC_QUALNAME
             && descrip != DESC_DBNAME && !always_plural)
         {
-            if (quantity_in_words)
+            if (Options.language == lang_t::ZH && base_type == OBJ_MISSILES
+                && (sub_type == MI_STONE || sub_type == MI_LARGE_ROCK))
+            {
+                const string count = quantity_in_words
+                    ? number_in_words(quantity) : make_stringf("%d", quantity);
+                buff << make_stringf(C_("stone stack quantity", "%s "), count.c_str());
+            }
+            else if (quantity_in_words)
                 buff << number_in_words(quantity) << " ";
             else
                 buff << quantity << " ";

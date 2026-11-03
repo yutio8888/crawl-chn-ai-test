@@ -5806,3 +5806,15 @@ Issue #147 F2: the eight additions/replacements in frozen Chinese `c55cf7f7a5` a
 - `silver (silver) missile ego`: 保留高于普通弹药的基础伤害、混沌／魔法变形目标额外增伤，以及目标变异越多增伤越高的后续说明。
 - 紧凑物品属性：`AC`／`EV`／`SH` 改为“护甲”／“闪避”／“格挡”；`rN`／`rN+` 采用“负能抗”／“负能抗+”，保留等级符号。详情 `rNeg` 用“负能量抗性”。火抗、冰抗、电抗、毒抗和意志在属性列表中含义明确，保留简写。
 - 术语依据：当前 `docs/glossary.md` SHA-256 `8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`。
+
+### Linux Tiles 004 playtest targeted follow-up
+
+本次仅修复实际游玩报告 PT-09、PT-10 指出的两句语法，不重新判定历史全量审阅。英文条目身份、其他句子、通用充能尾注及游戏机制不变。
+术语依据：`docs/glossary.md` SHA-256 `8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`；魔力释放技能遵循 D-A-052；正文保留完整术语“意志力”。
+
+| Identity / Playtest ID | English meaning | Pre-review Chinese | Adopted Chinese | Decision and semantic evidence |
+|---|---|---|---|---|
+| body:items:tin of tremorstones / PT-09 | Armour is extremely effective at repelling the lightweight fragments of rock from a tremorstone's explosion. | 然而，护甲在抵挡震颤石的爆炸中所迸发的轻质岩石碎片非常有效， | 然而，护甲在抵挡震颤石爆炸所迸发的轻质岩石碎片方面非常有效， | adjust；补齐“在……方面”的句法结构；保留护甲极有效抵挡轻质碎片的原因，并保留相邻句中使用者仍有被击中的风险、护甲精良者不必太担心及技能增加爆炸次数。英文 `dat/descript/items.txt`、中文 `dat/descript/zh/items.txt` 同名条目逐句比对。 |
+| body:items:phantom mirror / PT-10 | The reflection's duration increases with Evocations skill and decreases with the willpower of the target. | 镜像的持续时间随魔力释放技能的提升而增加，随目标的意志力越强而减少。 | 镜像的持续时间随魔力释放技能的提升而增加，随目标意志力的增强而减少。 | adjust；两个并列条件统一为“随……而……”；保留技能越高持续越久、目标意志力越强持续越短的相反影响。创造附近生物镜像、镜面浑浊及镜像总略弱等相邻内容不变。 |
+
+以上为有限文本修订和 EN/ZH 比对记录；构建、验证 profile 与实际 Tiles 回归由整体验证记录另行提供，本节不声称已经通过。
