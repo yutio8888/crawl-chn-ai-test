@@ -780,6 +780,8 @@ string Note::describe(bool when, bool where, bool what) const
         case NOTE_MESSAGE:
             if (desc == "abyss entry")
                 result << _abyss_entry_note_display(name);
+            else if (desc == "corrupted level")
+                result << _corrupted_level_note_display(*this);
             else if (desc == "gold theft" || desc == "item theft")
                 result << _theft_note_display(*this);
             else

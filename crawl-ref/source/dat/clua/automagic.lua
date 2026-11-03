@@ -307,7 +307,8 @@ function am_set_spell()
       enabled = true
     end
     AUTOMAGIC_SPELL_SLOT = slot
-    spell_name = you.spell_table()[AUTOMAGIC_SPELL_SLOT]
+    local raw_spell = you.spell_table()[AUTOMAGIC_SPELL_SLOT]
+    spell_name = raw_spell and spells.title(raw_spell)
         or crawl.t_("no spell currently")
     local template = enabled
         and crawl.t_("Automagic enabled, will cast spell in slot %s (%s).")

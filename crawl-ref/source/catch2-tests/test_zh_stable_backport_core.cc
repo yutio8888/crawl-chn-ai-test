@@ -494,6 +494,50 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: corrupted level notes render only canonical typed payloads",
+                 "[zh-translation][backport][corrupted-level-notes]")
+{
+    const string canonical = "Corrupted D:7";
+    Note note(NOTE_MESSAGE, 0, 0, canonical, "corrupted level");
+    note.place = level_id(BRANCH_DUNGEON, 7);
+
+    SECTION("canonical producer note follows the display language")
+    {
+        const string expected = make_stringf(T_("Corrupted %s"),
+                                             note.place.describe(true, true).c_str());
+        REQUIRE(expected != canonical);
+        CHECK(note.describe(false, false, true) == expected);
+        {
+            EnTranslationFixture english;
+            CHECK(note.describe(false, false, true) == canonical);
+        }
+        CHECK(note.describe(false, false, true) == expected);
+        CHECK(note.name == canonical);
+        CHECK(note.desc == "corrupted level");
+    }
+
+    SECTION("historical unmarked snapshots remain unchanged")
+    {
+        note.desc.clear();
+        CHECK(note.describe(false, false, true) == canonical);
+    }
+
+    SECTION("unknown payloads remain unchanged")
+    {
+        const string unknown = "Corrupted unknown level";
+        note.name = unknown;
+        CHECK(note.describe(false, false, true) == unknown);
+        CHECK(note.name == unknown);
+    }
+
+    SECTION("invalid typed levels remain unchanged")
+    {
+        note.place.clear();
+        CHECK(note.describe(false, false, true) == canonical);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: equipment notice template keeps both slots",
                  "[zh-translation][backport][protocol]")
 {

@@ -430,9 +430,9 @@ w:5
 %%%%
 Gastronok cast targeted
 
-@The_monster@在吟诵时，朝@at@ @target@看去。
+@The_monster@在吟诵时，@at@ @target@看去。
 
-@The_monster@在咕哝着一些奇怪的话时，朝@at@ @target@看去。
+@The_monster@在咕哝着一些奇怪的话时，@at@ @target@看去。
 
 @The_monster@@at@@target@施展了一个法术。
 %%%%
@@ -674,7 +674,7 @@ Invisibility shadowghast cast
 %%%%
 ghost moth cast targeted
 
-@The_monster@朝@at@ @target@凝视。
+@The_monster@@at@ @target@凝视。
 %%%%
 ghost moth cast
 
@@ -848,7 +848,7 @@ unseen curse skull cast
 %%%%
 floating eye cast targeted
 
-@The_monster@朝@at@ @target@凝视。
+@The_monster@@at@ @target@凝视。
 %%%%
 floating eye cast
 
@@ -999,7 +999,7 @@ unseen wizard cast
 %%%%
 magical cast targeted
 
-@The_monster@朝@at@ @target@做出手势。
+@The_monster@@at@ @target@做出手势。
 %%%%
 magical cast
 
