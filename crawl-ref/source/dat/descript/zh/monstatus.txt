@@ -413,8 +413,8 @@ ready to howl monstatus
 %%%%
 ready to sunder monstatus
 
-这个生物的崩裂武器已完全充能，其下一次攻击将更加精准、造成大幅增加的伤害、
-并且劈砍范围扩大。如果它移动了，此效果将消失。
+这个生物的崩裂武器已完全充能，下一次攻击会更精准、伤害大幅提高，
+劈砍范围也会扩大。如果它移动了，此效果将消失。
 %%%%
 reflecting blocked projectiles monstatus
 
@@ -657,5 +657,5 @@ low-tier stab monstatus
 %%%%
 high-tier stab monstatus
 
-<blue>你对该生物进行的近战攻击将造成大幅增加的伤害，使用短刃武器时效果尤佳。</blue>
+<blue>你对该生物造成的近战伤害将大幅提高，使用短刃武器时效果尤佳。</blue>
 %%%%

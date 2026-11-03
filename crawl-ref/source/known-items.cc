@@ -204,13 +204,19 @@ public:
     virtual string get_text() const override
     {
         string name;
+        bool removed_food = false;
+#if TAG_MAJOR_VERSION == 34
+        removed_food = item->base_type == OBJ_FOOD;
+#endif
 
         if (item->base_type == OBJ_MISCELLANY)
-            name = pluralise(item->name(DESC_DBNAME));
-#if TAG_MAJOR_VERSION == 34
-        else if (item->base_type == OBJ_FOOD)
+        {
+            // DESC_DBNAME is an English lookup identity. Use the subtype's
+            // display name without charge or inert suffixes for this menu.
+            name = pluralise(sub_type_string(*item));
+        }
+        else if (removed_food)
             name = "removed food";
-#endif
         else if (item->is_type(OBJ_BOOKS, BOOK_MANUAL))
             name = T_("manuals");
         else if (item->is_type(OBJ_BOOKS, 0))

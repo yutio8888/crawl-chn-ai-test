@@ -1,6 +1,7 @@
 #include "catch_amalgamated.hpp"
 
 #include "AppHdr.h"
+#include "format.h"
 
 #include "database.h"
 #include "describe.h"
@@ -17,6 +18,7 @@
 #include "state.h"
 #include "stringutil.h"
 #include "test_zh_fixture.h"
+#include "unicode.h"
 #include "unwind.h"
 
 namespace
@@ -155,4 +157,40 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(string(C_("xom enchantment", "looks ")) == "looks ");
     CHECK(string(T_("  [<w>J</w>/<w>Enter</w>]: join"))
           == "  [<w>J</w>/<w>Enter</w>]: join");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Issue 237 monster stat columns retain full labels and values",
+                 "[zh-translation][issue237][descriptions]")
+{
+    init_monsters();
+    init_spell_descs();
+    unwind_var<bool> game_started(crawl_state.game_started, false);
+    unwind_var<god_type> religion(you.religion, GOD_NO_GOD);
+    monster_info mi(MONS_ORC_KNIGHT);
+    mi.sh = 10;
+    mi.mresists |= MR_RES_FIRE;
+    describe_info info;
+    bool has_stats = false;
+    get_monster_db_desc(mi, info, has_stats);
+    REQUIRE(has_stats);
+    const string desc = info.body.str();
+    const string plain = formatted_string::parse_string(desc).tostring();
+    for (const auto label : {"护甲:", "闪避:", "格挡:", "负能量抗性:"})
+        CHECK(plain.find(label) != string::npos);
+    // These rows share columns: the longer resistance label must leave room
+    // for its pips and the following electric-resistance cell.
+    const size_t start = plain.find("负能量抗性:");
+    REQUIRE(start != string::npos);
+    const string tail = plain.substr(start, plain.find('\n', start) - start);
+    CHECK(tail.find("电抗:") != string::npos);
+    CHECK(tail.find("...") != string::npos);
+    std::istringstream lines(plain);
+    string line;
+    while (std::getline(lines, line))
+        if (line.find("负能量抗性:") != string::npos
+            || line.find("护甲:") != string::npos)
+        {
+            CHECK(strwidth(line) <= 80);
+        }
 }
