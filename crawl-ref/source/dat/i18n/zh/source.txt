@@ -52630,3 +52630,35 @@ become Ostracised
 %%%%
 conjure a freezing cloud
 制造冰冻云
+
+%%%%
+Cooldown
+冷却时间
+
+%%%%
+Max HP loss
+生命上限损失
+
+%%%%
+Charge time
+蓄能时间
+
+%%%%
+Bonus AC
+额外护甲
+
+%%%%
+Self drain
+自身削命
+
+%%%%
+ HP
+点生命上限
+
+%%%%
+%d-%d%%, avg ~%.1f%%
+%d-%d%%，平均 ~%.1f%%
+
+%%%%
+ (max power: %s)
+（法术威力最大时：%s）

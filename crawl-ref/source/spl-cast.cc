@@ -3419,33 +3419,33 @@ pair<string, string> effect_description(spell_type spell, bool evoked, int pow,
     switch (spell)
     {
     case SPELL_BLINK:
-        return make_pair("Cooldown", blink_cooldown_description(pow)
-                                     + (terse ? "" : " turns"));
+        return make_pair(T_("Cooldown"), blink_cooldown_description(pow)
+                                     + (terse ? "" : T_(" turns")));
     case SPELL_BORGNJORS_REVIVIFICATION:
-        return make_pair("Max HP loss",
+        return make_pair(T_("Max HP loss"),
                          revivification_loss_description(pow, terse));
     case SPELL_MAXWELLS_COUPLING:
-        return make_pair("Charge time",
-            maxwells_coupling_charge_description(pow) + (terse ? "" : " turns"));
+        return make_pair(T_("Charge time"),
+            maxwells_coupling_charge_description(pow) + (terse ? "" : T_(" turns")));
     case SPELL_OZOCUBUS_ARMOUR:
     {
         double ac_bonus = ice_armour_ac(pow) / 100.0;
-        return make_pair("Bonus AC", make_stringf("%.1f", ac_bonus));
+        return make_pair(T_("Bonus AC"), make_stringf("%.1f", ac_bonus));
     }
     case SPELL_PASSWALL:
-        return make_pair("Bonus AC",
+        return make_pair(T_("Bonus AC"),
                          make_stringf("~%d", passwall_ac(pow, false)));
     case SPELL_PHALANX_BEETLE:
     {
         double ac_bonus = phalanx_beetle_barrier_ac(pow) / 100.0;
-        return make_pair("Bonus AC", make_stringf("%.1f", ac_bonus));
+        return make_pair(T_("Bonus AC"), make_stringf("%.1f", ac_bonus));
     }
     case SPELL_PUTREFACTION:
     {
         const int hp_loss = player_drain_hp_loss(
                                 putrefaction_drain_amount(pow, false), false);
-        return make_pair("Self drain", make_stringf("~%d%s", hp_loss,
-                                                    terse ? "" : " HP"));
+        return make_pair(T_("Self drain"), make_stringf("~%d%s", hp_loss,
+                                                    terse ? "" : T_(" HP")));
     }
     default:
         return make_pair("", "");

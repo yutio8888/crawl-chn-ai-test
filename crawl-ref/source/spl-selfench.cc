@@ -115,7 +115,7 @@ string revivification_loss_description(int pow, bool terse)
                             + binomial_mean(REVIV_ROLLS, REVIV_CHANCE, pow);
     if (terse)
         return make_stringf("~%.1f%%", avg_loss);
-    return make_stringf("%d-%d%%, avg ~%.1f%%", min_loss, max_loss, avg_loss);
+    return make_stringf(T_("%d-%d%%, avg ~%.1f%%"), min_loss, max_loss, avg_loss);
 }
 
 spret cast_revivification(int pow, bool fail)

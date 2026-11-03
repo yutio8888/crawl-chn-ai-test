@@ -1364,7 +1364,7 @@
 | source: to spare<br>EN:  to spare | <br>剩余 | <br>剩余 | adjust | 宝石取得时限剩余后缀语序错误，改完整模板；已按对应修后复核闭合：仍被其他消费者使用的旧片段保留，受影响调用已迁移完整模板或修正译值。 | crawl-ref/source/notes.cc:288 |
 | source: to zin<br>EN:  to Zin | <br>给辛 | <br>给辛 | keep | 金币捐献目标辛一致 | crawl-ref/source/notes.cc:301 |
 | source: turn<br>EN:  turn | <br>回合 | <br>回合 | keep | 回合单数中文单位正确 | crawl-ref/source/notes.cc:287 |
-| source: turns<br>EN:  turns | <br>回合 | <br>回合 | keep | 回合复数中文单位正确 | crawl-ref/source/notes.cc:287; crawl-ref/source/notes.cc:408; crawl-ref/source/notes.cc:412 |
+| source: turns<br>EN:  turns | <br>回合 | <br>回合 | keep | 回合复数中文单位正确；上游法术冷却／蓄能效果复用此键，不重复新增 | crawl-ref/source/notes.cc:287; crawl-ref/source/notes.cc:408; crawl-ref/source/notes.cc:412 |
 | source: was a mimic.<br>EN:  was a mimic. | 是一个拟态怪。 | 是一个拟态怪。 | keep | 拟态怪揭露完整 | crawl-ref/source/notes.cc:393 |
 | source: zot: &lt;%s&gt;%d&lt;/%s&gt;<br>EN:  Zot: &lt;%s&gt;%d&lt;/%s&gt; |  佐特：&lt;%s&gt;%d&lt;/%s&gt; |  佐特：&lt;%s&gt;%d&lt;/%s&gt; | keep | 佐特计时保留颜色及数值参数 | crawl-ref/source/dgn-overview.cc:377 |
 | source: &#124; xls as\n<br>EN:  &#124; XLs as\n |  &#124; 主用等级数\n |  &#124; 主用等级数\n | keep | 统计列为该技能主用的等级数，非技能当前等级 | crawl-ref/source/chardump.cc:1831 |
@@ -18587,3 +18587,20 @@
 | concat:620 | version.cc:46 | keep | 编译器平台flags构建信息技术输出。 |
 | concat:621 | xom.cc:691 | keep | ScopedLangEn下构造Xom gift规范Note，已审显示门单独翻译，保存身份不改。 |
 | concat:622 | prebuilt/levcomp.tab.cc:1844 | keep | prebuilt levcomp编译器生成Lua源码，非用户文本；其源levcomp.y同样规范语法。 |
+
+## Upstream db921c0140 spell effect display follow-up
+
+Gemini 4 Argon 负责纯文本译文，Codex 验收并接入。复核范围为 7 个既有法术新增的效果标签、单位、平均值和满威力说明；保持英文身份、数值、百分号、范围与近似符号。` turns` 复用既有条目。`Self drain` 属生命上限衰竭，不在吸取效果 `Drain` 的术语作用域内；` HP` 只用于该效果的点数。
+
+术语依据：`docs/glossary.md` SHA-256 `8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`。
+
+| Identity / English key | Pre-review Chinese | Adopted Chinese | Decision | Rationale | Evidence |
+|---|---|---|---|---|---|
+| source:cooldown<br>EN: Cooldown | — | 冷却时间 | adjust | 闪烁重新施放前的冷却回合范围；保留时间含义。 | crawl-ref/source/spl-cast.cc:effect_description; catch2-tests/test_zh_issue6_descriptions.cc:upstream-spell-effects |
+| source:max hp loss<br>EN: Max HP loss | — | 生命上限损失 | adjust | 复苏法术造成永久生命上限损失，值为范围及平均百分比，不是当前生命伤害。 | crawl-ref/source/spl-cast.cc:effect_description; catch2-tests/test_zh_issue6_descriptions.cc:upstream-spell-effects |
+| source:charge time<br>EN: Charge time | — | 蓄能时间 | adjust | 电容耦合完成蓄能所需回合范围。 | crawl-ref/source/spl-cast.cc:effect_description; catch2-tests/test_zh_issue6_descriptions.cc:upstream-spell-effects |
+| source:bonus ac<br>EN: Bonus AC | — | 额外护甲 | adjust | 护甲法术、穿墙术和方阵甲虫提供额外护甲，不是角色总护甲。 | crawl-ref/source/spl-cast.cc:effect_description; catch2-tests/test_zh_issue6_descriptions.cc:upstream-spell-effects |
+| source:self drain<br>EN: Self drain | — | 自身削命 | adjust | 腐烂法术对自身造成临时生命上限削减，区别于永久损失、吸血和耗蓝。 | crawl-ref/source/spl-cast.cc:effect_description; catch2-tests/test_zh_issue6_descriptions.cc:upstream-spell-effects |
+| source: hp<br>EN:  HP | — | 点生命上限 | adjust | 本键仅是自身削命的点数单位，显式生命上限消歧；英文首空格原样保留，中文以量词直接连接数字。 | crawl-ref/source/spl-cast.cc:effect_description; catch2-tests/test_zh_issue6_descriptions.cc:upstream-spell-effects |
+| source:%d-%d%%, avg ~%.1f%%<br>EN: %d-%d%%, avg ~%.1f%% | — | %d-%d%%，平均 ~%.1f%% | adjust | 保留两个整数、一个一位小数、两个百分号及顺序，平均值仍为近似值。 | crawl-ref/source/spl-selfench.cc:revivification_loss_description; catch2-tests/test_zh_issue6_descriptions.cc:upstream-spell-effects |
+| source: (max power: %s)<br>EN:  (max power: %s) | — | （法术威力最大时：%s） | adjust | 明确最大法术威力时的效果值条件，避免把插入值误读为法术威力数值或最大伤害；保留英文首空格与 %s。 | crawl-ref/source/describe.cc:_player_spell_stats; catch2-tests/test_zh_issue6_descriptions.cc:upstream-spell-effects |

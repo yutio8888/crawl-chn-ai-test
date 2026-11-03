@@ -4836,22 +4836,30 @@ static string _player_spell_stats(const spell_type spell)
     // TODO: generalize this pattern? It's very common in descriptions
     int padding = (acc != -1 || !defence_string.empty()) ? 8
                    : damage_string.size() ? 6 : 5;
-    padding = max(padding, static_cast<int>(effect.first.size()));
-    description += make_stringf(T_("\n\n%*s: "), padding, T_("Power"));
+    padding = max(padding, strwidth(effect.first));
+    // printf pads UTF-8 bytes; compensate so labels align in display columns.
+    const auto label_width = [padding](const char* label)
+    {
+        return padding + static_cast<int>(strlen(label)) - strwidth(label);
+    };
+    description += make_stringf(T_("\n\n%*s: "),
+                                    label_width(T_("Power")), T_("Power"));
     description += spell_power_string(spell);
 
     if (!effect.first.empty())
     {
-        description += make_stringf("\n%*s: %s", padding, effect.first.c_str(),
+        description += make_stringf(T_("\n%*s: %s"), label_width(effect.first.c_str()),
+                                    effect.first.c_str(),
                                     effect.second.c_str());
 
         const string max_effect = spell_max_effect_string(spell);
         if (!max_effect.empty())
-            description += " (max power: " + max_effect + ")";
+            description += make_stringf(T_(" (max power: %s)"), max_effect.c_str());
     }
     if (damage_string != "")
     {
-        description += make_stringf(T_("\n%*s: "), padding, T_("Damage"));
+        description += make_stringf(T_("\n%*s: "),
+                                    label_width(T_("Damage")), T_("Damage"));
         description += damage_string;
 
         const string max_dam = spell_max_damage_string(spell);
@@ -4862,22 +4870,27 @@ static string _player_spell_stats(const spell_type spell)
     {
         ostringstream acc_str;
         _print_bar(acc, 3, "", acc_str);
-        description += make_stringf(T_("\n%*s: %s"), padding, T_("Accuracy"),
+        description += make_stringf(T_("\n%*s: %s"),
+                                     label_width(T_("Accuracy")), T_("Accuracy"),
                                                     acc_str.str().c_str());
     }
 
-    description += make_stringf(T_("\n%*s: "), padding, T_("Range"));
+    description += make_stringf(T_("\n%*s: "),
+                                    label_width(T_("Range")), T_("Range"));
     description += spell_range_string(spell);
-    description += make_stringf(T_("\n%*s: "), padding, T_("Noise"));
+    description += make_stringf(T_("\n%*s: "),
+                                    label_width(T_("Noise")), T_("Noise"));
     description += spell_noise_string(spell);
     if (!defence_string.empty())
     {
-        description += make_stringf(T_("\n%*s: %s"), padding, T_("Defences"),
+        description += make_stringf(T_("\n%*s: %s"),
+                                     label_width(T_("Defences")), T_("Defences"),
                                     defence_string.c_str());
     }
     if (!resist_string.empty())
     {
-        description += make_stringf(T_("\n%*s: %s"), padding, T_("Resists"),
+        description += make_stringf(T_("\n%*s: %s"),
+                                     label_width(T_("Resists")), T_("Resists"),
                                     resist_string.c_str());
     }
     description += "\n";
