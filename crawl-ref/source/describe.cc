@@ -4828,17 +4828,27 @@ static string _player_spell_stats(const spell_type spell)
         failure = failure_rate_to_string(raw_spell_fail(spell));
     description += make_stringf(T_("        Fail: %s"), failure.c_str());
 
+    const pair<string, string> effect = effect_description(spell);
     const string damage_string = spell_damage_string(spell);
-    const string max_dam_string = spell_max_damage_string(spell);
     const int acc = spell_acc(spell);
     const string defence_string = spell_defence_string(spell);
     const string resist_string = spell_resist_string(spell);
     // TODO: generalize this pattern? It's very common in descriptions
-    const int padding = (acc != -1 || !defence_string.empty()) ? 8
-                        : damage_string.size() ? 6 : 5;
+    int padding = (acc != -1 || !defence_string.empty()) ? 8
+                   : damage_string.size() ? 6 : 5;
+    padding = max(padding, static_cast<int>(effect.first.size()));
     description += make_stringf(T_("\n\n%*s: "), padding, T_("Power"));
     description += spell_power_string(spell);
 
+    if (!effect.first.empty())
+    {
+        description += make_stringf("\n%*s: %s", padding, effect.first.c_str(),
+                                    effect.second.c_str());
+
+        const string max_effect = spell_max_effect_string(spell);
+        if (!max_effect.empty())
+            description += " (max power: " + max_effect + ")";
+    }
     if (damage_string != "")
     {
         description += make_stringf(T_("\n%*s: "), padding, T_("Damage"));
