@@ -813,15 +813,11 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertEqual("dcss-item-name-review-inventory-v1",
                          payload["schema"])
         self.assertEqual(390, payload["count"])
-        # Refreshed with the miscellany producer split (_misc_type_name_en +
-        # N_ identity table): the identity set is unchanged (390 rows, 31
-        # miscellany) but the row facts now carry the canonical English table.
-        # Refreshed after the 250-identity residual wording batch and the
-        # complete-key backports changed SourceDB values: the ordinary-v1 row
-        # facts changed while the identity set stayed at 390 rows / 31
-        # miscellany.
+        # The PR241 label backport changes only SPARM_POSITIVE_ENERGY's
+        # terse Chinese form in this inventory (负抗+ -> 负能抗+).
+        # All 390 identities and all other row facts remain unchanged.
         self.assertEqual(
-            "c1c772f0598c1a05f472167644b0488ec1ecc4526ca5af1ffe4a14e310ce49ca",
+            "ad0f527e85583ab104f6f2eb9ae73f5f36631320176aa124f93bbbd39fe4fbd6",
             payload["inventory_sha256"],
         )
         self.assertEqual(payload["count"], len(payload["rows"]))
