@@ -3280,6 +3280,11 @@ static dice_def _spell_damage(spell_type spell, int power)
     return zap_damage(zap, power, false, false);
 }
 
+static bool _at_max_spell_power(spell_type spell)
+{
+    return calc_spell_power(spell) >= spell_power_cap(spell);
+}
+
 string spell_max_damage_string(spell_type spell)
 {
     switch (spell)
@@ -3300,11 +3305,9 @@ string spell_max_damage_string(spell_type spell)
     }
     // Only show a distinct max damage string if we're not at max power
     // already. Otherwise, it's redundant!
-    const int pow = calc_spell_power(spell);
-    const int max_pow = spell_power_cap(spell);
-    if (pow >= max_pow)
+    if (_at_max_spell_power(spell))
         return "";
-    return spell_damage_string(spell, false, max_pow);
+    return spell_damage_string(spell, false, spell_power_cap(spell));
 }
 
 string spell_damage_string(spell_type spell, bool evoked, int pow, bool terse)
@@ -3406,6 +3409,54 @@ string spell_damage_string(spell_type spell, bool evoked, int pow, bool terse)
         return dam_str + "*"; // many special cases of more/less damage
     }
     return dam_str;
+}
+
+pair<string, string> effect_description(spell_type spell, bool evoked, int pow,
+                                        bool terse)
+{
+    if (pow == -1)
+        pow = evoked ? wand_power(spell) : calc_spell_power(spell);
+    switch (spell)
+    {
+    case SPELL_BLINK:
+        return make_pair(T_("Cooldown"), blink_cooldown_description(pow)
+                                     + (terse ? "" : T_(" turns")));
+    case SPELL_BORGNJORS_REVIVIFICATION:
+        return make_pair(T_("Max HP loss"),
+                         revivification_loss_description(pow, terse));
+    case SPELL_MAXWELLS_COUPLING:
+        return make_pair(T_("Charge time"),
+            maxwells_coupling_charge_description(pow) + (terse ? "" : T_(" turns")));
+    case SPELL_OZOCUBUS_ARMOUR:
+    {
+        double ac_bonus = ice_armour_ac(pow) / 100.0;
+        return make_pair(T_("Bonus AC"), make_stringf("%.1f", ac_bonus));
+    }
+    case SPELL_PASSWALL:
+        return make_pair(T_("Bonus AC"),
+                         make_stringf("~%d", passwall_ac(pow, false)));
+    case SPELL_PHALANX_BEETLE:
+    {
+        double ac_bonus = phalanx_beetle_barrier_ac(pow) / 100.0;
+        return make_pair(T_("Bonus AC"), make_stringf("%.1f", ac_bonus));
+    }
+    case SPELL_PUTREFACTION:
+    {
+        const int hp_loss = player_drain_hp_loss(
+                                putrefaction_drain_amount(pow, false), false);
+        return make_pair(T_("Self drain"), make_stringf("~%d%s", hp_loss,
+                                                    terse ? "" : T_(" HP")));
+    }
+    default:
+        return make_pair("", "");
+    }
+}
+
+string spell_max_effect_string(spell_type spell)
+{
+    if (_at_max_spell_power(spell))
+        return "";
+    return effect_description(spell, false, spell_power_cap(spell), true).second;
 }
 
 int spell_acc(spell_type spell)

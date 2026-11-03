@@ -4828,20 +4828,38 @@ static string _player_spell_stats(const spell_type spell)
         failure = failure_rate_to_string(raw_spell_fail(spell));
     description += make_stringf(T_("        Fail: %s"), failure.c_str());
 
+    const pair<string, string> effect = effect_description(spell);
     const string damage_string = spell_damage_string(spell);
-    const string max_dam_string = spell_max_damage_string(spell);
     const int acc = spell_acc(spell);
     const string defence_string = spell_defence_string(spell);
     const string resist_string = spell_resist_string(spell);
     // TODO: generalize this pattern? It's very common in descriptions
-    const int padding = (acc != -1 || !defence_string.empty()) ? 8
-                        : damage_string.size() ? 6 : 5;
-    description += make_stringf(T_("\n\n%*s: "), padding, T_("Power"));
+    int padding = (acc != -1 || !defence_string.empty()) ? 8
+                   : damage_string.size() ? 6 : 5;
+    padding = max(padding, strwidth(effect.first));
+    // printf pads UTF-8 bytes; compensate so labels align in display columns.
+    const auto label_width = [padding](const char* label)
+    {
+        return padding + static_cast<int>(strlen(label)) - strwidth(label);
+    };
+    description += make_stringf(T_("\n\n%*s: "),
+                                    label_width(T_("Power")), T_("Power"));
     description += spell_power_string(spell);
 
+    if (!effect.first.empty())
+    {
+        description += make_stringf(T_("\n%*s: %s"), label_width(effect.first.c_str()),
+                                    effect.first.c_str(),
+                                    effect.second.c_str());
+
+        const string max_effect = spell_max_effect_string(spell);
+        if (!max_effect.empty())
+            description += make_stringf(T_(" (max power: %s)"), max_effect.c_str());
+    }
     if (damage_string != "")
     {
-        description += make_stringf(T_("\n%*s: "), padding, T_("Damage"));
+        description += make_stringf(T_("\n%*s: "),
+                                    label_width(T_("Damage")), T_("Damage"));
         description += damage_string;
 
         const string max_dam = spell_max_damage_string(spell);
@@ -4852,22 +4870,27 @@ static string _player_spell_stats(const spell_type spell)
     {
         ostringstream acc_str;
         _print_bar(acc, 3, "", acc_str);
-        description += make_stringf(T_("\n%*s: %s"), padding, T_("Accuracy"),
+        description += make_stringf(T_("\n%*s: %s"),
+                                     label_width(T_("Accuracy")), T_("Accuracy"),
                                                     acc_str.str().c_str());
     }
 
-    description += make_stringf(T_("\n%*s: "), padding, T_("Range"));
+    description += make_stringf(T_("\n%*s: "),
+                                    label_width(T_("Range")), T_("Range"));
     description += spell_range_string(spell);
-    description += make_stringf(T_("\n%*s: "), padding, T_("Noise"));
+    description += make_stringf(T_("\n%*s: "),
+                                    label_width(T_("Noise")), T_("Noise"));
     description += spell_noise_string(spell);
     if (!defence_string.empty())
     {
-        description += make_stringf(T_("\n%*s: %s"), padding, T_("Defences"),
+        description += make_stringf(T_("\n%*s: %s"),
+                                     label_width(T_("Defences")), T_("Defences"),
                                     defence_string.c_str());
     }
     if (!resist_string.empty())
     {
-        description += make_stringf(T_("\n%*s: %s"), padding, T_("Resists"),
+        description += make_stringf(T_("\n%*s: %s"),
+                                     label_width(T_("Resists")), T_("Resists"),
                                     resist_string.c_str());
     }
     description += "\n";

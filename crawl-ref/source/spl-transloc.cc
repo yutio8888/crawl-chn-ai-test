@@ -47,6 +47,7 @@
 #include "output.h"
 #include "positional_format.h"
 #include "prompt.h"
+#include "random-var.h"
 #include "religion.h"
 #include "shout.h"
 #include "spl-monench.h"
@@ -947,6 +948,20 @@ spret controlled_blink(bool safe_cancel, dist *target)
     return spret::success;
 }
 
+static random_var _blink_cooldown(int pow)
+{
+    return random_var(2, 5) + div_rand_round(random_var(50 - pow), 10);
+}
+
+/**
+ * Describes the cooldown of the player spell Blink.
+ */
+string blink_cooldown_description(int pow)
+{
+    const random_var cooldown = _blink_cooldown(pow);
+    return make_stringf("%d-%d", cooldown.min(), cooldown.max());
+}
+
 /**
  * Cast the player spell Blink.
  *
@@ -966,8 +981,7 @@ spret cast_blink(int pow, bool fail)
     fail_check();
     uncontrolled_blink();
 
-    you.increase_duration(DUR_BLINK_COOLDOWN,
-                          2 + random2(3) + div_rand_round(50 - pow, 10));
+    you.increase_duration(DUR_BLINK_COOLDOWN, _blink_cooldown(pow).roll());
 
     return spret::success;
 }

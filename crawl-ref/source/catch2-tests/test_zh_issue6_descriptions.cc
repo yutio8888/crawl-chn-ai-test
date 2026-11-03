@@ -9,14 +9,19 @@
 #include "format.h"
 #include "i18n.h"
 #include "jobs.h"
+#include "item-prop.h"
+#include "lang-en-guard.h"
 #include "mon-info.h"
 #include "mon-util.h"
 #include "options.h"
+#include "mutation.h"
 #include "player.h"
 #include "positional_format.h"
 #include "religion.h"
 #include "species.h"
+#include "skills.h"
 #include "spl-util.h"
+#include "spl-cast.h"
 #include "state.h"
 #include "stringutil.h"
 #include "syscalls.h"
@@ -385,4 +390,98 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         {
             CHECK(strwidth(line) <= 80);
         }
+}
+
+TEST_CASE("upstream spell effect details localize all seven spells and align columns",
+          "[zh-translation][upstream-spell-effects][descriptions]")
+{
+    REQUIRE(ensure_utf8_ctype());
+    init_properties();
+    init_monsters();
+    init_mut_index();
+    init_spell_descs();
+    init_zap_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> need_save(crawl_state.need_save, true);
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    const string separator = language == lang_t::ZH ? "：" : ": ";
+    const vector<pair<spell_type, const char*>> spells = {
+        { SPELL_BLINK, "Cooldown" },
+        { SPELL_BORGNJORS_REVIVIFICATION, "Max HP loss" },
+        { SPELL_MAXWELLS_COUPLING, "Charge time" },
+        { SPELL_OZOCUBUS_ARMOUR, "Bonus AC" },
+        { SPELL_PASSWALL, "Bonus AC" },
+        { SPELL_PHALANX_BEETLE, "Bonus AC" },
+        { SPELL_PUTREFACTION, "Self drain" },
+    };
+    for (bool capped : {false, true})
+    {
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 100;
+        you.experience_level = 27;
+        you.base_stats.init(capped ? 100 : 10);
+        you.skills.init(capped ? 27 : 0);
+        for (int sk = 0; sk < NUM_SKILLS; ++sk)
+        {
+            you.skill_points[sk] = capped
+                ? skill_exp_needed(27, static_cast<skill_type>(sk)) : 0;
+        }
+        you.mutation[MUT_WILD_MAGIC] = capped ? 3 : 0;
+        you.duration[DUR_BRILLIANCE] = capped ? 10 : 0;
+        you.equipment.update();
+        for (const auto& row : spells)
+        {
+            const spell_type spell = row.first;
+            INFO(row.second << ": capped=" << capped);
+            REQUIRE((calc_spell_power(spell) >= spell_power_cap(spell)) == capped);
+            const auto effect = effect_description(spell);
+            CHECK(effect.first == T_(row.second));
+            if (language == lang_t::ZH)
+                CHECK(effect.first != row.second);
+            const string max_effect = spell_max_effect_string(spell);
+            CHECK(max_effect.empty() == capped);
+            // Terse maximum-power values retain upstream numbers and symbols.
+            const string terse = effect_description(spell, false, 30, true).second;
+            {
+                ScopedLangEn english;
+                CHECK(terse == effect_description(spell, false, 30, true).second);
+            }
+            const string plain = formatted_string::parse_string(player_spell_desc(spell)).tostring();
+            CHECK(plain.find(effect.first + separator + effect.second) != string::npos);
+            if (!capped)
+            {
+                CHECK(plain.find(make_stringf(T_(" (max power: %s)"), max_effect.c_str()))
+                      != string::npos);
+            }
+            else
+            {
+                const string frame = T_(" (max power: %s)");
+                CHECK(plain.find(frame.substr(0, frame.find("%s"))) == string::npos);
+            }
+            if (language == lang_t::ZH)
+            {
+                CHECK(plain.find("max power:") == string::npos);
+                CHECK(plain.find(" turns") == string::npos);
+                CHECK(plain.find(" HP") == string::npos);
+                CHECK(plain.find("avg ~") == string::npos);
+            }
+            // Check the actual producer's colon positions, not the format keys.
+            int expected_column = -1;
+            for (const string label : { string(T_("Power")), effect.first,
+                                        string(T_("Range")), string(T_("Noise")) })
+            {
+                const size_t at = plain.find(label + separator);
+                REQUIRE(at != string::npos);
+                const size_t start = plain.rfind('\n', at);
+                REQUIRE(start != string::npos);
+                const int column = strwidth(plain.substr(start + 1, at - start - 1))
+                                   + strwidth(label);
+                if (expected_column < 0)
+                    expected_column = column;
+                CHECK(column == expected_column);
+            }
+        }
+    }
 }

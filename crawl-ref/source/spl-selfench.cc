@@ -24,6 +24,7 @@
 #include "player.h"
 #include "positional_format.h"
 #include "prompt.h"
+#include "random.h"
 #include "religion.h"
 #include "spl-other.h"
 #include "spl-util.h"
@@ -56,6 +57,12 @@ void remove_ice_armour()
     mprf(MSGCH_DURATION, "%s", T_("Your icy armour melts away."));
     you.redraw_armour_class = true;
     you.duration[DUR_ICY_ARMOUR] = 0;
+}
+
+int ice_armour_ac(int pow)
+{
+    return max(0, 500 + pow * 8
+                      - you.unadjusted_body_armour_penalty() * 50);
 }
 
 spret ice_armour(int pow, bool fail)
@@ -91,13 +98,32 @@ void fiery_armour()
     you.redraw_armour_class = true;
 }
 
+static const int REVIV_BASE = 6;
+static const int REVIV_ROLLS = 9;
+static const int REVIV_CHANCE = 8;
+
+static int _revivification_loss(int pow)
+{
+    return (REVIV_BASE + binomial(REVIV_ROLLS, REVIV_CHANCE, pow)) * you.hp_max / 100;
+}
+
+string revivification_loss_description(int pow, bool terse)
+{
+    const int max_loss = REVIV_BASE + REVIV_ROLLS;
+    const int min_loss = pow <= REVIV_CHANCE ? max_loss : REVIV_BASE;
+    const double avg_loss = REVIV_BASE
+                            + binomial_mean(REVIV_ROLLS, REVIV_CHANCE, pow);
+    if (terse)
+        return make_stringf("~%.1f%%", avg_loss);
+    return make_stringf(T_("%d-%d%%, avg ~%.1f%%"), min_loss, max_loss, avg_loss);
+}
+
 spret cast_revivification(int pow, bool fail)
 {
     fail_check();
     mpr(T_("Your body is healed in an amazingly painful way."));
 
-    const int loss = 6 + binomial(9, 8, pow);
-    dec_max_hp(loss * you.hp_max / 100);
+    dec_max_hp(_revivification_loss(pow));
     set_hp(you.hp_max);
 
     if (you.duration[DUR_DEATHS_DOOR])

@@ -490,6 +490,13 @@ void lose_level()
         player_die(KILLED_BY_DRAINING);
 }
 
+int player_drain_hp_loss(int power, bool random)
+{
+    const int scaled_power = power * get_real_hp(false, false);
+    return 1 + (random ? div_rand_round(scaled_power, 750)
+                       : div_round_near(scaled_power, 750));
+}
+
 /**
  * Drain the player.
  *
@@ -525,8 +532,7 @@ bool drain_player(int power, bool announce_full, bool ignore_protection, bool qu
 
     if (power > 0)
     {
-        const int mhp = 1 + div_rand_round(power * get_real_hp(false, false),
-                750);
+        const int mhp = player_drain_hp_loss(power, true);
         you.hp_max_adj_temp -= mhp;
         you.hp_max_adj_temp = max(-(get_real_hp(false, false) - 1),
                 you.hp_max_adj_temp);
