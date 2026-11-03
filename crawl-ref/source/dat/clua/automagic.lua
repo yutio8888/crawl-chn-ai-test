@@ -260,8 +260,8 @@ function mag_attack(allow_movement)
     if AUTOMAGIC_FIGHT then
       attack(allow_movement)
     else
-      crawl.mpr(crawl.t_("You don't have enough magic to cast " ..
-          you.spell_table()[AUTOMAGIC_SPELL_SLOT] .. "!"))
+      crawl.mpr(string.format(crawl.t_("You don't have enough magic to cast %s!"),
+                              spells.title(you.spell_table()[AUTOMAGIC_SPELL_SLOT])))
     end
   elseif mp_is_low() then
     if AUTOMAGIC_FIGHT then
@@ -280,7 +280,7 @@ end
 
 -- Set this as a macro to change which spell is cast, in game!
 function am_set_spell()
-  crawl.mpr("Which spell slot to assign to automagic? (Enter to disable, Esc to cancel)", "prompt")
+  crawl.mpr(crawl.t_("Which spell slot to assign to automagic? (Enter to disable, Esc to cancel)"), "prompt")
   local slot = getkey()
   crawl.clear_messages()
 
@@ -298,17 +298,22 @@ function am_set_spell()
     return false
 
   else
-    message = ""
-    -- All conditional checks completed, continue to assign a slot now. If automagic
-    -- had been disabled, enable it now.
+    -- All conditional checks completed, continue to assign a slot now. If
+    -- automagic had been disabled, enable it now. Two complete templates: no
+    -- fragment is spliced into a translated sentence.
+    local enabled = false
     if AUTOMAGIC_ACTIVE == false then
       crawl.setopt("automagic_enable = true")
-      message = " enabled,"
+      enabled = true
     end
     AUTOMAGIC_SPELL_SLOT = slot
-    spell_name = you.spell_table()[AUTOMAGIC_SPELL_SLOT] or "no spell currently"
-    crawl.mpr("Automagic" .. message .. " will cast spell in slot " .. slot .. " (" ..
-        spell_name .. ")" .. ".")
+    local raw_spell = you.spell_table()[AUTOMAGIC_SPELL_SLOT]
+    spell_name = raw_spell and spells.title(raw_spell)
+        or crawl.t_("no spell currently")
+    local template = enabled
+        and crawl.t_("Automagic enabled, will cast spell in slot %s (%s).")
+        or crawl.t_("Automagic will cast spell in slot %s (%s).")
+    crawl.mpr(string.format(template, slot, spell_name))
     return false
 
   end

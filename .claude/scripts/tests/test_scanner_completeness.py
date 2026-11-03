@@ -127,9 +127,70 @@ class ScannerCompletenessTests(unittest.TestCase):
         self.assertEqual(len(source), tree.root_node.end_byte)
         self.assertEqual(expected, tree.root_node.text)
 
+    def test_trailing_purity_annotations_keep_offsets_and_nearby_findings(self):
+        sys.path.insert(0, str(SCRIPTS))
+        from i18n_shared import parse_cpp_annotations
+        import tree_sitter_cpp
+        from tree_sitter import Language, Parser
+        parser = Parser(Language(tree_sitter_cpp.language()))
+        source = (b'// PURE in a comment\n'
+                  b'#define PURE __attribute__((pure))\n'
+                  b'const char* text = "cost() const PURE;";\n'
+                  b'const char* raw = R"x(cost() const PURE;)x";\n'
+                  b'struct S { int PURE; int cost() const PURE; };\n'
+                  b'bool free_cost(int n) IMMUTABLE;\n'
+                  b'void f() { int value = PURE; mprf("%s", std::string("bad")); }\n')
+        expected = source.replace(b'cost() const PURE; };',
+                                  b'cost() const ' + b' ' * 4 + b'; };')
+        expected = expected.replace(b'free_cost(int n) IMMUTABLE;',
+                                    b'free_cost(int n) ' + b' ' * 9 + b';')
+        tree = parse_cpp_annotations(parser, source)
+        self.assertFalse(tree.root_node.has_error)
+        self.assertEqual(len(source), tree.root_node.end_byte)
+        self.assertEqual(expected, tree.root_node.text)
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "purity.cc"
+            for scanner, body in (
+                    ("scan_varargs_string.py", b'mprf("%s", std::string("bad"));'),
+                    ("scan_string_concat.py", b'auto label = std::string("visible ") + value;')):
+                path.write_bytes('// 中文偏移\n'.encode() + source.replace(
+                    b'mprf("%s", std::string("bad"));', body))
+                proc = self.run_scanner(scanner, "--files", path,
+                                        "--format", "json", "--require-parser")
+                self.assertEqual(1, proc.returncode, proc.stderr)
+                data = json.loads(proc.stdout)
+                self.assertEqual({"discovered": 1, "scanned": 1, "failed": []},
+                                 _coverage(data))
+                self.assertTrue(data["findings"])
+                self.assertTrue(all(f["line"] == 8 for f in data["findings"]))
+
+    def test_repository_purity_annotations_are_scannable(self):
+        sys.path.insert(0, str(SCRIPTS))
+        from i18n_shared import parse_cpp_annotations, has_relevant_parse_error
+        import tree_sitter_cpp
+        from tree_sitter import Language, Parser
+        parser = Parser(Language(tree_sitter_cpp.language()))
+        for name in ("ability.cc", "mon-util.h"):
+            with self.subTest(name=name):
+                data = (ROOT / "crawl-ref/source" / name).read_bytes()
+                tree = parse_cpp_annotations(parser, data)
+                self.assertFalse(
+                    has_relevant_parse_error(tree.root_node, data, name), name)
+
     def test_annotation_normalization_does_not_hide_unknown_or_broken_syntax(self):
         cases = (
             'UNKNOWN void f() {}',
+            'struct S { int cost() const UNKNOWN; };',
+            'struct S { int cost() const PUREX; };',
+            'struct S { int cost() const PURE UNKNOWN; };',
+            'struct S { int cost() const PURE };',
+            'struct S { int cost( const PURE; };',
+            'struct S { int value PURE; };',
+            'struct S { int cost() const PURE; void f() { int x = ; } };',
+            # tree-sitter reads an empty-argument declaration as a call-shaped
+            # init_declarator; the annotation is not lowered there, so the
+            # file stays fail-closed instead of being guessed as a prototype.
+            'int empty_parens() IMMUTABLE;',
             'NORETURN UNKNOWN void f() {}',
             'extern "C" JNIEXPORT void UNKNOWN f() {}',
             'JNIEXPORT void JNICALL f() {}',
@@ -1755,6 +1816,140 @@ int main() { return 0; }
                           "STRING_OBJECT", "STRING_OBJECT"])
         self.assertEqual(data["coverage"],
                          {"discovered": 1, "scanned": 1, "failed": []})
+
+
+    def test_varargs_display_verb_return_types(self):
+        with tempfile.TemporaryDirectory() as td:
+            source = Path(td) / "sample.cc"
+            source.write_text(r'''
+                void f(actor *caster, monster &mon, other &unrelated) {
+                    mprf_p(T_("%s"), caster->verb_for_display(N_("forge")));
+                    mprf("%s", mon.verb_for_display("forge"));
+                    mprf("%s", conjugate_verb_for_display("forge", false));
+                    mprf_p(T_("%s"), caster->verb_for_display("forge").c_str());
+                    mprf("%s", unrelated.verb_for_display("forge"));
+                }
+            ''', encoding="utf-8")
+            proc = self.run_scanner(
+                "scan_varargs_string.py", "--files", source,
+                "--format", "json")
+        self.assertEqual(1, proc.returncode, proc.stderr)
+        findings = json.loads(proc.stdout)["findings"]
+        high = [item for item in findings if item["risk"] == "HIGH"]
+        self.assertEqual([item["rule"] for item in high],
+                         ["STRING_RETURN_CALL"] * 3)
+        self.assertFalse(any(".c_str()" in item["arg"] for item in findings))
+        self.assertFalse(any("unrelated" in item["arg"] for item in high))
+
+    def _mprf_p_fixture(self, root, body):
+        src = Path(root) / "src"
+        src.mkdir()
+        (src / "sample.cc").write_text(body, encoding="utf-8")
+        source_txt = Path(root) / "source.txt"
+        source_txt.write_text(
+            "%%%%\n%1$s %2$s\n%2$s%1$s\n%%%%\n"
+            "ctx|%1$s %2$s\n%2$s%1$s\n%%%%\n"
+            "ctxplain|%1$s %2$s\n纯模板文本\n%%%%\n"
+            "%1$s %2$s.\n%2$s%1$s\n%%%%\n",
+            encoding="utf-8")
+        return src, source_txt
+
+    def test_mprf_p_classifies_real_consumers_not_lines(self):
+        cases = [
+            # const-bound C_ context key, read-only fallback check, then _p
+            ('const string format = C_("ctx", "%1$s %2$s");\n'
+             'if (format == "%1$s %2$s") return;\n'
+             'return make_stringf_p(format.c_str(), a, b);\n', 0),
+            # mprf_p with an explicit message channel
+            ('mprf_p(MSGCH_WARN, T_("%1$s %2$s"), a, b);\n', 0),
+            # mprf_p with a declared message-channel variable
+            ('const auto chan = MSGCH_MONSTER_SPELL;\n'
+             'mprf_p(chan, T_("%1$s %2$s"), a, b);\n', 0),
+            # the production conditional channel declaration
+            ('const auto chan = cond ? MSGCH_MONSTER_SPELL\n'
+             '                      : MSGCH_FRIEND_SPELL;\n'
+             'mprf_p(chan, T_("%1$s %2$s"), a, b);\n', 0),
+            # a non-channel variable in the first position is not a channel
+            ('void f(){ const char *fmt = "%s";\n'
+             '  mprf_p(fmt, T_("%1$s %2$s")); }\n', 1),
+            # a nested non-positional wrapper must still be reported
+            ('void f(){ make_stringf_p(\n'
+             '  make_stringf(T_("%1$s %2$s"), "a", "b").c_str()); }\n', 1),
+            # adjacent string literals are one runtime key
+            ('mprf_p(T_("%1$s " "%2$s"), a, b);\n', 0),
+            # bound template that is only compared: not a format consumer
+            ('const string tpl = T_("%1$s %2$s.");\n'
+             'CHECK(tpl.find("%1$s") != string::npos);\n', 0),
+            # non-positional printf consumer: real violation
+            ('mpr(T_("%1$s %2$s"), a, b);\n', 1),
+            # reassigned local no longer proves safety
+            ('string f = T_("%1$s %2$s");\n'
+             'f = other;\n'
+             'mprf_p(f.c_str(), a, b);\n', 1),
+            # literal in a non-format argument position
+            ('mprf_p("%s", T_("%1$s %2$s"));\n', 1),
+            # an unrelated _p call on the previous line proves nothing
+            ('make_stringf_p(ok, a);\n'
+             'mpr(T_("%1$s %2$s"), a, b);\n', 1),
+            # the same format also forwarded to a plain printf consumer
+            ('const string f = T_("%1$s %2$s");\n'
+             'make_stringf_p(f.c_str(), a, b);\n'
+             'mprf(f.c_str(), a, b);\n', 1),
+            # unknown escape/alias helper on the bound format
+            ('const string f = T_("%1$s %2$s");\n'
+             'escape_html(f);\n'
+             'make_stringf_p(f.c_str(), a, b);\n', 1),
+            # returning the raw bound template
+            ('const string f = T_("%1$s %2$s");\n'
+             'return f;\n', 1),
+            # an inner block shadows the name, so the outer use is unknown
+            ('const string f = T_("%1$s %2$s");\n'
+             'if (x) {\n'
+             '  const string f = other;\n'
+             '  make_stringf_p(f.c_str(), a, b);\n'
+             '}\n', 1),
+            # pseudo-code inside a string literal is not a call
+            ('const char *doc = "mprf_p(T_(\"%1$s %2$s\"), a, b);";\n', 0),
+            # a present non-positional context entry owns the lookup
+            ('mpr(C_("ctxplain", "%1$s %2$s"), a, b);\n', 0),
+            # same-name nested _p calls cannot borrow the outer format span
+            ('make_stringf_p(make_stringf_p("%s", T_("%1$s %2$s")));', 1),
+            # a channel declaration in another function supplies no type proof
+            ('void f(){ const auto fmt = MSGCH_WARN; }\n'
+             'void g(){ const char *fmt = "%s"; '
+             'mprf_p(fmt, T_("%1$s %2$s")); }', 1),
+            # channel-like text is still a string, not an enum
+            ('void f(){ const auto fmt = "MSGCH_WARN"; '
+             'mprf_p(fmt, T_("%1$s %2$s")); }', 1),
+            # a local shadow cancels the outer channel proof
+            ('void f(){ const auto fmt = MSGCH_WARN; '
+             '{ const char *fmt = "%s"; '
+             'mprf_p(fmt, T_("%1$s %2$s")); }}', 1),
+            # uninitialized locals and parameters also shadow an outer channel
+            ('void f(){ const auto fmt = MSGCH_WARN; '
+             '{ char *fmt; mprf_p(fmt, T_("%1$s %2$s")); }}', 1),
+            ('const auto fmt = MSGCH_WARN; '
+             'void f(const char *fmt){ mprf_p(fmt, T_("%1$s %2$s")); }', 1),
+            # before the shadow declaration this is still the outer binding
+            ('void f(){ const string fmt = T_("%1$s %2$s"); '
+             '{ mprf(fmt.c_str(), a, b); const string fmt = other; } '
+             'make_stringf_p(fmt.c_str(), a, b); }', 1),
+            # braces and escaped quotes in data do not change block/call scope
+            ('void f(){ const char *doc = R"x(} ") {")x"; '
+             'const string fmt = T_("%1$s %2$s"); '
+             'return make_stringf_p(fmt.c_str(), a, b); }', 0),
+        ]
+        for body, expected in cases:
+            with self.subTest(body=body.splitlines()[0]):
+                with tempfile.TemporaryDirectory() as td:
+                    src, source_txt = self._mprf_p_fixture(td, body)
+                    proc = subprocess.run(
+                        [sys.executable, str(SCRIPTS / "scan_i18n.py"),
+                         "mprf-p", str(src),
+                         "--source-txt", str(source_txt)],
+                        text=True, capture_output=True, check=False)
+                    self.assertEqual(expected, proc.returncode,
+                                     proc.stdout + proc.stderr)
 
 
 class CjkInventoryTests(unittest.TestCase):

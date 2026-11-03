@@ -173,7 +173,7 @@ void game_state::cancel_cmd_all(string reason)
 void game_state::cant_cmd_repeat(string reason)
 {
     if (reason.empty())
-        reason = "Can't repeat that command.";
+        reason = T_("Can't repeat that command.");
 
     cancel_cmd_repeat(reason);
 }
@@ -181,7 +181,7 @@ void game_state::cant_cmd_repeat(string reason)
 void game_state::cant_cmd_again(string reason)
 {
     if (reason.empty())
-        reason = "Can't redo that command.";
+        reason = T_("Can't redo that command.");
 
     cancel_cmd_again(reason);
 }
@@ -218,7 +218,7 @@ bool interrupt_cmd_repeat(activity_interrupt ai,
     case activity_interrupt::hp_loss:
     case activity_interrupt::monster_attacks:
     case activity_interrupt::mimic:
-        crawl_state.cancel_cmd_repeat("Command repetition interrupted.");
+        crawl_state.cancel_cmd_repeat(T_("Command repetition interrupted."));
         return true;
 
     default:
@@ -268,7 +268,7 @@ bool interrupt_cmd_repeat(activity_interrupt ai,
         else if (ai == activity_interrupt::full_hp)
             crawl_state.cancel_cmd_repeat(T_("HP restored"));
         else
-            crawl_state.cancel_cmd_repeat("Command repetition interrupted.");
+            crawl_state.cancel_cmd_repeat(T_("Command repetition interrupted."));
 
         return true;
     }
@@ -286,7 +286,7 @@ bool interrupt_cmd_repeat(activity_interrupt ai,
         if (!mons_is_threatening(*mon) && mon->visible_to(&you))
             return false;
 
-        crawl_state.cancel_cmd_repeat("Command repetition interrupted.");
+        crawl_state.cancel_cmd_repeat(T_("Command repetition interrupted."));
         return true;
     }
 
@@ -610,6 +610,9 @@ string game_state::game_type_name() const
     return game_type_name_for(type);
 }
 
+// Canonical identity API: the result doubles as a database key
+// ("welcome_spam" + name) and as a save/chardump qualifier. Display callers
+// translate it at the sink with T_().
 string game_state::game_type_name_for(game_type _type)
 {
     switch (_type)
@@ -621,17 +624,17 @@ string game_state::game_type_name_for(game_type _type)
         // No explicit game type name for default game.
         return "";
     case GAME_TYPE_CUSTOM_SEED:
-        return "Seeded";
+        return N_("Seeded");
     case GAME_TYPE_TUTORIAL:
-        return "Tutorial";
+        return N_("Tutorial");
     case GAME_TYPE_ARENA:
-        return "Arena";
+        return N_("Arena");
     case GAME_TYPE_SPRINT:
-        return "Dungeon Sprint";
+        return N_("Dungeon Sprint");
     case GAME_TYPE_DESCENT:
-        return "Dungeon Descent";
+        return N_("Dungeon Descent");
     case NUM_GAME_TYPE:
-        return "Unknown";
+        return N_("Unknown");
     }
 }
 

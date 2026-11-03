@@ -50,6 +50,7 @@ SKILL_TYPE = SRC / "skill-type.h"
 SKILL_CODE = SRC / "skills.cc"
 STAT_TYPE = SRC / "stat-type.h"
 STAT_CODE = SRC / "player-stats.cc"
+MONSTER_FLAGS = SRC / "mon-info-flag-name.h"
 
 DESCRIPTION_FILES = {
     "mutation": (
@@ -122,10 +123,13 @@ REVIEW_CATEGORY_HEADINGS = (
     ("attribute", "属性证据卡"),
     ("skill", "技能证据卡"),
     ("ability", "非神祇能力证据卡"),
+    ("ability_description", "全部能力正文证据卡"),
     ("mutation", "变异证据卡"),
+    ("mutation_description", "全部变异正文证据卡"),
     ("duration", "时长状态证据卡"),
     ("status", "附加状态证据卡"),
     ("monster_status", "怪物状态证据卡"),
+    ("monster_status_flag", "怪物状态标签证据卡"),
 )
 
 REVISED_MUTATION_IDENTITIES = {
@@ -933,6 +937,80 @@ def has_violations(payload):
     )
 
 
+def complete_description_rows(category, descriptions):
+    """Include orphan/compatibility bodies without asserting live reachability."""
+    en_desc, zh_desc = descriptions
+    return [{
+        "identity": f"{category}_description:{key}",
+        "category": f"{category}_description",
+        "lifecycle": "static-body",
+        "english_source_name": key,
+        "description_key": key,
+        "english_description": en_desc.get(key),
+        "chinese_description": zh_desc.get(key),
+        "source_file": relative(DESCRIPTION_FILES[category][0]),
+        "chinese_source_file": relative(DESCRIPTION_FILES[category][1]),
+    } for key in sorted(set(en_desc) | set(zh_desc))]
+
+
+def monster_status_flag_rows(db):
+    rows = []
+    for raw in ordered_initializer_rows(
+        active_source(MONSTER_FLAGS),
+        r"\bstatic\s+const\s+vector\s*<\s*monster_info_flag_name\s*>\s+monster_info_flag_names",
+    ):
+        fields = initializer_fields(raw)
+        identity = re.fullmatch(r"\s*(MB_[A-Z0-9_]+)\s*", fields[0])
+        if len(fields) != 4 or identity is None:
+            raise RuntimeError(f"unparsed monster flag row: {raw}")
+        displays = []
+        for field, context in zip(fields[1:], ("flag short", "flag long", "flag short")):
+            literal = r'"(?:\\.|[^"\\])*"'
+            plain = re.fullmatch(literal, field.strip())
+            contextual = re.fullmatch(
+                rf"NC_\(\s*({literal})\s*,\s*({literal})\s*\)", field.strip()
+            )
+            if plain is None and contextual is None:
+                raise RuntimeError(f"nonliteral monster flag label: {raw}")
+            strings = cpp_strings(field)
+            if contextual is not None:
+                if len(strings) != 2 or strings[0] != context:
+                    raise RuntimeError(f"unexpected monster flag context: {raw}")
+                strings = strings[1:]
+            if len(strings) != 1:
+                raise RuntimeError(f"nonliteral monster flag label: {raw}")
+            displays.append(translation(db, strings[0], context))
+        # Reachability of each form is a property of the consumer, not of the
+        # label row: mon-info.cc::_condition_string() uses short_singular when
+        # exactly one grouped monster has the flag, and plural when two or more
+        # grouped monsters do (the monster-list pane groups identical
+        # monsters); monster_info::attributes() uses long_singular. Keeping
+        # this mapping in the row prevents audits from treating a plural that
+        # the list pane really renders as "unreachable".
+        reachability = [
+            {"role": "short_singular",
+             "consumer": "mon-info.cc:_condition_string",
+             "condition": "grouped count of affected monsters == 1"},
+            {"role": "long_singular",
+             "consumer": "mon-info.cc:monster_info::attributes",
+             "condition": "describe/monster-pane attribute list"},
+            {"role": "plural",
+             "consumer": "mon-info.cc:_condition_string",
+             "condition": "grouped count of affected monsters >= 2"},
+        ]
+        for display, reach in zip(displays, reachability):
+            display["reachability"] = reach
+        rows.append({
+            "identity": "monster_status_flag:" + identity[1],
+            "category": "monster_status_flag",
+            "lifecycle": "flag-table",
+            "display_strings": displays,
+            "display_order": ["short", "long", "plural"],
+            "source_file": relative(MONSTER_FLAGS),
+        })
+    return rows
+
+
 @audit_snapshot_invocation(ROOT)
 def build_inventory():
     snapshot = audit_snapshot()
@@ -966,9 +1044,15 @@ def build_inventory():
         descriptions["monster_status"]["english"],
         descriptions["monster_status"]["chinese"],
     ))
+    complete_bodies = []
+    for category in ("mutation", "ability"):
+        complete_bodies.extend(complete_description_rows(category, (
+            descriptions[category]["english"], descriptions[category]["chinese"],
+        )))
+    flag_rows = monster_status_flag_rows(db)
     rows = sorted(
         mutation + durations + statuses + abilities + skills
-        + attributes + monster_statuses,
+        + attributes + monster_statuses + complete_bodies + flag_rows,
         key=lambda row: row["identity"],
     )
     inputs = [
@@ -985,6 +1069,7 @@ def build_inventory():
         SKILL_CODE,
         STAT_TYPE,
         STAT_CODE,
+        MONSTER_FLAGS,
         *(path for pair in DESCRIPTION_FILES.values() for path in pair),
         ROOT / "docs/glossary.md",
         ROOT / "docs/decisions.md",

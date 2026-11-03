@@ -33,6 +33,7 @@
 #include "database.h"
 #include "output.h"
 #include "player.h"
+#include "unwind.h"
 #include "player-equip.h"
 #include "prompt.h"
 #include "shopping.h"
@@ -42,6 +43,7 @@
 #include "stash.h"
 #include "stringutil.h"
 #include "throw.h"
+#include "unwind.h"
 
 struct item_wrapper
 {
@@ -302,7 +304,9 @@ static string _item_subtype(const item_def& item, bool armour_slots)
 {
     if (item.base_type != OBJ_WEAPONS && item.base_type != OBJ_ARMOUR
         && !item.is_identified())
+    {
         return "";
+    }
 
     // Special-case OBJ_ARMOUR behavior to maintain compatibility with
     // existing scripts.
@@ -1869,6 +1873,7 @@ LUAFN(l_item_pickable)
  * @tparam int|boolean plus requested enchantment, or false
  * @tparam string|boolean ego_type canonical English ego, or false
  * @tparam[opt=true] boolean grammar add the normal article when appropriate
+ * @tparam[opt=false] boolean english force canonical English for snapshot fallback
  * @treturn string localized display name
  * @function trove_name
  */
@@ -1883,6 +1888,9 @@ LUAFN(l_item_trove_name)
     const int plus = has_plus ? luaL_safe_checkint(ls, 4) : 0;
     const string ego_type = lua_isstring(ls, 5) ? lua_tostring(ls, 5) : "";
     const bool do_grammar = lua_isnoneornil(ls, 6) || lua_toboolean(ls, 6);
+    // Optional canonical-English rendering for language-locked snapshots.
+    // Absent/nil keeps the historical current-language behaviour.
+    const bool force_english = lua_toboolean(ls, 7);
 
     if (quantity < 1)
         return luaL_error(ls, "Invalid trove item quantity: %d", quantity);
@@ -1905,6 +1913,8 @@ LUAFN(l_item_trove_name)
     // their display must remain generic rather than naming the generated one.
     if (is_demon_weapon)
     {
+        unwind_var<lang_t> language(Options.language,
+            force_english ? lang_t::EN : Options.language);
         string display = T_("demon weapon");
         if (has_plus)
             display = make_stringf("%+d %s", plus, display.c_str());
@@ -1972,13 +1982,22 @@ LUAFN(l_item_trove_name)
         }
     }
 
+    // Snapshot fallback may require a canonical-English display.
+    const unwind_var<lang_t> display_language(Options.language,
+        force_english ? lang_t::EN : Options.language);
+
+    // Validation above may raise a Lua error; change language only after it.
+    unwind_var<lang_t> language(Options.language,
+        force_english ? lang_t::EN : Options.language);
+
     // A synthetic horn has no live evoker charge state. Use its database name
     // to avoid inventing an "inert" suffix, then apply only the requested
     // article. Runes and all ordinary items can use their complete item name.
     string display;
     if (is_horn)
     {
-        display = item.name(DESC_DBNAME, false, true, false);
+        // DESC_DBNAME is the canonical English identity; translate at display.
+        display = T_(item.name(DESC_DBNAME, false, true, false).c_str());
         if (do_grammar)
             display = thing_do_grammar(DESC_THE, display);
     }

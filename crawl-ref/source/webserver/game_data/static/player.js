@@ -5,6 +5,13 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
 
     var player = {}, last_time;
 
+    // Display text for a HUD caption. The server sends English-keyed labels so
+    // client lookups stay stable; older servers fall back to English.
+    function hud_caption(english)
+    {
+        return player.hud_labels && player.hud_labels[english] || english;
+    }
+
     var stat_boosters = {
         "str": "vitalised",
         "int": "vitalised",
@@ -102,7 +109,7 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
             noise_cat = "blank";
             // I couldn't get this to work just directly putting the text in #stats_noise_bar,
             // because clearing the text later will adjust the span width.
-            $("#stats_noise_status").text("Silenced");
+            $("#stats_noise_status").text(hud_caption("Silenced"));
         } else {
             $("#stats_noise_status").text("");
         }
@@ -208,9 +215,14 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
     {
         for (var i = 0; i < player.status.length; ++i)
         {
-            if (player.status[i].text &&
-                player.status[i].text.match(status_name) &&
-                (col == null || player.status[i].col == col))
+            var status = player.status[i];
+            // New payloads carry an English identity key; an empty key
+            // explicitly means "no client-queryable identity". Only older
+            // servers without the field fall back to the display text.
+            var key = Object.prototype.hasOwnProperty.call(status, "key")
+                      ? status.key : status.text;
+            if (key && key.match(status_name) &&
+                (col == null || status.col == col))
                 return true;
         }
         return false;
@@ -388,19 +400,25 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
      */
     function update_stats_pane()
     {
+        // Server-provided captions carry their English key in data-caption.
+        $("#stats .stats_caption[data-caption]").each(function () {
+            $(this).text(hud_caption($(this).attr("data-caption")));
+        });
         $("#stats_titleline").text(player.name
                                     + (player.title[0] === "," ? "" : " ")
                                     + player.title);
-        $("#stats_wizmode").text(player.wizard ? "*WIZARD*" : player.explore ? "*EXPLORE*" : "");
+        $("#stats_wizmode").text(player.wizard ? hud_caption("*WIZARD*")
+                                : player.explore ? hud_caption("*EXPLORE*") : "");
 
-        // Setup species
-        // TODO: Move to a proper initialisation task
+        // Setup species. "species" stays canonical for client-side keys/CSS;
+        // "species_display_name" carries the translated HUD text.
         if ($("#stats").attr("data-species") != player.species)
             $("#stats").attr("data-species", player.species);
 
-        var species_god = player.species;
+        var species_god = player.species_display_name || player.species;
         if (player.god != "")
-            species_god += " of " + player.god;
+            species_god += hud_caption(" of ")
+                + (player.god_display_name || player.god);
         if (player.god == "Xom")
         {
             if (player.piety_rank >=0)
@@ -425,7 +443,7 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
 
         if (player.god == "Gozag")
         {
-            $("#stats_gozag_gold_label").text(" Gold: ");
+            $("#stats_gozag_gold_label").text(" " + hud_caption("Gold:") + " ");
             $("#stats_gozag_gold_label").css("padding-left", "0.5em");
             $("#stats_gozag_gold").text(player.gold);
         } else {
@@ -443,7 +461,7 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
             $("#stats_" + simple_stats[i]).text(player[simple_stats[i]]);
 
         $("#stats_hpline > .stats_caption").text(
-            (player.real_hp_max != player.hp_max) ? "HP:" : "Health:");
+            hud_caption((player.real_hp_max != player.hp_max) ? "HP:" : "Health:"));
 
         if (player.real_hp_max != player.hp_max)
             $("#stats_real_hp_max").text("(" + player.real_hp_max + ")");
@@ -480,19 +498,19 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
 
         if (options.get("show_game_time") === true)
         {
-            $("#stats_time_caption").text("Time:");
+            $("#stats_time_caption").text(hud_caption("Time:"));
             $("#stats_time").text((player.time / 10.0).toFixed(1));
         }
         else
         {
-            $("#stats_time_caption").text("Turn:");
+            $("#stats_time_caption").text(hud_caption("Turn:"));
             $("#stats_time").text(player.turn);
         }
 
         if (player.time_delta)
             $("#stats_time").append(" (" + (player.time_delta / 10.0).toFixed(1) + ")");
 
-        var place_desc = player.place;
+        var place_desc = player.place_display_name || player.place;
         if (player.depth) place_desc += ":" + player.depth;
         $("#stats_place").text(place_desc);
 
@@ -612,6 +630,8 @@ function ($, comm, client, enums, map_knowledge, messages, options, util) {
         .on("game_init.player", function () {
             $.extend(player, {
                 name: "", god: "", title: "", species: "",
+                species_display_name: "",
+                hud_labels: {}, place_display_name: "", god_display_name: "",
                 hp: 0, hp_max: 0, real_hp_max: 0, poison_survival: 0,
                 mp: 0, mp_max: 0, dd_real_mp_max: 0,
                 ac: 0, ev: 0, sh: 0,

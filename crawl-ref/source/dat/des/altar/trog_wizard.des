@@ -35,11 +35,12 @@ function callback.trog_wizard_convert_wizard(data, triggerable,
     if mons and mons.base_name == "wizard" then
         crawl.god_speaks("Trog", crawl.t_("Flames erupt from the bowels of the wizard! "
                               .. "Trog roars with satisfaction!"))
+    elseif mons then
+        crawl.god_speaks("Trog", crawl.t_("Flames erupt from the wizard's cell! "
+                              .. "Trog roars with frustration!"))
     else
-        local empty = mons and "" or crawl.t_("empty ")
-        crawl.god_speaks("Trog", string.format(
-            crawl.t_("Flames erupt from the wizard's %scell! "
-                   .. "Trog roars with frustration!"), empty))
+        crawl.god_speaks("Trog", crawl.t_("Flames erupt from the wizard's empty cell! "
+                              .. "Trog roars with frustration!"))
     end
     data.triggered = true
   end

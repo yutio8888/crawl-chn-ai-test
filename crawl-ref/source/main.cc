@@ -109,6 +109,7 @@
 #include "player.h"
 #include "player-notices.h"
 #include "player-reacts.h"
+#include "positional_format.h"
 #include "prompt.h"
 #include "quiver.h"
 #include "random.h"
@@ -454,7 +455,7 @@ NORETURN static void _launch_game()
         {
             const string type_name = crawl_state.game_type_name();
             if (!type_name.empty())
-                msg::stream << "<white> [" << type_name << "]</white>";
+                msg::stream << "<white> [" << T_(type_name.c_str()) << "]</white>";
         }
         msg::stream << endl;
     }
@@ -626,7 +627,7 @@ static void _show_commandline_options_help()
 
 static string _wanderer_equip_str()
 {
-    return "the following items: "
+    return T_("the following items: ")
         + comma_separated_fn(begin(you.inv), end(you.inv),
                          [] (const item_def &item) -> string
                          {
@@ -667,11 +668,16 @@ static void _djinn_announce_spells()
     if (spell_str.empty() && equip_str.empty())
         return;
 
-    const string spacer = spell_str.empty() || equip_str.empty() ? "" : "; and ";
+    const string spacer = spell_str.empty() || equip_str.empty()
+        ? "" : T_("; and ");
     mprf(T_("You begin with %s%s%s."), equip_str.c_str(), spacer.c_str(), spell_str.c_str());
 
-    take_note(Note(NOTE_MESSAGE, 0, 0, you.your_name + " set off with " +
-                                       equip_str + spacer + spell_str + "."));
+    // Audited game-start display snapshot; the separate begin milestone
+    // remains canonical English. Historical notes are not reconstructed.
+    const string note = make_stringf(
+        C_("game start", "%s set off with %s%s%s."), you.your_name.c_str(),
+        equip_str.c_str(), spacer.c_str(), spell_str.c_str());
+    take_note(Note(NOTE_MESSAGE, 0, 0, note));
 }
 
 // Announce to the message log and make a note of the player's starting items,
@@ -680,7 +686,7 @@ static void _wanderer_note_equipment()
 {
     const string equip_str = inv_count() > 0 ? _wanderer_equip_str() : "";
 
-    const string eq_spacer = equip_str.empty() ? "" : "; and ";
+    const string eq_spacer = equip_str.empty() ? "" : T_("; and ");
 
     // Wanderers start with at most 1 spell memorised.
     const string spell_str =
@@ -688,7 +694,8 @@ static void _wanderer_note_equipment()
         eq_spacer + T_("the following spell memorised: ")
         + _wanderer_spell_str();
 
-    const string spell_spacer = spell_str.empty() && equip_str.empty() ? "" : "; and ";
+    const string spell_spacer = spell_str.empty() && equip_str.empty()
+        ? "" : T_("; and ");
 
     auto const library = get_sorted_spell_list(true, true);
     const string library_str =
@@ -1135,8 +1142,8 @@ static void _input()
     {
         // User pressed a key, so stop repeating commands and discard
         // the keypress.
-        crawl_state.cancel_cmd_repeat("Key pressed, interrupting command "
-                                      "repetition.");
+        crawl_state.cancel_cmd_repeat(T_("Key pressed, interrupting command "
+                                      "repetition."));
         crawl_state.prev_cmd = CMD_NO_CMD;
         flush_prev_message();
         return;
@@ -1152,8 +1159,8 @@ static void _input()
     {
         if (crawl_state.repeat_cmd != CMD_WIZARD)
         {
-            crawl_state.cancel_cmd_repeat("Cannot control self, cancelling command "
-                                          "repetition.");
+            crawl_state.cancel_cmd_repeat(T_("Cannot control self, cancelling command "
+                                          "repetition."));
         }
 
         // If the player has enough Vexed time left to make a proper attack, do
@@ -1256,7 +1263,7 @@ static void _input()
                     if (crawl_state.lua_script_killed)
                         crawl_state.lua_ready_throttled = true;
 
-                    mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
+                    mprf(MSGCH_ERROR, T_("Lua error: %s"), clua.error.c_str());
                     if (crawl_state.lua_ready_throttled)
                     {
                         mprf(MSGCH_ERROR, "Banning ready() after %d throttles",
@@ -1373,8 +1380,10 @@ static bool _can_take_stairs(dungeon_feature_type ftype, bool down,
     {
         if (crawl_state.doing_prev_cmd_again)
         {
-            mprf(T_("You can't repeat %s actions."),
-                ftype == DNGN_ENTER_SHOP ? "shop" : "altar");
+            const char* message = ftype == DNGN_ENTER_SHOP
+                ? N_("You can't repeat shop actions.")
+                : N_("You can't repeat altar actions.");
+            mpr(T_(message));
             crawl_state.cancel_cmd_all();
         }
         else if (you.berserk())
@@ -1803,9 +1812,9 @@ static void _experience_check()
     if (!crawl_state.game_is_sprint())
     {
         if (zot_immune())
-            msg::stream << "You are forever immune to Zot's power.";
+            msg::stream << T_("You are forever immune to Zot's power.");
         else if (player_in_branch(BRANCH_ABYSS))
-            msg::stream << "You have unlimited time to explore this branch.";
+            msg::stream << T_("You have unlimited time to explore this branch.");
         else
         {
             msg::stream << make_stringf(T_("If you stay in this area without exploring new floors, Zot will find you after %d turns."),
@@ -1973,7 +1982,7 @@ static void _handle_autofight(command_type cmd, command_type prev_cmd)
             if (!clua.callfn("get_af_fire_stop", ">b", &target.isEndpoint))
             {
                 if (!clua.error.empty())
-                    mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
+                    mprf(MSGCH_ERROR, T_("Lua error: %s"), clua.error.c_str());
                 // just continue with the default value in this case
             }
             // set this so that it prints appropriate error messages for
@@ -1991,7 +2000,7 @@ static void _handle_autofight(command_type cmd, command_type prev_cmd)
     const string fnname = _autofight_lua_fn(cmd);
 
     if (!clua.callfn(fnname.c_str(), 0, 0))
-        mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
+        mprf(MSGCH_ERROR, T_("Lua error: %s"), clua.error.c_str());
 }
 
 class GameMenu : public Menu
@@ -2215,7 +2224,8 @@ void process_command(command_type cmd, command_type prev_cmd)
 #ifdef USE_SOUND
     case CMD_TOGGLE_SOUND:
         Options.sounds_on = !Options.sounds_on;
-        mprf(T_("Sound effects are now %s."), Options.sounds_on ? T_("on") : T_("off"));
+        mprf(T_("Sound effects are now %s."), Options.sounds_on
+            ? C_("sound state", "on") : C_("sound state", "off"));
         break;
 #endif
 
@@ -2964,13 +2974,13 @@ static void _check_cmd_repeat(int last_turn)
         // it does take zero turns, to cancel command repetition
         // before we reach here.
 #ifdef WIZARD
-        crawl_state.cant_cmd_repeat("Can't repeat a command which "
+        crawl_state.cant_cmd_repeat(T_("Can't repeat a command which "
                                     "takes no turns (unless it's a "
-                                    "wizard command), cancelling ");
+                                    "wizard command), cancelling repetitions."));
 #else
-        crawl_state.cant_cmd_repeat("Can't repeat a command which "
+        crawl_state.cant_cmd_repeat(T_("Can't repeat a command which "
                                     "takes no turns, cancelling "
-                                    "repetitions.");
+                                    "repetitions."));
 #endif
         crawl_state.cancel_cmd_repeat();
         return;
@@ -3121,7 +3131,7 @@ static void _do_prev_cmd_again()
 
     if (crawl_state.prev_cmd == CMD_NO_CMD || crawl_state.prev_cmd_keys.empty())
     {
-        crawl_state.cancel_cmd_again("No previous command to re-do.", true);
+        crawl_state.cancel_cmd_again(T_("No previous command to re-do."), true);
         crawl_state.cancel_cmd_repeat();
         repeat_again_rec.clear();
         return;

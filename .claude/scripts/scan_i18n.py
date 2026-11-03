@@ -685,9 +685,16 @@ PROTOCOL_BOUNDARY_CONTRACTS = OrderedDict([
             'file': 'dat/dlua/lm_trove.lua',
             'start': r'function\s+TroveMarker:note_payed\s*\(',
             'end': r'function\s+trove_marker\s*\(',
-            'required': ((r'toll_desc\s*=\s*crawl\.t_\(self\.props\.toll_desc\)', 1),),
-            'forbidden': (r'toll_desc\s*=\s*self\.props\.toll_desc',),
-            'localized': 'toll_desc = self.props.toll_desc',
+            'required': (
+                (r'english_place\s*=\s*self\.props\.toll_desc', 1),
+                (r'display_place\s*=\s*crawl\.t_\(english_place\)', 1),
+                (r'crawl\.take_note\(trove_snapshot\(frame,\s*'
+                 r'\{english_item,\s*english_place\},\s*'
+                 r'\{display_item,\s*display_place\}\)\)', 1),
+            ),
+            'forbidden': (r'english_place\s*=\s*crawl\.t_',
+                          r'crawl\.take_note\(string\.format'),
+            'localized': 'english_place = crawl.t_(self.props.toll_desc)',
         },
     )),
 ])
@@ -1737,8 +1744,329 @@ def cmd_missing_t(args):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Subcommand: mprf-p
-# ══════════════════════════════════════════════════════════════════════════════
+_MPRF_P_FUNCS = ("mprf_p", "make_stringf_p", "vmake_stringf_p",
+                 "vimake_stringf_p")
+_MPRF_PLAIN_FUNCS = ("make_stringf", "mprf", "mpr", "cprintf", "stringf")
+_MPRF_P_CALL_RE = re.compile(
+    r'\b(' + '|'.join(_MPRF_P_FUNCS) + r')\s*\(')
+_MPRF_PLAIN_CALL_RE = re.compile(
+    r'\b(' + '|'.join(_MPRF_PLAIN_FUNCS) + r')\s*\(')
+_MPRF_LITERAL_CALL_RE = re.compile(r'\b(T_|C_|NC_)\s*\(')
+_MPRF_BINDING_RE = re.compile(
+    r'\bconst\s+(?:std::)?string\s+(\w+)\s*=\s*(T_|C_|NC_)\s*\(')
+def _mprf_spans(text: str):
+    """(start, end) spans of every C/C++ literal, so pseudo-code inside a
+    string can never be mistaken for a call."""
+    return [(m.start(), m.end()) for m in CPP_LITERAL_RE.finditer(text)]
+
+
+def _mprf_in_spans(pos: int, spans) -> bool:
+    return any(start <= pos < end for start, end in spans)
+
+
+def _mprf_literal_value(literal: str):
+    """UTF-8 text of one C/C++ string literal (raw bodies kept verbatim)."""
+    if literal[0] == "'":
+        return None
+    body = literal
+    for prefix in ('u8R', 'uR', 'UR', 'LR', 'R'):
+        if body.startswith(prefix + '"'):
+            body = body[len(prefix) + 1:-1]
+            open_paren = body.find('(')
+            close_paren = body.rfind(')')
+            if open_paren >= 0 and close_paren > open_paren:
+                return body[open_paren + 1:close_paren]
+            return None
+    body = body[body.index('"') + 1:-1]
+    return _decode_cpp_string(body)
+
+
+def _mprf_decode_literal_token(token: str):
+    """Decode one token made of adjacent string literals (compiler concat)."""
+    value = ""
+    pos = 0
+    while pos < len(token):
+        while pos < len(token) and token[pos] in " \t\r\n":
+            pos += 1
+        if pos >= len(token):
+            break
+        match = CPP_LITERAL_RE.match(token, pos)
+        if not match:
+            return None
+        decoded = _mprf_literal_value(match.group(0))
+        if decoded is None:
+            return None
+        value += decoded
+        pos = match.end()
+    return value
+
+
+def _mprf_literal_call(masked: str, start: int):
+    """Parse one T_/C_/NC_ call into (kind, context, key, call_end)."""
+    match = _MPRF_LITERAL_CALL_RE.match(masked, start)
+    if not match:
+        return None
+    open_paren = masked.index('(', match.start())
+    close = _find_matching_paren(masked, open_paren)
+    if close is None:
+        return None
+    args = _split_call_args(masked, open_paren + 1, close)
+    values = []
+    for text, _start in args:
+        token = text.strip()
+        values.append(_mprf_decode_literal_token(token)
+                      if CPP_LITERAL_RE.match(token) else None)
+    kind = match.group(1)
+    if kind == "T_":
+        key = values[0] if values else None
+        return kind, None, key, close + 1
+    context = values[0] if values else None
+    key = values[1] if len(values) > 1 else None
+    return kind, context, key, close + 1
+
+
+def _mprf_code(masked: str):
+    """Hide literals without changing byte/line positions for structural walks."""
+    return CPP_LITERAL_RE.sub(
+        lambda match: ''.join('\n' if c == '\n' else ' ' for c in match.group()),
+        masked)
+
+
+def _mprf_enclosing_block(masked: str, pos: int):
+    code = _mprf_code(masked)
+    stack = []
+    for index, char in enumerate(code[:pos]):
+        if char == '{':
+            stack.append(index)
+        elif char == '}' and stack:
+            stack.pop()
+    if not stack:
+        return None
+    end = _find_matching_brace(code, stack[-1])
+    return (stack[-1], end) if end is not None else None
+
+
+def _mprf_declared_channel(masked: str, before: int, name: str) -> bool:
+    """Recognize a visible const channel, never an unrelated identifier."""
+    code = _mprf_code(masked)
+    pattern = re.compile(
+        rf'\bconst\s+(?:auto|msg_channel_type)\s+{re.escape(name)}\s*='
+        r'\s*([^;]*);')
+    channel = r'MSGCH_[A-Z0-9_]+'
+    for match in reversed(list(pattern.finditer(code[:before]))):
+        scope = _mprf_enclosing_block(code, match.start())
+        if scope and not scope[0] < before < scope[1]:
+            continue
+        # Both branches have the channel enum type. Other auto initializers,
+        # including strings containing MSGCH_, cannot establish this overload.
+        if not re.fullmatch(rf'(?:{channel}|[^;{{}}?]+\?\s*{channel}'
+                            rf'\s*:\s*{channel})\s*', match.group(1)):
+            continue
+        # Any later declaration/rebinding of this name cancels this proof.
+        # This deliberately rejects uncertain shadowing rather than inferring
+        # types from names across blocks or functions.
+        intervening = code[match.end():before]
+        if (re.search(rf'\b{re.escape(name)}\s*=(?!=)', intervening)
+                or re.search(rf'\b[A-Za-z_]\w*(?:\s+|\s*[*&]+\s*)'
+                             rf'{re.escape(name)}\b', intervening)):
+            return False
+        return True
+    return False
+
+
+def _mprf_format_arg_index(name: str, args, masked: str = "",
+                           call_start: int = 0) -> int:
+    if name != "mprf_p" or len(args) < 2:
+        return 0
+    first = args[0][0].strip()
+    if re.fullmatch(r'MSGCH_[A-Z0-9_]+', first):
+        return 1
+    if re.fullmatch(r'[A-Za-z_]\w*', first) and _mprf_declared_channel(
+            masked, call_start, first):
+        return 1
+    return 0
+
+
+def _mprf_format_spans(masked: str, spans):
+    """Format-argument spans of every positional consumer call."""
+    result = []
+    for match in _MPRF_P_CALL_RE.finditer(masked):
+        if _mprf_in_spans(match.start(), spans):
+            continue
+        open_paren = masked.index('(', match.start())
+        close = _find_matching_paren(masked, open_paren)
+        if close is None:
+            continue
+        args = _split_call_args(masked, open_paren + 1, close)
+        if not args:
+            continue
+        index = _mprf_format_arg_index(
+            match.group(1), args, masked, match.start())
+        text, start = args[index]
+        result.append((start, start + len(text), open_paren))
+    return result
+
+
+def _mprf_enclosing_calls(masked: str, pos: int):
+    """Walk actual containing parentheses, ignoring all literal contents."""
+    code = _mprf_code(masked)
+    stack = []
+    for index, char in enumerate(code[:pos]):
+        if char == '(':
+            stack.append(index)
+        elif char == ')' and stack:
+            stack.pop()
+    for opening in reversed(stack):
+        name = re.search(r'([A-Za-z_]\w*)\s*$', code[:opening])
+        yield (name.group(1) if name else None), opening
+
+
+def _mprf_direct_format(masked: str, pos: int, format_spans) -> bool:
+    for name, opening in _mprf_enclosing_calls(masked, pos):
+        if name in _MPRF_P_FUNCS:
+            return any(start <= pos < end and call == opening
+                       for start, end, call in format_spans)
+        if name is not None:
+            return False  # nested non-positional call or unknown wrapper
+    return False
+
+
+def _mprf_shadow_spans(masked: str, name: str, start: int, end: int):
+    """Spans of nested blocks that re-declare ``name`` (they shadow it)."""
+    escaped = re.escape(name)
+    spans = []
+    text = _mprf_code(masked[start:end])
+    for match in re.finditer(
+            rf'\b(?:const\s+)?(?:std::)?(?:string|auto)\s+{escaped}\b', text):
+        block = _mprf_enclosing_block(masked, start + match.start())
+        if block and block[0] > start:
+            spans.append((match.start(), block[1] - start))
+    return spans
+
+
+def _mprf_variable_uses(masked: str, name: str, start: int, end: int):
+    """Classify every use of a ``const string`` binding in [start, end).
+
+    Uses inside literals and inside nested shadowing blocks are ignored. A use
+    is ``positional`` only when the variable is the format argument of a
+    positional consumer, ``plain`` when it is the format argument of a plain
+    printf consumer, ``readonly`` when it is only compared/find-read, and
+    ``unknown`` for anything else (escape helper, return, alias, reassign).
+    """
+    text = masked[start:end]
+    literal_spans = _mprf_spans(text)
+    shadow = _mprf_shadow_spans(masked, name, start, end)
+    escaped = re.escape(name)
+
+    def skip(local: int) -> bool:
+        return (_mprf_in_spans(local, literal_spans)
+                or any(lo <= local < hi for lo, hi in shadow))
+
+    uses = []
+    covered = []
+    for pattern, kind in ((_MPRF_P_CALL_RE, "positional"),
+                          (_MPRF_PLAIN_CALL_RE, "plain")):
+        for match in pattern.finditer(text):
+            if skip(match.start()):
+                continue
+            open_paren = text.index('(', match.start())
+            close = _find_matching_paren(text, open_paren)
+            if close is None:
+                continue
+            args = _split_call_args(text, open_paren + 1, close)
+            if not args:
+                continue
+            index = _mprf_format_arg_index(
+                match.group(1), args, masked, start + match.start())
+            for position, (arg_text, arg_start) in enumerate(args):
+                if not re.fullmatch(
+                        rf'\s*{escaped}(?:\.c_str\(\))?\s*', arg_text):
+                    continue
+                covered.append((arg_start, arg_start + len(arg_text)))
+                if kind == "positional" and position == index:
+                    uses.append("positional")
+                elif kind == "plain":
+                    uses.append("plain")
+                else:
+                    uses.append("unknown")
+
+    for match in re.finditer(rf'\b{escaped}\b', text):
+        local = match.start()
+        if skip(local):
+            continue
+        if any(lo <= local < hi for lo, hi in covered):
+            continue
+        after = text[match.end():]
+        stripped = after.lstrip()
+        before = text[:local]
+        if stripped.startswith("==") or stripped.startswith("!=") or \
+                re.match(r'\.(?:compare|find|rfind|empty|size|length)\s*\(', stripped) or \
+                re.search(r'(?:==|!=)\s*$', before):
+            uses.append("readonly")
+        else:
+            uses.append("unknown")
+    return uses
+
+
+def _mprf_p_findings(masked: str):
+    """Unsafe positional-literal uses, judged by real argument positions."""
+    spans = _mprf_spans(masked)
+    format_spans = _mprf_format_spans(masked, spans)
+    bindings = []
+    for match in _MPRF_BINDING_RE.finditer(masked):
+        if _mprf_in_spans(match.start(), spans):
+            continue
+        parsed = _mprf_literal_call(masked, match.start(2))
+        if parsed is None:
+            continue
+        _kind, _context, key, call_end = parsed
+        if call_end is None or not key:
+            continue
+        rest = masked[call_end:call_end + 8].lstrip()
+        if not rest.startswith(';'):
+            continue
+        block = _mprf_enclosing_block(masked, match.start())
+        bindings.append((match.start(), call_end, match.group(1), block))
+    results = []
+    for match in _MPRF_LITERAL_CALL_RE.finditer(masked):
+        if _mprf_in_spans(match.start(), spans):
+            continue
+        parsed = _mprf_literal_call(masked, match.start())
+        if parsed is None:
+            continue
+        _kind, context, key, call_end = parsed
+        if not key:
+            continue
+        if _mprf_direct_format(masked, match.start(), format_spans):
+            continue
+        bound = None
+        for decl_start, decl_end, name, block in bindings:
+            if decl_start <= match.start() < decl_end:
+                bound = (decl_end, name, block)
+                break
+        if bound is not None:
+            decl_end, name, block = bound
+            scope_end = block[1] if block else len(masked)
+            uses = _mprf_variable_uses(masked, name, decl_end + 1, scope_end)
+            if any(use in ("plain", "unknown") for use in uses):
+                results.append((match.start(), context, key))
+            elif any(use == "positional" for use in uses):
+                continue  # read-only fallback checks plus a positional use
+            elif uses:
+                continue  # pure template comparison, no printf consumer
+            else:
+                results.append((match.start(), context, key))
+            continue
+        # Inline literal: allow only a direct comparison of the literal.
+        line_start = masked.rfind("\n", 0, match.start()) + 1
+        line_end = masked.find("\n", call_end)
+        line = masked[line_start:line_end if line_end >= 0 else len(masked)]
+        if re.search(r'(?:==|!=)\s*$', line[:match.start() - line_start]) or \
+                re.match(r'\s*(?:==|!=)', line[call_end - line_start:]):
+            continue
+        results.append((match.start(), context, key))
+    return results
+
 
 def cmd_mprf_p(args):
     """Check that source.txt entries with positional %n$s use mprf_p in code."""
@@ -1747,8 +2075,7 @@ def cmd_mprf_p(args):
         print("ERROR: Could not parse source.txt")
         return 1
 
-    # Find all EN keys whose CN translation uses positional format
-    pos_keys = {}  # en_key -> cn_translation
+    pos_keys = {}
     for key, value in entries.items():
         if POSFMT_RE.search(value):
             pos_keys[key] = value
@@ -1757,7 +2084,6 @@ def cmd_mprf_p(args):
         print("OK: No positional format entries in source.txt.")
         return 0
 
-    # Search for these keys in C++ source
     source_dir = args.source_dir
     findings = []
 
@@ -1767,28 +2093,25 @@ def cmd_mprf_p(args):
             if not (fn.endswith(".cc") or fn.endswith(".h")):
                 continue
             filepath = os.path.join(dirpath, fn)
-
             with open(filepath, "r", encoding="utf-8", errors="replace") as f:
-                lines = f.readlines()
-
-            for lineno, line in enumerate(lines, 1):
-                if not HAS_T_RE.search(line):
-                    continue
-                # Check each positional key
-                for en_key, cn_val in pos_keys.items():
-                    # Search for the EN key as a T_() argument
-                    # (unescaped version — use simple substring match)
-                    if en_key not in line.lower():
+                raw = f.read()
+            masked = _mask_cpp_comments(raw, raw_strings=True)
+            for offset, context, key in _mprf_p_findings(masked):
+                plain = key.lower()
+                composite = (f"{context}|{key}".lower()
+                             if context else None)
+                if composite and composite in entries:
+                    # A present context entry owns the lookup even when it is
+                    # not positional: C_ never falls back to the plain key.
+                    if composite not in pos_keys:
                         continue
-                    # Found a match — check if it uses mprf_p
-                    # Also check previous 2 lines for multi-line _p calls
-                    pos_call = POSITIONAL_CALL_RE.search(line)
-                    if not pos_call and lineno > 1:
-                        pos_call = POSITIONAL_CALL_RE.search(lines[lineno - 2])
-                    if not pos_call and lineno > 2:
-                        pos_call = POSITIONAL_CALL_RE.search(lines[lineno - 3])
-                    if not pos_call:
-                        findings.append((filepath, lineno, en_key, cn_val[:60]))
+                    effective, cn_val = composite, pos_keys[composite]
+                elif plain in pos_keys:
+                    effective, cn_val = plain, pos_keys[plain]
+                else:
+                    continue
+                lineno = masked.count("\n", 0, offset) + 1
+                findings.append((filepath, lineno, effective, cn_val[:60]))
 
     if findings:
         print("=== Positional format in source.txt "
@@ -4328,13 +4651,15 @@ def cmd_monster_compound_consistency(args):
     ]
 
     exact_rules = {
-        # D-A-026 — sensed monster naming family
+        # D-A-026 — sensed monster naming family, as realised by the reviewed
+        # asset batch (base form keeps 的; the subtype forms are the reviewed
+        # 感知到的 <difficulty> 怪物 renderings).
         "sensed monster": "感知到的怪物",
-        "trivial sensed monster": "微弱感知怪物",
-        "easy sensed monster": "简单感知怪物",
-        "tough sensed monster": "困难感知怪物",
-        "nasty sensed monster": "危险感知怪物",
-        "friendly sensed monster": "友善感知怪物",
+        "trivial sensed monster": "感知到的微不足道的怪物",
+        "easy sensed monster": "感知到的弱小怪物",
+        "tough sensed monster": "感知到的危险怪物",
+        "nasty sensed monster": "感知到的极危险怪物",
+        "friendly sensed monster": "感知到的友方怪物",
         # D-B-012 — monster orb naming pattern (entity names only)
         "great orb of eyes": "巨眼之球",
         "orb of entropy": "熵之球",

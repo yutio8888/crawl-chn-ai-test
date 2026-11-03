@@ -333,6 +333,42 @@ class AndroidFirstRunTests(unittest.TestCase):
         zh_names = self.string_names("values-zh")
         self.assertEqual(default_names, zh_names)
 
+    def test_control_letter_labels_match_dispatched_android_keycodes(self) -> None:
+        # DCSSKeyboardBase.onClick parses tag codes verbatim into KeyEvents.
+        # Android KEYCODE_A..Z are consecutive (29..54); CTRL_LEFT is 113.
+        android = "{http://schemas.android.com/apk/res/android}"
+        root = ET.parse(ANDROID_RES / "layout/keyboard_ctrl.xml").getroot()
+        checked = set()
+        for node in root.iter("Button"):
+            label = node.attrib.get(android + "text", "")
+            match = re.match(r"\^([a-z])", label)
+            if not match:
+                continue
+            letter = match.group(1)
+            codes = [int(code) for code in node.attrib[android + "tag"].split(",")]
+            self.assertEqual([113, 29 + ord(letter) - ord("a")], codes, label)
+            checked.add(letter)
+        self.assertIn("l", checked)  # ^l must send Ctrl+L (40), not Ctrl+N (42).
+
+    def test_sdl_startup_error_dialog_uses_localized_resources(self) -> None:
+        names = ("sdl_startup_error", "sdl_error_detail",
+                 "sdl_error_title", "sdl_exit")
+        source = (ROOT / "crawl-ref/source/android-project/app/src/main/java/"
+                  "org/libsdl/app/SDLActivity.java").read_text(encoding="utf-8")
+        for name in names:
+            self.assertIn(f"R.string.{name}", source)
+            for qualifier in ("values", "values-zh", "values-zh-rCN"):
+                with self.subTest(name=name, qualifier=qualifier):
+                    strings = {node.attrib["name"]: node.text
+                               for node in ET.parse(
+                                   ANDROID_RES / qualifier / "strings.xml"
+                               ).getroot().findall("string")}
+                    self.assertTrue(strings.get(name), f"{qualifier}:{name}")
+        self.assertNotIn('setTitle("SDL Error")', source)
+        zh = ET.parse(ANDROID_RES / "values-zh" / "strings.xml").getroot()
+        zh_text = {node.attrib["name"]: node.text for node in zh.findall("string")}
+        self.assertEqual("错误：%1$s", zh_text["sdl_error_detail"])
+
     def test_android_shell_retains_english_fallback_resources(self) -> None:
         # Check the fallback artifact, not a simulated Android locale resolver.
         # Activity resource selection still needs a device smoke test in both

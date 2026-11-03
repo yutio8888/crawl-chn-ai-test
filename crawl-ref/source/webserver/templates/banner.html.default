@@ -1,4 +1,4 @@
-Welcome to WebTiles!
+欢迎来到 WebTiles！
 {% if username %}
-<br>Hello, {{ username }}!
+<br>你好，{{ username }}！
 {% end %}

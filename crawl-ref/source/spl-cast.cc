@@ -93,14 +93,14 @@ void surge_power(const int enhanced)
 {
     if (enhanced)               // one way or the other {dlb}
     {
-        const string modifier = (enhanced  < -2) ? "extraordinarily" :
-                                (enhanced == -2) ? "extremely" :
-                                (enhanced ==  2) ? "strong" :
-                                (enhanced  >  2) ? "huge"
-                                                 : "";
-        mprf(T_("You feel %s %s"),
-             !modifier.length() ? T_("a") : T_(article_a(modifier).c_str()),
-             (enhanced < 0) ? T_("numb sensation.") : T_("surge of power!"));
+        const char* message = enhanced < -2
+            ? N_("You feel an extraordinarily numb sensation.")
+            : enhanced == -2 ? N_("You feel an extremely numb sensation.")
+            : enhanced < 0 ? N_("You feel a numb sensation.")
+            : enhanced > 2 ? N_("You feel a huge surge of power!")
+            : enhanced == 2 ? N_("You feel a strong surge of power!")
+                            : N_("You feel a surge of power!");
+        mpr(T_(message));
     }
 }
 
@@ -133,7 +133,7 @@ static string _spell_base_description(spell_type spell, bool transient)
     desc << chop_string(spell_title(spell), 32);
 
     // spell schools
-    desc << spell_schools_string(spell);
+    desc << spell_schools_string(spell, Options.language == lang_t::ZH);
 
     const int so_far = strwidth(desc.str()) - (strwidth(colour_to_str(highlight))+2);
     if (so_far < 58)
@@ -175,7 +175,7 @@ static string _spell_extra_description(spell_type spell, bool transient)
     const string damagestring = spell_damage_string(spell, false, -1, true);
 
     desc << chop_string(spell_power_string(spell), 10)
-         << chop_string(damagestring.length() ? damagestring : "N/A", 10)
+         << chop_string(damagestring.length() ? damagestring : T_("N/A"), 10)
          << chop_string(rangestring, 8)
          << chop_string(spell_noise_string(spell, 10), 14);
 
@@ -396,7 +396,7 @@ static void _apply_post_zap_effect(spell_type spell, coord_def target)
         break;
     case SPELL_BOMBARD:
         if (coinflip())
-            you.stumble_away_from(target, "the blast");
+            you.stumble_away_from(target, N_("the blast"));
         break;
     default:
         break;
@@ -946,7 +946,7 @@ spret cast_a_spell(bool check_range, spell_type spell, dist *_target,
         if (!clua.callfn("c_choose_spell", ">s", &luachoice))
         {
             if (!clua.error.empty())
-                mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
+                mprf(MSGCH_ERROR, T_("Lua error: %s"), clua.error.c_str());
         }
         else if (!luachoice.empty() && isalpha(luachoice[0]))
         {
@@ -1964,7 +1964,7 @@ static string _mon_threat_string(const CrawlStoreValue &mon_store)
     // dummy monster rolled, which may not match what the actual monster
     // rolls.
     if (mons_is_ghost_demon(dummy.type))
-        desc = get_monster_data(dummy.type)->name;
+        desc = T_(get_monster_data(dummy.type)->name);
 
     const string col_name = colour_to_str(col);
 
@@ -3155,7 +3155,7 @@ static string _wizard_spell_power_numeric_string(spell_type spell)
 {
     const int cap = spell_power_cap(spell);
     if (cap == 0)
-        return "N/A";
+        return T_("N/A");
     const int power = min(calc_spell_power(spell), cap);
     return make_stringf("%d (%d)", power, cap);
 }
@@ -3369,7 +3369,7 @@ string spell_power_string(spell_type spell)
 
     const int percent = spell_power_percent(spell);
     if (percent < 0)
-        return "N/A";
+        return T_("N/A");
     else
         return make_stringf("%d%%", percent);
 }
@@ -3408,7 +3408,7 @@ string spell_range_string(spell_type spell)
 string range_string(int range, int maxrange, int minrange)
 {
     if (range <= 0)
-        return "N/A";
+        return T_("N/A");
 
     string ret = to_string(range);
     if (maxrange > -1)
@@ -3419,7 +3419,7 @@ string range_string(int range, int maxrange, int minrange)
     return ret;
 }
 
-string spell_schools_string(spell_type spell)
+string spell_schools_string(spell_type spell, bool abbreviated)
 {
     string desc;
 
@@ -3430,7 +3430,8 @@ string spell_schools_string(spell_type spell)
         {
             if (already)
                 desc += "/";
-            desc += spelltype_long_name(bit);
+            desc += abbreviated ? spelltype_short_name(bit)
+                                : spelltype_long_name(bit);
             already = true;
         }
     }

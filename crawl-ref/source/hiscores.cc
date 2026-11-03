@@ -11,6 +11,7 @@
  */
 
 #include "AppHdr.h"
+#include "god-wrath.h"
 
 #include "hiscores.h"
 
@@ -30,6 +31,8 @@
 #include "end.h"
 #include "english.h"
 #include "files.h"
+#include "beam.h"
+#include "god-wrath.h"
 #include "initfile.h"
 #include "item-prop.h"
 #include "item-status-flag-type.h"
@@ -54,6 +57,8 @@
 #include "skills.h"
 #include "state.h"
 #include "status.h"
+#include "transform.h"
+#include "spl-damage.h"
 #include "stringutil.h"
 #ifdef USE_TILE
  #include "tilepick.h"
@@ -1307,6 +1312,9 @@ string scorefile_entry::make_oneline(const string &ml) const
 
 string scorefile_entry::long_kill_message() const
 {
+    // Extended xlog fields ("tmsg"/"vmsg") and death milestones are canonical
+    // protocol text: build them in English even under a ZH UI.
+    const unwind_var<lang_t> language(Options.language, lang_t::EN);
     string msg = death_description(DDV_LOGVERBOSE);
     msg = make_oneline(msg);
     msg[0] = tolower_safe(msg[0]);
@@ -1316,6 +1324,7 @@ string scorefile_entry::long_kill_message() const
 
 string scorefile_entry::short_kill_message() const
 {
+    const unwind_var<lang_t> language(Options.language, lang_t::EN);
     string msg = death_description(DDV_ONELINE);
     msg = make_oneline(msg);
     msg[0] = tolower_safe(msg[0]);
@@ -1920,6 +1929,9 @@ static string _death_source_display_desc(const string &death_source_name)
     if (Options.language != lang_t::ZH || death_source_name.empty())
         return death_source_name;
 
+    const string wrath = god_wrath_display_name(death_source_name);
+    if (wrath != death_source_name)
+        return wrath;
     const string translated = T_(death_source_name.c_str());
     if (translated != death_source_name)
         return translated;
@@ -1962,6 +1974,11 @@ static string _death_source_display_desc(const string &death_source_name)
     return death_source_name;
 }
 
+string death_source_display_name(const string& canonical)
+{
+    return _death_source_display_desc(canonical);
+}
+
 string scorefile_entry::death_source_display_desc() const
 {
     if (Options.language == lang_t::ZH && !death_source_name_zh.empty())
@@ -1986,6 +2003,7 @@ static string _killerpath_display_desc(const string &killerpath)
     };
     static const blame_prefix prefixes[] =
     {
+        { "anointed by ",            N_("anointed by %1$s") },
         { "led by ",                 "led by %1$s" },
         { "summoned by ",            "summoned by %1$s" },
         { "woven by ",               "woven by %1$s" },
@@ -2178,6 +2196,9 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
 
     bool verbose = verbosity == DDV_VERBOSE;
 
+    const string species_label = _species_name(race);
+    const string display_species = race < 0
+        ? T_(species_label.c_str()) : species_label;
     string desc;
     // Please excuse the following bit of mess in the name of flavour ;)
     if (verbose)
@@ -2189,8 +2210,8 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
     {
         desc = make_stringf(T_("%8d %s the %s %s (level %d"),
                   points, name.c_str(),
-                  _species_name(race).c_str(),
-                  _job_name(job), lvl);
+                  display_species.c_str(),
+                  (job < 0 ? T_(_job_name(job)) : _job_name(job)), lvl);
     }
 
     if (final_max_max_hp > 0)  // as the other two may be negative
@@ -2208,9 +2229,8 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
 
     if (verbose)
     {
-        string srace = _species_name(race);
-        desc += make_stringf(T_("Began as a %s %s"), srace.c_str(),
-                             _job_name(job));
+        desc += make_stringf(T_("Began as a %s %s"), display_species.c_str(),
+                             (job < 0 ? T_(_job_name(job)) : _job_name(job)));
 
         ASSERT(birth_time);
         desc += make_stringf(T_(" on %s"),
@@ -2301,6 +2321,119 @@ string scorefile_entry::death_place(death_desc_verbosity verbosity) const
     return place;
 }
 
+// Display-only: render a canonical death cause in the current language.
+// Identity, the xlog "kaux" field and every stored/saved value keep the
+// canonical English string; only the rendered text is localized.
+static string _frailty_cause_display(const string &cause)
+{
+    const struct
+    {
+        const char* prefix;
+        const char* suffix;
+        const char* format;
+        bool mutation;
+    } forms[] =
+    {
+        { "gaining the ", " mutation", N_("gaining the %s mutation"), true },
+        { "losing the ", " mutation", N_("losing the %s mutation"), true },
+        { "gaining the ", " transformation", N_("gaining the %s transformation"), false },
+        { "losing the ", " form", N_("losing the %s form"), false },
+    };
+    for (const auto& form : forms)
+    {
+        const size_t prefix_length = strlen(form.prefix);
+        const size_t suffix_length = strlen(form.suffix);
+        if (starts_with(cause, form.prefix) && ends_with(cause, form.suffix)
+            && cause.size() > prefix_length + suffix_length)
+        {
+            const string name = cause.substr(prefix_length,
+                cause.size() - prefix_length - suffix_length);
+            string display = name;
+            if (form.mutation)
+                display = C_("mutation", name.c_str());
+            else
+            {
+                for (int i = 0; i < NUM_TRANSFORMS; ++i)
+                {
+                    const Form* candidate = get_form(static_cast<transformation>(i));
+                    if (candidate->wiz_name == name)
+                    {
+                        display = candidate->get_short_name();
+                        break;
+                    }
+                }
+            }
+            return make_stringf(T_(form.format), display.c_str());
+        }
+    }
+    return cause;
+}
+
+static string _death_cause_display(const string &canonical)
+{
+    if (Options.language != lang_t::ZH || canonical.empty())
+        return canonical;
+
+    const string orb = orb_beam_name_display(canonical);
+    if (orb != canonical)
+        return orb;
+    const string fragment = fragmentation_name_display(canonical);
+    if (fragment != canonical)
+        return fragment;
+    const string projectile = projectile_display_name(canonical);
+    if (projectile != canonical)
+        return projectile;
+
+    if (canonical == "electric aura" || canonical == "shield")
+        return C_("shock discharge source", canonical.c_str());
+
+    if (canonical == "unwielding a weapon of distortion"
+        || canonical == "rebranding a weapon of distortion")
+    {
+        const string translated = T_(canonical.c_str());
+        if (translated != canonical)
+            return translated;
+    }
+
+    const string frailty = _frailty_cause_display(canonical);
+    if (frailty != canonical)
+        return frailty;
+    const string wrath = god_wrath_display_name(canonical);
+    if (wrath != canonical)
+        return wrath;
+
+    if (is_known_beam_name(canonical))
+        return T_(canonical.c_str());
+
+    static const char *const indirect_causes[] = {
+        N_("Freeze"),
+        N_("the Shining One's cleansing flame"),
+        N_("cleansing flame"),
+        N_("Lee's Rapid Deconstruction"),
+        N_("Olgreb's Toxic Radiance"),
+        N_("Shatter"),
+        N_("a beckoning gale"),
+        N_("a malign offering"),
+        N_("a resonance strike"),
+        N_("angry trees"),
+        N_("burning poison"),
+        N_("dispel undead"),
+        N_("divine providence"),
+        N_("frigid sleet"),
+        N_("nerve-wracking pain"),
+        N_("psychic fangs"),
+        N_("static electricity"),
+        N_("the air"),
+        N_("the raging water"),
+        N_("torment"),
+        N_("vampiric draining"),
+    };
+    for (const char *key : indirect_causes)
+        if (canonical == key)
+            return T_(key);
+    return canonical;
+}
+
 /**
  * Describes the cause of the player's death.
  *
@@ -2318,6 +2451,9 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
     const bool verbose = (verbosity == DDV_VERBOSE || semiverbose);
     const bool oneline = (verbosity == DDV_ONELINE);
     const bool chinese = Options.language == lang_t::ZH;
+
+    // Beam/cause text shown to the player; never used as identity.
+    const string aux_display = _death_cause_display(auxkilldata);
 
     const string &weapon_display = chinese && !weapon_name_zh.empty()
                                    ? weapon_name_zh : auxkilldata;
@@ -2402,7 +2538,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             {
                 desc += terse ? T_("poison") : T_("Succumbed to poison");
                 if (!auxkilldata.empty())
-                    desc += make_stringf(T_(" (%s)"), auxkilldata.c_str());
+                    desc += make_stringf(T_(" (%s)"), aux_display.c_str());
             }
             else if (terse)
                 desc += make_stringf(T_("poisoned by %s"),
@@ -2420,7 +2556,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                                       : death_source_display_desc();
                 desc += make_stringf(T_("Succumbed to %s's %s"), source.c_str(),
                                      (auxkilldata.empty() ? T_("poison")
-                                                          : auxkilldata.c_str()));
+                                                          : aux_display.c_str()));
             }
         }
         else if (death_source_name.empty() || terse)
@@ -2508,7 +2644,13 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                     beam = terse_beam_cause();
                 trim_string(beam);
                 if (!beam.empty())
-                    desc += make_stringf(T_(" (%s)"), beam.c_str());
+                {
+                    desc += make_stringf(T_(" (%s)"),
+                        (chinese ? (starts_with(auxkilldata, "Hit by ")
+                            && projectile_display_name(beam) == beam
+                                ? death_source_display_name(beam)
+                                : _death_cause_display(beam)) : beam).c_str());
+                }
             }
         }
         else if (isupper(auxkilldata[0]))  // already made (ie shot arrows)
@@ -2517,13 +2659,59 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             // Darn it to heck.
             if (chinese)
             {
-                if (death_source_name == "you")
-                    desc += T_("Killed by their own ranged attack");
+                // This branch only runs for the verbose form; keep the
+                // (translated) projectile name instead of collapsing the
+                // whole cause into "ranged attack".
+                const string missile = terse_missile_name();
+                string missile_display = projectile_display_name(missile);
+                // A thrown monster is not a missile: the parsed name is the
+                // throwee, so translate it through the monster/job identity
+                // path instead of the finite projectile set.
+                const bool thrown_monster =
+                    starts_with(auxkilldata, "Hit by ")
+                    && missile_display == missile;
+                if (thrown_monster)
+                    missile_display = death_source_display_name(missile);
+                if (!terse && !missile.empty() && missile_display != missile
+                    && !death_source_display_desc().empty()
+                    && (starts_with(auxkilldata, "Hit by ")
+                        || starts_with(auxkilldata, "Shot with ")))
+                {
+                    if (thrown_monster)
+                    {
+                        desc += make_stringf_p(
+                            T_("Hit by %1$s thrown by %2$s"),
+                            missile_display.c_str(),
+                            death_source_display_desc().c_str());
+                    }
+                    else
+                    {
+                        desc += make_stringf_p(
+                            starts_with(auxkilldata, "Shot with ")
+                                ? T_("Shot with a%1$s %2$s by %3$s")
+                                : T_("Hit by a%1$s %2$s thrown by %3$s"),
+                            "", missile_display.c_str(),
+                            death_source_display_desc().c_str());
+                    }
+                }
+                else if (death_source_name == "you")
+                {
+                    desc += terse
+                        ? C_("damage source", "their own ranged attack")
+                        : T_("Killed by their own ranged attack");
+                }
                 else if (!death_source_display_desc().empty())
-                    desc += make_stringf(T_("Killed by %s's ranged attack"),
-                                         death_source_display_desc().c_str());
+                {
+                    desc += make_stringf(terse
+                            ? C_("damage source", "%s's ranged attack")
+                            : T_("Killed by %s's ranged attack"),
+                        death_source_display_desc().c_str());
+                }
                 else
-                    desc += T_("Killed by a ranged attack");
+                {
+                    desc += terse ? C_("damage source", "a ranged attack")
+                                  : T_("Killed by a ranged attack");
+                }
             }
             else
                 desc += terse? terse_missile_cause() : auxkilldata;
@@ -2537,13 +2725,13 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             {
                 needs_damage = true;
                 desc += make_stringf(T_("Killed by their own %s"),
-                         auxkilldata.substr(3).c_str());
+                         _death_cause_display(auxkilldata.substr(3)).c_str());
             }
             else
             {
                 needs_called_by_monster_line = true;
                 desc += make_stringf(T_("Killed %s"),
-                          auxkilldata.c_str());
+                          aux_display.c_str());
             }
         }
         else
@@ -3238,7 +3426,8 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
 
     case KILLED_BY_FRAILTY:
         desc += chinese ? (terse ? T_("frailty")
-                                 : make_stringf(T_("Became unviable by %s"), auxkilldata.c_str()))
+                                 : make_stringf(T_("Became unviable by %s"),
+                                                _frailty_cause_display(auxkilldata).c_str()))
                         : (terse ? "frailty" : "Became unviable by " + auxkilldata);
         break;
 
@@ -3338,7 +3527,8 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             needs_damage = true;
         }
         else if (needs_beam_cause_line)
-            desc += "/" + terse_beam_cause();
+            desc += "/" + (chinese ? _death_cause_display(terse_beam_cause())
+                                   : terse_beam_cause());
         else if (needs_called_by_monster_line)
             desc += chinese ? death_source_display_desc() : death_source_name;
 
@@ -3391,7 +3581,10 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                 if (!semiverbose)
                 {
                     if (chinese)
-                        desc += make_stringf(T_("... caused by %s"), T_(auxkilldata.c_str()));
+                    {
+                        desc += make_stringf(T_("... caused by %s"),
+                                             aux_display.c_str());
+                    }
                     else
                         desc += auxkilldata == "damnation" ? "... with " :
                          auxkilldata == "creeping frost" ? "... by " :
@@ -3412,13 +3605,17 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             {
                 if (chinese)
                 {
-                    const char *action = death_type == KILLED_BY_COLLISION
-                                         ? T_("after being knocked back")
-                                         : auxkilldata == "by angry trees" ? T_("awakened")
-                                         : auxkilldata == "by Freeze" ? T_("generated")
-                                                                       : T_("invoked");
-                    desc += make_stringf(T_("... %s by %s"), action,
-                                         death_source_display_desc().c_str());
+                    // Whole clauses: the reason must not be an isolated
+                    // participle forced into English word order.
+                    const char *clause = death_type == KILLED_BY_COLLISION
+                        ? N_("... after being knocked back by %1$s")
+                        : auxkilldata == "by angry trees"
+                          ? N_("... awakened by %1$s")
+                        : auxkilldata == "by Freeze"
+                          ? N_("... generated by %1$s")
+                          : N_("... invoked by %1$s");
+                    const string source = death_source_display_desc();
+                    desc += make_stringf_p(T_(clause), source.c_str());
                 }
                 else
                     desc += make_stringf(T_("... %s by %s"),
@@ -3468,10 +3665,10 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                 if (you.props.exists(DISABLED_BY_KEY))
                 {
                     const string disabled_source =
-                        you.props[DISABLED_BY_KEY].get_string();
+                        death_source_display_name(you.props[DISABLED_BY_KEY].get_string());
                     disabled_by = make_stringf_p(
                         T_(" by %1$s"),
-                        disabled_source.c_str());
+                        _death_source_display_desc(disabled_source).c_str());
                 }
 
                 if (you.duration[DUR_PARALYSIS])

@@ -77,16 +77,17 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "Issue 6 number vocabulary preserves grouping boundaries",
                  "[zh-translation][issue-6][grammar]")
 {
-    // Freeze existing grouping, including its established 110 and 10000 forms.
+    // Chinese grouping retains the tens digit after a higher group; values
+    // outside the finite word vocabulary retain their complete numeric value.
     const pair<unsigned, const char *> cases[] =
     {
         { 0, "零" }, { 1, "一" }, { 9, "九" }, { 10, "十" },
         { 11, "十一" }, { 19, "十九" }, { 20, "二十" }, { 21, "二十一" },
         { 99, "九十九" }, { 100, "一百" }, { 101, "一百零一" },
-        { 109, "一百零九" }, { 110, "一百十" }, { 119, "一百十九" },
+        { 109, "一百零九" }, { 110, "一百一十" }, { 119, "一百一十九" },
         { 120, "一百二十" }, { 999, "九百九十九" }, { 1000, "一千" },
-        { 1001, "一千零一" }, { 1010, "一千零十" },
-        { 1100, "一千一百" }, { 9999, "九千九百九十九" }, { 10000, "十千" },
+        { 1001, "一千零一" }, { 1010, "一千零一十" },
+        { 1100, "一千一百" }, { 9999, "九千九百九十九" }, { 10000, "10000" },
     };
     for (const auto &test : cases)
     {
@@ -115,7 +116,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     };
     const skin_case cases[] =
     {
-        { SP_HUMAN, "skin", "fleshy", "皮肤", "皮肤的" },
+        { SP_HUMAN, "skin", "fleshy", "皮肤", "肉质的" },
         { SP_RED_DRACONIAN, "scales", "scaled", "鳞片", "鳞片的" },
         { SP_NAGA, "scales", "scaled", "鳞片", "鳞片的" },
         { SP_TENGU, "feathers", "feathered", "羽毛", "羽毛的" },

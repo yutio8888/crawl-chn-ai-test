@@ -21,15 +21,17 @@ Agnes	艾格尼丝	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-
 Agnes title	流浪者艾格尼丝	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Agonising Touch	剧痛之触	domain=spells; source=EN/ZH; 备注=✅
 Agony	剧痛	domain=spells; source=EN/ZH; 备注=🆕
+Air	空气	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
 air	空气	domain=items; source=EN/ZH; Scope / comment=item display fragment; armour ego, book, staff; decision=D-B-020
 air elemental	气元素	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Air Elementalist	气元素使	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
-Air Magic	空气魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Air Magic	空气系	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-101
 Airstrike	空袭	domain=spells; source=EN/ZH; 备注=✅
 Aizul	艾祖尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Aizul title	疏忽的守卫艾祖尔	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+Alch	炼金	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
 Alchemist	炼金术士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
-Alchemy	炼金术	domain=magic; source=EN/ZH
+Alchemy	炼金系	domain=magic; source=EN/ZH
 Alistair's Intoxication	阿利斯泰尔之醉	domain=spells; source=EN/ZH; 备注=✅；混乱视野内智慧生物，成功时施法者短暂眩晕
 Alistair's Walking Alembic	阿利斯泰尔之行走蒸馏器	domain=spells; source=EN/ZH; 备注=✅；战斗构装酿造并分发药水
 alligator	短吻鳄	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -233,6 +235,7 @@ clever	聪慧	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=m
 Cloud	云	domain=magic; source=EN/ZH; 状态=✅ 已确认（现行 `X Cloud` 后缀系列 8 项；另有 4 项已移除兼容记录）
 Cloud Cone	云雾锥	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；非 `X Cloud` 后缀成员，暂缓术语；恢复时复审
 clumsy	笨拙	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Cocytus	悲叹河	domain=core; source=EN/ZH; 作用域=游戏领域名；D-C-103
 cocytus serpent of hell breath	悲叹河地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 coglin	齿轮地精	domain=species; source=EN/ZH
 Cold Breath	寒霜吐息	domain=spells; source=EN/ZH; 备注=✅；与 `Breathe Frost → 吐息寒霜` 复用元素词
@@ -245,6 +248,7 @@ Confusing Touch	困惑之触	domain=spells; source=EN/ZH; 备注=✅
 confusion	混乱	domain=items; source=EN/ZH; Scope / comment=internal weapon brand verbose; decision=D-B-016/D-B-020
 Confusion	混乱	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Confusion Gaze	困惑凝视	domain=spells; source=EN/ZH; 备注=✅
+Conj	咒法	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
 Conjuration	咒法系	domain=magic; source=EN/ZH
 Conjurations	咒法系	domain=magic; source=EN/ZH
 Conjure Ball Lightning	召唤球形闪电	domain=spells; source=EN/ZH; 备注=✅；创造会追敌并爆炸的球状闪电
@@ -307,7 +311,8 @@ Dimension Anchor	维度锚定	domain=spells; source=EN/ZH; 备注=✅
 Dimensional Bullseye	维度靶心	domain=spells; source=EN/ZH; 备注=✅
 Diminish Spells	削弱法术	domain=spells; source=EN/ZH; 备注=✅
 dire flail	双头链枷	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
-dis serpent of hell breath	铁城地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
+Dis	迪斯	domain=core; source=EN/ZH; 作用域=游戏领域名；D-C-103
+dis serpent of hell breath	迪斯地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名；decision=D-C-103
 Discord	纷乱	domain=spells; source=EN/ZH; 备注=📝
 Disjunction	空间分离	domain=spells; source=EN/ZH; 备注=✅
 Dispater	迪斯帕特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -349,7 +354,7 @@ DUR_SANGUINE_ARMOUR	血甲	domain=status; source=EN/ZH; Scope / comment=internal
 Duvessa	杜维莎	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Duvessa title	杜维莎，多万的妹妹	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Earth Elementalist	土元素使	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
-Earth Magic	大地魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Earth Magic	大地系	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-101
 Edmund	埃德蒙	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Edmund title	年少者埃德蒙	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 ego	ego 装备 / 附魔装备	domain=items; source=EN/ZH
@@ -375,6 +380,7 @@ Eringya's Noxious Bog	埃林吉亚之毒沼	domain=spells; source=EN/ZH; 备注=
 Eringya's Surprising Crocodile	埃林吉亚之意外鳄鱼	domain=spells; source=EN/ZH; 备注=✅；保留原名刻意突兀的戏谑语气
 Erolcha	伊罗查	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Erolcha title	狡猾的伊罗查	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+Erth	大地	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
 Eruption	喷发	domain=spells; source=EN/ZH; 备注=✅
 Eustachio	尤斯塔奇奥	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Eustachio title	奇伟的尤斯塔奇奥	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
@@ -396,12 +402,13 @@ Fedhas	费德哈	domain=gods; source=EN/ZH; 类型=音译
 felid	猫	domain=species; source=EN/ZH; 裁决=[D-A-039]
 Fighter	战士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Fighting	格斗	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Fire	火焰	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
 Fire	着火	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Fire Brand	火焰烙印	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Fire Breath	火焰吐息	domain=spells; source=EN/ZH; 备注=✅
 Fire cloud	火云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Fire Elementalist	火元素使	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
-Fire Magic	火焰魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Fire Magic	火焰系	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-101
 Fire Storm	火焰风暴	domain=spells; source=EN/ZH; 备注=✅；9 级大范围定点火焰爆炸，并留下短暂火旋涡
 Fireball	火球	domain=spells; source=EN/ZH; 备注=✅；投掷会爆炸的火焰球
 Flame	火焰	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行；另有 3 项已移除兼容；复合标题允许“焰／烈焰”）
@@ -424,7 +431,7 @@ Forge Blazeheart Golem	锻造炽心魔像	domain=spells; source=EN/ZH; 备注=�
 Forge Lightning Spire	锻造闪电尖塔	domain=spells; source=EN/ZH; 备注=✅
 Forge Monarch Bomb	锻造君主炸弹	domain=spells; source=EN/ZH; 备注=✅
 Forge Phalanx Beetle	锻造方阵甲虫	domain=spells; source=EN/ZH; 备注=✅
-Forgecraft	锻造术	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Forgecraft	锻造系	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-101
 Forgewright	锻造师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Form	变形	domain=magic; source=EN/ZH; 状态=⚠️ 已审阅（6 项均为已移除／TAG 34 兼容记录；暂缓术语；恢复时复审）
 formicid	蚁人	domain=species; source=EN/ZH
@@ -439,6 +446,7 @@ Freezing Aura	冰封灵气	domain=spells; source=EN/ZH; 备注=⚠️ 已移除�
 Freezing Cloud	冰冻云	domain=spells; source=EN/ZH; 备注=✅ 现行
 Freezing Gust	冰冻阵风	domain=spells; source=EN/ZH; 备注=🆕；穿透性严寒气流，沿途留下寒气云
 Frenzy	狂乱术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
+Frge	锻造	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
 Frozen	冰封	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Frozen Ramparts	冰冻壁垒	domain=spells; source=EN/ZH; 备注=✅；短暂冰封周围墙壁并伤害邻近敌人
 Fugue of the Fallen	亡灵赋格	domain=spells; source=EN/ZH; 备注=✅
@@ -452,6 +460,7 @@ Gastronok	加斯特罗诺克	domain=unique-monsters; source=EN/ZH; Scope / comme
 Gastronok title	沉重的加斯特罗诺克	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Gauntlet	试炼场	domain=core; source=EN/ZH; 注意事项=分支、地下城特征与世界显示文本统一；裁决 [D-A-045]
 Gaze	凝视	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行）
+Gehenna	欣嫩谷	domain=core; source=EN/ZH; 作用域=游戏领域名；D-C-103
 gehenna serpent of hell breath	欣嫩谷地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 Gell's Gavotte	盖尔之加沃特	domain=spells; source=EN/ZH; 备注=✅；重定向局部重力，使视野内生物随方向翻滚
 Gell's Gravitas	盖尔之重力	domain=spells; source=EN/ZH; 备注=✅；重力铃鼓专用效果，将怪物拉拢并固定
@@ -502,6 +511,7 @@ Held	受困	domain=status; source=EN/ZH; Scope / comment=status; source=status.t
 Hellfire Court	地狱火法庭	domain=spells; source=EN/ZH; 备注=✅
 Hellfire Mortar	地狱火迫击炮	domain=spells; source=EN/ZH; 备注=✅
 Hepliaklqana	惠普利亚卡纳	domain=gods; source=EN/ZH; 类型=音译
+Hex	诅咒	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
 Hexes	诅咒系	domain=magic; source=EN/ZH
 Hexslinger	诅咒射手	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 high mp	高魔力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
@@ -523,9 +533,10 @@ Hurl Damnation	投掷天谴	domain=abilities; source=EN/ZH; Scope / comment=abil
 Hurl Sludge	投掷污泥	domain=spells; source=EN/ZH; 备注=✅；剧毒污泥会使目标中毒并浸湿周围
 Hurl Torchlight	投掷火炬之光	domain=spells; source=EN/ZH; 备注=✅；暗影火炬光伤害并强化友方亡灵
 Hydra Form	多头蛇变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+Ice	寒冰	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
 Ice Elementalist	冰元素使	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Ice Form	寒冰变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
-Ice Magic	寒冰魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Ice Magic	寒冰系	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-101
 Iceblast	冰爆	domain=spells; source=EN/ZH; 备注=✅；冰块撞击后爆炸，一半伤害无视寒冷抗性
 icy blue scales	冰蓝鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 identify	鉴定	domain=items; source=EN/ZH
@@ -554,6 +565,7 @@ Invisibility	隐形	domain=core; source=EN/ZH; 注意事项=不可被看见 | do
 Invisibility	隐身术	domain=spells; source=EN/ZH; 备注=✅；使施法者隐形
 Invisibility Other	使他人隐形	domain=spells; source=EN/ZH; 备注=🆕；使附近盟友隐形
 Invocations	祈神	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Iron City	铁城	domain=core; source=EN/ZH; 作用域=单独出现时的城市通名；D-C-103
 Iron Shot	铁弹	domain=spells; source=EN/ZH; 备注=✅；`shot` 指重型金属弹体，不机械统一为“射击”
 Irradiate	辐射	domain=spells; source=EN/ZH; 备注=✅
 Iskenderun's Battlesphere	伊斯肯德伦之战斗法球	domain=spells; source=EN/ZH; 备注=🆕；与实体及运行时 `battlesphere → 战斗法球` 统一
@@ -699,8 +711,9 @@ Natasha	娜塔莎	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-m
 Natasha title	娜塔莎，生死仆从	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Nazja's All-Purpose Tempering	纳兹亚之通用淬炼	domain=spells; source=EN/ZH; 备注=✅；可修复并强化附近任意构装体
 Nazja's Percussive Tempering	纳兹亚之冲击淬炼	domain=spells; source=EN/ZH; 备注=✅；修复并强化施法者锻造的构装体
+Necr	死灵	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
 Necromancer	死灵法师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
-Necromancy	死灵术	domain=magic; source=EN/ZH
+Necromancy	死灵系	domain=magic; source=EN/ZH
 Necromutation	亡灵变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Nellie	内莉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Nellie title	内莉，演出明星	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
@@ -858,7 +871,7 @@ Seismic Stomp	地震践踏	domain=spells; source=EN/ZH; 备注=✅
 Sentinel's Mark	哨兵印记	domain=spells; source=EN/ZH; 备注=✅；向同层所有生物暴露目标的位置
 Seracfall	冰塔崩塌	domain=spells; source=EN/ZH; 备注=✅
 Serpent of Hell cocytus	悲叹河地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
-Serpent of Hell dis	铁城地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
+Serpent of Hell dis	迪斯地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name; decision=D-C-103
 Serpent of Hell gehenna	欣嫩谷地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
 Serpent of Hell tartarus	塔尔塔罗斯地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
 Shadow	暗影	domain=magic; source=EN/ZH; 状态=✅ 已确认（12 项现行；另有 1 项已移除／TAG 34 兼容记录）
@@ -971,6 +984,7 @@ Strip Willpower	剥离意志力	domain=spells; source=EN/ZH; 备注=✅
 strong	强壮	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Stunning Burst	眩晕爆发	domain=spells; source=EN/ZH; 备注=✅
 Sublimation of Blood	血液升华	domain=spells; source=EN/ZH; 备注=✅
+Summ	召唤	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
 Summon	召唤	domain=magic; source=EN/ZH; 状态=✅ 已确认
 Summon Air Elementals	召唤气元素	domain=spells; source=EN/ZH; 备注=✅
 Summon Butterflies	召唤蝴蝶	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
@@ -1019,6 +1033,7 @@ Sure Blade	精准之刃	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼�
 Swiftness	迅捷	domain=spells; source=EN/ZH; 备注=✅
 sword of Cerebov	塞雷波夫之剑	domain=items; source=EN/ZH; Scope / comment=unrand; follows unique name; decision=D-B-021
 Symbol of Torment	折磨之符	domain=spells; source=EN/ZH; 备注=✅
+Tartarus	塔尔塔罗斯	domain=core; source=EN/ZH; 作用域=游戏领域名；D-C-103
 tartarus serpent of hell breath	塔尔塔罗斯地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=✅；复用分支限定实体名
 taunts	嘲讽道	domain=dialogue; source=EN/ZH; 适用角色=高等恶魔、反派
 Teleport	传送	domain=core; source=EN/ZH; 注意事项=位移效果
@@ -1027,6 +1042,7 @@ Teleport Self	自我传送	domain=spells; source=EN/ZH; 备注=⚠️ 已移除�
 tengu	天狗	domain=species; source=EN/ZH; 复合格式=天狗 + 职业（天狗咒法师）
 Terence	特伦斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Terence title	老练的特伦斯	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+the Iron City of Dis	迪斯铁城	domain=core; source=EN/ZH; 作用域=城市全名；D-C-103
 The Shining One	光辉者	domain=gods; source=EN/ZH; 类型=意译; 裁决=[D-A-006]
 the Wu Jian Council	无间门派	domain=gods; source=EN/ZH; 类型=实体／派别长名（门派=sect）
 thin metallic scales	薄金属鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
@@ -1043,6 +1059,7 @@ Throwing	投掷	domain=skills; source=EN/ZH; Scope / comment=skill; source=sourc
 Thunderbolt	雷击	domain=spells; source=EN/ZH; 备注=✅ 现行；固定词形例外
 Tiamat	提亚马特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Tiamat title	提亚马特，龙神的化身	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+Tloc	传送	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
 Tomb of Doroklohe	多洛克洛之墓	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Torment	折磨	domain=combat; source=EN/ZH; column3=按比例造成伤害
 Touch	触	domain=magic; source=EN/ZH; 状态=✅ 已确认（2 项现行）

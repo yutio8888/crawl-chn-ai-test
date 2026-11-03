@@ -496,6 +496,14 @@ void fill_chain_targets(const bolt& beam, coord_def centre,
 
 bolt setup_targeting_beam(const monster &mons);
 
+// Canonical identity check against the zap table: true when the string is a
+// known beam/zap name. Displaying an old death must not construct a zap.
+bool is_known_beam_name(const string &name);
+
+// Display-only rendering of a canonical slow-orb beam identity. Identity,
+// xlog and death-cause fields keep the canonical English string.
+string orb_beam_name_display(const string& canonical);
+
 bool cancel_beam_prompt(const bolt& beam, const player_beam_tracer& tracer,
                         int beams_fired = 1);
 

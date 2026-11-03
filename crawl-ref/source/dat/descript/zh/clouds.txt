@@ -92,7 +92,7 @@ thin mist cloud
 %%%%
 seething chaos cloud
 
-一团翻腾的混乱云。身处云中会受到各种不可预测的影响，
+一团翻腾的混沌云。身处云中会受到各种不可预测的影响，
 从隐形到狂暴，再到完全麻痹。
 %%%%
 rain cloud
@@ -122,7 +122,7 @@ sparse dust cloud
 spectral mist cloud
 
 一团幽灵迷雾云。它对除亡灵以外的所有生物造成轻微伤害。
-随着时间的推移，危险却短暂的亡灵生物将从雾中聚集。
+随着时间推移，危险但只能短暂存在的幽魂亡灵会从雾中凝聚成形。
 %%%%
 acidic fog cloud
 

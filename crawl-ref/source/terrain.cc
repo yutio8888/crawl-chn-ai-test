@@ -1006,9 +1006,10 @@ void slime_wall_damage(actor* act, int delay)
     const int dam = resist_adjust_damage(act, BEAM_ACID, base_dam);
     if (dam > 0 && you.see_cell_no_trans(act->pos()))
     {
-        const char *verb = act->is_icy() ? "melt" : "burn";
-        mprf((walls > 1) ? T_("The walls %s %s!") : T_("The wall %ss %s!"),
-              verb, act->name(DESC_THE).c_str());
+        const char* message = act->is_icy()
+            ? (walls > 1 ? N_("The walls melt %s!") : N_("The wall melts %s!"))
+            : (walls > 1 ? N_("The walls burn %s!") : N_("The wall burns %s!"));
+        mprf(T_(message), act->name(DESC_THE).c_str());
         act->hurt(&you, dam, BEAM_ACID);
         if (act->alive())
             behaviour_event(act->as_monster(), ME_WHACK, &you, you.pos());
@@ -2690,7 +2691,7 @@ void ice_wall_damage(monster &mons, int delay)
     beam.thrower = KILL_YOU;
     int dam = mons_adjust_flavoured(&mons, beam, orig_dam);
     mprf(T_("The wall freezes %s%s%s"),
-         you.can_see(mons) ? mons.name(DESC_THE).c_str() : "something",
+         you.can_see(mons) ? mons.name(DESC_THE).c_str() : T_("something"),
          dam ? "" : T_(" but does no damage"),
          attack_strength_punctuation(dam).c_str());
 
@@ -2733,7 +2734,7 @@ void frigid_walls_damage(int delay)
         beam.thrower = KILL_YOU;
         int dam = mons_adjust_flavoured(*mi, beam, orig_dam);
         mprf(T_("The frigid air chills %s%s%s"),
-            you.can_see(**mi) ? mi->name(DESC_THE).c_str() : "something",
+            you.can_see(**mi) ? mi->name(DESC_THE).c_str() : T_("something"),
             dam ? "" : T_(" but does no damage"),
             attack_strength_punctuation(dam).c_str());
 

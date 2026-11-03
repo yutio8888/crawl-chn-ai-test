@@ -73,6 +73,53 @@ def valid_rows():
 
 
 class SpeciesBackgroundInventoryAuditTest(unittest.TestCase):
+    def test_dynamic_display_keeps_raw_identities_and_absent_forms(self):
+        defaults = {"child_name": "Child", "orc_name": "Orc",
+                    "orcification_msg": "Your teeth change."}
+        db = {"child": "孩子", "orc": "兽人", "your teeth change.": "牙齿变化。",
+              "first": "第一项", "first long.": "第一段。",
+              "second long.": "第二段。"}
+        data = {"fake_mutations": [
+            {"short": "first", "long": "First long."},
+            {"long": "Second long."},
+        ]}
+        display = MODULE.species_dynamic_display(data, db, defaults)
+        self.assertEqual("Child", display["child_name"]["lookup_key"])
+        self.assertEqual("孩子", display["child_name"]["chinese"])
+        self.assertEqual("First long.", display["fake_mutations"][0]["long"]["english"])
+        self.assertNotIn("short", display["fake_mutations"][1])
+        self.assertEqual([], MODULE.missing_dynamic_translations(display, "species:TEST"))
+        rows = valid_rows()
+        rows[0]["dynamic_display"] = display
+        self.assertFalse(MODULE.has_violations(MODULE.inventory_violations(rows)))
+        del db["second long."]
+        missing = MODULE.species_dynamic_display(data, db, defaults)
+        rows[0]["dynamic_display"] = missing
+        violations = MODULE.inventory_violations(rows)
+        self.assertEqual(["species:SP_TEST.fake_mutations[1].long"],
+                         violations["missing_chinese_dynamic_display"])
+        self.assertTrue(MODULE.has_violations(violations))
+        self.assertEqual(["species:TEST.fake_mutations[1].long"],
+                         MODULE.missing_dynamic_translations(missing, "species:TEST"))
+        self.assertNotEqual(MODULE.fact_sha256({"dynamic_display": display}),
+                            MODULE.fact_sha256({"dynamic_display": missing}))
+
+    def test_dynamic_defaults_follow_accessors_and_reject_unknown_shape(self):
+        code = '''
+string child_name(species_type sp) { return value ? value : "Infant"; }
+string orc_name(species_type sp) { return value ? value : "Orc"; }
+string orcification_msg(species_type sp) {
+    return message ? message : "Changed.";
+}
+'''
+        with mock.patch.object(MODULE, "active_source", return_value=code):
+            self.assertEqual("Infant", MODULE.species_display_defaults()["child_name"])
+        with mock.patch.object(MODULE, "active_source", return_value=code.replace(
+            'return value ? value : "Infant";', 'return make_child_name();'
+        )):
+            with self.assertRaisesRegex(RuntimeError, "child_name fallback"):
+                MODULE.species_display_defaults()
+
     def test_enum_parser_uses_only_active_concrete_identities(self):
         with tempfile.TemporaryDirectory() as directory:
             header = Path(directory) / "enum.txt"

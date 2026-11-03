@@ -501,7 +501,8 @@ function hit_magic()
   if you.spell_table()[AUTOMAGIC_SPELL_SLOT] then
     mag_attack(true)
   else
-    crawl.mpr(crawl.t_("No spell in slot " .. AUTOMAGIC_SPELL_SLOT .. "!"))
+    crawl.mpr(string.format(crawl.t_("No spell in slot %s!"),
+                            AUTOMAGIC_SPELL_SLOT))
   end
 end
 
@@ -509,7 +510,8 @@ function hit_magic_nomove()
   if you.spell_table()[AUTOMAGIC_SPELL_SLOT] then
     mag_attack(false)
   else
-    crawl.mpr(crawl.t_("No spell in slot " .. AUTOMAGIC_SPELL_SLOT .. "!"))
+    crawl.mpr(string.format(crawl.t_("No spell in slot %s!"),
+                            AUTOMAGIC_SPELL_SLOT))
   end
 end
 

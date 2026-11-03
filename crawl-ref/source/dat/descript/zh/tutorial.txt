@@ -48,7 +48,7 @@ tutorial1 downstairs
 
 当你站在向下的楼梯口时，
 你可以按下<input>$cmd[CMD_GO_DOWNSTAIRS]</input><localtiles>
-或<input>左击</input>你的角色</localtiles>。
+或<input>左击</input>你的角色</localtiles>，即可进入下一层。
 %%%%
 tutorial1 levelmap
 
@@ -79,8 +79,8 @@ tutorial1 autoexplore_announce
 
 在第一次碰到物品或地牢地标时，比如这些楼梯，自动探索会停下来。
 如果要直接前往楼梯，可以<localtiles><input>点击</input> 它们；
-或是</localtiles>点击<input>$cmd[CMD_DISPLAY_MAP]</input>以查看地图概览，
-然后<input><<</input>将光标移动到最近楼梯，
+或是</localtiles>按<input>$cmd[CMD_DISPLAY_MAP]</input>以查看地图概览，
+然后按<input><<</input>将光标移动到最近的上楼梯，
 键入<input>回车</input>开始前往。
 %%%%
 tutorial1 tutorial_end
@@ -163,8 +163,8 @@ tutorial2 melee
 %%%%
 tutorial2 resting
 
-非常好！你可以通过按<input>$cmd[CMD_REST]</input>
-<localtiles>，或点击小地图下方的命令栏中的“休息”按钮来休息以恢复损失的生命值</localtiles>。
+非常好！你可以按<input>$cmd[CMD_REST]</input>
+<localtiles>，或点击小地图下方的命令栏中的“休息”按钮</localtiles>来休息以恢复损失的生命值。
 在身体痊愈前会一直休息，但如果发生重要事件，会被打断。
 %%%%
 tutorial2 wait
@@ -179,13 +179,12 @@ tutorial2 resting_reminder
 %%%%
 tutorial2 compare_monster_desc
 
-# 为清晰起见，在localtile中跳过键盘命令。
 查看这些怪物（<localtiles>通过 <input>鼠标悬停</input></localtiles>
 <nomouse>按下<input>$cmd[CMD_LOOK_AROUND]</input>进入查看模式，
 并用<input>$cmd[CMD_TARGET_CYCLE_FORWARD]</input>循环切换周围怪物</nomouse>）
 接着比较他们的描述（<localtiles>用 <input>鼠标右击</input></localtiles>
-<nomouse>按下<input>$cmd[CMD_TARGET_DESCRIBE]</input>
-在查看模式中选择他们</nomouse>）看看从哪个笼子通过才是最安全的。
+<nomouse>在查看模式中选中怪物后，
+按<input>$cmd[CMD_TARGET_DESCRIBE]</input>阅读描述</nomouse>）看看从哪个笼子通过才是最安全的。
 %%%%
 tutorial2 downstairs
 
@@ -291,8 +290,8 @@ tutorial3 scroll_noautopickup
 
 在周围有怪物的时候，自动拾取不会生效。
 你现在可以按<input>$cmd[CMD_PICKUP]</input><localtiles>
-或<input>点击</input>你的角色来拾取它，
-</localtiles>或者你也可以先干掉附近的敌人然后再拾取它。
+或<input>点击</input>你的角色</localtiles>来拾取它，
+或者你也可以先干掉附近的敌人然后再拾取它。
 %%%%
 tutorial3 ego_weapon
 
@@ -337,24 +336,21 @@ tutorial3 potion
 
 药水可能提供关键的治疗或有益强化，但有些药水也会产生不太理想的效果。
 你可以按<input>$cmd[CMD_QUAFF]</input><localtiles>
-或<input>鼠标点击</input>来饮用药水，</localtiles>以发现它的作用。
+或<input>鼠标点击</input>它</localtiles>来饮用这瓶药水，发现它的作用。
 %%%%
 tutorial3 artefact_armour
 
-# TODO：用真正的神器替换非随机神器。需要有一些防范措施，
-#       以规避能让教程偏离正轨的东西（脆弱、污染……）
 有<w>不同寻常名称</w>的物品是神器。神器可能具有各种特殊属性。
 一些独一无二的神器（如这件披风）总是处于已鉴定状态，
 并且可能具有其他地方找不到的特殊属性！
 另一些神器的属性随机生成，且在你踏上其所在位置前不会被鉴定。
 试着按<input>$cmd[CMD_EQUIP]</input><localtiles>
-或在物品栏中<input>鼠标点击</input>它来装备这件披风</localtiles>。
+或在物品栏中<input>鼠标点击</input>它</localtiles>来装备这件披风。
 %%%%
 tutorial3 wand_fire
 
-# 待办事项：魔杖的瞄准界面，可能需要一些相关帮助文本。
 你可以按<input>$cmd[CMD_EVOKE]</input><localtiles>
-或在物品栏中<input>鼠标点击</input>它来使用魔杖</localtiles>。
+或在物品栏中<input>鼠标点击</input>它</localtiles>来使用魔杖。
 %%%%
 tutorial3 wand_digging
 
@@ -364,8 +360,8 @@ tutorial3 wand_digging
 %%%%
 tutorial3 amulet
 
-通过按<input>$cmd[CMD_EQUIP]</input><localtiles>
-或在物品栏中<input>鼠标点击</input>首饰来佩戴它</localtiles>。
+按<input>$cmd[CMD_EQUIP]</input><localtiles>
+或在物品栏中<input>鼠标点击</input>首饰</localtiles>即可佩戴。
 %%%%
 tutorial3 drop
 
@@ -393,7 +389,7 @@ tutorial3 enter_shop
 tutorial3 autoexplore_reminder
 
 记住，你可以按<input>$cmd[CMD_EXPLORE]</input><localtiles>
-或<input>点击</input><w>命令栏</w>上的自动探索图标来自动探索本楼层</localtiles>。
+或<input>点击</input><w>命令栏</w>上的自动探索图标</localtiles>来自动探索本楼层。
 %%%%
 tutorial3 go_shopping
 
@@ -416,20 +412,19 @@ tutorial3 tutorial_end
 %%%%
 tutorial3 exit
 
-# 一个囊括所有命令的界面。
 :nowrap
 <white>教程3总结：物品</white>
 
 <yellow>物品命令</yellow>
   <input>$cmd[CMD_PICKUP]</input>  捡起物品
   <input>$cmd[CMD_DROP]</input>  丢弃物品
-  <input>$cmd[CMD_EQUIP]</input>  装备防具、武器和首饰
-  <input>$cmd[CMD_UNEQUIP]</input>  卸下防具、武器和首饰
+  <input>$cmd[CMD_EQUIP]</input>  装备护甲、武器和首饰
+  <input>$cmd[CMD_UNEQUIP]</input>  卸下护甲、武器和首饰
   <input>$cmd[CMD_READ]</input>  阅读卷轴
   <input>$cmd[CMD_QUAFF]</input>  饮用药水
   <input>$cmd[CMD_EVOKE]</input> 使用魔杖
 
-  也可以在物品栏菜单（<input>$cmd[CMD_DISPLAY_INVENTORY]</input>）中的物品描述界面使用装备或卸下命令。<localtiles>
+  也可以在物品栏菜单（<input>$cmd[CMD_DISPLAY_INVENTORY]</input>）中的物品描述界面使用物品，或执行装备、卸下命令。<localtiles>
   当然，你也可以用<input>鼠标点击</input>。</localtiles>
 
 <yellow>其他</yellow>
@@ -464,8 +459,8 @@ tutorial4 spellcasting
 %%%%
 tutorial4 ring_power
 
-通过按<input>$cmd[CMD_EQUIP]</input><localtiles>
-或在物品栏中<input>点击</input>它，就能戴上这枚戒指</localtiles>，
+按<input>$cmd[CMD_EQUIP]</input><localtiles>
+或在物品栏中<input>点击</input>它</localtiles>戴上这枚戒指，
 然后休息至法力恢复到新的上限。
 %%%%
 tutorial4 undead
@@ -492,9 +487,9 @@ tutorial4 mephitic_cloud
 %%%%
 tutorial4 meph_reminder
 
-不要忘记你的新的可用法术，
-通过按<input>$cmd[CMD_MEMORISE_SPELL]</input><localtiles>
-或在记忆标签页中<input>点击</input>所选的法术贴图进行记忆</localtiles>！
+别忘了按<input>$cmd[CMD_MEMORISE_SPELL]</input><localtiles>
+或在记忆标签页中<input>点击</input>相应的法术图块</localtiles>，
+记忆新获得的法术！
 %%%%
 tutorial4 aiming_clouds
 
@@ -530,13 +525,12 @@ tutorial4 order_allies
 %%%%
 tutorial4 heavy_armour
 
-# 待办事项：将脱下拆分为单独的项目。
-重甲确实会妨碍施法。试着装备护甲、盾牌
+重甲确实会妨碍施法。试着穿上那件链甲和盾牌
 （通过<input>$cmd[CMD_EQUIP]</input><localtiles>或<input>点击</input>它们</localtiles>），
 并通过<input>$cmd[CMD_DISPLAY_SPELLS]</input><localtiles>或<input>鼠标悬停</input>
-在你记住的法术</localtiles>上，来比较你的施法失败率。
+在你已记忆的法术上</localtiles>，来比较你的施法失败率。
 你可以通过<input>$cmd[CMD_UNEQUIP]</input><localtiles>
-或<input>鼠标点击</input></localtiles>脱下防具。
+或<input>鼠标点击</input></localtiles>脱下护甲。
 %%%%
 tutorial4 resting_reminder
 
@@ -607,8 +601,8 @@ tutorial5 piety_on_kill
 tutorial5 berserk
 
 面对特别强大的敌人时，
-你可能需要通过<input>$cmd[CMD_USE_ABILITY]</input><localtiles>
-或通过<w>命令栏</w>来使用特洛格赐予你的狂暴能力</localtiles>。
+你可以按<input>$cmd[CMD_USE_ABILITY]</input><localtiles>
+或通过<w>命令栏</w></localtiles>使用特洛格赐予你的狂暴能力。
 %%%%
 tutorial5 exhaustion
 
@@ -653,5 +647,5 @@ tutorial4 spellquivering
 <input>$cmd[CMD_FIRE]</input> 或 <input>Shift+Tab</input> 来发射当前
 箭袋中的法术。
 
-一旦魔力耗尽，撤退并用 <input>$cmd[CMD_REST]</input><localtiles> 或
-在命令面板中 <input>点击</input> 休息图标</localtiles> 来恢复魔力。
+一旦法力耗尽，撤退并用 <input>$cmd[CMD_REST]</input><localtiles> 或
+在命令面板中 <input>点击</input> 休息图标</localtiles> 来恢复法力。

@@ -199,6 +199,32 @@ local invalid_horn_quantity = pcall(items.trove_name, "miscellaneous",
 assert(not invalid_horn_quantity,
        "trove renderer accepted an impossible stacked horn marker")
 
+-- Optional English snapshot rendering (lm_trove's complete-snapshot fallback).
+-- These go through the real C++ bindings, not a Lua stub.
+local zh_horn = items.trove_name("miscellaneous", "horn of Geryon", 1,
+                                 false, "unknown", false)
+local en_horn = items.trove_name("miscellaneous", "horn of Geryon", 1,
+                                 false, "unknown", false, true)
+assert(en_horn == "horn of Geryon",
+       "forced-English trove name was localized: " .. tostring(en_horn))
+assert(zh_horn ~= en_horn,
+       "trove name did not switch language for the snapshot fallback")
+
+local en_article = crawl.article_a("arrow", true, true)
+assert(en_article == "an arrow",
+       "article_a English snapshot mismatch: " .. tostring(en_article))
+if crawl.t_("arrow") ~= "arrow" then
+    assert(crawl.article_a("arrow", true) ~= en_article,
+           "article_a ZH form unexpectedly English")
+end
+
+local zh_bane = crawl.bane_name("Lethargy")
+local en_bane = crawl.bane_name("Lethargy", true)
+assert(en_bane == "Lethargy",
+       "forced-English bane name was localized: " .. tostring(en_bane))
+assert(zh_bane == crawl.t_("Lethargy"),
+       "bane name did not use the current display language")
+
 local trove_cases = {
     {label="quantity", spec="scroll of acquirement q:2 pre_id"},
     {label="plus", spec="golden dragon scales plus:4 pre_id"},
@@ -261,7 +287,12 @@ for index, trove_case in ipairs(trove_cases) do
                                            crawl.t_("demon weapon"))
             expected_grammar = crawl.grammar(expected_plain, "a")
         elseif trove_case.horn then
-            expected_plain = source_item.name("db")
+            -- The database name is the canonical English identity; the trove
+            -- display translates it at the sink.
+            local identity = source_item.name("db")
+            assert(identity == "horn of Geryon",
+                   "horn database identity was localized")
+            expected_plain = crawl.t_(identity)
             expected_grammar = crawl.grammar(expected_plain, "the")
         else
             expected_plain = source_item.name("plain")

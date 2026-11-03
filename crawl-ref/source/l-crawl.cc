@@ -1014,6 +1014,7 @@ static int _crawl_grammar(lua_State *ls)
 /*** Correctly attach the article 'a'.
  * @tparam string s
  * @tparam[opt=true] bool lowercase
+ * @tparam[opt=false] bool english force English for a complete snapshot fallback
  * @treturn string
  * @function article_a
  */
@@ -1025,6 +1026,9 @@ static int crawl_article_a(lua_State *ls)
     if (lua_isboolean(ls, 2))
         lowercase = lua_toboolean(ls, 2);
 
+    // Optional English rendering for language-locked snapshot fallback.
+    const unwind_var<lang_t> language(Options.language,
+        lua_toboolean(ls, 3) ? lang_t::EN : Options.language);
     lua_pushstring(ls, article_a(s, lowercase).c_str());
 
     return 1;
@@ -1485,7 +1489,18 @@ static int crawl_bane_name(lua_State *ls)
     if (!s || !*s)
         return 0;
 
-    lua_pushstring(ls, uppercase_first(bane_name(bane_from_name(s))).c_str());
+    const bane_type bane = bane_from_name(s);
+    if (bane >= NUM_BANES)
+    {
+        // Unknown identity: hand the requested name back so Lua callers never
+        // receive nil (lm_trove formats it into a snapshot frame).
+        lua_pushstring(ls, s);
+        return 1;
+    }
+    // Optional English display for complete snapshot fallback.
+    const unwind_var<lang_t> language(Options.language,
+        lua_toboolean(ls, 2) ? lang_t::EN : Options.language);
+    lua_pushstring(ls, uppercase_first(bane_name(bane)).c_str());
     return 1;
 }
 

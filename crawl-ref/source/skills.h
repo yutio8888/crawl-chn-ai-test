@@ -108,6 +108,10 @@ unsigned get_skill_rank(unsigned skill_lev);
 
 string player_title(bool the = true);
 
+// Display-only: map a known saved ghost title to the current language.
+// Unknown/historical snapshots are returned unchanged (no save-format change).
+string translated_ghost_title(const string& saved_title, species_type species);
+
 skill_type best_skill(skill_type min_skill, skill_type max_skill,
                       skill_type excl_skill = SK_NONE);
 void init_skill_order();

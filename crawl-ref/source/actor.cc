@@ -781,7 +781,7 @@ void actor::constriction_damage_defender(actor &defender)
         default:
             force_plural = false;
             if (is_player())
-                attacker_desc = "You";
+                attacker_desc = T_("You");
             else
                 attacker_desc = name(DESC_THE);
             break;
@@ -1010,8 +1010,8 @@ void actor::collide(coord_def newpos, const actor *agent, int damage)
         }
         else
         {
-            mprf(T_("%s violently %s moving%s"),
-                 name(DESC_THE).c_str(), verb_for_display(N_("stop")).c_str(),
+            mprf(T_("%s violently stops moving%s"),
+                 name(DESC_THE).c_str(),
                  attack_strength_punctuation(dam).c_str());
         }
 
@@ -1043,7 +1043,7 @@ void actor::collide(coord_def newpos, const actor *agent, int damage)
 
 bool actor::knockback(const actor &cause, int dist, int dmg, string source_name, coord_def source_pos)
 {
-    if (is_stationary() || resists_dislodge("being knocked back"))
+    if (is_stationary() || resists_dislodge(NC_("dislodge event", "being knocked back")))
         return false;
 
     const coord_def source = source_pos.origin() ? cause.pos() : source_pos;
@@ -1141,19 +1141,20 @@ bool actor::stumble_away_from(coord_def targ, string src)
 
     if (newpos.origin()
         || actor_at(newpos)
-        || resists_dislodge("being knocked back"))
+        || resists_dislodge(NC_("dislodge event", "being knocked back")))
     {
         return false;
     }
 
+    const string source_display = T_(src.c_str());
     if (is_player() && !src.empty())
     {
         mprf(T_("%s sends you backwards."),
-             uppercase_first(src).c_str());
+             uppercase_first(source_display).c_str());
     }
     else if (you.can_see(*this) && !src.empty())
         mprf(T_("%s is knocked back by %s."),
-             name(DESC_THE).c_str(), src.c_str());
+             name(DESC_THE).c_str(), source_display.c_str());
 
     move_to(newpos);
 

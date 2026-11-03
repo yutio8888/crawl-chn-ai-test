@@ -553,14 +553,14 @@ bool valid_electric_charge_target(const actor& agent, coord_def target, string* 
     if (agent.pos() == target)
     {
         if (fail_reason)
-            *fail_reason = "You can't charge at yourself.";
+            *fail_reason = T_("You can't charge at yourself.");
 
         return false;
     }
     else if (adjacent(agent.pos(), target))
     {
         if (fail_reason)
-            *fail_reason = "You're already next to there.";
+            *fail_reason = T_("You're already next to there.");
 
         return false;
     }
@@ -568,7 +568,7 @@ bool valid_electric_charge_target(const actor& agent, coord_def target, string* 
              > spell_range(SPELL_ELECTRIC_CHARGE, &agent))
     {
         if (fail_reason)
-            *fail_reason = "That's out of range!";
+            *fail_reason = T_("That's out of range!");
 
         return false;
     }
@@ -579,7 +579,7 @@ bool valid_electric_charge_target(const actor& agent, coord_def target, string* 
            && fedhas_passthrough(act->as_monster()))
     {
         if (fail_reason)
-            *fail_reason = "You can't see anything there to charge at.";
+            *fail_reason = T_("You can't see anything there to charge at.");
 
         return false;
     }
@@ -588,7 +588,7 @@ bool valid_electric_charge_target(const actor& agent, coord_def target, string* 
     if (mons_aligned(act, &agent) || act->is_firewood())
     {
         if (fail_reason)
-            *fail_reason = "Why would you want to do that?";
+            *fail_reason = T_("Why would you want to do that?");
 
         return false;
     }
@@ -871,7 +871,7 @@ spret controlled_blink(bool safe_cancel, dist *target)
 {
     if (crawl_state.is_replaying_keys())
     {
-        crawl_state.cancel_cmd_all("You can't repeat controlled blinks.");
+        crawl_state.cancel_cmd_all(T_("You can't repeat controlled blinks."));
         return spret::abort;
     }
 
@@ -1840,13 +1840,14 @@ spret cast_gravitas(int pow, const coord_def& where, bool fail)
     // XXX: If this is ever usable from elsewhere than the item, change this.
     mpr(T_("You rattle the tambourine."));
 
-    mprf(T_("Waves of gravity draw inward%s%s."),
-         mons || feat_is_solid(env.grid(where)) ? " around " : "",
-         mons ? mons->name(DESC_THE).c_str() :
-                feat_is_solid(env.grid(where)) ? feature_description(env.grid(where),
-                                                                     NUM_TRAPS, "",
-                                                                     DESC_THE)
-                                                                    .c_str() : "");
+    if (mons || feat_is_solid(env.grid(where)))
+    {
+        const string center = mons ? mons->name(DESC_THE)
+            : feature_description(env.grid(where), NUM_TRAPS, "", DESC_THE);
+        mprf(T_("Waves of gravity draw inward around %s."), center.c_str());
+    }
+    else
+        mpr(T_("Waves of gravity draw inward."));
 
     draw_ring_animation(where, radius, LIGHTMAGENTA);
     pull_monsters_inward(where, radius);
@@ -2394,7 +2395,7 @@ spret cast_gavotte(int pow, const coord_def dir, bool fail)
     else if (dir.x == 1 && dir.y == 1)
         dir_msg = "southeast";
 
-    mprf(T_("Gravity reorients to the %s!"), dir_msg.c_str());
+    mprf(T_("Gravity reorients to the %s!"), T_(dir_msg.c_str()));
 
     if (you.stasis())
         canned_msg(MSG_STRANGE_STASIS);

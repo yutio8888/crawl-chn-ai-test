@@ -6,8 +6,10 @@
 #include "AppHdr.h"
 
 #include "skills.h"
+#include "lang-en-guard.h"
 
 #include <algorithm>
+#include <set>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
@@ -337,8 +339,10 @@ static void _change_skill_level(skill_type exsk, int n)
         if (specify_base)
         {
             if (n > 0)
+            {
                 mprf(MSGCH_INTRINSIC_GAIN, T_("Your base %s skill increases to level %d!"),
                      skill_name(exsk), you.skills[exsk]);
+            }
             else
                 mprf(MSGCH_INTRINSIC_GAIN, T_("Your base %s skill decreases to level %d!"),
                      skill_name(exsk), you.skills[exsk]);
@@ -346,8 +350,10 @@ static void _change_skill_level(skill_type exsk, int n)
         else
         {
             if (n > 0)
+            {
                 mprf(MSGCH_INTRINSIC_GAIN, T_("Your %s skill increases to level %d!"),
                      skill_name(exsk), you.skills[exsk]);
+            }
             else
                 mprf(MSGCH_INTRINSIC_GAIN, T_("Your %s skill decreases to level %d!"),
                      skill_name(exsk), you.skills[exsk]);
@@ -358,8 +364,10 @@ static void _change_skill_level(skill_type exsk, int n)
         if (specify_base)
         {
             if (n > 0)
+            {
                 mprf(MSGCH_INTRINSIC_GAIN, T_("Your base %s skill gained %d levels and is now at level %d!"),
                      skill_name(exsk), abs(n), you.skills[exsk]);
+            }
             else
                 mprf(MSGCH_INTRINSIC_GAIN, T_("Your base %s skill lost %d levels and is now at level %d!"),
                      skill_name(exsk), abs(n), you.skills[exsk]);
@@ -367,8 +375,10 @@ static void _change_skill_level(skill_type exsk, int n)
         else
         {
             if (n > 0)
+            {
                 mprf(MSGCH_INTRINSIC_GAIN, T_("Your %s skill gained %d levels and is now at level %d!"),
                      skill_name(exsk), abs(n), you.skills[exsk]);
+            }
             else
                 mprf(MSGCH_INTRINSIC_GAIN, T_("Your %s skill lost %d levels and is now at level %d!"),
                      skill_name(exsk), abs(n), you.skills[exsk]);
@@ -1421,8 +1431,10 @@ bool check_training_target(skill_type sk)
         else
             you.train_alt[sk] = you.train[sk] = TRAINING_DISABLED;
         if (base)
+        {
             mprf(T_("Base training target %d.%d for %s reached!"),
                  targ / 10, targ % 10, skill_name(sk));
+        }
         else
             mprf(T_("Training target %d.%d for %s reached!"),
                  targ / 10, targ % 10, skill_name(sk));
@@ -1605,9 +1617,10 @@ static int _train(skill_type exsk, int &max_exp, bool simu, bool check_targets)
         you.skill_manual_points[exsk] -= bonus;
         if (!you.skill_manual_points[exsk] && !simu && !crawl_state.simulating_xp_gain)
         {
-            mprf(T_("You have finished your manual of %s and %stoss it away."),
-                 skill_name(exsk),
-                 exsk == SK_THROWING ? "skilfully " : "");
+            mprf(exsk == SK_THROWING
+                ? T_("You have finished your manual of %s and skilfully toss it away.")
+                : T_("You have finished your manual of %s and toss it away."),
+                skill_name(exsk));
         }
     }
 
@@ -2115,6 +2128,36 @@ string special_conduct_title(skill_type best_skill, uint8_t skill_rank)
 // Chinese skill title translations are now handled by T_() in skill_title_by_rank().
 // See line ~2385: result = T_(result.c_str());
 
+/**
+ * Render one title template in the current language, substituting the
+ * species-dependent placeholders. Shared by the live player title and by the
+ * ghost-title display mapping so both use exactly the same strings.
+ */
+static string _render_skill_title(const char* key, species_type species)
+{
+    string result = key ? key : "";
+    if (!result.empty())
+        result = T_(result.c_str());
+
+    const map<string, string> replacements =
+    {
+        { "Adj", species::name(species, species::SPNAME_ADJ) },
+        { "Genus", species::name(species, species::SPNAME_GENUS) },
+        { "genus", lowercase_string(species::name(species, species::SPNAME_GENUS)) },
+        { "Genus_Short", species == SP_DEMIGOD
+                         ? C_("skill title genus", "God")
+                         : species::name(species, species::SPNAME_GENUS) },
+        // Chinese titles use a complete noun rather than appending
+        // the English agent suffix to the walking verb.
+        { "Walker", Options.language == lang_t::ZH
+                        ? C_("skill title walker", "Walker")
+                                                   : species::walking_title(species) + "er" },
+        { "Weight", C_("skill title weight", _stk_weight(species).c_str()) },
+    };
+
+    return replace_keys(result, replacements);
+}
+
 string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
                            species_type species, int dex, int str, int intel,
                            god_type god, int piety, bool conducts)
@@ -2385,28 +2428,10 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
             result = skill_titles[best_skill][skill_rank];
     }
 
-    // Translate title before placeholder replacement
-    // so that template titles like "@Adj@ Blade" use a single key.
-    if (!result.empty())
-        result = T_(result.c_str());
-
-    const map<string, string> replacements =
-    {
-        { "Adj", species::name(species, species::SPNAME_ADJ) },
-        { "Genus", species::name(species, species::SPNAME_GENUS) },
-        { "genus", lowercase_string(species::name(species, species::SPNAME_GENUS)) },
-        { "Genus_Short", species == SP_DEMIGOD ? "God" :
-                           species::name(species, species::SPNAME_GENUS) },
-        // Chinese titles use a complete noun rather than appending
-        // the English agent suffix to the walking verb.
-        { "Walker", Options.language == lang_t::ZH
-                        ? C_("skill title walker", "Walker")
-                                                   : species::walking_title(species) + "er" },
-        { "Weight", _stk_weight(species) },
-    };
-
-    return replace_keys(result, replacements);
+    return _render_skill_title(result.c_str(), species);
 }
+
+static string _title_with_article(const string& title, bool the);
 
 /** What is the player's current title.
  *
@@ -2418,12 +2443,147 @@ string player_title(bool the)
     const skill_type best = best_skill(SK_FIRST_SKILL, SK_LAST_SKILL);
     const string title =
             skill_title_by_rank(best, get_skill_rank(you.skills[best]));
+    return _title_with_article(title, the);
+}
+
+// Article form used by saved titles ("the Fencer", La Petite Mort, ...).
+static string _title_with_article(const string& title, bool the)
+{
     const string article = !the ? ""
         : Options.language == lang_t::ZH ? ""
         : title == "Petite Mort" ? C_("title article", "La ")
         : title == "Who Hides the Stars" ? C_("title article", ", ")
         : C_("title article", "the ");
     return article + title;
+}
+
+// Special (species/god/conduct-specific) titles produced by
+// skill_title_by_rank(). Listed so saved ghost titles can be mapped back to
+// the current display language; plain N_ keys because the consumer calls
+// _render_skill_title() -> T_() with no context.
+static const char* const special_title_templates[] =
+{
+    N_("Abyssopelagic"),
+    N_("Ascendant"),
+    N_("Black Lotus"),
+    N_("Blademaster"),
+    N_("Blood Saint"),
+    N_("Brimstone Smiter"),
+    N_("Cobgoblin"),
+    N_("Cogmind"),
+    N_("Corpseflower"),
+    N_("Crusher"),
+    N_("Danse Macabre"),
+    N_("Death Knight"),
+    N_("Defender"),
+    N_("Demonologist"),
+    N_("Faerie Dragon"),
+    N_("Fire Dragon"),
+    N_("Fire Storm"),
+    N_("Forbidden One"),
+    N_("Frogwright"),
+    N_("God-Hated"),
+    N_("Hell Knight"),
+    N_("Hellbinder"),
+    N_("Herculean"),
+    N_("Highly Combustible"),
+    N_("Holy Roller"),
+    N_("Ice Dragon"),
+    N_("Iron Dragon"),
+    N_("Iron Golem"),
+    N_("Iron Troll"),
+    N_("Kraken"),
+    N_("Laughing Skull"),
+    N_("Leviathan"),
+    N_("Marid"),
+    N_("Master Archer"),
+    N_("Molten"),
+    N_("Necrodancer"),
+    N_("Necromech"),
+    N_("Nightshade"),
+    N_("Pearl Dragon"),
+    N_("Petite Mort"),
+    N_("Pharaoh"),
+    N_("Polar Vortex"),
+    N_("Polterguardian"),
+    N_("Prickly Pangolin"),
+    N_("Rockslime"),
+    N_("Rolling Thunder"),
+    N_("Royal Mummy"),
+    N_("Siren"),
+    N_("Smokeless Flame"),
+    N_("Spatial Maelstrom"),
+    N_("Storm Dragon"),
+    N_("Swamp Dragon"),
+    N_("Swordfish"),
+    N_("Teletunneler"),
+    N_("Thief of Divinity"),
+    N_("Titancaster"),
+    N_("Twister"),
+    N_("Undying Armoury"),
+    N_("Wallbreaker"),
+    N_("Weightless Champion"),
+    N_("Wishgranter"),
+    N_("Yokozuna"),
+    // Conduct titles returned by special_conduct_title() (not via the
+    // result=... table above).
+    N_("Flawless"),
+    N_("True Ascetic"),
+    N_("Incurious"),
+    N_("Ruthless"),
+    N_("Miser"),
+    N_("Chaos Fanatic"),
+    N_("Keeper of the Flame"),
+    N_("Pinnacle of Evolution"),
+};
+
+string translated_ghost_title(const string& saved_title, species_type species)
+{
+    // EN and unknown historical/ZH snapshots remain byte-for-byte unchanged.
+    // Never run arbitrary saved strings through the general translation DB.
+    if (Options.language != lang_t::ZH || saved_title.empty())
+        return saved_title;
+
+    set<string> matches;
+    const auto consider = [&](const string& english, const string& translated)
+    {
+        string canonical;
+        {
+            const ScopedLangEn protocol_language;
+            canonical = _title_with_article(english, true);
+        }
+        if (saved_title == english || saved_title == canonical)
+            matches.insert(translated);
+    };
+    const auto consider_skill = [&](const char* key)
+    {
+        if (!key || !*key)
+            return;
+        string english;
+        {
+            const ScopedLangEn protocol_language;
+            english = _render_skill_title(key, species);
+        }
+        consider(english, _render_skill_title(key, species));
+    };
+
+    for (const auto& titles : skill_titles)
+        for (int rank = 1; rank <= 5; ++rank)
+            consider_skill(titles[rank]);
+    for (int rank = 1; rank <= 5; ++rank)
+    {
+        consider_skill(martial_arts_titles[rank]);
+        consider_skill(claw_and_tooth_titles[rank]);
+    }
+    for (const char* key : special_title_templates)
+        consider_skill(key);
+    consider("Adventurer", T_("Adventurer"));
+    for (const auto& title : god_title_translation_pairs(species))
+        consider(title.first, title.second);
+
+    // Different contexts can share an English spelling. Do not guess which
+    // title was saved if their current translations disagree.
+    return matches.size() == 1 ? *matches.begin() : saved_title;
 }
 
 skill_type best_skill(skill_type min_skill, skill_type max_skill,

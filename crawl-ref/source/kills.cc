@@ -36,6 +36,8 @@ static void kill_lua_filltable(vector<kill_exp> &v);
 // KillMaster
 //
 
+// Identity strings handed to Lua (kills.lua renders them with crawl.t_());
+// never translate in a namespace-static initializer.
 static const char *kill_category_names[] =
 {
     "you",
@@ -155,7 +157,7 @@ string KillMaster::kill_info() const
     {
         char buf[200];
         snprintf(buf, sizeof buf,
-                "Grand Total: %d creatures vanquished",
+                T_("Grand Total: %d creatures vanquished"),
                 grandtotal);
         grandt = buf;
     }
@@ -211,9 +213,10 @@ void KillMaster::add_kill_info(string &killtext,
         if (separator)
             killtext += "\n";
 
-        killtext += T_("Vanquished Creatures");
-        if (category)
-            killtext += string(" (") + category + ")";
+        const string title = T_("Vanquished Creatures");
+        killtext += category
+            ? make_stringf(T_("%s (%s)"), title.c_str(), T_(category))
+            : title;
 
         killtext += "\n";
 
@@ -951,8 +954,9 @@ static int kill_lualc_summary(lua_State *ls)
     *buf = 0;
     if (count)
     {
-        snprintf(buf, sizeof buf, "%u creature%s vanquished.",
-                count, count > 1? "s" : "");
+        snprintf(buf, sizeof buf, count > 1
+                ? T_("%u creatures vanquished.")
+                : T_("%u creature vanquished."), count);
     }
     lua_pushstring(ls, buf);
     return 1;

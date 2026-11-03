@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "god-wrath.h"
 
 #include <cmath>
 #include <algorithm>
@@ -38,11 +39,13 @@
 #include "god-conduct.h"
 #include "god-item.h"
 #include "god-passive.h"
+#include "god-wrath.h"
 #include "item-name.h"
 #include "item-prop.h"
 #include "item-status-flag-type.h"
 #include "items.h"
 #include "libutil.h"
+#include "lang-en-guard.h"
 #include "positional_format.h"
 #include "makeitem.h"
 #include "message.h"
@@ -2542,13 +2545,13 @@ string monster::arm_name(bool plural, bool *can_plural) const
 string monster::blood_name() const
 {
     if (has_blood())
-        return "blood";
+        return N_("blood");
 
     mon_holy_type holi = holiness();
     if (holi & (MH_DEMONIC | MH_HOLY))
-        return "ichor";
+        return N_("ichor");
     else if (holi & MH_PLANT && mons_genus(type) != MONS_FUNGUS)
-        return "sap";
+        return N_("sap");
     // XXX: Not bothering to fill this out, since it's currently never called.
     else if (holi & (MH_NONLIVING | MH_UNDEAD))
         return "???";
@@ -2562,11 +2565,11 @@ string monster::blood_name() const
         case MON_SHAPE_ARACHNID:
         case MON_SHAPE_SNAIL:
         case MON_SHAPE_SNAKE:   // Worms; real snakes have actual blood.
-            return "haemolymph";
+            return N_("haemolymph");
 
         case MON_SHAPE_ORB:
             if (mons_genus(type) == MONS_FLOATING_EYE)
-                return "vitreous fluid";
+                return N_("vitreous fluid");
             break;
 
         default:
@@ -2574,7 +2577,7 @@ string monster::blood_name() const
     }
 
     // Generic fallback
-    return "vital fluids";
+    return N_("vital fluids");
 }
 
 int monster::mindex() const
@@ -4197,7 +4200,11 @@ bool monster::corrode(const actor* source, const char* corrosion_msg, int amount
     if (you.see_cell(pos()))
     {
         if (!has_ench(ENCH_CORROSION))
-            mprf(T_("%s corrodes %s!"), T_(corrosion_msg), name(DESC_THE).c_str());
+        {
+            mprf(T_("%s corrodes %s!"),
+                 T_(god_wrath_display_name(corrosion_msg).c_str()),
+                 name(DESC_THE).c_str());
+        }
         else
             mprf(T_("%s seems to be corroded for longer."), name(DESC_THE).c_str());
     }
@@ -5500,7 +5507,7 @@ void monster::finalise_movement(const actor* to_blame)
             if (you.can_see(*this))
             {
                 mprf(T_("%s dives back into the %s!"), name(DESC_THE).c_str(),
-                                                   feat_type_name(env.grid(pos())));
+                                                   feature_description(env.grid(pos()), NUM_TRAPS, "", DESC_PLAIN).c_str());
             }
             del_ench(ENCH_AQUATIC_LAND);
         }
@@ -5841,7 +5848,7 @@ bool monster::floodify(const actor* attacker, int duration, const char* substanc
         // something that can be called lungs.
         const bool has_lungs = get_mon_shape(*this) < MON_SHAPE_INSECT;
         mprf(T_("%s floods into %s %s!"),
-                substance, name(DESC_ITS).c_str(),
+                C_("flood substance", substance), name(DESC_ITS).c_str(),
                 has_lungs ? (T_("lungs")) : (T_("airways")));
     }
 
@@ -5980,7 +5987,7 @@ void monster::react_to_damage(const actor *oppressor, int damage,
             // so need to cast off its constness
             schedule_shock_discharge_fineff(this,
                                             const_cast<actor&>(*oppressor),
-                                            pos(), pow, "electric aura");
+                                            pos(), pow, NC_("shock discharge source", "electric aura"));
         }
     }
 
@@ -6377,10 +6384,13 @@ void monster::steal_item_from_player()
              stolen_amount,
              stolen_amount != 1 ? "s" : "");
 
-        const string what = make_stringf(T_("%s stole %d gold"),
-                                        uppercase_first(name(DESC_A)).c_str(),
-                                        stolen_amount);
-        take_note(Note(NOTE_MESSAGE, 0, 0, what), true);
+        string what;
+        {
+            ScopedLangEn canonical_language;
+            what = make_stringf("%s stole %d gold", uppercase_first(name(DESC_A)).c_str(),
+                                stolen_amount);
+        }
+        take_note(Note(NOTE_MESSAGE, stolen_amount, 0, what, "gold theft"), true);
 
         you.attribute[ATTR_GOLD_FOUND] -= stolen_amount;
 
@@ -6428,25 +6438,26 @@ item_def* monster::take_item(int steal_what, mon_inv_type mslot,
     // If the item was stolen, randomize quantity
     if (is_stolen)
     {
-        const int stolen_amount = 1 + random2(new_item.quantity);
-        if (stolen_amount < new_item.quantity)
+        const int original_amount = new_item.quantity;
+        const int stolen_amount = 1 + random2(original_amount);
+        new_item.quantity = stolen_amount;
+        if (stolen_amount < original_amount)
         {
-            mprf(T_("%s steals %d of %s!"),
-                 name(DESC_THE).c_str(),
-                 stolen_amount,
-                 new_item.name(DESC_YOUR).c_str());
+            mprf(T_("%s steals %s from you!"),
+                 name(DESC_THE).c_str(), new_item.name(DESC_A).c_str());
         }
         else
         {
-            mprf(T_("%s steals %s!"),
-                 name(DESC_THE).c_str(),
+            mprf(T_("%s steals %s!"), name(DESC_THE).c_str(),
                  new_item.name(DESC_YOUR).c_str());
         }
-        const string what = make_stringf(T_("%s stole %s"),
-                                        uppercase_first(name(DESC_A)).c_str(),
-                                        new_item.name(DESC_A).c_str());
-        take_note(Note(NOTE_MESSAGE, 0, 0, what), true);
-        new_item.quantity = stolen_amount;
+        string what;
+        {
+            ScopedLangEn canonical_language;
+            what = make_stringf("%s stole %s", uppercase_first(name(DESC_A)).c_str(),
+                                new_item.name(DESC_A).c_str());
+        }
+        take_note(Note(NOTE_MESSAGE, 0, 0, what, "item theft"), true);
     }
 
     // Drop the item already in the slot (including the shield

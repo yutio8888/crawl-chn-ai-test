@@ -3924,6 +3924,31 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 - **先祖**：稳定版 `monster::pronoun` 与 `monster_info::pronoun` 直接使用存储的性别，没有 trunk 的 ZH 中性先祖转 GENDER_NEUTER 映射，无需移除。
 - **历史注释**：`mon-cast.cc::_localized_zh_actor_possessive_pronoun` 保留的旧注释所述“中文代词表使用复数、非 unique 中性人物可能为复数”已不适用；当前中性来源均为单体，`pronoun_plurality()` 的 true 表示英文 singular-they 的一致关系，不代表多个对象。
 
+### D-C-101 — 学派全称与法术列表简称统一（2026-11-01，回补 trunk 已审裁决）
+
+- **Status**: active
+- **Source**: 复用 trunk 已审定的 D-C-101（用户确认全称统一为“××系”、法术列表使用两字简称），按稳定实际存在的实体迁移。
+- **裁决**：现行学派及对应技能统一为咒法系、诅咒系、召唤系、死灵系、传送系、锻造系、火焰系、寒冰系、空气系、大地系、炼金系。法术列表复用既有两字简称（咒法／诅咒／召唤／死灵／传送／锻造／火焰／寒冰／空气／大地／炼金）；法术详情仍用全称。此项更新 D-C-001 对相关技能的旧译法。
+- **实现边界**：只改稳定实际存在的学派显示键——`source.txt` 的学派名与相关消息、`dat/descript/zh/{skills,mutations,items}.txt` 中的同类表述。稳定没有 `spell school` 或法术详情防御／抗性的独立上下文键，故不迁移 trunk 的上下键、不新增无消费者条目。
+- **例外（不做机械替换）**：`Poison Magic → 毒素魔法`（已移除学派）、`Shapeshifting → 变形术`（非学派技能）、`book full name|Necromancy → 死灵术`（书名上下文键）、法杖类型名、职业名与泛指魔法技艺的叙述。
+- **不变量**：英文查询键、Lua 比较值、枚举与存档身份保持英文；只翻译显示端。
+
+### D-C-102 — 能力与变异名称的机制消歧（2026-11-01，稳定适用范围收窄）
+
+- **Status**: active
+- **Source**: 复用 trunk D-C-102 中适用于稳定既有实体的两条裁决；trunk 的能力/变异新名称不迁移。
+- **裁决**：`unskilled` 用“资质欠佳”，表示技能资质降低而非没有技能；`persistent drain` 用“持久衰竭”，指通过经验恢复生命值上限衰竭的速度减慢，不改变常规生命回复速度。
+- **范围**：只适用于这两个独立名称及其直接说明；不机械替换一般生命、技能或衰竭文本。
+
+### D-C-103 — 四个地狱领域的跨界面专名统一（2026-11-01，回补 trunk 已审裁决）
+
+- **Status**: active
+- **Source**: 复用 trunk 已审定的 D-C-103，覆盖稳定实际存在的实体：四个地狱领域名、迪斯城市名、地狱巨蛇与吐息、毁灭能力与变异、出入口、领主称号与具名台词。
+- **裁决**：`Gehenna → 欣嫩谷`、`Cocytus → 悲叹河`、`Tartarus → 塔尔塔罗斯`、`Dis → 迪斯`；`the Iron City of Dis → 迪斯铁城`，单独出现的 `Iron City → 铁城`。分支、出入口、巨蛇与吐息、毁灭能力／变异共用同一词根，替代 D-C-018 的“铁城”限定根（共同基础名仍是地狱巨蛇）。
+- **描述保真**：地名不代替地貌与力量说明；灰烬谷地、极寒荒原、腐朽冥界，以及烈火、寒冰、哀叹各自保留。
+- **精确例外**：`dat/descript/zh/quotes.txt` 中 `cacodemon` 的“科塞特斯河”与 `titan` 的“塔耳塔罗斯”保留文学语境；`Dispater` 指人物，作“迪斯帕特”，不加城市词根，其头衔“铁城领主”按 `Iron City → 铁城` 保留。
+- **实现边界**：英文 TextDB 查询键、Lua 比较值、枚举、地图身份与存档内容保持英文；只翻译显示端。通用 Hell/Hells 与同形假命中不机械替换。
+
 ---
 
 ## Quick Reference: All Decision IDs
@@ -4075,3 +4100,6 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-098 | Issue #147 stable shared status-label exceptions | Barbs → 尖刺；ambrosia-drunk → 仙酒醉 | active |
 | D-B-023 | lance / Wyrmbane | 骑枪 / 屠龙者；spear 保留长矛 | active |
 | D-C-100 | GENDER_NEUTRAL singular pronouns | 他 / 他的 / 他自己 / 他；EN 与存档不变 | active |
+| D-C-101 | Spell school display names | 全称统一为系；法术列表两字简称；例外保留 | active |
+| D-C-102 | Ability/mutation semantic names (stable subset) | 资质欠佳；持久衰竭 | active |
+| D-C-103 | Four Hell domain names | 欣嫩谷／悲叹河／塔尔塔罗斯／迪斯；迪斯铁城；文学例外 | active |

@@ -139,7 +139,10 @@ function ch_stash_search_annotate_item(it)
       ["shadow"] = "Stlth+",
       ["golden"] = "rF+ rC+ rPois"
     }
-    local t = it.name("base"):match("%a+")
+    -- The hide subtype is a canonical English identity (``name("base")`` is
+    -- translated), so match the English form before the annotation lookup.
+    local subtype = it.subtype_en(false)
+    local t = subtype and subtype:match("%a+")
     if props[t] then
       annot = annot .. "{" .. props[t] .. "} "
     end

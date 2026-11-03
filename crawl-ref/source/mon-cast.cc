@@ -897,7 +897,7 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
                     mprf(T_("%s shreds %s%s"), caster.name(DESC_THE).c_str(),
                         victim->name(DESC_THE).c_str(),
                         final ? attack_strength_punctuation(final).c_str()
-                                : ", but does no damage.");
+                                : T_(", but does no damage."));
                 }
 
                 if (final)
@@ -1528,7 +1528,7 @@ static void _cast_beckoning_gale(monster &caster, mon_spell_slot, bolt&)
                 || (new_foe_pos != caster.pos() && actor_at(new_foe_pos))
                 || foe->is_player() && need_expiration_warning(new_foe_pos)
                 || foe->is_constricted()
-                || foe->resists_dislodge("being dragged"))
+                || foe->resists_dislodge(NC_("dislodge event", "being dragged")))
             {
                 continue;
             }
@@ -1797,9 +1797,7 @@ static void _cast_siphon_essence(monster &caster, mon_spell_slot, bolt&)
                  caster.name(DESC_THE).c_str());
         }
         else
-        {
             mpr(T_("Stolen life floods into an unseen void!"));
-        }
     }
 }
 
@@ -3155,8 +3153,9 @@ static bool _mons_awaken_flesh(const monster& caster, const int power,
 
     if (seen_affected > 0)
     {
-        mprf(T_("Chaos surges forth from %s of flesh, awakening new unlife!"),
-             seen_affected == 1 ? "the pile" : "piles");
+        mpr(seen_affected == 1
+            ? T_("Chaos surges forth from the pile of flesh, awakening new unlife!")
+            : T_("Chaos surges forth from piles of flesh, awakening new unlife!"));
     }
 
     for (monster* mon : affected)
@@ -4098,7 +4097,7 @@ static bool _awaken_vines(monster* mon, bool test_only = false)
 {
     if (_is_wiz_cast())
     {
-        mpr("Sorry, this spell isn't supported for dummies!"); //mons dummy
+        mpr(T_("Sorry, this spell isn't supported for dummies!")); //mons dummy
         return false;
     }
 
@@ -5047,10 +5046,10 @@ static bool _should_cast_spell(const monster &mons, spell_type spell,
 static string _ru_spell_stop_desc(monster &mons)
 {
     if (mons.is_actual_spellcaster())
-        return "cast a spell";
+        return N_("cast a spell");
     if (mons.is_priest())
-        return "pray";
-    return "attack";
+        return N_("pray");
+    return N_("attack");
 }
 
 /// What spells can the given monster currently use?
@@ -5268,7 +5267,7 @@ bool handle_mon_spell(monster* mons)
         {
             const string message
                 = make_stringf(T_(" begins to %s, but is stunned by your conviction!"),
-                               _ru_spell_stop_desc(*mons).c_str());
+                               T_(_ru_spell_stop_desc(*mons).c_str()));
             simple_monster_message(*mons, message.c_str(), false, MSGCH_GOD);
             mons->lose_energy(EUT_SPELL);
             return true;
@@ -6825,19 +6824,15 @@ static void _sheep_message(int num_sheep, int sleep_pow, bool seen, actor& foe)
 
     // Determine messaging based on sleep strength.
     if (sleep_pow >= 125)
-        message = "You are overwhelmed by glittering dream dust!";
+        message = T_("You are overwhelmed by glittering dream dust!");
     else if (sleep_pow >= 75)
-        message = "The dream sheep are wreathed in dream dust.";
+        message = T_("The dream sheep are wreathed in dream dust.");
     else if (sleep_pow >= MIN_DREAM_SUCCESS_POWER)
     {
         if (num_sheep == 1)
-        {
             message = T_("The dream sheep shakes its wool and sparkles.");
-        }
         else
-        {
             message = T_("The dream sheep shake their wool and sparkle.");
-        }
     }
     else // if sleep fails
     {
@@ -6885,16 +6880,16 @@ static void _sheep_message(int num_sheep, int sleep_pow, bool seen, actor& foe)
     const char* pluralize = num_sheep == 1 ? "s": "";
     if (sleep_pow)
     {
-        mprf(chan,
-             T_("As the sheep sparkle%s and sway%s, %s falls asleep."),
+        mprf_p(chan,
+             T_("As the sheep sparkle%1$s and sway%2$s, %3$s falls asleep."),
              pluralize,
              pluralize,
              foe_name.c_str());
         return;
     }
 
-    mprf(chan,
-         T_("The dream sheep attempt%s to lull %s to sleep."),
+    mprf_p(chan,
+         T_("The dream sheep attempt%1$s to lull %2$s to sleep."),
          pluralize,
          foe_name.c_str());
     mprf(T_("%s is unaffected."), foe_name.c_str());
@@ -7054,10 +7049,9 @@ static void _mons_vortex(monster *mons)
     if (you.can_see(*mons))
     {
         bool flying = mons->airborne();
-        mprf(T_("A freezing vortex appears %s%s%s!"),
-             flying ? "around " : "and lifts ",
-             mons->name(DESC_THE).c_str(),
-             flying ? "" : " up!");
+        mprf(flying ? T_("A freezing vortex appears around %s!")
+                    : T_("A freezing vortex appears and lifts %s up!"),
+             mons->name(DESC_THE).c_str());
     }
     else if (you.see_cell(mons->pos()))
         mpr(T_("A freezing vortex appears from out of thin air!"));
@@ -7467,7 +7461,7 @@ static bool _cast_dominate_undead(const monster& caster, int pow, bool check_onl
             {
                 const string msg = make_stringf(T_("lash out against %s attempt to control you!"),
                                                 caster.name(DESC_ITS).c_str());
-                you.vex(&caster, random_range(3, 5), caster.name(DESC_A).c_str(), msg);
+                you.vex(&caster, random_range(3, 5), "", msg);
             }
         }
     }
@@ -7667,7 +7661,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         if (you.can_see(*foe))
         {
                 mprf(T_("The water %s and strikes %s%s"),
-                        foe->airborne() ? "rises up" : "swirls",
+                        foe->airborne() ? T_("rises up") : T_("swirls"),
                         foe->name(DESC_THE).c_str(),
                         attack_strength_punctuation(damage_taken).c_str());
         }
@@ -7703,7 +7697,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
             mprf(T_("%s and strikes %s%s%s"),
                  airstrike_intensity_display(empty_space, tile).c_str(),
                  foe->name(DESC_THE).c_str(),
-                 spell_cast == SPELL_SLEETSTRIKE ? " with frigid sleet" : "",
+                 spell_cast == SPELL_SLEETSTRIKE ? T_(" with frigid sleet") : "",
                  attack_strength_punctuation(damage_taken).c_str());
 
             flash_tile(foe->pos(), WHITE, 60, tile);
@@ -8658,7 +8652,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         const coord_def targ = pbolt.target;
         _fire_simple_beam(*mons, slot, pbolt);
         if (mons->alive())
-            mons->stumble_away_from(targ, "the blast");
+            mons->stumble_away_from(targ, N_("the blast"));
         return;
     }
 
@@ -9172,8 +9166,10 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
         bindings.actor.god_indefinite_en = english_god.indefinite_display;
         bindings.actor.reflexive_en = mon.pronoun(PRONOUN_REFLEXIVE);
         if (requirements.resolves_target)
+        {
             bindings.target.canonical_en =
                 _canonical_target_display(target, mon);
+        }
         if (requirements.needs_foe && foe)
         {
             bindings.foe.canonical_en = _overlay_foe_display(*foe);
@@ -9336,15 +9332,69 @@ resolved_monspell_cast_message resolve_monspell_cast_message(
     return result;
 }
 
+// Complete Chinese direction phrases for the legacy '@at@ <marker>' and
+// '@projectile_target@' bindings. Only used for ZH: the English path keeps
+// its existing preposition + marker expansion.
+static string _legacy_zh_target_phrase(const string &target,
+                                       speech_target_relation relation,
+                                       bool projectile)
+{
+    // Literal contexts so the key extractor can associate every catalog key.
+    switch (relation)
+    {
+    case speech_target_relation::AT:
+        return projectile
+            ? make_stringf(C_("monspell raw projectile target", "at %s"),
+                           target.c_str())
+            : make_stringf(C_("monspell raw direction", "at %s"),
+                           target.c_str());
+    case speech_target_relation::NEXT_TO:
+        return projectile
+            ? make_stringf(C_("monspell raw projectile target", "next to %s"),
+                           target.c_str())
+            : make_stringf(C_("monspell raw direction", "next to %s"),
+                           target.c_str());
+    case speech_target_relation::PAST:
+        return projectile
+            ? make_stringf(C_("monspell raw projectile target", "past %s"),
+                           target.c_str())
+            : make_stringf(C_("monspell raw direction", "past %s"),
+                           target.c_str());
+    }
+    return target;
+}
+
 static void _speech_fill_target(string& targ_prep, string& target,
                                 const monster* mons, const bolt& pbolt,
                                 bool gestured,
-                                const speech_target_observer *observer)
+                                const speech_target_observer *observer,
+                                string *zh_compatibility_message)
 {
     const resolved_speech_target resolved =
         resolve_speech_target(mons, pbolt, gestured, observer);
     targ_prep = resolved.preposition_display;
     target = resolved.display;
+    if (zh_compatibility_message)
+    {
+        // Bind complete direction phrases before the ordinary individual
+        // tokens. The foe marker belongs to mons_speaks_msg, not the beam
+        // target: keep it intact until that existing consumer resolves it.
+        for (const string &marker : { string("@target@"), string("@foe@") })
+        {
+            const string phrase = _legacy_zh_target_phrase(
+                marker == "@target@" ? target : marker,
+                resolved.relation, false);
+            for (const string &separator : { string(""), string(" ") })
+            {
+                *zh_compatibility_message = replace_all(
+                    *zh_compatibility_message, "@at@" + separator + marker,
+                    phrase);
+            }
+        }
+        *zh_compatibility_message = replace_all(
+            *zh_compatibility_message, "@projectile_target@",
+            _legacy_zh_target_phrase(target, resolved.relation, true));
+    }
 }
 
 static bool _legacy_message_implies_gesture(const string &message)
@@ -9448,7 +9498,8 @@ void mons_cast_noise(monster* mons, const bolt &pbolt,
         {
             _speech_fill_target(targ_prep, target, mons, pbolt, gestured,
                                 diagnostics
-                                    ? diagnostics->target_observer : nullptr);
+                                    ? diagnostics->target_observer : nullptr,
+                                Options.language == lang_t::ZH ? &msg : nullptr);
         }
 
         msg = replace_all(msg, "@at@",     targ_prep);
@@ -9672,9 +9723,13 @@ static void _throw_ally_to(const monster &thrower, monster &throwee,
 
     throwee.move_to(chosen_dest, MV_DEFAULT, true);
 
-    const string killed_by = make_stringf_p(T_("Hit by %s thrown by %s"),
-                                          throwee.name(DESC_A, true).c_str(),
-                                          thrower.name(DESC_PLAIN, true).c_str());
+    string killed_by;
+    {
+        ScopedLangEn canonical_language;
+        killed_by = make_stringf("Hit by %s thrown by %s",
+                                throwee.name(DESC_A, true).c_str(),
+                                thrower.name(DESC_PLAIN, true).c_str());
+    }
     const int dam = foe->apply_ac(random2(thrower.get_hit_dice() * 2));
     foe->hurt(&thrower, dam, BEAM_NONE, KILLED_BY_BEAM, "", killed_by, true);
     _whack(thrower, *foe);

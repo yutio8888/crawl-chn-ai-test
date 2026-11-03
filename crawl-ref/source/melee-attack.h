@@ -201,6 +201,8 @@ private:
     bool apply_staff_damage();
     void player_stab_check() override;
     bool player_good_stab() override;
+    // Display-only Chinese phrase for body actions with an object; empty for EN.
+    string mons_body_attack_phrase(const string& verb);
     void player_announce_aux_hit(unarmed_attack_type atk);
     string charge_desc();
     string weapon_desc();

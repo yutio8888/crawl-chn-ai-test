@@ -42,7 +42,7 @@ string god_prayer_reaction()
         (rank == 2) ? T_("aware of your devotion")
                     : T_("noncommittal");
 
-    // Chinese does not need a copula here.  Keep the full sentence in one
+    // Chinese does not need a copula here. Keep the full sentence in one
     // translatable template so a translated character dump never displays
     // the English "is" or "was" between the deity and its reaction.
     return make_stringf(crawl_state.player_is_dead()
@@ -60,7 +60,9 @@ static bool _prompt_ecu_worship(const vector<god_type> &gods)
                                              god_name(gods[i]).c_str()));
     }
     const string god_names = comma_separated_line(god_name_list.begin(),
-                                                  god_name_list.end(), " or ");
+                                                  god_name_list.end(),
+                                                  C_("god choice list", " or "),
+                                                  C_("god choice list", ", "));
     // This should be a proper menu, but I absolutely cannot be bothered with
     // webtiles menu code.
     mprf(MSGCH_PROMPT, "%s",

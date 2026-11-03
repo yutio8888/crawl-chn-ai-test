@@ -886,12 +886,18 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
             "speech.legacy_behavior_compatibility\n"
             "            && _legacy_message_implies_gesture(msg)",
             source)
+        # The call keeps the original observer/compatibility arguments and adds
+        # the ZH-only compatibility message sink as the last parameter.
         self.assertIn(
             "_speech_fill_target(targ_prep, target, mons, pbolt, gestured,\n"
             "                                diagnostics\n"
             "                                    ? diagnostics->target_observer"
-            " : nullptr);",
+            " : nullptr,\n"
+            "                                Options.language == lang_t::ZH"
+            " ? &msg : nullptr);",
             source)
+        self.assertIn("Options.language == lang_t::ZH ? &msg : nullptr", source)
+        self.assertIn("speech.legacy_behavior_compatibility", source)
 
 
 if __name__ == "__main__":

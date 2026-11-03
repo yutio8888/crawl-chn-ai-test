@@ -14,7 +14,8 @@ define(["jquery", "comm", "linkify"], function ($, comm, linkify) {
     {
         delete data["msg"];
         $.extend(spectators, data);
-        $("#spectator_count").html(data.count + " spectators");
+        // Spectator counts are shell text, not game text: translate here.
+        $("#spectator_count").text(`观众 ${data.count} 人`);
         $("#spectator_list").html(data.names);
         $(document).trigger("spectators_changed", [spectators]);
     }
@@ -51,8 +52,8 @@ define(["jquery", "comm", "linkify"], function ($, comm, linkify) {
 
     function update_message_count()
     {
-        var press_key = new_message_count > 0 ? " (Press F12)" : "";
-        $("#message_count").html(new_message_count + " new messages" + press_key);
+        var press_key = new_message_count > 0 ? "（按 F12）" : "";
+        $("#message_count").text(new_message_count + " 条新消息" + press_key);
         $("#message_count").toggleClass("has_new", new_message_count > 0);
     }
 
@@ -131,7 +132,7 @@ define(["jquery", "comm", "linkify"], function ($, comm, linkify) {
             $("#chat_body").slideDown(200);
             new_message_count = 0;
             update_message_count();
-            $("#message_count").html("(Esc: close)");
+            $("#message_count").text("（按 Esc 关闭聊天）");
             $('#chat_history_container').scrollTop($('#chat_history_container')[0].scrollHeight);
         }
         else
@@ -205,7 +206,7 @@ define(["jquery", "comm", "linkify"], function ($, comm, linkify) {
     {
         $("#spectator_list").html("&nbsp;");
         $("#chat_history").html("");
-        $("#spectator_count").html("0 spectators");
+        $("#spectator_count").text("观众 0 人");
         new_message_count = 0;
         update_message_count();
         $("#chat_body").slideUp(200);

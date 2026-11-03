@@ -89,6 +89,31 @@ class CharacterMechanicsInventoryAuditTest(unittest.TestCase):
             MODULE.cpp_strings(row),
         )
 
+    def test_monster_flag_display_forms_have_explicit_reachability(self):
+        # Reachability is a property of the consumers in mon-info.cc, not of
+        # the label row. A plural that the monster-list pane really renders
+        # must not be recorded as "unreachable".
+        source = (MODULE.SRC / "mon-info.cc").read_text(encoding="utf-8")
+        condition = source.split("static string _condition_string(", 1)[1]
+        condition = condition.split("\n}", 1)[0]
+        self.assertIn("(1 == num) ? name.short_singular : name.plural",
+                      condition)
+        self.assertIn('C_("flag short", word.c_str())', condition)
+        attributes = source.split("vector<string> monster_info::attributes()", 1)[1]
+        attributes = attributes.split("\n}", 1)[0]
+        self.assertIn('C_("flag long", name.long_singular.c_str())', attributes)
+
+        tool = (MODULE.ROOT / ".claude/scripts/"
+                "audit_character_mechanics_inventory.py").read_text(encoding="utf-8")
+        row_block = tool.split("def monster_status_flag_rows(db):", 1)[1]
+        row_block = row_block.split("\n@audit_snapshot_invocation", 1)[0]
+        self.assertIn('"role": "short_singular"', row_block)
+        self.assertIn("grouped count of affected monsters == 1", row_block)
+        self.assertIn('"role": "long_singular"', row_block)
+        self.assertIn("monster_info::attributes", row_block)
+        self.assertIn('"role": "plural"', row_block)
+        self.assertIn("grouped count of affected monsters >= 2", row_block)
+
     def test_context_translation_uses_runtime_fallback(self):
         contextual = MODULE.translation(
             {"mutation|clever": "聪慧", "plain": "普通"},

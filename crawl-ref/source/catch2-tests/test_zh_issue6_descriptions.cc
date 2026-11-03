@@ -43,10 +43,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     // Exercise the real description producer, including pronouns, list
     // assembly, and newlines, rather than only looking up individual keys.
     const string jelly = issue6_monster_description(MONS_ROYAL_JELLY);
-    CHECK(jelly.find("受伤或死亡时会释放多种史莱姆，"
+    CHECK(jelly.find("受伤或死亡时会释放多种果冻怪，"
                     "数量与受到的伤害成正比。\n") != string::npos);
-    CHECK(jelly.find("被变形时会释放所有史莱姆。\n") != string::npos);
-    CHECK(jelly.find("近战攻击时会额外造成1d5点酸伤害。\n")
+    CHECK(jelly.find("被变形时会释放所有果冻怪。\n") != string::npos);
+    CHECK(jelly.find("被近战击中时会造成1d5点酸伤害。\n")
           != string::npos);
     CHECK(jelly.find("是无定形的，免疫缠绕。\n") != string::npos);
 
@@ -114,7 +114,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                          "Despite %s appearance, it can open doors.\n"), "P")
           == "尽管外表P，但它能开门。\n");
     CHECK(make_stringf(C_("attack prompt", "fire in %s direction"), "M")
-          == "向M的方向");
+          == "朝M的方向射击");
     CHECK(string(C_("attack prompt", "your ally ")) == "你的盟友");
     CHECK(string(C_("attack prompt", "your "))
           + C_("attack prompt", "ally ") == "你的盟友");
@@ -127,10 +127,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
           == "  [<w>J</w>/<w>回车</w>]: 皈依");
     CHECK(make_stringf(T_("%s suddenly %s%s!"), "M",
                        C_("xom enchantment", "starts "), "E")
-          == "M突然开始了E！");
+          == "M突然开始E！");
     CHECK(make_stringf(T_("%s suddenly %s%s!"), "M",
                        C_("xom enchantment", "looks "), "E")
-          == "M突然看起来了E！");
+          == "M突然看起来E！");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

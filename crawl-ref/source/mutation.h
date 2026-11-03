@@ -72,6 +72,9 @@ bool delete_mutation(mutation_type which_mutation, const string &reason,
 bool delete_all_mutations(const string &reason);
 
 const char* mutation_name(mutation_type mut, bool allow_category = false);
+// Canonical English definition name. Identity/xlog/death-cause consumers use
+// this; display consumers keep using mutation_name().
+const char* mutation_name_en(mutation_type mut, bool allow_category = false);
 const char* category_mutation_name(mutation_type mut);
 mutation_type mutation_from_name(string name, bool allow_category, vector<mutation_type> *partial_matches = nullptr);
 mutation_type concretize_mut(mutation_type mut, mutation_permanence_class mutclass = MUTCLASS_NORMAL);
@@ -108,7 +111,8 @@ bane_type bane_from_name(string name, vector<bane_type> *partial_matches = nullp
 bool add_bane(bane_type bane = NUM_BANES, string reason = "Doom",
               int duration = 0, int mult = 100);
 void remove_bane(bane_type bane);
-int xl_to_remove_bane(bane_type bane, int mult = 100);
+int xl_to_remove_bane(bane_type bane, int mult = 100,
+                      bool include_new = false);
 
 bool skill_has_dilettante_penalty(skill_type skill);
 

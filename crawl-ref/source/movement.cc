@@ -41,6 +41,7 @@
 #include "nearby-danger.h"
 #include "player.h"
 #include "player-reacts.h"
+#include "positional_format.h"
 #include "prompt.h"
 #include "random.h"
 #include "religion.h"
@@ -127,7 +128,7 @@ static bool _cancel_barbed_move()
     if (you.duration[DUR_BARBS] && !you.props.exists(BARBS_MOVE_KEY)
         && !crawl_state.disables[DIS_CONFIRMATIONS])
     {
-        std::string prompt = "The barbs in your skin will harm you if you move.";
+        std::string prompt = T_("The barbs in your skin will harm you if you move.");
         prompt += T_(" Continue?");
         if (!yesno(prompt.c_str(), false, 'n'))
         {
@@ -169,21 +170,17 @@ void player_did_deliberate_movement()
 
 static bool _cancel_ice_move()
 {
-    vector<string> effects;
     if (i_feel_safe(false, true, true))
         return false;
 
-    if (you.duration[DUR_ICY_ARMOUR])
-        effects.push_back("icy armour");
-
-    if (you.duration[DUR_FROZEN_RAMPARTS])
-        effects.push_back("frozen ramparts");
-
-    if (!effects.empty())
+    const bool armour = you.duration[DUR_ICY_ARMOUR];
+    const bool ramparts = you.duration[DUR_FROZEN_RAMPARTS];
+    if (armour || ramparts)
     {
-        string prompt = "Your "
-                        + comma_separated_line(effects.begin(), effects.end())
-                        + " will break if you move. Continue?";
+        const string prompt = armour && ramparts
+            ? T_("Your icy armour and frozen ramparts will break if you move. Continue?")
+            : armour ? T_("Your icy armour will break if you move. Continue?")
+                     : T_("Your frozen ramparts will break if you move. Continue?");
 
         if (!yesno(prompt.c_str(), false, 'n'))
         {
@@ -300,25 +297,26 @@ bool cancel_confused_move(bool stationary)
 
     if (dangerous != DNGN_FLOOR || bad_mons)
     {
-        string prompt = "";
-        prompt += T_("Are you sure you want to ");
-        prompt += T_(!stationary ? "stumble around" : "swing wildly");
-        prompt += T_(" while confused and next to ");
-
+        string target;
+        string suffix;
         if (dangerous != DNGN_FLOOR)
         {
-            prompt += (dangerous == DNGN_LAVA ? "lava" : "deep water");
-            prompt += flight ? T_(" while you are losing your buoyancy")
-                             : T_(" while your transformation is expiring");
+            target = dangerous == DNGN_LAVA ? T_("lava") : T_("deep water");
+            suffix = flight ? T_(" while you are losing your buoyancy")
+                            : T_(" while your transformation is expiring");
         }
         else
         {
-            string name = remove_prepended_the(bad_mons->name(DESC_PLAIN));
-            if (!starts_with(bad_adj, "your"))
-               bad_adj = "the " + bad_adj;
-            prompt += bad_adj + name + bad_suff;
+            target = remove_prepended_the(bad_mons->name(DESC_PLAIN));
+            if (Options.language != lang_t::ZH && !starts_with(bad_adj, "your"))
+                bad_adj = "the " + bad_adj;
+            target = bad_adj + target;
+            suffix = bad_suff;
         }
-        prompt += "?";
+        string prompt = make_stringf_p(
+            T_("Are you sure you want to %1$s while confused and next to %2$s%3$s?"),
+            T_(!stationary ? "stumble around" : "swing wildly"),
+            target.c_str(), suffix.c_str());
 
         if (penance)
             prompt += T_(" This could place you under penance!");

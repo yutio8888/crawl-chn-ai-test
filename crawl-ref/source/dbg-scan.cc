@@ -552,7 +552,7 @@ void debug_mons_scan()
         const monster* mon = &env.mons[idx];
         vector<string> vaults = _in_vaults(mon->pos());
 
-        string str = make_stringf("Floating monster %s (%d, %d)",
+        string str = make_stringf(T_("Floating monster %s (%d, %d)"),
                                   mon->name(DESC_PLAIN, true).c_str(),
                                   mon->pos().x, mon->pos().y);
 
@@ -560,8 +560,9 @@ void debug_mons_scan()
             mprf(MSGCH_WARN, T_("%s not in any vaults."), str.c_str());
         else
         {
-            mpr_comma_separated_list(str + " in vault(s) ", vaults,
-                                     T_(" and "), ", ", MSGCH_WARN);
+            mpr_comma_separated_list(make_stringf(T_("%s in vault(s) "), str.c_str()), vaults,
+                                     C_("vault diagnostic list", " and "),
+                                     C_("vault diagnostic list", ", "), MSGCH_WARN);
         }
     }
 
@@ -573,7 +574,7 @@ void debug_mons_scan()
         const int       idx = bogus_idx[i];
         const monster* mon = &env.mons[idx];
 
-        string str = make_stringf("Bogus env.mgrid (%d, %d) pointing to %s", pos.x,
+        string str = make_stringf(T_("Bogus env.mgrid (%d, %d) pointing to %s"), pos.x,
                                   pos.y, mon->name(DESC_PLAIN, true).c_str());
 
         vector<string> vaults = _in_vaults(pos);
@@ -582,23 +583,25 @@ void debug_mons_scan()
             mprf(MSGCH_WARN, T_("%s not in any vaults."), str.c_str());
         else
         {
-            mpr_comma_separated_list(str + " in vault(s) ", vaults,
-                                     T_(" and "), ", ", MSGCH_WARN);
+            mpr_comma_separated_list(make_stringf(T_("%s in vault(s) "), str.c_str()), vaults,
+                                     C_("vault diagnostic list", " and "),
+                                     C_("vault diagnostic list", ", "), MSGCH_WARN);
         }
 
         // Don't report on same monster twice.
         if (is_floating[idx])
             continue;
 
-        str    = "Monster pointed to";
+        str    = T_("Monster pointed to");
         vaults = _in_vaults(mon->pos());
 
         if (vaults.empty())
             mprf(MSGCH_WARN, T_("%s not in any vaults."), str.c_str());
         else
         {
-            mpr_comma_separated_list(str + " in vault(s) ", vaults,
-                                     T_(" and "), ", ", MSGCH_WARN);
+            mpr_comma_separated_list(make_stringf(T_("%s in vault(s) "), str.c_str()), vaults,
+                                     C_("vault diagnostic list", " and "),
+                                     C_("vault diagnostic list", ", "), MSGCH_WARN);
         }
     }
 

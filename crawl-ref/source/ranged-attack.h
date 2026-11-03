@@ -62,6 +62,9 @@ private:
 
 private:
     string proj_name;
+    // Canonical English projectile identity. Persisted death/blink fields must
+    // use this; proj_name stays the display form.
+    string proj_name_en;
     bool teleport;
     bool _did_net;
 };

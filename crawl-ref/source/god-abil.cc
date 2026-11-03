@@ -6,6 +6,7 @@
 #include "AppHdr.h"
 
 #include "god-abil.h"
+#include "lang-en-guard.h"
 
 #include <cmath>
 #include <numeric>
@@ -76,6 +77,7 @@
 #include "ouch.h"
 #include "output.h"
 #include "place.h"
+#include "positional_format.h"
 #include "player.h"
 #include "player-equip.h"
 #include "player-stats.h"
@@ -135,18 +137,21 @@ bool can_do_capstone_ability(god_type god)
     return in_good_standing(god, pbreak) && !you.one_time_ability_used[god];
 }
 
+// NOTE_ID_ITEM's desc is a display snapshot taken when the note is created,
+// so it is a localized template, not a canonical identity. Keep the whole
+// sentence in one key per god and never concatenate a localized item name.
 static const char *_god_blessing_description(god_type god)
 {
     switch (god)
     {
     case GOD_SHINING_ONE:
-        return T_("blessed by the Shining One");
+        return T_("%s blessed by the Shining One");
     case GOD_LUGONU:
-        return "corrupted by Lugonu";
+        return T_("%s corrupted by Lugonu");
     case GOD_KIKUBAAQUDGHA:
-        return "bloodied by Kikubaaqudgha";
+        return T_("%s bloodied by Kikubaaqudgha");
     default:
-        return "touched by the gods";
+        return T_("%s touched by the gods");
     }
 }
 
@@ -163,7 +168,7 @@ bool bless_weapon(god_type god, brand_type brand, colour_t colour)
 {
     ASSERT(can_do_capstone_ability(god));
 
-    int item_slot = prompt_invent_item("Brand which weapon?",
+    int item_slot = prompt_invent_item(T_("Brand which weapon?"),
                                        menu_type::invlist,
                                        OSEL_BLESSABLE_WEAPON, OPER_ANY,
                                        invprompt_flag::escape_only);
@@ -182,14 +187,12 @@ bool bless_weapon(god_type god, brand_type brand, colour_t colour)
         return false;
     }
 
-    string what;
-    if (brand == SPWPN_PAIN)
-        what = T_("bloodied with pain");
-    else if (brand == SPWPN_DISTORTION)
-        what = T_("corrupted with distortion");
-    else
-        what = T_("blessed with holy wrath");
-    string prompt = make_stringf(T_("Do you wish to have %s %s?"), wpn.name(DESC_YOUR).c_str(), what.c_str());
+    const char* prompt_key = brand == SPWPN_PAIN
+        ? N_("Do you wish to have %s bloodied with pain?")
+        : brand == SPWPN_DISTORTION
+            ? N_("Do you wish to have %s corrupted with distortion?")
+            : N_("Do you wish to have %s blessed with holy wrath?");
+    const string prompt = make_stringf(T_(prompt_key), wpn.name(DESC_YOUR).c_str());
     if (!yesno(prompt.c_str(), true, 'n'))
     {
         canned_msg(MSG_OK);
@@ -217,7 +220,8 @@ bool bless_weapon(god_type god, brand_type brand, colour_t colour)
     calc_mp(); // in case the old brand was antimagic,
     you.redraw_armour_class = true; // protection,
     you.redraw_evasion = true;      // or evasion
-    const string desc = old_name + " " + _god_blessing_description(god);
+    const string desc = make_stringf(_god_blessing_description(god),
+                                     old_name.c_str());
     take_note(Note(NOTE_ID_ITEM, 0, 0, wpn.name(DESC_A), desc));
     wpn.flags |= ISFLAG_NOTED_ID;
     wpn.props[FORCED_ITEM_COLOUR_KEY] = colour;
@@ -271,7 +275,7 @@ bool zin_donate_gold()
         return false;
     }
 
-    if (!yesno(T_("Do you wish to donate half of your money?"), true, 'n'))
+    if (!yesno(T_("Do you wish to donate about half of your money?"), true, 'n'))
     {
         canned_msg(MSG_OK);
         return false;
@@ -601,11 +605,15 @@ string zin_recite_text(const int seed, const int prayertype, int step)
     }
     else
     {
-        const string bookname = (prayertype == RECITE_CHAOTIC)  ?  "Abominations" :
-                                (prayertype == RECITE_IMPURE)   ?  "Ablutions"    :
-                                (prayertype == RECITE_HERETIC)  ?  "Apostates"    :
-                                (prayertype == RECITE_UNHOLY)   ?  "Anathema"     :
-                                                                   "Bugginess";
+        const string bookname = (prayertype == RECITE_CHAOTIC)
+                                    ? C_("Zin recitation book", "Abominations")
+                                : (prayertype == RECITE_IMPURE)
+                                    ? C_("Zin recitation book", "Ablutions")
+                                : (prayertype == RECITE_HERETIC)
+                                    ? C_("Zin recitation book", "Apostates")
+                                : (prayertype == RECITE_UNHOLY)
+                                    ? C_("Zin recitation book", "Anathema")
+                                    : C_("Zin recitation book", "Bugginess");
         ostringstream out;
         out << bookname << ' ' << (chapter + 1) << ':' << (verse + 1);
         return out.str();
@@ -2207,6 +2215,11 @@ string curse_name(const CrawlStoreValue& c)
     return _ashenzari_curses[static_cast<curse_type>(c.get_int())].name;
 }
 
+string curse_display_name(const CrawlStoreValue& curse)
+{
+    return T_(curse_name(curse).c_str());
+}
+
 string curse_abbr(const CrawlStoreValue& curse)
 {
     const curse_data& c =
@@ -2231,7 +2244,7 @@ static string ashenzari_curse_knowledge_list()
     const CrawlVector& curses = you.props[CURSE_KNOWLEDGE_KEY].get_vector();
 
     return lowercase_string(comma_separated_fn(curses.begin(), curses.end(),
-                              curse_name));
+                              curse_display_name));
 }
 
 string desc_curse_skills(const CrawlStoreValue& curse)
@@ -2311,11 +2324,15 @@ void ashenzari_offer_new_curse()
     you.props[AVAILABLE_CURSE_KEY] = true;
     you.props[ASHENZARI_CURSE_PROGRESS_KEY] = 0;
     const string curse_names = ashenzari_curse_knowledge_list();
-    const string offer_string = curse_names.empty() ? "" :
-                                (" of " + curse_names);
+    // Complete sentences only: no English " of " fragment is spliced into a
+    // translated template.
+    const string offer_string = curse_names.empty()
+        ? make_stringf(T_("Ashenzari invites you to share a vision and a curse%s."),
+                       "")
+        : make_stringf(T_("Ashenzari invites you to share a vision and a curse of %s."),
+                       curse_names.c_str());
 
-    mprf_p(MSGCH_GOD, T_("Ashenzari invites you to share a vision and a curse%s."),
-           offer_string.c_str());
+    mprf(MSGCH_GOD, "%s", offer_string.c_str());
 }
 
 static void _do_curse_item(item_def &item)
@@ -3629,7 +3646,7 @@ static void _gozag_place_shop(int index)
                     decline_pronoun(gender, PRONOUN_POSSESSIVE),
                     shop_type_name(shop->type).c_str(),
                     !shop->shop_suffix_name.empty() ? " " : "",
-                    shop->shop_suffix_name.c_str());
+                    C_("shop name suffix", shop->shop_suffix_name.c_str()));
 }
 
 static bool _shop_type_valid(shop_type type)
@@ -4181,7 +4198,7 @@ spret qazlal_elemental_force(bool fail)
     }
 
     if (placed)
-        mprf(MSGCH_GOD, T_("Clouds arounds you coalesce and take form!"));
+        mprf(MSGCH_GOD, T_("Clouds around you coalesce and take form!"));
     else
         canned_msg(MSG_NOTHING_HAPPENS); // can this ever happen?
 
@@ -4966,15 +4983,15 @@ string ru_sacrifice_vector(ability_type sac)
 static const char* _describe_sacrifice_piety_gain(int piety_gain)
 {
     if (piety_gain >= 40)
-        return "an incredible";
+        return C_("sacrifice value", "an incredible");
     else if (piety_gain >= 29)
-        return "a major";
+        return C_("sacrifice value", "a major");
     else if (piety_gain >= 21)
-        return "a medium";
+        return C_("sacrifice value", "a medium");
     else if (piety_gain >= 13)
-        return "a modest";
+        return C_("sacrifice value", "a modest");
     else
-        return "a trivial";
+        return C_("sacrifice value", "a trivial");
 }
 
 static const string _piety_asterisks(int piety)
@@ -5141,44 +5158,67 @@ bool ru_do_sacrifice(ability_type sac)
             you.props[sac_def.sacrifice_vector].get_vector();
         num_sacrifices = sacrifice_muts.size();
 
+        // Compose the offer text (current language) and the milestone text
+        // (canonical English: xlog/milestone fields are protocol data) from
+        // the same sacrifice list.
+        vector<string> schools_display;
+        vector<string> schools_en;
+        string sac_text_en;
         for (int i = 0; i < num_sacrifices; i++)
         {
             mut = AS_MUT(sacrifice_muts[i]);
 
-            // format the text that will be displayed
             if (is_sac_arcana)
             {
-                if (i == num_sacrifices - 1)
-                {
-                    sac_text = make_stringf(
-                        T_("%s and %s"),
-                        sac_text.c_str(),
-                        _arcane_mutation_to_school_name(mut));
-                }
-                else
-                {
-                    sac_text = make_stringf("%s%s, ", sac_text.c_str(),
-                        _arcane_mutation_to_school_name(mut));
-                }
+                // Display and canonical names are collected per school, then
+                // joined once: substituting a bare separator for the printf
+                // format would drop every school name.
+                schools_display.emplace_back(_arcane_mutation_to_school_name(mut));
+                const ScopedLangEn canonical_language;
+                schools_en.emplace_back(_arcane_mutation_to_school_name(mut));
             }
             else
+            {
                 sac_text = mut_upgrade_summary(mut);
+                const ScopedLangEn canonical_language;
+                sac_text_en = mut_upgrade_summary(mut);
+            }
         }
-        offer_text = make_stringf("%s: %s", sac_def.sacrifice_text,
+        if (is_sac_arcana)
+        {
+            sac_text = comma_separated_line(schools_display.begin(),
+                                            schools_display.end(),
+                                            C_("Ru sacrifice list", " and "),
+                                            C_("Ru sacrifice list", ", "));
+            // Milestone text is canonical: plain English separators only.
+            sac_text_en = comma_separated_line(schools_en.begin(),
+                                               schools_en.end(),
+                                               " and ", ", ");
+        }
+        // Display half: the offer sentence is localized, the milestone above
+        // stays canonical for xlog/milestone records.
+        offer_text = make_stringf_p(
+            C_("Ru sacrifice offer", "%1$s: %2$s"),
+            C_("Ru sacrifice offer", sac_def.sacrifice_text),
             sac_text.c_str());
         mile_text = make_stringf("%s: %s.", sac_def.milestone_text,
-            sac_text.c_str());
+            sac_text_en.c_str());
     }
     else
     {
         variable_sac = false;
         mut = sac_def.mutation;
         num_sacrifices = 1;
-        string handtxt = "";
+        // Only the hand sacrifice has a "%s" slot in its offer text; every
+        // other fixed sacrifice is a complete phrase.
         if (sac == ABIL_RU_SACRIFICE_HAND)
-            handtxt = you.hand_name(true);
-
-        offer_text = sac_def.sacrifice_text + handtxt;
+        {
+            offer_text = make_stringf(
+                C_("Ru sacrifice offer", sac_def.sacrifice_text),
+                you.hand_name(true).c_str());
+        }
+        else
+            offer_text = C_("Ru sacrifice offer", sac_def.sacrifice_text);
         mile_text = make_stringf("%s.", sac_def.milestone_text);
     }
 
@@ -5432,7 +5472,7 @@ bool ru_power_leap()
 
     if (crawl_state.is_replaying_keys())
     {
-        crawl_state.cancel_cmd_all("You can't repeat Power Leap.");
+        crawl_state.cancel_cmd_all(T_("You can't repeat Power Leap."));
         return false;
     }
     if (you.is_nervous())
@@ -5613,22 +5653,23 @@ static int _apply_apocalypse(coord_def where)
         case 0:
             if (mons->antimagic_susceptible())
             {
-            message = T_(" doubts ") + mons->pronoun(PRONOUN_POSSESSIVE)
-                      + T_(" magic when faced with ultimate truth!");
+            message = make_stringf(
+                T_(" doubts %s magic when faced with ultimate truth!"),
+                mons->pronoun(PRONOUN_POSSESSIVE).c_str());
                 enchantment = ENCH_ANTIMAGIC;
                 duration = 500 + random2(200);
                 num_dice = 4;
                 break;
             } // if not antimagicable, fall through to paralysis.
         case 1:
-            message = " is paralysed by terrible understanding!";
+            message = T_(" is paralysed by terrible understanding!");
             enchantment = ENCH_PARALYSIS;
             duration = 80 + random2(60);
             num_dice = 4;
             break;
 
         case 2:
-            message = " slows down under the weight of truth!";
+            message = T_(" slows down under the weight of truth!");
             enchantment = ENCH_SLOW;
             duration = 300 + random2(100);
             num_dice = 6;
@@ -5730,7 +5771,7 @@ bool uskayaw_line_pass()
 
     if (crawl_state.is_replaying_keys())
     {
-        crawl_state.cancel_cmd_all("You can't repeat Line Pass.");
+        crawl_state.cancel_cmd_all(T_("You can't repeat Line Pass."));
         return false;
     }
 
@@ -5862,7 +5903,7 @@ spret uskayaw_grand_finale(bool fail)
 
     if (crawl_state.is_replaying_keys())
     {
-        crawl_state.cancel_cmd_all("No encores!");
+        crawl_state.cancel_cmd_all(T_("No encores!"));
         return spret::abort;
     }
 
@@ -5909,7 +5950,7 @@ spret uskayaw_grand_finale(bool fail)
         else if (cell_is_solid(beam.target))
         {
             clear_messages();
-            mprf(T_("You cannot occupy %s."), article_a(feat_type_name(env.grid(beam.target))).c_str());
+            mprf(T_("You cannot occupy %s."), article_a(T_(feat_type_name(env.grid(beam.target)))).c_str());
         }
         else if (you.see_cell_no_trans(beam.target))
         {
@@ -6018,10 +6059,15 @@ bool hepliaklqana_choose_ancestor_type(int ancestor_choice)
 
     god_speaks(you.religion, T_("It is so."));
     take_note(Note(NOTE_ANCESTOR_TYPE, 0, 0, ancestor_type_name));
-    const string mile_text
-        = make_stringf(T_("remembered their ancestor %s as %s."),
-                       hepliaklqana_ally_name().c_str(),
-                       ancestor_type_name.c_str());
+    string mile_text;
+    {
+        // Re-fetch the ancestor name inside the English guard: the display
+        // string above was already localized.
+        const ScopedLangEn canonical_language;
+        mile_text = make_stringf("remembered their ancestor %s as %s.",
+                                 hepliaklqana_ally_name().c_str(),
+                                 mons_type_name(ancestor_type, DESC_A).c_str());
+    }
     mark_milestone("ancestor.class", mile_text);
 
     return true;
@@ -6201,9 +6247,9 @@ spret hepliaklqana_transference(bool fail)
     else
         ancestor->swap_with(victim->as_monster(), MV_TRANSLOCATION, true);
 
-    mprf(T_("%s swap%s places with %s!"), victim->name(DESC_THE).c_str(),
-             victim->is_player() ? "" : "s",
-             ancestor->name(DESC_YOUR).c_str());
+    mprf(victim->is_player() ? T_("%s swap places with %s!")
+                             : T_("%s swaps places with %s!"),
+         victim->name(DESC_THE).c_str(), ancestor->name(DESC_YOUR).c_str());
 
     place_cloud(CLOUD_MIST, target, random_range(10,20), ancestor);
     place_cloud(CLOUD_MIST, destination, random_range(10,20), ancestor);
@@ -6327,8 +6373,8 @@ bool wu_jian_can_wall_jump(const coord_def& target, string &error_ret)
     {
         if (!feat_can_wall_jump_against(env.grid(target)))
         {
-            error_ret = string(T_("You cannot wall jump against ")) +
-                feature_description_at(target, false, DESC_THE) + ".";
+            error_ret = make_stringf(T_("You cannot wall jump against %s."),
+                feature_description_at(target, false, DESC_THE).c_str());
         }
         else
             error_ret = "";
@@ -6430,7 +6476,7 @@ spret wu_jian_wall_jump_ability()
 
     if (crawl_state.is_replaying_keys())
     {
-        crawl_state.cancel_cmd_all("You can't repeat a wall jump.");
+        crawl_state.cancel_cmd_all(T_("You can't repeat a wall jump."));
         return spret::abort;
     }
 
@@ -7091,7 +7137,14 @@ void makhleb_inscribe_mark(mutation_type mark)
 
     you.one_time_ability_used.set(GOD_MAKHLEB);
 
-    const string mile_text = make_stringf(T_("accepted the %s"), mutation_name(mark));
+    string mile_text;
+    string mark_en;
+    {
+        const ScopedLangEn canonical_language;
+        mark_en = mutation_name_en(mark);
+        mile_text = make_stringf("accepted the %s", mark_en.c_str());
+    }
+    // The note is display data (localized); only the milestone is canonical.
     take_note(Note(NOTE_INFERNAL_MARK, 0, 0, mutation_name(mark)));
     mark_milestone("mark", mile_text);
 }

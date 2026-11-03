@@ -183,18 +183,27 @@ def grep_producers(ref: str, enum: str) -> list[str]:
     """Find code locations that create this cloud type at a git commit.
 
     The search runs `git grep -n -E <pat> <ref> -- crawl-ref/source/` on
-    the baseline commit's Git objects (with `--end-of-options` so the ref
-    can never be parsed as an option), never on the worktree files, so
+    the baseline commit's Git objects, never on the worktree files, so
     the result is independent of local checkout state. Definition-site
     hits in cloud.cc / cloud-type.h are excluded, and the repo-root path
     prefix is normalized to source-relative (the previous worktree-grep
     format) to keep producer identities stable.
+
+    The pattern is POSIX ERE only: git grep uses the host's ERE engine, so
+    GNU extensions such as \\s and \\b are not portable (macOS), and the
+    enum name is bounded explicitly so CLOUD_FIRE cannot match
+    CLOUD_FIRE_OTHER / CLOUD_FIRE2 producer calls.
     """
-    pats = [rf"place_cloud\s*\(\s*{enum}", rf"big_cloud\s*\(\s*{enum}"]
+    # git grep does not support rev-parse's --end-of-options flag. Accept
+    # only the object ID already returned by resolve_commit instead.
+    if not re.fullmatch(r"[0-9a-f]{40}", ref):
+        raise ValueError("cloud producer search requires a resolved commit SHA")
+    pats = [rf"{producer}[[:space:]]*\([[:space:]]*{enum}([^[:alnum:]_]|$)"
+            for producer in ("place_cloud", "big_cloud")]
     hits = []
     for pat in pats:
         r = subprocess.run(
-            ["git", "grep", "-n", "-E", "-e", pat, "--end-of-options",
+            ["git", "grep", "-n", "-E", "-e", pat,
              ref, "--", "crawl-ref/source/"],
             capture_output=True, text=True, cwd=ROOT)
         if r.returncode not in (0, 1):  # 0 = matches, 1 = no matches

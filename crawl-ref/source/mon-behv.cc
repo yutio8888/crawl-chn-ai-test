@@ -1469,20 +1469,23 @@ static void _mons_indicate_level_exit(const monster* mon)
     else if (feat_is_travelable_stair(feat))
     {
         command_type dir = feat_stair_direction(feat);
-        simple_monster_message(*mon,
-            make_stringf(T_(" %s the %s."),
-                dir == CMD_GO_UPSTAIRS     ? "goes up" :
-                dir == CMD_GO_DOWNSTAIRS   ? "goes down"
-                                           : "takes",
-                feat_is_escape_hatch(feat) ? "escape hatch"
-                                           : "stairs").c_str());
+        const char* message;
+        if (feat_is_escape_hatch(feat))
+        {
+            message = dir == CMD_GO_UPSTAIRS ? N_(" goes up the escape hatch.")
+                    : dir == CMD_GO_DOWNSTAIRS ? N_(" goes down the escape hatch.")
+                                              : N_(" takes the escape hatch.");
+        }
+        else
+            message = dir == CMD_GO_UPSTAIRS ? N_(" goes up the stairs.")
+                    : dir == CMD_GO_DOWNSTAIRS ? N_(" goes down the stairs.")
+                                              : N_(" takes the stairs.");
+        simple_monster_message(*mon, T_(message));
     }
     else if (is_shaft)
     {
-        simple_monster_message(*mon,
-            make_stringf(T_(" %s the shaft."),
-                mon->airborne() ? "goes down"
-                                : "jumps into").c_str());
+        simple_monster_message(*mon, mon->airborne()
+            ? T_(" goes down the shaft.") : T_(" jumps into the shaft."));
 
         // Shafts are one-time-use.
         mpr(T_("The shaft crumbles and collapses."));

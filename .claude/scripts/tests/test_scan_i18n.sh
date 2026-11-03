@@ -580,7 +580,7 @@ cat /tmp/actual_protocol_boundaries.txt
 assert_status "protocol registry: passing + mutation matrix with custom monspeak dispatch" \
     0 "$protocol_boundary_status"
 assert_contains "protocol registry: every artifact receives negative mutations" \
-    "OK: 21 rows, 65 artifacts, 356 fixtures passed" \
+    "OK: 21 rows, 65 artifacts, 362 fixtures passed" \
     /tmp/actual_protocol_boundaries.txt
 
 # CR-034: a malformed weighted TextDB entry must fail closed at the custom

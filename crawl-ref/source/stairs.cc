@@ -21,6 +21,7 @@
 #include "directn.h"
 #include "dungeon.h" // place_specific_trap
 #include "env.h"
+#include "exclude.h"
 #include "files.h"
 #include "god-abil.h"
 #include "god-companions.h"
@@ -42,6 +43,7 @@
 #include "notes.h"
 #include "orb-type.h"
 #include "output.h"
+#include "positional_format.h"
 #include "player-stats.h"
 #include "prompt.h"
 #include "religion.h"
@@ -76,7 +78,7 @@ static string _annotation_exclusion_warning(level_id next_level_id)
 
     if (is_exclude_root(you.pos())
              && feat_is_travelable_stair(env.grid(you.pos()))
-             && !strstr(get_exclusion_desc(you.pos()).c_str(), "cloud"))
+             && !is_cloud_exclusion(get_exclusion_desc(you.pos())))
     {
         return "This staircase is marked as excluded!";
     }
@@ -110,7 +112,7 @@ static string _bezotting_warning(branch_type branch)
 
     const int turns = turns_until_zot_in(branch);
     return make_stringf(T_("You have just %d turns in %s to find a new floor before Zot consumes you."),
-                        turns, branches[branch].longname);
+                        turns, T_(branches[branch].longname));
 }
 
 bool check_next_floor_warning()
@@ -411,12 +413,18 @@ static bool _check_fall_down_stairs(const dungeon_feature_type ftype, bool going
         && !crawl_state.game_is_descent()
         && coinflip())
     {
-        const char* fall_where = T_("down the stairs");
-        if (!feat_is_staircase(ftype))
-            fall_where = T_("through the gate");
-
-        mprf(T_("In your confused state, you trip and fall %s%s."),
-             going_up ? T_("back ") : "", fall_where);
+        if (feat_is_staircase(ftype))
+        {
+            mpr(going_up
+                ? T_("In your confused state, you trip and fall back down the stairs.")
+                : T_("In your confused state, you trip and fall down the stairs."));
+        }
+        else
+        {
+            mpr(going_up
+                ? T_("In your confused state, you trip and fall back through the gate.")
+                : T_("In your confused state, you trip and fall through the gate."));
+        }
         if (!feat_is_staircase(ftype))
             ouch(1, KILLED_BY_FALLING_THROUGH_GATE);
         else

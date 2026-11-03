@@ -27,6 +27,7 @@
 #include "files.h"
 #include "mapmark.h"
 #include "message.h"
+#include "positional_format.h"
 #include "state.h"
 #include "stringutil.h"
 #include "syscalls.h"
@@ -197,7 +198,7 @@ static bool _resolve_map_lua(map_def &map)
         string seed_inf = "";
         if (msg::uses_stderr(MSGCH_ERROR))
             seed_inf = make_stringf("%s%" PRIu64, T_(" in seed "), crawl_state.seed);
-        mprf(MSGCH_ERROR, "Fatal lua error%s: %s", seed_inf.c_str(),
+        mprf_p(MSGCH_ERROR, T_("Fatal lua error%1$s: %2$s"), seed_inf.c_str(),
              err.c_str());
         // If we're using stderr, we don't have a morgue, so any dlua stack
         // trace should also go to stderr.
@@ -534,7 +535,7 @@ static bool _connected_minivault_place(const coord_def &c,
 
     for (rectangle_iterator ri(c, c + place.size - 1); ri; ++ri)
     {
-        const coord_def &ci(*ri);
+        const coord_def &ci = *ri;
 
         if (lines[ci.y - c.y][ci.x - c.x] == ' ')
             continue;
@@ -1060,7 +1061,7 @@ public:
     vault_chance_roll_iterator operator ++ (int)
     {
         vault_chance_roll_iterator copy(*this);
-        operator ++ ();
+        ++*this;
         return copy;
     }
 
@@ -1590,7 +1591,7 @@ void run_map_global_preludes()
         if (!chunk.empty())
         {
             if (chunk.load_call(dlua, nullptr))
-                mprf(MSGCH_ERROR, "Lua error: %s", chunk.orig_error().c_str());
+                mprf(MSGCH_ERROR, T_("Lua error: %s"), chunk.orig_error().c_str());
         }
     }
 }
@@ -1610,7 +1611,7 @@ void run_map_local_preludes()
                     seed_inf = make_stringf("%s%" PRIu64,
                                             T_(" in seed "), crawl_state.seed);
                 }
-                mprf(MSGCH_ERROR, "Lua error (map %s)%s: %s",
+                mprf_p(MSGCH_ERROR, T_("Lua error (map %1$s)%2$s: %3$s"),
                      vdef.name.c_str(), seed_inf.c_str(), err.c_str());
                 if (msg::uses_stderr(MSGCH_ERROR) && !dlua_errors.empty())
                 {

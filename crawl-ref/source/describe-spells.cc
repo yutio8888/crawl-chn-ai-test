@@ -499,7 +499,9 @@ static string _describe_living_spells(const monster_info &mon_owner)
     const spell_type spell = living_spell_type_for(mon_owner.type);
     const int n = living_spell_count(spell, false);
     const string base_desc = _effect_string(spell, &mon_owner);
-    const string desc = base_desc[0] == '(' ? base_desc : make_stringf(T_("(%s)"),
+    // Both supported display languages may return an already bracketed effect.
+    const bool bracketed = starts_with(base_desc, "(") || starts_with(base_desc, "（");
+    const string desc = bracketed ? base_desc : make_stringf(T_("(%s)"),
             base_desc.c_str());
     return make_stringf(T_("%dx%s"), n, desc.c_str());
 }
@@ -530,7 +532,7 @@ static string _effect_string(spell_type spell, const monster_info *mon_owner,
             return "";
         }
         if (you.immune_to_hex(spell))
-            return "(immune)";
+            return T_("(immune)");
 
         const string hex_str = make_stringf(T_("%d%%"), hex_chance(spell, mon_owner, is_wand));
 
@@ -597,10 +599,13 @@ static string _effect_string(spell_type spell, const monster_info *mon_owner,
         mult = "3x";
     else if (spell == SPELL_ELECTROLUNGE)
         mult = "+";
-    const char* suffix = spell == SPELL_LRD ? "*"
-                       : spell == SPELL_PYRE_ARROW || spell == SPELL_STICKY_FLAME ? "/turn"
-                       : "";
-    return make_stringf(T_("(%s%dd%d%s)"), mult.c_str(), dam.num, dam.size, suffix);
+    // T_() returns a borrowed pointer; materialise the translated suffix.
+    const string suffix = spell == SPELL_LRD ? "*"
+                       : spell == SPELL_PYRE_ARROW || spell == SPELL_STICKY_FLAME
+                            ? T_("/turn")
+                            : "";
+    return make_stringf(T_("(%s%dd%d%s)"), mult.c_str(), dam.num, dam.size,
+                        suffix.c_str());
 }
 
 /**
@@ -641,8 +646,10 @@ static void _describe_book(const spellbook_contents &book,
                   + chop_string(T_("Type"), school_column_width)
                   + chop_string(T_("Level"), level_column_width)).c_str());
         if (crawl_state.need_save)
+        {
             description.cprintf("%s",
                                 chop_string(T_("Known"), known_column_width).c_str());
+        }
     }
     description.cprintf("\n");
 
@@ -682,11 +689,11 @@ static void _describe_book(const spellbook_contents &book,
         const int effect_len = strwidth(effect_str);
         const int range_len = range_str.empty() ? 0 : 3;
         const int effect_range_space = effect_len && range_len ? 1 : 0;
-        // Monster spellbooks are rendered as two columns.  The historical
+        // Monster spellbooks are rendered as two columns. The historical
         // 32-column budget leaves no room for the popup's horizontal margins
         // once CJK spell names consume two display columns per character;
         // the generic tile text wrapper then breaks the second column in the
-        // middle of its range (e.g. moving "(7)" to the next line).  Keep a
+        // middle of its range (e.g. moving "(7)" to the next line). Keep a
         // small safety margin for the two-column layout.
         const int content_width = doublecolumn
                                   ? monster_spell_content_width
@@ -721,7 +728,7 @@ static void _describe_book(const spellbook_contents &book,
         if (doublecolumn && first_line_element)
         {
             // Pad the complete first cell to a fixed display width so every
-            // second-column entry starts at the same x position.  Use the
+            // second-column entry starts at the same x position. Use the
             // parsed text width because range_str may contain colour tags.
             const int target_width = content_width + spell_entry_prefix_width;
             const int padding = target_width - strwidth(spell_entry.tostring());

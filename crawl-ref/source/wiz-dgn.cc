@@ -89,7 +89,7 @@ void wizard_place_stairs(bool down)
     if (stairs == DNGN_UNSEEN)
         return;
 
-    mprf(T_("Creating %sstairs."), down ? "down" : "up");
+    mpr(down ? T_("Creating downstairs.") : T_("Creating upstairs."));
     dungeon_terrain_changed(you.pos(), stairs);
 }
 
@@ -228,7 +228,7 @@ dungeon_feature_type wizard_select_feature(bool mimic, bool allow_fprop)
                 if (fprop != FPROP_NONE && allow_fprop)
                 {
                     env.pgrid(you.pos()) |= fprop;
-                    mprf(T_("Set fprops \"%s\" at (%d,%d)"),
+                    mprf_p(T_("Set fprops \"%s\" at (%d,%d)"),
                          name.c_str(), you.pos().x, you.pos().y);
                 }
                 else

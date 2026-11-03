@@ -265,21 +265,31 @@ def aligned_candidate_artifacts(en_shout, en_insult, zh_shout, zh_insult):
             exact_artifact(fixture, "database/zh/"))
 
 
+# Immutable snapshot of the already-fixed consumers. The stable base commit
+# carries the I69-R4-CODE-001 canonical accessors (shout.cc `_shout_key` via
+# mons_type_name_en; mon-util.cc species insult via the canonical
+# `foe_genus_en`) with the frozen anchor lines (mon-util.cc:4275/4291). Using
+# a pinned commit keeps the fixture from mixing historical ShoutDB data with
+# whatever the current worktree happens to contain; the live production
+# consumers are covered separately by protocol-boundaries.
+FIXED_CONSUMER_REF = "76e25eeb27458b261d59bee7e1bbbd26bbf8dfd9"
+
+
 def fixed_candidate_sources() -> dict[str, str]:
-    """The worktree-fixed C++ consumers as fixture replacement blobs.
+    """The reviewed-fixed C++ consumers as fixture replacement blobs.
 
     The baseline OID predates the I69-R4-CODE-001 consumer fix, so every
     candidate fixture must explicitly carry the fixed shout.cc and
     mon-util.cc: the candidate-role identity shape checks reject the
     baseline's localized accessors, mirroring the real review gate for
-    commits that regress to a localized ShoutDB producer."""
+    commits that regress to a localized ShoutDB producer. The blobs come from
+    ``FIXED_CONSUMER_REF`` (not the mutable worktree) so the fixture stays a
+    coherent historical artifact."""
     return {
-        "crawl-ref/source/shout.cc": (
-            ROOT / "crawl-ref/source/shout.cc").read_text(
-                encoding="utf-8"),
-        "crawl-ref/source/mon-util.cc": (
-            ROOT / "crawl-ref/source/mon-util.cc").read_text(
-                encoding="utf-8"),
+        "crawl-ref/source/shout.cc": committed_source(
+            FIXED_CONSUMER_REF, "crawl-ref/source/shout.cc"),
+        "crawl-ref/source/mon-util.cc": committed_source(
+            FIXED_CONSUMER_REF, "crawl-ref/source/mon-util.cc"),
     }
 
 

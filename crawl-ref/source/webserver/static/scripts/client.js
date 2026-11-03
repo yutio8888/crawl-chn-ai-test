@@ -453,7 +453,7 @@ function (exports, $, key_conversion, chat, comm) {
             $("#login_form").hide();
             $("#reg_link").hide();
             $("#forgot_link").hide();
-            $("#login_message").html("Logging in...");
+            $("#login_message").text("登录中……");
             send_message("token_login", {
                 cookie: get_login_cookie()
             });
@@ -475,7 +475,7 @@ function (exports, $, key_conversion, chat, comm) {
         $("#login_form").hide();
         $("#reg_link").hide();
         $("#forgot_link").hide();
-        $("#login_message").html("Logging in...");
+        $("#login_message").text("登录中……");
         var username = $("#username").val();
         var password = $("#password").val();
         send_message("login", {
@@ -485,13 +485,52 @@ function (exports, $, key_conversion, chat, comm) {
         return false;
     }
 
+    // Translate known server account errors only at the display boundary.
+    // Keep wire messages and unknown server-specific reasons unchanged.
+    function account_error_message(message)
+    {
+        var messages = {
+            "Could not initialize your rc and morgue!<br>This probably means there is something wrong with the server configuration.": "无法初始化你的配置文件和角色档案！\n这可能是服务器配置有误所致。",
+            "The maximum number of connections has been reached, sorry :(": "连接数已达到上限，抱歉。",
+            "Account is disabled.": "账号已停用。",
+            "Account is disabled": "账号已停用。",
+            "New account creation is disabled.": "当前不允许注册新账号。",
+            "The password can't be empty!": "密码不能为空！",
+            "The password can't be empty.": "密码不能为空。",
+            "Account creation failed.": "账号创建失败。",
+            "User already exists!": "用户名已被使用！",
+            "Invalid account!": "账号无效！",
+            "Account has a password lock!": "账号的密码修改功能已锁定！",
+            "Account has an email lock!": "账号的邮箱修改功能已锁定！",
+            "You need to log in to change your password.": "请先登录，再修改密码。",
+            "Your account is restricted; change password unavailable.": "你的账号受到限制，无法修改密码。",
+            "Your password didn't match.": "当前密码不正确。",
+            "You need to log in to change your email": "请先登录，再修改邮箱。",
+            "Your account is restricted; change email unavailable.": "你的账号受到限制，无法修改邮箱。",
+            "Email address can't be empty": "电子邮箱不能为空。",
+            "Email address can't contain a space": "电子邮箱不能包含空格。",
+            "Expected email address to contain the @ symbol": "电子邮箱必须包含 @ 符号。",
+            "Invalid email address": "电子邮箱格式无效。",
+            "Email address can't be more than 80 characters": "电子邮箱不能超过 80 个字符。",
+            "Recovery tokens disabled": "密码重置令牌已停用。",
+            "Invalid token": "密码重置令牌无效。",
+            "Expired token": "密码重置令牌已过期。",
+            "Your account is restricted; spectating unavailable": "你的账号受到限制，无法观战。",
+            "Anonymous spectating disabled": "当前不允许匿名观战。",
+            "Spectating this player is restricted.": "观战此玩家受到限制。",
+            "You have been kicked.": "你已被移出。"
+        };
+        return Object.prototype.hasOwnProperty.call(messages, message)
+            ? messages[message] : message;
+    }
+
     function auth_error(data)
     {
         var reason = data.reason;
         if (reason)
-            $("#login_message").html(reason);
+            $("#login_message").text(account_error_message(reason));
         else
-            $("#login_message").html("Login failed.");
+            $("#login_message").text("登录失败。");
     }
 
     function login_failed(data)
@@ -508,7 +547,7 @@ function (exports, $, key_conversion, chat, comm) {
     {
         var username = data.username;
         hide_prompt();
-        $("#login_message").html("Logged in as " + username);
+        $("#login_message").text("已登录为：" + username);
         current_user = username;
         admin_user = data.admin;
         hide_dialog();
@@ -649,7 +688,7 @@ function (exports, $, key_conversion, chat, comm) {
 
     function server_announcement(data)
     {
-        var text = '<span class="fg5">Serverwide announcement: </span><span>'
+        var text = '<span class="fg5">全服公告：</span><span>'
             + data.text + '</span>';
         chat.show_in_chat(text);
     }
@@ -697,11 +736,6 @@ function (exports, $, key_conversion, chat, comm) {
         show_dialog(dialog);
     }
 
-    function possessive(name)
-    {
-        return name + "'" + (name.slice(-1) === "s" ? "" : "s");
-    }
-
     function exit_reason_message(reason, watched_name)
     {
         if (watched_name)
@@ -714,18 +748,17 @@ function (exports, $, key_conversion, chat, comm) {
             case "dead":
                 return null;
             case "cancel":
-                return watched_name + " quit before creating a character.";
+                return watched_name + " 在创建角色前退出了。";
             case "saved":
-                return watched_name + " stopped playing (saved).";
+                return watched_name + " 已保存并退出游戏。";
             case "crash":
-                return possessive(watched_name) + " game crashed.";
+                return watched_name + " 的游戏崩溃了。";
             case "error":
-                return possessive(watched_name)
-                       + " game was terminated due to an error.";
+                return watched_name + " 的游戏因错误而终止。";
             case "disconnect":
-                return watched_name + " has been disconnected.";
+                return watched_name + " 已断开连接。";
             default:
-                return possessive(watched_name) + " game ended unexpectedly."
+                return watched_name + " 的游戏意外结束了。"
                        + (reason != "unknown" ? " (" + reason + ")" : "");
             }
         }
@@ -741,16 +774,30 @@ function (exports, $, key_conversion, chat, comm) {
             case "cancel":
                 return null;
             case "crash":
-                return "Unfortunately your game crashed.";
+                return "你的游戏崩溃了。";
             case "error":
-                return "Unfortunately your game terminated due to an error.";
+                return "你的游戏因错误而终止。";
             case "disconnect":
-                return "You have been disconnected.";
+                return "你已断开连接。";
             default:
-                return "Unfortunately your game ended unexpectedly."
+                return "你的游戏意外结束了。"
                        + (reason != "unknown" ? " (" + reason + ")" : "");
             }
         }
+    }
+
+    function game_exit_message(message)
+    {
+        // Translate known server diagnostics at the display boundary. Preserve
+        // unknown diagnostics verbatim so administrators can investigate them.
+        const messages = {
+            "Error while starting the Crawl process!\nSomething has gone very wrong; please let a server admin know.":
+                "启动 Crawl 进程时发生错误！\n请联系服务器管理员。",
+            "Error while trying to terminate a stale process.\nPlease contact an administrator.":
+                "终止残留进程时发生错误。\n请联系服务器管理员。",
+        };
+        return Object.prototype.hasOwnProperty.call(messages, message)
+            ? messages[message] : message;
     }
 
     function show_exit_dialog(reason, message, dump, watched_name)
@@ -762,7 +809,7 @@ function (exports, $, key_conversion, chat, comm) {
             $("#exit_game_reason").hide();
 
         if (message)
-            $("#exit_game_message").text(message.replace(/\s+$/, "")).show();
+            $("#exit_game_message").text(game_exit_message(message.replace(/\s+$/, ""))).show();
         else
             $("#exit_game_message").hide();
 
@@ -771,11 +818,11 @@ function (exports, $, key_conversion, chat, comm) {
             var a = $("<a>").attr("target", "_blank")
                             .attr("href", dump + ".txt");
             if (reason === "saved")
-                a.text("Character dump");
+                a.text("角色档案");
             else if (reason === "crash")
-                a.text("Crash log");
+                a.text("崩溃日志");
             else
-                a.text("Morgue file");
+                a.text("角色记录");
             $("#exit_game_dump").html(a).show();
         }
         else
@@ -804,13 +851,13 @@ function (exports, $, key_conversion, chat, comm) {
 
         if (username.indexOf(" ") >= 0)
         {
-            $("#register_message").html("The username can't contain spaces.");
+            $("#register_message").text("用户名不能包含空格。");
             return false;
         }
 
         if (password !== password_repeat)
         {
-            $("#register_message").html("Passwords don't match.");
+            $("#register_message").text("两次输入的密码不一致。");
             return false;
         }
 
@@ -825,7 +872,7 @@ function (exports, $, key_conversion, chat, comm) {
 
     function register_failed(data)
     {
-        $("#register_message").html(data.reason);
+        $("#register_message").text(account_error_message(data.reason));
     }
 
 
@@ -848,7 +895,7 @@ function (exports, $, key_conversion, chat, comm) {
 
     function change_password_done(data)
     {
-        $("#ok_message_content").html("Password changed!");
+        $("#ok_message_content").text("密码已修改！");
         show_dialog("#floating_ok_message");
     }
 
@@ -860,7 +907,7 @@ function (exports, $, key_conversion, chat, comm) {
 
         if (new_password !== new_password_repeat)
         {
-            $("#chpw_message").html("Passwords don't match.");
+            $("#chpw_message").text("两次输入的密码不一致。");
             return false;
         }
 
@@ -874,10 +921,10 @@ function (exports, $, key_conversion, chat, comm) {
 
     function change_password_failed(data)
     {
-        var msg = "Password change failed!";
+        var msg = "密码修改失败！";
         if (data.reason)
-            msg = msg + " " + data.reason;
-        $("#ok_message_content").html(msg);
+            msg = msg + " " + account_error_message(data.reason);
+        $("#ok_message_content").text(msg);
         show_dialog("#floating_ok_message");
     }
 
@@ -888,7 +935,7 @@ function (exports, $, key_conversion, chat, comm) {
 
     function start_change_email(data)
     {
-        $("#chem_current").html(data.email);
+        $("#chem_current").text(data.email);
         $("#chem_message").html("");
         show_dialog("#change_email");
         $("#chem_email").focus();
@@ -912,18 +959,18 @@ function (exports, $, key_conversion, chat, comm) {
 
     function change_email_failed(data)
     {
-        $("#chem_message").html(data.reason);
+        $("#chem_message").text(account_error_message(data.reason));
     }
 
     function change_email_done(data)
     {
         if ( data.email == "" )
         {
-            $("#ok_message_content").html("Your account is no longer associated with an email address.");
+            $("#ok_message_content").text("你的账号已不再关联电子邮箱。");
         }
         else
         {
-            $("#ok_message_content").html("Your email address has been set to " + data.email + ".");
+            $("#ok_message_content").text("你的电子邮箱已设为：" + data.email + "。");
         }
 
         show_dialog("#floating_ok_message");
@@ -947,7 +994,7 @@ function (exports, $, key_conversion, chat, comm) {
 
         if (email.indexOf(" ") >= 0)
         {
-            $("#forgot_message").html("The email address can't contain spaces.");
+            $("#forgot_message").text("电子邮箱不能包含空格。");
             return false;
         }
 
@@ -960,7 +1007,7 @@ function (exports, $, key_conversion, chat, comm) {
 
     function forgot_password_failed(data)
     {
-        $("#forgot_message").html(data.reason);
+        $("#forgot_message").text(account_error_message(data.reason));
     }
 
     function forgot_password_done()
@@ -976,7 +1023,7 @@ function (exports, $, key_conversion, chat, comm) {
 
         if (password !== password_repeat)
         {
-            $("#reset_pw_message").html("Passwords don't match.");
+            $("#reset_pw_message").text("两次输入的密码不一致。");
             return false;
         }
 
@@ -995,7 +1042,7 @@ function (exports, $, key_conversion, chat, comm) {
 
     function reset_password_failed(data)
     {
-        $("#reset_pw_message").html(data.reason);
+        $("#reset_pw_message").text(account_error_message(data.reason));
     }
 
     var editing_rc;
@@ -1038,7 +1085,17 @@ function (exports, $, key_conversion, chat, comm) {
         set_layer("crt");
         hide_dialog();
         chat.reset_visibility(false);
-        $("#crt").html(msg + "<br><br>");
+        if (msg === "Could not initialize your rc and morgue!<br>This probably means there is something wrong with the server configuration."
+            || msg === "The maximum number of connections has been reached, sorry :(")
+        {
+            // This known account error is plain text. Keep server-provided
+            // HTML for other close reasons, such as the shutdown template.
+            $("#crt").empty().append($("<span>")
+                .css("white-space", "pre-line").text(account_error_message(msg)))
+                .append("<br><br>");
+        }
+        else
+            $("#crt").html(msg + "<br><br>");
         showing_close_message = true;
         return true;
     }
@@ -1141,18 +1198,18 @@ function (exports, $, key_conversion, chat, comm) {
     {
         cleanup();
         show_loading_screen();
-        show_prompt("Login required to play <span id='prompt_game'>"
-                    + data.game + "</span>:",
-                    "<a href='#lobby'>Back to lobby</a>");
+        show_prompt("请先登录，再开始游戏：<span id='prompt_game'>"
+                    + data.game + "</span>",
+                    "<a href='#lobby'>返回大厅</a>");
     }
 
     function chat_login(data)
     {
         if (!in_game() || !watching) return;
 
-        var a = $("<a href='javascript:'>Close</a>");
+        var a = $("<a href='javascript:'>关闭</a>");
         a.click(hide_prompt);
-        show_prompt("Login to chat:", a);
+        show_prompt("登录后即可聊天：", a);
     }
 
     var new_list = null;
@@ -1181,8 +1238,11 @@ function (exports, $, key_conversion, chat, comm) {
         }
 
         var username_entry = $(make_watch_link(data));
-        username_entry.text(data.username);
+        username_entry.text(data.username.replace(/^\[account hold\] /, "[账号审核中] "));
         set("username", username_entry);
+        // Sorting continues to use the canonical username, including its
+        // account-state prefix, rather than the localized visible label.
+        entry.find(".username").data("sort", data.username);
         set("game_id", data.game_id);
         set("xl", data.xl);
         set("char", data.char);
@@ -1633,7 +1693,7 @@ function (exports, $, key_conversion, chat, comm) {
                 ev.preventDefault();
                 ev.returnValue = '';
                 // n.b. this return value is ignored by 95% of browsers
-                return "Really save and quit the game?";
+                return "确定保存并退出游戏吗？";
             }
         });
 
@@ -1664,6 +1724,8 @@ function (exports, $, key_conversion, chat, comm) {
 
         if ( $("#reset_pw").length )
         {
+            var token_error = $("#reset_token_error");
+            token_error.text(account_error_message(token_error.text()));
             $("#reset_pw_cancel").bind("click", cancel_reset_password);
             $("#reset_pw_form").bind("submit", reset_password);
         }
@@ -1756,7 +1818,7 @@ function (exports, $, key_conversion, chat, comm) {
                 {
                     set_layer("crt");
                     $("#crt").html("");
-                    $("#crt").append("The WebSocket connection failed.<br>");
+                    $("#crt").append("WebSocket 连接失败。<br>");
                     showing_close_message = true;
                 }
             };
@@ -1767,12 +1829,12 @@ function (exports, $, key_conversion, chat, comm) {
                 {
                     set_layer("crt");
                     $("#crt").html("");
-                    $("#crt").append("The Websocket connection was closed.<br>");
+                    $("#crt").append("WebSocket 连接已关闭。<br>");
                     if (ev.reason)
                     {
-                        $("#crt").append("Reason:<br>" + ev.reason + "<br>");
+                        $("#crt").append($("<div>").text("原因：" + account_error_message(ev.reason)));
                     }
-                    $("#crt").append("Reload to try again.<br>");
+                    $("#crt").append("请刷新页面重试。<br>");
                     showing_close_message = true;
                 }
             };
@@ -1780,13 +1842,13 @@ function (exports, $, key_conversion, chat, comm) {
         else
         {
             set_layer("crt");
-            $("#crt").html("Sadly, your browser does not support WebSockets. <br><br>");
-            $("#crt").append("The following browsers can be used to run WebTiles: ");
-            $("#crt").append("<ul><li>Chrome 6 and greater</li>" +
-                             "<li>Firefox 4 and 5, after enabling the " +
-                             "network.websocket.override-security-block setting in " +
-                             "about:config</li><li>Opera 11, after " +
-                             " enabling WebSockets in opera:config#Enable%20WebSockets" +
+            $("#crt").html("你的浏览器不支持 WebSocket。<br><br>");
+            $("#crt").append("以下浏览器可以运行 WebTiles：");
+            $("#crt").append("<ul><li>Chrome 6 及更新版本</li>" +
+                             "<li>Firefox 4 或 5，需在 " +
+                             "about:config 中启用 network.websocket.override-security-block 设置" +
+                             "</li><li>Opera 11，需在 " +
+                             "opera:config#Enable%20WebSockets 中启用 WebSocket</li>" +
                              "<li>Safari 5</li></ul>");
         }
     });

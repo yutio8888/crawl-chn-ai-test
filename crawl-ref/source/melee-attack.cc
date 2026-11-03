@@ -33,6 +33,7 @@
 #include "hints.h"
 #include "invent.h"
 #include "item-prop.h"
+#include "lang-en-guard.h"
 #include "los.h"
 #include "losparam.h"
 #include "mapdef.h"
@@ -585,7 +586,7 @@ void melee_attack::do_ooze_flood()
         && defender->alive()
         && coinflip())
     {
-        defender->floodify(attacker, random_range(30, 70), T_("ooze"));
+        defender->floodify(attacker, random_range(30, 70), "ooze");
     }
 }
 
@@ -633,7 +634,7 @@ void melee_attack::do_vampire_lifesteal()
             mprf(T_("You sink your fangs into %s and drink %s %s."),
                     mon->name(DESC_THE, true).c_str(),
                     mon->pronoun(PRONOUN_POSSESSIVE).c_str(),
-                    mon->blood_name().c_str());
+                    T_(mon->blood_name().c_str()));
         }
         else if (can_enthrall)
         {
@@ -662,7 +663,7 @@ void melee_attack::handle_concussion_brand()
 {
     const coord_def old_pos = defender->pos();
     bool did_move = false;
-    if (defender->stumble_away_from(attack_position, T_("concussive force")))
+    if (defender->stumble_away_from(attack_position, N_("concussive force")))
     {
         did_move = true;
         if (monster* mon = defender->as_monster())
@@ -938,8 +939,19 @@ bool melee_attack::handle_phase_hit()
                 const string verb = is_player
                     ? attack_verb
                     : Options.language == lang_t::ZH
-                      ? monster_verb
+                      ? (monster_verb == "gore" ? C_("attack verb", "gore")
+                                                : T_(monster_verb.c_str()))
                       : attacker->conj_verb(monster_verb);
+                const string body_action = is_player ? ""
+                    : mons_body_attack_phrase(monster_verb);
+                if (!body_action.empty())
+                {
+                    mprf_p(C_("monster body attack",
+                              "%1$s %2$s but does no damage."),
+                           attacker->name(DESC_THE).c_str(),
+                           body_action.c_str());
+                }
+                else
                 mprf(T_(is_player
                         ? "%s %s %s but do no damage."
                         : "%s %s %s but does no damage."),
@@ -2091,7 +2103,9 @@ public:
     : AuxAttackType(0, 100, "constrict") { };
     bool xl_based_chance() const override { return false; }
 
-    string get_name() const override { return T_("constrict"); }
+    // Canonical English identity for the auxiliary attack; display text is
+    // produced at the message sinks below.
+    string get_name() const override { return "constrict"; }
 
     bool is_usable() const override
     {
@@ -2130,17 +2144,17 @@ public:
     string get_verb() const override
     {
         if (you.has_usable_talons())
-            return T_("claw");
+            return "claw";
         if (you.get_mutation_level(MUT_TENTACLE_SPIKE))
-            return T_("pierce");
-        return T_("kick");
+            return "pierce";
+        return "kick";
     }
 
     string get_name() const override
     {
         if (you.get_mutation_level(MUT_TENTACLE_SPIKE))
-            return T_("tentacle spike");
-        return T_("kick");
+            return "tentacle spike";
+        return "kick";
     }
 
     bool is_usable() const override
@@ -2157,7 +2171,7 @@ public:
     AuxHeadbutt()
     : AuxAttackType(5, 67, "headbutt") { };
 
-    string get_name() const override { return T_("headbutt"); }
+    string get_name() const override { return "headbutt"; }
 
     int get_damage(bool /*random*/) const override
     {
@@ -2176,7 +2190,7 @@ public:
     AuxPeck()
     : AuxAttackType(6, 67, "peck") { };
 
-    string get_name() const override { return T_("peck"); }
+    string get_name() const override { return "peck"; }
 
     bool is_usable() const override
     {
@@ -2265,7 +2279,7 @@ public:
             return "eel-slap";
 
         if (you.has_usable_claws())
-            return T_("claw");
+            return "claw";
 
         if (you.has_usable_tentacles())
             return "tentacle-slap";
@@ -2298,7 +2312,7 @@ public:
     AuxBite()
     : AuxAttackType(1, 40, "bite") { };
 
-    string get_name() const override { return T_("bite"); }
+    string get_name() const override { return "bite"; }
 
     int get_damage(bool random) const override
     {
@@ -2547,8 +2561,10 @@ void melee_attack::player_aux_setup(unarmed_attack_type atk)
 
     aux_damage = aux->get_damage(true);
     damage_brand = (brand_type)aux->get_brand();
-    aux_attack = aux->get_name();
-    aux_verb = aux->get_verb();
+    // These owned fields are consumed only by combat messages; the attack
+    // subtype/counting and mechanics continue to use the canonical enum.
+    aux_attack = C_("auxiliary attack name", aux->get_name().c_str());
+    aux_verb = C_("auxiliary attack verb", aux->get_verb().c_str());
 
     if (wu_jian_attack != WU_JIAN_ATTACK_NONE)
         wu_jian_attack = WU_JIAN_ATTACK_TRIGGERED_AUX;
@@ -2796,7 +2812,7 @@ void melee_attack::player_warn_miss()
 {
     did_hit = false;
 
-    mprf(T_("You%s miss %s%s."),
+    mprf_p(T_("You%1$s miss %2$s%3$s."),
          evasion_margin_adverb().c_str(),
          defender->name(DESC_THE).c_str(),
          weapon_desc().c_str());
@@ -3044,13 +3060,13 @@ void melee_attack::set_attack_verb(int damage)
         if (verbs.weak != nullptr)
         {
             if (damage < HIT_WEAK)
-                attack_verb = verbs.weak;
+                attack_verb = C_("form unarmed attack", verbs.weak);
             else if (damage < HIT_MED)
-                attack_verb = verbs.medium;
+                attack_verb = C_("form unarmed attack", verbs.medium);
             else if (damage < HIT_STRONG)
-                attack_verb = verbs.strong;
+                attack_verb = C_("form unarmed attack", verbs.strong);
             else
-                attack_verb = verbs.devastating;
+                attack_verb = C_("form unarmed attack", verbs.devastating);
             break;
         }
 
@@ -3321,6 +3337,46 @@ bool melee_attack::attack_chops_heads(int dam)
     return true;
 }
 
+// These six actions cannot share the generic Chinese verb+object grammar.
+// The selected canonical action and its random draw are shared by both hit
+// paths; the phrase is display-only and empty for English.
+string melee_attack::mons_body_attack_phrase(const string& verb)
+{
+    if (Options.language != lang_t::ZH)
+        return "";
+    const char* format = nullptr;
+    bool possessive = true;
+    if (verb == "eye-gouge")
+        format = NC_("monster body action", "gouges %s eyes");
+    else if (verb == "head-knock")
+        format = NC_("monster body action", "knocks %s head");
+    else if (verb == "headlock")
+        format = NC_("monster body action", "locks %s head");
+    else if (verb == "kneecap")
+        format = NC_("monster body action", "strikes %s knees");
+    else if (verb == "tickle")
+    {
+        format = NC_("monster body action", "tickles %s");
+        possessive = false;
+    }
+    else if (verb == "wrestle")
+    {
+        format = NC_("monster body action", "wrestles with %s");
+        possessive = false;
+    }
+    else if (verb == "decapitate")
+    {
+        format = NC_("monster body action", "beheads %s");
+        possessive = false;
+    }
+    else
+        return "";
+    const string owner = possessive ? apostrophise(defender_name(true))
+                                    : defender_name(true);
+    // NC_ only marks the canonical identity; translate it at this sink.
+    return make_stringf(C_("monster body action", format), owner.c_str());
+}
+
 /**
  * Decapitate the (hydra or hydra-like) defender!
  */
@@ -3333,14 +3389,18 @@ void melee_attack::decapitate()
 
     if (damage_type == DVORP_CLAWING)
     {
-        static const char *claw_verbs[] = { "rip", "tear", "claw" };
+        static const char *claw_verbs[] = {
+            NC_("decapitation verb", "rip"), NC_("decapitation verb", "tear"),
+            NC_("decapitation verb", "claw")
+        };
         verb = RANDOM_ELEMENT(claw_verbs);
     }
     else
     {
         static const char *slice_verbs[] =
         {
-            "slice", "lop", "chop", "hack"
+            NC_("decapitation verb", "slice"), NC_("decapitation verb", "lop"),
+            NC_("decapitation verb", "chop"), NC_("decapitation verb", "hack")
         };
         verb = RANDOM_ELEMENT(slice_verbs);
     }
@@ -3350,9 +3410,9 @@ void melee_attack::decapitate()
     {
         if (defender_visible)
         {
-            mprf_p(T_("%s %s %s last head off!"),
+            mprf_p(C_("decapitation", "%1$s %2$s %3$s last head off!"),
                    atk_name(DESC_THE).c_str(),
-                   attacker->conj_verb(verb).c_str(),
+                   attacker->verb_for_display(verb, "decapitation verb").c_str(),
                    apostrophise(defender_name(true)).c_str());
         }
 
@@ -3370,9 +3430,9 @@ void melee_attack::decapitate()
 
     if (defender_visible)
     {
-        mprf_p(T_("%s %s one of %s heads off!"),
+        mprf_p(C_("decapitation", "%1$s %2$s one of %3$s heads off!"),
                atk_name(DESC_THE).c_str(),
-               attacker->conj_verb(verb).c_str(),
+               attacker->verb_for_display(verb, "decapitation verb").c_str(),
                apostrophise(defender_name(true)).c_str());
     }
 
@@ -3586,6 +3646,8 @@ bool melee_attack::player_good_stab()
  */
 string melee_attack::mons_attack_verb()
 {
+    // Keep the selected action canonical until its display consumer.
+    const ScopedLangEn english;
     static const char *klown_attack[] =
     {
         N_("hit"),
@@ -4336,7 +4398,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         if (coinflip())
         {
             defender->floodify(attacker, random_range(30, 60),
-                               attacker->type == MONS_VOID_OOZE ? T_("ooze") : "water");
+                               attacker->type == MONS_VOID_OOZE ? "ooze" : "water");
         }
         break;
 
@@ -4998,7 +5060,8 @@ bool melee_attack::do_knockback(bool slippery)
         // Prevent trample/drown combo when flight is expiring
         || defender->is_player() && need_expiration_warning(new_pos)
         || defender->is_constricted()
-        || defender->resists_dislodge(needs_message ? "being knocked back" : ""))
+        || defender->resists_dislodge(needs_message
+            ? NC_("dislodge event", "being knocked back") : ""))
     {
         if (needs_message)
         {
@@ -5073,7 +5136,8 @@ bool melee_attack::do_drag()
         || (new_defender_pos != attacker->pos() && actor_at(new_defender_pos))
         || defender->is_player() && need_expiration_warning(new_defender_pos)
         || defender->is_constricted()
-        || defender->resists_dislodge(needs_message ? "being dragged" : ""))
+        || defender->resists_dislodge(needs_message
+            ? NC_("dislodge event", "being dragged") : ""))
     {
         return false;
     }
@@ -5372,7 +5436,7 @@ vector<string> get_player_aux_names()
     {
         const AuxAttackType* const aux = aux_attack_types[i - 1];
         if (aux->is_usable())
-            names.push_back(aux->get_name());
+            names.push_back(C_("auxiliary attack name", aux->get_name().c_str()));
     }
 
     return names;

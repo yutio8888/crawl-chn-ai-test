@@ -485,8 +485,8 @@ static bool _try_generate_apostle_challenge(int pow, int band_pow)
 
     // Todo: Make sure not to pick the same name as any existing apostle
 
-    string challenge_msg = " speaks to you: ";
-    challenge_msg += getSpeakString("Beogh apostle challenge");
+    const string challenge_msg = make_stringf(T_(" speaks to you: %s"),
+        getSpeakString("Beogh apostle challenge").c_str());
     simple_god_message(challenge_msg.c_str());
 
     you.duration[DUR_BEOGH_DIVINE_CHALLENGE] = 100;
@@ -649,7 +649,7 @@ void win_apostle_challenge(monster& apostle)
     // Remind the player how to do this, if they don't already have an apostle
     if (get_num_apostles() == 0)
     {
-        msg += make_stringf(T_(" (press <w>%c</w> on the <w>%s</w>bility menu to recruit an apostle)"),
+        msg += make_stringf_p(T_(" (press <w>%1$c</w> on the <w>%2$s</w>bility menu to recruit an apostle)"),
                             get_talent(ABIL_BEOGH_RECRUIT_APOSTLE).hotkey,
                             command_to_string(CMD_USE_ABILITY).c_str());
     }
@@ -687,7 +687,11 @@ string get_apostle_name(int slot, bool with_title)
     const monster& apostle = apostles[slot].apostle.mons;
     string name = apostle.name(DESC_PLAIN, true);
     if (with_title)
-        name += ", " + apostle_type_names[apostle.props[APOSTLE_TYPE_KEY].get_int()];
+    {
+        name += ", ";
+        name += T_(apostle_type_names[
+            apostle.props[APOSTLE_TYPE_KEY].get_int()].c_str());
+    }
 
     return name;
 }
@@ -705,9 +709,7 @@ void beogh_recruit_apostle()
         if (!you.can_see(*real))
         {
             if (try_recall(real->mid))
-            {
                 msg += make_stringf(T_("Beogh recalls %s to your side and "), real->name(DESC_THE, true).c_str());
-            }
         }
     }
     // Apostle died before we could recruit them
@@ -1147,7 +1149,7 @@ string apostle_short_description(int slot)
     string str = make_stringf("%s (<%s>%s</%s>)     %s\n",
         apostle.name(DESC_PLAIN, true).c_str(),
         _apostle_type_colours[atype],
-        apostle_type_names[atype].c_str(),
+        T_(apostle_type_names[atype].c_str()),
         _apostle_type_colours[atype],
         status.c_str());
 

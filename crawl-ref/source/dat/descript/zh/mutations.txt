@@ -175,7 +175,7 @@ stinger mutation
 %%%%
 weakness stinger mutation
 
-你长出一条细长的红色尾巴，在近战时能够扫打敌人。
+你长出一条细长的橙色尾巴，在近战时能够扫打敌人。
 这个变异每升一级会增强你的尾巴的力量，并使其变成尖锐的螫刺。
 这个变异达到第三级，那些不幸被螫刺击中的怪物会被短暂虚弱，
 但你将无法穿戴披风或围巾。
@@ -314,12 +314,12 @@ devolution mutation
 %%%%
 wild magic mutation
 
-你的法术将略难施放（增加了失误率和判定的严苛程度），但威力会变强。
+你的法术将略难施放（施法失误的概率及后果严重程度提高），但威力会变强。
 这个变异每升一级，两方面的效果都会增强。
 %%%%
 subdued magic mutation
 
-你的法术将略易施放（减少了失误率和判定的严苛程度），但威力会变弱。
+你的法术将略易施放（施法失误的概率及后果严重程度降低），但威力会变弱。
 这个变异每升一级，两方面的效果都会增强。
 %%%%
 # ------ 只有坏变异，没有对应的好变异 -----
@@ -337,9 +337,9 @@ deformed body mutation
 %%%%
 screaming mutation
 
-当敌人第一次出现在你的视线中时，有时你会有种无法克制的冲动，要冲他们喊叫。
-你的喊叫声也都比平时更大。这个变异达到第二级，你将更难克制那股冲动，
-你的喊叫声也会更大。
+每当你受伤时，有时会涌起无法克制的尖叫冲动。你的所有喊叫声也都比平时更响。
+
+此变异达到第二级时，你会更难克制这股冲动，喊叫声也会更加响亮。
 %%%%
 no potion heal mutation
 
@@ -418,7 +418,7 @@ sturdy frame mutation
 
 你的行动将少受到护甲的阻碍，
 并减少了护甲对施法成功率、闪避和远程武器攻击速度的负面影响。
-这个变异每升一级，就会减少2点护甲的妨碍等级。
+这个变异每升一级，就会减少2点护甲的负重等级。
 %%%%
 sanguine armour mutation
 
@@ -461,7 +461,7 @@ demonic willpower mutation
 %%%%
 hurl damnation mutation
 
-你可以通过<input>$cmd[CMD_USE_ABILITY]</input>发动天遣。敌人们可要当心了！
+你可以通过<input>$cmd[CMD_USE_ABILITY]</input>投掷天谴。敌人们可要当心了！
 %%%%
 word of chaos mutation
 
@@ -491,7 +491,7 @@ acrobatic mutation
 %%%%
 evasive flight mutation
 
-你地在空中扑闪，闪避能力得到一定提升。
+你在空中灵活飞行，闪避能力得到一定提升。
 %%%%
 big wings mutation
 
@@ -538,9 +538,8 @@ stealthy paws mutation
 %%%%
 four strong arms mutation
 
-你有两对双臂，可以一对手持双手武器，另一对手持盾牌。
-你甚至可以挥舞极其巨大的武器，比如大棒，不过这需要两对手臂的配合。
-每对手臂的副臂的形状都很奇怪，因此你无法戴上额外的手套或魔法戒指。
+你有两对手臂，可以一对持握双手武器、另一对持盾，还能额外穿戴一双手套。
+你甚至可以挥舞巨棒等极其巨大的武器，不过这需要两对手臂共同持握。
 %%%%
 retaliatory headbutt mutation
 
@@ -743,7 +742,7 @@ inability to train armour mutation
 %%%%
 no air magic mutation
 
-你的空气魔法技能等级为 0，你也无法训练它。
+你的空气系技能等级为 0，你也无法训练它。
 %%%%
 no conjurations magic mutation
 
@@ -751,11 +750,11 @@ no conjurations magic mutation
 %%%%
 no earth magic mutation
 
-你的大地魔法技能等级为 0，你也无法训练它。
+你的大地系技能等级为 0，你也无法训练它。
 %%%%
 no fire magic mutation
 
-你的火焰魔法技能等级为 0，你也无法训练它。
+你的火焰系技能等级为 0，你也无法训练它。
 %%%%
 no hexes magic mutation
 
@@ -763,15 +762,15 @@ no hexes magic mutation
 %%%%
 no ice magic mutation
 
-你的寒冰魔法技能等级为 0，你也无法训练它。
+你的寒冰系技能等级为 0，你也无法训练它。
 %%%%
 no necromancy magic mutation
 
-你的死灵术技能等级为0，你也无法训练它。
+你的死灵系技能等级为0，你也无法训练它。
 %%%%
 no alchemy magic mutation
 
-你的炼金术技能等级为0，你也无法训练它。
+你的炼金系技能等级为0，你也无法训练它。
 %%%%
 no summoning magic mutation
 
@@ -784,17 +783,17 @@ no translocations magic mutation
 %%%%
 Cocytus destruction mutation
 
-你的释放毁灭能力被冰狱强化。你能够投掷寒冰束而不是火焰，
+你的释放毁灭能力被悲叹河强化。你能够投掷寒冰束而不是火焰，
 你的寒冷束将受害者冻结成固体，减慢其移动。
 %%%%
 Dis destruction mutation
 
-你的释放毁灭能力被铁城强化。你能够投掷腐蚀性酸液束和金属碎片束
+你的释放毁灭能力被迪斯强化。你能够投掷腐蚀性酸液束和金属碎片束
 而不是负能量。
 %%%%
 Gehenna destruction mutation
 
-你的释放毁灭能力被火焚地狱强化。你能够投掷岩浆束而不是寒冷，
+你的释放毁灭能力被欣嫩谷强化。你能够投掷岩浆束而不是寒冷，
 你的火焰束可以剥离受害者的火焰抗性。
 %%%%
 Mark of Annihilation mutation
@@ -819,7 +818,7 @@ Mark of Annihilation mutation
 Mark of Atrocity mutation
 
 你的释放毁灭在连续使用不中断时会变得更加强大，伤害和生命消耗都会增加。
-连续使用第四次时，你将自动向随机目标释放一阵狂野的额外弩箭齐射，
+连续使用第四次时，你将自动向随机目标释放一阵狂野的额外毁灭光束齐射，
 并重置此加成。
 %%%%
 Mark of Carnage mutation
@@ -883,11 +882,11 @@ Mark of the Tyrant mutation
 
 你的地狱仆从持续时间更长，在非常高的祈神技能下你甚至可以
 召唤更强大的仆从（以额外的虔诚值为代价）。当你杀死敌人时，
-一个随机仆从可能获得以下之一：加速、强壮、再生或聪慧。
+一个随机仆从可能获得以下之一：加速、强效、再生或聪慧。
 %%%%
 Tartarus destruction mutation
 
-你的释放毁灭能力被悲叹地狱强化。你能够投掷毁灭束而不是闪电，
+你的释放毁灭能力被塔尔塔罗斯强化。你能够投掷毁灭束而不是闪电，
 它会降低受害者的意志力，且你的负能量束更加强大。
 %%%%
 accursed mutation
@@ -1005,8 +1004,7 @@ foul shadow mutation
 %%%%
 freeze response mutation
 
-每当你在近战中被击中时，你的身体本能地用一阵寒冷能量做出反应，
-对攻击者造成微弱的冰冻伤害。
+每当你受到寒冷伤害时，都有一定几率陷入冰封，短时间内降低移动速度。
 %%%%
 frigid aura mutation
 
@@ -1042,8 +1040,9 @@ hex mastery mutation
 %%%%
 hive swarm mutation
 
-你体内栖息着一群防御性昆虫，当你受到严重伤害时会蜂拥而出
-攻击附近的敌人。
+每当受伤使你的生命值降至上限的50%或以下时，愤怒的蜜蜂就会从你体内蜂拥而出，保护你。
+
+在你的生命值完全恢复之前，此效果不会再次触发。
 %%%%
 hunted bane
 
@@ -1124,7 +1123,7 @@ multiplicity bane
 %%%%
 no forgecraft magic mutation
 
-你的锻造术技能固定为 0，且无法训练该技能。
+你的锻造系技能固定为 0，且无法训练该技能。
 %%%%
 no jewellery mutation
 
@@ -1182,8 +1181,8 @@ renounce scrolls mutation
 %%%%
 riddle compulsion mutation
 
-你对谜语有一种无法控制的痴迷，有时在遇到新敌人时
-无法控制地向他们提出谜语。
+遇到敌人时，你就忍不住向它们出谜语。偶尔，这些谜语会使它们混乱或恼怒，
+但大多数时候只会引起它们的注意。
 %%%%
 runic magic mutation
 
@@ -1233,7 +1232,8 @@ sporulate mutation
 %%%%
 steam response mutation
 
-被火焰弹射物击中时，有一定几率扩散出蒸汽云雾。
+当你受到火焰投射物的伤害时，有一定概率在周身散布蒸汽云雾；
+受到的伤害越大，概率就越高。
 %%%%
 stinger hair mutation
 

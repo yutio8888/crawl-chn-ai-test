@@ -62,7 +62,7 @@ CMD_DISPLAY_RELIGION
 %%%%
 CMD_DISPLAY_RELIGION verbose
 
-显示你信仰的神祇的好恶、戒律，以及当前的虔诚度和神赐的能力。
+显示你信仰的神祇的好恶、戒律，以及你当前的信仰状况和神赐能力。
 %%%%
 CMD_DISPLAY_MUTATIONS
 
@@ -751,7 +751,7 @@ CMD_TARGET_SELECT_FORCE
 %%%%
 CMD_TARGET_SELECT_FORCE_ENDPOINT
 
-强制瞄准路径终点
+在路径终点强制确认
 %%%%
 CMD_TARGET_CYCLE_QUIVER_FORWARD
 

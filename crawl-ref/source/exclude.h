@@ -6,6 +6,8 @@
 
 using std::vector;
 
+class level_id;
+
 void add_auto_excludes();
 
 void init_exclusion_los();
@@ -15,6 +17,12 @@ void deferred_exclude_update();
 bool is_exclude_root(const coord_def &p);
 int get_exclusion_radius(const coord_def &p);
 string get_exclusion_desc(const coord_def &p);
+// Display-only rendering of a stored exclusion description. Storage and
+// comparisons use the canonical English form.
+string exclusion_display_name(const string &description);
+// Canonical-storage / display classifier that also recognises legacy
+// already-saved Chinese cloud descriptions without hardcoded CJK literals.
+bool is_cloud_exclusion(const string &description);
 void cycle_exclude_radius(const coord_def &p);
 void del_exclude(const coord_def &p);
 void set_exclude(const coord_def &p, int radius = LOS_RADIUS,
@@ -75,6 +83,11 @@ public:
 
     bool is_excluded(const coord_def &p) const;
     bool is_exclude_root(const coord_def &p) const;
+    // Summarise structured exclusions for one level. display=false yields the
+    // canonical stored form (level annotations are saved); display=true
+    // renders the current language.
+    string get_exclusion_desc(level_id level, bool display = false) const;
+    // Convenience for storage: the current level, canonical form.
     string get_exclusion_desc();
 
     size_t size()  const;

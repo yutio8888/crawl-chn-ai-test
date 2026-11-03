@@ -1071,15 +1071,16 @@ namespace arena
                  ties);
             if (contest_cancelled)
             {
-                outcome += make_stringf(T_("\n(Cancelled after %d trial%s)"),
-                    trials_done, trials_done > 1 ? "s" : "");
+                outcome += make_stringf(trials_done > 1
+                    ? T_("\n(Cancelled after %d trials)")
+                    : T_("\n(Cancelled after %d trial)"), trials_done);
             }
 
             mpr(T_("---- Contest finished ----\n") + outcome);
             if (!skipped_arena_ui)
             {
-                ui::message(outcome, "Arena results:",
-                    "<cyan>Hit any key to continue, ctrl-p for the full log.</cyan>");
+                ui::message(outcome, T_("Arena results:"),
+                    T_("<cyan>Hit any key to continue, ctrl-p for the full log.</cyan>"));
             }
         }
 
@@ -1375,7 +1376,7 @@ int arena_cull_items()
     for (int i = 0; i < MAX_ITEMS; i++)
     {
         // All items in env.item[] are valid when we're called.
-        const item_def &item(env.item[i]);
+        const item_def &item = env.item[i];
 
         // We want floor items.
         if (!in_bounds(item.pos))
@@ -1394,7 +1395,7 @@ int arena_cull_items()
 
     for (int idx : items)
     {
-        const item_def &item(env.item[idx]);
+        const item_def &item = env.item[idx];
 
         // If the drop time is 0 then this is probably thrown ammo.
         if (arena::item_drop_times[idx] == 0)
@@ -1469,7 +1470,7 @@ static void _choose_arena_teams(newgame_def& choice,
     arena::skipped_arena_ui = false;
     clear_message_store();
 
-    auto text = make_shared<Text>("Enter your choice of teams:\n ");
+    auto text = make_shared<Text>(T_("Enter your choice of teams:\n "));
     auto vbox = make_shared<Box>(ui::Widget::VERT);
     vbox->add_child(text);
     vbox->set_cross_alignment(Widget::Align::STRETCH);

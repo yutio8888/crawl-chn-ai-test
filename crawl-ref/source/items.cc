@@ -1368,6 +1368,9 @@ string origin_desc(const item_def &item)
     }
 
     string desc;
+    // Resolved once: the god-gift sentence and the trailing place suffix both
+    // need it, and recomputing would risk diverging from the serialized text.
+    const string place = _origin_place_desc(item);
     if (item.orig_monnum)
     {
         if (item.orig_monnum < 0)
@@ -1398,8 +1401,8 @@ string origin_desc(const item_def &item)
             default:
                 if (iorig > GOD_NO_GOD && iorig < NUM_GODS)
                 {
-                    desc += god_name(static_cast<god_type>(iorig))
-                        + (T_(" gifted ") + _article_it(item) + T_(" to you "));
+                    return make_stringf_p(T_("%1$s gifted it to you %2$s"),
+                        god_name(static_cast<god_type>(iorig)).c_str(), place.c_str());
                 }
                 else
                 {
@@ -1415,7 +1418,6 @@ string origin_desc(const item_def &item)
     else
         desc += (T_("You found ") + _article_it(item) + " ");
 
-    string place = _origin_place_desc(item);
     if (!place.empty())
     {
         if (Options.language == lang_t::ZH)
@@ -3053,8 +3055,13 @@ static void _maybe_disable_autopickup_for_dropped_items(vector<SelItem> &items)
     }
     if (autopickup_remove_count == 1)
     {
+        // Miscellany keeps its database name in English; message it via the
+        // translated display subtype.
+        const string name = last_touched_item->base_type == OBJ_MISCELLANY
+            ? sub_type_string(*last_touched_item)
+            : last_touched_item->name(DESC_DBNAME);
         mprf(T_("Autopickup disabled for %s."),
-             pluralise(last_touched_item->name(DESC_DBNAME)).c_str());
+             pluralise(name).c_str());
     }
     else if (autopickup_remove_count > 1)
         mprf(T_("Autopickup disabled for %d items."), autopickup_remove_count);
@@ -5160,8 +5167,8 @@ void maybe_name_weapon(item_def &item, bool silent)
     string full_name = get_weapon_name(item, true);
 
     // TODO: variant messages? (in the database?)
-    mprf(T_("You welcome %s%s into your grasp."), full_name.c_str(),
-         new_name ? "" : " back");
+    mprf(new_name ? T_("You welcome %s into your grasp.")
+                  : T_("You welcome %s back into your grasp."), full_name.c_str());
 }
 
 void say_farewell_to_weapon(const item_def &item)

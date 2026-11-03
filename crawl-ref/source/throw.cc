@@ -508,7 +508,7 @@ static void _handle_cannon_fx(actor &act, const item_def &weapon, coord_def targ
 
     // knock back
     if (coinflip())
-        act.stumble_away_from(targ, "Mule's kick");
+        act.stumble_away_from(targ, N_("Mule's kick"));
 }
 
 static void _throw_noise(actor* act, const item_def &ammo)

@@ -214,6 +214,10 @@ string mons_type_name(monster_type type, description_level_type desc);
 // Locale-independent form for protocol and TextDB key construction.
 string mons_type_name_en(monster_type type, description_level_type desc);
 
+// Join a corpse/ghost base name with its saved name suffix using the
+// language's own word order. Identity fields keep the raw suffix.
+string mons_name_with_suffix(const string& base, const string& suffix);
+
 bool give_monster_proper_name(monster& mon);
 
 size_type mons_class_body_size(monster_type mc);

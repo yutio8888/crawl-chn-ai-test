@@ -519,8 +519,10 @@ void ImprintDelay::start()
 void TransformDelay::start()
 {
     if (form == transformation::none)
+    {
         mprf(MSGCH_MULTITURN_ACTION,
              T_("You begin untransforming."));
+    }
     else
         mprf(MSGCH_MULTITURN_ACTION,
              T_("You begin transforming."));
@@ -951,7 +953,7 @@ void run_macro(const char *macroname)
     {
         if (!clua.error.empty())
         {
-            mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
+            mprf(MSGCH_ERROR, T_("Lua error: %s"), clua.error.c_str());
             stop_delay();
         }
         else if (delay->duration > 0)
