@@ -18,6 +18,7 @@
 #include "state.h"
 #include "stringutil.h"
 #include "test_zh_fixture.h"
+#include "unicode.h"
 #include "unwind.h"
 
 namespace
