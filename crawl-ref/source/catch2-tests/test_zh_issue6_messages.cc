@@ -4,6 +4,8 @@
 
 #include "acquire.h"
 #include "branch.h"
+#include "clua.h"
+#include "fight.h"
 #include "flang-t.h"
 #include "i18n.h"
 #include "item-prop.h"
@@ -14,6 +16,9 @@
 #include "mon-util.h"
 #include "options.h"
 #include "place.h"
+#include "player.h"
+#include "state.h"
+#include "target.h"
 #include "stringutil.h"
 #include "test_zh_fixture.h"
 #include "unwind.h"
@@ -140,5 +145,53 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             CHECK(vv.db_name() == "Vv");
         }
         CHECK(vv.title_name() == invisible_prefix + "芙芙");
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Freezing cloud self-hit confirmation translates the complete prompt",
+                 "[zh-translation][webtiles-screenshots]")
+{
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.set_position(coord_def(20, 20));
+    unwind_var<decltype(crawl_state.disables)> restore_disables(crawl_state.disables);
+    crawl_state.disables.set(DIS_CONFIRMATIONS, false);
+    // The production yesno hook observes the final prompt without opening a UI.
+    REQUIRE(clua.execstring(
+        "screenshot_old_prompt_hook = c_answer_prompt; "
+        "c_answer_prompt = function(s) screenshot_observed_prompt = s; return true end") == 0);
+    struct restore_prompt_hook
+    {
+        ~restore_prompt_hook()
+        {
+            clua.execstring("c_answer_prompt = screenshot_old_prompt_hook; "
+                            "screenshot_old_prompt_hook = nil; "
+                            "screenshot_observed_prompt = nil");
+        }
+    } restore_hook;
+    class self_targeter : public targeter
+    {
+    public:
+        explicit self_targeter(coord_def pos) { origin = aim = pos; }
+        bool valid_aim(coord_def pos) override { return pos == origin; }
+        aff_type is_affected(coord_def pos) override
+        { return pos == origin ? AFF_YES : AFF_NO; }
+    } hitfunc(you.pos());
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        bool prompted = false;
+        CHECK_FALSE(stop_attack_prompt(hitfunc, "conjure a freezing cloud",
+            [](const actor *) { return true; }, &prompted, nullptr, false, true));
+        REQUIRE(prompted);
+        REQUIRE(clua.execstring("return screenshot_observed_prompt", "screenshot", 1) == 0);
+        lua_State *ls = clua;
+        REQUIRE(lua_isstring(ls, -1));
+        const string prompt = lua_tostring(ls, -1);
+        lua_pop(ls, 1);
+        CHECK(prompt == (language == lang_t::ZH
+            ? "真的要在自己附近制造冰冻云吗？"
+            : "Really conjure a freezing cloud near yourself?"));
     }
 }

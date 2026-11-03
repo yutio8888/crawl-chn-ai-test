@@ -99,6 +99,21 @@ try:
 finally:
     delayed.close()
 
+# The stress assertion consumes a real full redraw in panels mode. Keep its
+# failure paths sensitive to truncated values, captions, and equipment slots.
+stress = '生命:34/138 (140) ===== 法力:7/29 ==== 装备:).[......... 加速+减速'
+bot.assert_hud_stress_labels(stress)
+for broken in (stress.replace('生命:', '命:'),
+               stress.replace('(140)', '(14'),
+               stress.replace('.........', '........'),
+               stress.replace('加速+减速', '速+缓')):
+    try:
+        bot.assert_hud_stress_labels(broken)
+    except bot.BotFailure:
+        pass
+    else:
+        raise SystemExit('incomplete HUD stress frame was accepted')
+
 bot.assert_screen('positive', '你的法术：魔法飞弹', ('魔法飞弹',))
 bot.assert_screen('help-main-positive', '地牢爬行帮助：查找说明',
                   bot.HELP_MAIN_REQUIRED)
@@ -139,6 +154,32 @@ for token in (
         pass
     else:
         raise SystemExit(f'panel-specific forbidden token accepted: {token}')
+
+# The known-items check must collect paginated labels and reject both a
+# missing item and the canonical-English display leak reported in Webtiles.
+class KnownMiscPages:
+    def __init__(self, pages):
+        self.pages = list(pages)
+
+    def send(self, keys, timeout):
+        if keys != b'>':
+            raise SystemExit('known-items probe used a non-page command')
+        return self.pages.pop(0) if self.pages else ''
+
+first_misc_page = '杂物：凝聚之翼 幻影镜 洪水之瓶 百兽之盒'
+second_misc_page = '盖尔的重力铃鼓 蜘蛛之袋 雷击杖 震颤石之罐'
+bot.assert_known_misc_items(KnownMiscPages([second_misc_page]), first_misc_page)
+for first, second in (
+    (first_misc_page.replace('幻影镜', ''), second_misc_page),
+    (first_misc_page + ' condenser vane', second_misc_page),
+    (first_misc_page.replace('凝聚之翼', 'condenser vane'), second_misc_page),
+):
+    try:
+        bot.assert_known_misc_items(KnownMiscPages([second]), first)
+    except bot.BotFailure:
+        pass
+    else:
+        raise SystemExit('known-items probe accepted missing or English labels')
 
 bot.validate_panel_manifest()
 configured_forbidden = {case[0]: case[3] for case in bot.PANEL_CASES}

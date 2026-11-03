@@ -5799,3 +5799,10 @@ Issue #147 F2: the eight additions/replacements in frozen Chinese `c55cf7f7a5` a
 | appearance:ring-primary:010 | 红宝石色 | 红宝石 | adjust | 按首饰材质义采用宝石/金属名，专用上下文与药水颜色词分开。 |
 | appearance:ring-primary:017 | 祖母绿色 | 祖母绿 | adjust | 按首饰材质义采用宝石/金属名，专用上下文与药水颜色词分开。 |
 | appearance:ring-primary:023 | 蓝宝石色 | 蓝宝石 | adjust | 按首饰材质义采用宝石/金属名，专用上下文与药水颜色词分开。 |
+
+### Issue #237 targeted follow-up
+
+- `sundering (sunder) weapon ego`: 下一击伤害大幅提高；连续多次攻击的前提和额外一格劈砍范围完整保留。
+- `silver (silver) missile ego`: 保留高于普通弹药的基础伤害、混沌／魔法变形目标额外增伤，以及目标变异越多增伤越高的后续说明。
+- 紧凑物品属性：`AC`／`EV`／`SH` 改为“护甲”／“闪避”／“格挡”；`rN`／`rN+` 采用“负能抗”／“负能抗+”，保留等级符号。详情 `rNeg` 用“负能量抗性”。火抗、冰抗、电抗、毒抗和意志在属性列表中含义明确，保留简写。
+- 术语依据：当前 `docs/glossary.md` SHA-256 `8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`。

@@ -7196,13 +7196,46 @@ public:
                     labels_widths_by_col[col] = max(labels_widths_by_col[col], label_w);
             }
         }
-        const int cell_len = fixed_column_width > 0 ? fixed_column_width
-                                : 80 / max(1, (int)labels_widths_by_col.size());
+        const int columns = max(1, (int)labels_widths_by_col.size());
+        const int budget = fixed_column_width > 0
+            ? fixed_column_width * fixed_column_num : 80;
+        vector<int> minimum_widths(columns, 0);
+        for (const auto &row : rows)
+            for (size_t col = 0; col < row.size(); ++col)
+                if (!row[col].label.empty())
+                {
+                    minimum_widths[col] = max(minimum_widths[col],
+                        labels_widths_by_col[col] + 2
+                        + _str_display_width(row[col].value) + 1);
+                }
+        vector<int> widths(columns);
+        int total = 0;
+        for (int col = 0; col < columns; ++col)
+        {
+            widths[col] = max(budget / columns, minimum_widths[col]);
+            total += widths[col];
+        }
+        // Give long translated labels space by taking unused column padding.
+        for (int col = columns - 1; col >= 0 && total > budget; --col)
+        {
+            const int spare = min(total - budget,
+                                  widths[col] - minimum_widths[col]);
+            widths[col] -= spare;
+            total -= spare;
+        }
 
         for (const auto &row : rows)
         {
+            int line_width = 0;
             for (size_t col = 0; col < row.size(); ++col)
             {
+                const int cell_len = widths[col];
+                if (line_width && line_width + cell_len > budget)
+                {
+                    result << "\n";
+                    line_width = 0;
+                }
+                line_width += cell_len;
                 const TableCell &cell = row[col];
                 if (cell.label.empty())  // padding
                 {

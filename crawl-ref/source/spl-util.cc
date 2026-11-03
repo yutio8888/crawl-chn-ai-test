@@ -25,6 +25,7 @@
 #include "god-abil.h"
 #include "item-prop.h"
 #include "level-state-type.h"
+#include "lang-en-guard.h"
 #include "libutil.h"
 #include "macro.h"
 #include "message.h"
@@ -663,21 +664,6 @@ spell_type spell_by_name(string name, bool partial_match)
     return sp == NUM_SPELLS ? SPELL_NO_SPELL : sp;
 }
 
-// English school long names for .des file parsing compatibility
-static const map<spschool, const char*> school_english_long_names = {
-    { spschool::conjuration, "Conjuration" },
-    { spschool::hexes, "Hexes" },
-    { spschool::fire, "Fire" },
-    { spschool::ice, "Ice" },
-    { spschool::necromancy, "Necromancy" },
-    { spschool::summoning, "Summoning" },
-    { spschool::forgecraft, "Forgecraft" },
-    { spschool::translocation, "Translocation" },
-    { spschool::alchemy, "Alchemy" },
-    { spschool::earth, "Earth" },
-    { spschool::air, "Air" },
-};
-
 spschool school_by_name(string name)
 {
     spschool short_match, long_match, en_match;
@@ -688,7 +674,9 @@ spschool school_by_name(string name)
 
     lowercase(name);
 
-    for (int i = 0; i <= (int)spschool::random; i++)
+    // Iterate bit exponents, including the random pseudo-school. The enum
+    // values are masks; using spschool::random as the bound shifts past int.
+    for (int i = 0; i <= SPSCHOOL_LAST_EXPONENT + 1; i++)
     {
         const auto type = spschools_type::exponent(i);
 
@@ -714,35 +702,39 @@ spschool school_by_name(string name)
             long_matches++;
         }
 
-        // Also match against English long name for .des file compatibility
-        auto en_it = school_english_long_names.find(type);
-        if (en_it != school_english_long_names.end())
+        // Vault specifications use canonical English names even in ZH mode.
+        // Include abbreviations such as Tloc and Frge that are not substrings
+        // of their long names. Count each school only once per match channel.
+        string en_short;
         {
-            string en_long = lowercase_string(en_it->second);
-            if (name == en_long)
-                return type;
-            if (en_long.find(name) != string::npos)
-            {
-                en_match = type;
-                en_matches++;
-            }
+            ScopedLangEn english;
+            en_short = lowercase_string(spelltype_short_name(type));
+        }
+        const string en_long = lowercase_string(spelltype_long_name_en(type));
+        if (name == en_short || name == en_long)
+            return type;
+        if (en_short.find(name) != string::npos
+            || en_long.find(name) != string::npos)
+        {
+            en_match = type;
+            en_matches++;
         }
     }
 
-    if (short_matches != 1 && long_matches != 1 && en_matches != 1)
-        return spschool::none;
-
-    if (short_matches == 1 && long_matches != 1 && en_matches != 1)
-        return short_match;
-    if (short_matches != 1 && long_matches == 1 && en_matches != 1)
-        return long_match;
-    if (short_matches != 1 && long_matches != 1 && en_matches == 1)
-        return en_match;
-
-    if (short_match == long_match && long_match == en_match)
-        return short_match;
-
-    return spschool::none;
+    // Unique matches from different channels may agree even if another
+    // channel has no match. Only conflicting unique matches are ambiguous.
+    spschool result = spschool::none;
+    for (const auto &match : { make_pair(short_matches, short_match),
+                              make_pair(long_matches, long_match),
+                              make_pair(en_matches, en_match) })
+    {
+        if (match.first != 1)
+            continue;
+        if (result != spschool::none && result != match.second)
+            return spschool::none;
+        result = match.second;
+    }
+    return result;
 }
 
 int get_spell_slot_by_letter(char letter)

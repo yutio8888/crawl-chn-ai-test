@@ -9169,10 +9169,10 @@ TEST_CASE("spell details expand defence and resistance labels in context",
     }
     if (language == lang_t::ZH)
     {
-        // The shared compact HUD keys are intentionally not expanded.
-        CHECK(string(T_("AC")) == "防");
-        CHECK(string(T_("EV")) == "闪");
-        CHECK(string(T_("SH")) == "盾");
+        // Shared defence labels remain readable in monster and item details.
+        CHECK(string(T_("AC")) == "护甲");
+        CHECK(string(T_("EV")) == "闪避");
+        CHECK(string(T_("SH")) == "格挡");
         CHECK(spell_resist_string(SPELL_BOLT_OF_DRAINING, true, 100) == "负能量抗性");
         CHECK(spell_resist_string(SPELL_SPIT_ACID, true, 100) == "腐蚀抗性");
         CHECK(spell_resist_string(SPELL_STEAM_BALL, true, 100) == "蒸汽抗性");
@@ -11617,4 +11617,47 @@ TEST_CASE("divine rereview: real deck summaries use bare categories and locale s
             CHECK(output.find(names[i]) == string::npos);
     }
     CHECK(displayed_category);
+}
+
+TEST_CASE("Issue 237 simultaneous speed effects retain display and identity",
+          "[zh-translation][issue237]")
+{
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.duration[DUR_SLOW] = 100;
+    you.duration[DUR_HASTE] = 100;
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+    status_info info;
+    REQUIRE(fill_status_info(STATUS_SPEED, info));
+    CHECK(info.db_key == "Fast+Slow");
+    CHECK(info.light_text == (language == lang_t::ZH ? "加速+减速" : "Fast+Slow"));
+}
+
+TEST_CASE("Issue 237 compact item properties preserve resistance levels",
+          "[zh-translation][issue237]")
+{
+    init_properties();
+    item_def item;
+    item.base_type = OBJ_ARMOUR;
+    item.sub_type = ARM_ROBE;
+    item.quantity = 1;
+    item.rnd = 1;
+    item.pos = coord_def(-1, -1);
+    REQUIRE(make_item_randart(item, true));
+    for (int prop = 0; prop < ART_PROPERTIES; ++prop)
+        artefact_set_property(item, static_cast<artefact_prop_type>(prop), 0);
+    artefact_set_property(item, ARTP_NEGATIVE_ENERGY, 2);
+    item.flags |= ISFLAG_IDENTIFIED;
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+    const bool zh = language == lang_t::ZH;
+    CHECK(artefact_inscription(item) == (zh ? "负能抗++" : "rN++"));
+    CHECK(string(jewellery_effect_name(RING_PROTECTION, true))
+          == (zh ? "护甲" : "AC"));
+    CHECK(string(jewellery_effect_name(RING_EVASION, true))
+          == (zh ? "闪避" : "EV"));
+    item.flags &= ~ISFLAG_ARTEFACT_MASK;
+    item.special = SPARM_POSITIVE_ENERGY;
+    CHECK(string(armour_ego_name(item, true)) == (zh ? "负能抗+" : "rN+"));
 }

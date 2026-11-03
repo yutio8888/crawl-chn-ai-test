@@ -177,13 +177,21 @@ secrets; their arm64 `buildTest` APK uses Gradle's ephemeral debug signature and
 named `android-pr-debug-apk` so it cannot
 be mistaken for the update channel.
 
-On a valid three-part release tag the workflow also builds `assembleRelease`,
-zipaligns and signs the APK, verifies the signature and four-ABI PCRE contract,
+Release tags skip the four-ABI Debug build, its test-signing secrets, and the
+`android-debug-apk` upload. They retain launcher unit tests. The workflow builds
+`assembleRelease`, zipaligns and signs the APK, verifies the signature and four-ABI PCRE contract,
 and uploads the versioned file as `android-release-apk`:
 
 ```text
 stone_soup-0.34.1-zhA-B-CCC-android.apk
 ```
+
+Android's Gradle dependency cache does not cache native C++ objects. The host
+Makefile's ccache configuration also does not automatically wrap Gradle's
+`ndkBuild`. A future native cache must distinguish ABI, NDK/compiler, build
+variant and compiler options, verify invalidation when inputs change, and
+compare cold and warm builds on the same runner class. Signing material must
+remain outside that cache.
 
 Configure dedicated test-signing Actions secrets
 `ANDROID_TEST_KEYSTORE_BASE64`, `ANDROID_TEST_KEYSTORE_PASS`, and

@@ -130,7 +130,8 @@ def pr_step_applicable(step):
     condition = step.get("if")
     if condition in (None, "${{ github.event_name == 'pull_request' }}"):
         return True
-    if condition == "${{ github.event_name != 'pull_request' }}":
+    if condition in ("${{ github.event_name != 'pull_request' }}",
+                     "${{ github.event_name != 'pull_request' && !startsWith(github.ref, 'refs/tags/') }}"):
         return False
     if pr_value(condition) == "false":
         return False

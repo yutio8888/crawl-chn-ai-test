@@ -117,8 +117,8 @@ speed (speed) weapon ego
 %%%%
 sundering (sunder) weapon ego
 
-在你连续攻击多次后，它的下一次攻击将造成大幅增加的伤害，
-并可以劈砍到额外一格的远处目标。
+在你连续攻击多次后，它的下一次攻击伤害将大幅提高，
+并能劈砍到额外一格远的目标。
 %%%%
 valour (valour) weapon ego
 
@@ -373,6 +373,6 @@ poisoned (poison) missile ego
 %%%%
 silver (silver) missile ego
 
-它比普通弹药造成更高的伤害，并对混沌生物和经魔法变形的生物造成大幅增加的伤害。
+它造成的伤害高于普通弹药，对混沌生物和经魔法变形的生物的伤害还会大幅提高。
 它还会根据变异程度对变异生物造成额外伤害。
 %%%%
