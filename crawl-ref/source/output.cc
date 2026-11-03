@@ -749,17 +749,6 @@ void update_turn_count()
     textcolour(LIGHTGREY);
 }
 
-static int _count_digits(int val)
-{
-    if (val > 999)
-        return 4;
-    else if (val > 99)
-        return 3;
-    else if (val > 9)
-        return 2;
-    return 1;
-}
-
 static const equipment_slot slot_order[] =
 {
     SLOT_WEAPON, SLOT_OFFHAND, SLOT_WEAPON_OR_OFFHAND, SLOT_BODY_ARMOUR,
@@ -978,23 +967,21 @@ static void _print_stats_mp(int x, int y)
         textcolour(HUD_VALUE_COLOUR);
     CPRINTF("/%d", you.max_magic_points);
 
-    int col = _count_digits(you.magic_points)
-              + _count_digits(you.max_magic_points) + 1;
-
 #if TAG_MAJOR_VERSION == 34
     int real_mp = get_real_mp(false);
     if (you.species == SP_DEEP_DWARF
         && real_mp != you.max_magic_points)
     {
         CPRINTF(" (%d)", real_mp);
-        col += _count_digits(real_mp) + 3;
     }
 #endif
 
     if (boosted)
         textcolour(HUD_VALUE_COLOUR);
 
-    for (int i = 11-col; i > 0; i--)
+    const int col = wherex() - crawl_view.hudp.x;
+    const int bar_x = max(19, col + 1);
+    for (int i = 18-col; i > 0; i--)
         CPRINTF(" ");
 
 #ifdef USE_TILE_LOCAL
@@ -1012,9 +999,9 @@ static void _print_stats_mp(int x, int y)
             MP_Bar.vdraw(6, 24, you.magic_points, you.max_magic_points);
     }
     else
-        MP_Bar.draw(19, y, you.magic_points, you.max_magic_points);
+        MP_Bar.draw(bar_x, y, you.magic_points, you.max_magic_points);
 #else
-    MP_Bar.draw(19, y, you.magic_points, you.max_magic_points);
+    MP_Bar.draw(bar_x, y, you.magic_points, you.max_magic_points);
 #endif
 
     you.redraw_magic_points = false;
@@ -1056,7 +1043,8 @@ static void _print_stats_hp(int x, int y)
     if (boosted)
         textcolour(HUD_VALUE_COLOUR);
 
-    int col = wherex() - crawl_view.hudp.x;
+    const int col = wherex() - crawl_view.hudp.x;
+    const int bar_x = max(19, col + 1);
     for (int i = 18-col; i > 0; i--)
         CPRINTF(" ");
 
@@ -1075,9 +1063,9 @@ static void _print_stats_hp(int x, int y)
             HP_Bar.vdraw(2, 24, you.hp, you.hp_max);
     }
     else
-        HP_Bar.draw(19, y, you.hp, you.hp_max, you.hp - max(0, poison_survival()));
+        HP_Bar.draw(bar_x, y, you.hp, you.hp_max, you.hp - max(0, poison_survival()));
 #else
-    HP_Bar.draw(19, y, you.hp, you.hp_max, you.hp - max(0, poison_survival()));
+    HP_Bar.draw(bar_x, y, you.hp, you.hp_max, you.hp - max(0, poison_survival()));
 #endif
 
     you.redraw_hit_points = false;
@@ -3220,8 +3208,8 @@ static vector<formatted_string> _get_overview_resistances(
     // Two columns.
     column_composer cols(2, Options.show_resist_percent ? 25 : 22);
 
-    // First column, resist name is up to 8 chars
-    int cwidth = 8;
+    // Leave room for the full negative-energy label in Chinese.
+    const int cwidth = max(8, strwidth(T_("rNeg")));
     string out;
     const int rfire = player_res_fire(false);
     out += _resist_composer(T_("rFire"), cwidth, rfire, 3, MR_RES_FIRE) + "\n";

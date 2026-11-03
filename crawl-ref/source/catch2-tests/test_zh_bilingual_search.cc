@@ -26,6 +26,10 @@
 #include "clua.h"                    // clua
 #include "directn.h"                 // feature_description(feat,trap)
 #include "dungeon-feature-type.h"    // DNGN_* feature types
+#include "i18n.h"
+#include "invent.h"
+#include "player.h"
+#include "unwind.h"
 #include "item-def.h"                 // item_def
 #include "item-name.h"                // item_def::name()
 #include "item-prop.h"                // item_english_name()
@@ -384,5 +388,51 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     }
     SECTION("escape hatch up") {
         check_bilingual(DNGN_ESCAPE_HATCH_UP, "hatch");
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Miscellaneous inventory entries retain Chinese display and English search",
+                 "[zh-translation][webtiles-screenshots]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    const pair<misc_item_type, const char *> cases[] =
+    {
+        { MISC_CONDENSER_VANE, "condenser vane" },
+        { MISC_PHANTOM_MIRROR, "phantom mirror" },
+        { MISC_PHIAL_OF_FLOODS, "phial of floods" },
+        { MISC_BOX_OF_BEASTS, "box of beasts" },
+        { MISC_GRAVITAMBOURINE, "Gell's gravitambourine" },
+        { MISC_SACK_OF_SPIDERS, "sack of spiders" },
+        { MISC_LIGHTNING_ROD, "lightning rod" },
+        { MISC_TIN_OF_TREMORSTONES, "tin of tremorstones" },
+    };
+    for (const auto &row : cases)
+    {
+        INFO("item=" << row.second);
+        item_def &item = you.inv[0];
+        item.clear();
+        item.base_type = OBJ_MISCELLANY;
+        item.sub_type = row.first;
+        item.quantity = 1;
+        item.flags = ISFLAG_IDENTIFIED;
+        item.pos = ITEM_IN_INVENTORY;
+        item.link = 0;
+        item.slot = 'a';
+        const string translated = T_(row.second);
+        REQUIRE(translated != row.second);
+        CHECK(item.name(DESC_DBNAME) == row.second);
+        InvEntry entry(item);
+        CHECK(entry.get_text().find(translated) != string::npos);
+        CHECK(entry.get_text().find(row.second) == string::npos);
+        CHECK(entry.get_filter_text().find(row.second) != string::npos);
+        CHECK(item_english_name(item).find(row.second) != string::npos);
+        CHECK(item_english_name(item).find(translated) == string::npos);
+        CHECK(item.name(DESC_INVENTORY).find(translated) != string::npos);
+        ScopedLangEn english;
+        InvEntry english_entry(item);
+        CHECK(english_entry.get_text().find(row.second) != string::npos);
     }
 }

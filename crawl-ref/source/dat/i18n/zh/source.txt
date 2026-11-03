@@ -4394,7 +4394,7 @@ HP: %d    AC: %d    Damage:%d (w/weapon)\n
 生命：%d    护甲：%d    伤害：%d（含武器）\n
 %%%%
 HPRegen
-回血
+生命再生
 %%%%
 huge
 巨大的
@@ -5210,7 +5210,7 @@ Movement
 移动
 %%%%
 MPRegen
-回魔
+法力再生
 %%%%
 Mushrooms sprout behind %s.
 蘑菇在%s背后冒了出来。
@@ -5898,7 +5898,7 @@ ring of
 戒指
 %%%%
 rNeg
-负能
+负能量抗性
 %%%%
 roots
 根须
@@ -11492,7 +11492,7 @@ Regen Will++
 禁再生
 %%%%
 Fast+Slow
-速+缓
+加速+减速
 %%%%
 Invis
 隐形
@@ -21044,7 +21044,7 @@ rF+
 火抗+
 %%%%
 rN+
-负抗+
+负能抗+
 %%%%
 howler monkey
 吼猴
@@ -22721,13 +22721,13 @@ Max HP
 最大生命
 %%%%
 AC
-防
+护甲
 %%%%
 EV
-闪
+闪避
 %%%%
 SH
-盾
+格挡
 %%%%
 Regen
 再生
@@ -27176,7 +27176,7 @@ MP:
 法力:  
 %%%%
 HP: 
-命: 
+生命: 
 %%%%
 Next: 
 下级: 
@@ -27586,13 +27586,13 @@ SH:
 格挡: 
 %%%%
 Str: 
-力: 
+力量: 
 %%%%
 Int: 
-智: 
+智力: 
 %%%%
 Dex: 
-敏: 
+敏捷: 
 %%%%
        Encumbrance rating: 
        负重等级: 
@@ -28117,7 +28117,7 @@ Int
 智力
 %%%%
 rN
-负抗
+负能抗
 %%%%
 HP
 生命
@@ -49252,7 +49252,7 @@ bound soul name|bound
 %%%%
 compact equipment caption|Eq: 
 
-装:
+装备:
 %%%%
 decapitation verb|chop
 
@@ -49421,3 +49421,7 @@ tile offsets|shield
 tile offsets|weapon
 
 武器
+
+%%%%
+conjure a freezing cloud
+制造冰冻云

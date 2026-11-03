@@ -2,6 +2,10 @@
 
 #include "AppHdr.h"
 #include "spl-util.h"
+#include "item-prop.h"
+#include "lang-en-guard.h"
+#include "mapdef.h"
+#include "test_zh_fixture.h"
 #include "rltiles/tiledef-gui.h"
 
 TEST_CASE("All spells are valid")
@@ -54,5 +58,50 @@ TEST_CASE("Removed spells and AXED_SPELLs are in sync" )
 
         INFO("Testing removedness for " << spell_title(spell));
         REQUIRE(spell_removed(spell) == spell_is_axed);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "School lookup accepts vault identities in both languages",
+                 "[zh-translation][webtiles-screenshots]")
+{
+    init_properties();
+    init_spell_descs();
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (int i = 0; i <= SPSCHOOL_LAST_EXPONENT + 1; ++i)
+        {
+            const auto school = spschools_type::exponent(i);
+            string short_en, long_en;
+            {
+                ScopedLangEn canonical;
+                short_en = spelltype_short_name(school);
+                long_en = spelltype_long_name_en(school);
+            }
+            INFO("school=" << long_en);
+            CHECK(school_by_name(short_en) == school);
+            CHECK(school_by_name(long_en) == school);
+            CHECK(school_by_name(spelltype_short_name(school)) == school);
+            CHECK(school_by_name(spelltype_long_name(school)) == school);
+        }
+        CHECK(school_by_name("conjur") == spschool::conjuration);
+        CHECK(school_by_name("not a school") == spschool::none);
+        CHECK(school_by_name("a") == spschool::none);
+
+        // Exercise the production .des item parser used by the failing trove.
+        item_list items;
+        item_spec spec;
+        REQUIRE(items.parse_single_spec(spec,
+            "randbook disc:earth disc2:conj numspells:5 w:4"));
+        CHECK(spec.props[RANDBK_DISC1_KEY].get_short() == static_cast<short>(spschool::earth));
+        CHECK(spec.props[RANDBK_DISC2_KEY].get_short() == static_cast<short>(spschool::conjuration));
+        REQUIRE(items.parse_single_spec(spec,
+            "randbook disc:summoning disc2:conj numspells:5 w:4"));
+        REQUIRE(items.parse_single_spec(spec,
+            "randbook disc:tloc disc2:frge numspells:5"));
+        CHECK(spec.props[RANDBK_DISC1_KEY].get_short() == static_cast<short>(spschool::translocation));
+        CHECK(spec.props[RANDBK_DISC2_KEY].get_short() == static_cast<short>(spschool::forgecraft));
+        CHECK_FALSE(items.parse_single_spec(spec, "randbook disc:not_a_school"));
     }
 }
