@@ -32,7 +32,9 @@ PANEL_CASES = [
     ('panel:overview', bytes([15]), ('地牢总览', '分支'), (), True),
     ('panel:messages', bytes([16]), ('欢迎', '游戏种子'), (), True),
     ('panel:spells', b'I', ('你的法术', '魔法飞弹'), (), True),
-    ('panel:resists', b'%', ('火抗', '冰抗', '毒抗'), (), True),
+    ('panel:resists', b'%', ('火抗', '冰抗', '毒抗', '负能量抗性',
+                               '力量:', '智力:', '敏捷:', '生命再生', '法力再生'),
+     (), True),
     ('panel:mutations', b'A', ('先天能力、怪异特征与变异', '你是亡灵，拥有许多免疫能力与弱点。'),
      ('You are undead, granting you many immunities and vulnerabilities.',
       'Gained at a future XL.'), True),
@@ -325,6 +327,51 @@ def validate_panel_manifest(cases=PANEL_CASES,
             f'panel manifest mismatch: expected {tuple(expected_ids)}, got {case_ids}')
 
 
+
+def assert_known_misc_items(bot: PtyBot, screen: str) -> None:
+    # The knowledge/autopickup menu uses KnownEntry, not inventory InvEntry.
+    # Follow real menu pages so the check also works in a 24-row terminal.
+    names = (
+        ('condenser vane', '凝聚之翼'),
+        ('phantom mirror', '幻影镜'),
+        ('phial of floods', '洪水之瓶'),
+        ('box of beasts', '百兽之盒'),
+        ("Gell's gravitambourine", '盖尔的重力铃鼓'),
+        ('sack of spiders', '蜘蛛之袋'),
+        ('lightning rod', '雷击杖'),
+        ('tin of tremorstones', '震颤石之罐'),
+    )
+    for _ in range(8):
+        if all(chinese in screen for _, chinese in names):
+            break
+        screen += bot.send(b'>', 0.5)
+    assert_screen('panel:known-items:misc', screen,
+                  tuple(chinese for _, chinese in names),
+                  tuple(english for english, _ in names))
+
+def assert_hud_stress_labels(screen: str) -> None:
+    assert_screen('panel:hud-stress', screen,
+                  ('生命:', '法力:', '装备:', '加速+减速'),
+                  ('法:', '装:', '速+缓'))
+    if not re.search(r'生命:\s*\d+/\d{3}\s*\(\d{3}\)', screen):
+        raise BotFailure('panel:hud-stress: missing complete drained HP values')
+    slots = re.search(r'装备:\s*(\S+)', screen)
+    if not slots or len(slots[1]) != 12:
+        raise BotFailure('panel:hud-stress: expected all 12 Octopode equipment slots')
+
+
+def run_hud_stress(bot: PtyBot) -> None:
+    # Run last: the no-save process is disposable, so changing species and XL
+    # cannot affect the other panel assertions or a real player's save.
+    bot.send(b'&r')
+    bot.send(b'Octopode\r')
+    bot.send(b'&l')
+    drain_more(bot, bot.send(b'27\r'))
+    bot.send(b'&Q')
+    bot.send(b's\r')
+    assert_hud_stress_labels(bot.send(bytes([18])))  # force full redraw
+
+
 def run_panels(bot: PtyBot) -> None:
     validate_panel_manifest()
     required = ('魔法飞弹',)
@@ -334,10 +381,13 @@ def run_panels(bot: PtyBot) -> None:
     for case_id, key, required, forbidden, needs_escape in PANEL_CASES:
         screen = bot.send(key)
         assert_screen(case_id, screen, required, forbidden)
+        if case_id == 'panel:known-items':
+            assert_known_misc_items(bot, screen)
         emit(case_id, required=list(required))
         if needs_escape:
             closed = bot.send(b'\x1b', 0.5)
             assert_main_hud(case_id + ':close', closed)
+    run_hud_stress(bot)
 
 
 def exit_nested_help(bot: PtyBot) -> None:

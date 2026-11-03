@@ -454,7 +454,7 @@ class AgentDocumentationTests(unittest.TestCase):
                 self.assertIn("set -euo pipefail", step["run"])
             self.assertLess(validate_index, pr_upload_index)
 
-            non_pr = "${{ github.event_name != 'pull_request' }}"
+            non_pr = "${{ github.event_name != 'pull_request' && !startsWith(github.ref, 'refs/tags/') }}"
             self.assertEqual(non_pr, test_require["if"])
             self.assertEqual(non_pr, test_sign["if"])
             self.assertEqual(non_pr, test_upload["if"])
@@ -664,6 +664,64 @@ class AgentDocumentationTests(unittest.TestCase):
         )
         with self.assertRaises(AssertionError):
             assert_contract(unsigned)
+
+    def test_android_release_tags_skip_debug_without_skipping_release_checks(self) -> None:
+        workflow = yaml.safe_load((ROOT / ".github/workflows/ci.yml").read_text())
+        steps = workflow["jobs"]["build_android"]["steps"]
+        debug = (
+            "Require Android test signing secrets", "Build Android four-ABI debug APK",
+            "Validate packaged PCRE linkage for every Android ABI",
+            "Sign Android debug APK for test updates", "Upload Android test APK",
+        )
+        release = (
+            "Require Android release signing secrets", "Build and sign Android release APK",
+            "Validate release APK PCRE linkage for every Android ABI",
+            "Upload Android release APK",
+        )
+        pr = ("Build Android arm64 PR APK", "Upload Android PR debug APK")
+        unit = ("Run Android launcher unit tests",)
+        cases = (
+            ("pull_request", "refs/pull/240/merge", False, False, True),
+            ("schedule", "refs/heads/chn-trunk", True, False, False),
+            ("workflow_dispatch", "refs/heads/chn-0.34.1-base", True, False, False),
+            ("push", "refs/tags/0.34.1-zh5-1-014", False, True, False),
+            ("push", "refs/tags/0.35-trunk-004", False, True, False),
+        )
+        evaluate = r"""
+const vm = require('vm'), fs = require('fs');
+const input = JSON.parse(fs.readFileSync(0, 'utf8'));
+const results = input.cases.map(([event_name, ref]) => Object.fromEntries(
+    input.steps.map(step => [step.name, vm.runInNewContext(
+        step.if ? step.if.replace(/^\$\{\{\s*|\s*\}\}$/g, '') : 'true', {
+            github: {event_name, ref, ref_name: ref.replace(/^refs\/(tags|heads)\//, '')},
+            startsWith: (s, p) => s.toLowerCase().startsWith(p.toLowerCase()),
+            contains: (s, p) => s.toLowerCase().includes(p.toLowerCase()),
+        }, {timeout: 1000})])));
+process.stdout.write(JSON.stringify(results));
+"""
+        names = (*debug, *release, *pr, *unit)
+
+        def assert_routes(candidate):
+            by_name = {step.get("name"): step for step in candidate}
+            for name in names:
+                self.assertIn(name, by_name)
+            result = subprocess.run(["node", "-e", evaluate],
+                input=json.dumps({"steps": [by_name[name] for name in names],
+                                  "cases": cases}),
+                text=True, capture_output=True, check=True)
+            for observed, case in zip(json.loads(result.stdout), cases):
+                for group, expected in ((debug, case[2]), (release, case[3]),
+                                        (pr, case[4]), (unit, True)):
+                    for name in group:
+                        self.assertEqual(observed[name], expected, (case, name))
+
+        assert_routes(steps)
+        for name, condition in ((debug[1], "${{ github.event_name != 'pull_request' }}"),
+                                (release[2], "${{ false }}")):
+            mutated = copy.deepcopy(steps)
+            next(step for step in mutated if step.get("name") == name)["if"] = condition
+            with self.assertRaises(AssertionError):
+                assert_routes(mutated)
 
     def test_zh_static_tooling_matrix_is_release_scoped(self) -> None:
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
