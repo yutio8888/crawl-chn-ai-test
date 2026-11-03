@@ -1481,7 +1481,7 @@ You grip the centipede bauble in your %s and it winds around your %s and fuses w
 %s每回合有%d%%几率注意到你。\n
 %%%%
 %s has about %d%% to hit you.\n
-%s有约%d%% 几率命中你。\n
+%s有约%d%%几率命中你。\n
 %%%%
 %s has entered your field of view.
 %s进入了视野。
@@ -1490,7 +1490,7 @@ You grip the centipede bauble in your %s and it winds around your %s and fuses w
 %s每回合有%d%%几率注意到你。\n
 %%%%
 %s have about %d%% to hit you.\n
-%s有约%d%% 几率命中你。\n
+%s有约%d%%几率命中你。\n
 %%%%
 %s hums with potential!
 %s嗡嗡作响，充满潜力！
@@ -1640,7 +1640,7 @@ The potion decomposes into %s within you.
 %s不在附近！
 %%%%
 %s leaves your view.
-%s 离开了你的视野。
+%s离开了你的视野。
 %%%%
 %s life force is offered up.
 %s生命力被献祭了。
@@ -52778,3 +52778,31 @@ score sentence|.
 %%%%
 feature note|Found %s.
 发现了%s。
+
+%%%%
+Do you really want to enter wizard mode?
+你真的想进入巫师模式吗？
+
+%%%%
+Make which kind of shop?
+创造哪种商店？
+
+%%%%
+shop type|any
+任意类型
+
+%%%%
+monster equipment| armed with 
+装备着
+
+%%%%
+monster equipment| wielding 
+持握着
+
+%%%%
+monster equipment| and 
+以及
+
+%%%%
+monster equipment|carrying 
+携带着

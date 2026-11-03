@@ -23,6 +23,7 @@
 #include "dungeon.h"
 #include "env.h"
 #include "describe.h"
+#include "directn.h"
 #include "files.h"
 #include "format.h"
 #include "hiscores.h"
@@ -294,6 +295,16 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(purchased_description.find(purchased + terminator + terminator)
               == string::npos);
         CHECK(item.orig_monnum == -IT_SRC_SHOP);
+        CHECK(item.orig_place == level_id(BRANCH_DUNGEON, 3));
+        item.orig_monnum = -AQ_WIZMODE;
+        REQUIRE(origin_describable(item));
+        const string conjured = origin_desc(item);
+        REQUIRE_FALSE(conjured.empty());
+        CHECK(conjured.back() != ' ');
+        CHECK(get_item_description(item).find(conjured + terminator) != string::npos);
+        if (language == lang_t::EN)
+            CHECK(conjured == "Your wizardly powers created it on level 3 of the Dungeon");
+        CHECK(item.orig_monnum == -AQ_WIZMODE);
         CHECK(item.orig_place == level_id(BRANCH_DUNGEON, 3));
         item.quantity = 2;
         CHECK_FALSE(origin_describable(item));
@@ -2127,5 +2138,171 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(saved.raw_string() == raw);
         CHECK(saved.get_fields().str_field("race") == "Human");
         CHECK(saved.get_fields().str_field("cls") == "Fighter");
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "derived monster display joins suffixes and retains names and hydra head counts",
+                 "[zh-translation][playtest-round3][monster-info]")
+{
+    init_monsters();
+    const vector<pair<monster_type, const char*>> forms = {
+        {MONS_ZOMBIE, "zombie"}, {MONS_DRAUGR, "draugr"},
+        {MONS_SIMULACRUM, "simulacrum"}
+    };
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (const auto& form : forms)
+        {
+            monster_info ordinary(form.first, MONS_KOBOLD);
+            const string displayed = ordinary.full_name(DESC_PLAIN);
+            const string species = mons_type_name(MONS_KOBOLD, DESC_PLAIN);
+            const string suffix = T_(form.second);
+            CHECK(displayed.find(species) != string::npos);
+            CHECK(displayed.find(suffix) != string::npos);
+            CHECK(displayed.find(species + " " + suffix)
+                  == (language == lang_t::ZH ? string::npos : 0));
+            CHECK(displayed.find(species + suffix)
+                  == (language == lang_t::ZH ? 0 : string::npos));
+
+            ordinary.mname = "Legacy Name";
+            CHECK(ordinary.full_name(DESC_A).find("Legacy Name") != string::npos);
+            CHECK(ordinary.proper_name() == "Legacy Name");
+            CHECK(ordinary.mname == "Legacy Name");
+            CHECK(ordinary.type == form.first);
+            CHECK(ordinary.base_type == MONS_KOBOLD);
+
+            monster_info hydra(form.first, MONS_HYDRA);
+            for (int heads : {1, 10, 11})
+            {
+                hydra.num_heads = heads;
+                const string name = hydra.full_name(DESC_PLAIN);
+                INFO(name);
+                if (language == lang_t::ZH)
+                {
+                    CHECK(name.find(" " + suffix) == string::npos);
+                    CHECK(name.find(heads == 1 ? "（一头）"
+                                    : heads == 10 ? "（十头）" : "（11头）")
+                          != string::npos);
+                }
+                else
+                {
+                    CHECK(name.find(heads == 1 ? "one-headed hydra "
+                                    : heads == 10 ? "ten-headed hydra "
+                                                  : "11-headed hydra ") == 0);
+                    CHECK(name.find(suffix) != string::npos);
+                }
+                CHECK(hydra.num_heads == heads);
+                CHECK(hydra.base_type == MONS_HYDRA);
+            }
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "prefix dart brands join Chinese names without changing lookup or terse forms",
+                 "[zh-translation][playtest-round3][items]")
+{
+    init_properties();
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (special_missile_type brand : {SPMSL_POISONED, SPMSL_CURARE,
+                                           SPMSL_BLINDING, SPMSL_FRENZY})
+        {
+            item_def dart;
+            dart.base_type = OBJ_MISSILES;
+            dart.sub_type = MI_DART;
+            dart.brand = brand;
+            dart.quantity = 1;
+            dart.flags = ISFLAG_IDENTIFIED;
+            const string noun = missile_name(MI_DART);
+            const string modifier = missile_brand_name(dart, MBN_NAME);
+            const string displayed = dart.name(DESC_PLAIN);
+            CHECK(displayed.find(modifier) == 0);
+            CHECK(displayed.substr(displayed.size() - noun.size()) == noun);
+            CHECK(displayed.find(modifier + " " + noun)
+                  == (language == lang_t::ZH ? string::npos : 0));
+            CHECK(dart.name(DESC_DBNAME) == noun);
+            CHECK(dart.name(DESC_BASENAME) == noun);
+            const string terse = dart.name(DESC_PLAIN, true);
+            CHECK(terse.find(noun) == 0);
+            CHECK(terse.find(" (") != string::npos);
+            CHECK(terse.find(missile_brand_name(dart, MBN_TERSE)) != string::npos);
+            {
+                ScopedLangEn canonical;
+                CHECK(dart.name(DESC_DBNAME) == "dart");
+                CHECK(dart.name(DESC_BASENAME) == "dart");
+            }
+            CHECK(dart.brand == brand);
+            CHECK(dart.sub_type == MI_DART);
+            CHECK(dart.quantity == 1);
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "visible monster equipment joins weapon armour and branded darts in both languages",
+                 "[zh-translation][playtest-round3][equipment]")
+{
+    init_properties();
+    init_monsters();
+    // A visible monster_info inventory is the snapshot consumed by targeting
+    // descriptions. Exercise the complete public producer, including the
+    // weapon action, armour list, missile naming, and final conjunction.
+    monster_info target(MONS_KOBOLD);
+    for (mon_inv_type slot : {MSLOT_WEAPON, MSLOT_ARMOUR, MSLOT_MISSILE})
+    {
+        target.inv[slot].reset(new item_def);
+        target.inv[slot]->quantity = 1;
+        target.inv[slot]->flags = ISFLAG_IDENTIFIED;
+    }
+    item_def& weapon = *target.inv[MSLOT_WEAPON];
+    weapon.base_type = OBJ_WEAPONS;
+    weapon.sub_type = WPN_DAGGER;
+    item_def& armour = *target.inv[MSLOT_ARMOUR];
+    armour.base_type = OBJ_ARMOUR;
+    armour.sub_type = ARM_ROBE;
+    item_def& missile = *target.inv[MSLOT_MISSILE];
+    missile.base_type = OBJ_MISSILES;
+    missile.sub_type = MI_DART;
+    missile.brand = SPMSL_CURARE;
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string displayed = get_monster_equipment_desc(target, DESC_FULL);
+        CHECK(displayed.find(weapon.name(DESC_A)) != string::npos);
+        CHECK(displayed.find(armour.name(DESC_A)) != string::npos);
+        CHECK(displayed.find(missile.name(DESC_PLAIN)) != string::npos);
+        if (language == lang_t::ZH)
+        {
+            const string conjunction = C_("monster equipment", " and ");
+            const size_t join = displayed.find(conjunction);
+            REQUIRE(join != string::npos);
+            REQUIRE(join > 0);
+            REQUIRE(join + conjunction.size() < displayed.size());
+            CHECK(displayed[join - 1] != ' ');
+            CHECK(displayed[join + conjunction.size()] != ' ');
+            CHECK(displayed.find(" wielding ") == string::npos);
+            CHECK(displayed.find(" and ") == string::npos);
+        }
+        else
+        {
+            CHECK(displayed.find("wielding ") != string::npos);
+            CHECK(displayed.find(" and ") != string::npos);
+            CHECK(displayed.find("curare-tipped darts") != string::npos);
+        }
+        CHECK(weapon.sub_type == WPN_DAGGER);
+        CHECK(armour.sub_type == ARM_ROBE);
+        CHECK(missile.sub_type == MI_DART);
+        CHECK(missile.brand == SPMSL_CURARE);
+        CHECK(weapon.quantity == 1);
+        CHECK(armour.quantity == 1);
+        CHECK(missile.quantity == 1);
+        ScopedLangEn canonical;
+        CHECK(weapon.name(DESC_DBNAME) == "dagger");
+        CHECK(armour.name(DESC_DBNAME) == "robe");
+        CHECK(missile.name(DESC_DBNAME) == "dart");
     }
 }

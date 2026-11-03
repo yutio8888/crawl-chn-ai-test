@@ -1847,7 +1847,11 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         if (!terse && !dbname && !basename)
         {
             if (_missile_brand_is_prefix(msl_brand))
-                buff << missile_brand_name(*this, MBN_NAME) << ' ';
+            {
+                buff << missile_brand_name(*this, MBN_NAME);
+                if (Options.language != lang_t::ZH)
+                    buff << ' ';
+            }
             else if (Options.language == lang_t::ZH && _missile_brand_is_postfix(msl_brand))
                 buff << make_stringf(C_("item ego prefix", "of %s"),
                                      missile_brand_name(*this, MBN_NAME));

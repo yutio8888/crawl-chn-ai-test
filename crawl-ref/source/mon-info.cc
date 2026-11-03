@@ -1358,7 +1358,7 @@ string monster_info::common_name(description_level_type desc) const
 
     // Add suffixes.
     const char* const hydra_suffix_sep =
-        Options.language == lang_t::ZH && show_hydra_heads ? "" : " ";
+        Options.language == lang_t::ZH ? "" : " ";
     switch (type)
     {
     case MONS_ZOMBIE:

@@ -18661,3 +18661,24 @@ Gemini 4 Argon 负责纯文本译文，Codex 验收并接入。复核范围为 7
 | source: please select your <br>EN: <code> Please select your </code> | <code> 请选择你的</code> | <code>请选择你的</code> | adjust | PT-24；只去中文提示开头的多余空格；英文键首尾空格原样保留，种族／背景选择内容不变。 | newgame.cc；SourceDB 同名键 |
 
 以上为有限文本与消费者核对；整体验证由父代理统一执行，本节不声称运行时或 profile 已通过。
+
+
+## Linux Tiles PT37–PT43 follow-up (Gemini 3.8 Flash patch)
+
+本轮游戏补丁由 Gemini 3.8 Flash 以纯文本交付，父代理核对实际消费者和资产格式后落盘；测试另按现有真实消费者夹具补充。首稿的 context 分行格式、wizard mode 用词及遗漏的最终装备列表连接已退回并由 Gemini 修订，本节仅记录采用的版本，不把未执行的 GUI 或整体验证写成已通过。
+术语依据：`docs/glossary.md` SHA-256 `8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`。
+
+| Identity / English key | Pre-review Chinese | Adopted Chinese | Decision | Rationale | Evidence |
+|---|---|---|---|---|---|
+| source:%s leaves your view.<br>EN: <code>%s leaves your view.</code> | <code>%s 离开了你的视野。</code> | <code>%s离开了你的视野。</code> | adjust | PT39；仅去姓名与中文谓语间空格，保留名称参数和事件。 | SourceDB 同名键；试玩报告 PT39。 |
+| source:%s has about %d%% to hit you.\n<br>EN: <code>%s has about %d%% to hit you.\n</code> | <code>%s有约%d%% 几率命中你。\n</code> | <code>%s有约%d%%几率命中你。\n</code> | adjust | PT40；保留近似概率、主语及源文件原有换行转义字节，仅去概率后空格。 | SourceDB 单数同名键；describe.cc 消费。 |
+| source:%s have about %d%% to hit you.\n<br>EN: <code>%s have about %d%% to hit you.\n</code> | <code>%s有约%d%% 几率命中你。\n</code> | <code>%s有约%d%%几率命中你。\n</code> | adjust | PT40；复数帧与单数帧采用同一有限格式修正，参数和换行不变。 | SourceDB 复数同名键；describe.cc 消费。 |
+| source:monster equipment&#124; armed with <br>EN: <code>monster equipment&#124; armed with </code> | — | <code>装备着</code> | adjust | PT38；仅怪物装备描述去连接处空格，保留装备从句；不改共享 plain 键。 | directn.cc:_describe_monster_weapon。 |
+| source:monster equipment&#124; wielding <br>EN: <code>monster equipment&#124; wielding </code> | — | <code>持握着</code> | adjust | PT38；仅怪物武器描述去边空格，保留持握语义和后接物品。 | directn.cc:_describe_monster_weapon。 |
+| source:monster equipment&#124; and <br>EN: <code>monster equipment&#124; and </code> | — | <code>以及</code> | adjust | PT38；同一装备列表三个连接点统一去边空格，保留所有武器、携带物和弹药；不改其他 plain and 消费者。 | directn.cc 武器、携带物及最终 item_description 列表。 |
+| source:monster equipment&#124;carrying <br>EN: <code>monster equipment&#124;carrying </code> | — | <code>携带着</code> | adjust | PT38；装备描述携带物前缀的局部中文接合，英文键尾空格保留。 | directn.cc:get_monster_equipment_desc。 |
+| source:do you really want to enter wizard mode?<br>EN: <code>Do you really want to enter wizard mode?</code> | — | <code>你真的想进入巫师模式吗？</code> | adjust | PT42；翻译完整确认问题，保留输入令牌 wiz 和通用大小写不敏感校验。 | wizard.cc；prompt.cc:confirm_prompt。 |
+| source:make which kind of shop?<br>EN: <code>Make which kind of shop?</code> | — | <code>创造哪种商店？</code> | adjust | PT42；只翻译建店选择标题；原英文过滤、排序和字母快捷键分配先后不变。 | wiz-dgn.cc:debug_make_shop；WizardMenu。 |
+| source:shop type&#124;any<br>EN: <code>shop type&#124;any</code> | — | <code>任意类型</code> | adjust | PT42；限定建店上下文，固定 * 快捷键及 SHOP_RANDOM 输出不变，不新增通用 any 译义。 | wiz-dgn.cc:debug_make_shop。 |
+
+PT37、PT41、PT43 仅修中文显示接缝，没有新术语或源键：衍生怪物后缀复用原译名，投掷物前缀复用原铭印，造物来源保留原主体、指代与地点。英文分隔、DBNAME/枚举或保存身份不改。以上项目来自有限试玩样本，不以原报告的百分百复现描述代替完整覆盖证据。完整运行结果由父代理的本轮实施记录提供。

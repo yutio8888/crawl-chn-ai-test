@@ -466,9 +466,14 @@ bool debug_make_shop(const coord_def& pos)
             options.emplace_back(WizardEntry(name, i));
     }
     sort(options.begin(), options.end());
-    options.emplace_back(WizardEntry('*', "any", SHOP_RANDOM));
+    if (Options.language == lang_t::ZH)
+    {
+        for (auto &entry : options)
+            entry.text = shop_type_name(static_cast<shop_type>(entry.output));
+    }
+    options.emplace_back(WizardEntry('*', C_("shop type", "any"), SHOP_RANDOM));
 
-    auto menu = WizardMenu("Make which kind of shop?", options);
+    auto menu = WizardMenu(T_("Make which kind of shop?"), options);
     if (!menu.run(true))
         return false;
 
