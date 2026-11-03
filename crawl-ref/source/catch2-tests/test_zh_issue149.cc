@@ -2038,9 +2038,21 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     init_monsters();
     unwind_var<player> restore_player(you);
     issue149_player();
+    // The production notice consumer expects already-visible monsters. Use
+    // the same lightweight wizard-vision setup as the other consumer tests;
+    // no allocator or dungeon cells are changed by these stack-local actors.
+    you.on_current_level = true;
+    you.wizard_vision = true;
+    you.current_vision = LOS_DEFAULT_RANGE;
     monster kobold, rat, second_rat;
     kobold.type = MONS_KOBOLD;
     rat.type = second_rat.type = MONS_RAT;
+    kobold.set_position(you.pos() + coord_def(1, 0));
+    rat.set_position(you.pos() + coord_def(0, 1));
+    second_rat.set_position(you.pos() + coord_def(1, 1));
+    REQUIRE(you.can_see(kobold));
+    REQUIRE(you.can_see(rat));
+    REQUIRE(you.can_see(second_rat));
     for (lang_t language : {lang_t::ZH, lang_t::EN})
     {
         TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
