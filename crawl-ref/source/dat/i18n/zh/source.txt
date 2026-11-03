@@ -2321,7 +2321,7 @@ comfort your suffering allies
 ；使用<white>(s)</white>将%3$s的目标设置为%1$d.%2$d。
 %%%%
 <%s>%s</%s>; <%s>%s</%s> risk of failure
-<%s>%s</%s>; <%s>%s</%s> 失败风险
+<%s>%s</%s>；失败率 <%s>%s</%s>
 %%%%
 <blue>Apt </blue>
 <blue>资质</blue>
@@ -5718,7 +5718,7 @@ Please finish your current recitation first.
  请输入 [Y]是 或 [n]否。
 %%%%
  Please select your 
- 请选择你的
+请选择你的
 %%%%
 Please submit a bug report.
 请提交一个错误报告。
@@ -9677,7 +9677,7 @@ You devour %s%s!
 你吞噬了%s%s!
 %%%%
 You die...
-你死了...
+你死了……
 %%%%
 You dig through %s.
 你挖穿了%s。
@@ -24398,7 +24398,7 @@ average
 平均
 %%%%
 Your damage rating with %s is about %s.
-你用%s的伤害评级约为%s
+%s的伤害评级约为%s
 %%%%
 You fade completely from view now that you are no longer glowing from magical contamination.
 你完全从视野中消失了，因为你不再因魔法污染而发光。
@@ -29911,16 +29911,16 @@ mark item for purchase
 标记购买物品         
 %%%%
 examine item             
-检查物品                 
+检视物品                 
 %%%%
 Choose to examine item  
-选择检查物品        
+选择检视物品        
 %%%%
  on 
 ，位于
 %%%%
 , or 
-、或 
+或
 %%%%
 :
 ：
@@ -45652,7 +45652,7 @@ weapon category|This %1$s falls into the '%2$s' category.
 这件%1$s属于“%2$s”类。
 %%%%
 hit chance|You have about %1$d%% chance to hit with %2$s
-你使用%2$s的命中率约为%1$d%%
+%2$s的命中率约为%1$d%%
 %%%%
 hit chance|; and a %1$d%% chance to hit with your %2$s
 ；你的%2$s攻击命中率为%1$d%%
@@ -52762,3 +52762,19 @@ unarmed hit chance|You have about %1$d%% chance to hit with %2$s
 %%%%
 stone stack quantity|%s 
 %s块
+
+%%%%
+score birth|Began as a %1$s %2$s on %3$s.
+%3$s以%1$s%2$s开始冒险。
+
+%%%%
+score death place|...
+……
+
+%%%%
+score sentence|.
+。
+
+%%%%
+feature note|Found %s.
+发现了%s。

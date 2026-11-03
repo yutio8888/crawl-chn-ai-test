@@ -46,6 +46,7 @@
 #include "output.h"
 #include "pattern.h"
 #include "player.h"
+#include "player-notices.h"
 #include "player-equip.h"
 #include "religion.h"
 #include "spl-cast.h"
@@ -1992,3 +1993,127 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     }
 }
 #endif
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "corpse display joins species without changing persisted names",
+                 "[zh-translation][playtest-round2][items]")
+{
+    init_monsters();
+    init_properties();
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (monster_type species : {MONS_BALL_PYTHON, MONS_BAT})
+        {
+            item_def corpse;
+            corpse.base_type = OBJ_CORPSES;
+            corpse.quantity = 1;
+            corpse.mon_type = species;
+            corpse.orig_monnum = species;
+            for (int form : {CORPSE_BODY, CORPSE_SKELETON})
+            {
+                corpse.sub_type = form;
+                const string body = T_(form == CORPSE_BODY ? "corpse" : "skeleton");
+                const string name = mons_type_name(species, DESC_PLAIN);
+                CHECK(corpse.name(DESC_PLAIN)
+                      == name + (language == lang_t::ZH ? "" : " ") + body);
+                const string identity = corpse.name(DESC_DBNAME);
+                corpse.props[CORPSE_NAME_KEY] = "CustomName";
+                corpse.props[CORPSE_NAME_TYPE_KEY] = static_cast<int64_t>(0);
+                CHECK(corpse.name(DESC_PLAIN).find("CustomName") != string::npos);
+                CHECK(get_corpse_name(corpse) == "CustomName");
+                CHECK(corpse.name(DESC_DBNAME) == identity);
+                corpse.props.erase(CORPSE_NAME_KEY);
+                corpse.props.erase(CORPSE_NAME_TYPE_KEY);
+                CHECK(corpse.orig_monnum == species);
+            }
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "encounter lists keep English count spacing and join Chinese conjunctions",
+                 "[zh-translation][playtest-round2][messages]")
+{
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    issue149_player();
+    monster kobold, rat, second_rat;
+    kobold.type = MONS_KOBOLD;
+    rat.type = second_rat.type = MONS_RAT;
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string pair = describe_monsters_condensed({&kobold, &rat});
+        if (language == lang_t::ZH)
+        {
+            CHECK(pair.find("和") != string::npos);
+            CHECK(pair.find(' ') == string::npos);
+            CHECK(describe_monsters_condensed({&rat, &second_rat}).find(' ')
+                  == string::npos);
+        }
+        else
+        {
+            CHECK(pair.find(" and ") != string::npos);
+            CHECK(describe_monsters_condensed({&rat, &second_rat}) == "2 rats");
+        }
+        CHECK(kobold.type == MONS_KOBOLD);
+        CHECK(rat.type == MONS_RAT);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "feature notes localize punctuation without rewriting saved snapshots",
+                 "[zh-translation][playtest-round2][notes]")
+{
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string feature = language == lang_t::ZH ? "褪色祭坛" : "a faded altar";
+        const Note note(NOTE_SEEN_FEAT, 0, 0, feature + ".");
+        CHECK(note.describe(false, false)
+              == make_stringf(C_("feature note", "Found %s."), feature.c_str()));
+        CHECK(note.name == feature + ".");
+        const Note historic(NOTE_SEEN_FEAT, 0, 0, "historic feature");
+        CHECK(historic.describe(false, false) == string(T_("Found ")) + historic.name);
+        CHECK(historic.name == "historic feature");
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "verbose score date grammar and punctuation preserve canonical xlog",
+                 "[zh-translation][playtest-round2][protocol]")
+{
+    const string raw = "v=0.35:name=TilesReview:race=Human:cls=Fighter:xl=1:"
+        "sk=Fighting:title=Adventurer:br=D:lvl=5:god=No God:ktyp=mon:"
+        "killer=an orc:start=20261003120000S:end=20261003130000S";
+    scorefile_entry saved;
+    REQUIRE(saved.parse(raw));
+    string english_birth, english_place;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string birth = saved.character_description(scorefile_entry::DDV_VERBOSE);
+        const string place = saved.death_place(scorefile_entry::DDV_VERBOSE);
+        if (language == lang_t::ZH)
+        {
+            CHECK(birth.find("2026年11月03日") < birth.find("人类战士"));
+            CHECK(place.find("……") == 0);
+            CHECK(place.find("。") != string::npos);
+            CHECK(place.find("...") == string::npos);
+            ScopedLangEn canonical;
+            CHECK(saved.character_description(scorefile_entry::DDV_VERBOSE) == english_birth);
+            CHECK(saved.death_place(scorefile_entry::DDV_VERBOSE) == english_place);
+        }
+        else
+        {
+            CHECK(birth.find("Began as a Human Fighter on 2026-11-03.") != string::npos);
+            CHECK(place.find("... ") == 0);
+            english_birth = birth;
+            english_place = place;
+        }
+        CHECK(saved.raw_string() == raw);
+        CHECK(saved.get_fields().str_field("race") == "Human");
+        CHECK(saved.get_fields().str_field("cls") == "Fighter");
+    }
+}

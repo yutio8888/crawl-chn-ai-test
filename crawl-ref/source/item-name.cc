@@ -2262,16 +2262,17 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         if (dbname && item_typ == CORPSE_SKELETON)
             return T_("decaying skeleton");
 
+        const char *separator = Options.language == lang_t::ZH && !dbname ? "" : " ";
         monster_flags_t name_flags;
         const string _name = get_corpse_name(*this, &name_flags);
         const monster_flags_t name_type = name_flags & MF_NAME_MASK;
         string corpse_species;
 
         if (!_name.empty() && name_type == MF_NAME_ADJECTIVE)
-            buff << _name << " ";
+            buff << _name << separator;
 
         if ((name_flags & MF_NAME_SPECIES) && name_type == MF_NAME_REPLACE)
-            buff << _name << " ";
+            buff << _name << separator;
         else if (!dbname && !starts_with(_name, "the "))
         {
             const monster_type mc = mon_type;
@@ -2282,14 +2283,14 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         if (!dbname && !corpse_species.empty()
             && !_name.empty() && name_type == MF_NAME_SUFFIX)
         {
-            buff << mons_name_with_suffix(corpse_species, _name) << ' ';
+            buff << mons_name_with_suffix(corpse_species, _name) << separator;
         }
         else
         {
             if (!corpse_species.empty())
-                buff << corpse_species << ' ';
+                buff << corpse_species << separator;
             if (!_name.empty() && name_type == MF_NAME_SUFFIX)
-                buff << _name << " ";
+                buff << _name << separator;
         }
 
         if (item_typ == CORPSE_BODY)

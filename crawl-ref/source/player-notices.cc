@@ -324,7 +324,8 @@ static void _count_monster_types(const vector<monster*> &monsters,
 static string _describe_monsters_from_species(const vector<details> &species,
                                               bool force_visible = false)
 {
-    const string and_sep = " " + string(C_("monster notice list", "and")) + " ";
+    const string padding = Options.language == lang_t::ZH ? "" : " ";
+    const string and_sep = padding + C_("monster notice list", "and") + padding;
     const string comma_sep = T_(", ");
     return comma_separated_fn(species.begin(), species.end(),
         [force_visible] (const details &det)
@@ -350,10 +351,11 @@ static string _describe_monsters_from_species(const vector<details> &species,
             else if (det.count > 1 && det.genus)
             {
                 auto genus = mons_genus(det.mon->type);
-                name = " "+pluralise(mons_type_name(genus, DESC_PLAIN));
+                name = (Options.language == lang_t::ZH ? "" : " ")
+                    + pluralise(mons_type_name(genus, DESC_PLAIN));
             }
             else if (det.count > 1)
-                name = " "+pluralise(det.name);
+                name = (Options.language == lang_t::ZH ? "" : " ") + pluralise(det.name);
             return apply_description(DESC_A, name, det.count);
         }, and_sep, comma_sep);
 }

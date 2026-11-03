@@ -18639,3 +18639,25 @@ Gemini 4 Argon 负责纯文本译文，Codex 验收并接入。复核范围为 7
 | source:stone stack quantity&#124;%s <br>EN: <code>stone stack quantity&#124;%s </code> | — | <code>%s块</code> | adjust | PT-05；仅石块／巨石的已限定数值堆叠语境采用“块”，保留 %s 数量字符串：数字模式采用十进制数值，quantity_in_words 模式复用既有中文数字分组，两种模式均不改变数量语义；不把量词套到其他物品或英文数据库／查找身份。 | item-name.cc:item_def::name；SourceDB 上下文键 |
 
 本节为文本与生产者核对记录，完整 profile 及运行时验证由整体验证另行提供，不据此声称已测通过。
+
+## Linux Tiles 004 remaining playtest wording follow-up
+
+本轮采纳有限措辞建议，不将它们重新标为强制语义缺陷，不重写历史全量审阅；涉及已批准的武器评级、武器命中率、商店交互用词，以及死亡／发现地貌笔记的完整显示句。PT-22“这是瓶……”可作正常口语省略，保持不变；PT-32 的变形装备前置“融入”和后缀“融合”各有句法作用，保持不变；未扩展品牌、背景、羊皮纸命名、施法动词或共享免疫列表连接词，也未增加其他物品量词。
+术语依据：`docs/glossary.md` SHA-256 `8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`。
+
+| Identity / English key | Pre-review Chinese | Adopted Chinese | Decision | Rationale | Evidence |
+|---|---|---|---|---|---|
+| source:your damage rating with %s is about %s.<br>EN: <code>Your damage rating with %s is about %s.</code> | <code>你用%s的伤害评级约为%s</code> | <code>%s的伤害评级约为%s</code> | adjust | PT-06；首参为带所有格的武器显示名或徒手，移除模板多余的“你用”，保留约数和两个 %s 槽。 | player.cc:_display_damage_rating；SourceDB 同名键。 |
+| source:hit chance&#124;you have about %1$d%% chance to hit with %2$s<br>EN: <code>hit chance&#124;You have about %1$d%% chance to hit with %2$s</code> | <code>你使用%2$s的命中率约为%1$d%%</code> | <code>%2$s的命中率约为%1$d%%</code> | adjust | PT-26；武器参数已经带“你的”，去掉外层“你使用”；保留武器身份、近似百分比及两个位置参数，徒手上下文不变。 | describe.cc:describe_hit_chance；SourceDB 同名键。 |
+| source:examine item             <br>EN: <code>examine item             </code> | <code>检查物品                 </code> | <code>检视物品                 </code> | adjust | PT-12；商店同一交互中的检查／检视统一为检视，原键与显示对齐尾空格不变。 | shopping.cc:ShopMenu::update_help；SourceDB 同名键。 |
+| source:choose to examine item  <br>EN: <code>Choose to examine item  </code> | <code>选择检查物品        </code> | <code>选择检视物品        </code> | adjust | PT-12；购物清单提示与商店检视模式、检视物品提示一致，英文键与显示对齐尾空格不变。 | shopping.cc:ShoppingListMenu::get_keyhelp；SourceDB 同名键。 |
+| source:you die...<br>EN: <code>You die...</code> | <code>你死了...</code> | <code>你死了……</code> | adjust | PT-30；仅将同一死亡段落中的省略号改为中文省略号，保留死亡结论。 | message.cc:canned_msg；SourceDB 同名键。 |
+| source:score birth&#124;began as a %1$s %2$s on %3$s.<br>EN: <code>score birth&#124;Began as a %1$s %2$s on %3$s.</code> | — | <code>%3$s以%1$s%2$s开始冒险。</code> | adjust | PT-31；日期前置的完整句保留初始种族、职业及日期三个位置参数；不更改生涯事实或日期值。 | hiscores.cc:scorefile_entry::character_description；SourceDB 上下文键。 |
+| source:score death place&#124;...<br>EN: <code>score death place&#124;...</code> | — | <code>……</code> | adjust | PT-30；只本地化死亡地点行的省略号前缀，地点层数由原生产者生成。 | hiscores.cc:scorefile_entry::death_place；SourceDB 上下文键。 |
+| source:score sentence&#124;.<br>EN: <code>score sentence&#124;.</code> | — | <code>。</code> | adjust | PT-30；只本地化死亡地点行句末标点，不修改地点身份。 | hiscores.cc:scorefile_entry::death_place；SourceDB 上下文键。 |
+| source:feature note&#124;found %s.<br>EN: <code>feature note&#124;Found %s.</code> | — | <code>发现了%s。</code> | adjust | PT-13f；NOTE_SEEN_FEAT 只在 Note::describe 显示层去除名称末尾恰好一个 ASCII 句点后放入完整句；持久化 Note.name 不变，无该句点的历史值保留原分支。 | notes.cc:Note::describe；SourceDB 上下文键。 |
+| source:<%s>%s</%s>; <%s>%s</%s> risk of failure<br>EN: <code><%s>%s</%s>; <%s>%s</%s> risk of failure</code> | <code><%s>%s</%s>; <%s>%s</%s> 失败风险</code> | <code><%s>%s</%s>；失败率 <%s>%s</%s></code> | adjust | PT-13a；中文分号并把“失败率”前置，保留安全等级、六个 %s、两组着色标记和失败数值，不把安全描述改写为无失败风险。 | spl-cast.cc:_spell_failure_rate_description |
+| source:, or <br>EN: <code>, or </code> | <code>、或 </code> | <code>或</code> | adjust | PT-19；共享择一列表连接词不再叠加顿号和“或”，英文键首尾字符不变。四个消费者分别为地形动作、物品动作、可购买清单提示和法术变形结果列表，均仍保留择一关系。 | describe.cc:_feat_action_desc / _actions_desc；shopping.cc:ShoppingList::gold_changed；spl-cast.cc:desc_wl_success_chance |
+| source: please select your <br>EN: <code> Please select your </code> | <code> 请选择你的</code> | <code>请选择你的</code> | adjust | PT-24；只去中文提示开头的多余空格；英文键首尾空格原样保留，种族／背景选择内容不变。 | newgame.cc；SourceDB 同名键 |
+
+以上为有限文本与消费者核对；整体验证由父代理统一执行，本节不声称运行时或 profile 已通过。
