@@ -2,6 +2,7 @@
 
 #include "AppHdr.h"
 
+#include <algorithm>
 #include <locale.h>
 #include "syscalls.h"
 
@@ -12167,5 +12168,85 @@ TEST_CASE("upheaval beam hits translate names while preserving raw identities",
             CHECK(display != test.first);
             CHECK(output.find(test.first) == string::npos);
         }
+    }
+}
+
+
+TEST_CASE("saved artefact line breaks stay inside one coloured floor message",
+          "[zh-translation][artefact][artefact-name-newline]")
+{
+    init_properties();
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    scoped_monspeak_world world;
+    unwind_var<map_cell> restore_cell(env.map_knowledge(you.pos()));
+    env.map_knowledge(you.pos()).set_feature(DNGN_FLOOR);
+    unwind_var<int> restore_grid(env.igrid(you.pos()), NON_ITEM);
+    int slot = NON_ITEM;
+    for (int i = 0; i < MAX_ITEMS; ++i)
+        if (!env.item[i].defined())
+        {
+            slot = i;
+            break;
+        }
+    REQUIRE(slot != NON_ITEM);
+    unwind_var<item_def> restore_item(env.item[slot]);
+    item_def& item = env.item[slot];
+    item.clear();
+    item.base_type = OBJ_ARMOUR;
+    item.sub_type = ARM_ROBE;
+    item.quantity = 1;
+    item.flags = ISFLAG_IDENTIFIED;
+    rng::subgenerator random(0x4e414d454c494e45ULL, 0x464c4f4f52ULL);
+    REQUIRE(make_item_randart(item, true));
+    item.pos = you.pos();
+    item.link = NON_ITEM;
+    env.igrid(you.pos()) = slot;
+    unwind_var<vector<colour_mapping>> restore_colours(
+        Options.menu_colour_mappings, {colour_mapping("white:.*")});
+
+    // Simulate the already-stored name: no random name needs regenerating.
+    for (const string line_break : {"\n", "\r", "\r\n", ""})
+    {
+        const string first = language == lang_t::ZH ? "干净的毛皮匠" : "Clean Furrier";
+        const string second = language == lang_t::ZH ? "王子" : "Prince";
+        const string raw_name = first + line_break + second;
+        set_artefact_name(item, raw_name);
+        const string raw_full_name = item.name(DESC_A);
+        const string expected_name = line_break.empty() ? raw_full_name
+            : replace_all(raw_full_name, line_break, " ");
+        const string coloured = menu_colour_item_name(item, DESC_A);
+        CAPTURE(language, line_break, raw_full_name, coloured);
+        CHECK(coloured == "<white>" + expected_name + "</white>");
+        CHECK(formatted_string::parse_string(coloured).tostring() == expected_name);
+        CHECK(coloured.find('\n') == string::npos);
+        CHECK(coloured.find('\r') == string::npos);
+
+        vector<unsigned char> saved_history;
+        writer history_output(&saved_history);
+        save_messages(history_output);
+        unwinder restore_history([&saved_history]() {
+            clear_message_store();
+            reader history_input(saved_history);
+            history_input.setMinorVersion(TAG_MINOR_VERSION);
+            load_messages(history_input);
+        });
+        clear_message_store();
+        string observed;
+        channel_capturing_tee messages(observed);
+        item_check();
+        CHECK(messages.appends == 1);
+        CHECK(messages.channel == MSGCH_FLOOR_ITEMS);
+        CHECK(observed.find(coloured) != string::npos);
+        CHECK(std::count(observed.begin(), observed.end(), '\n') == 1);
+        const string rendered = get_last_messages(1, false);
+        CHECK(rendered.find(expected_name) != string::npos);
+        CHECK(rendered.find("</white>") == string::npos);
+        CHECK(item.props[ARTEFACT_NAME_KEY].get_string() == raw_name);
+        CHECK(get_artefact_name(item, true) == raw_name);
+        CHECK(item.name(DESC_A) == raw_full_name);
     }
 }
