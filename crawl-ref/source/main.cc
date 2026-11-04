@@ -339,9 +339,12 @@ int main(int argc, char *argv[])
 #endif
 
 #ifdef USE_TILE_LOCAL
-    // Hook up text colour redefinitions
+    // Hook up text colour redefinitions. An option entry rejected by the parser
+    // keeps the NUM_TERM_COLOURS sentinel (see colour_remapping::valid()), which
+    // is the array length, so such entries must not index term_colours.
     for (auto col : Options.custom_text_colours)
-        term_colours[col.colour_index] = col.colour_def;
+        if (col.valid())
+            term_colours[col.colour_index] = col.colour_def;
 #endif
 
     _launch_game_loop();

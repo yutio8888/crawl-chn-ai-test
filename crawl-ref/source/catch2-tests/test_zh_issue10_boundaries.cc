@@ -70,6 +70,7 @@
 #include "stringutil.h"
 #include "test_zh_fixture.h"
 #include "transform.h"
+#include "ui.h"
 #include "unwind.h"
 #include "xom.h"
 
@@ -410,6 +411,21 @@ TEST_CASE("item action messages preserve armour number and duration",
 TEST_CASE("item action inventory counts use language appropriate number",
           "[zh-translation][actions-rereview]")
 {
+#ifdef USE_TILE_LOCAL
+    // Constructing any Menu builds the local-tiles UIMenu, whose FontBuffer
+    // dereferences the TilesFramework font wrapper. Headless Catch2 never
+    // initializes the font manager, so the existing ui::is_available() check
+    // (wm && tiles.fonts_initialized()) is the precondition for this case.
+    // Console builds have no such precondition and always run it fully.
+    // Catch2 3.2 has no SKIP() macro, so this is reported as an explicit
+    // warning and the assertions below are not claimed as covered.
+    if (!ui::is_available())
+    {
+        WARN("SKIPPED (not a pass): local tiles font manager is not "
+             "initialized in this test binary, so InvMenu cannot be built");
+        return;
+    }
+#endif
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH, lang_t::EN);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
     issue10_world world;

@@ -11842,3 +11842,94 @@ TEST_CASE("playtest: contamination display localizes at the sink and keeps Engli
             CHECK(observed.find(faded) != string::npos);
     }
 }
+
+TEST_CASE("playtest: Maxwell's coupling charge light keeps raw frames and translates at the sink",
+          "[zh-translation][playtest-fixes][status][charge]")
+{
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    const char *const frames[] = { "Charge-", "Charge/", "Charge|", "Charge\\" };
+    // English status.txt details, fetched under an EN layer for comparison.
+    string english_detail[4];
+    {
+        EnTranslationFixture english;
+        for (int i = 0; i < 4; ++i)
+        {
+            english_detail[i] = getLongDescription(string(frames[i]) + " status");
+            // status_light_description() trims the trailing newline itself.
+            trim_string_right(english_detail[i]);
+        }
+    }
+    for (int i = 0; i < 4; ++i)
+    {
+        CAPTURE(i, frames[i], english_detail[i]);
+        REQUIRE_FALSE(english_detail[i].empty());
+        REQUIRE(english_detail[i].find("channelling electrical charge")
+                != string::npos);
+    }
+
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        you = player();
+        you.species = SP_HUMAN;
+        you.attribute[ATTR_CHANNELLED_SPELL] = SPELL_MAXWELLS_COUPLING;
+        you.attribute[ATTR_CHANNEL_DURATION] = 5;
+
+        // One full rotation: the frame cycle mechanism must keep all four raw
+        // frames, with their symbols, in the same order-independent set.
+        set<string> seen;
+        for (int step = 0; step < 8; ++step)
+        {
+            status_info info;
+            REQUIRE(fill_status_info(STATUS_CHANNELLING_SPELL, info));
+            CAPTURE(language, step, info.light_text, info.db_key,
+                    info.long_text);
+            CHECK(info.light_colour == LIGHTCYAN);
+            // The canonical key is always one raw English frame with its
+            // trailing symbol, never localized text.
+            int frame = -1;
+            for (int i = 0; i < 4; ++i)
+                if (info.db_key == frames[i])
+                    frame = i;
+            REQUIRE(frame >= 0);
+            CHECK(info.db_key.back() == string(frames[frame]).back());
+            seen.insert(info.db_key);
+            if (step < 4)
+                CHECK(seen.size() == static_cast<size_t>(step) + 1);
+
+            // The shared status tail applies C_("status", ...) to that key.
+            CHECK(info.light_text == C_("status", info.db_key.c_str()));
+            CHECK(info.light_text.back() == info.db_key.back());
+            if (zh)
+            {
+                CHECK(info.light_text != info.db_key);
+                CHECK(info.light_text.rfind("蓄电", 0) == 0);
+            }
+            else
+                CHECK(info.light_text == info.db_key);
+
+            // The detail line resolves through the canonical key, so Chinese
+            // mode hits the translated status.txt body instead of falling back.
+            const string detail = status_light_description(info);
+            string raw_detail = getLongDescription(info.db_key + " status");
+            trim_string_right(raw_detail);
+            CAPTURE(detail, raw_detail);
+            CHECK(detail == raw_detail);
+            CHECK(detail != T_("No description found"));
+            CHECK(detail.find("<Charge- status>") == string::npos);
+            if (zh)
+                CHECK(detail != english_detail[frame]);
+            else
+                CHECK(detail == english_detail[frame]);
+
+            // The mechanism itself is untouched.
+            CHECK(you.attribute[ATTR_CHANNELLED_SPELL] == SPELL_MAXWELLS_COUPLING);
+            CHECK(you.attribute[ATTR_CHANNEL_DURATION] == 5);
+        }
+        CHECK(seen.size() == 4);
+        for (const char *frame : frames)
+            CHECK(seen.count(frame) == 1);
+    }
+}

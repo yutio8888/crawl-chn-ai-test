@@ -52951,3 +52951,19 @@ Your corrupting presence
 %%%%
 a flying bit
 飞来的碎块
+
+%%%%
+status|Charge-
+蓄电-
+
+%%%%
+status|Charge/
+蓄电/
+
+%%%%
+status|Charge|
+蓄电|
+
+%%%%
+status|Charge\\
+蓄电\

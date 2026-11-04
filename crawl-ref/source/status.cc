@@ -1541,7 +1541,11 @@ static void _describe_channelled_spell(status_info& inf)
 
         case SPELL_MAXWELLS_COUPLING:
             inf.light_colour = LIGHTCYAN;
-            inf.light_text   = _charge_text().c_str();
+            // Keep an owned display string and publish the raw English frame
+            // as the canonical key, so the shared status translation and the
+            // status.txt detail lookup both apply after this switch.
+            inf.light_text   = _charge_text();
+            inf.db_key       = inf.light_text;
             break;
 
         case SPELL_CLOCKWORK_BEE:
