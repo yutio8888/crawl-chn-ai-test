@@ -2396,6 +2396,41 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(std::string(C_("status", "Invis")) == "隐形");
 }
 
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: potion status info keeps one root per effect",
+                 "[zh-translation][status][potion-status]")
+{
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    you = player();
+
+    // Ambrosia: light, short label and @ long description all use 神食, the
+    // same root as the potion name (神食药水).
+    you.duration[DUR_AMBROSIA] = 10;
+    status_info ambrosia;
+    REQUIRE(fill_status_info(DUR_AMBROSIA, ambrosia));
+    CHECK(ambrosia.light_text == "神食");
+    CHECK(ambrosia.short_text == "神食酣醉");
+    CHECK(ambrosia.long_text == "你正在神食的作用下再生。");
+
+    // Confused: the three display surfaces share the established 混乱 root.
+    you.duration[DUR_CONF] = 10;
+    status_info confused;
+    REQUIRE(fill_status_info(DUR_CONF, confused));
+    CHECK(confused.light_text == "混乱");
+    CHECK(confused.short_text == "混乱");
+    CHECK(confused.long_text == "你处于混乱状态。");
+
+    // Enlightened: the @ long description uses the 启迪 effect root from the
+    // same status entry and the potion name, not the epiphany prose.
+    you.duration[DUR_ENLIGHTENED] = 10;
+    status_info enlightened;
+    REQUIRE(fill_status_info(DUR_ENLIGHTENED, enlightened));
+    CHECK(enlightened.light_text == "意志+");
+    CHECK(enlightened.short_text == "启迪");
+    CHECK(enlightened.long_text == "你处于启迪状态。（意志+）");
+}
+
 TEST_CASE("UNTRANSLATED rule", "[zh-translation][zh-helpers]")
 {
     using Row = std::tuple<std::string, std::string, bool>;

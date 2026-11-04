@@ -733,7 +733,7 @@ counts = collections.Counter(
     for classification in registry["classifications"]
 )
 assert counts["global"] == 12, counts
-assert counts["contextual"] == 10, counts
+assert counts["contextual"] == 13, counts
 assert len(registry["rejected_map"]) == counts["global"], registry
 assert {
     "弹飞弹": "排斥飞弹",
@@ -753,7 +753,18 @@ assert contextual_by_decision == {
     "D-A-007": 1,
     "D-D-005": 1,
     "D-A-046": 8,
+    "D-C-107": 2,
+    "D-C-108": 1,
 }, contextual_by_decision
+assert {
+    (rule["decision"], rule["key"], rule["rejected"], rule["correct"])
+    for rule in registry["contextual_rules"]
+    if rule["decision"] in {"D-C-107", "D-C-108"}
+} == {
+    ("D-C-107", "status|ambrosia-drunk", "仙酒醉", "神食酣醉"),
+    ("D-C-107", "status|Ambros", "仙酒", "神食"),
+    ("D-C-108", "status|confused", "困惑", "混乱"),
+}, registry["contextual_rules"]
 PY
 assert_status "validate-terms: production globals all have Choice mappings" \
     0 "$?"
