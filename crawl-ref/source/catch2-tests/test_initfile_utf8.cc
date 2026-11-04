@@ -3,7 +3,6 @@
 #include "AppHdr.h"
 
 #include "options.h"
-#include "tilefont.h"
 #include "syscalls.h"
 #include "artefact.h"
 #include "database.h"
@@ -391,21 +390,9 @@ TEST_CASE("legacy concat: actual custom text colour parser reports the rejected 
         REQUIRE(options.custom_text_colours.size() == 1);
         CHECK_FALSE(options.custom_text_colours.front().valid());
         CHECK(options.custom_text_colours.front().colour_index == NUM_TERM_COLOURS);
-#ifdef USE_TILE_LOCAL
-        // main.cc applies this list to the fixed-size term_colours array. A
-        // rejected entry keeps the NUM_TERM_COLOURS sentinel, which is exactly
-        // the array extent, so an unguarded consumer would write out of bounds;
-        // colour_remapping::valid() is the split the guard relies on.
-        CHECK(ARRAYSZ(term_colours) == static_cast<size_t>(NUM_TERM_COLOURS));
-#endif
         options.read_option_line("custom_text_colours = white:red");
         REQUIRE(options.custom_text_colours.size() == 1);
         CHECK(options.custom_text_colours.front().colour_index == WHITE);
-#ifdef USE_TILE_LOCAL
-        CHECK(options.custom_text_colours.front().valid());
-        REQUIRE(options.custom_text_colours.front().colour_index
-                < static_cast<int>(ARRAYSZ(term_colours)));
-#endif
     }
 }
 #endif

@@ -162,7 +162,6 @@ static monster_list_colour_type _str_to_mlc(const string &s)
 }
 
 mlc_mapping::mlc_mapping(const string &s)
-    : category(NUM_MLC), colour(-1)
 {
     vector<string> thesplit = split_string(":", s, true, true, 1);
     const int scolour = thesplit.size() == 1 ? -1 : str_to_colour(thesplit[1]);
@@ -185,7 +184,6 @@ mlc_mapping::mlc_mapping(const string &s)
 
 #ifdef USE_TILE
 colour_remapping::colour_remapping(const string &s)
-    : colour_index(NUM_TERM_COLOURS), colour_def(0, 0, 0)
 {
     vector<string> thesplit = split_string(":", s, true, true, 1);
     const int scolour = thesplit.size() == 1 ? -1 : str_to_colour(thesplit[0]);
