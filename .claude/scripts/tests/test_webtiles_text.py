@@ -140,6 +140,7 @@ class WebTilesTextTests(unittest.TestCase):
     def test_status_protocol_keys_drive_real_player_message_hud_in_both_languages(self):
         self.run_frontend(r'''
 for (const zh of [false,true,false]) {
+    player.hud_labels = zh ? {"Silenced":"沉默"} : {};
     receive([
         {key:"silenced",text:zh ? "显示甲" : "silenced",light:zh ? "甲" : "Sil",col:4},
         {key:"lost strength",text:zh ? "显示乙" : "lost strength"},
@@ -148,6 +149,7 @@ for (const zh of [false,true,false]) {
         {key:"gold aura",text:zh ? "显示戊" : "gold aura"}
     ]);
     assert.equal($("#stats_noise").attrs["data-level"],"blank");
+    assert.equal($("#stats_noise_status").text(),zh ? "沉默" : "Silenced");
     assert.equal($("#stats_noise_bar_full").styles.width,"0%");
     assert.ok($("#stats_str").value.classes.has("zero_stat"));
     assert.ok($("#stats_int").value.classes.has("boosted_stat"));
@@ -161,6 +163,7 @@ for (const zh of [false,true,false]) {
 // happens to contain every English substring the client knows.
 receive([{key:"",text:"silenced lost str vitalised divinely vigorous berserking gold aura"}]);
 assert.equal($("#stats_noise").attrs["data-level"],"veryloud");
+assert.equal($("#stats_noise_status").text(),"");
 assert.equal($("#stats_str").value.classes.size,0);
 assert.equal($("#stats_hp").classes.size,0);
 assert.equal($("#stats_mp").classes.size,0);

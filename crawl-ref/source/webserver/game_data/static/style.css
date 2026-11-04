@@ -153,6 +153,8 @@ canvas {
 /* default color when showing "Silenced" */
 #stats_noise_status {
     color: #FF00FF; /* magenta */
+    /* This zero-width overlay must also keep CJK captions on one line. */
+    white-space: nowrap;
 }
 
 /* default bar background color */
