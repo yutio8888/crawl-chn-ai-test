@@ -12225,26 +12225,31 @@ TEST_CASE("saved artefact line breaks stay inside one coloured floor message",
         CHECK(coloured.find('\n') == string::npos);
         CHECK(coloured.find('\r') == string::npos);
 
+        // Flush the caller's pending message before serializing its history.
+        const string history_before = get_last_messages(NUM_STORED_MESSAGES, true);
         vector<unsigned char> saved_history;
         writer history_output(&saved_history);
         save_messages(history_output);
-        unwinder restore_history([&saved_history]() {
+        {
+            unwinder restore_history([&saved_history]() {
+                clear_message_store();
+                reader history_input(saved_history);
+                history_input.setMinorVersion(TAG_MINOR_VERSION);
+                load_messages(history_input);
+            });
             clear_message_store();
-            reader history_input(saved_history);
-            history_input.setMinorVersion(TAG_MINOR_VERSION);
-            load_messages(history_input);
-        });
-        clear_message_store();
-        string observed;
-        channel_capturing_tee messages(observed);
-        item_check();
-        CHECK(messages.appends == 1);
-        CHECK(messages.channel == MSGCH_FLOOR_ITEMS);
-        CHECK(observed.find(coloured) != string::npos);
-        CHECK(std::count(observed.begin(), observed.end(), '\n') == 1);
-        const string rendered = get_last_messages(1, false);
-        CHECK(rendered.find(expected_name) != string::npos);
-        CHECK(rendered.find("</white>") == string::npos);
+            string observed;
+            channel_capturing_tee messages(observed);
+            item_check();
+            CHECK(messages.appends == 1);
+            CHECK(messages.channel == MSGCH_FLOOR_ITEMS);
+            CHECK(observed.find(coloured) != string::npos);
+            CHECK(std::count(observed.begin(), observed.end(), '\n') == 1);
+            const string rendered = get_last_messages(1, false);
+            CHECK(rendered.find(expected_name) != string::npos);
+            CHECK(rendered.find("</white>") == string::npos);
+        }
+        CHECK(get_last_messages(NUM_STORED_MESSAGES, true) == history_before);
         CHECK(item.props[ARTEFACT_NAME_KEY].get_string() == raw_name);
         CHECK(get_artefact_name(item, true) == raw_name);
         CHECK(item.name(DESC_A) == raw_full_name);
