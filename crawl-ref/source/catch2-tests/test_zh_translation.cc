@@ -17,10 +17,12 @@
 #include "branch.h"
 #include "clua.h"
 #include "cloud.h"
+#include "colour.h"
 #include "dlua.h"
 #include "database.h"
 #include "decks.h"
 #include "describe.h"
+#include "describe-spells.h"
 #include "describe-god.h"
 #include "directn.h"
 #include "dungeon.h"
@@ -12052,5 +12054,118 @@ TEST_CASE("Lua status lookup accepts the English key in Chinese display mode",
         REQUIRE(lua_isboolean(ls, -1));
         CHECK(lua_toboolean(ls, -1));
         i18n_cache_clear();
+    }
+}
+
+TEST_CASE("elemental text colours preserve complete UTF-8 characters",
+          "[zh-translation][quicksilver-colour][colour]")
+{
+    if (str_to_colour("magic", -1, false, true) != ETC_MAGIC)
+        init_element_colours();
+    const uint64_t parent_state = rng::current_generator().get_state();
+    const uint64_t parent_count = rng::current_generator().get_count();
+    const colour_t colours[] = {ETC_MAGIC, ETC_FIRE, ETC_ORB_GLOW, RED, BLACK};
+    for (const colour_t colour : colours)
+        for (const string text : {"(3d20)", "（3d20）", "水银", "A水银🧪z", "𠀀", ""})
+        {
+            CAPTURE(colour, text);
+            const string coloured = colourize_str(text, colour);
+            CHECK_FALSE(rule_garbled_utf8(coloured));
+            CHECK(formatted_string::parse_string(coloured).tostring() == text);
+        }
+    // Preserve the existing ASCII palette order and the ordinary-colour path.
+    CHECK(colourize_str("Ab3", ETC_MAGIC)
+          == "<lightmagenta>A</lightmagenta><lightblue>b</lightblue><magenta>3</magenta>");
+    CHECK(colourize_str("（3d20）", RED) == "<red>（3d20）</red>");
+    CHECK(colourize_str("A", BLACK) == "<darkgrey>A</darkgrey>");
+    // Elemental colours are hashes/palettes, not draws from gameplay RNG.
+    CHECK(rng::current_generator().get_state() == parent_state);
+    CHECK(rng::current_generator().get_count() == parent_count);
+}
+
+TEST_CASE("quicksilver monster spell descriptions preserve localized effects",
+          "[zh-translation][quicksilver-colour][monster-spells]")
+{
+    if (str_to_colour("magic", -1, false, true) != ETC_MAGIC)
+        init_element_colours();
+    init_properties();
+    init_monsters();
+    init_zap_index();
+    init_spell_descs();
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.hp = you.hp_max = 100;
+    rng::subgenerator random(0x515549434bULL, 0x53494c564552ULL);
+    for (const monster_type type : {MONS_QUICKSILVER_ELEMENTAL, MONS_QUICKSILVER_DRAGON})
+    {
+        scoped_monspeak_world world;
+        monster* source = world.place(type);
+        REQUIRE(source);
+        define_monster(*source);
+        const monster_info info(source);
+        REQUIRE(info.has_spells());
+        const string effect = spell_effect_string(SPELL_QUICKSILVER_BOLT, &info);
+        REQUIRE_FALSE(effect.empty());
+        formatted_string description;
+        describe_spellset(monster_spellset(info), nullptr, description, &info);
+        const string markup = description.to_colour_string();
+        CAPTURE(language, type, effect, markup);
+        CHECK_FALSE(rule_garbled_utf8(markup));
+        CHECK(description.tostring().find(effect) != string::npos);
+        CHECK(description.tostring().find(spell_title(SPELL_QUICKSILVER_BOLT)) != string::npos);
+    }
+}
+
+TEST_CASE("upheaval beam hits translate names while preserving raw identities",
+          "[zh-translation][playtest-fixes][upheaval-names]")
+{
+    init_properties();
+    init_monsters();
+    init_zap_index();
+    init_spell_descs();
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 1000;
+    scoped_monspeak_world world;
+    monster* source = world.place(MONS_SALAMANDER_TYRANT);
+    REQUIRE(source);
+    no_notes suppress_notes;
+    rng::subgenerator random(0x555048454156ULL, 0x414c4e414d45ULL);
+    const pair<const char*, beam_type> cases[] = {
+        {"blast of magma", BEAM_LAVA}, {"blast of ice", BEAM_ICE},
+        {"cutting wind", BEAM_AIR}, {"blast of rubble", BEAM_FRAG},
+    };
+    for (const auto& test : cases)
+    {
+        bolt beam;
+        beam.name = test.first;
+        beam.flavour = beam.real_flavour = test.second;
+        beam.thrower = KILL_MON_MISSILE;
+        beam.source_id = source->mid;
+        // Upheaval fires a local beam at each affected square.
+        beam.source = beam.target = you.pos();
+        beam.hit = AUTOMATIC_HIT;
+        beam.damage = dice_def(1, 1);
+        if (test.second == BEAM_LAVA)
+            beam.hit_verb = "engulfs";
+        msg::tee messages;
+        beam.fire();
+        const string output = messages.get_store();
+        const string display = T_(test.first);
+        CAPTURE(language, beam.name, output);
+        CHECK(beam.msg_generated);
+        CHECK(output.find(display) != string::npos);
+        CHECK(beam.name == test.first);
+        CHECK(beam.origin_spell == SPELL_NO_SPELL);
+        if (language == lang_t::ZH)
+        {
+            CHECK(display != test.first);
+            CHECK(output.find(test.first) == string::npos);
+        }
     }
 }

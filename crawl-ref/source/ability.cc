@@ -3316,7 +3316,7 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
     case ABIL_EVOKE_TURN_INVISIBLE:     // cloaks, randarts
         if (!invis_allowed())
             return spret::abort;
-        if (Options.show_invis_targeter && !invisibility_target_check("Confirm evoke"))
+        if (Options.show_invis_targeter && !invisibility_target_check(T_("Confirm evoke")))
             return spret::abort;
         if (_invis_causes_drain())
             drain_player(40, false, true); // yes, before the fail check!

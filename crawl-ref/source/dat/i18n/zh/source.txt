@@ -18586,6 +18586,18 @@ blast of flame
 blast of cold
 寒冰冲击
 %%%%
+blast of magma
+岩浆冲击
+%%%%
+blast of ice
+寒冰冲击
+%%%%
+cutting wind
+凌厉之风
+%%%%
+blast of rubble
+碎石冲击
+%%%%
 blast of poison
 毒素冲击
 %%%%
@@ -23523,6 +23535,9 @@ inflict 1d5 acid damage when struck in melee.
 %%%%
 ; and 
 ；
+%%%%
+Confirm evoke
+确认激活
 %%%%
 Confirm quaff
 确认饮用
