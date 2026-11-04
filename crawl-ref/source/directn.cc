@@ -1787,7 +1787,7 @@ static string _cell_sanctuary_description(const coord_def& pos)
 
 static string _cell_silence_description(const coord_def& pos)
 {
-    return silenced(pos) ? "silenced" : "";
+    return silenced(pos) ? T_("silenced") : "";
 }
 
 static void _push_back_if_nonempty(const string& str, vector<string>* vec)
