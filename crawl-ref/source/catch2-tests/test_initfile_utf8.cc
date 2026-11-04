@@ -396,3 +396,26 @@ TEST_CASE("legacy concat: actual custom text colour parser reports the rejected 
     }
 }
 #endif
+
+TEST_CASE("invalid monster list colours retain safe defaults",
+          "[initfile][invalid-colour-key]")
+{
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        game_options options;
+        clear_message_store();
+        options.read_option_line("monster_list_colour = friendly:invalid_colour_37");
+        REQUIRE(options.monster_list_colours_option.size() == 1);
+        const auto &invalid = options.monster_list_colours_option.front();
+        CHECK_FALSE(invalid.valid());
+        CHECK(invalid.category == NUM_MLC);
+        CHECK(invalid.colour == -1);
+        CHECK(get_last_messages(10, true).find("invalid_colour_37") != string::npos);
+        options.read_option_line("monster_list_colour = friendly:red");
+        REQUIRE(options.monster_list_colours_option.size() == 1);
+        CHECK(options.monster_list_colours_option.front().valid());
+        CHECK(options.monster_list_colours_option.front().category == MLC_FRIENDLY);
+        CHECK(options.monster_list_colours_option.front().colour == RED);
+    }
+}

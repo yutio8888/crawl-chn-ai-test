@@ -3364,10 +3364,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 // visible monster, fail closed). Every observed emission runs inside the
 // existing msgwin_temporary_mode with an RAII rollback
 // (msgwin_clear_temporary()) on the normal and REQUIRE-unwinding paths, so
-// the process-global message store is never contaminated: after the
-// rollback the complete retained history snapshot
-// (get_last_messages(NUM_STORED_MESSAGES, true)) is proven byte-identical
-// to the pre-call snapshot. Player state is restored by unwind_var; the
+// observation uses an isolated message store, restored through the existing
+// save/load interfaces. Temporary rollback is checked inside that store;
+// the complete caller history is checked again after restoration. This also
+// handles a full caller history, whose oldest entry a temporary push would
+// otherwise evict before rollback. Player state is restored by unwind_var; the
 // fixture restores language state. The tests mutate no env cells, so no
 // world snapshot/restore is needed.
 // =============================================================================
@@ -3471,6 +3472,7 @@ struct eel_observation
     string tee_raw;           // raw msg::tee stream (colour tag + text + newline)
     msg_channel_type channel = MSGCH_PLAIN;
     int appends = 0;
+    bool temporary_history_restored = false;
     bool history_restored = false; // complete retained history == pre-call
     bool parent_rng_unchanged = false;
 };
@@ -3486,27 +3488,41 @@ eel_observation observe_eel_flavour(lang_t language, uint64_t seed)
 
     eel_observation obs;
     const string history_before = get_last_messages(NUM_STORED_MESSAGES, true);
+    vector<unsigned char> saved_history;
+    writer history_output(&saved_history);
+    save_messages(history_output);
     const uint64_t parent_before = rng::peek_uint64();
     {
-        // Every observed emission runs inside the existing temporary mode;
-        // the rollback guard clears it on the normal path and on REQUIRE
-        // unwinding, so the emission never survives this scope.
-        msgwin_temporary_mode temporary;
-        temporary_message_rollback rollback;
-        rng::subgenerator scoped_rng(seed, EEL_RNG_SEQUENCE);
-        channel_capturing_tee tee(obs.tee_raw);
-        do_eel_flavour_msg();
-        // Capture the exact emission while it is still active in the store,
-        // the tee and the channel, before the rollback at scope exit.
-        obs.store = get_last_messages(1, true);
-        obs.channel = tee.channel;
-        obs.appends = tee.appends;
+        unwinder restore_history([&saved_history]() {
+            clear_message_store();
+            reader history_input(saved_history);
+            history_input.setMinorVersion(TAG_MINOR_VERSION);
+            load_messages(history_input);
+        });
+        clear_message_store();
+        {
+            // Every observed emission runs inside the existing temporary mode;
+            // the rollback guard clears it on the normal path and on REQUIRE
+            // unwinding, so the emission never survives this scope.
+            msgwin_temporary_mode temporary;
+            temporary_message_rollback rollback;
+            rng::subgenerator scoped_rng(seed, EEL_RNG_SEQUENCE);
+            channel_capturing_tee tee(obs.tee_raw);
+            do_eel_flavour_msg();
+            // Capture the exact emission while it is still active in the store,
+            // the tee and the channel, before the rollback at scope exit.
+            obs.store = get_last_messages(1, true);
+            obs.channel = tee.channel;
+            obs.appends = tee.appends;
+        }
+        obs.temporary_history_restored =
+            get_last_messages(NUM_STORED_MESSAGES, true).empty();
     }
-    // Rollback already ran at scope exit; prove the complete retained
+    // Caller history has been restored; prove the complete retained
     // message history equals the pre-call snapshot (isolation from later
     // cases and helper calls).
-    obs.history_restored =
-        get_last_messages(NUM_STORED_MESSAGES, true) == history_before;
+    const string history_after = get_last_messages(NUM_STORED_MESSAGES, true);
+    obs.history_restored = history_after == history_before;
     obs.parent_rng_unchanged = rng::peek_uint64() == parent_before;
     return obs;
 }
@@ -3531,9 +3547,10 @@ void check_eel_observation(const eel_observation &obs,
     CHECK(obs.appends == 1);
     // The replay drew only from the fixed subgenerator, never the parent RNG.
     CHECK(obs.parent_rng_unchanged);
-    // Full isolation: after the temporary-mode rollback, the complete
-    // retained message history is byte-identical to the pre-call snapshot,
+    // Full isolation: temporary-mode rollback empties the working store,
+    // then restoration makes the caller history byte-identical to its snapshot,
     // so no later case or helper call can see this emission.
+    CHECK(obs.temporary_history_restored);
     CHECK(obs.history_restored);
 }
 
@@ -11931,5 +11948,109 @@ TEST_CASE("playtest: Maxwell's coupling charge light keeps raw frames and transl
         CHECK(seen.size() == 4);
         for (const char *frame : frames)
             CHECK(seen.count(frame) == 1);
+    }
+}
+
+TEST_CASE("status identities remain English across display languages",
+          "[zh-translation][status][status-identities]")
+{
+    init_duration_index();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    unwind_var<game_type> restore_game(crawl_state.type, GAME_TYPE_NORMAL);
+    struct status_case
+    {
+        int status;
+        std::function<void()> setup;
+        const char *prefix;
+    };
+    const status_case cases[] = {
+        {STATUS_BACKLIT, [] { you.duration[DUR_CORONA] = 100; }, "glowing"},
+        {STATUS_NO_POTIONS, [] { you.duration[DUR_NO_POTIONS] = 100; }, "unable to drink"},
+        {STATUS_MANUAL, [] { you.skill_manual_points[SK_CONJURATIONS] = 100; }, "studying "},
+        {STATUS_MANUAL, [] {
+            you.skill_manual_points[SK_CONJURATIONS] = 100;
+            you.skill_manual_points[SK_FIRE_MAGIC] = 100;
+        }, "studying 2 skills"},
+        {STATUS_DRAINED, [] { you.hp_max_adj_temp = -30; }, ""},
+        {DUR_FORTRESS_BLAST_TIMER, [] { you.duration[DUR_FORTRESS_BLAST_TIMER] = 20; }, "fortress blast"},
+        {DUR_VAPOURISE, [] {
+            you.duration[DUR_VAPOURISE] = 100;
+            you.props[MISTMANE_VAPOUR_KEY] = int(POT_MIGHT);
+        }, "vapourise ("},
+        {DUR_POISONING, [] { you.duration[DUR_POISONING] = 100; }, ""},
+        {DUR_TRANSFORMATION, [] {
+            you.form = transformation::tree;
+            you.duration[DUR_TRANSFORMATION] = 1;
+        }, "tree-form (expiring)"},
+        // Existing canonical defaults must stay unchanged when a producer
+        // overrides its displayed description.
+        {DUR_CORROSION, [] { you.duration[DUR_CORROSION] = 100; }, "corroded"},
+        {DUR_INDOMITABLE, [] { you.duration[DUR_INDOMITABLE] = 300; }, "indomitable (3)"},
+    };
+    for (const auto &entry : cases)
+    {
+        you = player();
+        you.species = SP_HUMAN;
+        you.experience_level = 12;
+        you.hp = 30;
+        you.hp_max = 40;
+        you.where_are_you = BRANCH_DUNGEON;
+        you.depth = 1;
+        entry.setup();
+        status_info english;
+        {
+            EnTranslationFixture language;
+            REQUIRE(fill_status_info(entry.status, english));
+            REQUIRE_FALSE(english.short_db_key.empty());
+            CHECK(english.short_db_key.find(entry.prefix) == 0);
+        }
+        for (lang_t language : {lang_t::ZH, lang_t::EN, lang_t::ZH})
+        {
+            TranslationFixture display(language, language == lang_t::ZH ? "zh" : nullptr);
+            status_info info;
+            REQUIRE(fill_status_info(entry.status, info));
+            CAPTURE(entry.status, language, info.short_db_key, info.short_text);
+            CHECK(info.short_db_key == english.short_db_key);
+            CHECK(info.db_key == english.db_key);
+            if (language == lang_t::ZH)
+                CHECK(info.short_text != english.short_text);
+            else
+                CHECK(info.short_text == english.short_text);
+            const string saved_display = info.short_text;
+            i18n_cache_clear();
+            status_info rebuilt;
+            REQUIRE(fill_status_info(entry.status, rebuilt));
+            CHECK(rebuilt.short_db_key == english.short_db_key);
+            CHECK(rebuilt.short_text == saved_display);
+        }
+    }
+}
+
+TEST_CASE("Lua status lookup accepts the English key in Chinese display mode",
+          "[zh-translation][status][status-identities]")
+{
+    init_duration_index();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    unwind_var<game_type> restore_game(crawl_state.type, GAME_TYPE_NORMAL);
+    you = player();
+    you.species = SP_HUMAN;
+    you.experience_level = 12;
+    you.hp = 30;
+    you.hp_max = 40;
+    you.where_are_you = BRANCH_DUNGEON;
+    you.depth = 1;
+    you.duration[DUR_CORONA] = 100;
+    for (lang_t language : {lang_t::ZH, lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture display(language, language == lang_t::ZH ? "zh" : nullptr);
+        lua_State *ls = clua.state();
+        lua_stack_cleaner restore_stack(ls);
+        REQUIRE(clua.execstring("return you.status('glowing')",
+                               "status-identity-language", 1) == 0);
+        REQUIRE(lua_isboolean(ls, -1));
+        CHECK(lua_toboolean(ls, -1));
+        i18n_cache_clear();
     }
 }
