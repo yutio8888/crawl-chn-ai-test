@@ -20,6 +20,7 @@
 #include "mon-behv.h"
 #include "mon-death.h"
 #include "mon-place.h"
+#include "mon-util.h"
 #include "nearby-danger.h"
 #include "terrain.h"
 #include "database.h"
@@ -203,13 +204,35 @@ monster& get_tentacle_head(const monster& mon)
     return const_cast<monster&>(*m);
 }
 
-static void _establish_connection(monster* tentacle,
+// Can a body connector be created on this cell? create_monster() relocates a
+// forced placement onto a nearby cell when the requested one is occupied or
+// impassable, which would leave a segment away from the path it was meant to
+// fill. Body cells of the tentacle itself are handled before this check.
+static bool _connector_fits(const coord_def &pos, monster_type type)
+{
+    return !actor_at(pos) && mons_class_can_pass(type, env.grid(pos));
+}
+
+// Lays out the body along the found path. Returns whether the whole chain was
+// built; a caller must treat a partial layout as a failed connection, since the
+// outer links would keep pointing at monsters this layout has just removed.
+static bool _establish_connection(monster* tentacle,
                                   monster* head,
                                   set<position_node>::iterator path,
                                   monster_type connector_type)
 {
     const position_node * last = &(*path);
     const position_node * current = last->last;
+
+    // Segments placed by this attempt. A partial layout must not leave them
+    // behind: the caller removes the tentacle without its body.
+    vector<monster*> created;
+    const auto fail = [&created]() {
+        for (monster *segment : created)
+            if (segment && segment->alive())
+                monster_die(*segment, KILL_TENTACLE_CLEANUP, NON_MONSTER, true);
+        return false;
+    };
 
     // Tentacle is adjacent to the end position, not much to do.
     if (!current)
@@ -220,16 +243,33 @@ static void _establish_connection(monster* tentacle,
         else
             tentacle->props[INWARDS_KEY].get_int() = MID_NOBODY;
 
-        return;
+        return true;
     }
 
+    // The body may only end on its own head. Anything else at the end position
+    // would silently become the base segment of this chain.
+    monster* const base_monster = monster_at(last->pos);
+    if (base_monster && base_monster != head)
+        return false;
+
     // No base monster case (demonic tentacles)
-    if (!monster_at(last->pos))
+    if (!base_monster)
     {
+        if (!_connector_fits(last->pos, connector_type))
+            return false;
+
         mgen_data mg = _segment_data(*head, last->pos, connector_type);
         mg.props[MGEN_TENTACLE_CONNECT] = int(tentacle->mid);
         if (monster *connect = create_monster(mg))
         {
+            if (connect->pos() != last->pos)
+            {
+                // Relocated away from the path: do not graft it.
+                monster_die(*connect, KILL_TENTACLE_CLEANUP, NON_MONSTER, true);
+                return fail();
+            }
+
+            created.push_back(connect);
             connect->props[INWARDS_KEY].get_int() = MID_NOBODY;
             connect->props[OUTWARDS_KEY].get_int() = MID_NOBODY;
 
@@ -245,7 +285,7 @@ static void _establish_connection(monster* tentacle,
         else
         {
             // Big failure mode.
-            return;
+            return fail();
         }
     }
 
@@ -261,24 +301,38 @@ static void _establish_connection(monster* tentacle,
         {
             // Should be something there, what to do if there isn't?
             mpr(T_("Error! failed to place monster in tentacle connect change"));
-            break;
+            return fail();
         }
 
-        // Monster at the current square, should be the end of the line if there
+        // Monster at the current square: the tip is already there, anything
+        // else would be grafted into the body by the links below.
         monster* current_mons = monster_at(current->pos);
         if (current_mons)
         {
-            // Todo verify current monster type
+            if (current_mons != tentacle)
+                return fail();
+
             current_mons->props[INWARDS_KEY].get_int() = last_mon->mid;
             last_mon->props[OUTWARDS_KEY].get_int() = current_mons->mid;
             break;
         }
 
          // place a connector
+        if (!_connector_fits(current->pos, connector_type))
+            return fail();
+
         mgen_data mg = _segment_data(*head, current->pos, connector_type);
         mg.props[MGEN_TENTACLE_CONNECT] = int(tentacle->mid);
         if (monster *connect = create_monster(mg))
         {
+            if (connect->pos() != current->pos)
+            {
+                // Relocated away from the path: do not graft it.
+                monster_die(*connect, KILL_TENTACLE_CLEANUP, NON_MONSTER, true);
+                return fail();
+            }
+
+            created.push_back(connect);
             connect->max_hit_points = tentacle->max_hit_points;
             connect->hit_points = tentacle->hit_points;
 
@@ -296,8 +350,10 @@ static void _establish_connection(monster* tentacle,
         }
         else
         {
-            // connector placement failed, what to do?
-            mprf("connector placement failed at %d %d", current->pos.x, current->pos.y);
+            // connector placement failed: the remaining links cannot be built
+            dprf("connector placement failed at %d %d", current->pos.x,
+                 current->pos.y);
+            return fail();
         }
 
         last = current;
@@ -317,6 +373,8 @@ static void _establish_connection(monster* tentacle,
 
     if (updated)
         update_screen();
+
+    return true;
 }
 
 // Constraints on tentacle movement and connection. These are intended to make
@@ -677,9 +735,7 @@ static bool _try_tentacle_connect(const coord_def & new_pos,
     if (candidates.empty())
         return false;
 
-    _establish_connection(tentacle, head, candidates[0], connect_type);
-
-    return true;
+    return _establish_connection(tentacle, head, candidates[0], connect_type);
 }
 
 static void _collect_tentacles(monster* mons,
