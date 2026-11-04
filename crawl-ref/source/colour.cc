@@ -15,6 +15,7 @@
 #include "stringutil.h"
 #include "tag-version.h"
 #include "tiles-build-specific.h"
+#include "unicode.h"
 #include "libutil.h" // map_find
 
 static FixedVector<unique_ptr<base_colour_calc>, NUM_COLOURS> element_colours;
@@ -853,11 +854,17 @@ string colourize_str(string base, colour_t col)
     }
     ASSERT(element_colours[col]);
     string out;
-    for (int i = 0; i < (int)base.length(); i++)
+    int i = 0;
+    char32_t c;
+    int len;
+    // Keep each UTF-8 code point intact when inserting colour tags.
+    for (const char* p = base.c_str(); (len = utf8towc(&c, p)); p += len, ++i)
     {
         const colour_t term_col = element_colours[col]->get_nth(i);
         const string col_name = colour_to_str(term_col);
-        out += "<" + col_name + ">" + base[i] + "</" + col_name + ">";
+        out += "<" + col_name + ">";
+        out.append(p, len);
+        out += "</" + col_name + ">";
     }
     return out;
 }

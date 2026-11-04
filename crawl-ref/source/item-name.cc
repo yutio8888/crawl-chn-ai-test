@@ -4066,7 +4066,10 @@ string item_prefix(const item_def &item, bool temp)
 string menu_colour_item_name(const item_def &item, description_level_type desc)
 {
     const string cprf      = item_prefix(item, false);
-    const string item_name = item.name(desc);
+    // Names loaded from old saves can contain TextDB line breaks. Keep the
+    // stored name intact, but do not split a colour span across messages.
+    const string item_name = replace_all_of(
+        replace_all(item.name(desc), "\r\n", " "), "\r\n", " ");
 
     const int col = menu_colour(item_name, cprf, "pickup", false);
     if (col == -1)
