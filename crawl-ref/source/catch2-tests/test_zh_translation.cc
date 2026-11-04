@@ -12172,9 +12172,24 @@ TEST_CASE("upheaval beam hits translate names while preserving raw identities",
 }
 
 
+// The existing stream registry has no public initialized-state accessor.
+// Inspect it only here so this fixture never duplicates or destroys streams
+// already owned by its caller; no production API is added.
+namespace msg
+{
+extern vector<ostream*> stream_ptrs;
+}
+
 TEST_CASE("saved artefact line breaks stay inside one coloured floor message",
           "[zh-translation][artefact][artefact-name-newline]")
 {
+    const bool owns_streams = msg::stream_ptrs.empty();
+    if (owns_streams)
+        msg::initialise_mpr_streams();
+    unwinder restore_streams([owns_streams]() {
+        if (owns_streams)
+            msg::deinitialise_mpr_streams();
+    });
     init_properties();
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
