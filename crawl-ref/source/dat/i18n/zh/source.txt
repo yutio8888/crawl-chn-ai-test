@@ -52967,3 +52967,27 @@ status|Charge|
 %%%%
 status|Charge\\
 蓄电\
+
+%%%%
+%s writhes in pain as voices assail %s mind.
+%s痛苦地扭动着，阵阵声音正冲击着%s心智。
+
+%%%%
+%s writhes as voices assail %s being.
+%s扭动着，阵阵声音正冲击着%s形体。
+
+%%%%
+A cacophony of accursed wailing tears at your sanity!
+杂乱刺耳的诅咒哀嚎声撕扯着你的理智！
+
+%%%%
+A deafening chorus of shrieks assaults your mind!
+震耳欲聋的齐声尖啸冲击着你的心智！
+
+%%%%
+A chorus of shrieks assaults your mind.
+齐声尖啸冲击着你的心智。
+
+%%%%
+The starcursed mass shrieks in your mind.
+受星诅咒的聚合体在你的脑海中尖啸。

@@ -692,20 +692,20 @@ static void _starcursed_scream(monster* mon, actor* target)
 
     if (n > 7)
     {
-        message = "A cacophony of accursed wailing tears at your sanity!";
+        message = N_("A cacophony of accursed wailing tears at your sanity!");
         if (coinflip())
             stun = 2;
     }
     else if (n > 4)
     {
-        message = "A deafening chorus of shrieks assaults your mind!";
+        message = N_("A deafening chorus of shrieks assaults your mind!");
         if (one_chance_in(3))
             stun = 1;
     }
     else if (n > 1)
-        message = "A chorus of shrieks assaults your mind.";
+        message = N_("A chorus of shrieks assaults your mind.");
     else
-        message = "The starcursed mass shrieks in your mind.";
+        message = N_("The starcursed mass shrieks in your mind.");
 
     dam = 4 + random2(5) + random2(n * 3 / 2);
 
@@ -714,17 +714,18 @@ static void _starcursed_scream(monster* mon, actor* target)
         if (you.see_cell(target->pos()))
         {
             bool mind = mons_intel(*target->as_monster()) > I_BRAINLESS;
+            const char *const frame = mind
+                ? N_("%s writhes in pain as voices assail %s mind.")
+                : N_("%s writhes as voices assail %s being.");
             mprf(mon->friendly() ? MSGCH_FRIEND_SPELL
                                  : MSGCH_MONSTER_SPELL,
-                 "%s writhes%s as voices assail %s %s.",
+                 T_(frame),
                  target->name(DESC_THE).c_str(),
-                 mind ? " in pain" : "",
-                 target->pronoun(PRONOUN_POSSESSIVE).c_str(),
-                 mind ? "mind" : "being" );
+                 target->pronoun(PRONOUN_POSSESSIVE).c_str());
         }
     }
     else
-        mprf(MSGCH_MONSTER_SPELL, "%s", message);
+        mprf(MSGCH_MONSTER_SPELL, "%s", T_(message));
     target->hurt(mon, dam, BEAM_MISSILE, KILLED_BY_BEAM, "",
                  "accursed screaming");
 

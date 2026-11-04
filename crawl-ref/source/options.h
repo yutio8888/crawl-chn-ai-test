@@ -183,8 +183,8 @@ struct mlc_mapping
 
     bool valid() const { return category >= 0 && category < NUM_MLC; }
 
-    monster_list_colour_type category;
-    int colour;
+    monster_list_colour_type category = NUM_MLC;
+    int colour = -1;
 };
 
 #ifdef USE_TILE
@@ -212,8 +212,8 @@ struct colour_remapping
 
     bool valid() const { return colour_index >= 0 && colour_index < NUM_TERM_COLOURS; }
 
-    int colour_index;
-    VColour colour_def;
+    int colour_index = NUM_TERM_COLOURS;
+    VColour colour_def = VColour(0, 0, 0);
 };
 #endif
 
@@ -382,7 +382,12 @@ struct base_game_options
                             const vector<string> *rcdirs = nullptr);
     void set_from_defaults(const string &opt);
 
-    void report_error(PRINTF(1, ));
+#ifdef __GNUC__
+    void report_error(const char *format, ...)
+        __attribute__((format(CRAWL_PRINTF_FORMAT, 2, 3)));
+#else
+    void report_error(const char *format, ...);
+#endif
 
     // arguable which class this should be on
     vector<string> terp_files; // Lua files to load for luaterp
