@@ -382,7 +382,12 @@ struct base_game_options
                             const vector<string> *rcdirs = nullptr);
     void set_from_defaults(const string &opt);
 
-    void report_error(PRINTF(1, ));
+#ifdef __GNUC__
+    void report_error(const char *format, ...)
+        __attribute__((format(CRAWL_PRINTF_FORMAT, 2, 3)));
+#else
+    void report_error(const char *format, ...);
+#endif
 
     // arguable which class this should be on
     vector<string> terp_files; // Lua files to load for luaterp
