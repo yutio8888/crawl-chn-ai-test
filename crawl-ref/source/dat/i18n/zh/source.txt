@@ -2819,7 +2819,7 @@ accepted the %s
 接受了%s
 %%%%
  accepts your kill.
- 接受了你的杀戮。
+接受了你的杀戮。
 %%%%
 acid
 强酸
@@ -2989,19 +2989,19 @@ Antique Weapon
 陷入了混乱。
 %%%%
  appreciates the change of pace.
- 欣赏这种节奏的变化。
+欣赏这种节奏的变化。
 %%%%
 Your tail finishes growing back.
 你的尾巴已经完全长回来了。
 %%%%
  appreciates your contribution to the ecosystem.
- 对你为生态系统做出的贡献表示赞赏。
+对你为生态系统做出的贡献表示赞赏。
 %%%%
  appreciates your killing of a heretic priest.
- 对你杀死异端牧师表示赞赏。
+对你杀死异端牧师表示赞赏。
 %%%%
  appreciates your killing of a magic user.
- 对你杀死魔法使用者表示赞赏。
+对你杀死魔法使用者表示赞赏。
 %%%%
 archmagi
 大法师
@@ -3873,7 +3873,7 @@ disrobing
 消散了！
 %%%%
  dissipates.
- 消散了。
+消散了。
 %%%%
 dissipation
 消散
@@ -6009,7 +6009,7 @@ rElec
 电抗
 %%%%
  religion
- 宗教
+宗教
 %%%%
 Remember %s name as what?
 将%s的名字记作什么？
@@ -7930,7 +7930,7 @@ Thorny briars emerge from the ground!
 带刺的荆棘从地面冒出！
 %%%%
  thoroughly appreciates the change of pace.
- 非常欣赏这种节奏的变化。
+非常欣赏这种节奏的变化。
 %%%%
 Those are too big for your %s.
 那对你的%s来说太大了。
@@ -13437,25 +13437,25 @@ completely
 <yellow>你好，欢迎来到地牢爬行石汤 %s！</yellow>\n<brown>(c) 版权所有 1997-2002 Linley Henzell，2002-2025 Crawl 开发团队
 %%%%
  are unaffected.
- 不受影响。
+不受影响。
 %%%%
  barely resist.
- 勉强抵抗住了。
+勉强抵抗住了。
 %%%%
  struggle to resist.
- 奋力抵抗。
+奋力抵抗。
 %%%%
  resist with significant effort.
- 费了很大力气抵抗住了。
+费了很大力气抵抗住了。
 %%%%
  resist with some effort.
- 费了些力气抵抗住了。
+费了些力气抵抗住了。
 %%%%
  easily resist.
- 轻松抵抗住了。
+轻松抵抗住了。
 %%%%
  resist with almost no effort.
- 几乎毫不费力就抵抗住了。
+几乎毫不费力就抵抗住了。
 %%%%
 , vulnerable to %s
 ，受%s影响
@@ -52815,3 +52815,155 @@ monster equipment| and
 %%%%
 monster equipment|carrying 
 携带着
+
+%%%%
+attack prompt action|attack
+攻击
+
+%%%%
+attack prompt action|blast
+冲击
+
+%%%%
+attack prompt action|blind
+施放致盲法术
+
+%%%%
+attack prompt action|conjure a freezing cloud
+制造冰冻云
+
+%%%%
+attack prompt action|create a bog
+制造毒沼
+
+%%%%
+attack prompt action|drain life
+汲取生命
+
+%%%%
+attack prompt action|hailstorm
+降下冰雹
+
+%%%%
+attack prompt action|hurl reagents
+投掷炼金试剂
+
+%%%%
+attack prompt action|intoxicate
+施放阿利斯泰尔之醉
+
+%%%%
+attack prompt action|irradiate
+释放辐射
+
+%%%%
+attack prompt action|make a polar vortex
+制造极地漩涡
+
+%%%%
+attack prompt action|poison
+释放毒素
+
+%%%%
+attack prompt action|refrigerate
+施放制冷法术
+
+%%%%
+attack prompt action|release a tremorstone
+释放震石
+
+%%%%
+attack prompt action|Slouch
+施展懒散步伐
+
+%%%%
+attack prompt action|unravel
+解构魔法效果
+
+%%%%
+attack prompt action|zap
+电击
+
+%%%%
+[Stash: %s]
+[储藏：%s]
+
+%%%%
+Aim the phial where?
+要将洪水之瓶瞄准哪里？
+
+%%%%
+Aiming: <white>Phantom Mirror</white>
+瞄准：<white>幻影镜</white>
+
+%%%%
+Aiming: <white>Overgrow</white>
+瞄准：<white>过度生长</white>
+
+%%%%
+Retreat in which direction?
+向哪个方向撤退？
+
+%%%%
+You are lightly contaminated with residual magic.
+你受到残余魔法的轻度污染。
+
+%%%%
+You are dangerously contaminated with residual magic.
+你受到残余魔法的污染，已达危险程度。
+
+%%%%
+You are extremely contaminated with residual magic.
+你受到残余魔法的极重度污染。
+
+%%%%
+You are completely saturated with residual magic!
+你的身体已被残余魔法完全浸透！
+
+%%%%
+lightly contaminated
+轻度污染
+
+%%%%
+dangerously contaminated
+污染已达危险程度
+
+%%%%
+extremely contaminated
+极重度污染
+
+%%%%
+completely saturated
+完全浸透
+
+%%%%
+Your magical contamination has faded to a safe level.
+你的魔法污染已减轻至安全程度。
+
+%%%%
+the entropic weave
+熵之编织
+
+%%%%
+Your corrupting presence
+你的腐化存在
+
+%%%%
+a flying bit
+飞来的碎块
+
+%%%%
+status|Charge-
+蓄电-
+
+%%%%
+status|Charge/
+蓄电/
+
+%%%%
+status|Charge|
+蓄电|
+
+%%%%
+status|Charge\\
+蓄电\

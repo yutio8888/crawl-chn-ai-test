@@ -1076,7 +1076,7 @@ bool player_unrand_bad_attempt(const item_def &weapon,
         targeter_radius hitfunc(&you, LOS_NO_TRANS);
 
         return stop_attack_prompt(hitfunc,
-                               T_("attack "),
+                               N_("attack"),
                                nullptr, nullptr, defending_monster,
                                check_only);
     }
@@ -1085,7 +1085,7 @@ bool player_unrand_bad_attempt(const item_def &weapon,
         targeter_radius hitfunc(&you, LOS_NO_TRANS);
 
         return stop_attack_prompt(hitfunc,
-                               T_("attack "),
+                               N_("attack"),
                                [] (const actor *m)
                                {
                                    return !m->res_torment();
@@ -1183,7 +1183,7 @@ bool force_player_cleave(coord_def target)
     {
         targeter_cleave hitfunc(target);
         if (stop_attack_prompt(hitfunc,
-                T_("attack ")))
+                N_("attack")))
         {
             return true;
         }
@@ -1603,8 +1603,13 @@ bool stop_attack_prompt(targeter &hitfunc, const char* verb,
                                      T_("yourself"), mon_name.c_str());
     }
 
-    string action = T_(verb);
-    trim_string(action);
+    // Trim only the raw English identity, then resolve the display phrase in
+    // the dedicated action context so global spell/status names are untouched.
+    // Callers may already pass a formatted display value (e.g. "read the %s");
+    // such a value simply falls back to itself and is not re-identified.
+    string english_verb = verb;
+    trim_string(english_verb);
+    const string action = C_("attack prompt action", english_verb.c_str());
     const string prompt = make_stringf_p(
         defender_ok ? T_("Really %1$s near %2$s%3$s?%4$s")
                     : T_("Really %1$s %2$s%3$s?%4$s"),

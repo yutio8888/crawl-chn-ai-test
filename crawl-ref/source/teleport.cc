@@ -65,7 +65,8 @@ bool monster::blink_to(const coord_def& dest, bool quiet, bool jump)
                               ? NC_("move.bare", "hop")
                               : NC_("move.bare", "leap"))
                             : NC_("move.bare", "blink");
-    const string display_verb = Options.language == lang_t::ZH
+    const bool zh = Options.language == lang_t::ZH;
+    const string display_verb = zh
         ? translated_move_phrase(verb, move_phrase_context::bare)
         : conj_verb(verb);
 
@@ -78,7 +79,10 @@ bool monster::blink_to(const coord_def& dest, bool quiet, bool jump)
 
     if (!quiet)
     {
-        string message = " " + display_verb + "!";
+        // Chinese joins the monster name and verb without an ASCII separator
+        // and ends the sentence with the full-width exclamation mark.
+        const string message = (zh ? "" : " ") + display_verb
+                               + (zh ? "！" : "!");
         simple_monster_message(*this, message.c_str());
     }
 
