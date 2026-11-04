@@ -856,8 +856,9 @@ string colourize_str(string base, colour_t col)
     string out;
     int i = 0;
     char32_t c;
+    int len;
     // Keep each UTF-8 code point intact when inserting colour tags.
-    for (const char* p = base.c_str(); int len = utf8towc(&c, p); p += len, ++i)
+    for (const char* p = base.c_str(); (len = utf8towc(&c, p)); p += len, ++i)
     {
         const colour_t term_col = element_colours[col]->get_nth(i);
         const string col_name = colour_to_str(term_col);
