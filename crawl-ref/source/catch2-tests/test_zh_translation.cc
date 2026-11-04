@@ -12258,8 +12258,9 @@ TEST_CASE("saved artefact line breaks stay inside one coloured floor message",
             item_check();
             CHECK(messages.appends == 1);
             CHECK(messages.channel == MSGCH_FLOOR_ITEMS);
-            CHECK(observed.find(coloured) != string::npos);
-            CHECK(std::count(observed.begin(), observed.end(), '\n') == 1);
+            const string captured = messages.get_store();
+            CHECK(captured.find(coloured) != string::npos);
+            CHECK(std::count(captured.begin(), captured.end(), '\n') == 1);
             const string rendered = get_last_messages(1, false);
             CHECK(rendered.find(expected_name) != string::npos);
             CHECK(rendered.find("</white>") == string::npos);
