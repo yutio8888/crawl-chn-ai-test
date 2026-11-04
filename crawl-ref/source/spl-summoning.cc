@@ -2666,7 +2666,7 @@ spret fedhas_overgrow(bool fail)
     args.range = LOS_RADIUS;
     args.just_looking = false;
     args.needs_path = false;
-    args.top_prompt = "Aiming: <white>Overgrow</white>";
+    args.top_prompt = T_("Aiming: <white>Overgrow</white>");
     dist sdirect;
     direction(sdirect, args);
     if (!sdirect.isValid)

@@ -145,7 +145,7 @@ string get_stash_desc(const coord_def& c)
         {
             const string desc = s->description();
             if (!desc.empty())
-                return "[Stash: " + desc + "]";
+                return make_stringf(T_("[Stash: %s]"), desc.c_str());
         }
     }
     return "";

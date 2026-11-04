@@ -586,7 +586,7 @@ static bool _phial_of_floods(dist *target)
     // TODO: this needs a custom targeter
     direction_chooser_args args;
     args.mode = TARG_HOSTILE;
-    args.top_prompt = "Aim the phial where?";
+    args.top_prompt = T_("Aim the phial where?");
 
     unique_ptr<targeter> hitfunc = find_spell_targeter(SPELL_PRIMAL_WAVE,
             power, beam.range);
@@ -630,7 +630,7 @@ static spret _phantom_mirror(dist *target)
     args.restricts = DIR_TARGET;
     args.needs_path = false;
     args.self = confirm_prompt_type::cancel;
-    args.top_prompt = "Aiming: <white>Phantom Mirror</white>";
+    args.top_prompt = T_("Aiming: <white>Phantom Mirror</white>");
     args.hitfunc = &tgt;
     if (!spell_direction(*target, beam, &args))
         return spret::abort;
