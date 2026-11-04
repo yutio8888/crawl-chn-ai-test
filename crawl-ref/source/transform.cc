@@ -3216,6 +3216,7 @@ cloud_type mistmane_cloud_type(potion_type potion)
             return CLOUD_BLINDING_HAZE;
 
         case POT_BERSERK_RAGE:
+        case POT_BERSERK_SAGE:
             return CLOUD_FIRE;
 
         case POT_MUTATION:

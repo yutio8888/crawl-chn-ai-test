@@ -48,6 +48,7 @@
 #include "traps.h"
 #include "travel.h"
 #include "wiz-you.h"
+#include "xom.h"
 
 
 /*** Helper function to get a skill by name or raise an error
@@ -676,6 +677,12 @@ LUARET1(you_spell_levels, integer, player_spell_levels())
  * @function can_smell
  */
 LUARET1(you_can_smell, boolean, you.can_smell())
+
+/*** Do you have bones?
+ * @treturn boolean
+ * @function has_bones
+ */
+LUARET1(you_has_bones, boolean, you.has_bones())
 
 /*** Do you have claws?
  * @treturn int claws level
@@ -1546,6 +1553,16 @@ LUAFN(you_jademantle_crystals_desc)
     return 1;
 }
 
+LUAFN(you_xom_bonus_brand)
+{
+    if (you.attribute[ATTR_XOM_BLESSING] = XOM_BLESSING_CLEAVE)
+        lua_pushstring(ls, brand_type_name(static_cast<brand_type>(you.props[XOM_CLEAVE_BRAND_KEY].get_int()), false));
+    else
+        lua_pushstring(ls, "None");
+
+    return 1;
+}
+
 static const struct luaL_Reg you_clib[] =
 {
     { "turn_is_over", you_turn_is_over },
@@ -1670,6 +1687,7 @@ static const struct luaL_Reg you_clib[] =
     { "is_level_on_stack", you_is_level_on_stack },
 
     { "can_smell",         you_can_smell },
+    { "has_bones",         you_has_bones },
     { "has_claws",         you_has_claws },
 
     { "los",               you_los },
@@ -1698,6 +1716,7 @@ static const struct luaL_Reg you_clib[] =
     { "zot_orb_monster", you_zot_orb_monster },
 
     { "jademantle_crystals_desc", you_jademantle_crystals_desc },
+    { "xom_bonus_brand", you_xom_bonus_brand },
 
     { nullptr, nullptr },
 };

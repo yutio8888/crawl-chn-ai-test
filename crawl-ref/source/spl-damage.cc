@@ -469,7 +469,7 @@ spret cast_chain_spell(spell_type spell_cast, int pow,
         beam.source = source;
         beam.target = target;
         beam.colour       = ETC_RANDOM;
-        beam.ench_power   = pow;
+        beam.ench_power   = 50;
         beam.damage       = calc_dice(3, 5 + pow / 6);
         beam.real_flavour = BEAM_CHAOS;
         beam.flavour      = BEAM_CHAOS;
@@ -1100,10 +1100,7 @@ static ai_action::goodness _fire_permafrost_at(const actor &agent, int pow,
     if (is_tracer)
         beam.fire(tracer);
     else
-    {
         beam.fire();
-        flash_tile(target, YELLOW, 0, TILE_BOLT_PERMAFROST_EARTH);
-    }
 
     // To provide a different center graphic from the rest without changing
     // effect messaging order, split the vfx off into BEAM_VISUAL explosions.
@@ -5058,7 +5055,7 @@ static void _do_fusillade_hit(monster* mon, int power, beam_type flavour)
     exp.flavour       = flavour;
     exp.name          = concoction_description[flavour];
     exp.aux_source    = concoction_description[flavour];
-    exp.colour        = concoction_colour[flavour];
+    exp.animate       = false;
     exp.fire();
 
     if (flavour == BEAM_MMISSILE && mon && mon->alive())
@@ -5217,12 +5214,11 @@ spret cast_grave_claw(actor& caster, coord_def targ, int pow, bool fail)
         you.props[GRAVE_CLAW_CHARGES_KEY].get_int()--;
     }
 
-    flash_tile(targ, WHITE);
-
     bolt beam(caster, SPELL_GRAVE_CLAW, pow);
     beam.source = beam.target = targ;
     beam.hit_verb = "skewer";
     beam.plural = true;
+    beam.draw_delay = 60;
     beam.fire();
 
     if (caster.is_player())

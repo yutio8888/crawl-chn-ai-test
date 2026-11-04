@@ -169,4 +169,8 @@ static const vector<monster_info_flag_name> monster_info_flag_names = {
       NC_("flag long", "out of phase"), NC_("flag short", "phased")},
     { MB_DIVINE_SHIELD, NC_("flag short", "divine shielded"),
       NC_("flag long", "divinely shielded"), NC_("flag short", "divine shielded")},
+    { MB_GUARDIAN, NC_("flag short", "guardian"),
+      NC_("flag long", "your guardian"), NC_("flag short", "guardian")},
+    { MB_MAYBE_FAKE, NC_("flag short", "maybe fake"),
+      NC_("flag long", "maybe fake"), NC_("flag short", "maybe fake")},
 };

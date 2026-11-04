@@ -63,6 +63,7 @@ static const branch_type logical_branch_order[] = {
     BRANCH_GAUNTLET,
     BRANCH_ARENA,
     BRANCH_CRUCIBLE,
+    BRANCH_XOM_ARENA,
     BRANCH_NECROPOLIS,
     BRANCH_GULCH,
 };
@@ -74,6 +75,7 @@ static const branch_type danger_branch_order[] = {
     BRANCH_BAZAAR,
     BRANCH_TROVE,
     BRANCH_ARENA,
+    BRANCH_XOM_ARENA,
     BRANCH_DUNGEON,
     BRANCH_SEWER,
     BRANCH_OSSUARY,

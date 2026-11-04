@@ -283,7 +283,10 @@ void melee_attack::handle_phase_blocked()
     maybe_trigger_jinxbite();
 
     bool needs_block_message = needs_message;
-    if (defender->wearing_ego(OBJ_WEAPONS, SPWPN_REBUKE))
+    if (defender->wearing_ego(OBJ_WEAPONS, SPWPN_REBUKE)
+        || defender->is_player()
+           && you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_CLEAVE
+           && you.props[XOM_CLEAVE_BRAND_KEY].get_int() == SPWPN_REBUKE)
     {
         actor* best_targ = nullptr;
         for (distance_iterator di(attacker->pos(), true, true, attacker->reach_range()); di; ++di)
@@ -327,17 +330,10 @@ void melee_attack::handle_phase_blocked()
     // but Chinese uses the same verb form regardless.
     if (needs_block_message)
     {
-        // English uses "blocks" (singular) vs "block" (plural);
-        // conj_verb() handles the conjugation. Use the result
-        // to select the correct T_() key.
-        const string block_verb = defender->conj_verb("block");
-        const bool use_plural = (block_verb == "block");
-        const char* block_key = use_plural
-            ? T_("%s block %s attack.")
-            : T_("%s blocks %s attack.");
-        mprf(block_key,
-             defender_name(false).c_str(),
-             attacker == defender ? T_("its own") : atk_name(DESC_ITS).c_str());
+        string atk_attack = make_stringf("%s attack",
+            attacker == defender ? "its own"
+                                 : attacker->name(DESC_ITS).c_str());
+        mpr(block_event_string(defender, atk_attack));
     }
 
     if (defender->divinely_shielded()
@@ -350,16 +346,14 @@ void melee_attack::handle_phase_blocked()
                                 random_range(3, 5) * BASELINE_DELAY))
                 && need_msg)
             {
-                mprf(T_("%s is struck blind by the light of %s divine shield."),
-                        attacker->name(DESC_THE).c_str(),
-                        defender->name(DESC_ITS).c_str());
+                mprf(T_("%s is struck blind by the light."),
+                        attacker->name(DESC_THE).c_str());
             }
         }
         else
         {
-            blind_player(random_range(3, 5), WHITE);
-            mprf(T_("You are blinded by the light of %s divine shield."),
-                        defender->name(DESC_ITS).c_str());
+            blind_player(random_range(3, 5), WHITE, true);
+            mpr(T_("You are blinded by the light!"));
         }
     }
 
@@ -384,7 +378,7 @@ void melee_attack::handle_phase_dodged()
         else
         {
             mprf(T_("%s%s misses %s."),
-                 atk_name(DESC_THE).c_str(),
+                 attacker->name(DESC_THE).c_str(),
                  evasion_margin_adverb().c_str(),
                  defender_name(true).c_str());
         }
@@ -412,8 +406,8 @@ void melee_attack::handle_phase_dodged()
         // Active retaliations on the player's part require you to be able to act.
         if (you.can_see(*attacker) && !you.cannot_act() && !you.confused())
         {
-            const int aux_dist = you.form == transformation::aqua ? 3 : 1;
-            if (grid_distance(defender->pos(), attack_position) <= aux_dist)
+            if (grid_distance(defender->pos(), attack_position)
+                <= you.reach_range_bonus() + 1)
             {
                 if (you.has_mutation(MUT_REFLEXIVE_HEADBUTT)
                     && !you.did_reprisal(REPRISAL_HEADBUTT, attacker->mid)
@@ -1000,17 +994,27 @@ bool melee_attack::handle_phase_hit()
     // Check for weapon brand & inflict that damage too
     apply_damage_brand();
 
-    if (weapon && damage_brand == SPWPN_VALOUR)
+    if (damage_brand == SPWPN_VALOUR || xom_extra_brand() == SPWPN_VALOUR)
         do_valour_beam();
 
-    if (weapon && damage_brand == SPWPN_CONCUSSION)
-        handle_concussion_brand(is_unrandom_artefact(*weapon, UNRAND_CARINA));
+    if (damage_brand == SPWPN_CONCUSSION || xom_extra_brand() == SPWPN_CONCUSSION)
+        handle_concussion_brand(weapon && is_unrandom_artefact(*weapon, UNRAND_CARINA));
 
     if (weapon && weapon->is_type(OBJ_WEAPONS, WPN_CENTIPEDE))
         handle_centipede_poison(weapon->plus);
 
     if (weapon && testbits(weapon->flags, ISFLAG_CHAOTIC)
         && defender->alive())
+    {
+        unwind_var<brand_type> save_brand(damage_brand);
+        damage_brand = SPWPN_CHAOS;
+        apply_damage_brand();
+    }
+
+    if (defender->alive()
+        && attacker->is_player()
+        && attacker->scan_artefacts(ARTP_CHAOS_STRIKE)
+        && one_chance_in(6))
     {
         unwind_var<brand_type> save_brand(damage_brand);
         damage_brand = SPWPN_CHAOS;
@@ -1135,6 +1139,28 @@ bool melee_attack::handle_phase_hit()
         emit_foul_stench();
     }
 
+    if (attacker->alive()
+        && defender->is_player()
+        && x_chance_in_y(defender->scan_artefacts(ARTP_CHAOS_GUARD), 6))
+    {
+        if (x_chance_in_y(1 + damage_done, damage_done + 15))
+        {
+            // Find the armour doing this, for messaging.
+            // (Choose randomly if there's more than one.)
+            vector<item_def*> eq = you.equipment.get_slot_items(SLOT_ALL_ARMOUR);
+            shuffle_array(eq);
+            for (const item_def* item : eq)
+            {
+                if (testbits(item->flags, ISFLAG_CHAOTIC))
+                {
+                    mprf(T_("Your %s shimmers with wild colours."), item->name(DESC_PLAIN, true, true, false).c_str());
+                    break;
+                }
+            }
+            chaos_affects_actor(attacker, defender);
+        }
+    }
+
     return true;
 }
 
@@ -1162,7 +1188,7 @@ bool melee_attack::handle_phase_damaged()
     {
         you.duration[DUR_SHROUD_TIMEOUT] = 100 + random2(damage_done) * 10;
         mprf(T_("Your slime covering ruptures, deflecting the attack, %s attack away%s"),
-                     atk_name(DESC_ITS).c_str(),
+                     attacker->name(DESC_ITS).c_str(),
                      attack_strength_punctuation(damage_done).c_str());
         did_hit = false;
         damage_done = 0;
@@ -1205,9 +1231,9 @@ bool melee_attack::handle_phase_aux()
     {
         // returns whether an aux attack successfully took place
         // additional attacks from cleave don't get aux
-        const int aux_dist = you.form == transformation::aqua ? 3 : 1;
         if (!defender->friendly()
-            && grid_distance(defender->pos(), attack_position) <= aux_dist)
+            && grid_distance(defender->pos(), attack_position)
+               <= you.reach_range_bonus() + 1)
         {
             player_do_aux_attacks();
         }
@@ -3297,7 +3323,7 @@ void melee_attack::sear_defender()
     if (needs_message && visible_effect)
     {
         mprf(T_("%s fire resistance is stripped away!"),
-             def_name(DESC_ITS).c_str());
+             defender->name(DESC_ITS).c_str());
     }
 }
 
@@ -3479,7 +3505,7 @@ void melee_attack::decapitate()
         if (defender_visible)
         {
             mprf_p(C_("decapitation", "%1$s %2$s %3$s last head off!"),
-                   atk_name(DESC_THE).c_str(),
+                   attacker->name(DESC_THE).c_str(),
                    display_verb.c_str(),
                    apostrophise(defender_name(true)).c_str());
         }
@@ -3499,7 +3525,7 @@ void melee_attack::decapitate()
     if (defender_visible)
     {
         mprf_p(C_("decapitation", "%1$s %2$s one of %3$s heads off!"),
-               atk_name(DESC_THE).c_str(),
+               attacker->name(DESC_THE).c_str(),
                display_verb.c_str(),
                apostrophise(defender_name(true)).c_str());
     }
@@ -3891,7 +3917,7 @@ void melee_attack::announce_hit()
                 // Spore order omits the stealth slot, as before.
                 mprf_p(C_("spore attack",
                           "%1$s %2$s at %3$s%4$s%5$s%6$s%7$s"),
-                       atk_name(DESC_THE).c_str(),
+                       attacker->name(DESC_THE).c_str(),
                        verb.c_str(),
                        defender_name(true).c_str(),
                        charge_desc().c_str(),
@@ -3902,7 +3928,7 @@ void melee_attack::announce_hit()
             else if (!body_action.empty())
             {
                 mprf_p(C_("monster body attack", "%1$s %2$s%3$s%4$s%5$s%6$s%7$s"),
-                       atk_name(DESC_THE).c_str(), stealth.c_str(), body_action.c_str(),
+                       attacker->name(DESC_THE).c_str(), stealth.c_str(), body_action.c_str(),
                        charge_desc().c_str(), debug_damage_number().c_str(),
                        mons_attack_desc().c_str(),
                        attack_strength_punctuation(damage_done).c_str());
@@ -3910,7 +3936,7 @@ void melee_attack::announce_hit()
             else
             {
                 mprf_p(T_("%1$s %2$s%3$s %4$s%5$s%6$s%7$s%8$s"),
-                       atk_name(DESC_THE).c_str(),
+                       attacker->name(DESC_THE).c_str(),
                        stealth.c_str(),
                        verb.c_str(),
                        defender_name(true).c_str(),
@@ -3982,7 +4008,7 @@ bool melee_attack::mons_do_poison()
     if (needs_message)
     {
         mprf(T_("%s poisons %s!"),
-                atk_name(DESC_THE).c_str(),
+                attacker->name(DESC_THE).c_str(),
                 defender_name(true).c_str());
     }
 
@@ -4182,7 +4208,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         if (needs_message && base_damage)
         {
             mprf_p(T_("%s %s %s%s"),
-                 atk_name(DESC_THE).c_str(),
+                 attacker->name(DESC_THE).c_str(),
                  attacker->verb_for_display(N_("freeze")).c_str(),
                  defender_name(true).c_str(),
                  attack_strength_punctuation(special_damage).c_str());
@@ -4203,7 +4229,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         if (needs_message && base_damage)
         {
             mprf_p(T_("%s %s %s%s"),
-                 atk_name(DESC_THE).c_str(),
+                 attacker->name(DESC_THE).c_str(),
                  attacker->verb_for_display(N_("shock")).c_str(),
                  defender_name(true).c_str(),
                  attack_strength_punctuation(special_damage).c_str());
@@ -4235,9 +4261,9 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
                 if (needs_message)
                 {
                     mprf(T_("%s %s vitality from %s injuries!"),
-                         atk_name(DESC_THE).c_str(),
+                         attacker->name(DESC_THE).c_str(),
                          attacker->verb_for_display(NC_("verb", "draw"), "verb").c_str(),
-                         def_name(DESC_ITS).c_str());
+                         defender->name(DESC_ITS).c_str());
                 }
             }
         }
@@ -4363,7 +4389,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         break;
 
     case AF_CORRODE:
-        defender->corrode(attacker, atk_name(DESC_THE).c_str());
+        defender->corrode(attacker, attacker->name(DESC_THE).c_str());
         break;
 
     case AF_DISTORT:
@@ -4377,7 +4403,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         if (needs_message)
         {
             mprf(T_("%s %s %s!"),
-                 atk_name(DESC_THE).c_str(),
+                 attacker->name(DESC_THE).c_str(),
                  attacker->verb_for_display(N_("infuriate")).c_str(),
                  defender_name(true).c_str());
         }
@@ -4404,7 +4430,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         if (needs_message && special_damage)
         {
             mprf_p(T_("%s %s %s%s"),
-                 atk_name(DESC_THE).c_str(),
+                 attacker->name(DESC_THE).c_str(),
                  attacker->verb_for_display(N_("sear")).c_str(),
                  defender_name(true).c_str(),
                  attack_strength_punctuation(special_damage).c_str());
@@ -4422,7 +4448,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         if (needs_message && special_damage)
         {
             mprf_p(T_("%s %s %s%s"),
-                 atk_name(DESC_THE).c_str(),
+                 attacker->name(DESC_THE).c_str(),
                  attacker->verb_for_display(N_("sear")).c_str(),
                  defender_name(true).c_str(),
                  attack_strength_punctuation(special_damage).c_str());
@@ -4491,13 +4517,13 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
                     && attacker->as_monster()->pronoun_plurality()))
             {
                 mprf(T_("%s grab %s."),
-                     atk_name(DESC_THE).c_str(),
+                     attacker->name(DESC_THE).c_str(),
                      defender_name(true).c_str());
             }
             else
             {
                 mprf(T_("%s grabs %s."),
-                     atk_name(DESC_THE).c_str(),
+                     attacker->name(DESC_THE).c_str(),
                      defender_name(true).c_str());
             }
         }
@@ -4566,7 +4592,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         if (needs_message && special_damage)
         {
             mprf(T_("%s %s %s!"),
-                    atk_name(DESC_THE).c_str(),
+                    attacker->name(DESC_THE).c_str(),
                     attacker->verb_for_display(N_("burn")).c_str(),
                     defender_name(true).c_str());
 
@@ -4603,7 +4629,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
             if (needs_message)
             {
                 mprf_p(T_("%s %s %s%s"),
-                    atk_name(DESC_THE).c_str(),
+                    attacker->name(DESC_THE).c_str(),
                     attacker->verb_for_display(N_("drown")).c_str(),
                     defender_name(true).c_str(),
                     attack_strength_punctuation(special_damage).c_str());
@@ -5524,13 +5550,42 @@ int melee_attack::calc_damage()
 bool melee_attack::apply_damage_brand(const char *what)
 {
     // Staff damage overrides any brands
-    return apply_staff_damage() || attack::apply_damage_brand(what);
+    bool ret = apply_staff_damage() || attack::apply_damage_brand(what);
+
+    // Apply the bonus brand from Xom's cleaving blessing
+    const brand_type extra_brand = xom_extra_brand();
+    if (extra_brand != SPWPN_NORMAL)
+    {
+        unwind_var<brand_type> unwind(damage_brand, extra_brand);
+        ret |= attack::apply_damage_brand(what);
+    }
+
+    return ret;
+}
+
+// Is Xom's cleaving blessing applying an additional brand to this attack?
+brand_type melee_attack::xom_extra_brand() const
+{
+    if (attacker->is_player()
+        && you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_CLEAVE)
+    {
+        brand_type xom_brand = static_cast<brand_type>(you.props[XOM_CLEAVE_BRAND_KEY].get_int());
+
+        // Don't apply the special brand twice if the weapon already has that brand.
+        if (damage_brand == xom_brand)
+            return SPWPN_NORMAL;
+        else
+            return xom_brand;
+    }
+
+    return SPWPN_NORMAL;
 }
 
 bool melee_attack::is_sundering_weapon() const
 {
     return damage_brand == SPWPN_SUNDERING
-        || attacker->unrand_equipped(UNRAND_TROG);
+        || attacker->unrand_equipped(UNRAND_TROG)
+        || xom_extra_brand() == SPWPN_SUNDERING;
 }
 
 string mut_aux_attack_desc(mutation_type mut)

@@ -471,6 +471,8 @@ force_more_message += 将.*纳入麾下
 force_more_message += will allow you to brand your body
 # Chinese translation compatibility
 force_more_message += 允许.*烙印.*印记
+force_more_message += grow incredibly long
+force_more_message += Xom locks all of
 
 force_more_message += Beogh speaks to you:
 
@@ -478,9 +480,6 @@ force_more_message += Beogh speaks to you:
 force_more_message += is forced to slowly start .* word of recall
 # Chinese translation compatibility
 force_more_message += 被迫.*开始.*召回术
-force_more_message += too known and too boring
-# Chinese translation compatibility
-force_more_message += 太熟悉、太无聊了
 
 # Crucible exit notification
 force_more_message += Makhleb acknowledges your contrition

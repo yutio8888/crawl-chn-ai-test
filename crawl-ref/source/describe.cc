@@ -512,6 +512,12 @@ static const vector<property_descriptor> & _get_all_artp_desc_data()
         { ARTP_BANE,
             N_("It inflicts you with a random bane when you equip it."),
             prop_note::plain },
+        { ARTP_CHAOS_GUARD,
+            "It may inflict chaotic effects on those who attack you.",
+            prop_note::plain },
+        { ARTP_CHAOS_STRIKE,
+            "It may inflict chaos on those you attack in melee.",
+            prop_note::plain },
     };
     return data;
 }
@@ -604,6 +610,11 @@ static const vector<artefact_prop_type> artprop_annotation_order =
     ARTP_ENHANCE_AIR,
     ARTP_ENHANCE_EARTH,
     ARTP_ENHANCE_ALCHEMY,
+
+    // List after other artprops (since it's harder to list it before all
+    // unrand-specific props).
+    ARTP_CHAOS_GUARD,
+    ARTP_CHAOS_STRIKE,
 };
 
 static vector<string> _randart_propnames(const item_def& item,
@@ -621,7 +632,10 @@ static vector<string> _randart_propnames(const item_def& item,
     if (is_unrandom_artefact(item))
     {
         entry = get_unrand_entry(item.unrand_idx);
-        if (testbits(item.flags, ISFLAG_CHAOTIC))
+
+        // Chaotic weapons get a second 'fake' brand that must be noted this
+        // way, but chaotic armour get an actual artprop that is listed normally.
+        if (testbits(item.flags, ISFLAG_CHAOTIC) && item.base_type == OBJ_WEAPONS)
             propnames.push_back(T_("chaos,"));
     }
     const bool skip_ego = is_unrandom_artefact(item)
@@ -958,7 +972,8 @@ static string _artefact_descrip(const item_def &item)
  * @returns a string including a description of its head, its body, its flight
  *          mode (if any), and how it smells or looks.
  */
-static string _describe_demon(const string& name, bool flying, colour_t colour)
+static string _describe_demon(const string& name, bool flying, colour_t colour,
+                              const string& descriptor)
 {
     const uint32_t seed = hash32(&name[0], name.size());
     #define HRANDOM_ELEMENT(arr, id) arr[hash_with_seed(ARRAYSZ(arr), seed, id)]
@@ -1088,6 +1103,7 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
     };
 
     ostringstream description;
+
     const string body = C_("panlord body adjective", HRANDOM_ELEMENT(body_types, 2));
     const string wings = T_(HRANDOM_ELEMENT(wing_names, 3));
     const char* head = HRANDOM_ELEMENT(head_names, 1);
@@ -1100,21 +1116,40 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
         if (colour >= 0 && colour < NUM_TERM_COLOURS)
             colour_name = T_(colour_to_str(colour, true).c_str());
 
+        // Xom can mark a pan lord with an extra descriptor.
+        const string descriptor_name = descriptor.empty()
+                                     ? string()
+                                     : T_(descriptor.c_str());
+
         if (flying)
         {
-            description << make_stringf_p(T_("One of the many lords of Pandemonium, %1$s has a %2$s%3$s body, %4$s, and %5$s."),
-                                        name.c_str(), colour_name.c_str(),
-                                        body.c_str(), wings.c_str(), head);
+            description << (descriptor.empty()
+                ? make_stringf_p(T_("One of the many lords of Pandemonium, %1$s has a %2$s%3$s body, %4$s, and %5$s."),
+                                 name.c_str(), colour_name.c_str(),
+                                 body.c_str(), wings.c_str(), head)
+                : make_stringf_p(T_("One of the %1$s lords of Pandemonium, %2$s has a %3$s%4$s body, %5$s, and %6$s."),
+                                 descriptor_name.c_str(), name.c_str(),
+                                 colour_name.c_str(), body.c_str(),
+                                 wings.c_str(), head));
         }
         else
-            description << make_stringf_p(T_("One of the many lords of Pandemonium, %1$s has a %2$s%3$s body and %4$s."),
-                                        name.c_str(), colour_name.c_str(),
-                                        body.c_str(), head);
+        {
+            description << (descriptor.empty()
+                ? make_stringf_p(T_("One of the many lords of Pandemonium, %1$s has a %2$s%3$s body and %4$s."),
+                                 name.c_str(), colour_name.c_str(),
+                                 body.c_str(), head)
+                : make_stringf_p(T_("One of the %1$s lords of Pandemonium, %2$s has a %3$s%4$s body and %5$s."),
+                                 descriptor_name.c_str(), name.c_str(),
+                                 colour_name.c_str(), body.c_str(), head));
+        }
     }
     else
     {
         // Keep the original English construction unchanged.
-        description << T_("One of the many lords of Pandemonium, ") << name << " has ";
+        if (!descriptor.empty())
+            description << "One of the " << descriptor << " lords of Pandemonium, " << name << " has ";
+        else
+            description << "One of the many lords of Pandemonium, " << name << " has ";
         description << article_a(body);
         // ETC_RANDOM is also possible, handled later
         if (colour >= 0 && colour < NUM_TERM_COLOURS)
@@ -1141,6 +1176,9 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
 
     if (colour == ETC_RANDOM)
         description << T_(" It changes colour whenever you look at it.");
+
+    if (!descriptor.empty())
+        description << T_("\n\nIt seems like it would really prefer not to be here right now.");
 
     return description.str();
 }
@@ -2516,7 +2554,8 @@ static string _warlock_mirror_reflect_desc()
     const int reflect_chance_numer = (100 - (scaled_SH % 100)) * SH * omnireflect_chance_denom(SH+1) + (scaled_SH % 100) * (SH+1) * omnireflect_chance_denom(SH);
     const int reflect_chance_denom = omnireflect_chance_denom(SH) * omnireflect_chance_denom(SH+1);
     const int reflect_chance = reflect_chance_numer / reflect_chance_denom;
-    return make_stringf(T_("\n\nWith your current SH, it has a %d%% chance to reflect attacks against your willpower and other normally unblockable effects."), reflect_chance);
+    return make_stringf(T_("\n\nWith your current SH, it has a %d%% chance to reflect explosive projectiles and a %d%% chance to reflect attacks against your willpower and other normally unblockable effects."),
+                        reflect_chance * 2 / 5, reflect_chance);
 }
 
 static string _armour_ego_key(special_armour_type ego)
@@ -2632,10 +2671,10 @@ static string _describe_armour(const item_def &item, bool verbose, bool monster)
             const char* cumber_desc = evp < 100 ? T_("slightly ") :
                                       evp > 100 ? T_("greatly ") : "";
             description += make_stringf(
-                T_("It is cumbersome to wear, and %simpedes the evasion, "
-                "spellcasting ability, and attack speed of the wearer. "
-                "These penalties are reduced by the wearer's Shields skill "
-                "and Strength; mastering Shields eliminates penalties."),
+                T_("\n\nIt is cumbersome to wear, and %simpedes the evasion, "
+                   "spellcasting ability, and attack speed of the wearer. "
+                   "These penalties are reduced by the wearer's Shields skill "
+                   "and Strength; mastering Shields eliminates penalties."),
                 cumber_desc);
         }
         if (!monster)
@@ -5468,8 +5507,12 @@ static void _get_spell_description(const spell_type spell,
                                 || spell == SPELL_FLASHING_BALESTRA
                                 || spell == SPELL_BECKONING_GALE ? 3 : 0);
 
-        description += T_("\nRange : ");
-        description += range_string(range, -1, minrange);
+        const string rangestr = range_string(range, -1, minrange);
+        if (!rangestr.empty())
+        {
+            description += T_("\nRange : ");
+            description += rangestr;
+        }
 
         const string defence_string = spell_defence_string(spell, true, mon_pow);
         const string resist_string = spell_resist_string(spell, true, mon_pow);
@@ -7418,7 +7461,7 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
                T_(intelligence_description(mi.intel())));
     if (mi.is(MB_SICK) || mi.is(MB_NO_REGEN))
         pr.AddCell(T_("Regen"), T_("None"));
-    else if (mons_class_fast_regen(mi.type) || mi.is(MB_REGENERATION))
+    else if (mons_class_fast_regen(mi.type) || mi.is(MB_REGENERATION) || mi.is(MB_GUARDIAN))
         pr.AddCell(T_("Regen"), make_stringf(T_("%d/turn"), mi.regen_rate(1)));
                                         // (Wait, what's a 'turn'?)
 
@@ -7787,10 +7830,18 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     if (mon_explodes_on_death(mi.type))
         _desc_mon_death_explosion(result, mi);
 
-    if (mi.type == MONS_BATTLESPHERE)
+    if (mi.type == MONS_BATTLESPHERE || mi.type == MONS_CHAOS_BATTLESHAPE)
     {
-        const dice_def dam = battlesphere_damage_from_hd(mi.hd);
+        dice_def dam = battlesphere_damage_from_hd(mi.hd);
         result << T_("Projectile damage: ") << dam.num << "d" << dam.size << "\n";
+        if (mi.type == MONS_CHAOS_BATTLESHAPE)
+        {
+            dam = zap_damage(ZAP_CHAOS_BATTLESHAPE_FINALE, you.experience_level, false, false);
+            result << T_("Chaos blast: ") << dam.num << "d" << dam.size << "\n";
+
+            dam = zap_damage(ZAP_SHOOTING_STAR, 20 + you.experience_level * 2, false, false);
+            result << T_("Shooting stars: ") << dam.num << "d" << dam.size << "\n";
+        }
     }
     else if (mi.type == MONS_BURSTSHROOM)
     {
@@ -7969,7 +8020,11 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
         break;
 
     case MONS_PANDEMONIUM_LORD:
-        inf.body << _describe_demon(mi.mname, mi.airborne(), mi.ghost_colour) << "\n";
+    {
+        string descriptor = mi.props.exists(XOM_PAN_LORD_DESC) ? mi.props[XOM_PAN_LORD_DESC].get_string()
+                                                               : "";
+        inf.body << _describe_demon(mi.mname, mi.airborne(), mi.ghost_colour, descriptor) << "\n";
+    }
         break;
 
     case MONS_MUTANT_BEAST:

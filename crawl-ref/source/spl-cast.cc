@@ -85,6 +85,7 @@
 #include "unwind.h"
 #include "view.h"
 #include "viewchar.h" // stringize_glyph
+#include "xom.h"
 
 static int _spell_enhancement(spell_type spell);
 static int _apply_enhancement(const int initial_power,
@@ -597,6 +598,10 @@ int raw_spell_fail(spell_type spell, bool enkindled, bool include_temp)
  */
 int calc_spell_power(spell_type spell)
 {
+    // Eisegesis completely ignores your skills and other bonuses
+    if (you.chaos_eisegesis)
+        return 15 + you.experience_level * 5;
+
     int power = _skill_power(spell);
 
     if (you.divine_exegesis)
@@ -1189,6 +1194,9 @@ void do_post_spellcast_effects(spell_type spell)
 
     if (you.props.exists(BATTLESPHERE_KEY) && battlesphere_can_mirror(spell))
         trigger_battlesphere(&you);
+
+    if (you.props.exists(CHAOS_BATTLESHAPE_KEY))
+        trigger_chaos_battleshape_spell(spell_difficulty(spell));
 
     if (will_have_passive(passive_t::shadow_spells))
         dithmenos_shadow_spell(spell);
@@ -2501,6 +2509,9 @@ spret your_spells(spell_type spell, int powc, bool actual_spell,
         if (enkindled && --you.props[ENKINDLE_CHARGES_KEY].get_int() == 0)
             end_enkindled_status();
 
+        if (god == GOD_NO_GOD)
+            xom_end_disguise();
+
         return spret::success;
     }
     case spret::fail:
@@ -3768,7 +3779,7 @@ string spell_range_string(spell_type spell)
 string range_string(int range, int maxrange, int minrange)
 {
     if (range <= 0)
-        return T_("N/A");
+        return "";
 
     string ret = to_string(range);
     if (maxrange > -1)

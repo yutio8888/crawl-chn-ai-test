@@ -30,6 +30,7 @@
 #include "throw.h"
 #include "transform.h"
 #include "traps.h"
+#include "xom.h"
 #include "zot.h" // bezotting_level
 
 #include "duration-data.h"
@@ -222,6 +223,7 @@ static void _describe_zot(status_info& inf);
 static void _describe_gem(status_info& inf);
 static void _describe_rev(status_info& inf);
 static void _describe_channelled_spell(status_info& inf);
+static void _describe_xom_blessing(status_info& inf);
 
 bool fill_status_info(int status, status_info& inf)
 {
@@ -849,14 +851,6 @@ bool fill_status_info(int status, status_info& inf)
         break;
     }
 
-    case DUR_CLEAVE:
-    {
-        const item_def* weapon = you.weapon();
-        if (weapon && weapon_cleaves(*weapon))
-            inf.light_colour = DARKGREY;
-        break;
-    }
-
     case STATUS_ORB:
     {
         if (player_has_orb())
@@ -1189,6 +1183,30 @@ bool fill_status_info(int status, status_info& inf)
         inf.long_text = make_stringf(T_("producing %s"), cloud_type_name(dummy.type).c_str());
     }
     break;
+
+    case STATUS_FLOOR_LOCK:
+    {
+        if (you.attribute[ATTR_XOM_FLOOR_LOCK] > 0)
+        {
+            inf.light_text = make_stringf(T_("Lock (%d)"), you.attribute[ATTR_XOM_FLOOR_LOCK]);
+            inf.light_colour = LIGHTMAGENTA;
+        }
+    }
+    break;
+
+    case STATUS_XOM_BLESSING:
+        _describe_xom_blessing(inf);
+        break;
+
+    case STATUS_DISGUISE_COOLDOWN:
+        if (you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_SNEAKY
+            && you.props.exists(XOM_DISGUISE_RECOVERY_KEY))
+        {
+            inf.light_text = "-Disguise";
+            inf.light_colour = YELLOW;
+            inf.short_text = "on disguise cooldown";
+        }
+        break;
 
     default:
         if (!found)
@@ -1595,6 +1613,85 @@ static void _describe_channelled_spell(status_info& inf)
     }
 }
 
+static void _describe_xom_blessing(status_info& inf)
+{
+    switch (you.attribute[ATTR_XOM_BLESSING])
+    {
+        case XOM_BLESSING_CLEAVE:
+        {
+            const brand_type brand = static_cast<brand_type>(you.props[XOM_CLEAVE_BRAND_KEY].get_int());
+            const string suffix = uppercase_first(brand_type_name(brand, true)).substr(0, 1);
+            inf.light_text = T_("Cleave+");
+            inf.light_text_formatted = make_stringf(T_("<red>C<yellow>l<green>e<cyan>a<lightblue>v<magenta>e<lightmagenta>+<white>%s"),
+                                                    suffix.c_str());
+            inf.short_text = make_stringf(T_("blessing of cleaving (%s)"),
+                                          brand_type_name(brand, false));
+        }
+        break;
+
+        case XOM_BLESSING_CHAOS_EISEGESIS:
+            inf.light_text = T_("Eisegesis");
+            inf.light_text_formatted = T_("<red>E<lightred>i<yellow>s<green>e<cyan>g<lightcyan>e<blue>s<magenta>i<lightmagenta>s");
+            inf.short_text = make_stringf(T_("blessing of eisegesis (%s)"),
+                                          spell_title(static_cast<spell_type>(you.props[EISEGESIS_SPELL].get_int())));
+            break;
+
+        case XOM_BLESSING_GUARDIAN:
+            inf.light_text = T_("Guardian");
+            inf.light_text_formatted = T_("<red>G<lightred>u<yellow>a<green>r<lightgreen>d<blue>i<lightblue>a<lightmagenta>n");
+            inf.short_text = make_stringf(T_("blessing of guardians (%s)"),
+                                          mons_type_name(xom_guardian_type(), DESC_PLAIN).c_str());
+            break;
+
+        case XOM_BLESSING_SPELLSTRIDE:
+            inf.light_text = T_("Spellstride");
+            inf.light_text_formatted = T_("<red>S<lightred>p<yellow>e<green>l<lightgreen>l<lightcyan>s"
+                                          "<cyan>t<blue>r<lightblue>i<magenta>d<lightmagenta>e");
+            inf.short_text = make_stringf(T_("blessing of spellstride (%s)"),
+                                          spell_title(static_cast<spell_type>(you.props[XOM_SPELLSTRIDE_SPELL].get_int())));
+            break;
+
+        case XOM_BLESSING_MANNEQUINS:
+        {
+            const int count = you.props.exists(XOM_MANNEQUIN_TROUPE)
+                                ? you.props[XOM_MANNEQUIN_TROUPE].get_vector().size() : 0;
+            inf.light_text = T_("Troupe");
+            string count_msg = make_stringf(T_("<lightblue>(+%d)</lightblue>"), count);
+            inf.light_text_formatted = make_stringf(T_("<red>T<yellow>r<green>o<cyan>u<lightblue>p<magenta>e %s"),
+                                                    count > 0 ? count_msg.c_str() : "");
+            inf.short_text = T_("blessing of mannequins");
+            break;
+        }
+
+        case XOM_BLESSING_BATTLESHAPE:
+        {
+            const monster* shape = find_chaos_battleshape();
+            const bool charged = shape && shape->has_ench(ENCH_SPELL_CHARGED);
+            inf.light_text = T_("Battleshape");
+            inf.light_text_formatted = make_stringf(T_("<red>B<lightred>a<yellow>t<green>t<lightgreen>l<cyan>e"
+                                                       "<lightcyan>s<blue>h<lightblue>a<magenta>p<lightmagenta>e%s"),
+                                                    charged ? "<white>!!!" : "");
+            inf.short_text = T_("blessing of battleshape");
+            break;
+        }
+
+        case XOM_BLESSING_PROTEAN:
+            inf.light_text = T_("Protean");
+            inf.light_text_formatted = T_("<red>P<yellow>r<green>o<cyan>t<blue>e<lightblue>a<magenta>n");
+            inf.short_text = T_("blessing of protean form");
+            break;
+
+        case XOM_BLESSING_SNEAKY:
+            inf.light_text = T_("Sneaky");
+            inf.light_text_formatted = T_("<red>S<yellow>n<green>e<blue>a<lightblue>k<lightmagenta>y");
+            inf.short_text = T_("blessing of disguise");
+            break;
+
+        default:
+        break;
+    }
+}
+
 /**
  * Does a given duration tick down simply over time?
  *
@@ -1681,6 +1778,7 @@ void duration_end_effect(duration_type dur)
 // Any durations or statuses not listed here will be drawn afterward in enum order.
 static const vector<unsigned int> important_statuses =
 {
+    STATUS_XOM_BLESSING,
     STATUS_TESSERACT,
     STATUS_ORB,
     STATUS_ZOT,
@@ -1745,7 +1843,7 @@ void status_iterator::operator ++()
     {
         if (current <= STATUS_LAST_STATUS)
             ++current;
-        while (current < STATUS_LAST_STATUS && done[current])
+        while (current <= STATUS_LAST_STATUS && done[current])
             ++current;
     }
 }
