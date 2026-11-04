@@ -2152,7 +2152,7 @@ static bool _merge_evokers(const item_def &it, int &inv_slot, bool quiet)
 #ifdef USE_SOUND
             parse_sound(PICKUP_SOUND);
 #endif
-            mprf_nocap("%s (improved by +1).",
+            mprf_nocap(T_("%s (improved by +1)."),
                         menu_colour_item_name(you.inv[inv_slot],
                                                     DESC_INVENTORY).c_str());
         }

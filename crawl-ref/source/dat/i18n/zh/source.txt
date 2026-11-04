@@ -1495,6 +1495,9 @@ You grip the centipede bauble in your %s and it winds around your %s and fuses w
 %s hums with potential!
 %s嗡嗡作响，充满潜力！
 %%%%
+%s (improved by +1).
+%s（提升了+1）。
+%%%%
 %s invites you to visit %s %s%s%s.
 %s邀请你访问%s %s%s%s。
 %%%%
@@ -36879,7 +36882,7 @@ Phobia (-%d)
 恐惧症（-%d）
 %%%%
 Pick up %s? ((y)es/(n)o/(a)ll/(m)enu/*?g,/q)
-拾取%s？是（y）/否（n）/全部（a）/菜单（m）/*?g,/q
+拾取%s？是（y）/否（n）/全部（a）/菜单（m、*、?、g、,）/取消（q、Esc）
 %%%%
 Pick up how many of %s (; or enter for all)? 
 拾取多少%s（按;或回车全取）？
