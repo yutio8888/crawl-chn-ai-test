@@ -1468,8 +1468,10 @@ string ability_name(ability_type ability, bool dbname)
                         you.props[EXEGESIS_SPELL].get_int())));
 
         case ABIL_XOM_CHAOS_EISEGESIS:
-            if (dbname || !you.props.exists(EISEGESIS_SPELL))
+            if (dbname)
                 return "Chaos Eisegesis";
+            else if (!you.props.exists(EISEGESIS_SPELL))
+                return T_("Chaos Eisegesis");
             else
                 return make_stringf(T_("Eisegesis: %s"),
                                     spell_title(static_cast<spell_type>(

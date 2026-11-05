@@ -53420,3 +53420,6 @@ status|on disguise cooldown
 %%%%
 You have finished assembling a new disguise.
 你已经重新组装好了一套新的伪装。
+%%%%
+Chaos Eisegesis
+混沌曲解
