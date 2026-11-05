@@ -35,9 +35,10 @@ candidate-worktree dispatch. Agent frontmatter fields `model`, `tools`,
 `thinking`, `systemPromptMode`,
 `inheritProjectContext`, and `inheritSkills` are honored by the extension.
 
-Use `zh-translator`, `crawl-coder`, `translation-reviewer`,
-`zh-code-reviewer`, and `ocr` according to `docs/agent-routing.md`. Use the
-built-in `scout` for read-only exploration. Keep one writer for each owned
+Use `zh-translator`, `crawl-coder`, `translation-reviewer`, and
+`zh-code-reviewer` according to `docs/agent-routing.md`. These four project
+roles are the only project agents; handle read-only exploration with the
+runtime's search tools. Keep one writer for each owned
 path; parallelize analysis and review, not overlapping edits. Agent model and
 tool assignments are authoritative in `.pi/agents/`; do not copy them into
 prose. `crawl-coder` and `zh-translator` intentionally leave `model` unset:
@@ -59,7 +60,7 @@ Refresh when scope or relevant terminology changes. Pure structural, tooling,
 or governance tasks need the applicable policy, not a glossary query.
 
 For an enumerable full-category audit, load `batch-translation-review`. Use
-`scout` only for read-only evidence discovery and keep one sequential
+read-only search only for evidence discovery and keep one sequential
 `zh-translator` writer. Do not create a Pi-only copy of the shared Skill.
 
 ## Translation Pipeline

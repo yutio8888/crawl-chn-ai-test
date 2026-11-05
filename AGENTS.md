@@ -94,7 +94,6 @@ available, follow the same contract inline. Full boundaries and examples are in
 | C++, Lua, build, TextDB loader/schema, or code-side `T_()` work | `crawl-coder` |
 | Translation wording, terminology, completeness, or voice review | `translation-reviewer` |
 | i18n implementation, protocol/display, format, or database review | `zh-code-reviewer` |
-| Verbatim text extraction from a screenshot or image | `ocr` |
 | Read-only code search | runtime read-only explorer |
 | End-to-end translation bug | `translation-pipeline` skill or its documented fallback |
 | Complete enumerable translation-category or series audit | `batch-translation-review` skill |
