@@ -53367,13 +53367,7 @@ Your limbs return to their normal size.
 status|Reach+
 延展+
 %%%%
-status|reach+
-延展+
-%%%%
 status|Irrate
-焦躁
-%%%%
-status|irrate
 焦躁
 %%%%
 status|Rampage+++
@@ -53390,3 +53384,12 @@ status|plinking
 %%%%
 scroll type|frog
 青蛙
+%%%%
+Arena?
+竞技场？
+%%%%
+Xom's Arena of Wonders
+佐姆奇观竞技场
+%%%%
+You are whisked away to a strange place.
+你被送到一个陌生之地。

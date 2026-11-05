@@ -200,8 +200,13 @@ static bool _fill_inf_from_ddef(duration_type dur, status_info& inf)
     inf.light_colour = ddef->light_colour;
     inf.db_key       = ddef->light_text; // English TextDB key (before translation)
     inf.short_db_key = ddef->short_text;
+    // When the light and short labels differ only by case, both use the light
+    // key: the catalog rejects case-only alias pairs and Chinese has no case.
+    const bool same_label = lowercase_string(ddef->light_text)
+                            == lowercase_string(ddef->short_text);
     inf.light_text   = C_("status", ddef->light_text);
-    inf.short_text   = C_("status", ddef->short_text);
+    inf.short_text   = C_("status", same_label ? ddef->light_text
+                                               : ddef->short_text);
     inf.long_text    = T_(ddef->long_text);
     if (ddef->duration_has_flag(D_EXPIRES))
     {
