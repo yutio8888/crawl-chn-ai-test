@@ -40,7 +40,9 @@ Use `zh-translator`, `crawl-coder`, `translation-reviewer`,
 built-in `scout` for read-only exploration. Keep one writer for each owned
 path; parallelize analysis and review, not overlapping edits. Agent model and
 tool assignments are authoritative in `.pi/agents/`; do not copy them into
-prose.
+prose. `crawl-coder` and `zh-translator` intentionally leave `model` unset:
+dispatch them by role and prompt, inheriting the runtime's model instead of
+pinning a provider.
 
 ## Skills
 
