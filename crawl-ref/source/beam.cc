@@ -5588,9 +5588,11 @@ bool bolt::attempt_block(monster* mon)
         finish_beam();
 
     if (you.see_cell(pos()))
+    {
         mpr(block_event_string(mon, make_stringf(T_("the %s"),
                                                  _beam_display_name(*this).c_str()),
                                reflected));
+    }
 
     mon->shield_block_succeeded(agent());
     return true;

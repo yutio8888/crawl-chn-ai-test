@@ -2720,8 +2720,10 @@ void do_plinking_effect()
 
 
     if (--you.duration[DUR_PLINKING] <= 0)
+    {
         mprf(MSGCH_DURATION, "%s",
              T_("A final flurry of detritus flies from you."));
+    }
 
     for (coord_def targ : targs)
     {

@@ -190,9 +190,11 @@ void ranged_attack::handle_phase_blocked()
         range_used = BEAM_STOP;
 
     if (needs_message)
+    {
         mpr(block_event_string(defender,
                               make_stringf(T_("the %s"), proj_name.c_str()),
                               reflected));
+    }
 
     if (!weapon->is_type(OBJ_MISSILES, MI_DART)
         && !weapon->is_type(OBJ_MISSILES, MI_THROWING_NET))

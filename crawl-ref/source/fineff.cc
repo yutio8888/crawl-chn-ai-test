@@ -1814,8 +1814,10 @@ void stardust_fineff::fire()
         return;
 
     if (type == SHOOTING_STAR_BATTLESHAPE)
+    {
         mprf(T_("%s breaks apart into shimmering stars!"),
              agent->name(DESC_THE).c_str());
+    }
     else if (type == SHOOTING_STAR_JELLY)
         mprf(T_("A flurry of magic pours from %s injured body!"),
              agent->name(DESC_ITS).c_str());
