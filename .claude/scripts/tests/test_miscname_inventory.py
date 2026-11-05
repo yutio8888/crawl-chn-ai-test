@@ -24,7 +24,7 @@ SPEC = importlib.util.spec_from_file_location("miscname_inventory", SCRIPT)
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
-BASELINE = "89b97ae826e1a065b9cdc9b1b715883c7eaa4d3d"
+BASELINE = "5bdfe919343044fa8023cc77f50639dbdb545a48"
 PRODUCTION_BASELINE = "4420998ec0ed812e4d183c1bb62ea514792d1b96"
 
 
@@ -171,8 +171,9 @@ class MiscnameInventoryTests(unittest.TestCase):
         self.assertEqual(
             ["_great_adj_", "_halloween_things_", "_lowly_",
              "harlequin_trap_lines", "hell_effect_noisy", "hell_effect_quiet",
-             "summon_horrible_things", "welcome_spam",
-             "welcome_spam dungeon descent", "welcome_spam halloween"],
+             "sage_go_berserk", "summon_horrible_things", "welcome_spam",
+             "welcome_spam dungeon descent", "welcome_spam halloween",
+             "xom_arena_name"],
             self.inventory["scope"]["identity_keys"],
         )
         self.assertEqual([], self.inventory["dumps"]["english"]["reachability"]["unreachable"])
@@ -180,11 +181,11 @@ class MiscnameInventoryTests(unittest.TestCase):
 
     def test_baseline_alias_and_structural_drift_are_explicit(self):
         self.assertEqual(
-            {"summon_horrible_things": "sht_int_loss"},
+            {},
             self.inventory["scope"]["baseline_chinese_aliases"],
         )
         self.assertEqual(
-            {"_great_adj_": [18, 17], "hell_effect_noisy": [23, 22]},
+            {},
             self.inventory["scope"]["baseline_asymmetry"],
         )
 
@@ -276,8 +277,8 @@ class MiscnameInventoryTests(unittest.TestCase):
                 MODULE._consumer_facts(BASELINE, "fixture")
 
     def test_baseline_variant_and_lua_facts(self):
-        self.assertEqual(152, self.inventory["dumps"]["english"]["variant_count"])
-        self.assertEqual(150, self.inventory["dumps"]["localized"]["variant_count"])
+        self.assertEqual(180, self.inventory["dumps"]["english"]["variant_count"])
+        self.assertEqual(180, self.inventory["dumps"]["localized"]["variant_count"])
         self.assertEqual(1, self.inventory["dumps"]["english"]["lua_site_count"])
         self.assertEqual(1, self.inventory["dumps"]["localized"]["lua_site_count"])
 
