@@ -782,10 +782,10 @@ Invisibility	隐形	domain=core; source=EN/ZH; 注意事项=不可被看见 | do
 Invisibility	隐身术	domain=spells; source=EN/ZH; 备注=✅；使施法者隐形
 Invisibility Other	使他人隐形	domain=spells; source=EN/ZH; 备注=🆕；使附近盟友隐形
 Invocations	祈神	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Irate	焦躁	domain=status; source=EN/ZH; 依据 / 作用域=狂暴贤者药水后的倒计时状态；说明将很快进入狂暴；上游已把 Irrate 拼写修正为 Irate；decision=D-C-109
 Iron City	铁城	domain=core; source=EN/ZH; 注意事项=Dis 的别称；不增补源文未写的地名；decision=D-C-103
 Iron Shot	铁弹	domain=spells; source=EN/ZH; 备注=✅；`shot` 指重型金属弹体，不机械统一为“射击”
 Irradiate	辐射	domain=spells; source=EN/ZH; 备注=✅
-Irrate	焦躁	domain=status; source=EN/ZH; 依据 / 作用域=狂暴贤者药水后的倒计时状态；说明将很快进入狂暴；decision=D-C-109
 Iskenderun's Battlesphere	伊斯肯德伦之战斗法球	domain=spells; source=EN/ZH; 备注=🆕；与实体及运行时 `battlesphere → 战斗法球` 统一
 Iskenderun's Mystic Blast	伊斯肯德伦之神秘冲击	domain=spells; source=EN/ZH; 备注=✅
 Jade	玉晶	domain=magic; source=EN/ZH; 依据 / 作用域=Jademantle 短名/status；四元素晶体；decision=D-C-095

@@ -68,7 +68,9 @@ class GuideInventoryTest(unittest.TestCase):
             hashlib.sha256(english.stdout).hexdigest(),
             # Full guide review corrects autofight/targeting, item examples,
             # binding and scoring prose; unrest.pl and its format are unchanged.
-            "19586be0cc8fc24f7b3f6029455f82a235755b48897ca53db19e9e84b23ed9f8")
+            # Upstream rewords the Oni entry around potions (140bd2bd74/
+            # 0f9025731a), which changes the rendered English manual only.
+            "e7e5e7e281bfc1c40cce53d650c2baa0ad6bea9623e63d4b68957ab63836e914")
 
     def test_unrest_rejects_invalid_utf8(self):
         invalid = self._run_unrest(b"Valid heading\n\xff\n")

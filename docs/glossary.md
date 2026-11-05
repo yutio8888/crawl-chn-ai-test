@@ -887,7 +887,7 @@
 | `Cleave+` | 顺劈+ | 佐姆顺劈祝福状态灯；沿用 Cleave status 的“顺劈”词根；decision=D-C-109 |
 | `Reach+` | 延展+ | 佐姆延展祝福状态；近战攻击距离 +3；decision=D-C-109 |
 | `Lock (%d)` | 封梯(%d) | 佐姆封锁楼层楼梯状态；括号内为剩余解锁所需击杀数；decision=D-C-109 |
-| `Irrate` | 焦躁 | 狂暴贤者药水后的倒计时状态；说明将很快进入狂暴；decision=D-C-109 |
+| `Irate` | 焦躁 | 狂暴贤者药水后的倒计时状态；说明将很快进入狂暴；上游已把 Irrate 拼写修正为 Irate；decision=D-C-109 |
 | `Rampage+++` | 冲刺+++ | 权宜药水赋予的极速接敌状态；直线接敌一步覆盖任意距离；decision=D-C-109 |
 | `status\|Eisegesis` | 曲解 | 佐姆混沌曲解祝福状态灯短标签（2 字）；与 Divine Exegesis 的“释经”相对；完整词根见“曲解经文”；decision=D-C-109 |
 | eisegesis | 曲解经文 | 佐姆能力与祝福正文词根；`blessing of eisegesis`、状态描述同根；decision=D-C-109 |
