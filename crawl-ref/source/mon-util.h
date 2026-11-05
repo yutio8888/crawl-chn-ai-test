@@ -29,11 +29,11 @@ struct mon_attack_def
     int             reach;
     bool            cleaves;
 
-    mon_attack_def(attack_type _type = AT_NONE,
-                   attack_flavour _flavour = AF_PLAIN,
-                   int _damage = 0,
-                   int _reach = 1,
-                   bool _cleaves = false)
+    constexpr mon_attack_def(attack_type _type = AT_NONE,
+                             attack_flavour _flavour = AF_PLAIN,
+                             int _damage = 0,
+                             int _reach = 1,
+                             bool _cleaves = false)
         : type(_type), flavour(_flavour), damage(_damage), reach(_reach),
           cleaves(_cleaves)
     {}
