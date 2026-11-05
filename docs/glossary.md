@@ -897,10 +897,10 @@
 | `status\|Battleshape` | 战形 | 佐姆混沌战斗形态祝福状态灯短标签（2 字）；与 battlesphere 战斗法球同构词；完整词根见“战斗形态”；decision=D-C-109 |
 | battleshape | 战斗形态 | 佐姆祝福与怪物正文词根；与 battlesphere 战斗法球同构词；decision=D-C-109 |
 | `Protean` | 千变 | 佐姆千变形态祝福状态灯；低血量时迸出渴望之肉盟友；decision=D-C-109 |
-| `-Flesh` | -渴望之肉 | 渴望之肉迸发后的冷却状态；保留负号；decision=D-C-109 |
+| `status\|-Flesh` | -渴望之肉 | 渴望之肉迸发后的冷却状态灯/短标签；保留负号；decision=D-C-109 |
 | `Sneaky` | 诡秘 | 佐姆诡秘祝福状态灯；区别处于伪装中的 Disguised；decision=D-C-109 |
-| `Disguised` | 伪装 | 伪装状态；敌人无法察觉，攻击或施法会解除；decision=D-C-109 |
-| `-Disguise` | -伪装 | 伪装冷却状态；保留负号；decision=D-C-109 |
+| `status\|Disguised` | 伪装 | 伪装状态灯；敌人无法察觉，攻击或施法会解除；短标签 `status\|perfectly disguised` → 完美伪装；decision=D-C-109 |
+| `status\|-Disguise` | -伪装 | 伪装冷却状态灯；保留负号；短标签 `status\|on disguise cooldown` → 伪装冷却中；decision=D-C-109 |
 | blessing | 祝福 | 佐姆赐予的长效增益统称；`blessing of X` → “X之祝福”；decision=D-C-109 |
 | cleave / cleaving | 顺劈 | 佐姆顺劈祝福与状态词根；沿用 status.txt 既有“顺劈”；decision=D-C-109 |
 | guardian | 守卫 | 佐姆赐予的持久盟友及怪物标签；decision=D-C-109 |

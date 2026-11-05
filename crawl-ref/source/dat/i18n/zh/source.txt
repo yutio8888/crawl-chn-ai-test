@@ -53393,3 +53393,24 @@ Xom's Arena of Wonders
 %%%%
 You are whisked away to a strange place.
 你被送到一个陌生之地。
+%%%%
+status|Disguised
+伪装
+%%%%
+status|perfectly disguised
+完美伪装
+%%%%
+status|rampage 7
+冲刺
+%%%%
+status|extra reach
+延展
+%%%%
+status|-Flesh
+-渴望之肉
+%%%%
+status|-Disguise
+-伪装
+%%%%
+status|on disguise cooldown
+伪装冷却中

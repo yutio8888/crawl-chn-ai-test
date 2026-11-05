@@ -1,5 +1,3 @@
--Disguise	-伪装	domain=status; source=EN/ZH; 依据 / 作用域=伪装冷却状态；保留负号；decision=D-C-109
--Flesh	-渴望之肉	domain=status; source=EN/ZH; 依据 / 作用域=渴望之肉迸发后的冷却状态；保留负号；decision=D-C-109
 -Jolt	-电冲	domain=status; source=EN/ZH; 依据 / 作用域=status.txt；状态灯对齐共享 catalog 标签，保留负号；完全恢复生命后才能再次满强度放电；decision=D-C-098（取代 D-C-095 的放电冷却译法）
 -Sirocco	灼热风冷却	domain=status; source=EN/ZH; 依据 / 作用域=status.txt；移动会延后再次施放；decision=D-C-095
 -Swift	-迅捷	domain=status; source=EN/ZH; 依据 / 作用域=行动加速后的移动迟缓；对齐稳定版共享 catalog 标签，保留负号；decision=D-C-098（取代 D-C-095 的缓步译法）
@@ -415,7 +413,6 @@ dire flail	双头链枷	domain=items; source=EN/ZH; Scope / comment=weapon; deci
 Dis	迪斯	domain=core; source=EN/ZH; 注意事项=游戏地狱城市短名；区别人物 Dis pater；decision=D-C-103
 dis serpent of hell breath	迪斯地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=复用分支限定实体名；decision=D-C-103
 Discord	纷乱	domain=spells; source=EN/ZH; 备注=📝
-Disguised	伪装	domain=status; source=EN/ZH; 依据 / 作用域=伪装状态；敌人无法察觉，攻击或施法会解除；decision=D-C-109
 Disjunction	空间分离	domain=spells; source=EN/ZH; 备注=✅
 Dispater	迪斯帕特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Dispater title	迪斯帕特，铁城领主	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
@@ -1319,12 +1316,15 @@ Starburst	星爆	domain=spells; source=EN/ZH; 备注=✅
 Static Discharge	静电释放	domain=spells; source=EN/ZH; 备注=✅
 Statue Form	石像变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 statue-form	石像形态	domain=magic; source=EN/ZH; 依据 / 作用域=form 名称／伤害标签；statue:long_name；decision=D-C-098
+status|-Disguise	-伪装	domain=status; source=EN/ZH; 依据 / 作用域=伪装冷却状态灯；保留负号；短标签 `status|on disguise cooldown` → 伪装冷却中；decision=D-C-109
+status|-Flesh	-渴望之肉	domain=status; source=EN/ZH; 依据 / 作用域=渴望之肉迸发后的冷却状态灯/短标签；保留负号；decision=D-C-109
 status|Ambros	神食	domain=status; source=EN/ZH; 依据 / 作用域=ambrosia 状态灯短标签；与药水名及短标签同词根，宽度仍为两字；decision=D-C-107
 status|ambrosia-drunk	神食酣醉	domain=status; source=EN/ZH; 依据 / 作用域=药水作用状态的短标签（取消药水说明、@ 行与标记）；与 ambrosia 药水、状态灯同用神食词根；弃用仙酒醉；decision=D-C-107（取代 D-C-098 的仙酒醉及本行的兼容保留）
 status|Barbs	尖刺	domain=status; source=EN/ZH; 依据 / 作用域=玩家状态的稳定版共享上下文键；普通 barbs 仍用倒刺；decision=D-C-098（取代 D-C-096 的此状态标签译法）
 status|Battleshape	战形	domain=status; source=EN/ZH; 依据 / 作用域=佐姆混沌战斗形态祝福状态灯短标签（2 字）；与 battlesphere 战斗法球同构词；完整词根见“战斗形态”；decision=D-C-109
 status|Blood	血甲	domain=status; source=EN/ZH; Scope / comment=defensive sanguine armour status; decision=D-D-005
 status|confused	混乱	domain=status; source=EN/ZH; 依据 / 作用域=玩家困惑状态的短标签（@ 行、标记、取消药水说明）；与灯标 `status|Conf`、长描述及怪物状态说明同根；不重命名固定法术名“困惑之触／困惑凝视”与感受消息；decision=D-C-108
+status|Disguised	伪装	domain=status; source=EN/ZH; 依据 / 作用域=伪装状态灯；敌人无法察觉，攻击或施法会解除；短标签 `status|perfectly disguised` → 完美伪装；decision=D-C-109
 status|Eisegesis	曲解	domain=status; source=EN/ZH; 依据 / 作用域=佐姆混沌曲解祝福状态灯短标签（2 字）；与 Divine Exegesis 的“释经”相对；完整词根见“曲解经文”；decision=D-C-109
 Staves	杖类	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 stealthy	善于潜行	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；hypnogecko:fakemuts；不声称是可遗传突变；decision=D-C-098
