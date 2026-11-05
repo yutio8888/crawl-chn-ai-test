@@ -1719,7 +1719,7 @@ static void _append_penalty(string &description, const item_def *source,
     else
         description += T_(" slightly slows your attacks with this weapon");
 
-    description += ".";
+    description += T_(".");
 }
 
 // Max damage from a magical staff with a given amount of staff & evo skill

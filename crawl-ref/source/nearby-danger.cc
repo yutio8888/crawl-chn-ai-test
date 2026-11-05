@@ -151,10 +151,26 @@ bool mons_is_safe(const monster* mon, const bool want_move,
     return is_safe;
 }
 
+static bool _has_terminal_punctuation(const string &text)
+{
+    if (Options.language != lang_t::ZH)
+        return false;
+    return ends_with(text, ".") || ends_with(text, "!")
+        || ends_with(text, "?") || ends_with(text, T_("."))
+        || ends_with(text, T_("!")) || ends_with(text, T_("?"));
+}
+
+static string _ensure_terminal_bang(const string &text)
+{
+    return _has_terminal_punctuation(text) ? text : text + T_("!");
+}
+
 static void _announce_monsters(string announcement, vector<coord_def> &visible,
                                bool none_visible)
 {
-    mprf(MSGCH_WARN, "%s!%s", announcement.c_str(),
+    const string bang = _has_terminal_punctuation(announcement)
+        ? "" : T_("!");
+    mprf(MSGCH_WARN, "%s%s%s", announcement.c_str(), bang.c_str(),
          none_visible && !you.gave_invis_clear_prompt
 #ifdef USE_TILE_WEB
             ? T_(" (Press *t to temporarily disregard this.)")
@@ -230,7 +246,8 @@ vector<monster* > get_nearby_monsters(bool want_move,
 
 #define UNSAFE_MSG(msg) {                           \
     if (announce)                                   \
-        mprf(MSGCH_WARN, "%s!", msg);               \
+        mprf(MSGCH_WARN, "%s",                      \
+             _ensure_terminal_bang(msg).c_str());   \
     if (reason)                                     \
         *reason = msg;                              \
     return false;                                   \
