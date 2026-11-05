@@ -1,8 +1,6 @@
 ---
 name: crawl-coder
 description: DCSS Chinese i18n code implementation agent — C++ source modification, TextDB loader/schema and assigned structural repairs, T_() migration, compilation verification
-model: command-code/muse-spark-1.2-contributor
-fallbackModels: command-code/muse-spark-1.2-contributor
 tools: read, grep, find, ls, bash, edit, write
 thinking: max
 systemPromptMode: replace
