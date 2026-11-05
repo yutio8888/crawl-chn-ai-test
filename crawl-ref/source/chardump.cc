@@ -867,7 +867,7 @@ static void _sdump_location(dump_params &par)
     else
         par.text += T_("You are ") + prep_branch_level_name();
 
-    par.text += ".";
+    par.text += T_(".");
     par.text += "\n";
 }
 

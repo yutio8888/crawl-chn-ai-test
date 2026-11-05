@@ -2513,7 +2513,7 @@ Enter a base skill target for %s:
 \n神眷 -
 %%%%
 \nLevel: %d
-\n等级: %d
+\n等级：%d
 %%%%
 \nTo read a description, press the key listed above. (AdB) indicates damage (the sum of A B-sided dice), (x%%) indicates the chance to defeat your Will, and (y) indicates the spell range
 \n要阅读描述，请按上方列出的按键。(AdB) 表示伤害（A个B面骰子之和），(x%%) 表示穿透意志的几率，(y) 表示法术射程
@@ -4379,6 +4379,9 @@ glowing
 gold piece
 金币
 %%%%
+gold quantity|pieces
+枚
+%%%%
 Gozag
 哥萨戈
 %%%%
@@ -5028,6 +5031,12 @@ Its outline shimmers with magical energy.
 %%%%
 its own
 自己的
+%%%%
+its own attack
+自己的攻击
+%%%%
+%s attack
+%s攻击
 %%%%
 %s is struck blind by the light of %s divine shield.
 %s被%s神圣护盾的光芒致盲了。
@@ -8768,10 +8777,10 @@ you are in a cloud of %s
 你正处于%s之中
 %%%%
  (Press *t to temporarily disregard this.)
- （按*t暂时忽略此警告。）
+（按*t暂时忽略此警告。）
 %%%%
  (Press Ctrl+T to temporarily disregard this.)
- （按Ctrl+T暂时忽略此警告。）
+（按Ctrl+T暂时忽略此警告。）
 %%%%
 You are incapable of wielding weapons or throwing items.
 你无法持握武器或投掷物品。
@@ -10652,7 +10661,7 @@ You may now remember your ancestor's life.
 你现在可以回忆起先祖的生平了。
 %%%%
 You miscast %s.
-你施法%s失误了。
+你施放%s时出现施法失误。
 %%%%
 You must be standing atop the corpse of a fallen apostle!
 你必须站在倒下的使徒的尸体上！
@@ -17973,10 +17982,10 @@ Your heavy armour
 你的重甲
 %%%%
  slows your attacks with this weapon by %.1f
- 使此武器的攻击延迟增加%.1f
+使此武器的攻击延迟增加%.1f
 %%%%
  slightly slows your attacks with this weapon
- 略微减慢了此武器的攻击速度
+略微减慢了此武器的攻击速度
 %%%%
 Wearing heavy armour would reduce your attack speed with this weapon
 穿戴重甲会降低你使用此武器的攻击速度
@@ -21894,6 +21903,9 @@ autopickup state|on
 %%%%
 !
 ！
+%%%%
+?
+？
 %%%%
 %s %s into %s%s
 %s%s撞上了%s%s
@@ -28677,7 +28689,7 @@ Select a spell, or
         学派：%2$s
 %%%%
         Fail: %s
-        失败率: %s
+        失败率：%s
 %%%%
 Power
 威力

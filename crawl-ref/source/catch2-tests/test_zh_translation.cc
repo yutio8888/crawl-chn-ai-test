@@ -458,6 +458,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 {
     CHECK(make_stringf(T_("%s blocks %s attack."), "你", "兽人的")
           == "你格挡了兽人的攻击。");
+    CHECK(make_stringf(T_("%s attack"), "兽人的") == "兽人的攻击");
+    CHECK(block_event_string(&you, make_stringf(T_("%s attack"), "兽人的"))
+          == "你挡住了兽人的攻击。");
+    CHECK(string(T_("its own attack")) == "自己的攻击");
+    CHECK(string(T_("!")) == "！");
     CHECK(make_stringf_p(T_("%1$s attacks as %2$s pursue you!"), "它", "s")
           == "在追击你时发动攻击！");
 
@@ -467,6 +472,25 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(make_stringf(T_("%d creatures vanquished.\n"), 2)
           == "已消灭2只生物。\n");
     CHECK(std::string(C_("morgue item inscription", "unknown")) == "未鉴定");
+
+    CHECK(std::string(T_("\nLevel: %d")) == "\n等级：%d");
+    CHECK(std::string(T_("        Fail: %s")) == "        失败率：%s");
+    CHECK(make_stringf(T_("You miscast %s."), "魔法飞弹")
+          == "你施放魔法飞弹时出现施法失误。");
+    CHECK(std::string(T_(" slightly slows your attacks with this weapon"))
+          == "略微减慢了此武器的攻击速度");
+    CHECK(make_stringf(T_("the %s"), "箭") == "箭");
+    CHECK(strip_cjk_spaces("兽人 颤动 着。 你 好") == "兽人颤动着。你好");
+    CHECK(strip_cjk_spaces("A B") == "A B");
+    CHECK(std::string(C_("gold quantity", "pieces")) == "枚");
+
+    item_def gold;
+    gold.base_type = OBJ_GOLD;
+    gold.sub_type = 0;
+    gold.quantity = 16;
+    CHECK(gold.name(DESC_PLAIN) == "16枚金币");
+    gold.quantity = 1;
+    CHECK(gold.name(DESC_PLAIN) == "金币");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
@@ -4582,7 +4606,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                 result = legacy_bind_body_parts(result, false);
                 return legacy_bind_body_parts(result, true);
             });
-        CHECK(mon.result == mon_control.result);
+        // Production monster text passes through strip_cjk_spaces();
+        // normalize the legacy control the same way for this parity check.
+        CHECK(strip_cjk_spaces(mon.result)
+              == strip_cjk_spaces(mon_control.result));
         CHECK(mon.state == mon_control.state);
         CHECK(mon.count == mon_control.count);
         CHECK(mon.result.find("@random_body_part") == string::npos);
@@ -5665,8 +5692,8 @@ void check_mons_speaks_genus_fallback()
         rng::subgenerator scoped_rng(seed, sequence);
         (void)random2(2);   // exact-name miss coinflip
         (void)random2(2);   // genus __try_exact_string coinflip
-        const string expected =
-            do_mon_str_replacements(getSpeakString("orc"), *orc);
+        const string expected = strip_cjk_spaces(
+            do_mon_str_replacements(getSpeakString("orc"), *orc));
         const string &emitted = language == lang_t::EN
             ? english.line : chinese.line;
         INFO("language=" << (language == lang_t::ZH ? "zh" : "en"));
@@ -5730,8 +5757,8 @@ void check_mons_speaks_glyph_fallback()
         (void)random2(2);   // exact-name miss coinflip
         (void)random2(2);   // genus miss coinflip
         (void)random2(2);   // glyph-path __try_exact_string coinflip
-        const string expected =
-            do_mon_str_replacements(getSpeakString("'l'"), *basilisk);
+        const string expected = strip_cjk_spaces(
+            do_mon_str_replacements(getSpeakString("'l'"), *basilisk));
         const string &emitted = language == lang_t::EN
             ? english.line : chinese.line;
         INFO("language=" << (language == lang_t::ZH ? "zh" : "en"));
@@ -5739,6 +5766,30 @@ void check_mons_speaks_glyph_fallback()
     }
 }
 } // namespace
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: monspeak removes English spacing between Chinese words",
+                 "[zh-translation][monspeak][playtest]")
+{
+    init_monsters();
+    init_mon_name_cache();
+    scoped_monspeak_world world;
+    monster *orc = world.place(MONS_ORC);
+    REQUIRE(orc != nullptr);
+
+    monspeak_capture capture;
+    const mon_speech_emission_observer observer = {
+        monspeak_capture::observe, &capture };
+    REQUIRE(mons_speaks_msg(orc,
+        "@The_monster@ 颤动着。 @The_monster@ 对 @foe@ 尖叫道：\"站住！\"",
+        MSGCH_TALK, false, false, &observer));
+    REQUIRE(capture.emissions.size() == 1);
+
+    const string &rendered = capture.emissions[0].line;
+    CHECK(rendered.find(' ') == string::npos);
+    CHECK(rendered.find("兽人颤动着") != string::npos);
+    CHECK(rendered.find("兽人对你尖叫道") != string::npos);
+}
 
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: mons_speaks genus fallback resolves through the production seam",

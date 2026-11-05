@@ -330,9 +330,12 @@ void melee_attack::handle_phase_blocked()
     // but Chinese uses the same verb form regardless.
     if (needs_block_message)
     {
-        string atk_attack = make_stringf("%s attack",
-            attacker == defender ? "its own"
-                                 : attacker->name(DESC_ITS).c_str());
+        // Keep the attack noun localized: translating only the outer
+        // "You block %s." sentence would leave "attack" in Chinese text.
+        const string atk_attack = attacker == defender
+            ? T_("its own attack")
+            : make_stringf(T_("%s attack"),
+                           attacker->name(DESC_ITS).c_str());
         mpr(block_event_string(defender, atk_attack));
     }
 
