@@ -1120,7 +1120,7 @@ void trigger_exploration_conducts()
         if (you.newly_revealed_cells >= remaining)
         {
             you.props.erase(XOM_DISGUISE_RECOVERY_KEY);
-            god_speaks(GOD_XOM, "You have finished assembling a new disguise.");
+            god_speaks(GOD_XOM, T_("You have finished assembling a new disguise."));
         }
         else
             remaining -= you.newly_revealed_cells;

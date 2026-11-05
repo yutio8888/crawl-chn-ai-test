@@ -53417,3 +53417,6 @@ status|on disguise cooldown
 %%%%
  dispatches reinforcements to the rest of the floor.
  向本层其余区域派遣了增援。
+%%%%
+You have finished assembling a new disguise.
+你已经重新组装好了一套新的伪装。
