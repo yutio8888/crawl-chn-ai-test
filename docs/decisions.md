@@ -4730,7 +4730,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   曲解经文体现强解经文、退去提示 `divinely inspired misunderstanding`）；
   `guardian → 守护者`（状态灯需短标签，且避免与既有守护者描述混同）；
   `mannequin → 傀儡`（傀儡对应 golem 类构装，人偶保留剧场道具本义）；
-  `Arena → 角斗场`（术语表固定 Arena = 竞技场）。
+  `Arena → 角斗场`（术语表固定 Arena 为竞技场）
 - **Source**: 上游 trunk `7f52e8de5c` 的佐姆张力／祝福重做；`xom.cc`、
   `status.cc`、`item-name.cc`、`dat/descript/status.txt`、
   `dat/descript/monsters.txt`、`dat/database/godspeak.txt`。

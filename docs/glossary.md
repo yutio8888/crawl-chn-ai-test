@@ -461,6 +461,13 @@
 <!-- item-name-terms -->
 | EN | ZH | Scope / comment |
 |----|----|----------------|
+| Xom's Arena | 佐姆竞技场 | 佐姆竞技场分支与传送门；Arena = 竞技场；键为 `Xom's Arena`；decision=D-C-109 |
+| berserk sage | 狂暴贤者 | 药水词根，完整名“potion of berserk sage → 狂暴贤者药水”；恢复法力并赋予聪慧，随后进入焦躁；decision=D-C-109 |
+| expedience | 权宜 | 药水词根，完整名“potion of expedience → 权宜药水”；短时间内接敌移动一步覆盖任意距离；decision=D-C-109 |
+| `scroll type\|frog` | 青蛙 | 卷轴词根，完整名“scroll of frog → 青蛙卷轴”；短时召唤青蛙同伴；与既有 `frog → 蛙` 区分；decision=D-C-109 |
+| plinking | 飞石 | 卷轴词根，完整名“scroll of plinking → 飞石卷轴”；持续数回合飞石骚扰；decision=D-C-109 |
+| gate leading to Xom's Arena | 通往佐姆竞技场的大门 | 佐姆竞技场入口地形描述；decision=D-C-109 |
+| mannequin | 人偶 | 剧场木制道具怪物；与人偶剧团 troupe 同词根；decision=D-C-109 |
 | air | 空气 | item display fragment; armour ego, book, staff; decision=D-B-020 |
 | arbalest | 重弩 | weapon; decision=D-B-017 |
 | Barding | 马铠 | armour; decision=D-B-019 |
@@ -591,12 +598,6 @@
 | EN | ZH | 依据 / 作用域 |
 |----|----|---------------|
 | Archery | 箭术 | 护甲 ego 铭文；item-name.cc 的 SPARM_ARCHERY 显示键；不是技能 Ranged Weapons；decision=D-C-098 |
-| Xom's Arena | 佐姆竞技场 | 佐姆竞技场分支与传送门；Arena = 竞技场；decision=D-C-109 |
-| potion of berserk sage | 狂暴贤者药水 | 佐姆专属药水；恢复法力并赋予聪慧，随后进入焦躁狂暴；decision=D-C-109 |
-| potion of expedience | 权宜药水 | 佐姆专属药水；短时间内接敌移动一步覆盖任意距离；decision=D-C-109 |
-| scroll of frog | 青蛙卷轴 | 佐姆专属卷轴；短时召唤青蛙同伴；decision=D-C-109 |
-| scroll of plinking | 飞石卷轴 | 佐姆专属卷轴；持续数回合飞石骚扰；decision=D-C-109 |
-| mannequin | 人偶 | 剧场木制道具怪物；与人偶剧团 troupe 同词根；decision=D-C-109 |
 
 <!-- domain:dialogue -->
 ## 七、对话动词（按语境选择）

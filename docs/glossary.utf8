@@ -168,6 +168,7 @@ Benumbed	冻僵的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；
 Beogh	比欧弗	domain=gods; source=EN/ZH; 类型=音译
 Berserk	狂暴	domain=core; source=EN/ZH; 注意事项=近战加成但结束后减速 | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Berserk Other	狂暴他人	domain=spells; source=EN/ZH; 备注=✅；使附近一个盟友进入狂暴
+berserk sage	狂暴贤者	domain=items; source=EN/ZH; Scope / comment=药水词根，完整名“potion of berserk sage → 狂暴贤者药水”；恢复法力并赋予聪慧，随后进入焦躁；decision=D-C-109
 Berserker	狂战士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Berserker Rage	狂暴之怒	domain=spells; source=EN/ZH; 备注=✅
 Bestow Arms	赐予武器	domain=spells; source=EN/ZH; 备注=✅
@@ -528,6 +529,7 @@ Evocations	魔力释放	domain=core; source=EN/ZH; 注意事项=技能名；普�
 Excruciating Wounds	剧痛之伤	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 executioner's axe	刽子手斧	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
 Exegesis	释经	domain=status; source=EN/ZH; 依据 / 作用域=status.txt；可低成本再次施放最近释经法术；decision=D-C-095
+expedience	权宜	domain=items; source=EN/ZH; Scope / comment=药水词根，完整名“potion of expedience → 权宜药水”；短时间内接敌移动一步覆盖任意距离；decision=D-C-109
 experience	经验值	domain=core; source=EN/ZH
 Explosive Bolt	爆裂弩矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 exposed	暴露	domain=status; source=EN/ZH; 依据 / 作用域=monstatus.txt；更易遭非攻击伤害且意志降低；不译为防具破碎；decision=D-C-095
@@ -626,6 +628,7 @@ Galvanic Breath	电击吐息	domain=spells; source=EN/ZH; 备注=✅
 gargoyle	石像鬼	domain=species; source=EN/ZH
 Gastronok	加斯特罗诺克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Gastronok title	沉重的加斯特罗诺克	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+gate leading to Xom's Arena	通往佐姆竞技场的大门	domain=items; source=EN/ZH; Scope / comment=佐姆竞技场入口地形描述；decision=D-C-109
 gather mist	聚雾	domain=mutations; source=EN/ZH; 依据 / 作用域=mistmane.yaml；探索时制造雾药水；decision=D-C-095
 Gauntlet	试炼场	domain=core; source=EN/ZH; 注意事项=分支、地下城特征与世界显示文本统一；裁决 [D-A-045]
 Gaze	凝视	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行）
@@ -876,7 +879,7 @@ Malign Gateway	邪恶传送门	domain=spells; source=EN/ZH; 备注=✅；通往�
 Malign Offering	邪恶献祭	domain=spells; source=EN/ZH; 备注=✅；汲取敌人生命并治疗附近盟友
 Malmutate	恶性变异	domain=spells; source=EN/ZH; 备注=✅
 Manifold Assault	多重攻击	domain=spells; source=EN/ZH; 备注=✅
-mannequin	人偶	domain=items; source=EN/ZH; 依据 / 作用域=剧场木制道具怪物；与人偶剧团 troupe 同词根；decision=D-C-109 | domain=monsters; source=EN/ZH; 依据 / 作用域=复制敌人技能与记忆的剧场道具怪物；区别傀儡 golem；decision=D-C-109
+mannequin	人偶	domain=items; source=EN/ZH; Scope / comment=剧场木制道具怪物；与人偶剧团 troupe 同词根；decision=D-C-109 | domain=monsters; source=EN/ZH; 依据 / 作用域=复制敌人技能与记忆的剧场道具怪物；区别傀儡 golem；decision=D-C-109
 Mara	玛拉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Mara Summon	玛拉召唤	domain=spells; source=EN/ZH; 备注=✅
 Mara title	玛拉，幻象领主	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
@@ -1056,6 +1059,7 @@ Plasma Beam	等离子光束	domain=spells; source=EN/ZH; 备注=✅；电击束�
 Platinum Paragon	白金典范	domain=spells; source=EN/ZH; 备注=✅
 player ghost	玩家鬼魂	domain=core; source=EN/ZH
 pleads	恳求道	domain=dialogue; source=EN/ZH; 适用角色=濒死角色
+plinking	飞石	domain=items; source=EN/ZH; Scope / comment=卷轴词根，完整名“scroll of plinking → 飞石卷轴”；持续数回合飞石骚扰；decision=D-C-109
 Poison	中毒	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Poison	毒素 / 毒 / 淬毒	domain=magic; source=EN/ZH; 状态=✅ 已确认（5 项现行；另有 4 项已移除兼容；`Spit Poison → 喷吐毒液`）
 Poison Arrow	毒箭	domain=spells; source=EN/ZH; 备注=✅；复用 Arrow 系列证据 | domain=spells; source=EN/ZH; 备注=✅
@@ -1079,8 +1083,6 @@ potion clouds	药水云雾	domain=mutations; source=EN/ZH; 依据 / 作用域=mi
 potion full name|invisibility	隐形	domain=items; source=EN/ZH; Scope / comment=potion context key; decision=D-B-020
 potion full name|might	力量	domain=items; source=EN/ZH; Scope / comment=potion context key; melee-only effect; decision=D-B-022
 potion full name|mist	雾	domain=items; source=EN/ZH; 依据 / 作用域=药水完整名上下文的效果片段；与雾药水同词根；decision=D-C-095
-potion of berserk sage	狂暴贤者药水	domain=items; source=EN/ZH; 依据 / 作用域=佐姆专属药水；恢复法力并赋予聪慧，随后进入焦躁狂暴；decision=D-C-109
-potion of expedience	权宜药水	domain=items; source=EN/ZH; 依据 / 作用域=佐姆专属药水；短时间内接敌移动一步覆盖任意距离；decision=D-C-109
 potion of mist	雾药水	domain=core; source=EN/ZH; 依据 / 作用域=完整英文名用于 TextDB／协议查找；item-name.cc 的中文显示由 mist → 雾与 potion → 药水拼接，不是完整 catalog 键；Mistmane 产物；decision=D-C-098（B0-5 查找方式对齐）
 Prayer of Brilliance	聪慧祈祷	domain=spells; source=EN/ZH; 备注=✅
 Primal Wave	原初浪潮	domain=spells; source=EN/ZH; 备注=🆕；召出激流击退目标并留下短时浅水
@@ -1165,8 +1167,7 @@ Scattershot	散射术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容
 Scorch	烧焦	domain=spells; source=EN/ZH; 备注=✅
 scrapshell chimera	废铁壳奇美拉	domain=monsters; source=EN/ZH; 依据 / 作用域=monsters.txt；水生血肉与废铁甲壳融合；decision=D-C-095
 scroll	卷轴	domain=items; source=EN/ZH
-scroll of frog	青蛙卷轴	domain=items; source=EN/ZH; 依据 / 作用域=佐姆专属卷轴；短时召唤青蛙同伴；decision=D-C-109
-scroll of plinking	飞石卷轴	domain=items; source=EN/ZH; 依据 / 作用域=佐姆专属卷轴；持续数回合飞石骚扰；decision=D-C-109
+scroll type|frog	青蛙	domain=items; source=EN/ZH; Scope / comment=卷轴词根，完整名“scroll of frog → 青蛙卷轴”；短时召唤青蛙同伴；与既有 `frog → 蛙` 区分；decision=D-C-109
 scroll-form	卷轴形态	domain=magic; source=EN/ZH; 依据 / 作用域=form 名称／伤害标签；walking-scroll:long_name；decision=D-C-098
 Sculpt Simulacrum	塑造拟像	domain=spells; source=EN/ZH; 备注=✅
 Seal Doors	封印门	domain=spells; source=EN/ZH; 备注=✅
@@ -1551,7 +1552,7 @@ Word of Recall	召回之言	domain=spells; source=EN/ZH; 备注=✅；短暂延�
 Wu Jian	无间	domain=gods; source=EN/ZH; 类型=运行时短名
 Xak'krixis title	王家远征炼金师扎克里西斯	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Xom	佐姆	domain=gods; source=EN/ZH; 类型=音译
-Xom's Arena	佐姆竞技场	domain=items; source=EN/ZH; 依据 / 作用域=佐姆竞技场分支与传送门；Arena = 竞技场；decision=D-C-109
+Xom's Arena	佐姆竞技场	domain=items; source=EN/ZH; Scope / comment=佐姆竞技场分支与传送门；Arena = 竞技场；键为 `Xom's Arena`；decision=D-C-109
 XP	经验值	domain=core; source=EN/ZH
 Xtahua	扎塔瓦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Xtahua title	古老的扎塔瓦	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt

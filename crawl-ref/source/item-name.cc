@@ -977,7 +977,7 @@ const char* scroll_type_name(int scrolltype)
     case SCR_SILENCE:                 return T_("silence");
     case SCR_AMNESIA:                 return T_("amnesia");
 
-    case SCR_FROG:                    return T_("frog");
+    case SCR_FROG:                    return C_("scroll type", "frog");
     case SCR_PLINKING:                return T_("plinking");
 #if TAG_MAJOR_VERSION == 34
     case SCR_HOLY_WORD:               return T_("holy word");

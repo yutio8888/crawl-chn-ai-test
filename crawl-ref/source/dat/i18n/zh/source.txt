@@ -53330,3 +53330,63 @@ your bare %s
 %%%%
 your battlecube
 你的战斗立方
+%%%%
+mannequin
+人偶
+%%%%
+chaos battleshape
+混沌战斗形态
+%%%%
+Xom's Arena
+佐姆竞技场
+%%%%
+gate leading to Xom's Arena
+通往佐姆竞技场的大门
+%%%%
+You are quickly growing irritated.
+你正迅速变得焦躁。
+%%%%
+You are rapidly tossing pebbles at your foes.
+你正飞快地向敌人投掷石子。
+%%%%
+You rampage instantly towards enemies.
+你能瞬间冲向敌人。
+%%%%
+Your body feels full of potential once again.
+你的身体再次充满潜能。
+%%%%
+Your burst of speed ends.
+你的疾速结束了。
+%%%%
+Your limbs are incredibly long.
+你的四肢变得无比修长。
+%%%%
+Your limbs return to their normal size.
+你的四肢恢复正常大小。
+%%%%
+status|Reach+
+延展+
+%%%%
+status|reach+
+延展+
+%%%%
+status|Irrate
+焦躁
+%%%%
+status|irrate
+焦躁
+%%%%
+status|Rampage+++
+冲刺+++
+%%%%
+status|rampage+
+冲刺+
+%%%%
+status|Plink
+飞石
+%%%%
+status|plinking
+飞石
+%%%%
+scroll type|frog
+青蛙
