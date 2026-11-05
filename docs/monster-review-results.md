@@ -1,9 +1,9 @@
 # Issue #24 怪物翻译全量复审结果
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
-- 术语表 SHA-256：`8a36accf4fc362bf8f103d84ba5d5e6639615274e94d38b16a2d2afe0b0c04cf`
-- 清单 SHA-256：`8aa5f99e2131f2508ef91ec7a80aab8a9804ed7411bca3a34630f9856f1f3c4f`
-- 身份总数：813（现行 689；兼容枚举 124）
+- 术语表 SHA-256：`04f86bac66e75828968d413e1cef8ed3872c5e21d7213a8768bcbfc2a037ca2b`
+- 清单 SHA-256：`5478a2f7c3ef233fc7abec6cf470a391a233306ddf3ddb7863c24d3988c0b95c`
+- 身份总数：815（现行 691；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
 - 重建命令：`python3 .claude/scripts/monster_name_ssot.py --inventory-output /tmp/monster-inventory.json --review-results docs/monster-review-results.md --baseline-ref 7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`。
@@ -627,7 +627,7 @@
 | `monster:MONS_MOON_TROLL` | current; exposure=ordinary; name=moon troll→月巨魔; genus=MONS_TROLL; species=MONS_MOON_TROLL; data=crawl-ref/source/dat/mons/moon-troll.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_MUTANT_BEAST` | current; exposure=ordinary; name=mutant beast→变异野兽; genus=MONS_MUTANT_BEAST; species=MONS_MUTANT_BEAST; data=crawl-ref/source/dat/mons/mutant-beast.yaml; desc=EN/ZH | keep |
 | `monster:MONS_JUGGERNAUT` | current; exposure=ordinary; name=juggernaut→巨像; genus=MONS_GIANT; species=MONS_JUGGERNAUT; data=crawl-ref/source/dat/mons/juggernaut.yaml; desc=EN/ZH | keep |
-| `monster:MONS_SPARK_WASP` | current; exposure=ordinary; name=spark wasp→火花蜂; genus=MONS_SPARK_WASP; species=MONS_SPARK_WASP; data=crawl-ref/source/dat/mons/spark-wasp.yaml; desc=EN/ZH | keep |
+| `monster:MONS_SPARK_WASP` | current; exposure=ordinary; name=spark wasp→火花蜂; genus=MONS_HORNET; species=MONS_SPARK_WASP; data=crawl-ref/source/dat/mons/spark-wasp.yaml; desc=EN/ZH | keep |
 | `monster:MONS_OBLIVION_HOUND` | current; exposure=ordinary; name=oblivion hound→湮灭猎犬; genus=MONS_HOUND; species=MONS_OBLIVION_HOUND; data=crawl-ref/source/dat/mons/oblivion-hound.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_DEEP_ELF_ELEMENTALIST` | current; exposure=ordinary; name=deep elf elementalist→精灵元素师; genus=MONS_ELF; species=MONS_ELF; data=crawl-ref/source/dat/mons/deep-elf-elementalist.yaml; desc=EN/ZH | keep |
 | `monster:MONS_DEEP_ELF_ARCHER` | current; exposure=ordinary; name=deep elf archer→精灵弓箭手; genus=MONS_ELF; species=MONS_ELF; data=crawl-ref/source/dat/mons/deep-elf-archer.yaml; desc=EN/ZH | keep |
@@ -685,7 +685,7 @@
 | `monster:MONS_WENDIGO` | current; exposure=ordinary; name=wendigo→温迪戈; genus=MONS_WENDIGO; species=MONS_WENDIGO; data=crawl-ref/source/dat/mons/wendigo.yaml; desc=EN/ZH | keep |
 | `monster:MONS_NARGUN` | current; exposure=ordinary; name=nargun→纳尔根; genus=MONS_GOLEM; species=MONS_NARGUN; data=crawl-ref/source/dat/mons/nargun.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_HEADMASTER` | current; exposure=ordinary; name=Head Instructor→总教官; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/headmaster.yaml; desc=EN/ZH | keep |
-| `monster:MONS_LIVING_SPELL` | current; exposure=ordinary; name=living spell→活体法术; genus=MONS_LIVING_SPELL; species=MONS_LIVING_SPELL; data=crawl-ref/source/dat/mons/living-spell.yaml; desc=EN/ZH | keep |
+| `monster:MONS_LIVING_SPELL` | current; exposure=ordinary; name=living spell→活体法术; genus=MONS_LIVING_SPELL; species=MONS_LIVING_SPELL; data=crawl-ref/source/dat/mons/living-spell.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_WALKING_TOME` | current; exposure=internal_or_special; name=walking tome→行走的宝典; genus=MONS_WALKING_TOME; species=MONS_WALKING_TOME; data=crawl-ref/source/dat/mons/walking-tome.yaml; desc=EN/ZH | keep |
 | `monster:MONS_EARTHEN_TOME` | current; exposure=ordinary; name=walking earthen tome→行走的土石宝典; genus=MONS_WALKING_TOME; species=MONS_EARTHEN_TOME; data=crawl-ref/source/dat/mons/earthen-tome.yaml; desc=EN/ZH | keep |
 | `monster:MONS_CRYSTAL_TOME` | current; exposure=ordinary; name=walking crystal tome→行走的水晶宝典; genus=MONS_WALKING_TOME; species=MONS_EARTHEN_TOME; data=crawl-ref/source/dat/mons/crystal-tome.yaml; desc=EN/ZH | keep |
@@ -823,6 +823,8 @@
 | `monster:MONS_JADE_CRYSTAL_FIRE` | current; exposure=ordinary; name=fiery jade→火玉晶; genus=MONS_JADE_CRYSTAL_FIRE; species=MONS_JADE_CRYSTAL_FIRE; data=crawl-ref/source/dat/mons/jade-crystal-fire.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_JADE_CRYSTAL_ICE` | current; exposure=ordinary; name=icy jade→冰玉晶; genus=MONS_JADE_CRYSTAL_ICE; species=MONS_JADE_CRYSTAL_ICE; data=crawl-ref/source/dat/mons/jade-crystal-ice.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_HYPNOTAIL` | current; exposure=ordinary; name=hypnotail→迷魂尾; genus=MONS_GIANT_LIZARD; species=MONS_HYPNOTAIL; data=crawl-ref/source/dat/mons/hypnotail.yaml; desc=EN/ZH | retranslate: name and description corrected |
+| `monster:MONS_MANNEQUIN` | current; exposure=ordinary; name=mannequin→人偶; genus=MONS_MANNEQUIN; species=MONS_MANNEQUIN; data=crawl-ref/source/dat/mons/mannequin.yaml; desc=EN/ZH | retranslate: name and description corrected |
+| `monster:MONS_CHAOS_BATTLESHAPE` | current; exposure=ordinary; name=chaos battleshape→混沌战斗形态; genus=MONS_CHAOS_BATTLESHAPE; species=MONS_CHAOS_BATTLESHAPE; data=crawl-ref/source/dat/mons/chaos-battleshape.yaml; desc=EN/ZH | retranslate: name and description corrected |
 
 ## Full-content semantic review
 
