@@ -380,6 +380,7 @@
 | EN | ZH | 依据 / 作用域 |
 |----|----|---------------|
 | potion of mist | 雾药水 | 完整英文名用于 TextDB／协议查找；item-name.cc 的中文显示由 mist → 雾与 potion → 药水拼接，不是完整 catalog 键；Mistmane 产物；decision=D-C-098（B0-5 查找方式对齐） |
+| tension | 张力 | Xom 重做后的核心机制：按周围一回合内危险事件累积，驱动行动与祝福；普通叙述可用“紧张度”；decision=D-C-109 |
 
 <!-- domain:combat -->
 ## 五、战斗与伤害
@@ -590,6 +591,12 @@
 | EN | ZH | 依据 / 作用域 |
 |----|----|---------------|
 | Archery | 箭术 | 护甲 ego 铭文；item-name.cc 的 SPARM_ARCHERY 显示键；不是技能 Ranged Weapons；decision=D-C-098 |
+| Xom's Arena | 佐姆竞技场 | 佐姆竞技场分支与传送门；Arena = 竞技场；decision=D-C-109 |
+| potion of berserk sage | 狂暴贤者药水 | 佐姆专属药水；恢复法力并赋予聪慧，随后进入焦躁狂暴；decision=D-C-109 |
+| potion of expedience | 权宜药水 | 佐姆专属药水；短时间内接敌移动一步覆盖任意距离；decision=D-C-109 |
+| scroll of frog | 青蛙卷轴 | 佐姆专属卷轴；短时召唤青蛙同伴；decision=D-C-109 |
+| scroll of plinking | 飞石卷轴 | 佐姆专属卷轴；持续数回合飞石骚扰；decision=D-C-109 |
+| mannequin | 人偶 | 剧场木制道具怪物；与人偶剧团 troupe 同词根；decision=D-C-109 |
 
 <!-- domain:dialogue -->
 ## 七、对话动词（按语境选择）
@@ -876,6 +883,29 @@
 | mutagenic radiation | 诱变辐射 | 复用 Contamination 既有译法；decision=D-C-096 |
 | mutagenic fog | 诱变雾气 | 云类型及鬃毛药水云、怪物状态描述；弃用“致变雾气／变异雾气”；decision=D-C-096 |
 | mutagenic serum | 诱变血清 | 净化诱变催化器正文；沿用 features 既有译法；decision=D-C-096 |
+| `Cleave+` | 顺劈+ | 佐姆顺劈祝福状态灯；沿用 Cleave status 的“顺劈”词根；decision=D-C-109 |
+| `Reach+` | 延展+ | 佐姆延展祝福状态；近战攻击距离 +3；decision=D-C-109 |
+| `Lock (%d)` | 封梯(%d) | 佐姆封锁楼层楼梯状态；括号内为剩余解锁所需击杀数；decision=D-C-109 |
+| `Irrate` | 焦躁 | 狂暴贤者药水后的倒计时状态；说明将很快进入狂暴；decision=D-C-109 |
+| `Rampage+++` | 冲刺+++ | 权宜药水赋予的极速接敌状态；直线接敌一步覆盖任意距离；decision=D-C-109 |
+| `status\|Eisegesis` | 曲解 | 佐姆混沌曲解祝福状态灯短标签（2 字）；与 Divine Exegesis 的“释经”相对；完整词根见“曲解经文”；decision=D-C-109 |
+| eisegesis | 曲解经文 | 佐姆能力与祝福正文词根；`blessing of eisegesis`、状态描述同根；decision=D-C-109 |
+| `Guardian` | 守卫 | 佐姆守卫祝福状态灯；区别一般“守护者”描述；decision=D-C-109 |
+| `Spellstride` | 法术阔步 | 佐姆法术阔步祝福状态灯；冲锋时消耗法力沿途生成活体射线法术；decision=D-C-109 |
+| `Troupe` | 剧团 | 佐姆人偶剧团祝福状态灯；需极短标签；decision=D-C-109 |
+| `status\|Battleshape` | 战形 | 佐姆混沌战斗形态祝福状态灯短标签（2 字）；与 battlesphere 战斗法球同构词；完整词根见“战斗形态”；decision=D-C-109 |
+| battleshape | 战斗形态 | 佐姆祝福与怪物正文词根；与 battlesphere 战斗法球同构词；decision=D-C-109 |
+| `Protean` | 千变 | 佐姆千变形态祝福状态灯；低血量时迸出渴望之肉盟友；decision=D-C-109 |
+| `-Flesh` | -渴望之肉 | 渴望之肉迸发后的冷却状态；保留负号；decision=D-C-109 |
+| `Sneaky` | 诡秘 | 佐姆诡秘祝福状态灯；区别处于伪装中的 Disguised；decision=D-C-109 |
+| `Disguised` | 伪装 | 伪装状态；敌人无法察觉，攻击或施法会解除；decision=D-C-109 |
+| `-Disguise` | -伪装 | 伪装冷却状态；保留负号；decision=D-C-109 |
+| blessing | 祝福 | 佐姆赐予的长效增益统称；`blessing of X` → “X之祝福”；decision=D-C-109 |
+| cleave / cleaving | 顺劈 | 佐姆顺劈祝福与状态词根；沿用 status.txt 既有“顺劈”；decision=D-C-109 |
+| guardian | 守卫 | 佐姆赐予的持久盟友及怪物标签；decision=D-C-109 |
+| minibane | 短暂灾祸 | 佐姆施加的超短时灾祸；消息后缀“（……但只持续很短时间）”；decision=D-C-109 |
+| floor lock | 封梯 | 佐姆锁死本层全部楼梯的机制；状态灯 Lock(%d)；decision=D-C-109 |
+| doppleganger | 二重身 | 佐姆人偶剧团：复制你亲手击杀的敌人；decision=D-C-109 |
 
 <!-- domain:backgrounds -->
 ## 十五、角色背景
@@ -971,6 +1001,7 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 | Ancestor Life: Knight | 先祖生涯：骑士 | 现行先祖职业回忆；Life指生前经历，非生命值；decision=D-C-102 |
 | Ancestor Life: Hexer | 先祖生涯：诅咒师 | 与现行Knight/Elementalist共用生涯词根；decision=D-C-102 |
 | Sacrifice Love | 献祭爱 | 入的献祭能力；覆盖爱与友好关系，不限爱情；decision=D-C-102 |
+| Chaos Eisegesis | 混沌曲解 | 佐姆能力：以魔法污染为代价施放借来的法术；与 Divine Exegesis 神圣释经相对；decision=D-C-109 |
 
 <!-- domain:mutations -->
 ## 十七、变异名
@@ -1234,6 +1265,10 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 |----|----|---------------|
 | burstshroom | 爆裂菇 | 怪物／召唤构造实体名；沿用 catalog；spike launcher 复用 Construct Spike Launcher 的词根；decision=D-C-098 |
 | spike launcher | 尖刺发射器 | 怪物／召唤构造实体名；沿用 catalog；spike launcher 复用 Construct Spike Launcher 的词根；decision=D-C-098 |
+| chaos battleshape | 混沌战斗形态 | 佐姆祝福伴生怪物；随近战开火、满能时随施法引爆；decision=D-C-109 |
+| mannequin | 人偶 | 复制敌人技能与记忆的剧场道具怪物；区别傀儡 golem；decision=D-C-109 |
+| battlecube | 战斗立方 | 混沌战斗形态的立方体形态；your battlecube → 你的战斗立方；decision=D-C-109 |
+| living spell | 活体法术 | 被赋予短暂形体的法术；沿用既有译名；decision=D-C-109 |
 
 <!-- domain:unique-monsters -->
 ## 十九、独特怪物名称

@@ -1,3 +1,5 @@
+-Disguise	-伪装	domain=status; source=EN/ZH; 依据 / 作用域=伪装冷却状态；保留负号；decision=D-C-109
+-Flesh	-渴望之肉	domain=status; source=EN/ZH; 依据 / 作用域=渴望之肉迸发后的冷却状态；保留负号；decision=D-C-109
 -Jolt	-电冲	domain=status; source=EN/ZH; 依据 / 作用域=status.txt；状态灯对齐共享 catalog 标签，保留负号；完全恢复生命后才能再次满强度放电；decision=D-C-098（取代 D-C-095 的放电冷却译法）
 -Sirocco	灼热风冷却	domain=status; source=EN/ZH; 依据 / 作用域=status.txt；移动会延后再次施放；decision=D-C-095
 -Swift	-迅捷	domain=status; source=EN/ZH; 依据 / 作用域=行动加速后的移动迟缓；对齐稳定版共享 catalog 标签，保留负号；decision=D-C-098（取代 D-C-095 的缓步译法）
@@ -152,7 +154,9 @@ bat form	蝠群变形	domain=mutations; source=EN/ZH; 依据 / 作用域=form �
 bat-form	蝙蝠形态	domain=magic; source=EN/ZH; 依据 / 作用域=form 名称／伤害标签；bat:long_name；decision=D-C-098
 batswarm-form	蝠群形态	domain=magic; source=EN/ZH; 依据 / 作用域=form 名称／伤害标签；bat-swarm:long_name；decision=D-C-098
 Battlecry	战吼	domain=spells; source=EN/ZH; 备注=✅
+battlecube	战斗立方	domain=monsters; source=EN/ZH; 依据 / 作用域=混沌战斗形态的立方体形态；your battlecube → 你的战斗立方；decision=D-C-109
 Battlemage	战斗法师	domain=abilities; source=EN/ZH; 依据 / 作用域=旧先祖类型保留兼容；一般角色词不受替代；decision=D-C-095
+battleshape	战斗形态	domain=status; source=EN/ZH; 依据 / 作用域=佐姆祝福与怪物正文词根；与 battlesphere 战斗法球同构词；decision=D-C-109
 battlesphere	战斗法球	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 beak	鸟喙	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Beam	光束	domain=magic; source=EN/ZH; 状态=✅ 已确认（2 项现行；`Shadow Beam` 已在 Shadow 批次审阅）
@@ -182,6 +186,7 @@ blast of rock	岩石冲击	domain=combat; source=EN/ZH; 依据 / 作用域=Drago
 blast of wind	狂风冲击	domain=combat; source=EN/ZH; 依据 / 作用域=Dragon Veins 气元素射线显示名，不改法术名龙脉（气）；decision=D-C-098
 blazeheart core	焰心核心	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 blazeheart golem	焰心魔像	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+blessing	祝福	domain=status; source=EN/ZH; 依据 / 作用域=佐姆赐予的长效增益统称；`blessing of X` → “X之祝福”；decision=D-C-109
 blinding haze	致盲浓雾	domain=status; source=EN/ZH; 依据 / 作用域=cloud.cc / clouds.txt；逗留其中会被致盲；decision=D-C-095
 Blink	闪烁	domain=magic; source=EN/ZH; 状态=✅ 已确认（现行 8 项；另有 1 项已移除／TAG 34 兼容记录） | domain=spells; source=EN/ZH; 备注=✅ 现行
 Blink Allies Away	使盟友闪烁远离	domain=spells; source=EN/ZH; 备注=📝 现行
@@ -285,7 +290,9 @@ Chain of Chaos	混沌之链	domain=spells; source=EN/ZH; 备注=✅
 chains	枷锁	domain=abilities; source=EN/ZH; 依据 / 作用域=Ashenzari 仪式意象；chain yourself → 以枷锁束缚自己；decision=D-C-095
 Chant Fire Storm	咏唱火焰风暴	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 chaos	混沌	domain=items; source=EN/ZH; Scope / comment=weapon brand verbose/terse; decision=D-B-016/D-B-020
+chaos battleshape	混沌战斗形态	domain=monsters; source=EN/ZH; 依据 / 作用域=佐姆祝福伴生怪物；随近战开火、满能时随施法引爆；decision=D-C-109
 Chaos Breath	混沌吐息	domain=spells; source=EN/ZH; 备注=✅
+Chaos Eisegesis	混沌曲解	domain=abilities; source=EN/ZH; 依据 / 作用域=佐姆能力：以魔法污染为代价施放借来的法术；与 Divine Exegesis 神圣释经相对；decision=D-C-109
 Chaos Knight	混沌骑士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 chaos spawn	混沌之子	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 chaotic	混沌	domain=items; source=EN/ZH; Scope / comment=weapon brand adjective; decision=D-B-016/D-B-020
@@ -301,6 +308,9 @@ Cigotuvi's Putrefaction	西格图维之腐烂	domain=spells; source=EN/ZH; 备�
 Cinder Acolyte	灰烬侍僧	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 claws	利爪	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Cleansing Flame	净化之焰	domain=spells; source=EN/ZH; 备注=✅
+cleave	顺劈	domain=status; source=EN/ZH; 依据 / 作用域=佐姆顺劈祝福与状态词根；沿用 status.txt 既有“顺劈”；decision=D-C-109
+Cleave+	顺劈+	domain=status; source=EN/ZH; 依据 / 作用域=佐姆顺劈祝福状态灯；沿用 Cleave status 的“顺劈”词根；decision=D-C-109
+cleaving	顺劈	domain=status; source=EN/ZH; 依据 / 作用域=佐姆顺劈祝福与状态词根；沿用 status.txt 既有“顺劈”；decision=D-C-109
 clever	聪慧	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Cloud	云	domain=magic; source=EN/ZH; 状态=✅ 已确认（现行 `X Cloud` 后缀系列 8 项；另有 4 项已移除兼容记录）
 Cloud Cone	云雾锥	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；非 `X Cloud` 后缀成员，暂缓术语；恢复时复审
@@ -404,6 +414,7 @@ dire flail	双头链枷	domain=items; source=EN/ZH; Scope / comment=weapon; deci
 Dis	迪斯	domain=core; source=EN/ZH; 注意事项=游戏地狱城市短名；区别人物 Dis pater；decision=D-C-103
 dis serpent of hell breath	迪斯地狱巨蛇吐息	domain=spells; source=EN/ZH; 备注=复用分支限定实体名；decision=D-C-103
 Discord	纷乱	domain=spells; source=EN/ZH; 备注=📝
+Disguised	伪装	domain=status; source=EN/ZH; 依据 / 作用域=伪装状态；敌人无法察觉，攻击或施法会解除；decision=D-C-109
 Disjunction	空间分离	domain=spells; source=EN/ZH; 备注=✅
 Dispater	迪斯帕特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Dispater title	迪斯帕特，铁城领主	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
@@ -432,6 +443,7 @@ Donald title	冒险者唐纳德	domain=monster-titles; source=EN/ZH; Scope / com
 Doom Bolt	厄运箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Doomsaying	宣告厄运	domain=spells; source=EN/ZH; 备注=✅
 dopey	愚钝	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+doppleganger	二重身	domain=status; source=EN/ZH; 依据 / 作用域=佐姆人偶剧团：复制你亲手击杀的敌人；decision=D-C-109
 doubled heal-on-kills	杀敌治疗加倍	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；slaughter:fakemuts；不声称是可遗传突变；decision=D-C-098
 Dowan	多万	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Dowan title	多万，杜维莎的哥哥	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
@@ -473,6 +485,7 @@ eel punch	电鳗拳击	domain=mutations; source=EN/ZH; 依据 / 作用域=form �
 eeljolt	电鳗放电	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；eel-hands:fakemuts；不声称是可遗传突变；decision=D-C-098
 ego	ego 装备 / 附魔装备	domain=items; source=EN/ZH
 Eiolaiphi	埃奥莱菲	domain=items; source=EN/ZH; Scope / comment=unrand lore proper name; decision=D-B-021
+eisegesis	曲解经文	domain=status; source=EN/ZH; 依据 / 作用域=佐姆能力与祝福正文词根；`blessing of eisegesis`、状态描述同根；decision=D-C-109
 Electrical Bolt	电击箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 electrical cleaving	电流横扫	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；storm:fakemuts；不声称是可遗传突变；decision=D-C-098
 elemental crystals	元素晶体	domain=mutations; source=EN/ZH; 依据 / 作用域=jademantle.yaml；四元素晶体充能；decision=D-C-095
@@ -562,6 +575,7 @@ flee	逃跑	domain=core; source=EN/ZH
 Fleetfoot	轻快脚步	domain=spells; source=EN/ZH; 备注=✅
 fleshless physiology	无肉生理	domain=mutations; source=EN/ZH; 依据 / 作用域=mutations.txt；石像鬼特征分类，不误示亡灵；decision=D-C-095
 Flight	飞行术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
+floor lock	封梯	domain=status; source=EN/ZH; 依据 / 作用域=佐姆锁死本层全部楼梯的机制；状态灯 Lock(%d)；decision=D-C-109
 Flux	变形	domain=magic; source=EN/ZH; 依据 / 作用域=form 名称／伤害标签；flux:short_name；decision=D-C-098
 flux bauble	变形球	domain=items; source=EN/ZH; Scope / comment=bauble; decision=D-B-020
 flux-form	变形形态	domain=magic; source=EN/ZH; 依据 / 作用域=form 名称／伤害标签；flux:long_name；decision=D-C-098
@@ -667,6 +681,8 @@ Grum	格拉姆	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-mons
 Grum title	猎人格拉姆	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Grunn	格伦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Grunn title	被惩罚的格伦	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+Guardian	守卫	domain=status; source=EN/ZH; 依据 / 作用域=佐姆守卫祝福状态灯；区别一般“守护者”描述；decision=D-C-109
+guardian	守卫	domain=status; source=EN/ZH; 依据 / 作用域=佐姆赐予的持久盟友及怪物标签；decision=D-C-109
 Gulch	污渠	domain=core; source=EN/ZH; 依据 / 作用域=branch-data.h / portals/gulch.des / branches.txt；宝库废物与诱变污水的排水空间；decision=D-C-095
 gutter gulch	排污渠	domain=core; source=EN/ZH; 依据 / 作用域=Gulch 分支长描述；普通称呼，不用山间峡谷意象；decision=D-C-095
 Hailstorm	冰雹风暴	domain=spells; source=EN/ZH; 备注=✅；环形冰雹避开紧邻施法者的目标
@@ -769,6 +785,7 @@ Invocations	祈神	domain=skills; source=EN/ZH; Scope / comment=skill; source=so
 Iron City	铁城	domain=core; source=EN/ZH; 注意事项=Dis 的别称；不增补源文未写的地名；decision=D-C-103
 Iron Shot	铁弹	domain=spells; source=EN/ZH; 备注=✅；`shot` 指重型金属弹体，不机械统一为“射击”
 Irradiate	辐射	domain=spells; source=EN/ZH; 备注=✅
+Irrate	焦躁	domain=status; source=EN/ZH; 依据 / 作用域=狂暴贤者药水后的倒计时状态；说明将很快进入狂暴；decision=D-C-109
 Iskenderun's Battlesphere	伊斯肯德伦之战斗法球	domain=spells; source=EN/ZH; 备注=🆕；与实体及运行时 `battlesphere → 战斗法球` 统一
 Iskenderun's Mystic Blast	伊斯肯德伦之神秘冲击	domain=spells; source=EN/ZH; 备注=✅
 Jade	玉晶	domain=magic; source=EN/ZH; 依据 / 作用域=Jademantle 短名/status；四元素晶体；decision=D-C-095
@@ -827,7 +844,9 @@ ley line	地脉	domain=magic; source=EN/ZH; 依据 / 作用域=Dragon Veins spel
 ley lines	地脉	domain=magic; source=EN/ZH; 依据 / 作用域=Dragon Veins spell 与四种 dragon vein 地形；指贯穿地牢的魔法能量脉络；可写“元素能量地脉／土魔法地脉”等，不将“魔法地脉”另立术语；decision=D-C-096
 Lightning Bolt	闪电箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 lithotoxin	石化毒素	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；medusa:fakemuts；不声称是可遗传突变；decision=D-C-098
+living spell	活体法术	domain=monsters; source=EN/ZH; 依据 / 作用域=被赋予短暂形体的法术；沿用既有译名；decision=D-C-109
 Localized Ignite Poison	局部引爆毒素	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
+Lock (%d)	封梯(%d)	domain=status; source=EN/ZH; 依据 / 作用域=佐姆封锁楼层楼梯状态；括号内为剩余解锁所需击杀数；decision=D-C-109
 Lodul	洛杜尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Lodul title	雷霆洛杜尔	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Lom Lobon	洛姆·洛邦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -857,6 +876,7 @@ Malign Gateway	邪恶传送门	domain=spells; source=EN/ZH; 备注=✅；通往�
 Malign Offering	邪恶献祭	domain=spells; source=EN/ZH; 备注=✅；汲取敌人生命并治疗附近盟友
 Malmutate	恶性变异	domain=spells; source=EN/ZH; 备注=✅
 Manifold Assault	多重攻击	domain=spells; source=EN/ZH; 备注=✅
+mannequin	人偶	domain=items; source=EN/ZH; 依据 / 作用域=剧场木制道具怪物；与人偶剧团 troupe 同词根；decision=D-C-109 | domain=monsters; source=EN/ZH; 依据 / 作用域=复制敌人技能与记忆的剧场道具怪物；区别傀儡 golem；decision=D-C-109
 Mara	玛拉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Mara Summon	玛拉召唤	domain=spells; source=EN/ZH; 备注=✅
 Mara title	玛拉，幻象领主	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
@@ -894,6 +914,7 @@ Might	强壮	domain=spells; source=EN/ZH; 备注=✅；法术显示标题，区�
 Might	强效	domain=core; source=EN/ZH; 注意事项=状态名；近战攻击额外增加 1–10 点伤害；药水名称见 D-B-022 | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Might Other	强壮他人	domain=spells; source=EN/ZH; 备注=✅；对附近友方施加同类近战伤害增益
 Mindburst	心智爆发	domain=spells; source=EN/ZH; 备注=✅
+minibane	短暂灾祸	domain=status; source=EN/ZH; 依据 / 作用域=佐姆施加的超短时灾祸；消息后缀“（……但只持续很短时间）”；decision=D-C-109
 Minor Healing	小型治疗	domain=spells; source=EN/ZH; 备注=✅；治疗施法者身体所受的少量伤害
 minotaur	牛头人	domain=species; source=EN/ZH
 miscast	施法失误	domain=core; source=EN/ZH; 注意事项=非"施法失败"（后者指被中断）
@@ -1058,10 +1079,13 @@ potion clouds	药水云雾	domain=mutations; source=EN/ZH; 依据 / 作用域=mi
 potion full name|invisibility	隐形	domain=items; source=EN/ZH; Scope / comment=potion context key; decision=D-B-020
 potion full name|might	力量	domain=items; source=EN/ZH; Scope / comment=potion context key; melee-only effect; decision=D-B-022
 potion full name|mist	雾	domain=items; source=EN/ZH; 依据 / 作用域=药水完整名上下文的效果片段；与雾药水同词根；decision=D-C-095
+potion of berserk sage	狂暴贤者药水	domain=items; source=EN/ZH; 依据 / 作用域=佐姆专属药水；恢复法力并赋予聪慧，随后进入焦躁狂暴；decision=D-C-109
+potion of expedience	权宜药水	domain=items; source=EN/ZH; 依据 / 作用域=佐姆专属药水；短时间内接敌移动一步覆盖任意距离；decision=D-C-109
 potion of mist	雾药水	domain=core; source=EN/ZH; 依据 / 作用域=完整英文名用于 TextDB／协议查找；item-name.cc 的中文显示由 mist → 雾与 potion → 药水拼接，不是完整 catalog 键；Mistmane 产物；decision=D-C-098（B0-5 查找方式对齐）
 Prayer of Brilliance	聪慧祈祷	domain=spells; source=EN/ZH; 备注=✅
 Primal Wave	原初浪潮	domain=spells; source=EN/ZH; 备注=🆕；召出激流击退目标并留下短时浅水
 Prince Ribbit	蛙王子	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Protean	千变	domain=status; source=EN/ZH; 依据 / 作用域=佐姆千变形态祝福状态灯；低血量时迸出渴望之肉盟友；decision=D-C-109
 psychic force	精神冲击	domain=combat; source=EN/ZH; 依据 / 作用域=fineff.cc psychokinetic_burst 的击退原因／攻击效果，不当作独立法术名；decision=D-C-098
 purified mutation catalyst	净化诱变催化器	domain=core; source=EN/ZH; 依据 / 作用域=feature-data.h / features.txt；可打破的实验装置，非背包药剂；decision=D-C-095
 Pyre Arrow	烈火箭	domain=spells; source=EN/ZH; 备注=✅；液态火焰附着目标并持续灼烧
@@ -1078,11 +1102,13 @@ quills	刺毛护体	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪�
 RageSunder	怒裂	domain=items; source=EN/ZH; 依据 / 作用域=art-data.txt；连击积蓄的强化劈砍；显示铭文／特效标签，内部属性不改名；decision=D-C-095
 Rakshasa Summon	召唤罗刹	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Rampage	冲锋	domain=core; source=EN/ZH; 注意事项=攻击时自动向敌人移动一步
+Rampage+++	冲刺+++	domain=status; source=EN/ZH; 依据 / 作用域=权宜药水赋予的极速接敌状态；直线接敌一步覆盖任意距离；decision=D-C-109
 rampaging	冲锋	domain=items; source=EN/ZH; Scope / comment=armour ego; decision=D-B-020
 Random Bolt	随机箭矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Random Effects	随机效果	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Ranged Weapons	远程武器	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Ravenous Swarm	饥渴蝠群	domain=spells; source=EN/ZH; 备注=🆕；吸血蝙蝠群啃咬非亡灵并最终使其入睡
+Reach+	延展+	domain=status; source=EN/ZH; 依据 / 作用域=佐姆延展祝福状态；近战攻击距离 +3；decision=D-C-109
 Rearrange the Pieces	重新布局	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Reaver	掠夺者	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Rebounding Blaze	弹跳烈焰	domain=spells; source=EN/ZH; 备注=✅
@@ -1139,6 +1165,8 @@ Scattershot	散射术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容
 Scorch	烧焦	domain=spells; source=EN/ZH; 备注=✅
 scrapshell chimera	废铁壳奇美拉	domain=monsters; source=EN/ZH; 依据 / 作用域=monsters.txt；水生血肉与废铁甲壳融合；decision=D-C-095
 scroll	卷轴	domain=items; source=EN/ZH
+scroll of frog	青蛙卷轴	domain=items; source=EN/ZH; 依据 / 作用域=佐姆专属卷轴；短时召唤青蛙同伴；decision=D-C-109
+scroll of plinking	飞石卷轴	domain=items; source=EN/ZH; 依据 / 作用域=佐姆专属卷轴；持续数回合飞石骚扰；decision=D-C-109
 scroll-form	卷轴形态	domain=magic; source=EN/ZH; 依据 / 作用域=form 名称／伤害标签；walking-scroll:long_name；decision=D-C-098
 Sculpt Simulacrum	塑造拟像	domain=spells; source=EN/ZH; 备注=✅
 Seal Doors	封印门	domain=spells; source=EN/ZH; 备注=✅
@@ -1216,6 +1244,7 @@ Slug Dart	蛞蝓飞镖	domain=spells; source=EN/ZH; 备注=✅；由飞镖蛞蝓
 Smiting	惩击	domain=spells; source=EN/ZH; 备注=✅
 snapping turtle	鳄龟	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from alligator snapping turtle → 巨鳄龟
 snarls	咆哮道	domain=dialogue; source=EN/ZH; 适用角色=野兽、狼人
+Sneaky	诡秘	domain=status; source=EN/ZH; 依据 / 作用域=佐姆诡秘祝福状态灯；区别处于伪装中的 Disguised；decision=D-C-109
 Snorg	斯诺格	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Snorg title	饕餮的斯诺格	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Snowblind	雪盲的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；雪光致盲意象；decision=D-C-095
@@ -1259,6 +1288,7 @@ spell school|Ice	寒冰系	domain=magic; source=EN/ZH
 Spellcasting	施法能力	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 spellpower	法术威力	domain=core; source=EN/ZH; 注意事项=**绝不**译为"法力"——法力 = MP
 Spellspark Servitor	法术火花仆从	domain=spells; source=EN/ZH; 备注=✅
+Spellstride	法术阔步	domain=status; source=EN/ZH; 依据 / 作用域=佐姆法术阔步祝福状态灯；冲锋时消耗法力沿途生成活体射线法术；decision=D-C-109
 Sphinx Sisters	斯芬克斯姐妹	domain=spells; source=EN/ZH; 备注=✅
 sphinx-form	斯芬克斯形态	domain=magic; source=EN/ZH; 依据 / 作用域=form 名称／伤害标签；sphinx:long_name；decision=D-C-098
 Spider Form	蜘蛛变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
@@ -1291,8 +1321,10 @@ statue-form	石像形态	domain=magic; source=EN/ZH; 依据 / 作用域=form 名
 status|Ambros	神食	domain=status; source=EN/ZH; 依据 / 作用域=ambrosia 状态灯短标签；与药水名及短标签同词根，宽度仍为两字；decision=D-C-107
 status|ambrosia-drunk	神食酣醉	domain=status; source=EN/ZH; 依据 / 作用域=药水作用状态的短标签（取消药水说明、@ 行与标记）；与 ambrosia 药水、状态灯同用神食词根；弃用仙酒醉；decision=D-C-107（取代 D-C-098 的仙酒醉及本行的兼容保留）
 status|Barbs	尖刺	domain=status; source=EN/ZH; 依据 / 作用域=玩家状态的稳定版共享上下文键；普通 barbs 仍用倒刺；decision=D-C-098（取代 D-C-096 的此状态标签译法）
+status|Battleshape	战形	domain=status; source=EN/ZH; 依据 / 作用域=佐姆混沌战斗形态祝福状态灯短标签（2 字）；与 battlesphere 战斗法球同构词；完整词根见“战斗形态”；decision=D-C-109
 status|Blood	血甲	domain=status; source=EN/ZH; Scope / comment=defensive sanguine armour status; decision=D-D-005
 status|confused	混乱	domain=status; source=EN/ZH; 依据 / 作用域=玩家困惑状态的短标签（@ 行、标记、取消药水说明）；与灯标 `status|Conf`、长描述及怪物状态说明同根；不重命名固定法术名“困惑之触／困惑凝视”与感受消息；decision=D-C-108
+status|Eisegesis	曲解	domain=status; source=EN/ZH; 依据 / 作用域=佐姆混沌曲解祝福状态灯短标签（2 字）；与 Divine Exegesis 的“释经”相对；完整词根见“曲解经文”；decision=D-C-109
 Staves	杖类	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 stealthy	善于潜行	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；hypnogecko:fakemuts；不声称是可遗传突变；decision=D-C-098
 Steam Ball	蒸汽球	domain=spells; source=EN/ZH; 备注=✅
@@ -1380,6 +1412,7 @@ Teleport	传送	domain=core; source=EN/ZH; 注意事项=位移效果
 Teleport Other	传送他人	domain=spells; source=EN/ZH; 备注=✅；短暂延迟后尝试将目标传送出施法者视野
 Teleport Self	自我传送	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 tengu	天狗	domain=species; source=EN/ZH; 复合格式=天狗 + 职业（天狗咒法师）
+tension	张力	domain=core; source=EN/ZH; 依据 / 作用域=Xom 重做后的核心机制：按周围一回合内危险事件累积，驱动行动与祝福；普通叙述可用“紧张度”；decision=D-C-109
 Terence	特伦斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Terence title	老练的特伦斯	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 terrified	惊恐	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；fungus:badmuts；不声称是可遗传突变；decision=D-C-098
@@ -1424,6 +1457,7 @@ triple crossbow	三弦弩	domain=items; source=EN/ZH; Scope / comment=weapon; de
 Trog	特洛格	domain=gods; source=EN/ZH; 类型=音译; 裁决=[D-A-002]
 Trog's Hand	特洛格之手	domain=spells; source=EN/ZH; 备注=✅；提供强力恢复与意志力
 troll	巨魔	domain=species; source=EN/ZH; 复合格式=巨魔 + 职业
+Troupe	剧团	domain=status; source=EN/ZH; 依据 / 作用域=佐姆人偶剧团祝福状态灯；需极短标签；decision=D-C-109
 Tukima's Dance	图基玛之舞	domain=spells; source=EN/ZH; 备注=✅；活化敌方武器使其倒戈
 Twisted Resurrection	扭曲复活	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 two hats	双帽	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；serpent:fakemuts；不声称是可遗传突变；decision=D-C-098
@@ -1517,6 +1551,7 @@ Word of Recall	召回之言	domain=spells; source=EN/ZH; 备注=✅；短暂延�
 Wu Jian	无间	domain=gods; source=EN/ZH; 类型=运行时短名
 Xak'krixis title	王家远征炼金师扎克里西斯	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Xom	佐姆	domain=gods; source=EN/ZH; 类型=音译
+Xom's Arena	佐姆竞技场	domain=items; source=EN/ZH; 依据 / 作用域=佐姆竞技场分支与传送门；Arena = 竞技场；decision=D-C-109
 XP	经验值	domain=core; source=EN/ZH
 Xtahua	扎塔瓦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Xtahua title	古老的扎塔瓦	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt

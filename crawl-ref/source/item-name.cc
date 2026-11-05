@@ -957,33 +957,33 @@ const char* scroll_type_name(int scrolltype)
 {
     switch (static_cast<scroll_type>(scrolltype))
     {
-    case SCR_IDENTIFY:           return "identify";
-    case SCR_TELEPORTATION:      return "teleportation";
-    case SCR_FEAR:               return "fear";
-    case SCR_NOISE:              return "noise";
-    case SCR_SUMMONING:          return "summoning";
-    case SCR_ENCHANT_WEAPON:     return "enchant weapon";
-    case SCR_ENCHANT_ARMOUR:     return "enchant armour";
-    case SCR_TORMENT:            return "torment";
-    case SCR_IMMOLATION:         return "immolation";
-    case SCR_POISON:             return "poison";
-    case SCR_BUTTERFLIES:        return "butterflies";
-    case SCR_BLINKING:           return "blinking";
-    case SCR_REVELATION:         return "revelation";
-    case SCR_FOG:                return "fog";
-    case SCR_ACQUIREMENT:        return "acquirement";
-    case SCR_BRAND_WEAPON:       return "brand weapon";
-    case SCR_VULNERABILITY:      return "vulnerability";
-    case SCR_SILENCE:            return "silence";
-    case SCR_AMNESIA:            return "amnesia";
+    case SCR_IDENTIFY:                return T_("identify");
+    case SCR_TELEPORTATION:           return T_("teleportation");
+    case SCR_FEAR:                    return T_("fear");
+    case SCR_NOISE:                   return T_("noise");
+    case SCR_SUMMONING:               return T_("summoning");
+    case SCR_ENCHANT_WEAPON:          return T_("enchant weapon");
+    case SCR_ENCHANT_ARMOUR:          return T_("enchant armour");
+    case SCR_TORMENT:                 return T_("torment");
+    case SCR_IMMOLATION:              return T_("immolation");
+    case SCR_POISON:                  return T_("poison");
+    case SCR_BUTTERFLIES:             return T_("butterflies");
+    case SCR_BLINKING:                return T_("blinking");
+    case SCR_REVELATION:              return T_("revelation");
+    case SCR_FOG:                     return T_("fog");
+    case SCR_ACQUIREMENT:             return T_("acquirement");
+    case SCR_BRAND_WEAPON:            return T_("brand weapon");
+    case SCR_VULNERABILITY:           return T_("vulnerability");
+    case SCR_SILENCE:                 return T_("silence");
+    case SCR_AMNESIA:                 return T_("amnesia");
 
-    case SCR_FROG:               return T_("frog");
-    case SCR_PLINKING:           return T_("plinking");
+    case SCR_FROG:                    return T_("frog");
+    case SCR_PLINKING:                return T_("plinking");
 #if TAG_MAJOR_VERSION == 34
-    case SCR_HOLY_WORD:          return T_("holy word");
-    case SCR_CURSE_WEAPON:       return T_("curse weapon");
-    case SCR_CURSE_ARMOUR:       return T_("curse armour");
-    case SCR_CURSE_JEWELLERY:    return T_("curse jewellery");
+    case SCR_HOLY_WORD:               return T_("holy word");
+    case SCR_CURSE_WEAPON:            return T_("curse weapon");
+    case SCR_CURSE_ARMOUR:            return T_("curse armour");
+    case SCR_CURSE_JEWELLERY:         return T_("curse jewellery");
 #endif
     default:                     return item_type_removed(OBJ_SCROLLS,
                                                           scrolltype)

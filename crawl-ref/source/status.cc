@@ -27,6 +27,7 @@
 #include "spl-damage.h" // COUPLING_TIME_KEY
 #include "state.h" // crawl_state
 #include "stringutil.h"
+#include "unicode.h"
 #include "throw.h"
 #include "transform.h"
 #include "traps.h"
@@ -1620,7 +1621,12 @@ static void _describe_xom_blessing(status_info& inf)
         case XOM_BLESSING_CLEAVE:
         {
             const brand_type brand = static_cast<brand_type>(you.props[XOM_CLEAVE_BRAND_KEY].get_int());
-            const string suffix = uppercase_first(brand_type_name(brand, true)).substr(0, 1);
+            // Initial of the (possibly localized) brand name; take a whole
+            // UTF-8 glyph so CJK names are not truncated mid-character.
+            const string brand_name = uppercase_first(brand_type_name(brand, true));
+            const size_t suffix_len = next_glyph(const_cast<char*>(brand_name.c_str()))
+                                      - brand_name.c_str();
+            const string suffix = brand_name.substr(0, suffix_len);
             inf.light_text = T_("Cleave+");
             inf.light_text_formatted = make_stringf(T_("<red>C<yellow>l<green>e<cyan>a<lightblue>v<magenta>e<lightmagenta>+<white>%s"),
                                                     suffix.c_str());
@@ -1630,7 +1636,7 @@ static void _describe_xom_blessing(status_info& inf)
         break;
 
         case XOM_BLESSING_CHAOS_EISEGESIS:
-            inf.light_text = T_("Eisegesis");
+            inf.light_text = C_("status", "Eisegesis");
             inf.light_text_formatted = T_("<red>E<lightred>i<yellow>s<green>e<cyan>g<lightcyan>e<blue>s<magenta>i<lightmagenta>s");
             inf.short_text = make_stringf(T_("blessing of eisegesis (%s)"),
                                           spell_title(static_cast<spell_type>(you.props[EISEGESIS_SPELL].get_int())));
@@ -1667,7 +1673,7 @@ static void _describe_xom_blessing(status_info& inf)
         {
             const monster* shape = find_chaos_battleshape();
             const bool charged = shape && shape->has_ench(ENCH_SPELL_CHARGED);
-            inf.light_text = T_("Battleshape");
+            inf.light_text = C_("status", "Battleshape");
             inf.light_text_formatted = make_stringf(T_("<red>B<lightred>a<yellow>t<green>t<lightgreen>l<cyan>e"
                                                        "<lightcyan>s<blue>h<lightblue>a<magenta>p<lightmagenta>e%s"),
                                                     charged ? "<white>!!!" : "");

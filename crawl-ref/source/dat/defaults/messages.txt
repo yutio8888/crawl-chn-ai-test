@@ -472,7 +472,11 @@ force_more_message += will allow you to brand your body
 # Chinese translation compatibility
 force_more_message += 允许.*烙印.*印记
 force_more_message += grow incredibly long
+# Chinese translation compatibility
+force_more_message += 变得无比修长
 force_more_message += Xom locks all of
+# Chinese translation compatibility
+force_more_message += 锁上了这一层所有的楼梯
 
 force_more_message += Beogh speaks to you:
 

@@ -10153,3 +10153,12 @@ friendly good god 'Å'
 default 'Å'
 
 __NONE
+
+%%%%
+disguise success
+
+@The_monster@说道：“大概只是风声吧……”
+
+@The_monster@嘟囔道：“多半只是只老鼠。”
+
+@The_monster@问道：“有人在那儿吗？”

@@ -4032,7 +4032,7 @@ static void _xom_torment(int)
     }
 
     const string note = make_stringf("torment%s(%d/%d hp)",
-                                      you.penance[GOD_XOM] ? " all (player " : " (",
+                                      you.penance[GOD_XOM] ? " all (player " : " ",
                                       you.hp, you.hp_max);
     take_note(Note(NOTE_XOM_EFFECT, -1, -1, note), true);
 }
@@ -6149,14 +6149,16 @@ static void _xom_cleaving()
         case SPWPN_CONCUSSION:
             msg = make_stringf(T_("%s %s dense and you feel ready to concuss everything with %s."),
                                wpn_name.c_str(),
-                               conjugate_verb_for_display(N_("grow"), can_plural).c_str(),
+                               conjugate_verb_for_display(NC_("weapon verb", "grow"), can_plural,
+                                                            "weapon verb").c_str(),
                                suffix.c_str());
             break;
 
         case SPWPN_SUNDERING:
             msg = make_stringf(T_("%s %s sharply and you feel ready to sunder everything with %s."),
                                wpn_name.c_str(),
-                               conjugate_verb_for_display(N_("glint"), can_plural).c_str(),
+                               conjugate_verb_for_display(NC_("weapon verb", "glint"), can_plural,
+                                                            "weapon verb").c_str(),
                                suffix.c_str());
             break;
 
@@ -6168,14 +6170,16 @@ static void _xom_cleaving()
         case SPWPN_REBUKE:
             msg = make_stringf(T_("%s %s with scorn and you feel ready to rebuke everything with %s."),
                                wpn_name.c_str(),
-                               conjugate_verb_for_display(N_("quiver"), can_plural).c_str(),
+                               conjugate_verb_for_display(NC_("weapon verb", "quiver"), can_plural,
+                                                            "weapon verb").c_str(),
                                suffix.c_str());
             break;
 
         case SPWPN_VALOUR:
             msg = make_stringf(T_("%s %s with valour and you feel ready to face down everything with %s."),
                                wpn_name.c_str(),
-                               conjugate_verb_for_display(N_("gleam"), can_plural).c_str(),
+                               conjugate_verb_for_display(NC_("weapon verb", "gleam"), can_plural,
+                                                            "weapon verb").c_str(),
                                suffix.c_str());
     }
 

@@ -381,8 +381,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                               istreambuf_iterator<char>());
             INFO("Xom dump=" << dump);
             CHECK(dump.find(language == lang_t::ZH
-                            ? dead ? "你曾是佐姆的玩具。\n" : "你是佐姆的玩具。\n"
-                            : dead ? "You were a toy of Xom.\n" : "You are a toy of Xom.\n")
+                            ? dead ? "你曾是佐姆的玩物。\n" : "你是佐姆的玩物。\n"
+                            : dead ? "You were a plaything of Xom.\n"
+                                   : "You are a plaything of Xom.\n")
                   != string::npos);
             CHECK(dump.find("柯苏特") == string::npos);
             CHECK(you.religion == GOD_XOM);

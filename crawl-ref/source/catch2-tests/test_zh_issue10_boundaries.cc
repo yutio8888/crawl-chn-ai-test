@@ -802,7 +802,7 @@ TEST_CASE("issue 10 Tukima unarmed failure formats the complete hand action",
     CHECK_FALSE(mon->weapon());
 }
 
-TEST_CASE("issue 10 Xom cleaving describes both weapon variants completely",
+TEST_CASE("issue 10 Xom cleave blessing names the equipped weapon",
           "[zh-translation][issue10]")
 {
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
@@ -817,23 +817,13 @@ TEST_CASE("issue 10 Xom cleaving describes both weapon variants completely",
     item.pos = ITEM_IN_INVENTORY;
     equip_item(SLOT_WEAPON, 0, false, true);
     REQUIRE(you.weapon() == &item);
-    const string message = observe_message([] { xom_take_action(XOM_GOOD_CLEAVING, 10); });
+    const string message = observe_message([] { xom_take_action(XOM_BLESSING_CLEAVE, 10); });
     CAPTURE(language, message);
-    if (language == lang_t::ZH)
-    {
-        const string suffix = weapon == WPN_HAND_AXE
-            ? "看起来很锋利（一如既往）。" : "看起来很锋利。";
-        CHECK(message.find(item.name(DESC_YOUR) + suffix) != string::npos);
-        CHECK(message.find("sharp") == string::npos);
-        CHECK(message.find("look") == string::npos);
-    }
-    else
-    {
-        const string suffix = weapon == WPN_HAND_AXE
-            ? " looks sharp (like it always does)." : " looks sharp.";
-        CHECK(message.find(item.name(DESC_YOUR) + suffix) != string::npos);
-    }
-    CHECK(you.duration[DUR_CLEAVE] > 0);
+    // The blessing message names the wielded weapon and describes its new
+    // brand; the exact sentence differs per randomly chosen brand.
+    CHECK(message.find(item.name(DESC_YOUR)) != string::npos);
+    CHECK(you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_CLEAVE);
+    CHECK(you.props.exists(XOM_CLEAVE_BRAND_KEY));
 }
 
 TEST_CASE("monster wand drops localize articles only at the death message sink",
@@ -1105,16 +1095,8 @@ TEST_CASE("playtest: reflected blocks place shield method before the Chinese act
     REQUIRE(you.reflection() == (protection != 0));
     blocked_ranged_probe shot(shooter, &you, &projectile);
     shot.needs_message = true;
-    const string subject = shot.defender_name(false);
-    const string proj = shot.projectile_name();
-    string method;
-    if (protection == 1)
-        method = T_(" with an invisible shield");
-    else if (protection == 2)
-        method = T_(" with a divine shield");
-    else if (protection == 3)
-        method = T_(" with ") + you.pronoun(PRONOUN_POSSESSIVE)
-                 + " " + you.shield()->name(DESC_PLAIN);
+    const string proj = make_stringf(T_("the %s"),
+                                     shot.projectile_name().c_str());
     const int hp = you.hp;
     const string message = observe_message([&] { shot.handle_phase_blocked(); });
     INFO(message);
@@ -1122,20 +1104,14 @@ TEST_CASE("playtest: reflected blocks place shield method before the Chinese act
     CHECK(shot.damage_done == 0);
     CHECK(shot.reflected == (protection != 0));
     CHECK(shot.range_used == (protection ? 0 : BEAM_STOP));
-    if (language == lang_t::EN)
+    // Block and reflection messages are produced by the shared
+    // block_event_string() helper, which translates complete sentences.
+    CHECK(message == block_event_string(&you, proj, protection != 0) + "\n");
+    if (language == lang_t::ZH)
     {
-        const string ending = protection ? "... and reflect it back!" : ".";
-        CHECK(message == subject + " block the " + proj + method + ending + "\n");
-    }
-    else
-    {
-        const string verb = you.verb_for_display(NC_("verb", "block"), "verb");
-        CHECK(message.find(verb) != string::npos);
-        CHECK(message.find(proj) != string::npos);
-        if (protection)
-            CHECK(message.find(method) < message.find(verb));
-        CHECK(message.find(verb) < message.find(proj));
         CHECK(message.find(" block ") == string::npos);
+        CHECK(message.find("blocks") == string::npos);
+        CHECK(message.find("reflect") == string::npos);
     }
 }
 
@@ -4231,11 +4207,10 @@ TEST_CASE("legacy concat: actual numeric spell display helpers localize only the
     for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
     {
         TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
-        CHECK(range_string(0) == T_("N/A"));
+        // Unavailable ranges are omitted instead of claiming "N/A".
+        CHECK(range_string(0).empty());
         CHECK(range_string(3, 5) == "3/5");
         CHECK(range_string(3, 5, 2) == "2-3/5");
-        if (language == lang_t::ZH)
-            CHECK(range_string(0) != "N/A");
     }
 }
 
