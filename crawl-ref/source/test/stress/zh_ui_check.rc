@@ -38,7 +38,7 @@ function ready()
         crawl.sendkeys(".")
     elseif action == 6 then
         crawl.clear_messages(false)
-        crawl.sendkeys("g&o[boots" .. eol .. "running" .. eol)
+        crawl.sendkeys("&o[boots" .. eol)
     elseif action == 7 then
         crawl.sendkeys(".")
     elseif action == 8 then
