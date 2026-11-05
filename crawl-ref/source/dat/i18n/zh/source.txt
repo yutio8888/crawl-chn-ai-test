@@ -53006,3 +53006,420 @@ A chorus of shrieks assaults your mind.
 %%%%
 The starcursed mass shrieks in your mind.
 受星诅咒的聚合体在你的脑海中尖啸。
+%%%%
+ (...for a very short time)
+（……但只持续很短时间）
+%%%%
+ is distracted by the glint of gold.
+被金子的闪光分散了注意力。
+%%%%
+ loses form entirely.
+完全失去了形态。
+%%%%
+%s %s dense and you feel ready to concuss everything with %s.
+%s%s得十分沉重，你觉得准备好用%s震晕一切了。
+%%%%
+%s %s sharply and you feel ready to sunder everything with %s.
+%s锐利地%s，你觉得准备好用%s劈碎一切了。
+%%%%
+%s %s with scorn and you feel ready to rebuke everything with %s.
+%s带着蔑视%s，你觉得准备好用%s斥退一切了。
+%%%%
+%s %s with valour and you feel ready to face down everything with %s.
+%s英勇地%s，你觉得准备好用%s直面一切了。
+%%%%
+%s blocks %s.
+%s格挡了%s。
+%%%%
+%s blocks %s... and reflects it back!
+%s格挡了%s……并将其反弹了回去！
+%%%%
+%s breaks apart into shimmering stars!
+%s碎裂成闪烁的流星！
+%%%%
+%s divine shield blocks %s.
+%s的神圣护盾格挡了%s。
+%%%%
+%s divine shield blocks %s... and reflects it back!
+%s的神圣护盾格挡了%s……并将其反弹了回去！
+%%%%
+%s is struck blind by the light.
+%s被强光刺瞎了。
+%%%%
+%s shimmers and splits into %s!
+%s闪烁着分裂成了%s个！
+%%%%
+%s to avoid %s notice.
+%s，以避开%s的注意。
+%%%%
+%s violently unleashes its stored power!
+%s猛烈地释放出储存的力量！
+%%%%
+, Contam (up to %d%%)
+，污染（最高%d%%）
+%%%%
+<lightblue>(+%d)</lightblue>
+<lightblue>(+%d)</lightblue>
+%%%%
+<red>B<lightred>a<yellow>t<green>t<lightgreen>l<cyan>e<lightcyan>s<blue>h<lightblue>a<magenta>p<lightmagenta>e%s
+<red>混<lightred>沌<yellow>战<green>斗<lightgreen>形<cyan>态<lightcyan>·<blue>共<lightblue>鸣<magenta>体<lightmagenta>！%s
+%%%%
+<red>C<yellow>l<green>e<cyan>a<lightblue>v<magenta>e<lightmagenta>+<white>%s
+<red>顺<yellow>劈<green>加<cyan>成<lightblue>·<magenta>附<lightmagenta>+<white>%s
+%%%%
+<red>E<lightred>i<yellow>s<green>e<cyan>g<lightcyan>e<blue>s<magenta>i<lightmagenta>s
+<red>混<lightred>沌<yellow>曲<green>解<cyan>·<lightcyan>妄<blue>释<magenta>经<lightmagenta>文
+%%%%
+<red>G<lightred>u<yellow>a<green>r<lightgreen>d<blue>i<lightblue>a<lightmagenta>n
+<red>佐<lightred>姆<yellow>守<green>卫<lightgreen>·<blue>护<lightblue>佑<lightmagenta>者
+%%%%
+<red>P<yellow>r<green>o<cyan>t<blue>e<lightblue>a<magenta>n
+<red>千<yellow>变<green>万<cyan>化<blue>·<lightblue>肉<magenta>身
+%%%%
+<red>S<lightred>p<yellow>e<green>l<lightgreen>l<lightcyan>s<cyan>t<blue>r<lightblue>i<magenta>d<lightmagenta>e
+<red>法<lightred>术<yellow>阔<green>步<lightgreen>·<lightcyan>踏<cyan>咒<blue>留<lightblue>痕<magenta>行<lightmagenta>者
+%%%%
+<red>S<yellow>n<green>e<blue>a<lightblue>k<lightmagenta>y
+<red>诡<yellow>秘<green>伪<blue>装<lightblue>大<lightmagenta>师
+%%%%
+<red>T<yellow>r<green>o<cyan>u<lightblue>p<magenta>e %s
+<red>木<yellow>偶<green>戏<cyan>剧<lightblue>团<magenta>队 %s
+%%%%
+A chaotic battlecube coalesces beside you.
+一个混沌战斗立方在你身旁凝聚成形。
+%%%%
+A final flurry of detritus flies from you.
+最后一阵杂物从你身上飞射而出。
+%%%%
+A flurry of pebbles and grit begins flying from you!
+一阵小石子与砂砾开始从你身上飞射而出！
+%%%%
+A mannequin begins to dance....
+一个人偶开始起舞……
+%%%%
+A polyhedron of chaotic magic now fights alongside you.
+一个由混沌魔法构成的多面体开始与你并肩作战。
+%%%%
+status|Battleshape
+战形
+%%%%
+Chaos blast: 
+混沌冲击：
+%%%%
+Cleave+
+顺劈+
+%%%%
+status|Eisegesis
+曲解
+%%%%
+Eisegesis: %s
+曲解：%s
+%%%%
+Guardian
+守卫
+%%%%
+It can block and reflect piercing ranged attacks, explosive projectiles, and magical attacks against the wielder's willpower.
+它可以格挡并反射穿透性远程攻击、爆炸性投射物，以及针对使用者意志力的魔法攻击。
+%%%%
+Lock (%d)
+封梯(%d)
+%%%%
+One of the %1$s lords of Pandemonium, %2$s has a %3$s%4$s body and %5$s.
+作为万魔殿%1$s领主之一，%2$s有着%3$s%4$s的身躯和%5$s。
+%%%%
+One of the %1$s lords of Pandemonium, %2$s has a %3$s%4$s body, %5$s, and %6$s.
+作为万魔殿%1$s领主之一，%2$s有着%3$s%4$s的身躯、%5$s和%6$s。
+%%%%
+Protean
+千变
+%%%%
+Shooting stars: 
+流星：
+%%%%
+Sneaky
+诡秘
+%%%%
+Some mannequins begin to dance....
+几个人偶开始起舞……
+%%%%
+Spellstride
+法术阔步
+%%%%
+The world spins around you as you enter the gateway.
+当你踏入传送门时，周围的世界天旋地转。
+%%%%
+Troupe
+剧团
+%%%%
+Vines sprout from %s and you feel ready to entangle everything with %s.
+藤蔓从%s上抽芽生长，你觉得准备好用%s纠缠一切了。
+%%%%
+With no witnesses left, you stow your disguise for future use.
+周围已无目击者，你将伪装收好以备后用。
+%%%%
+Xom grants you %s devoted guardians.
+佐姆赐予你%s个忠诚的守卫。
+%%%%
+Xom grants you a devoted guardian.
+佐姆赐予你一个忠诚的守卫。
+%%%%
+Xom grants you chaotic knowledge of %s.
+佐姆向你赐予了关于%s的混沌知识。
+%%%%
+Xom locks all of the stairs on the floor! (Kill monsters to unlock them again.)
+佐姆锁上了这一层所有的楼梯！（杀死怪物才能重新解锁。）
+%%%%
+Xom raises dopplegangers of enemies you slay yourself.
+佐姆会为你亲手斩杀的敌人唤起二重身。
+%%%%
+Xom returns %s to life.
+佐姆使%s复活了。
+%%%%
+Xom sends your guardian elsewhere.
+佐姆把你的守卫送往了别处。
+%%%%
+Xom sends your guardians elsewhere.
+佐姆把你的守卫们送往了别处。
+%%%%
+You are blinded by the light!
+你被强光刺瞎了！
+%%%%
+You are blinded for an even longer time.
+你的致盲时间延长了。
+%%%%
+You are stricken with the %s%s.
+你遭受了%s%s。
+%%%%
+You disguise yourself as a common bush
+你将自己伪装成一丛普通的灌木
+%%%%
+You disguise yourself as a convenient statue
+你将自己伪装成一尊顺眼的雕像
+%%%%
+You disguise yourself as a nondescript pile of rubble
+你将自己伪装成一堆不起眼的碎石
+%%%%
+You disguise yourself as an ordinary barrel
+你将自己伪装成一个普通的木桶
+%%%%
+You exit %s.
+你离开了%s。
+%%%%
+You feel in a tremendous hurry.
+你感到无比匆忙。
+%%%%
+You feel like a master of disguise.
+你感觉自己成了伪装大师。
+%%%%
+You feel slightly irritated.
+你感到略微烦躁。
+%%%%
+You gain both the wisdom and the impatience of a great sage.
+你同时获得了大贤者的智慧与急躁。
+%%%%
+You hear a cheerful croaking...
+你听到一声欢快的蛙鸣……
+%%%%
+You hear a very distant croak, but nothing seems to happen.
+你听到极远处传来一声蛙鸣，但似乎什么也没发生。
+%%%%
+You manifest living %s spells as you rampage.
+你在冲锋时会具现出活体%s法术。
+%%%%
+You no longer feel a connection to %s.
+你感觉自己与%s失去了联系。
+%%%%
+You trail magic in your wake.
+你在身后留下了魔法的轨迹。
+%%%%
+Your %s and %s grow incredibly long!
+你的%s和%s变得无比修长！
+%%%%
+Your %s grow incredibly long!
+你的%s变得无比修长！
+%%%%
+Your %s shimmers with wild colours.
+你的%s闪烁着狂野的色彩。
+%%%%
+Your body is suffused with distortional energy.
+你的身体充满了扭曲能量。
+%%%%
+Your body ripples with infinite possibility.
+你的身体荡漾着无限的可能性。
+%%%%
+Your disguise falls apart.
+你的伪装散架了。
+%%%%
+Your divinely inspired misunderstanding of %s fades.
+你在神启下对%s产生的曲解消退了。
+%%%%
+Your guardian avoids your attack.
+你的守卫避开了你的攻击。
+%%%%
+\nUsing this now could inflict up to %d%% magic contamination.
+\n现在使用此能力最高可能造成%d%%的魔法污染。
+%%%%
+\n\nIt is cumbersome to wear, and %simpedes the evasion, spellcasting ability, and attack speed of the wearer. These penalties are reduced by the wearer's Shields skill and Strength; mastering Shields eliminates penalties.
+\n\n它穿戴起来颇为笨重，会%s妨碍穿戴者的闪避、施法能力和攻击速度。这些惩罚可由穿戴者的盾牌技能和力量减轻；完全掌握盾牌技能可消除所有惩罚。
+%%%%
+\n\nIt seems like it would really prefer not to be here right now.
+\n\n它看起来现在真的宁愿待在别的地方。
+%%%%
+\n\nWith your current SH, it has a %d%% chance to reflect explosive projectiles and a %d%% chance to reflect attacks against your willpower and other normally unblockable effects.
+\n\n以你当前的盾牌值（SH），它有%d%%的几率反射爆炸性投射物，并有%d%%的几率反射针对你意志力的攻击及其他通常无法格挡的效果。
+%%%%
+berserk sage
+狂暴贤者
+%%%%
+blessing of battleshape
+战斗形态之祝福
+%%%%
+blessing of cleaving (%s)
+顺劈之祝福（%s）
+%%%%
+blessing of disguise
+伪装之祝福
+%%%%
+blessing of eisegesis (%s)
+曲解经文之祝福（%s）
+%%%%
+blessing of guardians (%s)
+守卫之祝福（%s）
+%%%%
+blessing of mannequins
+人偶之祝福
+%%%%
+blessing of protean form
+千变形态之祝福
+%%%%
+blessing of spellstride (%s)
+法术阔步之祝福（%s）
+%%%%
+expedience
+权宜
+%%%%
+flag long|maybe fake
+疑似假身
+%%%%
+flag long|your guardian
+你的守卫
+%%%%
+flag short|guardian
+守卫
+%%%%
+flag short|maybe fake
+疑似假身
+%%%%
+weapon verb|gleam
+闪耀
+%%%%
+weapon verb|glint
+闪着寒光
+%%%%
+weapon verb|grow
+变
+%%%%
+plinking
+飞石
+%%%%
+weapon verb|quiver
+震颤
+%%%%
+your bare %s
+你赤裸的%s
+%%%%
+your battlecube
+你的战斗立方
+%%%%
+mannequin
+人偶
+%%%%
+chaos battleshape
+混沌战斗形态
+%%%%
+Xom's Arena
+佐姆竞技场
+%%%%
+gate leading to Xom's Arena
+通往佐姆竞技场的大门
+%%%%
+You are quickly growing irritated.
+你正迅速变得焦躁。
+%%%%
+You are rapidly tossing pebbles at your foes.
+你正飞快地向敌人投掷石子。
+%%%%
+You rampage instantly towards enemies.
+你能瞬间冲向敌人。
+%%%%
+Your body feels full of potential once again.
+你的身体再次充满潜能。
+%%%%
+Your burst of speed ends.
+你的疾速结束了。
+%%%%
+Your limbs are incredibly long.
+你的四肢变得无比修长。
+%%%%
+Your limbs return to their normal size.
+你的四肢恢复正常大小。
+%%%%
+status|Reach+
+延展+
+%%%%
+status|Irrate
+焦躁
+%%%%
+status|Rampage+++
+冲刺+++
+%%%%
+status|rampage+
+冲刺+
+%%%%
+status|Plink
+飞石
+%%%%
+status|plinking
+飞石
+%%%%
+scroll type|frog
+青蛙
+%%%%
+Arena?
+竞技场？
+%%%%
+Xom's Arena of Wonders
+佐姆奇观竞技场
+%%%%
+You are whisked away to a strange place.
+你被送到一个陌生之地。
+%%%%
+status|Disguised
+伪装
+%%%%
+status|perfectly disguised
+完美伪装
+%%%%
+status|rampage 7
+冲刺
+%%%%
+status|extra reach
+延展
+%%%%
+status|-Flesh
+-渴望之肉
+%%%%
+status|-Disguise
+-伪装
+%%%%
+status|on disguise cooldown
+伪装冷却中
+%%%%
+ dispatches reinforcements to the rest of the floor.
+ 向本层其余区域派遣了增援。
+%%%%
+You have finished assembling a new disguise.
+你已经重新组装好了一套新的伪装。
+%%%%
+Chaos Eisegesis
+混沌曲解

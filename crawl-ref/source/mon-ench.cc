@@ -1656,7 +1656,7 @@ void monster::apply_enchantment(const mon_enchant &me)
         }
 
         // Zombies don't take damage from flopping about on land.
-        if (mons_is_zombified(*this))
+        if (is_derived())
             break;
 
         hurt(me.agent(), 1 + random2(5), BEAM_NONE);
@@ -1805,11 +1805,7 @@ void monster::apply_enchantment(const mon_enchant &me)
     break;
 
     case ENCH_GLOWING_SHAPESHIFTER: // This ench never runs out!
-        // Number of actions is fine for shapeshifters. Don't change
-        // shape while taking the stairs because monster_polymorph() has
-        // an assert about it. -cao
-        if (!(flags & MF_TAKING_STAIRS)
-            && !(paralysed() || petrified() || petrifying() || asleep())
+        if (!(paralysed() || petrified() || petrifying() || asleep())
             && (type == MONS_GLOWING_SHAPESHIFTER
                 || one_chance_in(4)))
         {
@@ -1818,8 +1814,7 @@ void monster::apply_enchantment(const mon_enchant &me)
         break;
 
     case ENCH_SHAPESHIFTER:         // This ench never runs out!
-        if (!(flags & MF_TAKING_STAIRS)
-            && !(paralysed() || petrified() || petrifying() || asleep())
+        if (!(paralysed() || petrified() || petrifying() || asleep())
             && (type == MONS_SHAPESHIFTER
                 || x_chance_in_y(1000 / (15 * max(1, get_hit_dice()) / 5),
                                  1000)))
@@ -2395,7 +2390,7 @@ static const char *enchant_names[] =
     "diminished_spells", "orb_cooldown", "sunder_charge",
     "exposed", "briar_cooldown", "stampeding",
     "preparing_to_lurk", "phase_shift", "divine_shield",
-    "insubstantial",
+    "insubstantial", "mostly_harmless", "maybe_fake",
     "buggy", // NUM_ENCHANTMENTS
 };
 

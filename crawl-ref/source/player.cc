@@ -1394,6 +1394,7 @@ bool player::weapon_is_good_stab(const item_def *weapon) const
     return wpn_skill == SK_SHORT_BLADES
            || you.get_mutation_level(MUT_PAWS)
            || you.form == transformation::spider
+           || you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_SNEAKY
            || you.unrand_equipped(UNRAND_HOOD_ASSASSIN)
               && (!weapon || is_melee_weapon(*weapon));
 }
@@ -2285,7 +2286,14 @@ int player_parrying()
             sh /= 2;
     }
 
-    sh += 10 * you.wearing_ego(OBJ_WEAPONS, SPWPN_REBUKE);
+    // Xom's blessing of cleaving(rebuke) shouldn't stack if the weapon already had it.
+    int rebuke = you.wearing_ego(OBJ_WEAPONS, SPWPN_REBUKE);
+    if (rebuke == 0 && you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_CLEAVE
+                    && you.props[XOM_CLEAVE_BRAND_KEY].get_int() == SPWPN_REBUKE)
+    {
+        rebuke = 1;
+    }
+    sh += 10 * rebuke;
 
     if (you.form == transformation::blade)
         sh += get_form()->get_effect_size() + max(0, you.slaying());
@@ -2957,6 +2965,15 @@ static void _handle_ostracism(int exp)
     player_change_ostracism(-loss);
 }
 
+static void _handle_xom_blessing(int exp)
+{
+    if (!you_worship(GOD_XOM))
+        return;
+
+    int loss = div_rand_round(exp, calc_skill_cost(you.skill_cost_level) * 4 / 3);
+    you.attribute[ATTR_XOM_BLESSING_TIMER] -= loss;
+}
+
 static void _handle_god_wrath(int exp)
 {
     for (god_iterator it; it; ++it)
@@ -3050,6 +3067,8 @@ void apply_exp()
     _handle_cacophony_recharge(skill_xp);
     _handle_batform_recharge(skill_xp);
     _handle_watery_grave_recharge(skill_xp);
+
+    _handle_xom_blessing(skill_xp);
 
     _log_form_xp(exp_gained);
 
@@ -3701,9 +3720,6 @@ int player_stealth()
     stealth += STEALTH_PIP * you.wearing_ego(OBJ_ARMOUR, SPARM_STEALTH);
     stealth += STEALTH_PIP * you.wearing_jewellery(RING_STEALTH);
 
-    if (you.duration[DUR_STEALTH])
-        stealth += STEALTH_PIP * 2;
-
     // Mutations.
     stealth += STEALTH_PIP * you.get_mutation_level(MUT_NIGHTSTALKER) / 3;
     stealth += STEALTH_PIP * you.get_mutation_level(MUT_THIN_SKELETAL_STRUCTURE);
@@ -3718,6 +3734,9 @@ int player_stealth()
     }
 
     if (you.form == transformation::hypnogecko)
+        stealth += STEALTH_PIP;
+
+    if (you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_SNEAKY)
         stealth += STEALTH_PIP;
 
     if (feat_is_water(env.grid(you.pos())))
@@ -3999,7 +4018,9 @@ bool player::sunder_is_ready() const
     }
 
     return wearing_ego(OBJ_WEAPONS, SPWPN_SUNDERING)
-            || unrand_equipped(UNRAND_TROG);
+            || unrand_equipped(UNRAND_TROG)
+            || you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_CLEAVE
+               && you.props[XOM_CLEAVE_BRAND_KEY].get_int() == SPWPN_SUNDERING;
 }
 
 /**
@@ -4120,6 +4141,9 @@ int player::slaying(bool throwing, bool random) const
 
     if (you.duration[DUR_DEVIOUS])
         ret += you.props[DEVIOUS_KEY].get_int() * 3;
+
+    if (you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_CLEAVE)
+        ret += 5;
 
     if (you.duration[DUR_HORROR])
         ret -= you.props[HORROR_PENALTY_KEY].get_int();
@@ -5380,7 +5404,7 @@ void barb_player(int turns, int pow)
  *
  * @param amount   The number of turns to increase blindness duration by.
  */
-void blind_player(int amount, colour_t flavour_colour)
+void blind_player(int amount, colour_t flavour_colour, bool quiet)
 {
     ASSERT(!crawl_state.game_is_arena());
 
@@ -5393,10 +5417,13 @@ void blind_player(int amount, colour_t flavour_colour)
     if (you.duration[DUR_BLIND] > current)
     {
         you.props[BLIND_COLOUR_KEY] = flavour_colour;
-        if (current > 0)
-            mpr(T_("You are blinded for longer."));
-        else
-            mpr(T_("You are blinded!"));
+        if (!quiet)
+        {
+            if (current > 0)
+                mpr(T_("You are blinded for an even longer time."));
+            else
+                mpr(T_("You are blinded!"));
+        }
         learned_something_new(HINT_YOU_ENCHANTED);
         xom_is_stimulated((you.duration[DUR_BLIND] - current) / BASELINE_DELAY);
     }
@@ -5945,6 +5972,7 @@ player::player()
     // Non-saved UI state:
     prev_targ        = MID_NOBODY;
     divine_exegesis  = false;
+    chaos_eisegesis  = false;
 
     travel_x         = 0;
     travel_y         = 0;
@@ -6201,10 +6229,16 @@ int player::rampaging() const
     if (you.duration[DUR_EXECUTION])
         rampage++;
 
+    if (you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_SPELLSTRIDE)
+        rampage++;
+
     rampage = min(3, rampage);
 
-    if (you.unrand_equipped(UNRAND_SEVEN_LEAGUE_BOOTS))
+    if (you.unrand_equipped(UNRAND_SEVEN_LEAGUE_BOOTS)
+        || you.duration[DUR_RAMPAGE_MAX])
+    {
         rampage = get_los_radius();
+    }
 
     return rampage;
 }
@@ -7713,7 +7747,7 @@ bool player::nightvision() const
 
 int player::reach_range(bool include_weapon) const
 {
-    const int bonus = you.form == transformation::aqua ? 2 : 0;
+    const int bonus = reach_range_bonus();
 
     if (!include_weapon)
         return 1 + bonus;
@@ -7728,7 +7762,11 @@ int player::reach_range(bool include_weapon) const
 
 int player::reach_range_bonus() const
 {
-    return you.form == transformation::aqua ? 2 : 0;
+    int bonus = you.form == transformation::aqua ? 2 : 0;
+    if (you.duration[DUR_REACH])
+        bonus += 3;
+
+    return bonus;
 }
 
 monster_type player::mons_species(bool /*zombie_base*/) const

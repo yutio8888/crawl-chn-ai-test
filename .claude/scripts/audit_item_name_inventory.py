@@ -2430,7 +2430,7 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
         "appearance": 186,
         "special": 23,
         "gizmo": 543,
-        "item-description": 317,
+        "item-description": 321,
         "randart-component": 2445,
         "randart-grammar": 115,
     }

@@ -943,6 +943,8 @@ const char* potion_type_name(int potiontype)
     case POT_LIGNIFY:           return T_("lignification");
 
     case POT_MIST:              return C_("potion full name", "mist");
+    case POT_BERSERK_SAGE:      return T_("berserk sage");
+    case POT_EXPEDIENCE:        return T_("expedience");
 
     // FIXME: Remove this once known-items no longer uses this as a sentinel.
     default:
@@ -955,30 +957,33 @@ const char* scroll_type_name(int scrolltype)
 {
     switch (static_cast<scroll_type>(scrolltype))
     {
-    case SCR_IDENTIFY:           return T_("identify");
-    case SCR_TELEPORTATION:      return T_("teleportation");
-    case SCR_FEAR:               return T_("fear");
-    case SCR_NOISE:              return T_("noise");
-    case SCR_SUMMONING:          return T_("summoning");
-    case SCR_ENCHANT_WEAPON:     return T_("enchant weapon");
-    case SCR_ENCHANT_ARMOUR:     return T_("enchant armour");
-    case SCR_TORMENT:            return T_("torment");
-    case SCR_IMMOLATION:         return T_("immolation");
-    case SCR_POISON:             return T_("poison");
-    case SCR_BUTTERFLIES:        return T_("butterflies");
-    case SCR_BLINKING:           return T_("blinking");
-    case SCR_REVELATION:         return T_("revelation");
-    case SCR_FOG:                return T_("fog");
-    case SCR_ACQUIREMENT:        return T_("acquirement");
-    case SCR_BRAND_WEAPON:       return T_("brand weapon");
-    case SCR_VULNERABILITY:      return T_("vulnerability");
-    case SCR_SILENCE:            return T_("silence");
-    case SCR_AMNESIA:            return T_("amnesia");
+    case SCR_IDENTIFY:                return T_("identify");
+    case SCR_TELEPORTATION:           return T_("teleportation");
+    case SCR_FEAR:                    return T_("fear");
+    case SCR_NOISE:                   return T_("noise");
+    case SCR_SUMMONING:               return T_("summoning");
+    case SCR_ENCHANT_WEAPON:          return T_("enchant weapon");
+    case SCR_ENCHANT_ARMOUR:          return T_("enchant armour");
+    case SCR_TORMENT:                 return T_("torment");
+    case SCR_IMMOLATION:              return T_("immolation");
+    case SCR_POISON:                  return T_("poison");
+    case SCR_BUTTERFLIES:             return T_("butterflies");
+    case SCR_BLINKING:                return T_("blinking");
+    case SCR_REVELATION:              return T_("revelation");
+    case SCR_FOG:                     return T_("fog");
+    case SCR_ACQUIREMENT:             return T_("acquirement");
+    case SCR_BRAND_WEAPON:            return T_("brand weapon");
+    case SCR_VULNERABILITY:           return T_("vulnerability");
+    case SCR_SILENCE:                 return T_("silence");
+    case SCR_AMNESIA:                 return T_("amnesia");
+
+    case SCR_FROG:                    return C_("scroll type", "frog");
+    case SCR_PLINKING:                return T_("plinking");
 #if TAG_MAJOR_VERSION == 34
-    case SCR_HOLY_WORD:          return T_("holy word");
-    case SCR_CURSE_WEAPON:       return T_("curse weapon");
-    case SCR_CURSE_ARMOUR:       return T_("curse armour");
-    case SCR_CURSE_JEWELLERY:    return T_("curse jewellery");
+    case SCR_HOLY_WORD:               return T_("holy word");
+    case SCR_CURSE_WEAPON:            return T_("curse weapon");
+    case SCR_CURSE_ARMOUR:            return T_("curse armour");
+    case SCR_CURSE_JEWELLERY:         return T_("curse jewellery");
 #endif
     default:                     return item_type_removed(OBJ_SCROLLS,
                                                           scrolltype)
@@ -1874,6 +1879,9 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         if (!terse && cursed())
             buff << T_("bound ");
 
+        if (testbits(flags, ISFLAG_CHAOTIC))
+            buff << "chaotic ";
+
         // Don't list unenchantable armor as +0.
         if (identified && !dbname && !qualname && armour_is_enchantable(*this))
             buff << make_stringf("%+d ", plus);
@@ -2172,6 +2180,8 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
     }
 
     case OBJ_TALISMANS:
+        if (!dbname && !basename && testbits(flags, ISFLAG_CHAOTIC))
+            buff << "chaotic ";
         if (is_random_artefact(*this) && !dbname && !basename)
             buff << get_artefact_name(*this, ident);
         else
@@ -3340,6 +3350,7 @@ bool is_good_item(const item_def &item)
         switch (item.sub_type)
         {
         case POT_EXPERIENCE:
+        case POT_EXPEDIENCE:
             return true;
         default:
             return false;
@@ -3539,6 +3550,7 @@ string cannot_read_item_reason(const item_def *item, bool temp, bool ident,
 
         case SCR_SUMMONING:
         case SCR_BUTTERFLIES:
+        case SCR_FROG:
             if (you.allies_forbidden())
                 return T_("You cannot coerce anything to answer your summons.");
             break;

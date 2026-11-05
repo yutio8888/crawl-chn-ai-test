@@ -847,7 +847,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
 
     def test_production_centipede_identities_and_translation_consumer(self):
         payload = MODULE.build_inventory()
-        self.assertEqual(398, payload["count"])
+        self.assertEqual(402, payload["count"])
         rows = {row["identity"]: row for row in payload["rows"]}
         for identity, key in (("weapon:WPN_CENTIPEDE", "assassin centipede"),
                               ("bauble:BAUBLE_CENTIPEDE", "centipede bauble")):
@@ -1032,7 +1032,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertEqual(0, proc.returncode, proc.stderr)
         self.assertEqual("dcss-item-name-review-inventory-v1",
                          payload["schema"])
-        self.assertEqual(398, payload["count"])
+        self.assertEqual(402, payload["count"])
         # Independently verify the emitted rows' canonical digest. Content
         # repairs may change it without changing the inventory identities.
         serialized_rows = json.dumps(
@@ -1245,7 +1245,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
 
     def test_issue29_source_inventory_freezes_every_production_boundary(self):
         payload, internal_rows = MODULE.build_extended_inventory()
-        self.assertEqual(398, payload["ordinary_v1"]["count"])
+        self.assertEqual(402, payload["ordinary_v1"]["count"])
         self.assertEqual(
             {
                 "unrand": 155,
@@ -1253,7 +1253,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                 "appearance": 186,
                 "special": 23,
                 "gizmo": 543,
-                "item-description": 317,
+                "item-description": 321,
                 "randart-component": 2445,
                 "randart-grammar": 115,
             },

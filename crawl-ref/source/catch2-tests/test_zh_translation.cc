@@ -11473,11 +11473,13 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         REQUIRE(note_list.size() > before);
         const Note& note = note_list.back();
         REQUIRE(note.type == NOTE_XOM_EFFECT);
-        CHECK(note.name == make_stringf(player_only
-            ? "torment player (%d/%d hp)" : "torment all (%d/%d hp)", you.hp, you.hp_max));
-        CHECK(note.describe(false, false, true) == string(T_("XOM: "))
-            + make_stringf(player_only ? T_("torment player (%d/%d hp)")
-                                      : T_("torment all (%d/%d hp)"), you.hp, you.hp_max));
+        // Upstream's tension rework stores the note in English; penance makes
+        // the torment affect the whole area instead of only the player.
+        const string expected = make_stringf(player_only
+            ? "torment all (player (%d/%d hp)" : "torment (%d/%d hp)",
+            you.hp, you.hp_max);
+        CHECK(note.name == expected);
+        CHECK(note.describe(false, false, true) == string(T_("XOM: ")) + expected);
         CHECK(you.hp < 100);
     }
 }

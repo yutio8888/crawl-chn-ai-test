@@ -826,8 +826,8 @@ string Note::describe(bool when, bool where, bool what) const
             const bool gift_fallback = starts_with(name, "god gift: ") && display == name;
             result << (gift_fallback ? "XOM: " : T_("XOM: ")) << display;
 #if defined(DEBUG_XOM) || defined(NOTE_DEBUG_XOM)
-            // If debugging, also take note of piety and tension.
-            result << " (piety: " << first;
+            // If debugging, also take note of severity and tension.
+            result << " (severity: " << first;
             if (second >= 0)
                 result << ", tension: " << second;
             result << ")";

@@ -51,10 +51,13 @@ DIRECT_ROOT_KEYS = frozenset({
     "welcome_spam halloween",
     "hell_effect_quiet",
     "hell_effect_noisy",
+    "xom_arena_name",
+    "sage_go_berserk",
 })
 EXPECTED_MISSING_LOOKUPS = frozenset({"welcome_spam hints"})
 CONSUMER_GIT_FILES = (
     "crawl-ref/source/database.cc",
+    "crawl-ref/source/duration-data.h",
     "crawl-ref/source/main.cc",
     "crawl-ref/source/stairs.cc",
     "crawl-ref/source/spl-summoning.cc",
@@ -157,6 +160,7 @@ def _consumer_facts(ref: str, label: str) -> dict[str, Any]:
     database = _read_exact(ref, "crawl-ref/source/database.cc", label)
     main = _read_exact(ref, "crawl-ref/source/main.cc", label)
     stairs = _read_exact(ref, "crawl-ref/source/stairs.cc", label)
+    durations = _read_exact(ref, "crawl-ref/source/duration-data.h", label)
     summoning = _read_exact(ref, "crawl-ref/source/spl-summoning.cc", label)
     traps = _read_exact(ref, "crawl-ref/source/traps.cc", label)
 
@@ -173,6 +177,10 @@ def _consumer_facts(ref: str, label: str) -> dict[str, Any]:
     ) is not None, f"{label} hell effect consumer changed")
     _require(main.count('getMiscString("welcome_spam" + type)') == 1,
              f"{label} welcome_spam consumer changed")
+    _require(stairs.count('getMiscString("xom_arena_name")') == 1,
+             f"{label} xom_arena_name consumer changed")
+    _require(durations.count('getMiscString("sage_go_berserk")') == 1,
+             f"{label} sage_go_berserk consumer changed")
     suffix_match = re.search(
         r'static string _welcome_spam_suffix\(\)\s*\{(?P<body>.*?)\n\}',
         main, re.DOTALL,

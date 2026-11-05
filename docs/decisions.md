@@ -4710,3 +4710,37 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 |---|---|---|
 | `status\|confused` | 混乱 | DUR_CONF 短标签；与灯标 Conf、长描述同根 |
 | `You are enlightened. (Will+)` | 你处于启迪状态。（意志+） | DUR_ENLIGHTENED 长描述；与短标签、结束消息、药水名同根 |
+
+### D-C-109 — 佐姆重做同步新增术语（张力／祝福／人偶剧团）
+
+- **Type**: C — Upstream content terminology intake
+- **Status**: active
+- **Date**: 2026-11-05
+- **Choice**: `tension → 张力`；`blessing → 祝福`（`blessing of X → X之祝福`）；
+  `guardian → 守卫`；`mannequin → 人偶`；`troupe → 剧团`；
+  `chaos battleshape → 混沌战斗形态`；`battlecube → 战斗立方`；
+  `protean → 千变`；`cleave / cleaving → 顺劈`；`eisegesis → 曲解经文`
+  （能力名 `Chaos Eisegesis → 混沌曲解`，与既有 `Divine Exegesis → 神圣释经`
+  相对）；`spellstride → 法术阔步`；`sneaky → 诡秘`；`disguise → 伪装`；
+  `minibane → 短暂灾祸`；`doppleganger → 二重身`；`floor lock → 封梯`；
+  新增药水／卷轴 `potion of berserk sage → 狂暴贤者药水`、
+  `potion of expedience → 权宜药水`、`scroll of frog → 青蛙卷轴`、
+  `scroll of plinking → 飞石卷轴`；`Xom's Arena → 佐姆竞技场`。
+- **Rejected**: `eisegesis → 混沌释经`（保留“释经”给 exegesis 的既有词根，
+  曲解经文体现强解经文、退去提示 `divinely inspired misunderstanding`）；
+  `guardian → 守护者`（状态灯需短标签，且避免与既有守护者描述混同）；
+  `mannequin → 傀儡`（傀儡对应 golem 类构装，人偶保留剧场道具本义）；
+  `Arena → 角斗场`（术语表固定 Arena 为竞技场）
+- **Source**: 上游 trunk `7f52e8de5c` 的佐姆张力／祝福重做；`xom.cc`、
+  `status.cc`、`item-name.cc`、`dat/descript/status.txt`、
+  `dat/descript/monsters.txt`、`dat/database/godspeak.txt`。
+- **Rationale**: 同批新增概念需一次登记，避免状态灯、物品名、怪名与
+  佐姆台词各自漂移；状态灯采用 2–4 字短标签，描述正文可展开。
+- **Scope / boundaries**: 只登记本批新增显示词根，不改既有 `Divine Exegesis`
+  神圣释经、`Arena` 竞技场、`Cleave status` 顺劈等既有裁决；不重命名
+  旧版心情／无聊机制的残留文本（上游已删除对应内容）。
+- **Affected files**: `crawl-ref/source/dat/i18n/zh/source.txt`、
+  `crawl-ref/source/dat/database/zh/godspeak.txt`、
+  `crawl-ref/source/dat/descript/zh/{status,monsters,items,monstatus}.txt`、
+  `crawl-ref/source/dat/defaults/messages.txt`、`docs/glossary.md`、
+  `docs/glossary.utf8`、`docs/decisions.md`。

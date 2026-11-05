@@ -155,8 +155,8 @@ class MonsterNameSsotTests(unittest.TestCase):
     def test_trunk_english_definition_population_is_frozen(self) -> None:
         definitions = audit._load_monster_definitions(
             str(AUDIT_ROOT / "crawl-ref/source"))
-        self.assertEqual(689, len(definitions))
-        self.assertEqual(684, len({row.en_name.casefold() for row in definitions}))
+        self.assertEqual(691, len(definitions))
+        self.assertEqual(686, len({row.en_name.casefold() for row in definitions}))
         self.assertEqual(2, sum(row.en_name == "Goji" for row in definitions))
         self.assertNotIn("armataur", {row.en_name.casefold() for row in definitions})
 
@@ -166,10 +166,11 @@ class MonsterNameSsotTests(unittest.TestCase):
             str(source_dir),
             str(source_dir / "dat" / "i18n" / "zh" / "source.txt"),
         )
-        # 19 new YAML definitions minus Armataur (upstream e12fab6a22).
-        self.assertEqual(689, result.definition_count)
-        # The two Goji forms share a name: +18 names minus Armataur.
-        self.assertEqual(684, result.monster_count)
+        # 21 new YAML definitions minus Armataur (upstream e12fab6a22),
+        # plus the Xom battleshape and mannequin from trunk 7f52e8de5c.
+        self.assertEqual(691, result.definition_count)
+        # The two Goji forms share a name: +20 names minus Armataur.
+        self.assertEqual(686, result.monster_count)
         self.assertEqual((), result.findings)
 
     def test_issue_24_inventory_cross_checks_production_enum(self) -> None:
