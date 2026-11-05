@@ -709,7 +709,7 @@ DYNAMIC_KEY_WRAPPERS = {
 # Calls whose result is already translated.  String literals below these calls
 # are translation keys or DB lookup keys, not raw player-visible text.
 TRANSLATED_VALUE_PROVIDERS = {
-    'T_', 'C_', '_get_xom_speech', 'getLongDescription',
+    'T_', 'C_', '_get_xom_speech', 'getLongDescription', 'getSpeakString',
 }
 
 # Severity grading: which function was matched

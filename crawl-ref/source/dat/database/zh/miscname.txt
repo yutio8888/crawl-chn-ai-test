@@ -375,8 +375,6 @@ hell_effect_noisy
 
 你听见自己凄惨哀号的声音！
 %%%%
-
-%%%%
 xom_arena_name
 
 佐姆奇观竞技场

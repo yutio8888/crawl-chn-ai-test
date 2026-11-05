@@ -462,6 +462,8 @@ RUNTIME_KEYWORDS=(
     "_subject_" "_the_subject_" "level" "book_name" "book_noun"
     # Names
     "ancestor name" "any orc name" "bland name"
+    # Xom blessing and legacy zh display replacements
+    "beam_type" "guardian_name" "projectile_target"
     # Random body parts
     "random_body_part_any_plural" "random_body_part_any_singular"
     "random_body_part_external_plural" "random_body_part_external_singular"
@@ -528,6 +530,8 @@ RUNTIME_KEYWORDS = {
     "random_body_part_internal_plural", "random_body_part_internal_singular",
     "species_insult_adj1", "species_insult_adj2", "species_insult_noun",
     "sparkling_message", "killer_name", "player_name", "branch_name",
+    # Xom blessing and legacy zh display replacements
+    "beam_type", "guardian_name", "projectile_target",
     # mon-cast.cc spell cast messages
     "target", "beam", "at",
     # shout.cc weapon references

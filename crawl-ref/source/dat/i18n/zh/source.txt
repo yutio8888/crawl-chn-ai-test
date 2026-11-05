@@ -53414,3 +53414,6 @@ status|-Disguise
 %%%%
 status|on disguise cooldown
 伪装冷却中
+%%%%
+ dispatches reinforcements to the rest of the floor.
+ 向本层其余区域派遣了增援。

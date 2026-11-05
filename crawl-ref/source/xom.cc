@@ -592,7 +592,7 @@ static void _xom_give_item(object_class_type type, int subtype, int quantity = 0
 
     if (thing_created == NON_ITEM)
     {
-        god_speaks(GOD_XOM, "\"No, never mind.\"");
+        god_speaks(GOD_XOM, T_("\"No, never mind.\""));
         return;
     }
 
@@ -5911,7 +5911,8 @@ static void _xom_chaos_reinforcements(int)
 
     if (created)
     {
-        simple_god_message(" dispatches reinforcements to the rest of the floor.", false, GOD_XOM);
+        simple_god_message(T_(" dispatches reinforcements to the rest of the floor."),
+                           false, GOD_XOM);
         take_note(Note(NOTE_XOM_EFFECT, -1, -1, "chaos reinforcements"), true);
     }
 }
