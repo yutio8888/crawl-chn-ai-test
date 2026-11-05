@@ -51,7 +51,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ${{ fromJSON((startsWith(github.ref, 'refs/tags/0.34.1-zh') || (startsWith(github.ref, 'refs/tags/') && contains(github.ref_name, '-trunk-'))) && '["ubuntu-latest", "macos-latest"]' || '["ubuntu-latest"]') }}
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     env:
       PYTHONSAFEPATH: "1"
@@ -109,7 +109,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ${{ fromJSON((startsWith(github.ref, 'refs/tags/0.34.1-zh') || (startsWith(github.ref, 'refs/tags/') && contains(github.ref_name, '-trunk-'))) && '["ubuntu-latest", "macos-latest"]' || '["ubuntu-latest"]') }}
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     env:
       PYTHONSAFEPATH: "1"

@@ -23,8 +23,8 @@ execute tooling and static CI gates on Ubuntu and compile Android, Linux, and
 Windows, with same-repository PR builds eligible for the local reuse described
 below. Remote Android debug APKs remain available for device testing; Windows builds
 compile Tiles without creating or uploading a release ZIP. Release tags matching
-the workflow's stable or trunk tag rules additionally run the macOS tooling and
-static gates, build the macOS DMG, and package and upload Windows Tiles. Tagged
+the workflow's stable or trunk tag rules additionally build the macOS DMG and
+package and upload Windows Tiles; macOS runs no tooling or static gates. Tagged
 draft Releases retain full runtime checks, Android signing, and closed-world
 validation of the Windows ZIP, macOS DMG, and Android release APK.
 
