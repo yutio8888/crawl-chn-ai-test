@@ -467,12 +467,12 @@ class MiscnameInventoryTests(unittest.TestCase):
             ]))
         glossary.assert_called_once_with(ROOT / "docs/glossary.md", candidate)
         audited = json.loads(output.read_text(encoding="utf-8"))
-        self.assertEqual(10, len(audited["review_evidence"]["cards"]))
+        self.assertEqual(12, len(audited["review_evidence"]["cards"]))
         self.assertEqual(
-            167, audited["candidate"]["dumps"]["english"]["variant_count"]
+            180, audited["candidate"]["dumps"]["english"]["variant_count"]
         )
         self.assertEqual(
-            167, audited["candidate"]["dumps"]["localized"]["variant_count"]
+            180, audited["candidate"]["dumps"]["localized"]["variant_count"]
         )
 
     def test_complete_review_ledger_validates(self):
