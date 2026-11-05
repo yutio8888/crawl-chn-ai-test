@@ -40500,6 +40500,9 @@ status|Howl
 status|Invis
 隐形
 %%%%
+status|Irate
+焦躁
+%%%%
 status|Jelly
 凝胶
 %%%%
@@ -53366,9 +53369,6 @@ Your limbs return to their normal size.
 %%%%
 status|Reach+
 延展+
-%%%%
-status|Irrate
-焦躁
 %%%%
 status|Rampage+++
 冲刺+++
