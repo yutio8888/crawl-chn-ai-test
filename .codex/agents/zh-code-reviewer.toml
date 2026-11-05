@@ -193,6 +193,31 @@ and risks introduced by the change, using existing tests and interfaces.
   or gaps; detailed raw evidence can stay in the existing verification log.
 <!-- END GENERATED: verification-authoring -->
 
+## Current review surfaces
+
+- `chn-trunk` follows a pinned upstream master commit and publishes
+  `X.Y-trunk-NNN` prereleases; the stable line uses `0.34.1-zhA-B-CCC`. Confirm
+  the reviewed base and head instead of assuming one line.
+- Upstream syncs enter as merge commits from `crawl/crawl`; they keep the fork's
+  display boundaries while adopting upstream behavior. In such a diff, confirm
+  that removed helpers and enum members are no longer referenced, new
+  player-visible text has `T_()`/TextDB coverage, new data entries exist under
+  the ZH trees, and frozen inventories and review ledgers were rebound to the
+  reviewed content rather than merely shifted by line numbers.
+- The `ci` profile runs the static gates plus strict review-ledger freshness for
+  `docs/*-review-results.md`. Ledger artifacts are written or validated by their
+  owning tools; stale fact hashes, inventory count changes, and manual ledger
+  edits are review evidence, not formatting noise.
+- Key and lifetime gates are the existing scanners: `scan_i18n.py` subcommands,
+  `i18n_extract.py`, `audit_data_i18n.py`, `source_control_parity.py`, and
+  `source-key-collisions`. Case-only key pairs are defects; duration light and
+  short labels that differ only by case share one catalog key.
+- Display surfaces include speech and name TextDBs, description TextDBs, status
+  light/short/long labels, and the message-overlay artifacts. `getSpeakString()`
+  results are already localized and are not `T_()` keys; `T_()` keys need exact
+  `source.txt` entries. C++ sources must not gain Chinese display literals, and
+  the frozen CJK inventory permits only its reviewed remaining items.
+
 ## Required workflow
 
 1. Identify the requested files, existing implementation, or diff. Ordinary
@@ -205,14 +230,14 @@ and risks introduced by the change, using existing tests and interfaces.
    whole-project verification suites. Report missing required evidence as a
    Validation Gap; do not infer runtime failure from unavailable evidence.
 4. For affected C++ i18n paths, inspect lifetime and varargs scanner results,
-   extraction/key validation, and movement exact-key evidence where relevant.
-   Manually confirm return types behind relevant `CALL_NO_CSTR` warnings.
-5. Report plain human-readable Blocker / Needs Fix / Suggestion findings and
+   extraction/key validation, movement exact-key evidence, and source-control
+   parity where relevant. Manually confirm return types behind relevant
+   `CALL_NO_CSTR` warnings.
+5. For upstream-sync or ledger-touching diffs, verify compilation of touched
+   translation points, removed-symbol references, data-tree coverage, frozen
+   fixture expectations, and ledger freshness. A stale fixture or unreviewed
+   ledger card for reviewed content is a Changes Requested item.
+6. Report plain human-readable Blocker / Needs Fix / Suggestion findings and
    Validation Gaps, with file/line evidence, impact, and concrete fixes, followed
    by a final conclusion of Ready or Changes Requested for the assigned endpoint.
-
-The injected safety policy is the checklist for affected i18n behavior; do not
-duplicate it as a universal task preflight. Translation wording remains the
-translation reviewer's domain. Ordinary audits finish with findings and gaps,
-without implying merge readiness or remote-posting authority.
 '''

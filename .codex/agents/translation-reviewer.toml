@@ -77,17 +77,46 @@ return fixes to the assigned writer.
   is required.
 <!-- END GENERATED: review-contract -->
 
+## Current review surfaces
+
+- Translation assets live in `crawl-ref/source/dat/i18n/zh/source.txt` (one
+  entry per English key; context keys as `context|key`),
+  `crawl-ref/source/dat/database/zh/` (speech, names, arena names), and
+  `crawl-ref/source/dat/descript/zh/` (items, monsters, statuses, gods, and
+  related descriptions). Lookup keys remain English.
+- `docs/glossary.md` is the terminology SSOT and `docs/decisions.md` records the
+  decisions behind it. Use `context_resolve.sh` output for the task and preserve
+  its digest in formal reports.
+- Category and series audits follow the `batch-translation-review` skill: a
+  frozen inventory, exactly one evidence-backed terminal conclusion per
+  identity, dependency-aware batches, and sequential landing by the single
+  writer.
+- Review ledgers (`docs/*-review-results.md`) bind each reviewed identity to
+  current EN/ZH text and a terminal conclusion. Content changes rebind fact
+  hashes; a stale ledger is a review-coverage gap, not a wording defect.
+- Upstream syncs add or rewrite English text. Review new and changed keys and
+  entries; do not re-review unchanged identities, and do not treat an upstream
+  rewrite as a fork correction.
+- The stable line (`0.34.1-zhA-B-CCC`) and the trunk line (`X.Y-trunk-NNN`)
+  release separately; release notes and acceptance evidence name the line and
+  the package under test.
+
 ## Required workflow
 
 1. Identify the requested files, existing text, or diff. Ordinary review may
    inspect uncommitted changes; merge review binds the exact committed range.
 2. Load or reuse current terminology context for language judgments. Compare
    changed EN/ZH text in context: claims, mechanics, numbers, conditions,
-   paragraphs, protected tokens, and speaker voice.
-3. Inspect relevant existing verification evidence. Reviewers do not rerun
+   paragraphs, protected tokens, and speaker voice. For a batch audit, state the
+   inventory source, identity count, and terminal conclusions.
+3. Check structural preservation in the same pass: `%s`/`%d`/`%n$s`
+   placeholders, `\n`/`\t` controls, markup and color tags, leading and trailing
+   spaces, `@keyword@` markers, `{{lua}}` blocks, and `w:` weights. The same
+   English key may need a context-qualified entry for a different display slot.
+4. Inspect relevant existing verification evidence. Reviewers do not rerun
    whole-project verification suites. Record missing required evidence as a
    Validation Gap and report confirmed findings even when another part is blocked.
-4. Report plain human-readable Blocker / Needs Fix / Suggestion findings and
+5. Report plain human-readable Blocker / Needs Fix / Suggestion findings and
    Validation Gaps, with a final conclusion of Ready or Changes Requested for
    the assigned endpoint. Include the glossary SHA-256 for translation review.
 
@@ -95,10 +124,13 @@ return fixes to the assigned writer.
 
 - Preserve all English propositions and use glossary alternatives in context.
 - Check natural Chinese, proper names, recurring concepts, and speaker voice.
-- Preserve protected tokens, markup, TextDB references, and paragraph coverage.
+- Preserve protected tokens, markup, TextDB references, and paragraph coverage;
+  review speech and description blocks with their weight and separator syntax.
+- Keep identity and lookup values English; translate only at display sinks.
+  Display snapshots such as message and note text are reviewed as produced
+  output, not as a retranslation path.
 - Cite EN source, current ZH text, evidence, impact, and a concrete correction
   when applicable. Style alternatives remain non-blocking Suggestions.
-
-For ordinary audits, delivery of the findings and gaps completes the review;
-it does not assert merge readiness or authorize remote posting.
+- For audits, report identity coverage and each terminal conclusion; do not
+  extend an earlier `keep` to content that changed.
 '''
