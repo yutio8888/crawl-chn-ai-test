@@ -461,6 +461,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(make_stringf(T_("%s attack"), "兽人的") == "兽人的攻击");
     CHECK(block_event_string(&you, make_stringf(T_("%s attack"), "兽人的"))
           == "你挡住了兽人的攻击。");
+    CHECK(make_stringf(T_("%s divine shield blocks %s."), "你的", "兽人的攻击")
+          == "你的神圣护盾格挡了兽人的攻击。");
+    CHECK(make_stringf(T_("%s divine shield blocks %s... and reflects it back!"),
+                       "你的", "箭矢")
+          == "你的神圣护盾格挡了箭矢……并将其反弹了回去！");
     CHECK(string(T_("its own attack")) == "自己的攻击");
     CHECK(string(T_("!")) == "！");
     CHECK(make_stringf_p(T_("%1$s attacks as %2$s pursue you!"), "它", "s")

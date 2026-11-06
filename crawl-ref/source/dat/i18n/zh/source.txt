@@ -53057,10 +53057,10 @@ The starcursed mass shrieks in your mind.
 %s碎裂成闪烁的流星！
 %%%%
 %s divine shield blocks %s.
-%s的神圣护盾格挡了%s。
+%s神圣护盾格挡了%s。
 %%%%
 %s divine shield blocks %s... and reflects it back!
-%s的神圣护盾格挡了%s……并将其反弹了回去！
+%s神圣护盾格挡了%s……并将其反弹了回去！
 %%%%
 %s is struck blind by the light.
 %s被强光刺瞎了。
