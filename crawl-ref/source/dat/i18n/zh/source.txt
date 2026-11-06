@@ -3822,7 +3822,7 @@ Demonic plants sprout around you!
  离开熔炉。
 %%%%
  departs this earthly plane.
- 离开了这个位面。
+离开了这个位面。
 %%%%
  detonates violently!
  剧烈地爆炸了！
@@ -21881,7 +21881,7 @@ No target in view!
  选择物品
 %%%%
 describe
- 描述
+描述
 %%%%
  in shopping list
 （在购物清单中）
