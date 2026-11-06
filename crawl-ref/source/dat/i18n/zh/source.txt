@@ -24751,6 +24751,15 @@ If you stay in this area without exploring new floors, Zot will find you after %
  (%d times)
 （%d次）
 %%%%
+ (once)
+（1次）
+%%%%
+ (twice)
+（2次）
+%%%%
+ (thrice)
+（3次）
+%%%%
  %s version %s
  %s 版本 %s
 %%%%

@@ -500,6 +500,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                        "冬眠羊皮纸")
           == "你捡起了冬眠羊皮纸并开始阅读……");
     CHECK(std::string(C_("gold quantity", "pieces")) == "枚");
+    CHECK(std::string(T_(" (once)")) == "（1次）");
+    CHECK(std::string(T_(" (twice)")) == "（2次）");
+    CHECK(std::string(T_(" (thrice)")) == "（3次）");
+    CHECK(make_stringf(T_(" (%d times)"), 4) == "（4次）");
 
     item_def gold;
     gold.base_type = OBJ_GOLD;
