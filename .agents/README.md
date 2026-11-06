@@ -49,6 +49,7 @@ Never edit generated blocks directly.
 |---|---|
 | Role routing | `docs/agent-routing.md` |
 | Complete enumerable translation audit | `.agents/skills/batch-translation-review/SKILL.md` |
+| Console gameplay playtesting and branch routing | `.agents/skills/dcss-playtest/SKILL.md` |
 | Build/deployment | `docs/build-workflow.md` |
 | Translation design | `docs/translation-architecture.md` |
 | CJK tiles design | `docs/cjk-tiles-architecture.md` |
