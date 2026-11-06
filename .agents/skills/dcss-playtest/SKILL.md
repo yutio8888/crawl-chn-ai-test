@@ -79,8 +79,10 @@ Use soft checkpoints, not rigid quotas:
 - about D:8 with 4,500–7,000 turns;
 - first branch entrance before 10,000 turns.
 
-If the run is far behind, cut optional fights, shops, vaults, and UI
-inspection. Do not skip healing or safety to catch up.
+If the run is far behind, **timebox** shops, identification, and low-threat
+fights rather than skipping them: they provide information, consumables, and
+XP. Cut optional vaults, portal detours, and repeated UI inspection first. Do
+not skip healing or safety to catch up.
 
 At each D:8–D:11 level:
 
@@ -123,16 +125,40 @@ These are playtest rules, not game rules:
 Depth targets are more important than kill count. A 1,500-turn run stuck on
 D:4 is less useful than a 1,200-turn run that reaches D:9 and enters Lair.
 
+## Consumables, identification, and threat handling
+
+- Use identify scrolls proactively once the character is safe. Identify unknown
+  potions, scrolls, and wands in batches; prioritise healing, escape, resistance,
+  and emergency items. Do not hoard identification for a perfect item while
+  carrying unknown healing or escape options.
+- Visit shops and identify gear when the route allows. Shops are useful for
+  filling resistance/escape gaps; timebox them, but do not skip them as a class.
+  Low-threat fights are normal XP and practice; do not avoid all of them either.
+  The rule is **route progress first**, not “skip everything optional.”
+- Against a **pursuing unique**, do not trade hits in the open. Go upstairs or
+  change level immediately, heal on a cleared floor, and return through another
+  staircase. If it follows, repeat the stair/level change. Use corridors and
+  doors only when escaping is not available.
+- Against a **sleeping dangerous unique**, do not wake it. Use the map (`X`) and
+  the exclusion command (`e`) to mark it and its approach, then route around.
+  Keep the exclusion until the area is safe. Do not auto-explore or auto-travel
+  through an excluded sleeping unique.
+- Keep escape consumables identified before D:8. If the character has no known
+  healing/blink/teleport, spend identification and shop time to acquire or
+  identify them before entering a branch-search level.
+
 ## Common failure modes to avoid
 
 Recent automated runs failed to reach Lair/Orc for predictable reasons:
 
 - full-clearing early levels and optional vaults instead of heading to D:8;
-- fighting uniques and large orc/centaur packs for loot;
+- fighting pursuing uniques in the open instead of changing stairs/levels;
+- waking a sleeping dangerous unique while auto-exploring;
+- hoarding identify scrolls and leaving healing/escape consumables unknown;
 - stopping at low HP without using stairs, haste, blink, teleport, or curing;
 - treating “no branch entrance seen on one path” as “branch absent” without
   fully exploring D:8–D:11;
-- spending the session on item/menu inspection and build experiments;
+- spending the whole session on item/menu inspection and build experiments;
 - switching weapon classes or spreading skill XP after finding a shiny item;
 - mistyping command keys and triggering explore-mode or travel prompts;
 - reporting a branch as covered without a `Lair:1`/`Orc:1` capture.
