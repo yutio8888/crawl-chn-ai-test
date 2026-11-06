@@ -3473,7 +3473,7 @@ Casting now could cause dangerous contamination. Continue?
 现在施放可能会对你造成危险的污染。继续吗？
 %%%%
 Casting: <w>%s</w> <lightgrey>(%s)</lightgrey>
-正在施放: <w>%s</w> <lightgrey>(%s)</lightgrey>
+正在施放：<w>%s</w><lightgrey>（%s）</lightgrey>
 %%%%
  casts you out from the arena!
 将你逐出了竞技场！
@@ -18158,7 +18158,7 @@ You feel more buoyant.
 你感觉更加有浮力。
 %%%%
 You pick up the %s and begin to read...
-你捡起了%s并开始阅读...
+你捡起了%s并开始阅读……
 %%%%
 %s stands up to serve you!
 %s站起来为你服务！
@@ -24750,6 +24750,15 @@ If you stay in this area without exploring new floors, Zot will find you after %
 %%%%
  (%d times)
 （%d次）
+%%%%
+ (once)
+（1次）
+%%%%
+ (twice)
+（2次）
+%%%%
+ (thrice)
+（3次）
 %%%%
  %s version %s
  %s 版本 %s
@@ -52847,6 +52856,10 @@ monster equipment|carrying
 携带着
 
 %%%%
+monster equipment|,
+，
+
+%%%%
 attack prompt action|attack
 攻击
 
@@ -53053,10 +53066,10 @@ The starcursed mass shrieks in your mind.
 %s碎裂成闪烁的流星！
 %%%%
 %s divine shield blocks %s.
-%s的神圣护盾格挡了%s。
+%s神圣护盾格挡了%s。
 %%%%
 %s divine shield blocks %s... and reflects it back!
-%s的神圣护盾格挡了%s……并将其反弹了回去！
+%s神圣护盾格挡了%s……并将其反弹了回去！
 %%%%
 %s is struck blind by the light.
 %s被强光刺瞎了。

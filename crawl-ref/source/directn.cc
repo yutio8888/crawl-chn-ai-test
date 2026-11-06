@@ -3711,11 +3711,13 @@ string get_monster_equipment_desc(const monster_info& mi,
         item_descriptions.push_back(carried_desc);
     }
 
+    const string item_separator = Options.language == lang_t::ZH
+        ? C_("monster equipment", ",") : T_(", ");
     const string item_description = comma_separated_line(
                                                 item_descriptions.begin(),
                                                 item_descriptions.end(),
                                                 C_("monster equipment", " and "),
-                                                T_(", "));
+                                                item_separator);
 
     if (!item_description.empty() && !desc.empty())
         desc += T_(", ");
