@@ -110,10 +110,13 @@ These are playtest rules, not game rules:
 - In dangerous fights, send **one key at a time** and read the screen after
   each action. Avoid long key batches while HP is dropping, a status is
   changing, or a new monster appears.
-- Skip optional uniques and branch-end fights unless the route requires them.
-  “I could probably win” is not a reason to risk the run.
+- Do not skip every unique or group. Engage when the power check below favors
+  you; a capable character that avoids all fights stops gaining XP and never
+  reaches the branches. Skip only when clearly underpowered, out of escape
+  options, or the fight would be in bad terrain.
 - Use stairs to split packs: retreat upstairs, rest, then fight the first
-  pursuer. Use corridors and doors to limit line of sight.
+  pursuer. Use corridors and doors to limit line of sight, then kill the split
+  group rather than abandoning the floor.
 - Poison, constriction, confusion, and berserk ending are decision points.
   Check whether the next hit or poison tick can kill before resting or
   continuing.
@@ -125,24 +128,55 @@ These are playtest rules, not game rules:
 Depth targets are more important than kill count. A 1,500-turn run stuck on
 D:4 is less useful than a 1,200-turn run that reaches D:9 and enters Lair.
 
+### Combat power evaluation
+
+Before a unique, a large group, or an unknown dangerous monster, pause and
+check the player sheet and the target:
+
+- HP/MP, AC/EV/SH, weapon delay and damage, resistances, and current statuses;
+- known healing, haste, might, agility, resistance, blink, teleport, wands,
+  throwing items, god abilities, and summons;
+- escape route and terrain: corridor, door, staircase, open room, water, lava;
+- enemy abilities and speed via `x`/`v`, especially smiters, casters, paralysis,
+  ranged attackers, and summons.
+
+Engage when most of these are true: HP is at least ~75%, a retreat route
+exists, the fight can be taken in a corridor or at a stair, dangerous casters
+can be focused first, and at least one emergency consumable is ready. Pre-buff
+before entering, not after HP collapses. Use wands/throwing/god abilities as
+part of the plan, not as a last resort.
+
+If the check fails, do not simply walk away from the branch: retreat to a
+chokepoint or cleared stair, split the group, heal/buff, and re-engage. Change
+level only when the position is genuinely lost, then return by another stair.
+“Avoid every unique/group” is a failure mode, not a safety rule.
+
 ## Consumables, identification, and threat handling
 
 - Use identify scrolls proactively once the character is safe. Identify unknown
   potions, scrolls, and wands in batches; prioritise healing, escape, resistance,
   and emergency items. Do not hoard identification for a perfect item while
   carrying unknown healing or escape options.
+- Use consumables early enough to matter. At ~50–60% HP, heal before the next
+  dangerous exchange; pre-buff with might/haste/agility/resistance before a
+  unique or group, not after the fight turns bad. Use wands and throwing items
+  on dangerous casters/ranged threats. Hoarding a heal until 20% HP is a
+  common way to lose a winnable fight.
 - Visit shops and identify gear when the route allows. Shops are useful for
   filling resistance/escape gaps; timebox them, but do not skip them as a class.
   Low-threat fights are normal XP and practice; do not avoid all of them either.
   The rule is **route progress first**, not “skip everything optional.”
-- Against a **pursuing unique**, do not trade hits in the open. Go upstairs or
-  change level immediately, heal on a cleared floor, and return through another
-  staircase. If it follows, repeat the stair/level change. Use corridors and
-  doors only when escaping is not available.
-- Against a **sleeping dangerous unique**, do not wake it. Use the map (`X`) and
-  the exclusion command (`e`) to mark it and its approach, then route around.
-  Keep the exclusion until the area is safe. Do not auto-explore or auto-travel
-  through an excluded sleeping unique.
+- Against a **pursuing unique**, first decide whether you are prepared to fight
+  in a corridor/stair. If yes, stop retreating, pre-buff, and fight with an
+  escape route. If not, go upstairs or change level, heal/buff on a cleared
+  floor, and return through another staircase. If it follows, repeat the
+  stair/level change. Do not trade hits in the open while unprepared.
+- Against a **sleeping dangerous unique**, do not wake it accidentally. Use the
+  map (`X`) and the exclusion command (`e`) to mark it and its approach, then
+  route around. Keep the exclusion until the area is safe. Do not auto-explore
+  or auto-travel through an excluded sleeping unique. If it blocks the only
+  route or must be cleared, prepare buffs/escape first, then wake and fight it
+  deliberately.
 - Keep escape consumables identified before D:8. If the character has no known
   healing/blink/teleport, spend identification and shop time to acquire or
   identify them before entering a branch-search level.
@@ -152,9 +186,11 @@ D:4 is less useful than a 1,200-turn run that reaches D:9 and enters Lair.
 Recent automated runs failed to reach Lair/Orc for predictable reasons:
 
 - full-clearing early levels and optional vaults instead of heading to D:8;
-- fighting pursuing uniques in the open instead of changing stairs/levels;
+- fighting a pursuing unique or group in the open without buffs/escape, or
+  avoiding every fight until the character is too weak to progress;
 - waking a sleeping dangerous unique while auto-exploring;
 - hoarding identify scrolls and leaving healing/escape consumables unknown;
+- hoarding healing/haste/might until critical HP instead of using them early;
 - stopping at low HP without using stairs, haste, blink, teleport, or curing;
 - treating “no branch entrance seen on one path” as “branch absent” without
   fully exploring D:8–D:11;
