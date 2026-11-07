@@ -504,6 +504,13 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(std::string(T_(" (twice)")) == "（2次）");
     CHECK(std::string(T_(" (thrice)")) == "（3次）");
     CHECK(make_stringf(T_(" (%d times)"), 4) == "（4次）");
+    CHECK(std::string(T_("Do you really want to enter explore mode?"))
+          == "你真的要进入探索模式吗？");
+    CHECK(make_stringf(T_("The liquid fire burns you%s%s"), "", T_("!"))
+          == "液体火焰灼烧着你，令你痛苦！");
+    CHECK(make_stringf(T_("The liquid fire burns you%s%s"),
+                       T_(" terribly"), T_("!"))
+          == "液体火焰灼烧着你，令你极其痛苦！");
 
     item_def gold;
     gold.base_type = OBJ_GOLD;

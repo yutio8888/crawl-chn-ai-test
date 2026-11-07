@@ -5243,7 +5243,7 @@ void dec_sticky_flame_player(int delay)
 
     mprf(MSGCH_WARN, T_("The liquid fire burns you%s%s"),
          damage > base_damage ? T_(" terribly") : "",
-         damage < base_damage ? T_(". You resist.") : "!");
+         damage < base_damage ? T_(". You resist.") : T_("!"));
 
     damage = div_rand_round(damage * delay, BASELINE_DELAY);
 
