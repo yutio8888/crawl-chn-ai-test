@@ -1,6 +1,6 @@
 ---
 name: dcss-playtest
-description: Run evidence-backed real gameplay tests of Dungeon Crawl Stone Soup, especially Chinese console builds, with branch-focused routing, survival rules, and per-action captures. Use for playtesting a candidate build, reaching Lair/Orcish Mines, or analyzing why an automated playtest stalled.
+description: Run evidence-backed real gameplay tests of Dungeon Crawl Stone Soup, especially Chinese console builds. Default to fully clearing every entered floor, including Lair and Orcish Mines, with survival, combat, consumable, and per-action evidence; use short branch coverage probes only when explicitly requested.
 ---
 
 # DCSS Playtest
@@ -82,19 +82,48 @@ Caster combat rules:
 Do not switch builds mid-run to chase loot. Depth comes from a coherent build,
 not from clearing every optional vault.
 
-## Route: reach the branches before the run decays
+## Route: default full-clear
+
+Unless the user explicitly asks for a short coverage probe, the default target
+is to **fully explore and clear every floor you enter**, including all five
+Lair floors and both Orcish Mines floors. Entrance coverage alone is not a
+completed floor.
+
+There is **no fixed turn limit and no wall-clock stop** in the default mode.
+Stop when the requested floors are complete, the user explicitly sets a limit,
+or the character genuinely cannot continue safely. Do not abandon a floor just
+because a timer, a short-visit quota, or an entrance screenshot was reached.
 
 The Lair entrance appears on D:8–D:11; the Orcish Mines entrance appears on
-D:9–D:12. Do not spend the whole session clearing D:1–D:5.
-
-Suggested route card:
+D:9–D:12.
 
 | Depth | Goal | Discipline |
 |---|---|---|
-| D:1–D:4 | Get online, find Temple, basic gear | Fight only what blocks exploration; skip optional uniques |
-| D:5–D:7 | Power spike, god, better weapon/armour | Stair-dance dangerous packs; do not full-clear |
-| D:8–D:11 | **Find Lair and Orc entrances** | Fully reveal each candidate level near stairs; enter a branch when found |
-| Lair:1 / Orc:1 | Capture branch evidence | Explore 30–50 turns, then return if the other branch is still missing |
+| D:1–D:4 | Get online, find Temple, basic gear | Clear safely reachable content and normal threats; skip only clearly dangerous optional uniques/vaults after evaluation |
+| D:5–D:7 | Power spike, god, better weapon/armour | Fight when the power check favors you; split packs with stairs/corridors, then finish them |
+| D:8–D:11 | Find Lair and Orc entrances | Clear each floor’s safe reachable areas; record unreachable/excluded regions |
+| Lair:1–Lair:5 | **Full branch clear** | Do not stop at the entrance; clear each floor until exploration is complete, then descend |
+| Orc:1–Orc:2 | **Full branch clear** | Clear both floors; capture shops/Elf entrance where present |
+
+### Floor completion standard
+
+A floor is complete when:
+
+- the game reports exploration complete (“探索完成”), or every safely
+  reachable area has been visited and remaining unreachable/excluded regions
+  are documented;
+- ordinary reachable monsters have been cleared, with dangerous optional
+  uniques/vaults either handled or explicitly recorded as deferred risks;
+- shops, altars, stairs, and branch entrances encountered on the floor are
+  captured and recorded.
+
+“Exploration complete” is not a substitute for checking excluded regions,
+sealed doors, deep water/lava islands, or unreachable vaults. Record those
+gaps explicitly. Do not claim a full clear when a known reachable area remains.
+
+`Coverage mode` (only when the user explicitly requests a short probe) may stop
+after an entrance screen and a short visit. It must be labelled as coverage,
+not full clear.
 
 Use `Ctrl-F` to search known features (stairs, branch names, shops). Treat it as
 a convenience for **already known** features, not as a way to discover an
@@ -103,23 +132,13 @@ descending. Entering a branch means a screen showing `Lair:1` or `Orc:1`; a
 message or a guess is not proof. Record a missing branch as a Validation Gap,
 never as a pass.
 
-### Budget and per-level audit
+### Progress checks, not budgets
 
-For a branch-focused lane, reserve **90–120 minutes** and allow at most two
-fresh characters. Depth is more important than kill count: a shorter run that
-enters a branch is better evidence than a long full clear that never reaches
-D:8.
-
-Use soft checkpoints, not rigid quotas:
-
-- about D:5 with 2,500–4,000 turns;
-- about D:8 with 4,500–7,000 turns;
-- first branch entrance before 10,000 turns.
-
-If the run is far behind, **timebox** shops, identification, and low-threat
-fights rather than skipping them: they provide information, consumables, and
-XP. Cut optional vaults, portal detours, and repeated UI inspection first. Do
-not skip healing or safety to catch up.
+Use D:5 and D:8 as soft progress checks, not stopping points. If progress feels
+slow, review build, resources, route, and danger handling; do not set a turn or
+clock deadline that forces an unsafe stop. Shops, identification, and
+low-threat fights are part of progression and XP; timebox a single visit only
+to avoid repetitive UI loops, not to cap the run.
 
 At each D:8–D:11 level:
 
@@ -157,13 +176,18 @@ These are playtest rules, not game rules:
 - Poison, constriction, confusion, and berserk ending are decision points.
   Check whether the next hit or poison tick can kill before resting or
   continuing.
-- A natural death is valid evidence. Restart at most once in the same lane and
-  record both characters; never restore a save to undo death.
-- Stop when both branch targets are captured, the time/risk budget is spent, or
-  the character cannot safely continue. Report the stop reason explicitly.
+- A natural death is valid evidence. The default is one continuous character;
+  restart only when the task explicitly allows it, and never restore a save to
+  undo death.
+- Stop when the requested floors are fully cleared, the user explicitly sets a
+  limit, or the character genuinely cannot continue safely. A temporary danger
+  is not a stop: retreat, heal, resupply, change stairs, and re-enter when
+  possible. Report any stop reason explicitly.
 
-Depth targets are more important than kill count. A 1,500-turn run stuck on
-D:4 is less useful than a 1,200-turn run that reaches D:9 and enters Lair.
+Default full-clear mode is about completing floors, not maximizing kill count
+for its own sake; XP and gear from normal fights are part of survival and
+progression. Coverage mode may prioritize an entrance over a full clear, but
+only when the task explicitly asks for coverage.
 
 ### Combat power evaluation
 
@@ -220,9 +244,10 @@ level only when the position is genuinely lost, then return by another stair.
 
 ## Common failure modes to avoid
 
-Recent automated runs failed to reach Lair/Orc for predictable reasons:
+Recent automated runs failed to clear Lair/Orc for predictable reasons:
 
-- full-clearing early levels and optional vaults instead of heading to D:8;
+- leaving safe reachable floor content unvisited solely to rush to D:8;
+- treating a branch entrance or a short visit as a completed branch;
 - fighting a pursuing unique or group in the open without buffs/escape, or
   avoiding every fight until the character is too weak to progress;
 - waking a sleeping dangerous unique while auto-exploring;
@@ -231,10 +256,11 @@ Recent automated runs failed to reach Lair/Orc for predictable reasons:
 - stopping at low HP without using stairs, haste, blink, teleport, or curing;
 - treating “no branch entrance seen on one path” as “branch absent” without
   fully exploring D:8–D:11;
-- spending the whole session on item/menu inspection and build experiments;
+- repeated item/menu inspection loops at the expense of floor completion;
 - switching weapon classes or spreading skill XP after finding a shiny item;
 - mistyping command keys and triggering explore-mode or travel prompts;
-- reporting a branch as covered without a `Lair:1`/`Orc:1` capture.
+- reporting a floor as fully cleared without an exploration-complete screen or
+  a documented list of unreachable/excluded areas.
 
 When the run stalls, inspect the last 20 actions and the current level map
 before deciding whether to retreat or reroute. Do not keep auto-exploring into
@@ -255,7 +281,7 @@ Write to the lane directory only:
   keys, expected/actual, reproducibility, and regression status;
 - `observations.json` for uncertain behavior;
 - `report.md` with candidate metadata, character/seed, turns/XL/depth, route,
-  branch coverage, issues, validation gaps, and save/dump/exit paths.
+  floor completion/coverage, issues, validation gaps, and save/dump/exit paths.
 
 Use the actual exit code from the game process. A fixed `echo 0` in a launcher
 is not evidence.
