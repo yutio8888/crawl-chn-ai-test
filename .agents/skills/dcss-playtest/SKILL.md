@@ -42,6 +42,43 @@ For a first branch-progression run:
 - A caster run should focus one attack school to a low failure rate before
   branching into defence or summons.
 
+### Caster baseline: Deep Elf Conjurer (Alchemy + Conjuration + Spellcasting)
+
+A proven 15-rune reference character (`morgue-yutio888-20261104-160724.txt`,
+0.35-trunk-004 web, seed `4302450506678966134`) started as a Deep Elf Conjurer
+and prioritized **Alchemy + Conjurations + Spellcasting** early, then widened
+into elemental schools.
+
+Early order:
+
+1. Train **Conjurations** first enough to make the starting attack spell
+   reliable; add **Alchemy** for the poison/alchemy attack line and
+   **Spellcasting** for MP and spell slots.
+2. Reference milestones: Alchemy 1 on D:1, Conjurations 5 on D:2, Spellcasting 5
+   and Alchemy 5 by D:4. Do not spread into every school before this core works.
+3. Typical early pickups: Searing Ray on D:1–2, Fulminant Prism and Iskenderun's
+   Mystic Blast on D:2, Blink on D:4, Olgreb's Toxic Radiance on D:6,
+   Iskenderun's Battlesphere on D:8, Mephitic Cloud by D:10–11, Airstrike /
+   Freezing Cloud around D:8.
+4. Take **Sif Muna** when found (the reference took her on D:5) for channeling,
+   spell gifts, and mana recovery. High Intelligence and MP management matter
+   more than melee damage.
+5. After the core, add Fighting for HP, Dodging, Shields, and one or two
+   elemental schools that match the spells actually found. The reference ended
+   broad (Spellcasting 27, Conjurations 23, Fire/Ice/Air/Earth 23, Alchemy 8,
+   Fighting/Dodging/Shields 27, Translocations 16), but that is a late-game
+   outcome, not an early target.
+
+Caster combat rules:
+
+- Fight from corridors and doors; use Fulminant Prism/Mephitic Cloud/Freezing
+  Cloud to break groups; retreat and kite rather than trading melee.
+- Keep Blink/teleport and a shield/robe option; low HP is the primary danger.
+- Use channeling/MP recovery before MP reaches zero; do not hoard escape
+  consumables.
+- Inspect spell failure and spell power; train the school of the spell you
+  actually use, not a theoretical endgame school.
+
 Do not switch builds mid-run to chase loot. Depth comes from a coherent build,
 not from clearing every optional vault.
 
@@ -231,6 +268,9 @@ Strategy sources used for this protocol:
 - CrawlWiki Early Game Character Building:
   <http://crawl.chaosforge.org/Early_Game_Character_Building>
 - MiBe beginner guide: <https://dungeoncrawlstonesoup.com/guides/mibe>
+
+Reference build data: `morgue-yutio888-20261104-160724.txt` (Deep Elf Conjurer,
+Sif Muna, 15 runes, 0.35-trunk-004 web, seed `4302450506678966134`).
 
 The wiki walkthrough gives the D:8–D:11 Lair and D:9–D:12 Orc ranges, the
 Lair-first recommendation, and the “skip optional floors/branches” principle.
