@@ -477,6 +477,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(make_stringf(T_("%d creatures vanquished.\n"), 2)
           == "已消灭2只生物。\n");
     CHECK(std::string(C_("morgue item inscription", "unknown")) == "未鉴定");
+    CHECK(std::string(T_("Mortality")) == "索命");
+    CHECK(make_stringf(T_("Bane of %s"), T_("Mortality")) == "索命之灾");
 
     CHECK(std::string(T_("\nLevel: %d")) == "\n等级：%d");
     CHECK(std::string(T_("        Fail: %s")) == "        失败率：%s");
