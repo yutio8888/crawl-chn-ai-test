@@ -8210,6 +8210,18 @@ turns back into a lifeless stick
 Two slime creatures merge to form %s.
 两个史莱姆生物融合成了%s。
 %%%%
+slime size|large
+大型
+%%%%
+slime size|very large
+超大型
+%%%%
+slime size|enormous
+巨型
+%%%%
+slime size|titanic
+泰坦级
+%%%%
 Type
 学派
 %%%%
@@ -39318,6 +39330,75 @@ hand|misty tendril
 hand|misty tendrils
 雾气触须
 %%%%
+hand|front paw
+前爪
+%%%%
+hand|front paws
+前爪
+%%%%
+hand|front talon
+前爪
+%%%%
+hand|front talons
+前爪
+%%%%
+hand|front hoof
+前蹄
+%%%%
+hand|pincer
+螯钳
+%%%%
+hand|wing
+翅膀
+%%%%
+hand|wings
+翅膀
+%%%%
+hand|antenna
+触角
+%%%%
+hand|antennae
+触角
+%%%%
+hand|eye-stalk
+眼柄
+%%%%
+hand|eye-stalks
+眼柄
+%%%%
+hand|leaf
+叶片
+%%%%
+hand|leaves
+叶片
+%%%%
+hand|stratum
+云层
+%%%%
+hand|strata
+云层
+%%%%
+hand|body
+身体
+%%%%
+hand|rhizome
+根茎
+%%%%
+hand|rhizomes
+根茎
+%%%%
+hand|pupil
+瞳孔
+%%%%
+hand|pupils
+瞳孔
+%%%%
+hand|handbug
+虫手
+%%%%
+hand|handbugs
+虫手
+%%%%
 foot|hoof
 蹄
 %%%%
@@ -39374,6 +39455,36 @@ foot|trotter
 %%%%
 foot|trotters
 蹄
+%%%%
+foot|leg
+腿
+%%%%
+foot|legs
+腿
+%%%%
+foot|claw
+爪
+%%%%
+foot|claws
+爪
+%%%%
+foot|stem
+茎
+%%%%
+foot|stems
+茎
+%%%%
+foot|underside
+腹部
+%%%%
+foot|undersides
+腹部
+%%%%
+foot|footbug
+虫足
+%%%%
+foot|footbugs
+虫足
 %%%%
 arm|arm
 手臂

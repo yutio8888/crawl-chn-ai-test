@@ -4439,6 +4439,76 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(you.arm_name(true) == "化石般的手臂");
 }
 
+TEST_CASE("zh: monster body-part names localize while EN stays canonical",
+          "[zh-translation][body-part]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language,
+                                   language == lang_t::ZH ? "zh" : nullptr);
+    const bool zh = language == lang_t::ZH;
+    init_monsters();
+
+    struct part_case
+    {
+        monster_type type;
+        const char *en;
+        const char *zh;
+        bool hand;
+    };
+    const part_case cases[] = {
+        { MONS_HOUND,     "front paw", "前爪",   true  },
+        { MONS_HOUND,     "paw",       "爪",     false },
+        { MONS_SCORPION,  "pincer",    "螯钳",   true  },
+        { MONS_ADDER,     "tail",      "尾巴",   false },
+        { MONS_BAT,       "claw",      "爪",     false },
+        { MONS_BAT,       "wing",      "翅膀",   true  },
+        { MONS_PLANT,     "root",      "根部",   false },
+        { MONS_ORC,       "hand",      "手",     true  },
+    };
+
+    for (const part_case &test : cases)
+    {
+        monster mons;
+        mons.type = test.type;
+        const string got = test.hand ? mons.hand_name(false)
+                                     : mons.foot_name(false);
+        INFO("type=" << test.type << " hand=" << test.hand);
+        CHECK(got == (zh ? test.zh : test.en));
+    }
+}
+
+TEST_CASE("zh: merged slime size stays visible in monster names",
+          "[zh-translation][monster-name][slime]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language,
+                                   language == lang_t::ZH ? "zh" : nullptr);
+    const bool zh = language == lang_t::ZH;
+    init_monsters();
+
+    struct slime_case
+    {
+        int size;
+        const char *en;
+        const char *zh;
+    };
+    const slime_case cases[] = {
+        { 1, "slime creature",           "史莱姆生物" },
+        { 2, "large slime creature",     "大型史莱姆生物" },
+        { 3, "very large slime creature", "超大型史莱姆生物" },
+        { 4, "enormous slime creature",  "巨型史莱姆生物" },
+        { 5, "titanic slime creature",   "泰坦级史莱姆生物" },
+    };
+
+    for (const slime_case &test : cases)
+    {
+        monster_info mi(MONS_SLIME_CREATURE);
+        mi.slime_size = test.size;
+        INFO("blob_size=" << test.size);
+        CHECK(mi.common_name(DESC_PLAIN) == (zh ? test.zh : test.en));
+    }
+}
+
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: issue 64 body RNG topology is language invariant for all classes and plural skins",
                  "[zh-translation][xom][issue-64]")

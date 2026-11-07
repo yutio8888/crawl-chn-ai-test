@@ -1171,14 +1171,29 @@ string monster_info::_core_name() const
             s = draconian_colour_name(base_type) + " " + s;
         }
 
+        if (type == MONS_SLIME_CREATURE)
+        {
+            ASSERT((size_t) slime_size < ARRAYSZ(slime_sizes));
+            if (Options.language == lang_t::ZH)
+            {
+                const char* zh_slime_sizes[] = {
+                    "BUGGY ", "",
+                    C_("slime size", "large"),
+                    C_("slime size", "very large"),
+                    C_("slime size", "enormous"),
+                    C_("slime size", "titanic"),
+                };
+                ASSERT((size_t) slime_size < ARRAYSZ(zh_slime_sizes));
+                s = string(zh_slime_sizes[slime_size]) + s;
+            }
+            else
+                s = slime_sizes[slime_size] + s;
+        }
+
         if (Options.language != lang_t::ZH)
         {
             switch (type)
             {
-            case MONS_SLIME_CREATURE:
-                ASSERT((size_t) slime_size < ARRAYSZ(slime_sizes));
-                s = slime_sizes[slime_size] + s;
-                break;
             case MONS_UGLY_THING:
             case MONS_VERY_UGLY_THING:
                 s = ugly_thing_colour_name(_colour) + " " + s;

@@ -2224,6 +2224,9 @@ string monster::conj_verb(const string &verb) const
     return conjugate_verb(verb, false);
 }
 
+static string _canonical_foot_name(const monster &mons, bool plural,
+                                   bool *can_plural);
+
 string monster::hand_name(bool plural, bool *can_plural) const
 {
     bool _can_plural;
@@ -2265,8 +2268,8 @@ string monster::hand_name(bool plural, bool *can_plural) const
             str = "pincer";
         else
         {
-            str = "front ";
-            return str + foot_name(plural, can_plural);
+            const string foot = _canonical_foot_name(*this, plural, can_plural);
+            return C_("hand", ("front " + foot).c_str());
         }
         break;
 
@@ -2359,10 +2362,19 @@ string monster::hand_name(bool plural, bool *can_plural) const
     if (plural && *can_plural)
         str = pluralise(str);
 
-    return str;
+    return C_("hand", str.c_str());
 }
 
 string monster::foot_name(bool plural, bool *can_plural) const
+{
+    return C_("foot",
+              _canonical_foot_name(*this, plural, can_plural).c_str());
+}
+
+// Canonical English foot name, before localization. hand_name() needs the
+// untranslated phrase so that "front <foot>" can be translated as a unit.
+static string _canonical_foot_name(const monster &mons, bool plural,
+                                   bool *can_plural)
 {
     bool _can_plural;
     if (can_plural == nullptr)
@@ -2371,13 +2383,13 @@ string monster::foot_name(bool plural, bool *can_plural) const
 
     string str;
 
-    char32_t ch = mons_base_char(mons_is_pghost(type)
-                                 ? species::to_mons_species(ghost->species)
-                                 : type);
+    char32_t ch = mons_base_char(mons_is_pghost(mons.type)
+                                 ? species::to_mons_species(mons.ghost->species)
+                                 : mons.type);
 
-    const bool rand = (type == MONS_CHAOS_SPAWN);
+    const bool rand = (mons.type == MONS_CHAOS_SPAWN);
 
-    switch (get_mon_shape(*this))
+    switch (get_mon_shape(mons))
     {
     case MON_SHAPE_INSECT:
     case MON_SHAPE_INSECT_WINGED:
@@ -2390,9 +2402,9 @@ string monster::foot_name(bool plural, bool *can_plural) const
     case MON_SHAPE_HUMANOID_WINGED:
     case MON_SHAPE_HUMANOID_TAILED:
     case MON_SHAPE_HUMANOID_WINGED_TAILED:
-        if (mons_genus(type) == MONS_MINOTAUR)
+        if (mons_genus(mons.type) == MONS_MINOTAUR)
             str = "hoof";
-        else if (swimming() && mons_genus(type) == MONS_MERFOLK)
+        else if (mons.swimming() && mons_genus(mons.type) == MONS_MERFOLK)
         {
             str         = "tail";
             *can_plural = false;
@@ -2411,21 +2423,21 @@ string monster::foot_name(bool plural, bool *can_plural) const
             const char* feet[] = {"paw", "talon", "hoof"};
             str = RANDOM_ELEMENT(feet);
         }
-        else if (mons_genus(type) == MONS_HOG)
+        else if (mons_genus(mons.type) == MONS_HOG)
             str = "trotter";
-        else if (mons_genus(type) == MONS_HOUND
-                 || mons_genus(type) == MONS_FELID
-                 || mons_genus(type) == MONS_SPHINX
-                 || type == MONS_MANTICORE)
+        else if (mons_genus(mons.type) == MONS_HOUND
+                 || mons_genus(mons.type) == MONS_FELID
+                 || mons_genus(mons.type) == MONS_SPHINX
+                 || mons.type == MONS_MANTICORE)
         {
             str = "paw";
         }
-        else if (mons_genus(type) == MONS_DRAGON)
+        else if (mons_genus(mons.type) == MONS_DRAGON)
             str = "talon";
-        else if (mons_genus(type) == MONS_YAK
-                 || mons_genus(type) == MONS_ELEPHANT
-                 || type == MONS_DREAM_SHEEP
-                 || type == MONS_APIS)
+        else if (mons_genus(mons.type) == MONS_YAK
+                 || mons_genus(mons.type) == MONS_ELEPHANT
+                 || mons.type == MONS_DREAM_SHEEP
+                 || mons.type == MONS_APIS)
         {
             str = "hoof";
         }
@@ -2481,7 +2493,7 @@ string monster::foot_name(bool plural, bool *can_plural) const
     {
         // Reduce the chance of a random-shaped monster having feet.
         if (rand && coinflip())
-            return foot_name(plural, can_plural);
+            return _canonical_foot_name(mons, plural, can_plural);
 
         return plural ? "feet" : "foot";
     }
@@ -2543,7 +2555,7 @@ string monster::arm_name(bool plural, bool *can_plural) const
     if (plural)
         str = pluralise(str);
 
-    return str;
+    return C_("arm", str.c_str());
 }
 
 // Returns a description of the blood-like vital fluid found inside this monster.
