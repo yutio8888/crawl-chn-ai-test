@@ -4509,6 +4509,109 @@ TEST_CASE("zh: merged slime size stays visible in monster names",
     }
 }
 
+TEST_CASE("zh: dynamic monster name modifiers stay localized",
+          "[zh-translation][monster-name]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language,
+                                   language == lang_t::ZH ? "zh" : nullptr);
+    const bool zh = language == lang_t::ZH;
+    init_monsters();
+    init_properties();
+
+    // Draconian job colour: the base colour is dynamic, not part of the
+    // job's static monster name.
+    {
+        monster_info mi(MONS_DRACONIAN_KNIGHT, MONS_RED_DRACONIAN);
+        CHECK(mi.common_name(DESC_PLAIN)
+              == (zh ? "红龙人骑士" : "red draconian knight"));
+    }
+
+    // Ugly thing colour changes with its current attack/resistance set.
+    {
+        monster_info mi(MONS_UGLY_THING);
+        mi._colour = RED;
+        CHECK(mi.common_name(DESC_PLAIN)
+              == (zh ? "红色丑陋之物" : "red ugly thing"));
+    }
+
+    // Xom battleshape geometry names.
+    struct shape_case
+    {
+        int number;
+        const char *en;
+        const char *zh;
+    };
+    const shape_case shapes[] = {
+        { 0, "battlepyramid",       "战斗金字塔" },
+        { 2, "battlecube",          "战斗立方" },
+        { 4, "battleoctahedron",    "战斗八面体" },
+        { 6, "battledodecahedron",  "战斗十二面体" },
+        { 7, "battlebifrustum",     "战斗双棱台" },
+    };
+    for (const shape_case &shape : shapes)
+    {
+        monster_info mi(MONS_CHAOS_BATTLESHAPE);
+        mi.number = shape.number;
+        INFO("battleshape number=" << shape.number);
+        CHECK(mi.common_name(DESC_PLAIN) == (zh ? shape.zh : shape.en));
+    }
+
+    // Mannequins keep their base species and add a localized suffix.
+    {
+        monster_info mi(MONS_MANNEQUIN, MONS_ORC);
+        CHECK(mi.common_name(DESC_PLAIN)
+              == (zh ? "兽人人偶" : "orc mannequin"));
+    }
+
+    // Animated weapon and armour names include the defining item.
+    const auto make_item = [](object_class_type base_type, int sub_type)
+    {
+        item_def item;
+        item.base_type = base_type;
+        item.sub_type = sub_type;
+        item.quantity = 1;
+        item.flags |= ISFLAG_IDENTIFIED;
+        return item;
+    };
+
+    {
+        monster_info mi(MONS_DANCING_WEAPON);
+        mi.inv[MSLOT_WEAPON].reset(
+            new item_def(make_item(OBJ_WEAPONS, WPN_LONG_SWORD)));
+        const string item_name = mi.inv[MSLOT_WEAPON]->name(DESC_PLAIN);
+        CHECK(mi.common_name(DESC_PLAIN)
+              == (zh ? "舞动的" + item_name : "dancing " + item_name));
+    }
+
+    {
+        monster_info mi(MONS_SPECTRAL_WEAPON);
+        mi.inv[MSLOT_WEAPON].reset(
+            new item_def(make_item(OBJ_WEAPONS, WPN_LONG_SWORD)));
+        const string item_name = mi.inv[MSLOT_WEAPON]->name(DESC_PLAIN);
+        CHECK(mi.common_name(DESC_PLAIN)
+              == (zh ? "灵体" + item_name : "dancing " + item_name));
+    }
+
+    {
+        monster_info mi(MONS_ARMOUR_ECHO);
+        mi.inv[MSLOT_ARMOUR].reset(
+            new item_def(make_item(OBJ_ARMOUR, ARM_PLATE_ARMOUR)));
+        const string item_name = mi.inv[MSLOT_ARMOUR]->name(DESC_PLAIN);
+        CHECK(mi.common_name(DESC_PLAIN)
+              == (zh ? "回响的" + item_name : "echoed " + item_name));
+    }
+
+    {
+        monster_info mi(MONS_HAUNTED_ARMOUR);
+        mi.inv[MSLOT_ARMOUR].reset(
+            new item_def(make_item(OBJ_ARMOUR, ARM_PLATE_ARMOUR)));
+        const string item_name = mi.inv[MSLOT_ARMOUR]->name(DESC_QUALNAME);
+        CHECK(mi.common_name(DESC_PLAIN)
+              == (zh ? "怨灵" + item_name : "haunted " + item_name));
+    }
+}
+
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: issue 64 body RNG topology is language invariant for all classes and plural skins",
                  "[zh-translation][xom][issue-64]")
@@ -12372,6 +12475,56 @@ TEST_CASE("upheaval beam hits translate names while preserving raw identities",
     }
 }
 
+
+TEST_CASE("zh: monster beam hit verbs are localized",
+          "[zh-translation][beam-hit-verb][creeping-frost]")
+{
+    init_properties();
+    init_monsters();
+    init_zap_index();
+    init_spell_descs();
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    const bool zh = language == lang_t::ZH;
+
+    CHECK(string(T_("grips")) == (zh ? "攫住" : "grips"));
+    CHECK(string(T_("grasp")) == (zh ? "攫住" : "grasp"));
+    CHECK(string(T_("batters")) == (zh ? "砸中" : "batters"));
+    CHECK(string(T_("slices through")) == (zh ? "贯穿" : "slices through"));
+
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 1000;
+    scoped_monspeak_world world;
+    monster* source = world.place(MONS_SALAMANDER_TYRANT);
+    REQUIRE(source);
+    no_notes suppress_notes;
+
+    // Mirrors _setup_creeping_frost(): the displayed beam name comes from
+    // the spell title, while hit_verb is the raw English verb.
+    bolt beam;
+    beam.name = "frost";
+    beam.origin_spell = SPELL_CREEPING_FROST;
+    beam.flavour = beam.real_flavour = BEAM_COLD;
+    beam.thrower = KILL_MON_MISSILE;
+    beam.source_id = source->mid;
+    beam.source = beam.target = you.pos();
+    beam.hit = AUTOMATIC_HIT;
+    beam.damage = dice_def(1, 1);
+    beam.hit_verb = "grips";
+    msg::tee messages;
+    beam.fire();
+    const string output = messages.get_store();
+    CAPTURE(language, output);
+    if (zh)
+    {
+        CHECK(output.find("蔓延冰霜攫住了你") != string::npos);
+        CHECK(output.find("grips") == string::npos);
+    }
+    else
+        CHECK(output.find("frost grips you") != string::npos);
+}
 
 // The existing stream registry has no public initialized-state accessor.
 // Inspect it only here so this fixture never duplicates or destroys streams
