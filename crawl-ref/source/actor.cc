@@ -507,7 +507,7 @@ void actor::end_constriction(mid_t whom, bool intentional, bool quiet,
                 mprf(T_("%s %s free of %s!"),
                      constrictee->name(DESC_THE).c_str(),
                      constrictee->verb_for_display(escape_verb.c_str(),
-                         contextual_move ? "move.bare" : nullptr).c_str(),
+                         contextual_move ? "move.bare" : "escape verb").c_str(),
                      attacker_desc.c_str());
             }
         }
@@ -831,8 +831,9 @@ void actor::constriction_damage_defender(actor &defender)
         }
 
         mprf_p(T_("%s %s %s%s%s"), attacker_desc.c_str(),
-             force_plural ? T_("constrict")
-                          : verb_for_display(N_("constrict")).c_str(),
+             force_plural ? C_("verb", "constrict")
+                          : verb_for_display(NC_("verb", "constrict"),
+                                             "verb").c_str(),
              defender.name(DESC_THE).c_str(),
 #ifdef DEBUG_DIAGNOSTICS
              make_stringf(" for %d", damage).c_str(),
