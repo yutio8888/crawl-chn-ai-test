@@ -311,6 +311,9 @@ gizmo_adjective
 
 扎尼姆
 
+# 《地球冒险》
+泽克索尼特
+
 @gizmo_modifier@轴向
 
 @gizmo_modifier@bolic
