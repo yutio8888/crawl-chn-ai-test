@@ -19501,6 +19501,12 @@ slowness
 spark swarm
 火花群
 %%%%
+Foes you shock or burn may be outlined in light.
+被你电击或灼烧的敌人有时会被光芒勾勒出轮廓。
+%%%%
+Foes you shock or burn are regularly outlined in light.
+被你电击或灼烧的敌人会经常被光芒勾勒出轮廓。
+%%%%
 spatial entanglement
 空间纠缠
 %%%%

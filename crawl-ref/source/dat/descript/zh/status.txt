@@ -1295,3 +1295,8 @@ Disguised status
 -Disguise status
 
 你最近刚使用过伪装，必须再多探索一会儿才能再次伪装。
+
+%%%%
+Plink status
+
+你正朝火线上的所有敌人投掷飞石。
