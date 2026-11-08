@@ -462,7 +462,7 @@ Sphinx riddle failure
 Sphinx riddle failure acknowledged
 
 @_riddle_prefix_@@_riddle_fail_acknowledged_@
-
+%%%%
 ############################################################
 # 怪物喊叫/说话动词（shout.cc get_says_type/get_speaking_type）
 ############################################################
