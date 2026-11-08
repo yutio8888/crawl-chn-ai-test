@@ -3754,6 +3754,18 @@ damnation
 dancing weapon
 舞动武器
 %%%%
+dancing weapon|dancing %s
+舞动的%s
+%%%%
+spectral weapon|spectral %s
+灵体%s
+%%%%
+armour echo|echoed %s
+回响的%s
+%%%%
+haunted armour|haunted %s
+怨灵%s
+%%%%
 Dangerous Friends
 危险伙伴
 %%%%
@@ -34377,6 +34389,30 @@ djinni
 dormant clockwork bee
 休眠发条蜂
 %%%%
+draconic colour|black
+黑
+%%%%
+draconic colour|yellow
+黄
+%%%%
+draconic colour|green
+绿
+%%%%
+draconic colour|purple
+紫
+%%%%
+draconic colour|red
+红
+%%%%
+draconic colour|white
+白
+%%%%
+draconic colour|grey
+灰
+%%%%
+draconic colour|pale
+苍白
+%%%%
 draconian
 龙人
 %%%%
@@ -35327,6 +35363,24 @@ tyrant leech
 %%%%
 ufetubus
 乌菲特布斯
+%%%%
+ugly thing colour|red
+红色
+%%%%
+ugly thing colour|brown
+褐色
+%%%%
+ugly thing colour|green
+绿色
+%%%%
+ugly thing colour|cyan
+青色
+%%%%
+ugly thing colour|purple
+紫色
+%%%%
+ugly thing colour|white
+白色
 %%%%
 ugly thing
 丑陋之物
@@ -38783,6 +38837,18 @@ envelops
 %%%%
 passes through
 穿过
+%%%%
+batters
+砸中
+%%%%
+grasp
+攫住
+%%%%
+grips
+攫住
+%%%%
+slices through
+贯穿
 %%%%
 The fireball explodes!
 火球爆炸了！
@@ -53472,6 +53538,21 @@ your battlecube
 %%%%
 mannequin
 人偶
+%%%%
+battlepyramid
+战斗金字塔
+%%%%
+battlecube
+战斗立方
+%%%%
+battleoctahedron
+战斗八面体
+%%%%
+battledodecahedron
+战斗十二面体
+%%%%
+battlebifrustum
+战斗双棱台
 %%%%
 chaos battleshape
 混沌战斗形态
