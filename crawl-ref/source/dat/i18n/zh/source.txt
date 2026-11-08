@@ -47096,6 +47096,10 @@ shop name suffix|Spoils
 战利品
 %%%%
 
+shop name suffix|Stall
+摊位
+%%%%
+
 shop name suffix|Stash
 藏货处
 %%%%
@@ -47254,6 +47258,10 @@ shop name type|Comfort
 
 shop name type|Commerce
 贸易
+%%%%
+
+shop name type|Costume
+戏服
 %%%%
 
 shop name type|Delphic
