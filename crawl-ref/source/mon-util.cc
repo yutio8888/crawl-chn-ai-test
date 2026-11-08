@@ -2284,6 +2284,10 @@ string mon_attack_name(attack_type attack, bool with_object)
         ASSERT(verb_index < (int)merged_en.size());
         if (attack == AT_GORE)
             return C_("attack verb", "gore");
+        if (attack == AT_TOUCH)
+            return C_("attack verb", "touch");
+        if (attack == AT_CONSTRICT)
+            return C_("attack verb", "constrict");
         if (with_object)
             return T_(merged_en[verb_index].c_str());
         else

@@ -12526,6 +12526,55 @@ TEST_CASE("zh: monster beam hit verbs are localized",
         CHECK(output.find("frost grips you") != string::npos);
 }
 
+TEST_CASE("zh: dynamic verbs are localized without shadowing spell names",
+          "[zh-translation][verb]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language,
+                                   language == lang_t::ZH ? "zh" : nullptr);
+    const bool zh = language == lang_t::ZH;
+
+    // Verb contexts avoid the capitalized spell/ability keys.
+    CHECK(string(C_("verb", "freeze")) == (zh ? "冻住" : "freeze"));
+    CHECK(string(C_("verb", "envenom")) == (zh ? "毒害" : "envenom"));
+    CHECK(string(C_("verb", "shock")) == (zh ? "电击" : "shock"));
+    CHECK(string(C_("verb", "constrict")) == (zh ? "缠住" : "constrict"));
+    CHECK(string(C_("attack verb", "touch")) == (zh ? "触碰" : "touch"));
+    CHECK(string(C_("attack verb", "constrict"))
+          == (zh ? "缠住" : "constrict"));
+
+    // The capitalized spell/ability names stay distinct.
+    CHECK(string(T_("Touch")) == (zh ? "接触" : "Touch"));
+    CHECK(string(T_("Constrict")) == (zh ? "束缚" : "Constrict"));
+    CHECK(string(T_("Envenom")) == (zh ? "淬毒" : "Envenom"));
+    CHECK(string(T_("Freeze")) == (zh ? "冰冻" : "Freeze"));
+    CHECK(string(T_("Shock")) == (zh ? "震击" : "Shock"));
+    CHECK(string(T_("Jump")) == (zh ? "跳跃" : "Jump"));
+
+    // Constriction escape verbs use their own context, avoiding the
+    // capitalized ability key for "Jump".
+    CHECK(string(C_("escape verb", "slip")) == (zh ? "滑脱" : "slip"));
+    CHECK(string(C_("escape verb", "burst")) == (zh ? "猛然" : "burst"));
+    CHECK(string(C_("escape verb", "dance")) == (zh ? "舞动" : "dance"));
+    CHECK(string(C_("escape verb", "jump")) == (zh ? "跃起" : "jump"));
+
+    // Monster attack verbs use the contextual keys.
+    CHECK(mon_attack_name(AT_TOUCH) == (zh ? "触碰" : "touch"));
+    CHECK(mon_attack_name(AT_CONSTRICT) == (zh ? "缠住" : "constrict"));
+
+    // verb_for_display exercises the same production lookup.
+    monster mons;
+    mons.type = MONS_ORC;
+    CHECK(mons.verb_for_display(NC_("verb", "freeze"), "verb")
+          == (zh ? "冻住" : "freezes"));
+    CHECK(mons.verb_for_display(NC_("verb", "envenom"), "verb")
+          == (zh ? "毒害" : "envenoms"));
+    CHECK(mons.verb_for_display(NC_("verb", "shock"), "verb")
+          == (zh ? "电击" : "shocks"));
+    CHECK(mons.verb_for_display(NC_("verb", "constrict"), "verb")
+          == (zh ? "缠住" : "constricts"));
+}
+
 // The existing stream registry has no public initialized-state accessor.
 // Inspect it only here so this fixture never duplicates or destroys streams
 // already owned by its caller; no production API is added.
