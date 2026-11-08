@@ -10327,7 +10327,7 @@ You feel your anger nearly subside.
 You feel your bond with your battlesphere wane.
 你感到与战斗法球的联结减弱了。
 %%%%
-You feel your defenses recover.
+You feel your defences recover.
 你感觉你的防御恢复了。
 %%%%
 You feel your existence waver again.
@@ -28130,7 +28130,7 @@ Your stump has regrown into a hand!
 Your suffering will be repaid in blood.
 你的苦难将以鲜血偿还。
 %%%%
-Your swarm has recently come to your defense.
+Your swarm has recently come to your defence.
 你的蜂群最近来保护你了。
 %%%%
 Your system completely accepts the healing effects of potions.
