@@ -1252,7 +1252,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                 "unident": 7,
                 "appearance": 186,
                 "special": 23,
-                "gizmo": 543,
+                "gizmo": 544,
                 "item-description": 321,
                 "randart-component": 2445,
                 "randart-grammar": 115,
