@@ -7527,6 +7527,12 @@ The poison in your system burns!
 The portal closes; %s is severed.
 传送门关闭了；%s被切断了。
 %%%%
+The tentacle is hauled back through the portal!
+触手被拖回了传送门！
+%%%%
+With a roar, the tentacle is hauled back through the portal!
+伴随着一声咆哮，触手被拖回了传送门！
+%%%%
 The potion freezes solid before it can reach you!
 药水在到达你之前就冻成了固体！
 %%%%

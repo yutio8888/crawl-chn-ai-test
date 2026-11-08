@@ -3053,8 +3053,8 @@ item_def* monster_die(monster& mons, killer_type killer,
             if (you.can_see(mons))
             {
                 mprf(MSGCH_MONSTER_DAMAGE, MDAM_DEAD, silenced(mons.pos()) ?
-                    "The tentacle is hauled back through the portal!" :
-                    "With a roar, the tentacle is hauled back through the portal!");
+                    T_("The tentacle is hauled back through the portal!") :
+                    T_("With a roar, the tentacle is hauled back through the portal!"));
             }
             for (map_marker* mark : env.markers.get_all(MAT_MALIGN_GATEWAY))
             {
