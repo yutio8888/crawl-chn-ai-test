@@ -3452,21 +3452,14 @@ static void _gozag_add_potions(CrawlVector &vec, potion_type *which)
 
 #define ADD_POTIONS(a,b) _gozag_add_potions(a, b[random2(ARRAYSZ(b))])
 
-bool gozag_setup_potion_petition(bool quiet, string* reason)
+bool gozag_setup_purchase_blessing(bool quiet)
 {
-    if (reason)
-        reason->clear();
-    if (you.gold < GOZAG_POTION_PETITION_AMOUNT)
+    if (you.gold < GOZAG_PURCHASE_BLESSING_COST)
     {
-        if (reason)
-        {
-            *reason = make_stringf(T_("You need at least %d gold to purchase potions right now!"),
-                                  GOZAG_POTION_PETITION_AMOUNT);
-        }
         if (!quiet)
         {
             mprf(T_("You need at least %d gold to purchase potions right now!"),
-                 GOZAG_POTION_PETITION_AMOUNT);
+                 GOZAG_PURCHASE_BLESSING_COST);
         }
         return false;
     }
@@ -3474,7 +3467,7 @@ bool gozag_setup_potion_petition(bool quiet, string* reason)
     return true;
 }
 
-bool gozag_potion_petition()
+bool gozag_purchase_blessing()
 {
     CrawlVector *pots[GOZAG_MAX_POTIONS];
     int prices[GOZAG_MAX_POTIONS];
@@ -3520,7 +3513,7 @@ bool gozag_potion_petition()
                 key = make_stringf(GOZAG_PRICE_KEY, i);
                 you.props[key].get_int() = prices[i];
 
-                if (prices[i] <= GOZAG_POTION_PETITION_AMOUNT)
+                if (prices[i] <= GOZAG_PURCHASE_BLESSING_COST)
                     affordable_potions = true;
             }
         }
@@ -3555,7 +3548,7 @@ bool gozag_potion_petition()
             line += comma_separated_line(pot_names.begin(), pot_names.end());
             mpr_nojoin(MSGCH_PLAIN, line);
         }
-        mprf(MSGCH_PROMPT, T_("Purchase which effect?"));
+        mprf(MSGCH_PROMPT, T_("Purchase which blessing?"));
         keyin = toalower(get_ch()) - 'a';
         if (keyin < 0 || keyin > GOZAG_MAX_POTIONS - 1)
             continue;
@@ -3577,7 +3570,7 @@ bool gozag_potion_petition()
     for (auto pot : *pots[keyin])
     {
         potionlike_effect(static_cast<potion_type>(pot.get_int()), 40);
-        flash_tile(you.pos(), YELLOW, 120, TILE_BOLT_POTION_PETITION);
+        flash_tile(you.pos(), YELLOW, 120, TILE_BOLT_PURCHASE_BLESSING);
     }
 
     for (int i = 0; i < GOZAG_MAX_POTIONS; i++)

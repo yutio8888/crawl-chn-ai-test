@@ -4888,7 +4888,7 @@ bool poison_player(int amount, string source, string source_aux, bool force)
     const bool was_fatal = poison_is_lethal();
 
     if (player_res_poison() < 0)
-        amount *= 2;
+        amount = amount * 3 / 2;
 
     // TODO: support being poisoned by monsters wearing "harm (ha)
     if (you.extra_harm())
@@ -7034,7 +7034,7 @@ int player::armour_class_scaled(int scale) const
     }
 
     if (you.props.exists(PASSWALL_ARMOUR_KEY))
-        AC += you.props[PASSWALL_ARMOUR_KEY].get_int() * 100;
+        AC += you.props[PASSWALL_ARMOUR_KEY].get_int();
 
     if (you.duration[DUR_PHALANX_BARRIER])
         AC += you.props[PHALANX_BARRIER_POWER_KEY].get_int();
@@ -7542,31 +7542,34 @@ int player::res_blind() const
         return 0;
 }
 
-int player::willpower() const
+int player::willpower(bool items) const
 {
-    return player_willpower();
+    return player_willpower(true, items);
 }
 
-int player_willpower(bool include_temp)
+int player_willpower(bool include_temp, bool items)
 {
     if (include_temp && you.form == transformation::slaughter)
         return WILL_INVULN;
 
-    if (you.unrand_equipped(UNRAND_FOLLY))
+    if (items && you.unrand_equipped(UNRAND_FOLLY))
         return 0;
 
     int rm = you.experience_level * species::get_wl_modifier(you.species);
 
-    // randarts and dragon armour
-    rm += WL_PIP * you.scan_artefacts(ARTP_WILLPOWER);
+    if (items)
+    {
+        // randarts and dragon armour
+        rm += WL_PIP * you.scan_artefacts(ARTP_WILLPOWER);
 
-    // ego armours
-    rm += WL_PIP * you.wearing_ego(OBJ_ARMOUR, SPARM_WILLPOWER);
+        // ego armours
+        rm += WL_PIP * you.wearing_ego(OBJ_ARMOUR, SPARM_WILLPOWER);
 
-    rm -= 2 * WL_PIP * you.wearing_ego(OBJ_ARMOUR, SPARM_GUILE);
+        rm -= 2 * WL_PIP * you.wearing_ego(OBJ_ARMOUR, SPARM_GUILE);
 
-    // rings of willpower
-    rm += WL_PIP * you.wearing_jewellery(RING_WILLPOWER);
+        // rings of willpower
+        rm += WL_PIP * you.wearing_jewellery(RING_WILLPOWER);
+    }
 
     // Mutations
     rm += WL_PIP * you.get_mutation_level(MUT_STRONG_WILLED);
@@ -7841,16 +7844,31 @@ int player::hurt(const actor *agent, int amount, beam_type flavour,
  */
 bool player::resists_dislodge(string event, const actor* puller) const
 {
-    if (!you.unrand_equipped(UNRAND_MOUNTAIN_BOOTS))
+    if (!you.unrand_equipped(UNRAND_MOUNTAIN_BOOTS)
+        && !you.duration[DUR_FORTRESS_BLAST_TIMER])
+    {
         return false;
+    }
     if (puller)
     {
-        mprf(T_("Your boots prevent you from being pulled by %s."),
-             puller->name(DESC_THE).c_str());
+        if (you.unrand_equipped(UNRAND_MOUNTAIN_BOOTS))
+        {
+            mprf(T_("Your boots prevent you from being pulled by %s."),
+                 puller->name(DESC_THE).c_str());
+        }
+        else
+            mprf(T_("Your magic anchors you in place."));
     }
     else if (!event.empty())
-        mprf(T_("Your boots prevent you from %s."),
-             C_("dislodge event", event.c_str()));
+    {
+        if (you.unrand_equipped(UNRAND_MOUNTAIN_BOOTS))
+        {
+            mprf(T_("Your boots keep you from %s."),
+                 C_("dislodge event", event.c_str()));
+        }
+        else
+            mprf(T_("Your magic anchors you in place."));
+    }
     return true;
 }
 

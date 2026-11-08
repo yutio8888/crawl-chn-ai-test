@@ -4400,6 +4400,9 @@ Gozag
 Gozag incites %s against you.
 戈扎格煽动%s对抗你。
 %%%%
+Gozag grants %s a complimentary blessing in exchange for %s services.
+戈扎格赐予%s一份免费祝福，以换取%s的服务。
+%%%%
 Gozag's golden gift will leave your new mouth with nothing to eat.
 哥萨戈的金色礼物会让你的新嘴无食可吃。
 %%%%
@@ -5854,6 +5857,9 @@ punch
 %%%%
 Purchase which effect?
 购买哪种效果？
+%%%%
+Purchase which blessing?
+购买哪种祝福？
 %%%%
 put on
 佩戴
@@ -11066,6 +11072,9 @@ You start to feel a little slower.
 %%%%
 You steady yourself in place and focus your resilience into a mighty blast.
 你稳住身形，将韧性凝聚成一股强大的冲击。
+%%%%
+You anchor yourself in place and focus your resilience into a mighty blast.
+你将自己固定原地，将韧性凝聚成一股强大的冲击。
 %%%%
 You step out of the flow of time.
 你踏出了时间流动之外。
@@ -18610,6 +18619,12 @@ You feel invigorated by spreading misfortune.
 Your boots prevent you from %s.
 你的靴子阻止了你%s。
 %%%%
+Your boots keep you from %s.
+你的靴子使你免于%s。
+%%%%
+Your magic anchors you in place.
+你的魔法将你固定在原地。
+%%%%
 You %s
 你%s
 %%%%
@@ -19485,6 +19500,12 @@ slowness
 %%%%
 spark swarm
 火花群
+%%%%
+Foes you shock or burn may be outlined in light.
+被你电击或灼烧的敌人有时会被光芒勾勒出轮廓。
+%%%%
+Foes you shock or burn are regularly outlined in light.
+被你电击或灼烧的敌人会经常被光芒勾勒出轮廓。
 %%%%
 spatial entanglement
 空间纠缠
@@ -31332,6 +31353,9 @@ release
 %s %s flashes viciously!
 %s%s猛烈闪光！
 %%%%
+Your %s flash viciously!
+你的%s闪出凶光！
+%%%%
 %s %s free of %s!
 %s%s挣脱了%s！
 %%%%
@@ -31907,6 +31931,9 @@ Your cloak can equip an additional pair of gloves.
 %%%%
 You are bathed in light that prevents you from turning invisible. Whenever you enter a new floor, you announce yourself to nearby enemies and refuse to leave the floor again for some time.
 你沐浴在光芒之中，无法隐形。每当你进入新的楼层，你会向附近的敌人宣告自己的到来，并在一段时间内拒绝再次离开该楼层。
+%%%%
+You are bathed in light that prevents you from turning invisible. Whenever you enter another floor, you announce yourself to nearby enemies and refuse to leave the floor again for some time.
+你沐浴在光芒之中，无法隐形。每当你进入另一层，你会向附近的敌人宣告自己的到来，并在一段时间内拒绝再次离开该层。
 %%%%
 You can equip two additional rings.
 你可以装备两枚额外的戒指。
@@ -33368,6 +33395,12 @@ Overgrow
 %%%%
 Potion Petition
 药剂祈求
+%%%%
+Purchase Blessing
+购买祝福
+%%%%
+purchase blessings with gold
+用金币购买祝福
 %%%%
 Receive Armour
 接收护甲

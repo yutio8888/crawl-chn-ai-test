@@ -1930,8 +1930,8 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
                 return false;
             // fallthrough to normal mut
         case MUTCLASS_NORMAL:
-            mprf(MSGCH_MUTATION, T_("Your body is rotting!"));
-            drain_player(30, false, true, true);
+            mprf(MSGCH_MUTATION, T_("Your body decomposes!"));
+            drain_player(50, false, true, true);
             return true;
         case MUTCLASS_INNATE:
             // You can't miss out on innate mutations just because you're

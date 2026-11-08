@@ -2016,8 +2016,21 @@ bool melee_attack::attack()
 
     if (is_sunder && !cleaving && is_sundering_weapon() && you.can_see(*attacker))
     {
-        mprf(T_("%s %s flashes viciously!"), attacker->name(DESC_ITS).c_str(),
-                                         weapon->name(DESC_PLAIN).c_str());
+        // XXX: For now, this is only Xom's cleaving blessing while unarmed.
+        //      Change this code if that ever changes.
+        if (!weapon)
+        {
+            bool is_plural = false;
+            string hands = you.hand_name(true, &is_plural);
+            if (Options.language == lang_t::ZH)
+                mprf(T_("Your %s flash viciously!"), hands.c_str());
+            else
+                mprf("Your %s flash%s viciously!", hands.c_str(),
+                     !is_plural ? "es" : "");
+        }
+        else
+            mprf(T_("%s %s flashes viciously!"), attacker->name(DESC_ITS).c_str(),
+                 weapon->name(DESC_PLAIN).c_str());
         draw_ring_animation(attacker->pos(), 2, WHITE, WHITE, true, 25, TILE_BOLT_SUNDERING);
     }
 
@@ -5200,7 +5213,8 @@ void melee_attack::do_valour_beam()
     if (!found_targ)
         return;
 
-    bolt beam(*attacker, ZAP_VALOUR_BEAM, weapon_damage());
+    bolt beam(*attacker, ZAP_VALOUR_BEAM, weapon ? weapon_damage()
+                                                 : 3 + attacker->skill_rdiv(SK_UNARMED_COMBAT, 2, 3));
     beam.source = attacker->pos();
     beam.range = 4;
     beam.stop_at_allies = true;

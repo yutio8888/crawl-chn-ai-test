@@ -1025,8 +1025,8 @@ their attacks completely blocked, and they may also be blinded by its light.
 %%%%
 Blast status
 
-You are preparing to unleash a kinetic shockwave and cannot move until this is
-complete.
+You are preparing to unleash a kinetic shockwave and cannot move or be moved
+until this is complete.
 %%%%
 Blast. status
 
@@ -1380,6 +1380,10 @@ Rampage+++ status
 When moving towards enemies in a straight line, you cover any distance in a
 single step.
 %%%%
+Plink status
+
+You are hurling pebbles at all foes in your line of fire.
+%%%%
 Eisegesis status
 
 You have been granted temporary knowledge of a single spell, which you can cast
@@ -1388,7 +1392,7 @@ reduced by your own experience level) using the Eisegesis ability.
 %%%%
 Guardian status
 
-Xom has granted you a persistant ally, which will accompany you between floors
+Xom has granted you a persistent ally, which will accompany you between floors
 and eventually be revived after dying. It is also immune to your attacks and
 can be freely shot through.
 

@@ -371,7 +371,7 @@ Shatter The Chains ability
 但也会减少艾申扎利对穿戴者的青睐。
 %%%%
 # 哥萨戈
-Potion Petition ability
+Purchase Blessing ability
 
 向哥萨戈祈求购买一组药水的效果。
 （这些效果会立即直接施加于祈求者，而不会提供实体药水，也无需像普通药水那样饮用。）

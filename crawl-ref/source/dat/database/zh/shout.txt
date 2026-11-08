@@ -462,3 +462,231 @@ Sphinx riddle failure
 Sphinx riddle failure acknowledged
 
 @_riddle_prefix_@@_riddle_fail_acknowledged_@
+%%%%
+############################################################
+# 怪物喊叫/说话动词（shout.cc get_says_type/get_speaking_type）
+############################################################
+__BUGGY says
+
+错误地叫道
+%%%%
+__SILENT says
+
+说道
+%%%%
+__SHOUT says
+
+喊道
+%%%%
+__BARK says
+
+吠叫道
+%%%%
+__HOWL says
+
+嚎叫道
+%%%%
+__TWO_SHOUTS says
+
+喊道
+%%%%
+__ROAR says
+
+吼道
+%%%%
+__SCREAM says
+
+尖叫道
+%%%%
+__BELLOW says
+
+吼叫道
+%%%%
+__BLEAT says
+
+咩咩叫道
+%%%%
+__TRUMPET says
+
+长鸣道
+%%%%
+__SCREECH says
+
+尖声嘶叫道
+%%%%
+__BUZZ says
+
+嗡嗡叫道
+%%%%
+__MOAN says
+
+呻吟道
+%%%%
+__GURGLE says
+
+咕噜叫道
+%%%%
+__CROAK says
+
+呱呱叫道
+%%%%
+__GROWL says
+
+咆哮道
+%%%%
+__HISS says
+
+嘶嘶叫道
+%%%%
+__SKITTER says
+
+发出窸窣声
+%%%%
+__FAINT_SKITTER says
+
+发出微弱的窸窣声
+%%%%
+__DEMON_TAUNT says
+
+冷笑道
+%%%%
+__CHERUB says
+
+说道
+%%%%
+__SQUEAL says
+
+尖声叫道
+%%%%
+__LOUD_ROAR says
+
+吼道
+%%%%
+__RUSTLE says
+
+沙沙作响
+%%%%
+__SQUEAK says
+
+吱吱叫道
+%%%%
+__CAW says
+
+嘎嘎叫道
+%%%%
+__LAUGH says
+
+笑道
+%%%%
+__BUGGY speaking
+
+错误地说话
+%%%%
+__SILENT speaking
+
+夸张地吟唱
+%%%%
+__SHOUT speaking
+
+大喊
+%%%%
+__BARK speaking
+
+吠叫着念诵
+%%%%
+__HOWL speaking
+
+嚎叫着念诵
+%%%%
+__TWO_SHOUTS speaking
+
+用双重声音大喊
+%%%%
+__ROAR speaking
+
+咆哮着念诵
+%%%%
+__SCREAM speaking
+
+尖叫着念诵
+%%%%
+__BELLOW speaking
+
+吼叫着念诵
+%%%%
+__BLEAT speaking
+
+咩咩叫着念诵
+%%%%
+__TRUMPET speaking
+
+发出号角般的声音念诵
+%%%%
+__SCREECH speaking
+
+尖啸着念诵
+%%%%
+__BUZZ speaking
+
+嗡嗡叫着念诵
+%%%%
+__MOAN speaking
+
+令人毛骨悚然地呻吟着念诵
+%%%%
+__GURGLE speaking
+
+咕噜叫着念诵
+%%%%
+__CROAK speaking
+
+呱呱叫着念诵
+%%%%
+__GROWL speaking
+
+低吼着念诵
+%%%%
+__HISS speaking
+
+嘶嘶叫着念诵
+%%%%
+__SKITTER speaking
+
+编织
+%%%%
+__FAINT_SKITTER speaking
+
+微弱地编织
+%%%%
+__DEMON_TAUNT speaking
+
+讥笑着念诵
+%%%%
+__CHERUB speaking
+
+念诵
+%%%%
+__SQUEAL speaking
+
+尖声叫着念诵
+%%%%
+__LOUD_ROAR speaking
+
+咆哮着念诵
+%%%%
+__RUSTLE speaking
+
+书写
+%%%%
+__SQUEAK speaking
+
+吱吱叫着念诵
+%%%%
+__CAW speaking
+
+嘎嘎叫着念诵
+%%%%
+__LAUGH speaking
+
+狂笑着念诵
+%%%%

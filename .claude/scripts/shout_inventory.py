@@ -669,13 +669,16 @@ def _shoutcc_default_keys(oid: str, label: str) -> list[str]:
     match = _DEFAULT_MSG_MAP_RE.search(source)
     _require(match is not None,
              f"{label} cannot find default_msg_keys map in shout.cc")
-    # The map starts with the S_SILENT -> "" entry; the 26 non-empty
-    # values are the default shout lookup keys.
+    # The map starts with the S_SILENT entry. Current upstream uses
+    # __SILENT as a key for forced sounds; the frozen identity shape
+    # intentionally covers only the 26 speakable shout types, so the
+    # aliasing key is allowed in addition to the frozen tuple.
     keys = [found.group(1)
             for found in _MSG_MAP_ENTRY_RE.finditer(match.group(1))
             if found.group(1)]
+    comparable = [key for key in keys if key != "__SILENT"]
     _require(
-        tuple(keys) == DEFAULT_MSG_KEYS,
+        tuple(comparable) == DEFAULT_MSG_KEYS,
         f"{label} default_msg_keys differ from the frozen 26 keys: {keys!r}",
     )
     return keys
