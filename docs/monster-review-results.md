@@ -1,8 +1,8 @@
 # Issue #24 怪物翻译全量复审结果
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
-- 术语表 SHA-256：`04f86bac66e75828968d413e1cef8ed3872c5e21d7213a8768bcbfc2a037ca2b`
-- 清单 SHA-256：`5478a2f7c3ef233fc7abec6cf470a391a233306ddf3ddb7863c24d3988c0b95c`
+- 术语表 SHA-256：`2534b6d47d80fc9be65d628faf77d8669b94bbeb2e160b06fe5cf1c6381329ac`
+- 清单 SHA-256：`203c62b1083ef605f650e65340ad7d4f28b367fca46b743c5f94bbb226db05e6`
 - 身份总数：815（现行 691；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
