@@ -1407,8 +1407,7 @@ unique_ptr<targeter> find_spell_targeter(spell_type spell, int pow, int range)
         return make_unique<targeter_beam>(&you, range, ZAP_HURL_TORCHLIGHT,
                                           spell, pow, 1, 1);
     case SPELL_MEPHITIC_CLOUD:
-        return make_unique<targeter_beam>(&you, range, ZAP_MEPHITIC, spell, pow,
-                                          pow >= 100 ? 1 : 0, 1);
+        return make_unique<targeter_mephitic>(&you, range, pow);
     case SPELL_RUST_BREATH:
         return make_unique<targeter_beam>(&you, 4, ZAP_RUST_BREATH, spell, pow,
                                           pow >= 25 ? 2 : 1, 2);
@@ -2008,7 +2007,8 @@ static vector<string> _desc_dispersal_chance(const monster_info& mi, int pow)
 static vector<string> _desc_enfeeble_chance(const monster_info& mi, int pow)
 {
     vector<string> all_effects;
-    const int wl = mi.willpower();
+    int wl = mi.willpower();
+    wl = apply_willpower_bypass(you, wl);
 
     if (!mi.is(MB_NO_ATTACKS))
         all_effects.push_back(T_("will inflict weakness"));
@@ -3444,8 +3444,11 @@ pair<string, string> effect_description(spell_type spell, bool evoked, int pow,
         return make_pair(T_("Bonus AC"), make_stringf("%.1f", ac_bonus));
     }
     case SPELL_PASSWALL:
+    {
+        double ac_bonus = passwall_ac(pow) / 100.0;
         return make_pair(T_("Bonus AC"),
-                         make_stringf("~%d", passwall_ac(pow, false)));
+                         make_stringf("%.1f", ac_bonus));
+    }
     case SPELL_PHALANX_BEETLE:
     {
         double ac_bonus = phalanx_beetle_barrier_ac(pow) / 100.0;

@@ -355,7 +355,7 @@ const vector<vector<god_power>> & get_all_god_powers()
         // Gozag
         {   { 0, "", "", "Gozag turns your defeated foes' bodies to gold." },
             { 0, "", "", "Your enemies may become distracted by gold." },
-            { 0, ABIL_GOZAG_POTION_PETITION, "petition Gozag for potion effects" },
+            { 0, ABIL_GOZAG_PURCHASE_BLESSING, "purchase blessings with gold" },
             { 0, ABIL_GOZAG_CALL_MERCHANT,
                  "fund merchants seeking to open stores in the dungeon" },
             { 0, ABIL_GOZAG_BRIBE_BRANCH,
@@ -3143,6 +3143,13 @@ void excommunication(bool voluntary, god_type new_god)
         break;
 
     case GOD_GOZAG:
+    {
+        const int fee = you.gold / 2;
+        if (fee > 0)
+        {
+            mprf(MSGCH_GOD, "Gozag exacts a cancellation fee of %d gold.", fee);
+            you.del_gold(fee);
+        }
         if (you.attribute[ATTR_GOZAG_SHOPS_CURRENT])
         {
             mprf(MSGCH_GOD, old_god, T_("Your funded stores close, unable to pay their debts without your funds."));
@@ -3156,6 +3163,7 @@ void excommunication(bool voluntary, god_type new_god)
         shopping_list.remove_gozag_shops();
         you.exp_docked[old_god] = excom_xp_docked();
         you.exp_docked_total[old_god] = you.exp_docked[old_god];
+    }
         break;
 
     case GOD_QAZLAL:

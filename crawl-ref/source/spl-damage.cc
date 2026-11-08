@@ -3695,6 +3695,9 @@ spret cast_unravelling(coord_def target, int pow, bool fail)
         return spret::abort;
     }
 
+    if (warn_about_contam_cost(360))
+        return spret::abort;
+
     const actor* victim = actor_at(target);
     if ((!victim || !you.aware_of(*victim))
         && !yesno(T_("You can't see anything there. Cast anyway?"), false, 'n'))
@@ -3739,6 +3742,8 @@ spret cast_unravelling(coord_def target, int pow, bool fail)
     beam.source = beam.target = target;
     beam.ex_size = 1;
     beam.fire();
+
+    contaminate_player(random_range(165, 360));
 
     return spret::success;
 }
@@ -5268,7 +5273,7 @@ spret cast_fortress_blast(actor& caster, int pow, bool fail)
     {
         const int delay = 70 - div_rand_round(pow * 10, 25);
         you.duration[DUR_FORTRESS_BLAST_TIMER] = delay;
-        mpr(T_("You steady yourself in place and focus your resilience into a mighty blast."));
+        mpr(T_("You anchor yourself in place and focus your resilience into a mighty blast."));
     }
     // Todo: Add monster implementation here
 

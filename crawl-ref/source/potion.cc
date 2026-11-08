@@ -790,7 +790,7 @@ public:
 
     bool effect(bool was_known = true, int=40, bool is_potion = true) const override
     {
-        if (you.form == transformation::death) // Gozag potion petition
+        if (you.form == transformation::death) // Gozag blessing
         {
             mpr(T_("You're too dead to take root!"));
             return false;

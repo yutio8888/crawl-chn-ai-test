@@ -4282,37 +4282,6 @@ static void _xom_brain_drain(int)
     }
 }
 
-// XXX: Possibly this could be used elsewhere, like defaults for wizard spells
-// for those without speech, but we generally try to just give those custom
-// messages per-monster anyway currently.
-static const map<shout_type, string> speaking_keys = {
-    { S_SILENT,         NC_("Xom recall delivery", "dramatically intoning") },
-    { S_SHOUT,          NC_("Xom recall delivery", "shouting") },
-    { S_BARK,           NC_("Xom recall delivery", "barking") },
-    { S_HOWL,           NC_("Xom recall delivery", "howling") },
-    { S_SHOUT2,         NC_("Xom recall delivery", "shouting twice-over") },
-    { S_ROAR,           NC_("Xom recall delivery", "roaring") },
-    { S_SCREAM,         NC_("Xom recall delivery", "screaming") },
-    { S_BELLOW,         NC_("Xom recall delivery", "bellowing") },
-    { S_BLEAT,          NC_("Xom recall delivery", "bleating") },
-    { S_TRUMPET,        NC_("Xom recall delivery", "trumpeting") },
-    { S_SCREECH,        NC_("Xom recall delivery", "screeching") },
-    { S_BUZZ,           NC_("Xom recall delivery", "buzzing") },
-    { S_MOAN,           NC_("Xom recall delivery", "chillingly moaning") },
-    { S_GURGLE,         NC_("Xom recall delivery", "gurgling") },
-    { S_CROAK,          NC_("Xom recall delivery", "croaking") },
-    { S_GROWL,          NC_("Xom recall delivery", "growling") },
-    { S_HISS,           NC_("Xom recall delivery", "hissing") },
-    { S_SKITTER,        NC_("Xom recall delivery", "weaving") },
-    { S_FAINT_SKITTER,  NC_("Xom recall delivery", "faintly weaving") },
-    { S_DEMON_TAUNT,    NC_("Xom recall delivery", "sneering") },
-    { S_CHERUB,         NC_("Xom recall delivery", "speaking") },
-    { S_SQUEAL,         NC_("Xom recall delivery", "squealing") },
-    { S_LOUD_ROAR,      NC_("Xom recall delivery", "roaring") },
-    { S_RUSTLE,         NC_("Xom recall delivery", "scribing") },
-    { S_SQUEAK,         NC_("Xom recall delivery", "squeaking") },
-};
-
 static bool _has_min_recall_level()
 {
     int min = you.penance[GOD_XOM] ? 3 : 5;
@@ -4357,14 +4326,14 @@ static void _xom_grants_word_of_recall(int)
     string xom_speech = "grant word of recall";
 
     shout_type shouting = get_monster_data(targetable[0]->type)->shouts;
-    phrasing = speaking_keys.find(shouting)->second;
-    if (phrasing == "dramatically intoning")
+    if (shouting == S_SILENT)
         xom_speech = "grant voiceless word of recall";
+    phrasing = get_speaking_type(shouting);
 
     god_speaks(GOD_XOM, _get_xom_speech(xom_speech).c_str());
     mprf(MSGCH_WARN, T_("%s is forced to slowly start %s a word of recall!"),
                      targetable[0]->name(DESC_A, true, false).c_str(),
-                     C_("Xom recall delivery", phrasing.c_str()));
+                     phrasing.c_str());
     mon_enchant chant_timer = mon_enchant(ENCH_WORD_OF_RECALL, targetable[0], duration);
     targetable[0]->add_ench(chant_timer);
 
@@ -6246,8 +6215,8 @@ static const vector<spell_type> _eisegesis_spells =
 
 static void _xom_eisegesis()
 {
-    const int spell_level = min(9, random_range(you.experience_level / 5 + 2,
-                                                you.experience_level / 3 + 3));
+    const int spell_level = max(3, min(9, random_range(
+        you.experience_level / 5 + 2, you.experience_level / 3 + 3)));
 
     vector<spell_type> choices;
     for (int i = 0; i < (int)_eisegesis_spells.size(); ++i)
@@ -6289,6 +6258,8 @@ static void _xom_guardian()
                   && mons_class_intel(mon_type) == I_HUMAN
                     ? make_name()
                     : do_mon_name_replacements(getRandMonNameString("bland name"));
+    string other_name = coinflip() ? "Other " : "Not-";
+    string other_other_name = other_name + other_name;
     for (int i = 0; i < count; ++i)
     {
         if (monster *summons = create_monster(mg))
@@ -6301,7 +6272,7 @@ static void _xom_guardian()
 
             summons->mname = make_stringf("%s%s",
                                           i == 0 ? "" :
-                                          i == 1 ? "Other " : "Other Other ",
+                                          i == 1 ? other_name.c_str() : other_other_name.c_str(),
                                           name.c_str());
             summons->props[DBNAME_KEY] = mons_class_name(mon_type);
 

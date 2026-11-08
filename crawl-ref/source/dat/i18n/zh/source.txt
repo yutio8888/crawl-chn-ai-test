@@ -4400,6 +4400,9 @@ Gozag
 Gozag incites %s against you.
 戈扎格煽动%s对抗你。
 %%%%
+Gozag grants %s a complimentary blessing in exchange for %s services.
+戈扎格赐予%s一份免费祝福，以换取%s的服务。
+%%%%
 Gozag's golden gift will leave your new mouth with nothing to eat.
 哥萨戈的金色礼物会让你的新嘴无食可吃。
 %%%%
@@ -5854,6 +5857,9 @@ punch
 %%%%
 Purchase which effect?
 购买哪种效果？
+%%%%
+Purchase which blessing?
+购买哪种祝福？
 %%%%
 put on
 佩戴
@@ -11066,6 +11072,9 @@ You start to feel a little slower.
 %%%%
 You steady yourself in place and focus your resilience into a mighty blast.
 你稳住身形，将韧性凝聚成一股强大的冲击。
+%%%%
+You anchor yourself in place and focus your resilience into a mighty blast.
+你将自己固定原地，将韧性凝聚成一股强大的冲击。
 %%%%
 You step out of the flow of time.
 你踏出了时间流动之外。
@@ -18609,6 +18618,12 @@ You feel invigorated by spreading misfortune.
 %%%%
 Your boots prevent you from %s.
 你的靴子阻止了你%s。
+%%%%
+Your boots keep you from %s.
+你的靴子使你免于%s。
+%%%%
+Your magic anchors you in place.
+你的魔法将你固定在原地。
 %%%%
 You %s
 你%s
@@ -31332,6 +31347,9 @@ release
 %s %s flashes viciously!
 %s%s猛烈闪光！
 %%%%
+Your %s flash viciously!
+你的%s闪出凶光！
+%%%%
 %s %s free of %s!
 %s%s挣脱了%s！
 %%%%
@@ -33368,6 +33386,12 @@ Overgrow
 %%%%
 Potion Petition
 药剂祈求
+%%%%
+Purchase Blessing
+购买祝福
+%%%%
+purchase blessings with gold
+用金币购买祝福
 %%%%
 Receive Armour
 接收护甲
