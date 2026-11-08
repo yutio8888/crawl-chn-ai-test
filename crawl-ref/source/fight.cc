@@ -1706,13 +1706,13 @@ bool warn_about_bad_targets(const char* source_name, vector<coord_def> targets,
             make_stringf(T_(" (and %zu other bad targets)"),
                          bad_targets.size() - 1) : "";
     const string prompt = make_stringf(T_("%s might hit %s%s.%s %s"),
-                                       source_name,
+                                       T_(source_name),
                                        ex_mon->name(DESC_THE).c_str(),
                                        and_more.c_str(),
                                        any_penance
                                        ? T_(" This would place you under penance!")
                                        : "",
-                                       msg);
+                                       T_(msg));
     if (!yesno(prompt.c_str(), false, 'n'))
     {
         canned_msg(MSG_OK);

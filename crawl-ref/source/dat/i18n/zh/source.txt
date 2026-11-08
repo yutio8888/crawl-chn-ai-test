@@ -37271,6 +37271,18 @@ weapon of %s
 %s might hit %s%s.%s %s
 %s可能击中%s%s。%s %s
 %%%%
+Cast it anyway?
+仍要施放吗？
+%%%%
+Attack anyway?
+仍要攻击吗？
+%%%%
+The arc blade's discharge
+电弧之刃的放电
+%%%%
+Detonate Monarch Bomb
+引爆君主炸弹
+%%%%
  (max %d damage)
 （最高%d伤害）
 %%%%
