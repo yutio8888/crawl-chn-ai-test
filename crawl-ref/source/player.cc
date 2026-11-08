@@ -7852,16 +7852,20 @@ bool player::resists_dislodge(string event, const actor* puller) const
     if (puller)
     {
         if (you.unrand_equipped(UNRAND_MOUNTAIN_BOOTS))
+        {
             mprf(T_("Your boots prevent you from being pulled by %s."),
                  puller->name(DESC_THE).c_str());
+        }
         else
             mprf(T_("Your magic anchors you in place."));
     }
     else if (!event.empty())
     {
         if (you.unrand_equipped(UNRAND_MOUNTAIN_BOOTS))
+        {
             mprf(T_("Your boots keep you from %s."),
                  C_("dislodge event", event.c_str()));
+        }
         else
             mprf(T_("Your magic anchors you in place."));
     }
