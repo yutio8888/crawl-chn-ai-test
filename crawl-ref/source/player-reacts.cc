@@ -827,8 +827,8 @@ static void _handle_trickster_decay(int delay)
 
     int& stacks = you.props[TRICKSTER_POW_KEY].get_int();
 
-    // Decay at a rate of ~1 AC per 30 aut.
-    const int reduction = div_rand_round(3, delay);
+    // Decay at a rate of 0.8 AC per turn.
+    const int reduction = delay * 8;
     stacks -= reduction;
     if (stacks <= 0)
     {
@@ -1212,6 +1212,10 @@ static void _decrement_durations()
 
     if (you.has_mutation(MUT_TRICKSTER))
         _handle_trickster_decay(delay);
+
+    if (you.duration[DUR_STUMBLING])
+        if (--you.duration[DUR_STUMBLING] <= 0)
+            you.redraw_evasion = true;
 
     // these should be after decr_ambrosia, transforms, liquefying, etc.
     for (int i = 0; i < NUM_DURATIONS; ++i)
