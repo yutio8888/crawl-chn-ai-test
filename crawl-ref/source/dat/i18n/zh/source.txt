@@ -31926,6 +31926,9 @@ Your cloak can equip an additional pair of gloves.
 You are bathed in light that prevents you from turning invisible. Whenever you enter a new floor, you announce yourself to nearby enemies and refuse to leave the floor again for some time.
 你沐浴在光芒之中，无法隐形。每当你进入新的楼层，你会向附近的敌人宣告自己的到来，并在一段时间内拒绝再次离开该楼层。
 %%%%
+You are bathed in light that prevents you from turning invisible. Whenever you enter another floor, you announce yourself to nearby enemies and refuse to leave the floor again for some time.
+你沐浴在光芒之中，无法隐形。每当你进入另一层，你会向附近的敌人宣告自己的到来，并在一段时间内拒绝再次离开该层。
+%%%%
 You can equip two additional rings.
 你可以装备两枚额外的戒指。
 %%%%
