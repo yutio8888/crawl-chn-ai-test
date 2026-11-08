@@ -12575,6 +12575,25 @@ TEST_CASE("zh: dynamic verbs are localized without shadowing spell names",
           == (zh ? "缠住" : "constricts"));
 }
 
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: bad-target prompts localize the action phrase",
+                 "[zh-translation][targeting]")
+{
+    CHECK(string(T_("Cast it anyway?")) == "仍要施放吗？");
+    CHECK(string(T_("Attack anyway?")) == "仍要攻击吗？");
+    CHECK(string(T_("The arc blade's discharge")) == "电弧之刃的放电");
+    CHECK(string(T_("Detonate Monarch Bomb")) == "引爆君主炸弹");
+    CHECK(string(T_("Static Discharge")) == "静电释放");
+
+    const string prompt = make_stringf(T_("%s might hit %s%s.%s %s"),
+                                       T_("Static Discharge"),
+                                       "兽人", "", "",
+                                       T_("Cast it anyway?"));
+    CHECK(prompt.find("静电释放可能击中兽人") != string::npos);
+    CHECK(prompt.find("仍要施放吗？") != string::npos);
+    CHECK(prompt.find("Cast it anyway?") == string::npos);
+}
+
 // The existing stream registry has no public initialized-state accessor.
 // Inspect it only here so this fixture never duplicates or destroys streams
 // already owned by its caller; no production API is added.
