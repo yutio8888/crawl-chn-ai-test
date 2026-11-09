@@ -11,6 +11,7 @@
 #include "feature.h"
 #include "initfile.h"
 #include "losglobal.h"
+#include "map-knowledge.h"
 #include "mon-cast.h"
 #include "mon-cast-target.h"
 #include "mon-ench.h"
@@ -2677,4 +2678,50 @@ TEST_CASE("structured localized body cannot select a message channel",
         legacy, legacy_channel, true, false));
     CHECK(legacy == " legacy protocol body");
     CHECK(legacy_channel == MSGCH_ERROR);
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "unseen movement does not relocate invisible warnings (#5551)",
+                 "[invis-knowledge]")
+{
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster *mon = world.placed_source();
+    mon->add_ench(mon_enchant(ENCH_INVIS, mon, INFINITE_DURATION));
+    env.invis_knowledge.clear();
+    mon->sense_if_invisible();
+    REQUIRE(mon->flags & MF_KNOWN_INVISIBLE);
+
+    const coord_def remembered = mon->pos();
+    const int old_time = you.elapsed_time;
+    SECTION("distant movement preserves the old warning anchor")
+    {
+        you.set_position(coord_def(50, 50));
+        invalidate_los();
+        REQUIRE_FALSE(you.see_cell(remembered));
+        REQUIRE(env.invis_knowledge.get_unknown_in_los().empty());
+        REQUIRE(mon->move_to(remembered + coord_def(1, 0)));
+        CHECK_FALSE(mon->flags & MF_KNOWN_INVISIBLE);
+        CHECK(env.invis_knowledge.get_unknown_in_los().empty());
+    }
+    SECTION("expired memory is not recreated by distant movement")
+    {
+        you.elapsed_time += 160;
+        env.invis_knowledge.handle_time();
+        you.set_position(coord_def(50, 50));
+        invalidate_los();
+        REQUIRE(mon->move_to(remembered + coord_def(1, 0)));
+        CHECK(env.invis_knowledge.get_unknown_in_los().empty());
+    }
+    SECTION("nearby movement still leaves a useful warning")
+    {
+        REQUIRE(you.see_cell(remembered));
+        REQUIRE(mon->move_to(remembered + coord_def(1, 0)));
+        CHECK_FALSE(mon->flags & MF_KNOWN_INVISIBLE);
+        const auto unknown = env.invis_knowledge.get_unknown_in_los();
+        REQUIRE(unknown.size() == 1);
+        CHECK(unknown[0].pos == remembered);
+    }
+    you.elapsed_time = old_time;
+    env.invis_knowledge.clear();
 }
