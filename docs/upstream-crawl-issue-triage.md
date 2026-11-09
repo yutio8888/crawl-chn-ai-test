@@ -18,7 +18,7 @@
 | [5557](https://github.com/crawl/crawl/issues/5557) | 2026-11-04 | Stuck "tough sensed monster" in monster list when worshipping Ashenzari | — | W1 | no (defer) | open; no related fix through 7c4eee1bee | defer | — | 未取得复现证据；候选缺口在 mutation.cc:3412 清除感知未标记重绘 / tileweb.cc:2030 vs :2093；需 WebTiles 增量复现后再定 |
 | [5554](https://github.com/crawl/crawl/issues/5554) | 2026-11-02 | Being killed by monster Grave Claw produces message including "Killed by a jagged bones" | — | W1 | no | open; 上游 PR #5556 未合并 | upstream-only | — | 中文独立分支经 `_death_beam_display_name()` 输出“由锯齿骨头造成”，不经过英文冠词；zap-data.h:2342 / hiscores.cc:3579-3590 |
 | [5553](https://github.com/crawl/crawl/issues/5553) | 2026-11-02 | Distracted enemies cast LRD at locations that hit only the player | — | — | pending | pending | pending | — | — |
-| [5551](https://github.com/crawl/crawl/issues/5551) | 2026-11-02 | Spurious invisibility warnings | — | W5 | pending | pending | pending | — | — |
+| [5551](https://github.com/crawl/crawl/issues/5551) | 2026-11-02 | Spurious invisibility warnings | — | W5 | yes | open; no upstream fix through c17805322d | local-fix | `40780a6351` | 远处已知隐形怪首次移动时会把警告锚到玩家位置；monster.cc:5597 仅在 `you.see_cell(last_move_pos)` 时刷新记忆；新增 3 个回归场景（18 断言） |
 | [5550](https://github.com/crawl/crawl/issues/5550) | 2026-11-01 | Webtiles: TerminalRecorder._spawn hangs at 100% CPU in containerized environments with high RLIMIT_NOFILE | — | — | pending | pending | pending | — | — |
 | [5549](https://github.com/crawl/crawl/issues/5549) | 2026-11-01 | Unusual monster items artefact regex | — | — | pending | pending | pending | — | — |
 | [5539](https://github.com/crawl/crawl/issues/5539) | 2026-10-26 | Closet in Dungeon | Vaults | — | pending | pending | pending | — | — |
