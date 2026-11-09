@@ -42,7 +42,7 @@
 | [5474](https://github.com/crawl/crawl/issues/5474) | 2026-10-02 | Unclear Dialogue when Entering Cocytus | — | W2 | no | open; no related fix through 7c4eee1bee | upstream-only | — | 警告原因在消息栏，确认弹窗只显示通用问句；中文“仍然进入下一层吗？”语义准确；stairs.cc:126/138 + prompt.cc:205；建议上游把警告原因纳入弹窗 |
 | [5463](https://github.com/crawl/crawl/issues/5463) | 2026-09-29 | Coglin does not equip gizmo | — | — | pending | pending | pending | — | — |
 | [5462](https://github.com/crawl/crawl/issues/5462) | 2026-09-29 | Fails to run on MacOS due to a failed GateKeeper check | — | — | pending | pending | pending | — | — |
-| [5449](https://github.com/crawl/crawl/issues/5449) | 2026-09-23 | Mutations from potion of mutation may fail to apply silently | — | W4 | pending | pending | pending | — | — |
+| [5449](https://github.com/crawl/crawl/issues/5449) | 2026-09-23 | Mutations from potion of mutation may fail to apply silently | — | W4 | no | open; no related fix through c17805322d | upstream-only | — | `_accept_mutation()` 未排除全部先天冲突，低魔力等会在 mutation.cc:1509 被拒绝且仅调试消息；中文通用提示“你感到极度怪异。”未误称成功；改候选/重抽会影响变异概率 |
 | [5448](https://github.com/crawl/crawl/issues/5448) | 2026-09-22 | When my apostles got feared, I can remove fear by using recall apostle ability | — | — | pending | pending | pending | — | — |
 | [5442](https://github.com/crawl/crawl/issues/5442) | 2026-09-21 | Ctrl + Direction(forced attack) - attacking ally interaction bugs | — | W4 | pending | pending | pending | — | — |
 | [5441](https://github.com/crawl/crawl/issues/5441) | 2026-09-21 | Interlevel travel(ctrl+G) can cause player to use transporter. | — | W4 | no | open; no related fix through c17805322d | upstream-only | — | 旅行寻路把已知传送器作为路径边并自动进入（dd972a7a068 引入）；travel.cc:1967/970，1829 已有排除保护；禁用/加确认属上游旅行规则 |
