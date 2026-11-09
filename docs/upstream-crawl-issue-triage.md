@@ -12,7 +12,7 @@
 | # | 创建日期 | 标题 | 标签 | 批次 | 是否需要本地修复 | 上游状态 | 结论 | 修复分支/提交 | 证据/备注 |
 |---:|---|---|---|---|---|---|---|---|---|
 | [5568](https://github.com/crawl/crawl/issues/5568) | 2026-11-08 | Xom locked up stairs with no monsters left on the level | — | — | pending | pending | pending | — | — |
-| [5567](https://github.com/crawl/crawl/issues/5567) | 2026-11-08 | compiler warning sb.SB may be used uninitialized in json.cc | — | W1 | pending | pending | pending | — | — |
+| [5567](https://github.com/crawl/crawl/issues/5567) | 2026-11-08 | compiler warning sb.SB may be used uninitialized in json.cc | — | W1 | no | open; no fix through 7c4eee1bee | upstream-only | — | GCC 16 误报；`sb_init()` 初始化全部成员，初始化/访问/清理共用同一 `if (out)` 守卫；json.cc:59/849/954 |
 | [5566](https://github.com/crawl/crawl/issues/5566) | 2026-11-07 | FR: Setting skill training targets in offline client | — | — | pending | pending | pending | — | — |
 | [5561](https://github.com/crawl/crawl/issues/5561) | 2026-11-04 | Crash related to Xom effects/circle animation | — | — | pending | pending | pending | — | — |
 | [5557](https://github.com/crawl/crawl/issues/5557) | 2026-11-04 | Stuck "tough sensed monster" in monster list when worshipping Ashenzari | — | W1 | pending | pending | pending | — | — |
