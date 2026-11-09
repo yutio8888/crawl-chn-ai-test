@@ -117,8 +117,12 @@
 
 ## 历史归档（historical / evidence）
 
-[archive/README.md](archive/README.md) 列出翻译质量实验和 Android UI 审计的原始用途。
-归档保留当时的结论与证据边界，不作为当前实施授权。
+[archive/README.md](archive/README.md) 列出翻译质量实验、Android UI 审计和 2026-11
+上游 issue 分析的原始用途。归档保留当时的结论与证据边界，不作为当前实施授权。
+
+[2026-11 上游 issue 分析与修复](archive/upstream-issue-triage-2026-11/report.md)
+汇总 44 个近三个月 issue 的结论、13 个本地修复与验证摘要；逐项证据见同目录
+`triage.md`。
 
 [review-recovery-history.md](review-recovery-history.md) 是已退役审查控制面的只读历史。
 其路径受 `test_agent_docs.py` 保护，原位保留，不授予合并权限。

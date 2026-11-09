@@ -19,3 +19,10 @@
 [审计报告](android-ui-audit-2026-09-22/report.md) 记录当时的源码基线、模拟器观察、
 优化建议与未覆盖项；[证据目录](android-ui-audit-2026-09-22/evidence/) 保存截图、
 UI 层级与文本记录。后续实施与验收以报告所链接的 PR 为准。
+
+## 上游 issue 分析与修复（2026-11）
+
+[crawl/crawl 近期 issue 分析与修复报告](upstream-issue-triage-2026-11/report.md) 汇总
+2026-08-09 之后 44 个上游 open issue 的结论、13 个本地修复提交与验证；
+[完整 triage 表](upstream-issue-triage-2026-11/triage.md) 保存逐项证据、批次与引用。
+历史材料不授予后续实施或合并权限。
