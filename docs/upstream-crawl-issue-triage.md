@@ -11,14 +11,14 @@
 
 | # | 创建日期 | 标题 | 标签 | 批次 | 是否需要本地修复 | 上游状态 | 结论 | 修复分支/提交 | 证据/备注 |
 |---:|---|---|---|---|---|---|---|---|---|
-| [5568](https://github.com/crawl/crawl/issues/5568) | 2026-11-08 | Xom locked up stairs with no monsters left on the level | — | — | pending | pending | pending | — | — |
+| [5568](https://github.com/crawl/crawl/issues/5568) | 2026-11-08 | Xom locked up stairs with no monsters left on the level | — | W5 | pending | pending | pending | — | — |
 | [5567](https://github.com/crawl/crawl/issues/5567) | 2026-11-08 | compiler warning sb.SB may be used uninitialized in json.cc | — | W1 | no | open; no fix through 7c4eee1bee | upstream-only | — | GCC 16 误报；`sb_init()` 初始化全部成员，初始化/访问/清理共用同一 `if (out)` 守卫；json.cc:59/849/954 |
 | [5566](https://github.com/crawl/crawl/issues/5566) | 2026-11-07 | FR: Setting skill training targets in offline client | — | — | pending | pending | pending | — | — |
 | [5561](https://github.com/crawl/crawl/issues/5561) | 2026-11-04 | Crash related to Xom effects/circle animation | — | W2 | no | 已由上游 `fb7e857c27` 修复（最低等级限制为 3） | already-fixed-upstream | — | 当前分支 xom.cc:6237-6245 已含修复；:6605-6608 显示彩环先于祝福；旧版 XL1-4 会抽到空候选 |
 | [5557](https://github.com/crawl/crawl/issues/5557) | 2026-11-04 | Stuck "tough sensed monster" in monster list when worshipping Ashenzari | — | W1 | no (defer) | open; no related fix through 7c4eee1bee | defer | — | 未取得复现证据；候选缺口在 mutation.cc:3412 清除感知未标记重绘 / tileweb.cc:2030 vs :2093；需 WebTiles 增量复现后再定 |
 | [5554](https://github.com/crawl/crawl/issues/5554) | 2026-11-02 | Being killed by monster Grave Claw produces message including "Killed by a jagged bones" | — | W1 | no | open; 上游 PR #5556 未合并 | upstream-only | — | 中文独立分支经 `_death_beam_display_name()` 输出“由锯齿骨头造成”，不经过英文冠词；zap-data.h:2342 / hiscores.cc:3579-3590 |
 | [5553](https://github.com/crawl/crawl/issues/5553) | 2026-11-02 | Distracted enemies cast LRD at locations that hit only the player | — | — | pending | pending | pending | — | — |
-| [5551](https://github.com/crawl/crawl/issues/5551) | 2026-11-02 | Spurious invisibility warnings | — | — | pending | pending | pending | — | — |
+| [5551](https://github.com/crawl/crawl/issues/5551) | 2026-11-02 | Spurious invisibility warnings | — | W5 | pending | pending | pending | — | — |
 | [5550](https://github.com/crawl/crawl/issues/5550) | 2026-11-01 | Webtiles: TerminalRecorder._spawn hangs at 100% CPU in containerized environments with high RLIMIT_NOFILE | — | — | pending | pending | pending | — | — |
 | [5549](https://github.com/crawl/crawl/issues/5549) | 2026-11-01 | Unusual monster items artefact regex | — | — | pending | pending | pending | — | — |
 | [5539](https://github.com/crawl/crawl/issues/5539) | 2026-10-26 | Closet in Dungeon | Vaults | — | pending | pending | pending | — | — |
@@ -27,8 +27,8 @@
 | [5531](https://github.com/crawl/crawl/issues/5531) | 2026-10-24 | Feature request (clua): Additional ability info. | — | — | pending | pending | pending | — | — |
 | [5530](https://github.com/crawl/crawl/issues/5530) | 2026-10-23 | Fortress talisman ashenrazi can't remove talisman | — | — | pending | pending | pending | — | — |
 | [5529](https://github.com/crawl/crawl/issues/5529) | 2026-10-23 | Feature request: delay/nullify repeated rapid inputs | — | — | pending | pending | pending | — | — |
-| [5528](https://github.com/crawl/crawl/issues/5528) | 2026-10-23 | Spurious encounter messages with fog machines | — | — | pending | pending | pending | — | — |
-| [5526](https://github.com/crawl/crawl/issues/5526) | 2026-10-22 | New clang compile warning in 0.32-a0-7082-g32f959a6b0 | — | — | pending | pending | pending | — | — |
+| [5528](https://github.com/crawl/crawl/issues/5528) | 2026-10-23 | Spurious encounter messages with fog machines | — | W5 | pending | pending | pending | — | — |
+| [5526](https://github.com/crawl/crawl/issues/5526) | 2026-10-22 | New clang compile warning in 0.32-a0-7082-g32f959a6b0 | — | W5 | pending | pending | pending | — | — |
 | [5524](https://github.com/crawl/crawl/issues/5524) | 2026-10-22 | Ru redirects out of range spells | — | — | pending | pending | pending | — | — |
 | [5522](https://github.com/crawl/crawl/issues/5522) | 2026-10-19 | strange behavior with aiming fireball at solid features | — | — | pending | pending | pending | — | — |
 | [5521](https://github.com/crawl/crawl/issues/5521) | 2026-10-19 | Vaults index caches tags intended to depend on player location | — | — | pending | pending | pending | — | — |
