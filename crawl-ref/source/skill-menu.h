@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "enum.h"
@@ -174,6 +175,11 @@ public:
     void finish_experience(bool experience_change);
 
 private:
+    // Out-of-bounds items are still used by the skill state, but are not
+    // owned by MenuFreeform. Keep them alive until the menu is cleared.
+    vector<std::unique_ptr<MenuItem>> m_unattached_items;
+    void attach_item(TextItem* item);
+
     MenuFreeform*        m_ff;
     BoxMenuHighlighter*  m_highlighter;
 
