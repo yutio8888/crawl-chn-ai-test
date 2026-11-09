@@ -1,6 +1,6 @@
 # crawl/crawl 上游 Issue 追踪
 
-> 范围：`crawl/crawl` 仓库中 2026-09-01 之后创建的 open issue（当前抓取 40 个；上游总开放 issue 344 个，历史项分批补入）。
+> 范围：`crawl/crawl` 仓库中 **2026-08-09 之后（近三个月）** 创建的 open issue（当前 44 个；上游总开放 issue 344 个；更早的 issue 不纳入本轮）。
 
 > 目的：判断上游反馈的问题是否影响本中文分支，是否需要本地修复，并记录证据、结论和修复提交。
 
@@ -52,8 +52,14 @@
 | [5414](https://github.com/crawl/crawl/issues/5414) | 2026-09-12 | Lua error when reloading saved game in tutorial mode | — | — | pending | pending | pending | — | — |
 | [5413](https://github.com/crawl/crawl/issues/5413) | 2026-09-12 | memory leak in skill-menu-cc | — | W3 | yes | open; no related fix through 7c4eee1bee | local-fix | `c5de3666ed` | `MenuFreeform::attach_item` 拒绝越界项时不接管所有权；skill-menu 用 `m_unattached_items` 保留至 clear，新增 `test_skill_menu.cc`（16 断言） |
 
+| [5384](https://github.com/crawl/crawl/issues/5384) | 2026-08-22 | Undefined behaviour from isalpha(). | — | — | pending | pending | pending | — | — |
+| [5383](https://github.com/crawl/crawl/issues/5383) | 2026-08-22 | Unidentified Jewelry autopickup does not work | — | — | pending | pending | pending | — | — |
+| [5378](https://github.com/crawl/crawl/issues/5378) | 2026-08-18 | Fungal Fisticloak "unwears" itself or destroys other aux gear on Poltergeist of  | — | — | pending | pending | pending | — | — |
+| [5368](https://github.com/crawl/crawl/issues/5368) | 2026-08-09 | Teleport closet in spider | Vaults | — | — | pending | pending | pending | — | — |
+
 ## 方法与约束
 
+- 仅纳入创建时间在 2026-08-09 之后（近三个月）的 open issue；更早的 issue 不纳入本轮追踪。
 - 每个 issue 由独立子代理确认：是否已在上游 `master` 修复、是否影响本分支、是否需要本地修复。
 
 - 需要修复时，在独立 worktree 中基于 `opencode/chn-trunk-pr` 实现最小修复，附测试/验证证据，再汇入集成分支。
