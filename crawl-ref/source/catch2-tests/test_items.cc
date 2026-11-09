@@ -8,6 +8,9 @@
 #include "item-prop.h"
 #include "item-prop-enum.h"
 #include "invent.h"
+#include "env.h"
+#include "transform.h"
+#include "unwind.h"
 #include "player-equip.h"
 #include "potion-type.h"
 
@@ -238,4 +241,63 @@ TEST_CASE("Test all_item_subtypes() does include items for each category",
     REQUIRE(all_item_subtypes(OBJ_RUNES).size() > 0);
     REQUIRE(all_item_subtypes(OBJ_TALISMANS).size() > 0);
     REQUIRE(all_item_subtypes(OBJ_GEMS).size() > 0);
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "Fortress safety checks preserve bound two-handed weapons",
+                 "[single-file][transform][upstream-5530]")
+{
+    unwind_var<dungeon_feature_type> floor(env.grid(you.pos()), DNGN_FLOOR);
+    auto equip = [](object_class_type base, int subtype)
+    {
+        item_def item = simple_create_item(base, subtype);
+        move_item_to_inv(item);
+        const int index = find_inv_index_with_exact_item(base, subtype);
+        REQUIRE(index != -1);
+        autoequip_item(you.inv[index]);
+    };
+    equip(OBJ_WEAPONS, WPN_GREAT_SWORD);
+    item_def* weapon = you.weapon();
+    REQUIRE(weapon);
+    weapon->flags |= ISFLAG_CURSED;
+
+    // Entering fortress form must not mistake the melded offhand overflow
+    // for removal of the weapon.
+    CHECK_FALSE(transforming_is_unsafe(transformation::fortress_crab));
+    CHECK(you.form == transformation::none);
+    CHECK(you.equipment.get_slot_entries(SLOT_OFFHAND).size() == 1);
+
+    // Model the equipment layout produced by entering fortress form.
+    you.form = you.default_form = transformation::fortress_crab;
+    you.equipment.shift_twohander_to_slot(SLOT_TWOHANDER_ONLY);
+    you.equipment.update();
+    REQUIRE(you.equipment.get_slot_entries(SLOT_TWOHANDER_ONLY).size() == 1);
+
+    SECTION("Removing the talisman keeps the bound weapon")
+    {
+        CHECK_FALSE(transforming_is_unsafe(transformation::none));
+    }
+    SECTION("Changing to another weapon-using form keeps the bound weapon")
+    {
+        CHECK_FALSE(transforming_is_unsafe(transformation::statue));
+    }
+    SECTION("A bound shield still prevents losing the extra hand")
+    {
+        equip(OBJ_ARMOUR, ARM_KITE_SHIELD);
+        item_def* shield = you.shield();
+        REQUIRE(shield);
+        shield->flags |= ISFLAG_CURSED;
+        CHECK(transforming_is_unsafe(transformation::none));
+        CHECK(you.shield() == shield);
+        // Fixture teardown must not destroy an artificially cursed item.
+        shield->flags &= ~ISFLAG_CURSED;
+    }
+
+    // The safety simulation must leave the real equipment/form untouched.
+    CHECK(you.form == transformation::fortress_crab);
+    CHECK(you.default_form == transformation::fortress_crab);
+    CHECK(you.equipment.get_slot_entries(SLOT_TWOHANDER_ONLY).size() == 1);
+    CHECK(you.weapon() == weapon);
+    CHECK(weapon->cursed());
+    weapon->flags &= ~ISFLAG_CURSED;
 }

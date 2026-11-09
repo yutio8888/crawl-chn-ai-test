@@ -1971,10 +1971,17 @@ bool transforming_is_unsafe(transformation which_trans)
     unwind_var<transformation> unwind_default_form(you.default_form);
     unwind_var<transformation> unwind_form(you.form);
 
+    const transformation old_form = you.form;
     you.default_form = which_trans;
     you.form = which_trans;
 
     you.equipment.unmeld_all_equipment(true);
+
+    // Match untransform's two-hander slot migration before checking removals.
+    if (old_form == transformation::fortress_crab)
+        you.equipment.shift_twohander_to_slot(SLOT_OFFHAND);
+
+    you.equipment.update();
     you.equipment.meld_equipment(get_form(which_trans)->blocked_slots, true);
 
     // Pretend incompatible items fell away.
