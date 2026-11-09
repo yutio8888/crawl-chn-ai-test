@@ -13,6 +13,7 @@
 #include "unwind.h"
 #include "player-equip.h"
 #include "potion-type.h"
+#include "player.h"
 
 #include "test_player_fixture.h"
 
@@ -189,6 +190,44 @@ TEST_CASE_METHOD( MockPlayerYouTestsFixture,
 
 TEST_CASE("armour_prop_test", "[single-file]"){
     REQUIRE(armour_prop(ARM_SCALE_MAIL, PARM_AC) == 6);
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "Sanguine talisman flight returns after bat swarm",
+                 "[single-file][transform][upstream-5499]")
+{
+    unwind_var<dungeon_feature_type> floor(env.grid(you.pos()), DNGN_FLOOR);
+    const bool grants_flight = GENERATE(false, true);
+    item_def talisman = simple_create_item(OBJ_TALISMANS, TALISMAN_VAMPIRE);
+    // Use a deterministic randart, with flight as its only possible property.
+    talisman.flags |= ISFLAG_RANDART | ISFLAG_IDENTIFIED;
+    CrawlVector &props = talisman.props[ARTEFACT_PROPS_KEY].new_vector(SV_SHORT);
+    props.resize(ART_PROPERTIES);
+    props.set_max_size(ART_PROPERTIES);
+    for (vec_size i = 0; i < ART_PROPERTIES; ++i)
+        props[i].get_short() = 0;
+    artefact_set_property(talisman, ARTP_FLY, grants_flight);
+    move_item_to_inv(talisman);
+    const int index = find_inv_index_with_exact_item(OBJ_TALISMANS, TALISMAN_VAMPIRE);
+    REQUIRE(index != -1);
+    you.cur_talisman = index;
+    you.default_form = transformation::vampire;
+    REQUIRE(transform(0, you.default_form, true, true));
+    REQUIRE(you.airborne() == grants_flight);
+
+    for (int cycle = 0; cycle < 2; ++cycle)
+    {
+        REQUIRE(transform(15, transformation::bat_swarm, true));
+        REQUIRE(you.airborne());
+        CHECK(you.equip_flight() == 0);
+
+        return_to_default_form();
+        CHECK(you.form == transformation::vampire);
+        CHECK(you.equip_flight() == int(grants_flight));
+        CHECK(you.attribute[ATTR_PERM_FLIGHT] == int(grants_flight));
+        CHECK(you.airborne() == grants_flight);
+        CHECK(artefact_property(you.inv[index], ARTP_FLY) == int(grants_flight));
+    }
 }
 
 TEST_CASE("Test all_item_subtypes() does not include removed items",

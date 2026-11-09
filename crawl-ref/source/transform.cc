@@ -2130,6 +2130,9 @@ static void _enter_form(int dur, transformation which_trans, bool using_talisman
     // a new artefact talisman or were forcibly polymorphed away from one),
     // refresh equipment properties.
     you.equipment.update();
+    // Returning from a temporary form can restore talisman flight without
+    // triggering equip effects (and untransform() may have cleared this cache).
+    you.attribute[ATTR_PERM_FLIGHT] = you.equip_flight() ? 1 : 0;
     if (which_trans == transformation::fortress_crab)
         calc_mp();
 
