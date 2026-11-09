@@ -56,6 +56,7 @@
 #ifdef DGL_SIMPLE_MESSAGING
 #include "dgl-message.h"
 #endif
+#include "dgn-event.h"
 #include "dgn-overview.h"
 #include "directn.h"
 #include "dlua.h"
@@ -355,6 +356,11 @@ int main(int argc, char *argv[])
 
 static void _reset_game()
 {
+    // Discard the old level's markers before closing Lua. Restoring the player's
+    // position fires movement events before the saved level is loaded.
+    dungeon_events.clear();
+    env.markers.clear();
+
     clua.close();
     dlua.close();
 
