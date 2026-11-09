@@ -11,7 +11,7 @@
 
 | # | 创建日期 | 标题 | 标签 | 批次 | 是否需要本地修复 | 上游状态 | 结论 | 修复分支/提交 | 证据/备注 |
 |---:|---|---|---|---|---|---|---|---|---|
-| [5568](https://github.com/crawl/crawl/issues/5568) | 2026-11-08 | Xom locked up stairs with no monsters left on the level | — | W5 | pending | pending | pending | — | — |
+| [5568](https://github.com/crawl/crawl/issues/5568) | 2026-11-08 | Xom locked up stairs with no monsters left on the level | — | W5 | no (defer) | open; no related fix through c17805322d | defer | — | xom.cc:6007-6108 按可达敌对怪物计数封锁/恢复楼梯；mon-death.cc:3710、mon-util.cc:3674、stairs.cc:324 与上游一致；附件无存档，无法区分计数异常/不可达怪物/恢复失败 |
 | [5567](https://github.com/crawl/crawl/issues/5567) | 2026-11-08 | compiler warning sb.SB may be used uninitialized in json.cc | — | W1 | no | open; no fix through 7c4eee1bee | upstream-only | — | GCC 16 误报；`sb_init()` 初始化全部成员，初始化/访问/清理共用同一 `if (out)` 守卫；json.cc:59/849/954 |
 | [5566](https://github.com/crawl/crawl/issues/5566) | 2026-11-07 | FR: Setting skill training targets in offline client | — | — | pending | pending | pending | — | — |
 | [5561](https://github.com/crawl/crawl/issues/5561) | 2026-11-04 | Crash related to Xom effects/circle animation | — | W2 | no | 已由上游 `fb7e857c27` 修复（最低等级限制为 3） | already-fixed-upstream | — | 当前分支 xom.cc:6237-6245 已含修复；:6605-6608 显示彩环先于祝福；旧版 XL1-4 会抽到空候选 |
