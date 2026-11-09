@@ -48899,6 +48899,9 @@ form melding|All Equipment
 form melding|All Weapons and Armour
 全部武器和护甲
 %%%%
+form melding|All Headgear
+全部头部装备
+%%%%
 much less effective
 效果大幅减弱
 %%%%

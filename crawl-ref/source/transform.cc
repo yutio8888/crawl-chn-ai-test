@@ -112,7 +112,10 @@ string Form::melding_description(bool itemized) const
                 if (testbits(blocked_slots, SLOTF(slot))
                     && you.equipment.num_slots[slot] > 0)
                 {
-                    tags.emplace_back(lowercase_string(equip_slot_name(slot)));
+                    // The slot type includes hats and any extra headgear slots.
+                    tags.emplace_back(lowercase_string(slot == SLOT_HELMET
+                        ? C_("form melding", "All Headgear")
+                        : equip_slot_name(slot)));
                 }
             }
             if (!tags.empty())
@@ -144,7 +147,9 @@ string Form::melding_description(bool itemized) const
         {
             equipment_slot slot = static_cast<equipment_slot>(i);
             if (testbits(blocked_slots, SLOTF(slot)))
-                tags.emplace_back(equip_slot_name(slot));
+                tags.emplace_back(slot == SLOT_HELMET
+                    ? C_("form melding", "All Headgear")
+                    : equip_slot_name(slot));
         }
     }
 
