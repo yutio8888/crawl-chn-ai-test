@@ -2359,11 +2359,11 @@ comfort your suffering allies
 <green>Wyrmbane glows as a worthy foe approaches.</green>
 <green>屠龙者在强大的敌人接近时发出光芒。</green>
 %%%%
-<lightgreen>%d spell level left </lightgreen>
-<lightgreen>剩余%d级法术容量 </lightgreen>
+<lightgreen>%d spell slot left </lightgreen>
+<lightgreen>剩余法术容量：%d </lightgreen>
 %%%%
-<lightgreen>%d spell levels left</lightgreen>
-<lightgreen>剩余%d级法术容量</lightgreen>
+<lightgreen>%d spell slots left</lightgreen>
+<lightgreen>剩余法术容量：%d</lightgreen>
 %%%%
 <lightgreen>Casting with Divine Exegesis: %d MP available</lightgreen>
 <lightgreen>用神圣释经施放：%d MP可用</lightgreen>
@@ -5320,8 +5320,8 @@ melt
  melts!
 融化了！
 %%%%
-Memorise %1$s, consuming %2$d spell level%3$s and leaving %4$d?%5$s%6$s
-记忆%1$s，消耗%2$d级法术容量，剩余%4$d级？%5$s%6$s
+Memorise %1$s, consuming %2$d spell slot%3$s and leaving %4$d?%5$s%6$s
+记忆%1$s，消耗%2$d法术容量，剩余%4$d？%5$s%6$s
 %%%%
  memory burns away to nothing.
 记忆燃烧殆尽。
