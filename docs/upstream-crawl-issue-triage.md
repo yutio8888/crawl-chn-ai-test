@@ -46,7 +46,7 @@
 | [5448](https://github.com/crawl/crawl/issues/5448) | 2026-09-22 | When my apostles got feared, I can remove fear by using recall apostle ability | — | — | pending | pending | pending | — | — |
 | [5442](https://github.com/crawl/crawl/issues/5442) | 2026-09-21 | Ctrl + Direction(forced attack) - attacking ally interaction bugs | — | — | pending | pending | pending | — | — |
 | [5441](https://github.com/crawl/crawl/issues/5441) | 2026-09-21 | Interlevel travel(ctrl+G) can cause player to use transporter. | — | — | pending | pending | pending | — | — |
-| [5429](https://github.com/crawl/crawl/issues/5429) | 2026-09-19 | noise bar and equip bar at the same time | — | W3 | pending | pending | pending | — | — |
+| [5429](https://github.com/crawl/crawl/issues/5429) | 2026-09-19 | noise bar and equip bar at the same time | — | W3 | no | open; no related fix through 7c4eee1bee | upstream-only | — | ASCII 下 equip_bar=true 按设计替换噪音条；options_guide.txt:1699 与 output.cc:2269 互斥分支；Tiles 顶栏空间允许时已同时显示（output.cc:2134） |
 | [5418](https://github.com/crawl/crawl/issues/5418) | 2026-09-14 | Rewinded Clockwork bee loses Justiciar's Inspire | — | — | pending | pending | pending | — | — |
 | [5416](https://github.com/crawl/crawl/issues/5416) | 2026-09-13 | New invis breaks autofire | — | — | pending | pending | pending | — | — |
 | [5414](https://github.com/crawl/crawl/issues/5414) | 2026-09-12 | Lua error when reloading saved game in tutorial mode | — | — | pending | pending | pending | — | — |
