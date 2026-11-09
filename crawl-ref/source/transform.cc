@@ -147,9 +147,11 @@ string Form::melding_description(bool itemized) const
         {
             equipment_slot slot = static_cast<equipment_slot>(i);
             if (testbits(blocked_slots, SLOTF(slot)))
+            {
                 tags.emplace_back(slot == SLOT_HELMET
                     ? C_("form melding", "All Headgear")
                     : equip_slot_name(slot));
+            }
         }
     }
 
