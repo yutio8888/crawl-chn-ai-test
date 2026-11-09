@@ -468,9 +468,15 @@ TEST_CASE("upstream spell effect details localize all seven spells and align col
                 CHECK(plain.find("avg ~") == string::npos);
             }
             // Check the actual producer's colon positions, not the format keys.
+            // Upstream omits the Range line entirely when a spell has no range
+            // (range_string returns empty), so only expect the label when the
+            // same range value used by player_spell_desc() is non-empty.
             int expected_column = -1;
-            for (const string label : { string(T_("Power")), effect.first,
-                                        string(T_("Range")), string(T_("Noise")) })
+            vector<string> labels = { string(T_("Power")), effect.first };
+            if (!spell_range_string(spell).empty())
+                labels.push_back(string(T_("Range")));
+            labels.push_back(string(T_("Noise")));
+            for (const string label : labels)
             {
                 const size_t at = plain.find(label + separator);
                 REQUIRE(at != string::npos);
