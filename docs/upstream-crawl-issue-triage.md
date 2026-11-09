@@ -19,7 +19,7 @@
 | [5554](https://github.com/crawl/crawl/issues/5554) | 2026-11-02 | Being killed by monster Grave Claw produces message including "Killed by a jagged bones" | — | W1 | no | open; 上游 PR #5556 未合并 | upstream-only | — | 中文独立分支经 `_death_beam_display_name()` 输出“由锯齿骨头造成”，不经过英文冠词；zap-data.h:2342 / hiscores.cc:3579-3590 |
 | [5553](https://github.com/crawl/crawl/issues/5553) | 2026-11-02 | Distracted enemies cast LRD at locations that hit only the player | — | — | pending | pending | pending | — | — |
 | [5551](https://github.com/crawl/crawl/issues/5551) | 2026-11-02 | Spurious invisibility warnings | — | W5 | yes | open; no upstream fix through c17805322d | local-fix | `40780a6351` | 远处已知隐形怪首次移动时会把警告锚到玩家位置；monster.cc:5597 仅在 `you.see_cell(last_move_pos)` 时刷新记忆；新增 3 个回归场景（18 断言） |
-| [5550](https://github.com/crawl/crawl/issues/5550) | 2026-11-01 | Webtiles: TerminalRecorder._spawn hangs at 100% CPU in containerized environments with high RLIMIT_NOFILE | — | — | pending | pending | pending | — | — |
+| [5550](https://github.com/crawl/crawl/issues/5550) | 2026-11-01 | Webtiles: TerminalRecorder._spawn hangs at 100% CPU in containerized environments with high RLIMIT_NOFILE | — | W6 | pending | pending | pending | — | — |
 | [5549](https://github.com/crawl/crawl/issues/5549) | 2026-11-01 | Unusual monster items artefact regex | — | — | pending | pending | pending | — | — |
 | [5539](https://github.com/crawl/crawl/issues/5539) | 2026-10-26 | Closet in Dungeon | Vaults | — | pending | pending | pending | — | — |
 | [5538](https://github.com/crawl/crawl/issues/5538) | 2026-10-26 | In seeded games with pregen, being explore-trap shafted changes the RNG. | — | — | pending | pending | pending | — | — |
@@ -31,7 +31,7 @@
 | [5526](https://github.com/crawl/crawl/issues/5526) | 2026-10-22 | New clang compile warning in 0.32-a0-7082-g32f959a6b0 | — | W5 | no | 已由上游 `201d16105e` 修复，早于 08290378b6 | already-fixed-upstream | — | `get_skill_bonus()` 缺 `override` 触发 `-Winconsistent-missing-override`；transform.cc:1483 已含 `const override` |
 | [5524](https://github.com/crawl/crawl/issues/5524) | 2026-10-22 | Ru redirects out of range spells | — | — | pending | pending | pending | — | — |
 | [5522](https://github.com/crawl/crawl/issues/5522) | 2026-10-19 | strange behavior with aiming fireball at solid features | — | — | pending | pending | pending | — | — |
-| [5521](https://github.com/crawl/crawl/issues/5521) | 2026-10-19 | Vaults index caches tags intended to depend on player location | — | — | pending | pending | pending | — | — |
+| [5521](https://github.com/crawl/crawl/issues/5521) | 2026-10-19 | Vaults index caches tags intended to depend on player location | — | W6 | pending | pending | pending | — | — |
 | [5519](https://github.com/crawl/crawl/issues/5519) | 2026-10-18 | nicolae_transmutations_shop could use adjusting | — | W2 | no | open; no related fix through 7c4eee1bee | upstream-only | — | 属于商品池/权重玩法设计；shops.des:1386 与上游一致；中文 `Changing→变装`、`Room→间` 键存在，shopping.cc:1744 上下文翻译正常 |
 | [5517](https://github.com/crawl/crawl/issues/5517) | 2026-10-17 | (console) Dragon Vein feature glyphs aren't hidable by any of the View Layers | — | W3 | no | open; no related fix through 7c4eee1bee | upstream-only | — | Dragon Veins 是地形；show.cc:374 始终更新地形，show.h:80 无地形图层开关；showsymb.cc:302 地形优先覆盖物品；中文菜单不影响规则 |
 | [5515](https://github.com/crawl/crawl/issues/5515) | 2026-10-16 | Closet in Vaults | — | — | pending | pending | pending | — | — |
@@ -41,7 +41,7 @@
 | [5483](https://github.com/crawl/crawl/issues/5483) | 2026-10-04 | Talisman hive describes melding helmet even thought it melds both the helmet and the extra hat slot from the unrandtart Zonguldrok | — | W3 | yes | open; no related fix through 7c4eee1bee | local-fix | `4c865c94b3` | `SLOT_HELMET` 覆盖所有头部装备槽（含 Zonguldrok 的额外 Hat+）；transform.cc:112-155 标签改为 `All Headgear`，source.txt:48902 新增“全部头部装备” |
 | [5474](https://github.com/crawl/crawl/issues/5474) | 2026-10-02 | Unclear Dialogue when Entering Cocytus | — | W2 | no | open; no related fix through 7c4eee1bee | upstream-only | — | 警告原因在消息栏，确认弹窗只显示通用问句；中文“仍然进入下一层吗？”语义准确；stairs.cc:126/138 + prompt.cc:205；建议上游把警告原因纳入弹窗 |
 | [5463](https://github.com/crawl/crawl/issues/5463) | 2026-09-29 | Coglin does not equip gizmo | — | — | pending | pending | pending | — | — |
-| [5462](https://github.com/crawl/crawl/issues/5462) | 2026-09-29 | Fails to run on MacOS due to a failed GateKeeper check | — | — | pending | pending | pending | — | — |
+| [5462](https://github.com/crawl/crawl/issues/5462) | 2026-09-29 | Fails to run on MacOS due to a failed GateKeeper check | — | W6 | pending | pending | pending | — | — |
 | [5449](https://github.com/crawl/crawl/issues/5449) | 2026-09-23 | Mutations from potion of mutation may fail to apply silently | — | W4 | no | open; no related fix through c17805322d | upstream-only | — | `_accept_mutation()` 未排除全部先天冲突，低魔力等会在 mutation.cc:1509 被拒绝且仅调试消息；中文通用提示“你感到极度怪异。”未误称成功；改候选/重抽会影响变异概率 |
 | [5448](https://github.com/crawl/crawl/issues/5448) | 2026-09-22 | When my apostles got feared, I can remove fear by using recall apostle ability | — | — | pending | pending | pending | — | — |
 | [5442](https://github.com/crawl/crawl/issues/5442) | 2026-09-21 | Ctrl + Direction(forced attack) - attacking ally interaction bugs | — | W4 | no | open; no related fix through c17805322d | upstream-only | — | main.cc:2868 远程动作前 `could_harm()` 提前拒绝；mon-util.cc:6089 可穿射对象判不可伤害，avatar 分支无提示；beam.cc:5952 正常射击允许穿过；属上游输入体验缺口 |
@@ -49,7 +49,7 @@
 | [5429](https://github.com/crawl/crawl/issues/5429) | 2026-09-19 | noise bar and equip bar at the same time | — | W3 | no | open; no related fix through 7c4eee1bee | upstream-only | — | ASCII 下 equip_bar=true 按设计替换噪音条；options_guide.txt:1699 与 output.cc:2269 互斥分支；Tiles 顶栏空间允许时已同时显示（output.cc:2134） |
 | [5418](https://github.com/crawl/crawl/issues/5418) | 2026-09-14 | Rewinded Clockwork bee loses Justiciar's Inspire | — | — | pending | pending | pending | — | — |
 | [5416](https://github.com/crawl/crawl/issues/5416) | 2026-09-13 | New invis breaks autofire | — | W4 | yes | open; no upstream fix through c17805322d | local-fix | `e08bcb7557` | 旧隐形位置被误计为射线阻挡；l-autofight.cc:99 忽略 `MB_REMEMBERED_INVIS`；新增 `test_autofight.cc`（34 断言） |
-| [5414](https://github.com/crawl/crawl/issues/5414) | 2026-09-12 | Lua error when reloading saved game in tutorial mode | — | — | pending | pending | pending | — | — |
+| [5414](https://github.com/crawl/crawl/issues/5414) | 2026-09-12 | Lua error when reloading saved game in tutorial mode | — | W6 | pending | pending | pending | — | — |
 | [5413](https://github.com/crawl/crawl/issues/5413) | 2026-09-12 | memory leak in skill-menu-cc | — | W3 | yes | open; no related fix through 7c4eee1bee | local-fix | `c5de3666ed` | `MenuFreeform::attach_item` 拒绝越界项时不接管所有权；skill-menu 用 `m_unattached_items` 保留至 clear，新增 `test_skill_menu.cc`（16 断言） |
 
 | [5384](https://github.com/crawl/crawl/issues/5384) | 2026-08-22 | Undefined behaviour from isalpha(). | — | — | pending | pending | pending | — | — |
