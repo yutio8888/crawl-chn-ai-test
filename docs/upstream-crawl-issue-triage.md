@@ -23,7 +23,7 @@
 | [5549](https://github.com/crawl/crawl/issues/5549) | 2026-11-01 | Unusual monster items artefact regex | — | — | pending | pending | pending | — | — |
 | [5539](https://github.com/crawl/crawl/issues/5539) | 2026-10-26 | Closet in Dungeon | Vaults | — | pending | pending | pending | — | — |
 | [5538](https://github.com/crawl/crawl/issues/5538) | 2026-10-26 | In seeded games with pregen, being explore-trap shafted changes the RNG. | — | — | pending | pending | pending | — | — |
-| [5535](https://github.com/crawl/crawl/issues/5535) | 2026-10-25 | Typo when memorising spells (levels instead of slots) | — | W1 | pending | pending | pending | — | — |
+| [5535](https://github.com/crawl/crawl/issues/5535) | 2026-10-25 | Typo when memorising spells (levels instead of slots) | — | W1 | yes | open; no upstream fix through 7c4eee1bee | local-fix | `19cd875609` | spl-book.cc:931-940/1160 + source.txt:2359-2366/5320；英文改 spell slot(s)，中文沿用“法术容量” |
 | [5531](https://github.com/crawl/crawl/issues/5531) | 2026-10-24 | Feature request (clua): Additional ability info. | — | — | pending | pending | pending | — | — |
 | [5530](https://github.com/crawl/crawl/issues/5530) | 2026-10-23 | Fortress talisman ashenrazi can't remove talisman | — | — | pending | pending | pending | — | — |
 | [5529](https://github.com/crawl/crawl/issues/5529) | 2026-10-23 | Feature request: delay/nullify repeated rapid inputs | — | — | pending | pending | pending | — | — |
