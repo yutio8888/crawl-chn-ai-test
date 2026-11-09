@@ -55,7 +55,7 @@
 | [5384](https://github.com/crawl/crawl/issues/5384) | 2026-08-22 | Undefined behaviour from isalpha(). | — | W8 | yes | open; upstream PR #5407 unmerged | local-fix | `275bc4b5e5` | 13 处 `isalpha`/`tolower` 改用 `isaalpha`/`toalower`，拒绝非 ASCII 字节再做槽位索引；涉及 spl-cast.cc/item-use.cc/items.cc/l-item.cc/quiver.cc/lang-fake.cc；6 文件 `-j4` 编译通过 |
 | [5383](https://github.com/crawl/crawl/issues/5383) | 2026-08-22 | Unidentified Jewelry autopickup does not work | — | W8 | no | open; PR #5559 closed unmerged (policy, not technical) | upstream-only | — | 移动时先鉴定地面物品（player.cc:999→items.cc:1035），`_autopickup_subtype()` 改用已知类型（items.cc:3177）；旧机制 c4c869ff2ff 因强制拾取副作用删除；等待兼顾显式类型与冗余过滤的上游方案 |
 | [5378](https://github.com/crawl/crawl/issues/5378) | 2026-08-18 | Fungal Fisticloak "unwears" itself or destroys other aux gear on Poltergeist of  | — | W11 | pending | pending | pending | — | — |
-| [5368](https://github.com/crawl/crawl/issues/5368) | 2026-08-09 | Teleport closet in spider | Vaults | W11 | — | pending | pending | pending | — | — |
+| [5368](https://github.com/crawl/crawl/issues/5368) | 2026-08-09 | Teleport closet in spider | Vaults | W11 | pending | pending | pending | — | — |
 
 ## 方法与约束
 
