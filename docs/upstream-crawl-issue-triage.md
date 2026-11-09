@@ -28,7 +28,7 @@
 | [5530](https://github.com/crawl/crawl/issues/5530) | 2026-10-23 | Fortress talisman ashenrazi can't remove talisman | — | — | pending | pending | pending | — | — |
 | [5529](https://github.com/crawl/crawl/issues/5529) | 2026-10-23 | Feature request: delay/nullify repeated rapid inputs | — | — | pending | pending | pending | — | — |
 | [5528](https://github.com/crawl/crawl/issues/5528) | 2026-10-23 | Spurious encounter messages with fog machines | — | W5 | pending | pending | pending | — | — |
-| [5526](https://github.com/crawl/crawl/issues/5526) | 2026-10-22 | New clang compile warning in 0.32-a0-7082-g32f959a6b0 | — | W5 | pending | pending | pending | — | — |
+| [5526](https://github.com/crawl/crawl/issues/5526) | 2026-10-22 | New clang compile warning in 0.32-a0-7082-g32f959a6b0 | — | W5 | no | 已由上游 `201d16105e` 修复，早于 08290378b6 | already-fixed-upstream | — | `get_skill_bonus()` 缺 `override` 触发 `-Winconsistent-missing-override`；transform.cc:1483 已含 `const override` |
 | [5524](https://github.com/crawl/crawl/issues/5524) | 2026-10-22 | Ru redirects out of range spells | — | — | pending | pending | pending | — | — |
 | [5522](https://github.com/crawl/crawl/issues/5522) | 2026-10-19 | strange behavior with aiming fireball at solid features | — | — | pending | pending | pending | — | — |
 | [5521](https://github.com/crawl/crawl/issues/5521) | 2026-10-19 | Vaults index caches tags intended to depend on player location | — | — | pending | pending | pending | — | — |
