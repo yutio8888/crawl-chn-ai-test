@@ -20,13 +20,13 @@
 | [5553](https://github.com/crawl/crawl/issues/5553) | 2026-11-02 | Distracted enemies cast LRD at locations that hit only the player | — | W7 | no | open; no related fix through c17805322d | upstream-only | — | `ENCH_MISDIRECTED` 设置诱饵目标，但 LRD 独立遍历所有可爆破位置，命中目标只是加分项；mon-behv.cc:499 / mon-cast.cc:6492；强制命中诱饵会改变误导强度 |
 | [5551](https://github.com/crawl/crawl/issues/5551) | 2026-11-02 | Spurious invisibility warnings | — | W5 | yes | open; no upstream fix through c17805322d | local-fix | `40780a6351` | 远处已知隐形怪首次移动时会把警告锚到玩家位置；monster.cc:5597 仅在 `you.see_cell(last_move_pos)` 时刷新记忆；新增 3 个回归场景（18 断言） |
 | [5550](https://github.com/crawl/crawl/issues/5550) | 2026-11-01 | Webtiles: TerminalRecorder._spawn hangs at 100% CPU in containerized environments with high RLIMIT_NOFILE | — | W6 | yes | open; no upstream fix through c17805322d | local-fix | `1b2000d3d8` | `_spawn` 的 Python `for i in range(3, max_fd)` 改为 `os.closerange(3, max_fd)`；新增 `terminal_test.py` 覆盖高 NOFILE 场景 |
-| [5549](https://github.com/crawl/crawl/issues/5549) | 2026-11-01 | Unusual monster items artefact regex | — | — | pending | pending | pending | — | — |
+| [5549](https://github.com/crawl/crawl/issues/5549) | 2026-11-01 | Unusual monster items artefact regex | — | W8 | pending | pending | pending | — | — |
 | [5539](https://github.com/crawl/crawl/issues/5539) | 2026-10-26 | Closet in Dungeon | Vaults | — | pending | pending | pending | — | — |
 | [5538](https://github.com/crawl/crawl/issues/5538) | 2026-10-26 | In seeded games with pregen, being explore-trap shafted changes the RNG. | — | W7 | no | open; documented classic behavior; no fix PR | upstream-only | — | `classic` 按实际进入顺序生成楼层，竖井跳层改变同分支 RNG 顺序；options_guide.txt:464-482 明确不保证同种子稳定；incremental 才预生成被跳过楼层（PR #1094） |
 | [5535](https://github.com/crawl/crawl/issues/5535) | 2026-10-25 | Typo when memorising spells (levels instead of slots) | — | W1 | yes | open; no upstream fix through 7c4eee1bee | local-fix | `19cd875609` | spl-book.cc:931-940/1160 + source.txt:2359-2366/5320；英文改 spell slot(s)，中文沿用“法术容量” |
 | [5531](https://github.com/crawl/crawl/issues/5531) | 2026-10-24 | Feature request (clua): Additional ability info. | — | — | pending | pending | pending | — | — |
 | [5530](https://github.com/crawl/crawl/issues/5530) | 2026-10-23 | Fortress talisman ashenrazi can't remove talisman | — | — | pending | pending | pending | — | — |
-| [5529](https://github.com/crawl/crawl/issues/5529) | 2026-10-23 | Feature request: delay/nullify repeated rapid inputs | — | — | pending | pending | pending | — | — |
+| [5529](https://github.com/crawl/crawl/issues/5529) | 2026-10-23 | Feature request: delay/nullify repeated rapid inputs | — | W8 | pending | pending | pending | — | — |
 | [5528](https://github.com/crawl/crawl/issues/5528) | 2026-10-23 | Spurious encounter messages with fog machines | — | W5 | no | open; no related fix through c17805322d | upstream-only | — | main.cc:2635 在环境更新(2663)前通知新见怪物；lm_fog.lua:209 生成雾、cloud.cc:438 更新遮挡；player-notices.cc:576 用 MF_SEEN 去重；延后通知会影响首次见面副作用 |
 | [5526](https://github.com/crawl/crawl/issues/5526) | 2026-10-22 | New clang compile warning in 0.32-a0-7082-g32f959a6b0 | — | W5 | no | 已由上游 `201d16105e` 修复，早于 08290378b6 | already-fixed-upstream | — | `get_skill_bonus()` 缺 `override` 触发 `-Winconsistent-missing-override`；transform.cc:1483 已含 `const override` |
 | [5524](https://github.com/crawl/crawl/issues/5524) | 2026-10-22 | Ru redirects out of range spells | — | W7 | no | open; no related fix through c17805322d | upstream-only | — | Ru 在法术选择前重定向到施法者自身并绕过 tracer 判定；mon-cast.cc:5409 / mon-util.cc:3761；简单距离检查会误伤爆炸/特殊瞄准，属上游干扰时机 |
@@ -52,8 +52,8 @@
 | [5414](https://github.com/crawl/crawl/issues/5414) | 2026-09-12 | Lua error when reloading saved game in tutorial mode | — | W6 | yes | open; no upstream fix through c17805322d | local-fix | `33a3331a5e` | `_reset_game()` 在关闭 Lua 前 `dungeon_events.clear()` + `env.markers.clear()`，避免旧教程监听器在坐标恢复时触发；main.o 编译通过 |
 | [5413](https://github.com/crawl/crawl/issues/5413) | 2026-09-12 | memory leak in skill-menu-cc | — | W3 | yes | open; no related fix through 7c4eee1bee | local-fix | `c5de3666ed` | `MenuFreeform::attach_item` 拒绝越界项时不接管所有权；skill-menu 用 `m_unattached_items` 保留至 clear，新增 `test_skill_menu.cc`（16 断言） |
 
-| [5384](https://github.com/crawl/crawl/issues/5384) | 2026-08-22 | Undefined behaviour from isalpha(). | — | — | pending | pending | pending | — | — |
-| [5383](https://github.com/crawl/crawl/issues/5383) | 2026-08-22 | Unidentified Jewelry autopickup does not work | — | — | pending | pending | pending | — | — |
+| [5384](https://github.com/crawl/crawl/issues/5384) | 2026-08-22 | Undefined behaviour from isalpha(). | — | W8 | pending | pending | pending | — | — |
+| [5383](https://github.com/crawl/crawl/issues/5383) | 2026-08-22 | Unidentified Jewelry autopickup does not work | — | W8 | pending | pending | pending | — | — |
 | [5378](https://github.com/crawl/crawl/issues/5378) | 2026-08-18 | Fungal Fisticloak "unwears" itself or destroys other aux gear on Poltergeist of  | — | — | pending | pending | pending | — | — |
 | [5368](https://github.com/crawl/crawl/issues/5368) | 2026-08-09 | Teleport closet in spider | Vaults | — | — | pending | pending | pending | — | — |
 
