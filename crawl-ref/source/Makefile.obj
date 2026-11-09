@@ -317,6 +317,7 @@ fontwrapper-ft.o
 TEST_OBJECTS = \
 catch2-tests/monspell_candidate_artifact.o \
 catch2-tests/textdb_phase0_artifact.o \
+catch2-tests/test_autofight.o \
 catch2-tests/test_branch.o \
 catch2-tests/test_coordit.o \
 catch2-tests/test_describe.o \
