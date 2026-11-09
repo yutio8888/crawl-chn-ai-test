@@ -48,7 +48,7 @@
 | [5441](https://github.com/crawl/crawl/issues/5441) | 2026-09-21 | Interlevel travel(ctrl+G) can cause player to use transporter. | — | W4 | no | open; no related fix through c17805322d | upstream-only | — | 旅行寻路把已知传送器作为路径边并自动进入（dd972a7a068 引入）；travel.cc:1967/970，1829 已有排除保护；禁用/加确认属上游旅行规则 |
 | [5429](https://github.com/crawl/crawl/issues/5429) | 2026-09-19 | noise bar and equip bar at the same time | — | W3 | no | open; no related fix through 7c4eee1bee | upstream-only | — | ASCII 下 equip_bar=true 按设计替换噪音条；options_guide.txt:1699 与 output.cc:2269 互斥分支；Tiles 顶栏空间允许时已同时显示（output.cc:2134） |
 | [5418](https://github.com/crawl/crawl/issues/5418) | 2026-09-14 | Rewinded Clockwork bee loses Justiciar's Inspire | — | — | pending | pending | pending | — | — |
-| [5416](https://github.com/crawl/crawl/issues/5416) | 2026-09-13 | New invis breaks autofire | — | W4 | pending | pending | pending | — | — |
+| [5416](https://github.com/crawl/crawl/issues/5416) | 2026-09-13 | New invis breaks autofire | — | W4 | yes | open; no upstream fix through c17805322d | local-fix | `e08bcb7557` | 旧隐形位置被误计为射线阻挡；l-autofight.cc:99 忽略 `MB_REMEMBERED_INVIS`；新增 `test_autofight.cc`（34 断言） |
 | [5414](https://github.com/crawl/crawl/issues/5414) | 2026-09-12 | Lua error when reloading saved game in tutorial mode | — | — | pending | pending | pending | — | — |
 | [5413](https://github.com/crawl/crawl/issues/5413) | 2026-09-12 | memory leak in skill-menu-cc | — | W3 | yes | open; no related fix through 7c4eee1bee | local-fix | `c5de3666ed` | `MenuFreeform::attach_item` 拒绝越界项时不接管所有权；skill-menu 用 `m_unattached_items` 保留至 clear，新增 `test_skill_menu.cc`（16 断言） |
 
