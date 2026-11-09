@@ -702,11 +702,11 @@ equipment_slot player_equip_set::find_slot_to_equip_item(const item_def& item,
     equipment_slot ret = SLOT_UNUSED;
     for (size_t i = 0; i < slots.size(); ++i)
     {
-        equipment_slot slot = find_free_compatible_slot(slots[i]);
+        equipment_slot slot = equipment.find_free_compatible_slot(slots[i]);
         if (slot == SLOT_UNUSED)
         {
-            find_removable_items_for_slot(slots[i], to_replace, ignore_curses,
-                                          false);
+            equipment.find_removable_items_for_slot(slots[i], to_replace,
+                                                    ignore_curses, false);
         }
 
         // If a slot is unavailable and there is nothing the player could
@@ -721,11 +721,6 @@ equipment_slot player_equip_set::find_slot_to_equip_item(const item_def& item,
         if (i == 0)
             ret = slot;
 
-        // Track that this slot was used (to handle the case of multi-slot
-        // items competing for the same flex slot, such as poltergeists wearing
-        // the Fungal Fisticloak).
-        equipment.num_slots[slot] -= 1;
-
         // If we had to remove an item to free this slot, remove it from the
         // equipment now so that we don't remove the same item again if we need
         // another slot of the same type (e.g. the Fungal Fisticloak needs two
@@ -735,7 +730,13 @@ equipment_slot player_equip_set::find_slot_to_equip_item(const item_def& item,
             equipment.remove(*to_replace[0]);
             to_replace.clear();
             requires_replace = true;
+            slot = equipment.find_free_compatible_slot(slots[i]);
         }
+
+        // Reserve the slot, including one freed by a simulated removal, so
+        // another part of this item cannot claim the same flex slot again.
+        if (slot != SLOT_UNUSED)
+            equipment.num_slots[slot] -= 1;
     }
 
     return ret;
