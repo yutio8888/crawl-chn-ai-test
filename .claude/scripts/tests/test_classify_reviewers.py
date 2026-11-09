@@ -138,6 +138,31 @@ class ReviewerRoutingTests(unittest.TestCase):
                 category, _reason = MODULE.classify_file(path)
                 self.assertNotEqual("mixed", category)
 
+    def test_archived_docs_do_not_route_as_ledgers_or_game_static(self):
+        path = "docs/archive/translation-quality-2026/translation-quality-m0-report.md"
+        self.assert_route([path], "none", [])
+        category, _reason = MODULE.classify_file(path)
+        self.assertNotEqual("mixed", category)
+
+        # Exercise the production shell path classifier, including its fail-safe.
+        script = (REPO / ".claude/scripts/verify_zh.sh").read_text()
+        start = script.index('        case "$changed_file" in')
+        end = script.index("        esac", start) + len("        esac")
+        dispatch = script[start:end]
+        for candidate, expected in (
+            (path, "0"),
+            ("docs/character-mechanics-review-results.md", "1"),
+            ("unknown-asset", "1"),
+        ):
+            with self.subTest(path=candidate):
+                proc = subprocess.run(
+                    ["bash", "-c",
+                     'GAME_STATIC=0; for changed_file in "$1"; do\n'
+                     + dispatch + '\ndone\nprintf "%s" "$GAME_STATIC"', "_", candidate],
+                    text=True, capture_output=True, check=True,
+                )
+                self.assertEqual(expected, proc.stdout)
+
     def test_explicit_absolute_and_parent_paths_fail_closed(self):
         for path in ("/tmp/source.txt", "../source.txt", "docs/../CODEX.md", "C:/repo/file.cc"):
             with self.subTest(path=path):

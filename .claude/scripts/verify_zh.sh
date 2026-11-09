@@ -208,7 +208,7 @@ if [[ -n "$CHANGED_FILES" ]]; then
                 GAME_STATIC=1
                 RISK_MESSAGE_OVERLAY=1
                 ;;
-            docs/*.md|AGENTS.md|CODEX.md|README*|\
+            docs/*.md|docs/archive/*.md|docs/archive/*/*.md|AGENTS.md|CODEX.md|README*|\
             .agents/*.md|.pi/*.md|.codex/*.md|.claude/*.md|\
             .codex/agents/*.toml|.codex/config.toml|\
             .claude/scripts/check_agent_policies.py|\

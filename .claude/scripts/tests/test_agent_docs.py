@@ -786,7 +786,8 @@ process.stdout.write(JSON.stringify(results));
         self.assertNotIn("必须保留 DejaVu Sans Mono", text)
 
     def test_relative_markdown_links_resolve(self) -> None:
-        for path in DOCS_TO_LINT:
+        paths = set(DOCS_TO_LINT) | set(ROOT.glob("docs/**/*.md"))
+        for path in sorted(paths):
             for raw_target in MARKDOWN_LINK.findall(path.read_text()):
                 target = raw_target.strip().strip("<>")
                 if target.startswith(("http://", "https://", "mailto:", "#")):
