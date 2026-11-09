@@ -1104,6 +1104,7 @@ static bool _update_statuses(player_info& c)
                 // from the counter-th element in c.status?
                 if (counter >= c.status.size()
                     || inf.light_text != c.status[counter].light_text
+                    || inf.light_text_formatted != c.status[counter].light_text_formatted
                     || inf.light_colour != c.status[counter].light_colour
                     || inf.short_text != c.status[counter].short_text
                     || inf.short_db_key != c.status[counter].short_db_key)

@@ -170,6 +170,71 @@ int main() {
             run = subprocess.run([str(path / "test")], capture_output=True, text=True, timeout=10)
             self.assertEqual(0, run.returncode, run.stdout + run.stderr)
 
+    def test_webtiles_crystal_colour_changes_invalidate_status_cache(self):
+        # Execute the production cache update with controlled status input;
+        # no game, renderer, or transport is needed to reproduce #5503.
+        body = exact_function_body((SRC / "tileweb.cc").read_text(),
+                                   r"static bool _update_statuses")
+        header = (SRC / "status.h").read_text()
+        start = header.index("struct status_info")
+        end = header.index("\n};", start) + len("\n};")
+        source = r'''
+#include <cassert>
+#include <string>
+#include <vector>
+using namespace std;
+#define ASSERT assert
+''' + header[start:end] + r'''
+vector<status_info> incoming;
+struct player_info { vector<status_info> status; };
+struct status_iterator {
+    unsigned int index = 0;
+    explicit operator bool() const { return index < incoming.size(); }
+    void operator++() { ++index; }
+    unsigned int operator*() const { return index; }
+};
+bool fill_status_info(unsigned int index, status_info& inf) {
+    inf = incoming[index]; return true;
+}
+string _web_status_key(unsigned int, const status_info& inf) { return inf.short_db_key; }
+bool update(player_info& c) {''' + body + r'''}
+int main() {
+    for (const string& label : {string("Crystals"), string("晶体")}) {
+        player_info cache;
+        status_info crystal;
+        crystal.light_text = label;
+        crystal.light_colour = 10;
+        crystal.short_db_key = "Crystals";
+        crystal.light_text_formatted = "<yellow>A<darkgrey>B<darkgrey>C<darkgrey>D";
+        incoming = {crystal};
+        assert(update(cache));
+        assert(!update(cache));
+        // Charging and expiring one crystal only changes the formatted light.
+        for (const string& colour : {string("lightred"), string("darkgrey")}) {
+            incoming[0].light_text_formatted = "<yellow>A<" + colour + ">B<darkgrey>C<darkgrey>D";
+            assert(update(cache));
+            assert(cache.status[0].light_text_formatted == incoming[0].light_text_formatted);
+            assert(!update(cache));
+        }
+        incoming.clear();
+        assert(update(cache));
+        assert(cache.status.empty());
+        assert(!update(cache));
+    }
+}
+'''
+        compiler = shutil.which("c++")
+        self.assertIsNotNone(compiler)
+        with tempfile.TemporaryDirectory(prefix="crystal-status-") as tmp:
+            path = Path(tmp)
+            (path / "test.cc").write_text(source)
+            build = subprocess.run([compiler, "-std=c++11", "-Wall", "-Wextra", "-Werror",
+                                    str(path / "test.cc"), "-o", str(path / "test")],
+                                   capture_output=True, text=True, timeout=30)
+            self.assertEqual(0, build.returncode, build.stdout + build.stderr)
+            run = subprocess.run([str(path / "test")], capture_output=True, text=True, timeout=10)
+            self.assertEqual(0, run.returncode, run.stdout + run.stderr)
+
     def test_chardump_and_existing_tag_title_consumers(self):
         dump = (SRC / "chardump.cc").read_text()
         self.assertNotIn("->short_name", dump)
