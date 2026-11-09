@@ -98,11 +98,7 @@ class TerminalRecorder(object):
 
             # Make sure not to retain any files from the parent
             max_fd = resource.getrlimit(resource.RLIMIT_NOFILE)[0]
-            for i in range(3, max_fd):
-                try:
-                    os.close(i)
-                except OSError:
-                    pass
+            os.closerange(3, max_fd)
 
             # And exec
             env            = dict(os.environ)
