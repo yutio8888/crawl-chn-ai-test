@@ -39,7 +39,7 @@
 | [5499](https://github.com/crawl/crawl/issues/5499) | 2026-10-07 | RandArt sanguine talisman with fly loses fly upon exiting bat mode | — | — | pending | pending | pending | — | — |
 | [5498](https://github.com/crawl/crawl/issues/5498) | 2026-10-07 | Jade crystals block the doorway | — | — | pending | pending | pending | — | — |
 | [5483](https://github.com/crawl/crawl/issues/5483) | 2026-10-04 | Talisman hive describes melding helmet even thought it melds both the helmet and the extra hat slot from the unrandtart Zonguldrok | — | — | pending | pending | pending | — | — |
-| [5474](https://github.com/crawl/crawl/issues/5474) | 2026-10-02 | Unclear Dialogue when Entering Cocytus | — | W2 | pending | pending | pending | — | — |
+| [5474](https://github.com/crawl/crawl/issues/5474) | 2026-10-02 | Unclear Dialogue when Entering Cocytus | — | W2 | no | open; no related fix through 7c4eee1bee | upstream-only | — | 警告原因在消息栏，确认弹窗只显示通用问句；中文“仍然进入下一层吗？”语义准确；stairs.cc:126/138 + prompt.cc:205；建议上游把警告原因纳入弹窗 |
 | [5463](https://github.com/crawl/crawl/issues/5463) | 2026-09-29 | Coglin does not equip gizmo | — | — | pending | pending | pending | — | — |
 | [5462](https://github.com/crawl/crawl/issues/5462) | 2026-09-29 | Fails to run on MacOS due to a failed GateKeeper check | — | — | pending | pending | pending | — | — |
 | [5449](https://github.com/crawl/crawl/issues/5449) | 2026-09-23 | Mutations from potion of mutation may fail to apply silently | — | — | pending | pending | pending | — | — |
