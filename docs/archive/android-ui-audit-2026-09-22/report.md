@@ -52,7 +52,7 @@
 - Android 中文资源、可滚动的折叠设置和键盘大小校验。
 - 系统返回键、文本场景自动展开完整布局、字号变化处理及已有存档保护。
 
-当前背包分类触屏证据见[右切](evidence/android-ui-audit-2026-09-22/11-inventory-right.png)和[左切](evidence/android-ui-audit-2026-09-22/12-inventory-left.png)。其他历史验收可参考 [P3 验证记录](android-shortcut-p3-verification.md)，但其旧候选的通过结果不能替代本次未覆盖场景。
+当前背包分类触屏证据见[右切](evidence/11-inventory-right.png)和[左切](evidence/12-inventory-left.png)。其他历史验收可参考 P3 验证记录（已删除的历史文档，可按文档索引中的 Git 历史取回命令查看），但其旧候选的通过结果不能替代本次未覆盖场景。
 
 横屏当前按产品安排锁定，相关 [Issue #113](https://github.com/yutio8888/crawl-chn-ai-test/issues/113) 已延期；本方案围绕竖屏推进，不自动恢复该项投入。关闭背包后重新打开从顶部开始，也是既有明确接受的行为，不列为新缺陷。
 
@@ -84,11 +84,11 @@ P1 为应优先处理的操作错误、明确可读性问题或高频路径缺�
 
 | HUD 点击前 | HUD 点击后 |
 |---|---|
-| ![目标已选但尚未确认](evidence/android-ui-audit-2026-09-22/04-target-before-hud.png) | ![点击HUD后发箭并耗时](evidence/android-ui-audit-2026-09-22/05-target-after-hud.png) |
+| ![目标已选但尚未确认](evidence/04-target-before-hud.png) | ![点击HUD后发箭并耗时](evidence/05-target-after-hud.png) |
 
-长按另有[之前](evidence/android-ui-audit-2026-09-22/06-target-before-longpress.png)与[之后](evidence/android-ui-audit-2026-09-22/07-target-after-longpress.png)截图。这里的 1.3 是游戏显示的行动时间增量，不是现实输入延迟。
+长按另有[之前](evidence/06-target-before-longpress.png)与[之后](evidence/07-target-after-longpress.png)截图。这里的 1.3 是游戏显示的行动时间增量，不是现实输入延迟。
 
-**原因。** [directn.cc](../crawl-ref/source/directn.cc) 第 2541–2548 行对 `MouseDown` 统一发出 `CMD_TARGET_MOUSE_SELECT`，未按按钮和有效地图命中区过滤；第 2374–2376 行继续执行目标确认。[SDLActivity.java](../crawl-ref/source/android-project/app/src/main/java/org/libsdl/app/SDLActivity.java) 第 1758–1763 行把长按转成右键，两条路径由此汇合。
+**原因。** [directn.cc](../../../crawl-ref/source/directn.cc) 第 2541–2548 行对 `MouseDown` 统一发出 `CMD_TARGET_MOUSE_SELECT`，未按按钮和有效地图命中区过滤；第 2374–2376 行继续执行目标确认。[SDLActivity.java](../../../crawl-ref/source/android-project/app/src/main/java/org/libsdl/app/SDLActivity.java) 第 1758–1763 行把长按转成右键，两条路径由此汇合。
 
 **方案。** 在现有目标选择事件入口验证按钮、区域与有效格子；只有有效地图左键点击能够走当前点击确认。HUD、消息区、边距及无效地图坐标不提交目标。右键/长按与确认分开，沿用查看能力或保持选择状态。保留现有射程、自伤和友军保护。
 
@@ -96,13 +96,13 @@ P1 为应优先处理的操作错误、明确可读性问题或高频路径缺�
 
 ### A02：大字号必须完成排版，而不只是放大字形
 
-**复现。** 1080px 宽、540dpi 即 320dp，系统字号 200%：完整键盘中的带箭头字母、紧凑切换文字出现跨行裁切；紧凑模式“自动战斗”也被截断。截图和 [UI 层级](evidence/android-ui-audit-2026-09-22/compact-320dp-200.xml) 显示每键仍高 162px，即 48dp。
+**复现。** 1080px 宽、540dpi 即 320dp，系统字号 200%：完整键盘中的带箭头字母、紧凑切换文字出现跨行裁切；紧凑模式“自动战斗”也被截断。截图和 [UI 层级](evidence/compact-320dp-200.xml) 显示每键仍高 162px，即 48dp。
 
 | 完整键盘 | 紧凑键盘 |
 |---|---|
-| ![完整键盘字形越界](evidence/android-ui-audit-2026-09-22/02-full-keyboard-320dp-200.png) | ![紧凑自动战斗文字裁切](evidence/android-ui-audit-2026-09-22/03-compact-320dp-200.png) |
+| ![完整键盘字形越界](evidence/02-full-keyboard-320dp-200.png) | ![紧凑自动战斗文字裁切](evidence/03-compact-320dp-200.png) |
 
-**原因。** [DCSSKeyboard.java](../crawl-ref/source/android-project/app/src/main/java/org/develz/crawl/DCSSKeyboard.java) 第 325–340 行按固定键高保留四行空间；[DCSSKeyboardBase.java](../crawl-ref/source/android-project/app/src/main/java/org/develz/crawl/DCSSKeyboardBase.java) 第 87–95 行与相关配置刷新处理未保证放大后的文字实际布局可容纳。已有配置测试检查字号、可见性和高度，不能证明文字没有裁剪。
+**原因。** [DCSSKeyboard.java](../../../crawl-ref/source/android-project/app/src/main/java/org/develz/crawl/DCSSKeyboard.java) 第 325–340 行按固定键高保留四行空间；[DCSSKeyboardBase.java](../../../crawl-ref/source/android-project/app/src/main/java/org/develz/crawl/DCSSKeyboardBase.java) 第 87–95 行与相关配置刷新处理未保证放大后的文字实际布局可容纳。已有配置测试检查字号、可见性和高度，不能证明文字没有裁剪。
 
 **方案。** 每次屏幕/字号配置确定后，结合文字行高、内边距和可用宽度计算布局，再保持该配置下情境切换的几何稳定。优先为高频触控按钮保留完整名称和足够热区；必要时将低频动作移入已有“更多”。完整字母盘需单独处理双符号标签与换行，文本任务结合 A06 使用系统输入法。不能用无条件缩小文字抵消用户的大字号选择，也不能把十列字母盘的每键都机械设成 48dp 宽。
 
@@ -117,9 +117,9 @@ P1 为应优先处理的操作错误、明确可读性问题或高频路径缺�
 language = zh
 ```
 
-原文件为 23 字节、0 个 NUL；保存后为 27 字节，末尾新增 4 个 `00` 字节。完整对比见 [rc-roundtrip.txt](evidence/android-ui-audit-2026-09-22/rc-roundtrip.txt)。测试后已恢复该安装的原配置。
+原文件为 23 字节、0 个 NUL；保存后为 27 字节，末尾新增 4 个 `00` 字节。完整对比见 [rc-roundtrip.txt](evidence/rc-roundtrip.txt)。测试后已恢复该安装的原配置。
 
-**原因。** [DCSSTextBase.java](../crawl-ref/source/android-project/app/src/main/java/org/develz/crawl/DCSSTextBase.java) 第 39–44 行以文件字节数分配字符缓冲，读取后 `rewind()` 保留容量作为 limit，UTF-8 多字节字符留下的未填充区域进入文本；第 56–59 行将其写回。本次证明文件被改变，未进一步证明这段尾部内容必然导致所有配置加载失败。
+**原因。** [DCSSTextBase.java](../../../crawl-ref/source/android-project/app/src/main/java/org/develz/crawl/DCSSTextBase.java) 第 39–44 行以文件字节数分配字符缓冲，读取后 `rewind()` 保留容量作为 limit，UTF-8 多字节字符留下的未填充区域进入文本；第 56–59 行将其写回。本次证明文件被改变，未进一步证明这段尾部内容必然导致所有配置加载失败。
 
 **方案。** 循环读取至 EOF，并只传递实际字符；显式使用 UTF-8。保存采用临时文件写完再替换，失败保留原文件。顺带为编辑器增加 dirty 状态，系统返回/取消时对未保存更改提供继续编辑与明确放弃；不改动时直接关闭。
 
@@ -129,9 +129,9 @@ language = zh
 
 **复现。** 本次测试角色持有短弓，但箭袋为空时，绿色“射击”与硬件 `f` 均返回 GAME，没有射击、目标选择或新的解释。经 `Q` 进入现有箭袋菜单选择短弓后，同一按钮正常进入瞄准。因此不能将它归因于触控按键未送达。
 
-这一静默行为在 [P1 既有验收记录](android-shortcut-p1-verification.md) 中已有观察，本次确认它在最新包仍然存在，不是认定当前提交新引入了故障。
+这一静默行为在 P1 既有验收记录（已删除的历史文档，可按文档索引中的 Git 历史取回命令查看） 中已有观察，本次确认它在最新包仍然存在，不是认定当前提交新引入了故障。
 
-**原因。** [main.cc](../crawl-ref/source/main.cc) 第 2266 行进入 `quiver_action.target()`；[quiver.cc](../crawl-ref/source/quiver.cc) 第 2882–2895 行继续进入动作流程，空动作的非定向路径由 [throw.cc](../crawl-ref/source/throw.cc) 第 116–121 行置无效后返回，没有失败消息。GAME 描述符只判断键位，Java 只按键值和标签启用按钮。
+**原因。** [main.cc](../../../crawl-ref/source/main.cc) 第 2266 行进入 `quiver_action.target()`；[quiver.cc](../../../crawl-ref/source/quiver.cc) 第 2882–2895 行继续进入动作流程，空动作的非定向路径由 [throw.cc](../../../crawl-ref/source/throw.cc) 第 116–121 行置无效后返回，没有失败消息。GAME 描述符只判断键位，Java 只按键值和标签启用按钮。
 
 **方案。** 在原生命令入口或 `action_cycler::target()` 区分“尚未指定动作”和“完全没有候选”，给出原因，并引导已有 `quiver::choose()`。优先消除静默，再考虑按钮状态；Java 不复制游戏的能力/资源规则。空动作的 `is_valid()` 仍为 true，应使用已有 `is_empty()` 判断。
 
@@ -143,9 +143,9 @@ language = zh
 
 | 当前背包 | 当前游戏菜单 |
 |---|---|
-| ![旧背包列表](evidence/android-ui-audit-2026-09-22/08-inventory.png) | ![新游戏菜单](evidence/android-ui-audit-2026-09-22/09-drawer.png) |
+| ![旧背包列表](evidence/08-inventory.png) | ![新游戏菜单](evidence/09-drawer.png) |
 
-[menu.cc](../crawl-ref/source/menu.cc) 第 115、214、382–485 行使用 CRT 字体、32 个游戏像素图标和固定 padding 推导行高，缺少 Android 触控最小尺寸约束。[tilesdl.cc](../crawl-ref/source/tilesdl.cc) 第 318–343 行的自动字体下限只覆盖消息、提示和标签，保留 CRT/HUD 原有算法；Android 系统字号并未统一作用于这些 C++ 文本。截图能证明显示差异，尚未测得真人误触率。
+[menu.cc](../../../crawl-ref/source/menu.cc) 第 115、214、382–485 行使用 CRT 字体、32 个游戏像素图标和固定 padding 推导行高，缺少 Android 触控最小尺寸约束。[tilesdl.cc](../../../crawl-ref/source/tilesdl.cc) 第 318–343 行的自动字体下限只覆盖消息、提示和标签，保留 CRT/HUD 原有算法；Android 系统字号并未统一作用于这些 C++ 文本。截图能证明显示差异，尚未测得真人误触率。
 
 **方案。** 扩展现有 `UIMenu`，为 Android 的可选条目设置最小整行热区，分开处理文字大小、图标和行间距；长列表继续滚动，长名称换行，不直接把旧定列界面的字体全部放大。字体设置可先覆盖列表、描述和消息，HUD 保持重点信息优先。原生角色档案/Mod 列表同样补齐行高与选中语义，其 XML 目前也缺少最小行高。
 
@@ -153,7 +153,7 @@ language = zh
 
 ### A06：让文本场景使用合适的输入工具
 
-**现状。** 从菜单进入搜索后自动出现自制字母盘，系统 IME 未显示，见[截图](evidence/android-ui-audit-2026-09-22/10-search-text.png)及 [IME 状态](evidence/android-ui-audit-2026-09-22/search-ime.txt)。[DCSSKeyboard.java](../crawl-ref/source/android-project/app/src/main/java/org/develz/crawl/DCSSKeyboard.java) 第 555–557 行仅切换完整盘；[SDLActivity.java](../crawl-ref/source/android-project/app/src/main/java/org/libsdl/app/SDLActivity.java) 第 1837–1846 行只有全局系统键盘模式才能聚焦 IME。
+**现状。** 从菜单进入搜索后自动出现自制字母盘，系统 IME 未显示，见[截图](evidence/10-search-text.png)及 [IME 状态](evidence/search-ime.txt)。[DCSSKeyboard.java](../../../crawl-ref/source/android-project/app/src/main/java/org/develz/crawl/DCSSKeyboard.java) 第 555–557 行仅切换完整盘；[SDLActivity.java](../../../crawl-ref/source/android-project/app/src/main/java/org/libsdl/app/SDLActivity.java) 第 1837–1846 行只有全局系统键盘模式才能聚焦 IME。
 
 **方案。** 在 TEXT 场景提供“系统键盘”入口，临时使用已有 `DummyEdit`/IME 通路；结束文本输入后恢复先前紧凑布局。数字场景提供数字输入类型。保留完整盘用于快捷键与高级输入，不要求玩家退出游戏修改全局键盘模式。
 
@@ -161,7 +161,7 @@ language = zh
 
 ### A07：状态溢出必须有可见提示
 
-**代码事实。** [output.cc](../crawl-ref/source/output.cc) 第 1471–1484 行在一行状态放不下时停止输出，没有剩余数量标记。重要状态已有优先序，不能描述为完全随机。[tilereg-stat.cc](../crawl-ref/source/tilereg-stat.cc) 第 84–94 行只有精确状态文字命中才打开状态抽屉，附近空白进入通用菜单。完整状态列表已经存在于 [topbar-drawer.cc](../crawl-ref/source/topbar-drawer.cc) 第 114–167 行。
+**代码事实。** [output.cc](../../../crawl-ref/source/output.cc) 第 1471–1484 行在一行状态放不下时停止输出，没有剩余数量标记。重要状态已有优先序，不能描述为完全随机。[tilereg-stat.cc](../../../crawl-ref/source/tilereg-stat.cc) 第 84–94 行只有精确状态文字命中才打开状态抽屉，附近空白进入通用菜单。完整状态列表已经存在于 [topbar-drawer.cc](../../../crawl-ref/source/topbar-drawer.cc) 第 114–167 行。
 
 **方案。** 预留“全部状态/+N”入口，扩大状态组热区，点击后复用完整状态抽屉；继续优先显示重要负面状态。避免新增第二套状态详情页。
 
@@ -169,9 +169,9 @@ language = zh
 
 ### A08：补齐已有“更多”机制的最后几处缺口
 
-**代码事实。** 两类快捷项同时存在时，[tilesdl.cc](../crawl-ref/source/tilesdl.cc) 第 1328–1346 行将法术与能力各分一半宽度，超出容量直接截断；第 999–1019 行在高度不足时隐藏整行。菜单末尾已有完整列表，但快捷栏自身没有溢出说明。
+**代码事实。** 两类快捷项同时存在时，[tilesdl.cc](../../../crawl-ref/source/tilesdl.cc) 第 1328–1346 行将法术与能力各分一半宽度，超出容量直接截断；第 999–1019 行在高度不足时隐藏整行。菜单末尾已有完整列表，但快捷栏自身没有溢出说明。
 
-另外，[quiver.cc](../crawl-ref/source/quiver.cc) 第 2766–2778 行固定六槽：同时有物品、法术、能力并允许清空时，“清空”因没有剩余槽位而不显示。底层清空命令仍存在，该页面未覆盖 `keyboard_more()`，所以这是紧凑入口缺口，并非彻底不能清空。
+另外，[quiver.cc](../../../crawl-ref/source/quiver.cc) 第 2766–2778 行固定六槽：同时有物品、法术、能力并允许清空时，“清空”因没有剩余槽位而不显示。底层清空命令仍存在，该页面未覆盖 `keyboard_more()`，所以这是紧凑入口缺口，并非彻底不能清空。
 
 **方案。** 快捷栏提供“全部”入口，直达现有完整列表；空间允许时让条目少的一类让出空位。箭袋直接复用 `ui::spill_input_actions()` 和 `Menu::keyboard_more()`。先完成入口和溢出一致性，再考虑可选的常用项排序；暂不引入持久自定义快捷栏框架。
 
@@ -179,7 +179,7 @@ language = zh
 
 ### A09：把消息回看放到消息附近
 
-**代码事实。** [tilereg-msg.cc](../crawl-ref/source/tilereg-msg.cc) 第 22–25 行对 overlay 消息区点击直接不处理；消息历史存在于通用菜单。MORE 已有继续操作，但 [message.cc](../crawl-ref/source/message.cc) 第 2030–2036 行的 Escape 会设置当前批次自动清除，语义比普通“关闭当前页”更强。
+**代码事实。** [tilereg-msg.cc](../../../crawl-ref/source/tilereg-msg.cc) 第 22–25 行对 overlay 消息区点击直接不处理；消息历史存在于通用菜单。MORE 已有继续操作，但 [message.cc](../../../crawl-ref/source/message.cc) 第 2030–2036 行的 Escape 会设置当前批次自动清除，语义比普通“关闭当前页”更强。
 
 **方案。** 在消息区提供明确、不会穿透地图的历史/展开入口，复用 `CMD_REPLAY_MESSAGES`；新消息与待确认消息的可见状态保持清楚。MORE 的继续与批量跳过分别评估，先补充说明和实测，不直接取消既有危险提示。
 
@@ -187,7 +187,7 @@ language = zh
 
 ### A10：设置让玩家看得懂、调得准
 
-**现状。** [当前设置截图](evidence/android-ui-audit-2026-09-22/01-settings.png) 只有“键盘大小”数字；[DCSSLauncher.java](../crawl-ref/source/android-project/app/src/main/java/org/develz/crawl/DCSSLauncher.java) 第 337–371 行虽已夹紧输入，但页面没有单位、范围、紧凑模式下限解释或效果预览。
+**现状。** [当前设置截图](evidence/01-settings.png) 只有“键盘大小”数字；[DCSSLauncher.java](../../../crawl-ref/source/android-project/app/src/main/java/org/develz/crawl/DCSSLauncher.java) 第 337–371 行虽已夹紧输入，但页面没有单位、范围、紧凑模式下限解释或效果预览。
 
 **方案。** 扩展现有“输入与显示”组，加入小/标准/大尺寸预设和占屏预览；高级数值保留，标出 dp 和允许范围；数值被调整时说明实际采用值。将 A05 的阅读字号设置纳入同一组，区分地图缩放、文字大小、按键高度三件事。
 

@@ -64,7 +64,7 @@ Parser (统一):
 | **控制符奇偶检查** | `python3 .claude/scripts/source_control_parity.py --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **运行时冒烟测试** | `bash .claude/scripts/smoke_test.sh` |
 | **统一 Catch2 运行时** | `bash .claude/scripts/post_zh_runtime.sh catch2` |
-| **运行工具测试** | `bash .claude/scripts/tests/run_all.sh` |
+| **运行工具测试** | `bash .claude/scripts/run_isolated.sh bash .claude/scripts/tests/run_all.sh` |
 | **隔离运行重 Python 测试/验证** | `bash .claude/scripts/run_isolated.sh python3 <test>` |
 
 ### 支持平台与依赖
@@ -700,7 +700,7 @@ bash .claude/scripts/check_checkpoint.sh
 
 # context_resolve.sh: 为 Agent 调度生成精简上下文
 CONTEXT=$(bash .claude/scripts/context_resolve.sh "translate god descriptions" \
-    --files dat/database/zh/godspeak.txt)
+    --files crawl-ref/source/dat/database/zh/godspeak.txt)
 ```
 
 ### verify_zh.sh — 单入口验证调度器

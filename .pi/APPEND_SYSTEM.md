@@ -41,9 +41,8 @@ roles are the only project agents; handle read-only exploration with the
 runtime's search tools. Keep one writer for each owned
 path; parallelize analysis and review, not overlapping edits. Agent model and
 tool assignments are authoritative in `.pi/agents/`; do not copy them into
-prose. `crawl-coder` and `zh-translator` intentionally leave `model` unset:
-dispatch them by role and prompt, inheriting the runtime's model instead of
-pinning a provider.
+prose. Dispatch agents by role and prompt; consult `.pi/agents/` for the
+current model and tool configuration.
 
 ## Skills
 
