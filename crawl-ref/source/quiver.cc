@@ -22,6 +22,7 @@
 #include "item-prop.h"
 #include "item-use.h"
 #include "items.h"
+#include "libutil.h"
 #include "macro.h"
 #include "message.h"
 #include "mon-death.h"
@@ -2859,7 +2860,7 @@ namespace quiver
                                                     T_("Quick cast"));
                 if (skey == 0)
                     return true;
-                if (isalpha(skey))
+                if (isaalpha(skey))
                 {
                     auto s = make_shared<spell_action>(
                             static_cast<spell_type>(get_spell_by_letter(skey)));

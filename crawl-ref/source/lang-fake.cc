@@ -295,7 +295,7 @@ static void _german(string &txt)
     for (unsigned int i = 0; i < txt.length(); i++)
         if (txt[i] == 'c' || txt[i] == 'C')
         {
-            switch (tolower(txt[i+1]))
+            switch (toalower(txt[i+1]))
             {
             case 'h': case 'z':
                 break;
@@ -320,7 +320,7 @@ static void _german(string &txt)
     ben a deterent to akurate speling.
     */
     for (int i = txt.length() - 2; i > 0; i--)
-        if (isalpha(txt[i]) && txt[i] == txt[i + 1])
+        if (isaalpha(txt[i]) && txt[i] == txt[i + 1])
             txt.erase(i, 1);
     /*
     Also, al wil agre that the horibl mes of the silent "e" in the languag is
