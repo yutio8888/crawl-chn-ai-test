@@ -340,3 +340,47 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     CHECK(weapon->cursed());
     weapon->flags &= ~ISFLAG_CURSED;
 }
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "Fisticloak needs two distinct haunted aux slots",
+                 "[single-file][equipment][upstream-5378]")
+{
+    const int occupied = GENERATE(4, 5, 6);
+    const int removable = GENERATE(0, 1, 2, 6);
+    CAPTURE(occupied, removable);
+
+    // Model a poltergeist's six interchangeable aux slots. Keep this layout
+    // local: slot planning must neither equip nor remove any real items.
+    player_equip_set equipment;
+    equipment.num_slots.init(0);
+    equipment.num_slots[SLOT_HAUNTED_AUX] = 6;
+    for (int i = 0; i < occupied; ++i)
+    {
+        item_def& item = you.inv[i];
+        item = simple_create_item(OBJ_ARMOUR, ARM_CLOAK);
+        item.link = i;
+        item.pos = ITEM_IN_INVENTORY;
+        if (i >= removable)
+            item.flags |= ISFLAG_CURSED;
+        equipment.add(item, SLOT_HAUNTED_AUX);
+    }
+
+    item_def cloak;
+    REQUIRE(make_item_unrandart(cloak, UNRAND_FISTICLOAK));
+    const bool can_fit = 6 - occupied + min(occupied, removable) >= 2;
+    bool requires_replace = false;
+    const equipment_slot slot =
+        equipment.find_slot_to_equip_item(cloak, requires_replace);
+    CHECK((slot != SLOT_UNUSED || requires_replace) == can_fit);
+    CHECK(requires_replace == (can_fit && occupied > 4));
+    if (occupied <= 4)
+        CHECK(slot == SLOT_HAUNTED_AUX);
+    else if (!can_fit)
+        CHECK(slot == SLOT_UNUSED);
+
+    // Equipment preview may ignore curses, but must still reserve two slots.
+    equipment.find_slot_to_equip_item(cloak, requires_replace, true);
+    CHECK(requires_replace == (occupied > 4));
+    CHECK(equipment.items.size() == static_cast<size_t>(occupied));
+    CHECK(equipment.num_slots[SLOT_HAUNTED_AUX] == 6);
+}
