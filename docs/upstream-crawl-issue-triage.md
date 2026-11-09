@@ -33,12 +33,12 @@
 | [5522](https://github.com/crawl/crawl/issues/5522) | 2026-10-19 | strange behavior with aiming fireball at solid features | — | — | pending | pending | pending | — | — |
 | [5521](https://github.com/crawl/crawl/issues/5521) | 2026-10-19 | Vaults index caches tags intended to depend on player location | — | — | pending | pending | pending | — | — |
 | [5519](https://github.com/crawl/crawl/issues/5519) | 2026-10-18 | nicolae_transmutations_shop could use adjusting | — | W2 | no | open; no related fix through 7c4eee1bee | upstream-only | — | 属于商品池/权重玩法设计；shops.des:1386 与上游一致；中文 `Changing→变装`、`Room→间` 键存在，shopping.cc:1744 上下文翻译正常 |
-| [5517](https://github.com/crawl/crawl/issues/5517) | 2026-10-17 | (console) Dragon Vein feature glyphs aren't hidable by any of the View Layers | — | — | pending | pending | pending | — | — |
+| [5517](https://github.com/crawl/crawl/issues/5517) | 2026-10-17 | (console) Dragon Vein feature glyphs aren't hidable by any of the View Layers | — | W3 | pending | pending | pending | — | — |
 | [5515](https://github.com/crawl/crawl/issues/5515) | 2026-10-16 | Closet in Vaults | — | — | pending | pending | pending | — | — |
 | [5503](https://github.com/crawl/crawl/issues/5503) | 2026-10-10 | Jade Form "Crystals" status display desync | — | W2 | yes | open; no upstream fix through 7c4eee1bee | local-fix | `98ee4b477b` | WebTiles 状态缓存遗漏 `light_text_formatted` 比较；tileweb.cc:1107 补齐；新增颜色变化/缓存稳定/状态移除回归测试 |
 | [5499](https://github.com/crawl/crawl/issues/5499) | 2026-10-07 | RandArt sanguine talisman with fly loses fly upon exiting bat mode | — | — | pending | pending | pending | — | — |
 | [5498](https://github.com/crawl/crawl/issues/5498) | 2026-10-07 | Jade crystals block the doorway | — | — | pending | pending | pending | — | — |
-| [5483](https://github.com/crawl/crawl/issues/5483) | 2026-10-04 | Talisman hive describes melding helmet even thought it melds both the helmet and the extra hat slot from the unrandtart Zonguldrok | — | — | pending | pending | pending | — | — |
+| [5483](https://github.com/crawl/crawl/issues/5483) | 2026-10-04 | Talisman hive describes melding helmet even thought it melds both the helmet and the extra hat slot from the unrandtart Zonguldrok | — | W3 | pending | pending | pending | — | — |
 | [5474](https://github.com/crawl/crawl/issues/5474) | 2026-10-02 | Unclear Dialogue when Entering Cocytus | — | W2 | no | open; no related fix through 7c4eee1bee | upstream-only | — | 警告原因在消息栏，确认弹窗只显示通用问句；中文“仍然进入下一层吗？”语义准确；stairs.cc:126/138 + prompt.cc:205；建议上游把警告原因纳入弹窗 |
 | [5463](https://github.com/crawl/crawl/issues/5463) | 2026-09-29 | Coglin does not equip gizmo | — | — | pending | pending | pending | — | — |
 | [5462](https://github.com/crawl/crawl/issues/5462) | 2026-09-29 | Fails to run on MacOS due to a failed GateKeeper check | — | — | pending | pending | pending | — | — |
@@ -46,11 +46,11 @@
 | [5448](https://github.com/crawl/crawl/issues/5448) | 2026-09-22 | When my apostles got feared, I can remove fear by using recall apostle ability | — | — | pending | pending | pending | — | — |
 | [5442](https://github.com/crawl/crawl/issues/5442) | 2026-09-21 | Ctrl + Direction(forced attack) - attacking ally interaction bugs | — | — | pending | pending | pending | — | — |
 | [5441](https://github.com/crawl/crawl/issues/5441) | 2026-09-21 | Interlevel travel(ctrl+G) can cause player to use transporter. | — | — | pending | pending | pending | — | — |
-| [5429](https://github.com/crawl/crawl/issues/5429) | 2026-09-19 | noise bar and equip bar at the same time | — | — | pending | pending | pending | — | — |
+| [5429](https://github.com/crawl/crawl/issues/5429) | 2026-09-19 | noise bar and equip bar at the same time | — | W3 | pending | pending | pending | — | — |
 | [5418](https://github.com/crawl/crawl/issues/5418) | 2026-09-14 | Rewinded Clockwork bee loses Justiciar's Inspire | — | — | pending | pending | pending | — | — |
 | [5416](https://github.com/crawl/crawl/issues/5416) | 2026-09-13 | New invis breaks autofire | — | — | pending | pending | pending | — | — |
 | [5414](https://github.com/crawl/crawl/issues/5414) | 2026-09-12 | Lua error when reloading saved game in tutorial mode | — | — | pending | pending | pending | — | — |
-| [5413](https://github.com/crawl/crawl/issues/5413) | 2026-09-12 | memory leak in skill-menu-cc | — | — | pending | pending | pending | — | — |
+| [5413](https://github.com/crawl/crawl/issues/5413) | 2026-09-12 | memory leak in skill-menu-cc | — | W3 | pending | pending | pending | — | — |
 
 ## 方法与约束
 
