@@ -37076,8 +37076,8 @@ Terminal colours: %d foreground, %d background\n\n
 Terminal type (`TERM`): <w>%s</w>\n
 终端类型（`TERM`）：<w>%s</w>\n
 %%%%
-You are bolstered by spread misfortune (+%d AC)
-散布的厄运强化了你（AC +%d）
+You are bolstered by spread misfortune (+%.1f AC)
+散布的厄运强化了你（AC +%.1f）
 %%%%
 You can wear up to %s rings at the same time.
 你可以同时佩戴最多%s枚戒指。
@@ -37229,8 +37229,8 @@ summons friendly %s
 ties %s tail in a knot.
 把%s尾巴打了个结。
 %%%%
-trickster (+%d AC)
-欺诈者（AC +%d）
+trickster (+%.1f AC)
+欺诈者（AC +%.1f）
 %%%%
 uppercase %c
 大写%c
@@ -40131,8 +40131,11 @@ Your slaying and spellpower are decreased in confined spaces.
 Stumbling
 踉跄
 %%%%
-Your evasion is greatly reduced on turns you move or wait in place.
-你移动或等待时，闪避值大幅降低。
+Your evasion is greatly reduced while moving.
+移动时，你的闪避值大幅降低。
+%%%%
+You are stumbling and have reduced evasion.
+你正在踉跄，闪避值降低。
 %%%%
 Succour
 援敌
@@ -41505,8 +41508,8 @@ status|surrounded by blades
 status|teleporting to hostiles
 传送至敌阵
 %%%%
-status|trickster (+%d AC)
-诡术(+%d甲)
+status|trickster (+%.1f AC)
+诡术(+%.1f甲)
 %%%%
 status|unable to call your familiar
 无法召唤使魔
@@ -47093,6 +47096,10 @@ shop name suffix|Spoils
 战利品
 %%%%
 
+shop name suffix|Stall
+摊位
+%%%%
+
 shop name suffix|Stash
 藏货处
 %%%%
@@ -47251,6 +47258,10 @@ shop name type|Comfort
 
 shop name type|Commerce
 贸易
+%%%%
+
+shop name type|Costume
+戏服
 %%%%
 
 shop name type|Delphic
@@ -53679,6 +53690,9 @@ status|Plink
 %%%%
 status|plinking
 飞石
+%%%%
+status|stumbling
+踉跄
 %%%%
 scroll type|frog
 青蛙

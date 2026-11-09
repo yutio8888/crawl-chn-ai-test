@@ -4914,9 +4914,13 @@ static string _player_spell_stats(const spell_type spell)
                                                     acc_str.str().c_str());
     }
 
-    description += make_stringf(T_("\n%*s: "),
-                                    label_width(T_("Range")), T_("Range"));
-    description += spell_range_string(spell);
+    const string range_str = spell_range_string(spell);
+    if (!range_str.empty())
+    {
+        description += make_stringf(T_("\n%*s: %s"),
+                                    label_width(T_("Range")), T_("Range"),
+                                    range_str.c_str());
+    }
     description += make_stringf(T_("\n%*s: "),
                                     label_width(T_("Noise")), T_("Noise"));
     description += spell_noise_string(spell);

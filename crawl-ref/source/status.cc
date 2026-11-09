@@ -1037,9 +1037,10 @@ bool fill_status_info(int status, status_info& inf)
             const int bonus = trickster_bonus();
             if (bonus > 0)
             {
-                inf.short_db_key = make_stringf("trickster (+%d AC)", bonus);
-                inf.short_text = make_stringf(T_("trickster (+%d AC)"), bonus);
-                inf.long_text = make_stringf(T_("You are bolstered by spread misfortune (+%d AC)"), bonus);
+                double ac = bonus / 100.0;
+                inf.short_db_key = make_stringf("trickster (+%.1f AC)", ac);
+                inf.short_text = make_stringf(T_("trickster (+%.1f AC)"), ac);
+                inf.long_text = make_stringf(T_("You are bolstered by spread misfortune (+%.1f AC)"), ac);
             }
         }
         break;

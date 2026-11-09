@@ -54,7 +54,7 @@ static const bane_def bane_data[] =
         BANE_STUMBLING,
         BANE_DUR_SHORT,
         N_("Stumbling"),
-        N_("Your evasion is greatly reduced on turns you move or wait in place."),
+        N_("Your evasion is greatly reduced while moving."),
     },
 
 #if TAG_MAJOR_VERSION == 34
