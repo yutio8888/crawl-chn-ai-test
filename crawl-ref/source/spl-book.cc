@@ -931,11 +931,11 @@ public:
         {
             if (player_spell_levels() > 1 || player_spell_levels() == 0)
             {
-                spell_levels_str = make_stringf(T_("<lightgreen>%d spell levels left</lightgreen>"),
+                spell_levels_str = make_stringf(T_("<lightgreen>%d spell slots left</lightgreen>"),
                                                 player_spell_levels());
             }
             else
-                spell_levels_str = make_stringf(T_("<lightgreen>%d spell level left </lightgreen>"),
+                spell_levels_str = make_stringf(T_("<lightgreen>%d spell slot left </lightgreen>"),
                                                 player_spell_levels());
             if (player_spell_levels() < 9)
                 spell_levels_str += " ";
@@ -1160,7 +1160,7 @@ bool learn_spell(spell_type specspell, bool wizard, bool interactive)
     if (interactive)
     {
         const string prompt = make_stringf_p(
-                 T_("Memorise %1$s, consuming %2$d spell level%3$s and leaving %4$d?%5$s%6$s"),
+                 T_("Memorise %1$s, consuming %2$d spell slot%3$s and leaving %4$d?%5$s%6$s"),
                  spell_title(specspell), spell_levels_required(specspell),
                  spell_levels_required(specspell) != 1 ? "s" : "",
                  player_spell_levels() - spell_levels_required(specspell),

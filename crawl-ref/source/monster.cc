@@ -5597,7 +5597,11 @@ void monster::finalise_movement(const actor* to_blame)
         if (flags & MF_KNOWN_INVISIBLE)
         {
             flags &= ~MF_KNOWN_INVISIBLE;
-            env.invis_knowledge.update(*this, false, last_move_pos);
+            // Movement out of sight gives the player no new information.
+            // Don't relocate an old warning to the player's current position
+            // when a distant stationary monster finally moves.
+            if (you.see_cell(last_move_pos))
+                env.invis_knowledge.update(*this, false, last_move_pos);
         }
     }
 

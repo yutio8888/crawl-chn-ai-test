@@ -112,7 +112,10 @@ string Form::melding_description(bool itemized) const
                 if (testbits(blocked_slots, SLOTF(slot))
                     && you.equipment.num_slots[slot] > 0)
                 {
-                    tags.emplace_back(lowercase_string(equip_slot_name(slot)));
+                    // The slot type includes hats and any extra headgear slots.
+                    tags.emplace_back(lowercase_string(slot == SLOT_HELMET
+                        ? C_("form melding", "All Headgear")
+                        : equip_slot_name(slot)));
                 }
             }
             if (!tags.empty())
@@ -144,7 +147,11 @@ string Form::melding_description(bool itemized) const
         {
             equipment_slot slot = static_cast<equipment_slot>(i);
             if (testbits(blocked_slots, SLOTF(slot)))
-                tags.emplace_back(equip_slot_name(slot));
+            {
+                tags.emplace_back(slot == SLOT_HELMET
+                    ? C_("form melding", "All Headgear")
+                    : equip_slot_name(slot));
+            }
         }
     }
 
@@ -1966,10 +1973,17 @@ bool transforming_is_unsafe(transformation which_trans)
     unwind_var<transformation> unwind_default_form(you.default_form);
     unwind_var<transformation> unwind_form(you.form);
 
+    const transformation old_form = you.form;
     you.default_form = which_trans;
     you.form = which_trans;
 
     you.equipment.unmeld_all_equipment(true);
+
+    // Match untransform's two-hander slot migration before checking removals.
+    if (old_form == transformation::fortress_crab)
+        you.equipment.shift_twohander_to_slot(SLOT_OFFHAND);
+
+    you.equipment.update();
     you.equipment.meld_equipment(get_form(which_trans)->blocked_slots, true);
 
     // Pretend incompatible items fell away.
@@ -2341,6 +2355,9 @@ static void _enter_form(int dur, transformation which_trans, bool using_talisman
     // a new artefact talisman or were forcibly polymorphed away from one),
     // refresh equipment properties.
     you.equipment.update();
+    // Returning from a temporary form can restore talisman flight without
+    // triggering equip effects (and untransform() may have cleared this cache).
+    you.attribute[ATTR_PERM_FLIGHT] = you.equip_flight() ? 1 : 0;
     if (which_trans == transformation::fortress_crab)
         calc_mp();
 
