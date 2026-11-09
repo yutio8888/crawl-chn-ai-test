@@ -32,7 +32,7 @@
 | [5524](https://github.com/crawl/crawl/issues/5524) | 2026-10-22 | Ru redirects out of range spells | — | — | pending | pending | pending | — | — |
 | [5522](https://github.com/crawl/crawl/issues/5522) | 2026-10-19 | strange behavior with aiming fireball at solid features | — | — | pending | pending | pending | — | — |
 | [5521](https://github.com/crawl/crawl/issues/5521) | 2026-10-19 | Vaults index caches tags intended to depend on player location | — | — | pending | pending | pending | — | — |
-| [5519](https://github.com/crawl/crawl/issues/5519) | 2026-10-18 | nicolae_transmutations_shop could use adjusting | — | W2 | pending | pending | pending | — | — |
+| [5519](https://github.com/crawl/crawl/issues/5519) | 2026-10-18 | nicolae_transmutations_shop could use adjusting | — | W2 | no | open; no related fix through 7c4eee1bee | upstream-only | — | 属于商品池/权重玩法设计；shops.des:1386 与上游一致；中文 `Changing→变装`、`Room→间` 键存在，shopping.cc:1744 上下文翻译正常 |
 | [5517](https://github.com/crawl/crawl/issues/5517) | 2026-10-17 | (console) Dragon Vein feature glyphs aren't hidable by any of the View Layers | — | — | pending | pending | pending | — | — |
 | [5515](https://github.com/crawl/crawl/issues/5515) | 2026-10-16 | Closet in Vaults | — | — | pending | pending | pending | — | — |
 | [5503](https://github.com/crawl/crawl/issues/5503) | 2026-10-10 | Jade Form "Crystals" status display desync | — | W2 | pending | pending | pending | — | — |
