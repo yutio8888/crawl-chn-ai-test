@@ -53,7 +53,7 @@
 | [5413](https://github.com/crawl/crawl/issues/5413) | 2026-09-12 | memory leak in skill-menu-cc | — | W3 | yes | open; no related fix through 7c4eee1bee | local-fix | `c5de3666ed` | `MenuFreeform::attach_item` 拒绝越界项时不接管所有权；skill-menu 用 `m_unattached_items` 保留至 clear，新增 `test_skill_menu.cc`（16 断言） |
 
 | [5384](https://github.com/crawl/crawl/issues/5384) | 2026-08-22 | Undefined behaviour from isalpha(). | — | W8 | pending | pending | pending | — | — |
-| [5383](https://github.com/crawl/crawl/issues/5383) | 2026-08-22 | Unidentified Jewelry autopickup does not work | — | W8 | pending | pending | pending | — | — |
+| [5383](https://github.com/crawl/crawl/issues/5383) | 2026-08-22 | Unidentified Jewelry autopickup does not work | — | W8 | no | open; PR #5559 closed unmerged (policy, not technical) | upstream-only | — | 移动时先鉴定地面物品（player.cc:999→items.cc:1035），`_autopickup_subtype()` 改用已知类型（items.cc:3177）；旧机制 c4c869ff2ff 因强制拾取副作用删除；等待兼顾显式类型与冗余过滤的上游方案 |
 | [5378](https://github.com/crawl/crawl/issues/5378) | 2026-08-18 | Fungal Fisticloak "unwears" itself or destroys other aux gear on Poltergeist of  | — | — | pending | pending | pending | — | — |
 | [5368](https://github.com/crawl/crawl/issues/5368) | 2026-08-09 | Teleport closet in spider | Vaults | — | — | pending | pending | pending | — | — |
 
