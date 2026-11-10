@@ -2279,6 +2279,9 @@ bool simple_monster_message(const monster& mons, const char *event,
         if (need_possessive)
             msg = apostrophise(msg);
         msg += event;
+        // Chinese event strings often keep the English leading space; remove
+        // only the CJK-CJK spaces that result from concatenation.
+        msg = strip_cjk_spaces(msg);
 
         if (channel == MSGCH_PLAIN && mons.wont_attack())
             channel = MSGCH_FRIEND_ACTION;

@@ -723,7 +723,7 @@ bool monster::likes_wand(const item_def &item) const
 void monster::equip_weapon_message(item_def &item)
 {
     const string str = (T_(" wields ")) +
-                       item.name(DESC_A, false, false, true, false) + ".";
+                       item.name(DESC_A, false, false, true, false) + T_(".");
     simple_monster_message(*this, str.c_str());
 
     const int brand = get_weapon_brand(item);
@@ -805,7 +805,7 @@ int monster::armour_bonus(const item_def &item) const
 void monster::equip_armour_message(item_def &item)
 {
     const string str = (T_(" wears ")) +
-                       item.name(DESC_A) + ".";
+                       item.name(DESC_A) + T_(".");
     simple_monster_message(*this, str.c_str());
 }
 
@@ -814,7 +814,7 @@ void monster::equip_jewellery_message(item_def &item)
     ASSERT(item.base_type == OBJ_JEWELLERY);
 
     const string str = (T_(" puts on ")) +
-                       item.name(DESC_A) + ".";
+                       item.name(DESC_A) + T_(".");
     simple_monster_message(*this, str.c_str());
 }
 
@@ -845,7 +845,7 @@ void monster::unequip_weapon(item_def &item, bool msg)
     if (msg)
     {
         const string str = (T_(" unwields ")) +
-                           item.name(DESC_A, false, false, true, false) + ".";
+                           item.name(DESC_A, false, false, true, false) + T_(".");
         msg = simple_monster_message(*this, str.c_str());
     }
 
@@ -890,7 +890,7 @@ void monster::unequip_armour(item_def &item, bool msg)
     if (msg)
     {
         const string str = (T_(" takes off ")) +
-                           item.name(DESC_A) + ".";
+                           item.name(DESC_A) + T_(".");
         simple_monster_message(*this, str.c_str());
     }
 }

@@ -198,6 +198,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(make_stringf(T_("the %s"), "箭") == "箭");
     CHECK(strip_cjk_spaces("兽人 颤动 着。 你 好") == "兽人颤动着。你好");
     CHECK(strip_cjk_spaces("A B") == "A B");
+    CHECK(std::string(T_("describe")) == "描述");
+    CHECK(make_stringf(T_("Your spells (%s)"), T_("describe"))
+          == "你的法术 (描述)");
+    CHECK(make_stringf(T_("Select a spell to %s"), T_("describe"))
+          == "选择一个要描述的法术");
     CHECK(std::string(C_("gold quantity", "pieces")) == "枚");
 
     item_def gold;
@@ -7873,3 +7878,41 @@ TEST_CASE("saved artefact line breaks stay inside one coloured floor message",
         CHECK(item.name(DESC_A) == raw_full_name);
     }
 }
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: monster equipment messages localize the final period",
+                 "[zh-translation][monster-equipment]")
+{
+    init_properties();
+    init_mut_index();
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    scoped_monspeak_world world;
+    monster *orc = world.place(MONS_ORC);
+    REQUIRE(orc != nullptr);
+
+    const int index = get_mitm_slot();
+    REQUIRE(index != NON_ITEM);
+    item_def &weapon = env.item[index];
+    weapon.base_type = OBJ_WEAPONS;
+    weapon.sub_type = WPN_CLUB;
+    weapon.quantity = 1;
+    weapon.flags = ISFLAG_IDENTIFIED;
+    weapon.pos = coord_def(-1, -1);
+    weapon.set_holding_monster(*orc);
+    orc->inv[MSLOT_WEAPON] = index;
+
+    msgwin_temporary_mode temporary;
+    unwinder clear_messages([]() { msgwin_clear_temporary(); });
+
+    msg::tee unequipped;
+    REQUIRE(orc->unequip(MSLOT_WEAPON, true));
+    CHECK(unequipped.get_store().find("卸下") != string::npos);
+    CHECK(unequipped.get_store().find(".") == string::npos);
+    CHECK(unequipped.get_store().find("。") != string::npos);
+
+    msgwin_clear_temporary();
+    msg::tee departed;
+    simple_monster_message(*orc, T_(" departs this earthly plane."));
+    CHECK(departed.get_store().find(" ") == string::npos);
+}
+
