@@ -654,6 +654,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: Issue 16 real score entries keep protocol fields English",
                  "[zh-translation][issue-16][hiscores][issue-114]")
 {
+    init_duration_index();
     unwind_var<player> restore_player(you);
     you = player();
     you.your_name = "Issue16";
@@ -674,6 +675,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         you.skills[sk] = 0;
     you.skills[SK_FIGHTING] = 27;
     you.skills[SK_AXES] = 15;
+    you.duration[DUR_AGILITY] = 100;
     you.duration[DUR_HASTE] = 100;
 
     REQUIRE(Options.language == lang_t::ZH);
