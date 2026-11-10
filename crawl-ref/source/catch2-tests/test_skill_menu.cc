@@ -60,7 +60,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         CHECK(attached_destroyed == pass);
         CHECK(rejected_destroyed == pass);
 
-        skm.reset();
+        skm.clear();
         CHECK(attached_destroyed == pass + 1);
         CHECK(rejected_destroyed == pass + 1);
         skm.clear();

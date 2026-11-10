@@ -139,11 +139,8 @@ public:
             {
                 continue;
             }
-            if (find(registered.begin(), registered.end(), mon)
-                != registered.end())
-            {
-                continue;
-            }
+            // Stable may reuse an old registered segment's slot for a new
+            // connector; ownership follows its anchor, not its address.
             monster_die(*mon, KILL_TENTACLE_CLEANUP, NON_MONSTER, true);
         }
     }
@@ -156,7 +153,7 @@ public:
         mon->set_hit_dice(1);
         mon->hit_points = mon->max_hit_points = 40;
         mon->speed = 10;
-        mon->base_attitude = ATT_HOSTILE;
+        mon->attitude = ATT_HOSTILE;
         mon->behaviour = BEH_SEEK;
         mon->foe = MHITNOT;
         mon->set_position(pos);
@@ -182,7 +179,7 @@ public:
             mon->set_hit_dice(1);
             mon->hit_points = mon->max_hit_points = 5;
             mon->speed = 10;
-            mon->base_attitude = ATT_HOSTILE;
+            mon->attitude = ATT_HOSTILE;
             mon->behaviour = BEH_SEEK;
             mon->foe = MHITNOT;
             mon->set_new_monster_id();
@@ -265,10 +262,10 @@ size_t checked_body_length(const monster &head, const coord_def &base)
 }
 
 // Is a living body segment anchored on @p head left in the level?
-bool has_live_body_segment(const monster &head)
+bool has_live_body_segment(mid_t head_mid)
 {
     for (monster_iterator mi; mi; ++mi)
-        if (mi->alive() && mi->tentacle_connect == head.mid)
+        if (mi->alive() && mi->tentacle_connect == head_mid)
             return true;
     return false;
 }
@@ -291,7 +288,10 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     monster *intruder = arena.add_monster(MONS_RAT, BASE_POS);
     const mid_t intruder_mid = intruder->mid;
 
+    const mid_t saved_vine_mid = vine->mid;
     move_solo_tentacle(vine);
+    // Stable completes monster resets through deferred final effects.
+    fire_final_effects();
 
     // The unrelated monster's connection props are untouched.
     CHECK_FALSE(intruder->props.exists(INWARDS_KEY));
@@ -303,7 +303,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     if (vine->alive())
         CHECK(checked_body_length(*vine, BASE_POS) > 0);
     else
-        CHECK_FALSE(has_live_body_segment(*vine));
+        CHECK_FALSE(has_live_body_segment(saved_vine_mid));
 }
 
 TEST_CASE_METHOD(MockPlayerYouTestsFixture,
@@ -322,7 +322,10 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     const coord_def root = vine->props[BASE_POSITION_KEY].get_coord();
     CHECK(root == BASE_POS);
 
+    const mid_t saved_vine_mid = vine->mid;
     move_solo_tentacle(vine);
+    // Stable completes monster resets through deferred final effects.
+    fire_final_effects();
 
     REQUIRE(vine->alive());
     // The anchored base is unchanged and the re-laid body reaches it within the
@@ -339,7 +342,8 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     // The connectors this case produced are owned by the arena and are removed
     // again, so the fixture's monster indices stay consistent.
     arena.cleanup_production_bodies();
-    CHECK_FALSE(has_live_body_segment(*vine));
+    fire_final_effects();
+    CHECK_FALSE(has_live_body_segment(saved_vine_mid));
     // The cleanup only removes bodies owned by this arena's tentacles.
     CHECK(bystander->alive());
 }
@@ -359,17 +363,23 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
 
     // Reach the level's monster cap so that only one more monster can be
     // placed: the base connector is created, the next one is refused.
-    arena.fill_monster_slots(MAX_MONSTERS - 2 - 3);
+    // Stable frees the two old body slots before laying out connectors.
+    // Fill every slot now; purging leaves room for exactly one placement
+    // below create_monster's MAX_MONSTERS - 1 cap.
+    arena.fill_monster_slots(MAX_MONSTERS - 3);
     CHECK(vine_mid != MID_NOBODY);
 
+    const mid_t saved_vine_mid = vine->mid;
     move_solo_tentacle(vine);
+    // Stable completes monster resets through deferred final effects.
+    fire_final_effects();
 
     // Only the base connector could be placed before the cap refused the rest,
     // so the connection has to report failure: the existing cleanup removes the
     // tentacle and the already created connector is not left behind. (Before
     // the construction fix this case kept a live orphan body segment.)
     CHECK_FALSE(vine->alive());
-    CHECK_FALSE(has_live_body_segment(*vine));
+    CHECK_FALSE(has_live_body_segment(saved_vine_mid));
 }
 
 TEST_CASE_METHOD(MockPlayerYouTestsFixture,

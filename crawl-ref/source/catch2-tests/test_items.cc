@@ -7,6 +7,7 @@
 #include "items.h"
 #include "item-prop.h"
 #include "item-prop-enum.h"
+#include "item-status-flag-type.h"
 #include "invent.h"
 #include "env.h"
 #include "transform.h"
