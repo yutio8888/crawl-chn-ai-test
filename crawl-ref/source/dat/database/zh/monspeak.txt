@@ -3660,7 +3660,7 @@ _friendly_beogh_speech_rare_
 
 @The_monster@ @_says_or_shouts_@："我们倒下的兄弟不会被遗忘。"
 
-VISUAL:@The_monster@ 紧张地看了看四周。
+VISUAL:@The_monster@紧张地@at_foe/around@。
 
 @The_monster@ 看着 @foe@ 说："我实在不想为你效劳而死，@player_name@。"
 
