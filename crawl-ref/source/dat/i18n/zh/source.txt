@@ -2036,7 +2036,7 @@ barrage of energy
 （按<w>%c</w>键打开<w>%s</w>菜单招募使徒）
 %%%%
  (quivered)
-（已装入箭袋）
+（已设为快捷动作）
 %%%%
 (Slaying mortal victims (and occasionally demons) will eventually satisfy Makhleb and create an exit.)
 (屠杀凡人受害者（有时甚至是恶魔）将最终满足马科列布并创造一个出口。）
@@ -3452,7 +3452,7 @@ Clearing monster memory.
 正在清除怪物记忆。
 %%%%
 Clearing quiver.
-清空箭袋。
+清除快捷动作。
 %%%%
 Clearing the skill training target for %s.
 正在清除%s的技能训练目标。
@@ -5258,10 +5258,10 @@ No
 否
 %%%%
 No %squiver actions available for cycling.%s
-没有可循环的%s箭袋动作%s
+没有可循环切换的%s快捷动作。%s
 %%%%
 No action is quivered. Press <w>%</w> to choose one.
-尚未设置箭袋动作。按 <w>%</w> 选择一个。
+尚未设置快捷动作。按 <w>%</w> 选择一个。
 %%%%
 No God
 无神
@@ -5354,7 +5354,7 @@ Nothing appears to happen... Ominous!
 似乎什么都没有发生……不祥之兆！
 %%%%
 Nothing quivered!
-箭袋中没有任何东西！
+尚未设置快捷动作！
 %%%%
 Nothing wielded
 未装备武器
@@ -6639,7 +6639,7 @@ surge of power!
 涌动着双倍活力！
 %%%%
 swap to recently quivered action
-切换到最近选定的箭袋动作
+切换到最近选定的快捷动作
 %%%%
 swim
 游泳
@@ -9338,7 +9338,7 @@ You don't have any memories left to burn.
 你已经没有记忆可以燃烧了。
 %%%%
 You don't have any quiverable items.
-你没有任何可以装入箭袋的物品。
+你没有可设为快捷动作的物品。
 %%%%
 You don't have any shoulders.
 你没有肩膀。
@@ -10052,7 +10052,7 @@ You have nothing to donate!
 你没有什么可捐赠的！
 %%%%
 You have nothing to quiver.
-你没有东西可装入箭袋。
+你没有可设为快捷动作的内容。
 %%%%
 You have nothing you can fire or use right now.
 你现在没有可以发射或使用的东西。
@@ -17004,7 +17004,7 @@ Rakshasa Summon
 召唤罗刹
 %%%%
 Fire Brand
-火焰烙印
+火焰铭印
 %%%%
 Flight
 飞行术
@@ -22577,7 +22577,7 @@ Empty
 空
 %%%%
 Nothing quivered
-未选择箭矢
+未设置快捷动作
 %%%%
 cross-training
 跨系训练
@@ -23657,7 +23657,7 @@ It is a scroll of enchant weapon.
 这是一张附魔武器卷轴。
 %%%%
 It is a scroll of brand weapon.
-这是一张武器烙印卷轴。
+这是一张武器铭印卷轴。
 %%%%
 It is a scroll of identify.
 这是一张鉴定卷轴。
@@ -26655,7 +26655,7 @@ If you quaff this potion your AC would be %d.
 (u)卸下
 %%%%
 (q)uiver
-(q)箭袋
+(q)快捷动作
 %%%%
 (w)ear
 (w)穿戴
@@ -31108,13 +31108,13 @@ Invent Gizmo
 发明装置
 %%%%
 Brand Weapon With Distortion
-扭曲烙印武器
+扭曲铭印武器
 %%%%
 Brand Weapon With Holy Wrath
-圣怒烙印武器
+神圣惩戒铭印武器
 %%%%
 Brand Weapon With Pain
-痛苦烙印武器
+痛苦铭印武器
 %%%%
 Brand Self #1
 自我烙印 #1
@@ -35007,7 +35007,7 @@ Non-targeted %s
 非瞄准%s
 %%%%
 Really quiver %s?
-确定将%s设为箭袋物品？
+确定将%s设为快捷动作？
 %%%%
 Round %d of %d
 第%d回合，共%d回合
@@ -35865,16 +35865,16 @@ obsoleteness
 <h>物品类型（及常用命令）\n
 %%%%
 <lightgreen>}</lightgreen> : miscellaneous items (e<w>%</w>oke)
-<lightgreen>}</lightgreen>：杂项物品（<w>%</w>唤醒）
+<lightgreen>}</lightgreen>：杂项物品（<w>%</w>激活）
 %%%%
 <lightgrey>(nothing)</lightgrey>
 <lightgrey>（无）</lightgrey>
 %%%%
 <lightgrey>/</lightgrey> : wands (e<w>%</w>oke)
-<lightgrey>/</lightgrey>：魔杖（<w>%</w>唤醒）
+<lightgrey>/</lightgrey>：魔杖（<w>%</w>激活）
 %%%%
 <lightred>percent</lightred> : talismans (e<w>%</w>oke)
-<lightred>percent</lightred>：护符（<w>%</w>唤醒）
+<lightred>percent</lightred>：护符（<w>%</w>激活）
 %%%%
 <magenta>!</magenta> : potions (<w>%</w>uaff)
 <magenta>!</magenta>：药水（<w>%</w>喝下）
@@ -40582,7 +40582,7 @@ Menu
 <w>/ 方向</w>、<w>Shift-方向</w>：长距离移动\n<w>* 方向</w>、<w>Ctrl-方向</w>：原地攻击\n
 %%%%
 <h>Autofight:\n<w>Tab</w>          : attack nearest monster,\n               moving if necessary\n<w>Shift-Tab</w>, <w>p</w> : trigger quivered action;\n               if targeted, aims at\n               nearest monster\n
-<h>自动战斗：\n<w>Tab</w>          ：攻击最近的怪物，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发已装填的动作；\n               若已瞄准，则瞄准\n               最近的怪物\n
+<h>自动战斗：\n<w>Tab</w>          ：攻击最近的怪物，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发已装填的动作；\n               若需要目标，则瞄准\n               最近的怪物\n
 %%%%
 <brown>(</brown> : missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
 <brown>(</brown> ：弹药（<w>%</w>装填、<w>%</w>瞄准、<w>%</w>/<w>%</w>切换）
@@ -43381,7 +43381,7 @@ inscribe item
 添加物品铭文
 %%%%
 Fire the currently quivered action
-执行当前快捷栏动作
+触发当前快捷动作
 %%%%
 select an item and Fire it
 选择物品并发射
@@ -48080,7 +48080,7 @@ rest or wait
 %%%%
 <h>Autofight:\n<w>Tab</w>          : attack a suitable target,\n               moving if necessary\n<w>Shift-Tab</w>, <w>p</w> : trigger quivered action;\n               automatically select\n               a target if needed\n
 
-<h>自动战斗：\n<w>Tab</w>          ：攻击合适的目标，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发箭袋动作；\n               必要时自动\n               选择目标\n
+<h>自动战斗：\n<w>Tab</w>          ：攻击合适的目标，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发快捷动作；\n               必要时自动\n               选择目标\n
 %%%%
 <lightred>percent</lightred> : talismans (<w>%</w>: equip)
 
