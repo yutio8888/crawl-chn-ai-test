@@ -50077,3 +50077,19 @@ attack verb|touch
 %%%%
 attack verb|constrict
 缠住
+
+%%%%
+Cast it anyway?
+仍要施放吗？
+
+%%%%
+Attack anyway?
+仍要攻击吗？
+
+%%%%
+The arc blade's discharge
+电弧之刃的放电
+
+%%%%
+Detonate Monarch Bomb
+引爆君主炸弹
