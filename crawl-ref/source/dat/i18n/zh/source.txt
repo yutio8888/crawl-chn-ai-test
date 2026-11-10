@@ -37450,7 +37450,7 @@ random rage
 随机狂暴
 %%%%
 infuse magic
-魔力灌注
+法力灌注
 %%%%
 Describe %s; partial names and regexps are fine.%s\nDescribe what? 
 查询%1$s：支持部分名称及正则表达式。%2$s\n查询内容：
