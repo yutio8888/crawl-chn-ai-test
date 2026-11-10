@@ -1102,10 +1102,16 @@ string monster_info::_core_name() const
                 s = zh;
         }
 
-        if (mons_is_draconian_job(type) && base_type != MONS_NO_MONSTER
-            && Options.language != lang_t::ZH)
+        if (mons_is_draconian_job(type) && base_type != MONS_NO_MONSTER)
         {
-            s = draconian_colour_name(base_type) + " " + s;
+            const string colour = draconian_colour_name(base_type);
+            if (colour != "buggy")
+            {
+                if (Options.language == lang_t::ZH)
+                    s = C_("draconic colour", colour.c_str()) + s;
+                else
+                    s = colour + " " + s;
+            }
         }
 
         if (type == MONS_SLIME_CREATURE)
@@ -1127,40 +1133,67 @@ string monster_info::_core_name() const
                 s = slime_sizes[slime_size] + s;
         }
 
-        if (Options.language != lang_t::ZH)
+        switch (type)
         {
-            switch (type)
+        case MONS_UGLY_THING:
+        case MONS_VERY_UGLY_THING:
+        {
+            const string colour = ugly_thing_colour_name(_colour);
+            if (colour != "buggy")
             {
-            case MONS_UGLY_THING:
-            case MONS_VERY_UGLY_THING:
-                s = ugly_thing_colour_name(_colour) + " " + s;
-                break;
-
-            case MONS_DANCING_WEAPON:
-            case MONS_SPECTRAL_WEAPON:
-                if (inv[MSLOT_WEAPON])
-                {
-                    const item_def& item = *inv[MSLOT_WEAPON];
-                    s = "dancing " + item.name(DESC_PLAIN);
-                }
-                break;
-
-            case MONS_ARMOUR_ECHO:
-                if (inv[MSLOT_ARMOUR])
-                {
-                    const item_def& item = *inv[MSLOT_ARMOUR];
-                    s = "echoed " + item.name(DESC_PLAIN);
-                }
-                break;
-
-            case MONS_HAUNTED_ARMOUR:
-                if (inv[MSLOT_ARMOUR])
-                {
-                    const item_def& item = *inv[MSLOT_ARMOUR];
-                    s = "haunted " + item.name(DESC_QUALNAME);
-                }
-                break;
+                if (Options.language == lang_t::ZH)
+                    s = C_("ugly thing colour", colour.c_str()) + s;
+                else
+                    s = colour + " " + s;
             }
+            break;
+        }
+
+        case MONS_DANCING_WEAPON:
+        case MONS_SPECTRAL_WEAPON:
+            if (inv[MSLOT_WEAPON])
+            {
+                const item_def& item = *inv[MSLOT_WEAPON];
+                const string item_name = item.name(DESC_PLAIN);
+                if (Options.language == lang_t::ZH)
+                {
+                    s = type == MONS_SPECTRAL_WEAPON
+                        ? make_stringf(C_("spectral weapon", "spectral %s"),
+                                       item_name.c_str())
+                        : make_stringf(C_("dancing weapon", "dancing %s"),
+                                       item_name.c_str());
+                }
+                else
+                    s = "dancing " + item_name;
+            }
+            break;
+
+        case MONS_ARMOUR_ECHO:
+            if (inv[MSLOT_ARMOUR])
+            {
+                const item_def& item = *inv[MSLOT_ARMOUR];
+                const string item_name = item.name(DESC_PLAIN);
+                s = Options.language == lang_t::ZH
+                    ? make_stringf(C_("armour echo", "echoed %s"),
+                                   item_name.c_str())
+                    : "echoed " + item_name;
+            }
+            break;
+
+        case MONS_HAUNTED_ARMOUR:
+            if (inv[MSLOT_ARMOUR])
+            {
+                const item_def& item = *inv[MSLOT_ARMOUR];
+                const string item_name = item.name(DESC_QUALNAME);
+                s = Options.language == lang_t::ZH
+                    ? make_stringf(C_("haunted armour", "haunted %s"),
+                                   item_name.c_str())
+                    : "haunted " + item_name;
+            }
+            break;
+
+        default:
+            break;
         }
 
         switch (type)

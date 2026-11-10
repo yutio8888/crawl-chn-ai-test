@@ -49949,3 +49949,91 @@ foot|footbug
 %%%%
 foot|footbugs
 虫足
+
+%%%%
+dancing weapon|dancing %s
+舞动的%s
+
+%%%%
+spectral weapon|spectral %s
+灵体%s
+
+%%%%
+armour echo|echoed %s
+回响的%s
+
+%%%%
+haunted armour|haunted %s
+怨灵%s
+
+%%%%
+draconic colour|black
+黑
+
+%%%%
+draconic colour|yellow
+黄
+
+%%%%
+draconic colour|green
+绿
+
+%%%%
+draconic colour|purple
+紫
+
+%%%%
+draconic colour|red
+红
+
+%%%%
+draconic colour|white
+白
+
+%%%%
+draconic colour|grey
+灰
+
+%%%%
+draconic colour|pale
+苍白
+
+%%%%
+ugly thing colour|red
+红色
+
+%%%%
+ugly thing colour|brown
+褐色
+
+%%%%
+ugly thing colour|green
+绿色
+
+%%%%
+ugly thing colour|cyan
+青色
+
+%%%%
+ugly thing colour|purple
+紫色
+
+%%%%
+ugly thing colour|white
+白色
+
+%%%%
+batters
+砸中
+
+%%%%
+grasp
+攫住
+
+%%%%
+grips
+攫住
+
+%%%%
+slices through
+贯穿
