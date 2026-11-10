@@ -1113,7 +1113,7 @@ mimic reveal plural|%s are mimics!
 %s%s了%s，但没有造成伤害。
 %%%%
 %s %s %s vigour!
-%1$s汲取了%3$s的精力！
+%1$s汲取了%3$s精力！
 %%%%
 %s %s %s%s%s
 %s%s了%s%s%s
@@ -1164,7 +1164,7 @@ mimic reveal plural|%s are mimics!
 %s了竖井！
 %%%%
 %s abandons %s pursuit.
-%s放弃了%s的追击。
+%s放弃了%s追击。
 %%%%
 %s absorbs %d nearby slime creatures and %s.
 %s吸收了附近的%d只史莱姆生物，并%s。
@@ -1185,7 +1185,7 @@ mimic reveal plural|%s are mimics!
 %s和%s
 %%%%
 %s answers %s call!
-%s响应了%s的召唤！
+%s响应了%s召唤！
 %%%%
 %s answers the call of its master!
 %s响应了主人的命令！
@@ -1293,7 +1293,7 @@ mimic reveal plural|%s are mimics!
 %s无法被转移到那里。
 %%%%
 %s chant is interrupted.
-%s的吟唱被打断了。
+%s吟唱被打断了。
 %%%%
 %s comes into view.
 %s进入了视野。
@@ -1305,7 +1305,7 @@ mimic reveal plural|%s are mimics!
 %s腐蚀了%s！
 %%%%
 %s corrosive artefact
-%s的腐蚀性神器
+%s腐蚀性神器
 %%%%
 %s corrupts the dungeon around %s!
 %s腐化了%s周围的地牢！
@@ -1401,10 +1401,10 @@ mimic reveal plural|%s are mimics!
 %s只对你感到仇恨！
 %%%%
 %s fire resistance burns away.
-%s的火焰抗性被烧尽了。
+%s火焰抗性被烧尽了。
 %%%%
 %s floods into %s %s!
-%s涌入了%s的%s！
+%s涌入了%s%s！
 %%%%
 %s forbids the use of this item.
 %s禁止使用此物品。
@@ -1416,7 +1416,7 @@ mimic reveal plural|%s are mimics!
 %s锻造了一个快速移动的防御者站在%s身边。
 %%%%
 %s gaze reveals you to all!
-%s的凝视将你暴露给所有人！
+%s凝视将你暴露给所有人！
 %%%%
 %s gleams with a vicious edge.
 %s闪烁着凶残的锋芒。
@@ -1571,7 +1571,7 @@ mimic reveal plural|%s are mimics!
 %s被重力钉住了。
 %%%%
 %s is pinned to %s own shadow.
-%s被钉在了%s自己的影子上。
+%s被钉在了%s影子上。
 %%%%
 %s is recalled away.
 %s被召回。
@@ -1601,7 +1601,7 @@ mimic reveal plural|%s are mimics!
 %s离开了你的视野。
 %%%%
 %s life force is offered up.
-%s的生命力被献祭了。
+%s生命力被献祭了。
 %%%%
 %s liquefies the ground around %s!
 %s将%s周围的地面液化！
@@ -1613,7 +1613,7 @@ mimic reveal plural|%s are mimics!
 %s看起来生病了。
 %%%%
 %s magic leaks into the air.
-%s的魔力泄漏到了空气中。
+%s魔力泄漏到了空气中。
 %%%%
 %s merges with something you can't see.
 %s与你无法看见的某种存在融合了。
@@ -1658,10 +1658,10 @@ barrage of energy
 %s向%s开火了！
 %%%%
 %s orb emits a pulse of dizzying energy.
-%s的球体释放出一阵令人眩晕的能量脉冲。
+%s球体释放出一阵令人眩晕的能量脉冲。
 %%%%
 %s orb unleashes a flurry of shooting stars!
-%s的宝珠释放出一阵流星雨！
+%s宝珠释放出一阵流星雨！
 %%%%
 %s orders the %s explosives to detonate!
 %s命令%s炸药引爆！
@@ -1727,10 +1727,10 @@ barrage of energy
 %s用冰雕刻了两门大炮！
 %%%%
 %s searing ray is interrupted.
-%s的灼热射线被打断了。
+%s灼热射线被打断了。
 %%%%
 %s seems less certain of %s magic.
-%s似乎对%s的魔力不那么自信了。
+%s似乎对%s魔力不那么自信了。
 %%%%
 %s seems to be corroded for longer.
 %s似乎被腐蚀得更久了。
@@ -1754,7 +1754,7 @@ barrage of energy
 %s从%s分离了出来。
 %%%%
 %s shadow slips away and your performance ends.
-%s的影子溜走了，你的表演结束了。
+%s影子溜走了，你的表演结束了。
 %%%%
 %s shapes itself into a furious %s!
 %s将自己塑造成了一只狂怒的%s！
@@ -1793,16 +1793,16 @@ barrage of energy
 %s散发出柔和的神圣光辉！
 %%%%
 %s song is interrupted.
-%s的歌声被打断了。
+%s歌声被打断了。
 %%%%
 %s soul is no longer bound.
-%s的灵魂不再被束缚。
+%s灵魂不再被束缚。
 %%%%
 %s spells grow weaker yet longer.
 %s法术被削弱的时间延长了。
 %%%%
 %s spells grow weaker.
-%s的法术变弱了。
+%s法术变弱了。
 %%%%
 %s spits out %s more jellies.
 %s又吐出了%s只果冻。
@@ -1889,22 +1889,22 @@ barrage of energy
 %s折磨着你。
 %%%%
 %s toxic aura wanes.
-%s的毒性光环减弱了。
+%s毒性光环减弱了。
 %%%%
 %s tunnels through space-time and arrives with you!
 %s穿越时空而来，与你一同抵达！
 %%%%
 %s turn aside %s attack!
-%s挡开了%s的攻击！
+%s挡开了%s攻击！
 %%%%
 %s turn%s aside %s attack!
 %s%s挡开了%s的攻击！
 %%%%
 %s turns %s attention toward your shadow.
-%s将%s的注意力转向了你的影子。
+%s将%s注意力转向了你的影子。
 %%%%
 %s turns aside %s attack!
-%s挡开了%s的攻击！
+%s挡开了%s攻击！
 %%%%
 %s turns into %s.
 %s变成了%s。
@@ -1931,7 +1931,7 @@ barrage of energy
 %s清楚地记得你的罪过。
 %%%%
 %s willpower is stripped away!
-%s的意志力被剥夺了！
+%s意志力被剥夺了！
 %%%%
 %s%s.
 %s%s。
@@ -2555,7 +2555,7 @@ A fragment of %s is already outside their body!
 %s的灵魂碎片已经在其体外了！
 %%%%
 A fragment of %s soul is dislodged from %s body.
-%s的一片灵魂从%s体内被剥离。
+%s一片灵魂从%s体内被剥离。
 %%%%
 A freezing vortex appears %s%s%s!
 一股冰封漩涡出现%s%s%s！
@@ -2615,7 +2615,7 @@ A mysterious force pulls you upwards.
 一股神秘的力量将你向上拉。
 %%%%
 A pair of sphinxes answers %s call!
-一对斯芬克斯回应了%s的召唤！
+一对斯芬克斯回应了%s召唤！
 %%%%
 A part of your body evaporates into steam!
 你身体的一部分蒸发成了蒸汽！
@@ -2851,7 +2851,7 @@ Ancestor Upgrades:\n\n<white>XL              Upgrade\n</white>
 并碎裂造成额外伤害
 %%%%
 Angry insects surge out from beneath %s foliage!
-愤怒的昆虫从%s的枝叶下涌出！
+愤怒的昆虫从%s枝叶下涌出！
 %%%%
 Angry insects swarm out of your body to defend their hive!
 愤怒的昆虫从你体内蜂拥而出保卫蜂巢！
@@ -4868,7 +4868,7 @@ Its scales and tail are adapted to the water.
 它的鳞片和尾巴适应了水域生活。
 %%%%
 Jet-black ravens fly out from beneath %s foliage!
-乌黑的乌鸦从%s的枝叶下飞出！
+乌黑的乌鸦从%s枝叶下飞出！
 %%%%
 jewellery
 珠宝
@@ -5904,7 +5904,7 @@ roots
 根须
 %%%%
 Rot billows forth from %s wounds!
-腐烂从%s的伤口中涌出！
+腐烂从%s伤口中涌出！
 %%%%
 rPois
 毒抗
@@ -6150,7 +6150,7 @@ Shadowy forms rise from the deep at %s song!
  急切地摇晃着。
 %%%%
  shakes off %s lethargy.
-摆脱了%s的昏沉。
+摆脱了%s昏沉。
 %%%%
 Shards of ice erupt from %s body!
 冰碎片从%s身上迸发出来！
@@ -6421,7 +6421,7 @@ Space contracts around you and %s and then re-expands violently!
 你与%s周围的空间收缩，然后猛烈地重新扩张！
 %%%%
 Space folds impossibly around %s blade!
-空间在%s的刀锋周围以不可能的方式折叠！
+空间在%s刀锋周围以不可能的方式折叠！
 %%%%
 Space momentarily warps into an impossible shape!
 空间短暂地扭曲成了不可能的形态！
@@ -6694,7 +6694,7 @@ Tentacles reach out from the kraken!
 触手从海妖身上伸出！
 %%%%
 Terrible wounds open up all over %s body!
-可怕的伤口遍布了%s的全身！
+可怕的伤口遍布了%s全身！
 %%%%
 Terrible wounds spread across more of %s body!
 可怕的伤口在%s身上进一步蔓延！
@@ -7240,7 +7240,7 @@ The priest grants you succour and welcomes you into the fold.
 祭司给予你援助，欢迎你加入教团。
 %%%%
 The pull of %s song draws you forwards.
-%s的歌声将你向前吸引。
+%s歌声将你向前吸引。
 %%%%
 The rain has left you waist-deep in water!
 雨水让你陷入了齐腰深的水中！
@@ -8181,7 +8181,7 @@ With a burst of heat and light, you rocket upwards!
 随着一阵热与光的爆发，你像火箭一样向上冲！
 %%%%
 With a deafening crack, the ground splits apart in the path of %s chthonic artillery!
-伴随着一声震耳欲聋的巨响，大地沿着%s的地狱火炮路径裂开！
+伴随着一声震耳欲聋的巨响，大地沿着%s地狱火炮路径裂开！
 %%%%
 With a frightful flash, the power of Zot shatters the %s gem into ten thousand fragments!
 伴随着可怕的闪光，佐特的力量将%s宝石粉碎成了无数碎片！
@@ -8190,7 +8190,7 @@ With a frightful flash, the power of Zot shatters your %s gem into ten thousand 
 伴随着可怕的闪光，佐特的力量将你的%s宝石粉碎成了无数碎片！
 %%%%
 With a metallic buzz, %s clockwork bee launches itself at %s.
-伴随着金属的嗡鸣声，%s的发条蜜蜂向%s发射出去。
+伴随着金属的嗡鸣声，%s发条蜜蜂向%s飞扑而去。
 %%%%
 With a soft hiss, the gate opens fully!
 随着一声轻柔的嘶嘶声，大门完全打开了！
@@ -8660,7 +8660,7 @@ You attempt to attack %s, but flinch away in fear!
 你尝试攻击%s，却因恐惧而退缩了！
 %%%%
 You attempt to bind %s soul, but %s is merely a clone!
-你试图束缚%s的灵魂，但%s只是个克隆体！
+你试图束缚%s灵魂，但%s只是个克隆体！
 %%%%
 You avoid being caught in the net.
 你避免了被网困住。
@@ -9971,7 +9971,7 @@ You freeze %s%s%s
 你冻结了%s%s%s
 %%%%
 You grasp %s shadow with your own and put on a performance!
-你用自己的影子抓住%s的影子，开始表演！
+你用自己的影子抓住%s影子，开始表演！
 %%%%
 You have %1$d gold piece%2$s.
 你持有%1$d枚金币。
@@ -10172,7 +10172,7 @@ you kill living or demonic beings while their torch is lit
 你在火炬点燃时杀死活物或恶魔生物
 %%%%
 You knock %s out of %s grip!
-你将%s从%s的掌握中击落！
+你将%s从%s掌握中击落！
 %%%%
 You lack sufficient magical power to recharge your bee.
 你没有足够的法力来给你的蜜蜂充能。
@@ -10457,7 +10457,7 @@ You rip the net and break free!
 你把网撕裂，挣脱出来！
 %%%%
 You sap %s willpower!
-你削弱了%s的意志力！
+你削弱了%s意志力！
 %%%%
 You savour every drop.
 你细细品味每一滴。
@@ -10529,7 +10529,7 @@ You sink your fangs into %s and drain %s dry!
 你把獠牙插入%s，吸干了%s！
 %%%%
 You sink your fangs into %s and drink %s %s.
-你把獠牙插入%s，畅饮了%s的%s。
+你把獠牙插入%s，畅饮了%s%s。
 %%%%
 You slam the %s%s shut%s!
 你猛地关上了%s%s%s！
@@ -10645,7 +10645,7 @@ You swap places with your shadow and weave the vestiges of your form into it.
 你与影子交换了位置，并把你形态的残余编织进去。
 %%%%
 You swear to avenge %s death!
-你发誓要为%s的死复仇！
+你发誓要为%s死复仇！
 %%%%
 You swing at nothing.
 你挥向了空处。
@@ -10699,7 +10699,7 @@ You will suffer for embracing such %s
 你将因拥抱这样的%s而受苦
 %%%%
 You wrap your dark will around %s soul!
-你用黑暗意志包裹了%s的灵魂！
+你用黑暗意志包裹了%s灵魂！
 %%%%
 You writhe in agony!
 你在痛苦中扭动！
@@ -11161,7 +11161,7 @@ Your paragon attacks with you!
 你的典范与你一同攻击！
 %%%%
 Your paragon deflects %s attack away from you.
-你的典范将%s的攻击偏转开了。
+你的典范将%s攻击偏转开了。
 %%%%
 Your paragon expends all of its energy in an overwhelming flurry of blows!
 你的典范耗尽所有能量，发动了一轮压倒性的猛攻！
@@ -12719,7 +12719,7 @@ That species isn't available.
 %%%%
 With your torch unlit, %s soul goes wasted...
 
-火炬未燃，%s的灵魂白白消散了……
+火炬未燃，%s灵魂白白消散了……
 %%%%
 With your torch unlit, a soul goes wasted...
 
@@ -15675,7 +15675,7 @@ dies
 死亡
 %%%%
  seems to regain %1$s courage.
-似乎重拾了%1$s的勇气。
+似乎重拾了%1$s勇气。
 %%%%
 %s is no longer %s.
 %s不再%s。
@@ -17819,7 +17819,7 @@ A shaft opens beneath you!
 你身下出现了一个竖井！
 %%%%
 You break free of %s.
-你挣脱了%s的掌控。
+你挣脱了%s掌控。
 %%%%
 The mark on you glows brighter.
 你身上的印记变得更亮了。
@@ -23207,7 +23207,7 @@ You slip past the binding sigil.
 你滑过了束缚符文。
 %%%%
 %s cannot be bound by the sigil due to %s high momentum!
-%s由于%s的高速移动而无法被符文束缚！
+%s由于%s高速移动而无法被符文束缚！
 %%%%
 You move over the binding sigil and are bound in place!
 你踩过束缚符文，被固定在原地！
@@ -24354,7 +24354,7 @@ You are suddenly pulled into a different region of the Abyss!
 你突然被拉入了深渊的另一个区域！
 %%%%
 You can no longer hear %1$s singing!
-你再也听不到%1$s的歌声了！
+你再也听不到%1$s歌声了！
 %%%%
 You can't see anything there. Try transferring anyway?
 你在那里什么也看不到。仍然尝试传送吗？
@@ -24408,7 +24408,7 @@ dismisses
 消散
 %%%%
 from %s prison
-从%s的囚牢中
+从%s囚牢中
 %%%%
 glares at
 怒视
@@ -29113,7 +29113,7 @@ kneel at
 %s%s紧紧缠绕%s%s
 %%%%
 %s %s flashes viciously!
-%s的%s猛烈闪光！
+%s%s猛烈闪光！
 %%%%
 %s %s free of %s!
 %s%s挣脱了%s！
@@ -29146,7 +29146,7 @@ kneel at
 %s的精神%s被冲击%s
 %%%%
 %s remembers %s %s %s.
-%s记起了%s%s的%s。
+%s记起了%s%s%s。
 %%%%
 %s remembers more of %s old skill.
 %s想起了更多%s昔日技能。
@@ -30382,7 +30382,7 @@ verb|fire
 %s试图对%s施下咒术！
 %%%%
 %s draws you further into %s thrall.
-%s将你进一步拉入%s的奴役。
+%s将你进一步拉入%s奴役之中。
 %%%%
 %s goes into a battle-frenzy!
 %s进入了战斗狂热状态！
@@ -30862,7 +30862,7 @@ spines
 %s%s倒刺刺穿。
 %%%%
 %s %s struck by %s %s.
-%s%s%s的%s击中。
+%s%s%s%s击中。
 %%%%
 %s %s %s%s
 %s%s了%s%s
@@ -33560,7 +33560,7 @@ Zot clock should be between 0 and %d
 猛烈地
 %%%%
 %s trance deepens.
-%s的恍惚状态加深了。
+%s恍惚状态加深了。
 %%%%
 %s is mesmerised by %s!
 %1$s被%2$s迷住了！
@@ -33843,7 +33843,7 @@ As you close the %s%s%s, it creaks loudly!
 你关上了%s%s%s，门发出刺耳的吱嘎声！
 %%%%
 %s drains %s %s.
-%s吸取了%s的%s。
+%s吸取了%s%s。
 %%%%
 You %s!
 你%s！
@@ -34611,7 +34611,7 @@ hp as a bound soul: ~%d
 缚魂生命值：~%d
 %%%%
 insults %s ancestors.
-辱骂了%s的祖先。
+辱骂了%s祖先。
 %%%%
 lash out against %s attempt to control you!
 反抗%s控制你的企图！
@@ -34665,7 +34665,7 @@ summons friendly %s
 召唤了友善的%s
 %%%%
 ties %s tail in a knot.
-把%s的尾巴打了个结。
+把%s尾巴打了个结。
 %%%%
 trickster (+%d AC)
 欺诈者（AC +%d）
@@ -37168,7 +37168,7 @@ Your stasis prevents you from being paralysed, but everything else in sight stop
 质疑
 %%%%
  magic when faced with ultimate truth!
-的魔法在终极真相面前毫无意义！
+魔法在终极真相面前毫无意义！
 %%%%
 You cannot wall jump against 
 你无法蹬墙跳越
@@ -47824,7 +47824,7 @@ To do this, first pick up %s, then press <w>%%</w> and select it from the item m
 %%%%
  doubts %s magic when faced with ultimate truth!
 
- 怀疑%s的魔法能否抵挡终极真理！
+ 面对终极真相，开始怀疑%s魔法！
 %%%%
 Your battlesphere is not activated by any of your spells.\n
 
