@@ -24750,7 +24750,7 @@ You are divinely vitalised.
 你被神圣力量注入了活力。
 %%%%
 You are enlightened. (Will+)
-你处于顿悟状态。（意志+）
+你处于启迪状态。（意志+）
 %%%%
 You are enveloped in primordial darkness.
 你被原初黑暗包围了。
@@ -37756,7 +37756,7 @@ status|Agi
 敏捷
 %%%%
 status|Ambros
-仙酒
+神食
 %%%%
 status|Aqua
 水灵
@@ -38338,7 +38338,7 @@ status|agile
 敏捷
 %%%%
 status|ambrosia-drunk
-仙酒醉
+神食酣醉
 %%%%
 status|animating dead
 复活死者
@@ -38383,7 +38383,7 @@ status|cleaving
 横扫中
 %%%%
 status|confused
-困惑
+混乱
 %%%%
 status|confusing by touch
 触之迷惑
@@ -49594,3 +49594,11 @@ monster equipment| and
 %%%%
 monster equipment|carrying 
 携带着
+
+%%%%
+Your pack is full.
+你的背包已满。
+
+%%%%
+Pick up %s? ((y)es/(n)o/(a)ll/(m)enu/*?g,/q)
+拾取%s？是（y）/否（n）/全部（a）/菜单（m）/*?g,/q

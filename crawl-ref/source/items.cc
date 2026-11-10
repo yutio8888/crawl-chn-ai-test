@@ -1099,7 +1099,7 @@ void pickup_menu(int item_link)
                 // floor.
                 if (!move_item_to_inv(j, num_to_take))
                 {
-                    pickup_warning = "You can't carry that many items.";
+                    pickup_warning = T_("You can't carry that many items.");
                     if (env.item[j].defined())
                         env.item[j].flags = oldflags;
                 }
@@ -1561,7 +1561,7 @@ void pickup(bool partial_quantity)
 
             if (keyin != 'a')
             {
-                string prompt = "Pick up %s? ((y)es/(n)o/(a)ll/(m)enu/*?g,/q)";
+                string prompt = T_("Pick up %s? ((y)es/(n)o/(a)ll/(m)enu/*?g,/q)");
 
                 mprf(MSGCH_PROMPT, prompt.c_str(),
                      menu_colour_item_name(env.item[o], DESC_A).c_str());
@@ -1592,7 +1592,7 @@ void pickup(bool partial_quantity)
                 // attempt to actually pick up the object.
                 if (!move_item_to_inv(o, num_to_take))
                 {
-                    pickup_warning = "You can't carry that many items.";
+                    pickup_warning = T_("You can't carry that many items.");
                     env.item[o].flags = old_flags;
                 }
             }
@@ -3546,7 +3546,7 @@ static void _do_autopickup()
             else
             {
                 n_tried_pickup++;
-                pickup_warning = "Your pack is full.";
+                pickup_warning = T_("Your pack is full.");
                 mi.flags = iflags;
             }
         }
