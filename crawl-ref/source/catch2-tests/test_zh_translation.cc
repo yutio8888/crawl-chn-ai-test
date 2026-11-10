@@ -31,6 +31,7 @@
 #include "item-name.h"
 #include "item-use.h"
 #include "items.h"
+#include "invent.h"
 #include "item-prop.h"
 #include "item-prop-enum.h"
 #include "jobs.h"
@@ -8317,4 +8318,47 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(messages.get_store().find("的的") == string::npos);
         CHECK_FALSE(mons->has_ench(ENCH_SLOW));
     }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: quiver warning composes action before the item",
+                 "[zh-translation][item-warning-prompt]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    item_def stone;
+    stone.base_type = OBJ_MISSILES;
+    stone.sub_type = MI_STONE;
+    stone.quantity = 1;
+    stone.flags = ISFLAG_IDENTIFIED;
+    stone.inscription = "!*";
+    REQUIRE_FALSE(in_inventory(stone));
+    const string item_name = stone.name(DESC_A);
+
+    // yesno's existing Lua prompt hook receives the exact producer argument;
+    // return no so this integration test never opens UI or consumes input.
+    lua_State *ls = clua.state();
+    lua_stack_cleaner restore_stack(ls);
+    lua_getglobal(ls, "c_answer_prompt");
+    const int previous = luaL_ref(ls, LUA_REGISTRYINDEX);
+    unwinder restore_prompt([ls, previous]()
+    {
+        lua_rawgeti(ls, LUA_REGISTRYINDEX, previous);
+        lua_setglobal(ls, "c_answer_prompt");
+        luaL_unref(ls, LUA_REGISTRYINDEX, previous);
+    });
+    string observed;
+    lua_pushlightuserdata(ls, &observed);
+    lua_pushcclosure(ls, [](lua_State *state) -> int
+    {
+        auto *prompt = static_cast<string *>(
+            lua_touserdata(state, lua_upvalueindex(1)));
+        *prompt = lua_tostring(state, 1);
+        lua_pushboolean(state, false);
+        return 1;
+    }, 1);
+    lua_setglobal(ls, "c_answer_prompt");
+    REQUIRE_FALSE(check_warning_inscriptions(stone, OPER_QUIVER));
+    CHECK(observed == "确定要将快捷动作设为" + item_name + "吗？");
 }

@@ -43423,7 +43423,7 @@ item warning action|evoke
 激活
 %%%%
 item warning action|quiver
-设为快捷动作
+将快捷动作设为
 %%%%
 item warning action|equip
 装备

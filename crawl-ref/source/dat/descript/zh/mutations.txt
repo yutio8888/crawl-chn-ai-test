@@ -621,11 +621,11 @@ tendrils mutation
 %%%%
 jelly sensing items mutation
 
-你身上附有一个小胶冻，它可以感知周围物品。
+你身上附有一只小果冻怪，它可以感知周围物品。
 %%%%
 jelly absorbing missiles mutation
 
-当你被飞弹击中时（比如箭或弩箭），你身上的胶冻可能会吞掉它，并进行一定治疗。
+当你被飞弹击中时（比如箭或弩箭），你身上的果冻怪可能会吞掉它，并进行一定治疗。
 %%%%
 otherworldly mutation
 
