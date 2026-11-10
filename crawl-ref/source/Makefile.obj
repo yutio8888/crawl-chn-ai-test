@@ -337,6 +337,7 @@ catch2-tests/test_randbook.o \
 catch2-tests/test_stringutil.o \
 catch2-tests/test_species.o \
 catch2-tests/test_tags.o \
+catch2-tests/test_tentacle_connect.o \
 catch2-tests/test_textdb_phase0.o \
 catch2-tests/test_tilecell.o \
 catch2-tests/test_tilefont.o \
