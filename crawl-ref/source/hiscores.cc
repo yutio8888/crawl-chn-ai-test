@@ -2274,7 +2274,7 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
                              (piety >= piety_breakpoint(0)) ? T_("a Follower")
                                                             : T_("an Initiate"),
                           god_name(god).c_str(),
-                             (penance > 0) ? T_(" (penitent).") : ".");
+                             (penance > 0) ? T_(" (penitent).") : T_("."));
 
                 desc += _hiscore_newline_string();
             }

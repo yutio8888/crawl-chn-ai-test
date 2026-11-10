@@ -1755,7 +1755,7 @@ static void _append_weapon_stats(string &description, const item_def &item)
             description += T_("Wearing heavy armour would reduce your attack "
                            "speed with this weapon");
         }
-        description += ".";
+        description += T_(".");
     }
 
     const bool want_player_stats = !is_useless_item(item) && crawl_state.need_save;

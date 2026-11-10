@@ -237,6 +237,12 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
                     ? number_in_words(quantity) : make_stringf("%d", quantity);
                 buff << make_stringf(C_("stone stack quantity", "%s "), count.c_str());
             }
+            else if (Options.language == lang_t::ZH && base_type == OBJ_GOLD)
+            {
+                const string count = quantity_in_words
+                    ? number_in_words(quantity) : make_stringf("%d", quantity);
+                buff << count << C_("gold quantity", "pieces");
+            }
             else if (quantity_in_words)
                 buff << number_in_words(quantity) << " ";
             else

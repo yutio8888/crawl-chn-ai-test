@@ -2432,7 +2432,7 @@ Clear target
 \n神眷 -
 %%%%
 \nLevel: %d
-\n等级: %d
+\n等级：%d
 %%%%
 \nTo read a description, press the key listed above. (AdB) indicates damage (the sum of A B-sided dice), (x%%) indicates the chance to defeat your Will, and (y) indicates the spell range
 \n要阅读描述，请按上方列出的按键。(AdB) 表示伤害（A个B面骰子之和），(x%%) 表示穿透意志的几率，(y) 表示法术射程
@@ -10211,7 +10211,7 @@ You may now remember your ancestor's life.
 你现在可以回忆起先祖的生平了。
 %%%%
 You miscast %s.
-你施法%s失误了。
+你施放%s时出现施法失误。
 %%%%
 You must be standing atop the corpse of a fallen apostle!
 你必须站在倒下的使徒的尸体上！
@@ -17313,10 +17313,10 @@ Your heavy armour
 你的重甲
 %%%%
  slows your attacks with this weapon by %.1f
- 使此武器的攻击延迟增加%.1f
+使此武器的攻击延迟增加%.1f
 %%%%
  slightly slows your attacks with this weapon
- 略微减慢了此武器的攻击速度
+略微减慢了此武器的攻击速度
 %%%%
 Wearing heavy armour would reduce your attack speed with this weapon
 穿戴重甲会降低你使用此武器的攻击速度
@@ -26703,7 +26703,7 @@ Select a spell, or
         学派：%2$s
 %%%%
         Fail: %s
-        失败率: %s
+        失败率：%s
 %%%%
 Power
 威力
@@ -49785,3 +49785,11 @@ cutting wind
 %%%%
 blast of rubble
 碎石冲击
+
+%%%%
+gold quantity|pieces
+枚
+
+%%%%
+?
+？

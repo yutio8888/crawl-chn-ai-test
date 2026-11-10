@@ -4365,6 +4365,55 @@ static string _replace_speech_tag(string msg, string from, const string &to)
     return msg;
 }
 
+// Chinese monster-speech templates keep the English spacing around
+// placeholders (for example "@The_monster@ 颤动着。"). After substitution the
+// extra spaces appear between Chinese words, so drop ASCII spaces that sit
+// between two CJK characters or CJK punctuation.
+static bool _is_cjk_codepoint(char32_t c)
+{
+    return (c >= 0x2E80 && c <= 0x9FFF)
+        || (c >= 0xF900 && c <= 0xFAFF)
+        || (c >= 0xFE30 && c <= 0xFE4F)
+        || (c >= 0xFF00 && c <= 0xFFEF);
+}
+
+static string _strip_spaces_between_cjk(const string &text)
+{
+    string out;
+    out.reserve(text.size());
+    char32_t prev = 0;
+    for (size_t i = 0; i < text.size();)
+    {
+        char32_t cp = 0;
+        const int len = utf8towc(&cp, text.c_str() + i);
+        if (len <= 0)
+        {
+            out.append(text, i, string::npos);
+            break;
+        }
+        if (cp == ' ' && _is_cjk_codepoint(prev))
+        {
+            char32_t next = 0;
+            const int next_len = utf8towc(&next, text.c_str() + i + 1);
+            if (next_len > 0 && _is_cjk_codepoint(next))
+            {
+                i += 1;
+                continue;
+            }
+        }
+        out.append(text, i, len);
+        prev = cp;
+        i += len;
+    }
+    return out;
+}
+
+string strip_cjk_spaces(const string &text)
+{
+    return Options.language == lang_t::ZH
+        ? _strip_spaces_between_cjk(text) : text;
+}
+
 // Replaces the "@foo@" strings in monster shout and monster speak
 // definitions.
 string do_mon_str_replacements(const string& in_msg, const monster& mons,
@@ -4784,6 +4833,9 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
         msg = replace_all(msg, "@says@", sound_list[s_type]);
 
     msg = maybe_capitalise_substring(msg);
+
+    if (Options.language == lang_t::ZH)
+        msg = strip_cjk_spaces(msg);
 
     return msg;
 }
