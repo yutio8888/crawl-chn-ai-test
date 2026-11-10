@@ -4401,10 +4401,16 @@ Gozag incites %s against you.
 戈扎格煽动%s对抗你。
 %%%%
 Gozag grants %s a complimentary blessing in exchange for %s services.
-戈扎格赐予%s一份免费祝福，以换取%s的服务。
+哥萨戈赐予%s一份免费祝福，以换取%s的服务。
 %%%%
 Gozag's golden gift will leave your new mouth with nothing to eat.
 哥萨戈的金色礼物会让你的新嘴无食可吃。
+%%%%
+Gozag exacts a cancellation fee of %d gold.
+哥萨戈收取了%d金币的解约费。
+%%%%
+ spells are empowered.
+法术被强化了。
 %%%%
 Granted powers:
 神授能力：
@@ -53731,7 +53737,7 @@ status|on disguise cooldown
 伪装冷却中
 %%%%
  dispatches reinforcements to the rest of the floor.
- 向本层其余区域派遣了增援。
+向本层其余区域派遣了增援。
 %%%%
 You have finished assembling a new disguise.
 你已经重新组装好了一套新的伪装。

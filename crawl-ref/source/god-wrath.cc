@@ -1970,7 +1970,7 @@ void gozag_incite(monster *mon)
             && mon->antimagic_susceptible())
         {
             mon->add_ench(ENCH_EMPOWERED_SPELLS);
-            simple_monster_message(*mon, " spells are empowered.", true);
+            simple_monster_message(*mon, T_(" spells are empowered."), true);
             success = true;
         }
 

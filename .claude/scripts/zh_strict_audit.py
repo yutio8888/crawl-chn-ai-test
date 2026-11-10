@@ -34,7 +34,6 @@ from collections import defaultdict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-import zh_runtime_check as zc  # noqa: E402
 from i18n_shared import parse_source_txt  # noqa: E402
 
 
@@ -76,6 +75,17 @@ _STRIP_PATTERNS = [
 _COMMENT_LINE = re.compile(r'^\s*#.*$', re.MULTILINE)
 
 
+def _iscjk(cp: int) -> bool:
+    """CJK ideographs, kana, hangul, and CJK/fullwidth punctuation."""
+    return ((0x3000 <= cp <= 0x30FF) or
+            (0x3400 <= cp <= 0x4DBF) or
+            (0x4E00 <= cp <= 0x9FFF) or
+            (0xAC00 <= cp <= 0xD7AF) or
+            (0xF900 <= cp <= 0xFAFF) or
+            (0xFF00 <= cp <= 0xFFEF) or
+            (0x20000 <= cp <= 0x2FFFF))
+
+
 def strip_templates(text: str) -> str:
     """Remove template/markup constructs so only player-visible text remains."""
     out = _COMMENT_LINE.sub(' ', text)
@@ -85,11 +95,10 @@ def strip_templates(text: str) -> str:
 
 
 def strict_mixed_cn_en(text: str):
-    """Like zc.rule_mixed_cn_en but returns the offending English tokens and
+    """Like the former runtime mixed-CN/EN rule but returns the offending English tokens and
     uses only the STRICT_WHITELIST. Operates on template-stripped text."""
     cleaned = strip_templates(text)
-    cps = zc._codepoints(cleaned)
-    if not any(zc.iscjk(cp) for cp in cps):
+    if not any(_iscjk(ord(c)) for c in cleaned):
         return []
     offenders = []
     i = 0

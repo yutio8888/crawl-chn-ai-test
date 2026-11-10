@@ -3147,7 +3147,7 @@ void excommunication(bool voluntary, god_type new_god)
         const int fee = you.gold / 2;
         if (fee > 0)
         {
-            mprf(MSGCH_GOD, "Gozag exacts a cancellation fee of %d gold.", fee);
+            mprf(MSGCH_GOD, T_("Gozag exacts a cancellation fee of %d gold."), fee);
             you.del_gold(fee);
         }
         if (you.attribute[ATTR_GOZAG_SHOPS_CURRENT])
