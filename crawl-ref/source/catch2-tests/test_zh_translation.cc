@@ -1,6 +1,7 @@
 #include "catch_amalgamated.hpp"
 
 #include "AppHdr.h"
+#include "lang-en-guard.h"
 
 #include "i18n.h"                // T_()
 #include "ability.h"
@@ -7251,4 +7252,243 @@ TEST_CASE("Issue 237 compact item properties preserve resistance levels",
     item.flags &= ~ISFLAG_ARTEFACT_MASK;
     item.special = SPARM_POSITIVE_ENERGY;
     CHECK(string(armour_ego_name(item, true)) == (zh ? "负能抗+" : "rN+"));
+}
+
+TEST_CASE("playtest: contamination display localizes at the sink and keeps English status keys",
+          "[zh-translation][playtest-fixes][contamination][status]")
+{
+    init_duration_index();
+    init_zap_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+
+    const char *const verbose_keys[] = {
+        "You are lightly contaminated with residual magic.",
+        "You are dangerously contaminated with residual magic.",
+        "You are extremely contaminated with residual magic.",
+        "You are completely saturated with residual magic!",
+    };
+    const char *const terse_keys[] = {
+        "lightly contaminated",
+        "dangerously contaminated",
+        "extremely contaminated",
+        "completely saturated",
+    };
+
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        you = player();
+        you.species = SP_HUMAN;
+        you.experience_level = 12;
+        set<string> seen_verbose;
+        set<string> seen_terse;
+
+        for (int level = 0; level < 4; ++level)
+        {
+            // 0..3 map to the four documented contamination tiers; keep the
+            // production thresholds and the 3000 cap untouched.
+            you.magic_contamination = level == 0 ? 500 : level * 1000;
+            CAPTURE(language, level, you.magic_contamination);
+
+            const int damage = contam_max_damage();
+            const string verbose_plain = string(T_(verbose_keys[level]));
+            const string terse_plain = string(T_(terse_keys[level]));
+            const string verbose = describe_contamination(true);
+            const string terse = describe_contamination(false);
+
+            CHECK(verbose_plain == T_(verbose_keys[level]));
+            CHECK(terse_plain == T_(terse_keys[level]));
+            if (zh)
+            {
+                CHECK(verbose_plain != verbose_keys[level]);
+                CHECK(terse_plain != terse_keys[level]);
+            }
+            else
+            {
+                CHECK(verbose_plain == verbose_keys[level]);
+                CHECK(terse_plain == terse_keys[level]);
+            }
+            // Levels stay distinguishable and severity is not collapsed.
+            CHECK(seen_verbose.insert(verbose_plain).second);
+            CHECK(seen_terse.insert(terse_plain).second);
+
+            // The maximum-damage suffix is unchanged and keeps its number.
+            if (level > 0)
+            {
+                REQUIRE(damage > 0);
+                CHECK(verbose == make_stringf(T_("%s (up to %d damage)"),
+                                              verbose_plain.c_str(), damage));
+                CHECK(terse == make_stringf(T_("%s (up to %d damage)"),
+                                            terse_plain.c_str(), damage));
+            }
+            else
+            {
+                CHECK(damage == 0);
+                CHECK(verbose == verbose_plain);
+                CHECK(terse == terse_plain);
+            }
+
+            // Owned display copies survive a cache clear; no borrowed T_()
+            // pointer may be retained across i18n_cache_clear().
+            const string verbose_before = verbose;
+            const string terse_before = terse;
+            i18n_cache_clear();
+            CHECK(verbose == verbose_before);
+            CHECK(terse == terse_before);
+            CHECK(describe_contamination(true) == verbose_before);
+            CHECK(describe_contamination(false) == terse_before);
+
+            if (level == 0)
+                continue;
+
+            // The @: status identity stays English and the light/db keys stay
+            // canonical, while the descriptions follow the display language.
+            status_info info;
+            REQUIRE(fill_status_info(STATUS_CONTAMINATION, info));
+            CAPTURE(info.db_key, info.short_db_key, info.light_text,
+                    info.short_text, info.long_text);
+            CHECK(info.db_key == "Contam");
+            CHECK(info.light_text == T_("Contam"));
+            CHECK(info.short_text == terse_before);
+            CHECK(info.long_text == verbose_before);
+            string english_terse;
+            {
+                ScopedLangEn english;
+                english_terse = describe_contamination(false);
+            }
+            CHECK(info.short_db_key == english_terse);
+            CHECK(info.short_db_key == make_stringf("%s (up to %d damage)",
+                                                    terse_keys[level], damage));
+            if (zh)
+                CHECK(info.short_db_key != info.short_text);
+            else
+                CHECK(info.short_db_key == info.short_text);
+        }
+
+        // No contamination: no status text and no bare English frame.
+        you.magic_contamination = 0;
+        CHECK(describe_contamination() == "");
+        CHECK(describe_contamination(false) == "");
+    }
+
+    // The safe-level recovery message is translated at the emission sink.
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_HUMAN;
+        you.magic_contamination = 1000;
+        REQUIRE(player_harmful_contamination());
+        string observed;
+        {
+            msgwin_temporary_mode temporary;
+            unwinder clear_messages([]() { msgwin_clear_temporary(); });
+            contaminate_player(-500, false, true);
+            observed = get_last_messages(4, true);
+        }
+        CAPTURE(language, observed);
+        CHECK(you.magic_contamination == 500);
+        CHECK_FALSE(player_harmful_contamination());
+        const char *faded = "Your magical contamination has faded to a safe level.";
+        CHECK(observed.find(T_(faded)) != string::npos);
+        if (language == lang_t::ZH)
+            CHECK(observed.find(faded) == string::npos);
+        else
+            CHECK(observed.find(faded) != string::npos);
+    }
+}
+
+TEST_CASE("playtest: Maxwell's coupling charge light keeps raw frames and translates at the sink",
+          "[zh-translation][playtest-fixes][status][charge]")
+{
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    const char *const frames[] = { "Charge-", "Charge/", "Charge|", "Charge\\" };
+    // English status.txt details, fetched under an EN layer for comparison.
+    string english_detail[4];
+    {
+        EnTranslationFixture english;
+        for (int i = 0; i < 4; ++i)
+        {
+            english_detail[i] = getLongDescription(string(frames[i]) + " status");
+            // status_light_description() trims the trailing newline itself.
+            trim_string_right(english_detail[i]);
+        }
+    }
+    for (int i = 0; i < 4; ++i)
+    {
+        CAPTURE(i, frames[i], english_detail[i]);
+        REQUIRE_FALSE(english_detail[i].empty());
+        REQUIRE(english_detail[i].find("channelling electrical charge")
+                != string::npos);
+    }
+
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        you = player();
+        you.species = SP_HUMAN;
+        you.attribute[ATTR_CHANNELLED_SPELL] = SPELL_MAXWELLS_COUPLING;
+        you.attribute[ATTR_CHANNEL_DURATION] = 5;
+
+        // One full rotation: the frame cycle mechanism must keep all four raw
+        // frames, with their symbols, in the same order-independent set.
+        set<string> seen;
+        for (int step = 0; step < 8; ++step)
+        {
+            status_info info;
+            REQUIRE(fill_status_info(STATUS_CHANNELLING_SPELL, info));
+            CAPTURE(language, step, info.light_text, info.db_key,
+                    info.long_text);
+            CHECK(info.light_colour == LIGHTCYAN);
+            // The canonical key is always one raw English frame with its
+            // trailing symbol, never localized text.
+            int frame = -1;
+            for (int i = 0; i < 4; ++i)
+                if (info.db_key == frames[i])
+                    frame = i;
+            REQUIRE(frame >= 0);
+            CHECK(info.db_key.back() == string(frames[frame]).back());
+            seen.insert(info.db_key);
+            if (step < 4)
+                CHECK(seen.size() == static_cast<size_t>(step) + 1);
+
+            // The shared status tail applies C_("status", ...) to that key.
+            CHECK(info.light_text == C_("status", info.db_key.c_str()));
+            CHECK(info.light_text.back() == info.db_key.back());
+            if (zh)
+            {
+                CHECK(info.light_text != info.db_key);
+                CHECK(info.light_text.rfind("蓄电", 0) == 0);
+            }
+            else
+                CHECK(info.light_text == info.db_key);
+
+            // The detail line resolves through the canonical key, so Chinese
+            // mode hits the translated status.txt body instead of falling back.
+            // Stable Tiles and topbar consumers resolve the canonical key directly.
+            string detail = getLongDescription(info.db_key + " status");
+            trim_string_right(detail);
+            string raw_detail = getLongDescription(info.db_key + " status");
+            trim_string_right(raw_detail);
+            CAPTURE(detail, raw_detail);
+            CHECK(detail == raw_detail);
+            CHECK(detail != T_("No description found"));
+            CHECK(detail.find("<Charge- status>") == string::npos);
+            if (zh)
+                CHECK(detail != english_detail[frame]);
+            else
+                CHECK(detail == english_detail[frame]);
+
+            // The mechanism itself is untouched.
+            CHECK(you.attribute[ATTR_CHANNELLED_SPELL] == SPELL_MAXWELLS_COUPLING);
+            CHECK(you.attribute[ATTR_CHANNEL_DURATION] == 5);
+        }
+        CHECK(seen.size() == 4);
+        for (const char *frame : frames)
+            CHECK(seen.count(frame) == 1);
+    }
 }

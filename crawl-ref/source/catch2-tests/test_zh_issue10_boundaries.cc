@@ -451,3 +451,232 @@ TEST_CASE("issue 10 Xom cleaving describes both weapon variants completely",
     }
     CHECK(you.duration[DUR_CLEAVE] > 0);
 }
+
+// PR #250 regression consumers adapted to stable APIs.
+#include "clua.h"
+#include "fight.h"
+#include "target.h"
+#include "stash.h"
+#include "god-wrath.h"
+#include "random.h"
+#include "monster.h"
+
+namespace {
+// Observe the actual prompt at the supported Lua answer hook, and decline it
+// before any interactive UI or gameplay continuation can run.
+struct action_prompt_capture
+{
+    string prompt;
+    lua_State *ls = clua.state();
+    int previous;
+
+    action_prompt_capture()
+    {
+        lua_getglobal(ls, "c_answer_prompt");
+        previous = luaL_ref(ls, LUA_REGISTRYINDEX);
+        lua_pushlightuserdata(ls, &prompt);
+        lua_pushcclosure(ls, [](lua_State *state) -> int
+        {
+            auto *text = static_cast<string*>(lua_touserdata(state, lua_upvalueindex(1)));
+            *text = luaL_checkstring(state, 1);
+            lua_pushboolean(state, false);
+            return 1;
+        }, 1);
+        lua_setglobal(ls, "c_answer_prompt");
+    }
+
+    ~action_prompt_capture()
+    {
+        lua_rawgeti(ls, LUA_REGISTRYINDEX, previous);
+        lua_setglobal(ls, "c_answer_prompt");
+        luaL_unref(ls, LUA_REGISTRYINDEX, previous);
+    }
+};
+
+}
+TEST_CASE("playtest: area attack prompts resolve actions in their own context",
+          "[zh-translation][playtest-fixes][prompts]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *ally = world.place(MONS_ORC, coord_def(21, 20));
+    ally->attitude = ATT_FRIENDLY;
+    targeter_smite area(&you, LOS_RADIUS, 1, 1);
+    REQUIRE(area.set_aim(ally->pos()));
+    action_prompt_capture captured;
+
+    const auto prompt_for = [&](const char *verb) -> string
+    {
+        captured.prompt.clear();
+        // The hook declines, so the observed text is the complete final prompt
+        // and no gameplay continuation runs.
+        stop_attack_prompt(area, verb, nullptr, nullptr);
+        return captured.prompt;
+    };
+
+    // The action identities the area overload's production callers pass.
+    const char *const verbs[] = {
+        "attack", "blast", "blind", "conjure a freezing cloud",
+        "drain life", "hailstorm", "hurl reagents",
+        "irradiate", "make a polar vortex", "poison",
+        "refrigerate", "release a tremorstone", "Slouch", "unravel", "zap",
+    };
+    for (const char *verb : verbs)
+    {
+        const string action = C_("attack prompt action", verb);
+        const string prompt = prompt_for(verb);
+        CAPTURE(language, verb, action, prompt);
+        REQUIRE_FALSE(prompt.empty());
+        CHECK(prompt.find(action) != string::npos);
+        CHECK(prompt.find(ally->name(DESC_PLAIN)) != string::npos);
+        if (language == lang_t::ZH)
+            CHECK(prompt.find(verb) == string::npos);
+        else
+            CHECK(prompt.find(verb) != string::npos);
+    }
+
+    if (language == lang_t::ZH)
+    {
+        // The action context must not rewrite the global noun/status keys other
+        // sinks share (blind/poison/Hailstorm/Slouch and friends). The sink must
+        // use the action phrase rather than the bare shared noun, and must leave
+        // the shared key itself untouched.
+        for (const char *verb : {"blind", "poison", "hailstorm", "Slouch"})
+        {
+            const string shared_name = T_(verb);
+            const string action = C_("attack prompt action", verb);
+            const string prompt = prompt_for(verb);
+            // The same display value used as the action identity is what a
+            // global-state leak would look like.
+            const string bare_prompt = prompt_for(shared_name.c_str());
+            CAPTURE(verb, shared_name, action, prompt, bare_prompt);
+            REQUIRE(shared_name != verb);
+            CHECK(action != shared_name);
+            CHECK(prompt.find(action) != string::npos);
+            CHECK(prompt != bare_prompt);
+            CHECK(T_(verb) == shared_name);
+        }
+    }
+
+    // Legacy callers pre-translated "attack " with padding; the English
+    // identity is normalized before the contextual lookup.
+    CHECK(prompt_for("attack") == prompt_for("attack "));
+
+    // "read the %s" reaches this sink already formatted in the current
+    // language: that complete display is retained verbatim and never becomes a
+    // new action identity.
+    const string rendered = make_stringf(T_("read the %s"), T_("scroll"));
+    const string rendered_prompt = prompt_for(rendered.c_str());
+    CAPTURE(rendered, rendered_prompt);
+    CHECK(rendered_prompt.find(rendered) != string::npos);
+    if (language == lang_t::ZH)
+        CHECK(rendered_prompt.find("read the ") == string::npos);
+}
+
+TEST_CASE("playtest: examined stash frame localizes and keeps the item name",
+          "[zh-translation][playtest-fixes][stash]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    unwind_var<branch_type> saved_branch(you.where_are_you, BRANCH_DUNGEON);
+    unwind_var<int> saved_depth(you.depth, 1);
+    const coord_def pos(20, 21);
+    const int index = get_mitm_slot();
+    REQUIRE(index != NON_ITEM);
+    unwind_var<item_def> restore_item(env.item[index]);
+    item_def &item = env.item[index];
+    item = item_def();
+    item.base_type = OBJ_ARMOUR;
+    item.sub_type = ARM_SCALE_MAIL;
+    item.quantity = 1;
+    item.flags = ISFLAG_IDENTIFIED;
+    item.link = NON_ITEM;
+    item.pos = pos;
+    unwind_var<int> saved_grid(env.igrid(pos), NON_ITEM);
+    env.igrid(pos) = index;
+    env.grid(pos) = DNGN_FLOOR;
+    // Isolate this case instead of permanently dropping a pre-existing
+    // current-level stash: the shared tracker is restored on scope exit.
+    unwind_var<StashTracker> saved_stashes(StashTrack, StashTracker());
+    StashTrack.add_stash(pos);
+
+    const string name = item.name(DESC_A);
+    const string description = get_stash_desc(pos);
+    CAPTURE(language, name, description);
+    REQUIRE_FALSE(description.empty());
+    // The item name is display-only here: the frame is translated around it.
+    CHECK(description == make_stringf(T_("[Stash: %s]"), name.c_str()));
+    CHECK(description.find(name) != string::npos);
+    if (language == lang_t::ZH)
+    {
+        CHECK(description.find("Stash:") == string::npos);
+        CHECK(description.find(name) != string::npos);
+    }
+    else
+        CHECK(description == "[Stash: " + name + "]");
+}
+
+
+TEST_CASE("playtest: corrosion translates canonical causes at player and monster sinks",
+          "[zh-translation][playtest-fixes][corrosion]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    // Corrosion shares the canonical-cause display path with vex: a god-wrath
+    // name is first rendered by god_wrath_display_name(), every other raw cause
+    // keeps its exact English identity and is translated by T_() only at the
+    // emission sink (player and monster).
+    // Deterministic local RNG stream: corrosion rolls must not advance or be
+    // perturbed by the parent generator.
+    const uint64_t corrosion_parent_state = rng::current_generator().get_state();
+    const uint64_t corrosion_parent_count = rng::current_generator().get_count();
+    {
+        rng::subgenerator corrosion_rng(0xc0440051ULL, 0xc0440052ULL);
+        for (const char *cause : {"the entropic weave", "the acid",
+                                  "Your corrupting presence", "a flying bit",
+                                  "the fiery rage of Trog"})
+        {
+            const string cause_display = god_wrath_display_name(cause);
+            const string shown = T_(cause_display.c_str());
+            CAPTURE(language, cause, cause_display, shown);
+            if (language == lang_t::EN)
+                CHECK(shown == cause);
+            else if (cause_display == cause)
+            {
+                // A raw cause must have its own SourceDB key; the identity string
+                // handed to corrode() never changes.
+                CHECK(shown != cause);
+            }
+
+            you.duration[DUR_CORROSION] = 0;
+            const string player_message = observe_message([&]
+            {
+                you.corrode(nullptr, cause, 8);
+            });
+            CAPTURE(player_message);
+            CHECK(player_message.find(make_stringf(T_("%s corrodes you!"),
+                                                  shown.c_str())) != string::npos);
+            if (language == lang_t::ZH)
+                CHECK(player_message.find(cause) == string::npos);
+
+            monster *victim = world.place(MONS_ORC, coord_def(21, 21));
+            const string monster_message = observe_message([&]
+            {
+                victim->corrode(&you, cause, 8);
+            });
+            CAPTURE(monster_message);
+            CHECK(monster_message.find(make_stringf(T_("%s corrodes %s!"), shown.c_str(),
+                                                    victim->name(DESC_THE).c_str()))
+                  != string::npos);
+            if (language == lang_t::ZH)
+                CHECK(monster_message.find(cause) == string::npos);
+        }
+    }
+
+    // The scoped subgenerator restored the parent stream untouched.
+    CHECK(rng::current_generator().get_state() == corrosion_parent_state);
+    CHECK(rng::current_generator().get_count() == corrosion_parent_count);
+}
