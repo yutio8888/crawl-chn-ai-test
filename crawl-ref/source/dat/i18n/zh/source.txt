@@ -516,7 +516,7 @@ engulf your surroundings in Yredelemnul's grip
 用伊莱德莱姆努尔之握吞噬周围
 %%%%
 gain magical power from killing
-通过杀戮获得魔力
+通过杀戮获得法力
 %%%%
 Vehumet is now aiding your destructive spells.
 维胡梅特现在协助你的破坏性法术。
@@ -585,7 +585,7 @@ Makhleb will no longer allow you to brand your body with an infernal mark.
 马科列布不再允许你在身体上烙印地狱印记。
 %%%%
 call upon Sif Muna for magical energy
-呼唤西芙·穆娜获取魔力
+呼唤西芙·穆娜获取法力
 %%%%
 freely open your mind to new spells
 自由开放心灵学习新法术
@@ -921,7 +921,7 @@ Your aura of power can strike those that harm you.
 你的力量光环可以反击伤害你的人。
 %%%%
 heal your body and restore your magic
-治愈身体并恢复魔力
+治愈身体并恢复法力
 %%%%
 gather your power into a mighty leap
 将力量凝聚为强力跳跃
@@ -1365,7 +1365,7 @@ mimic reveal plural|%s are mimics!
 %s从记忆之雾中浮现！
 %%%%
 %s enhances the restoration.
-%s增强了魔力恢复。
+%s增强了法力恢复。
 %%%%
 %s enters %s!
 %s进入了%s！
@@ -3088,7 +3088,7 @@ Beep! Your pager goes off! Use _ to check your messages.
 哔！你的寻呼机响了！使用 _ 查看你的消息。
 %%%%
  begins accelerating your health and magic regeneration.
-开始加速你的生命和魔力再生。
+开始加速你的生命和法力再生。
 %%%%
  begins to grow on the wall!
 开始在墙上生长！
@@ -3380,7 +3380,7 @@ chance to pacify: <<1%%
 安抚几率：<<1%%
 %%%%
 channel magic (%d%%)
-魔法引导（%d%%）
+法力引导（%d%%）
 %%%%
 Chaos surges forth from %s of flesh, awakening new unlife!
 混沌从%s的肉体中涌出，唤醒了新的亡灵！
@@ -3967,7 +3967,7 @@ explore_greedy
 贪婪探索
 %%%%
 extract magic from the potions you drink
-从你饮用的药水中提取魔法
+从你饮用的药水中提取法力
 %%%%
 extraordinarily
 异常
@@ -4466,7 +4466,7 @@ indomitable (%d)
 不屈（%d）
 %%%%
 infuse magic (%d %s)
-魔法注入（%d %s）
+法力灌注（%d %s）
 %%%%
 Innate Abilities, Weirdness & Mutations
 先天能力、怪异特征与变异
@@ -5048,7 +5048,7 @@ magic regeneration
 法力再生
 %%%%
 Magic restored.
-魔力已恢复。
+法力已恢复。
 %%%%
 Magic Scroll
 魔法卷轴
@@ -5363,7 +5363,7 @@ Now building '%s'
 正在建造'%s'
 %%%%
 Now linked to your health, your magic stops regenerating.
-与你的生命链接后，你的魔力停止了再生。
+与你的生命链接后，你的法力停止了再生。
 %%%%
 numb sensation.
 麻木感。
@@ -7588,7 +7588,7 @@ Things that are here:
 此处有：
 %%%%
 This ability has a chance of reducing your maximum magic capacity when used.
-此能力在使用时有一定几率降低你的最大魔力容量。
+此能力在使用时有一定几率降低你的法力上限。
 %%%%
 This altar belongs to %s, but you can't tell which.\nPress the corresponding letter to learn more about a god, or press enter to convert or escape to cancel.
 这个祭坛属于%s，但你无法分辨是哪位神祇。\n按对应字母了解神祇详情，按回车皈依或按Esc取消。
@@ -8217,7 +8217,7 @@ Without a target, your clockwork bee falls to the ground.
 没有目标，你的发条蜜蜂掉在了地上。
 %%%%
 Without enough magic to sustain it, your %s dissipates.
-没有足够的魔力维持，你的%s消散了。
+没有足够的法力维持，你的%s消散了。
 %%%%
 wizardry
 精准施法
@@ -8489,7 +8489,7 @@ You are out of cards!
 你没有牌了！
 %%%%
 You are out of magic!
-你魔力耗尽！
+你的法力耗尽了！
 %%%%
 You are peeking down the stairs.
 你正在朝楼梯下窥视。
@@ -8678,7 +8678,7 @@ You begin accumulating electric charge.
 你开始积累电荷。
 %%%%
 You begin rapidly regenerating health and magic.
-你开始快速恢复生命和魔法。
+你开始快速恢复生命和法力。
 %%%%
 You begin resting.
 你开始休息。
@@ -9218,7 +9218,7 @@ You challenge %s to single combat, but %s is merely a clone!
 你向%s发起单挑，但%s只是个幻象！
 %%%%
 You channel some magical energy.
-你引导了一些魔力。
+你引导了一些法力。
 %%%%
 You charge forward in eerie silence!
 你在诡异的寂静中向前冲锋！
@@ -9449,10 +9449,10 @@ You extend your mandibles.
 你伸出了大颚。
 %%%%
 You extract %smagical energy from the potion.
-你从药水中提取了%s魔力。
+你从药水中提取了%s法力。
 %%%%
 You extract magical energy from the potion.
-你从药水中提取了魔法能量。
+你从药水中提取了法力。
 %%%%
 You fade further into invisibility.
 你进一步隐入了无形。
@@ -9542,7 +9542,7 @@ You feel a strong urge to attack something.
 你感到一阵强烈的攻击欲望。
 %%%%
 You feel a surge of magic.
-你感到一股魔力涌动。
+你感到一股法力涌动。
 %%%%
 You feel a surge of power!
 你感到一股力量涌动！
@@ -9665,16 +9665,16 @@ You feel like your blood is boiling!
 你感到血液在沸腾！
 %%%%
 You feel magic leave you.
-你感到魔力离你而去。
+你感到法力离你而去。
 %%%%
 You feel magic leave your %s.
-你感到魔力离开了你的%s。
+你感到法力离开了你的%s。
 %%%%
 You feel magic pooling in your %s.
-你感到魔力在你的%s中汇聚。
+你感到法力在你的%s中汇聚。
 %%%%
 You feel magic returning to you.
-你感到魔力回到你身上。
+你感到法力回到你身上。
 %%%%
 You feel mighty!
 你感到力量强大！
@@ -9866,10 +9866,10 @@ You feel your light-headedness will last longer.
 你感到你的头晕将持续更久。
 %%%%
 You feel your magic capacity decrease.
-你感到你的魔力容量减少了。
+你感到自己的法力上限降低了。
 %%%%
 You feel your magic capacity increase.
-你感到你的魔力容量增加了。
+你感到自己的法力上限提高了。
 %%%%
 You feel your power drawn to a protective spirit.
 你感到你的力量被引向一个保护之灵。
@@ -10043,7 +10043,7 @@ You have no feet!
 你没有脚！
 %%%%
 You have no magic to restore.
-你没有魔法值需要恢复。
+你没有可恢复的法力。
 %%%%
 You have no religion.
 你不信仰任何神祇。
@@ -10175,7 +10175,7 @@ You knock %s out of %s grip!
 你将%s从%s的掌握中击落！
 %%%%
 You lack sufficient magical power to recharge your bee.
-你没有足够的魔力来给你的蜜蜂充能。
+你没有足够的法力来给你的蜜蜂充能。
 %%%%
 You learned that %s are actually %s.
 你了解到%s实际上是%s。
@@ -10636,7 +10636,7 @@ You sublimate a sliver of %s essence and reconstitute it in ice.
 你将%s一丝精华升华，并使其在冰中重组。
 %%%%
 You suddenly feel drained of magical energy!
-你突然感到魔力被抽空！
+你突然感到法力被抽空！
 %%%%
 You swap places with %s.
 你与%s交换了位置。
@@ -11086,19 +11086,19 @@ Your lungs strain for air.
 你的肺部迫切地需要空气。
 %%%%
 Your magic begins regenerating once more.
-你的魔力重新开始恢复。
+你的法力重新开始恢复。
 %%%%
 Your magic feels %stainted.
 你的魔力感到%s被玷污了。
 %%%%
 Your magic is already full.
-你的魔法值已经是满的。
+你的法力已经回满了。
 %%%%
 Your magical essence is drained by the effort!
 这番努力损耗了你的魔法精华！
 %%%%
 Your magical reserves are too exhausted to conjure more reagents.
-你的魔力储备太枯竭，无法召唤更多试剂。
+你的法力储备太枯竭，无法召唤更多试剂。
 %%%%
 Your maw growls hungrily at the sight of %s, but you resist your urges.
 你的吞噬之口在看到%s时饥饿地咆哮起来，但你抵抗住了冲动。
@@ -13635,7 +13635,7 @@ You %s the barbed spikes from your body.
 你%s了身上的倒刺。
 %%%%
  health and magic
-生命和魔法
+生命和法力
 %%%%
 regenerate%s more quickly
 更快地再生%s
@@ -17247,7 +17247,7 @@ The frigid air chills %s%s%s
 寒冷的空气侵袭了%s%s%s
 %%%%
 Drain Magic
-汲取魔力
+汲取法力
 %%%%
 Your %s skill: %s%d.%d%s
 你的%s技能: %s%d.%d%s
@@ -17627,7 +17627,7 @@ An external divine aura illuminates you.
 一个外部的神圣光环照亮了你。
 %%%%
 * * * LOW MAGIC WARNING * * *
-* * * 低魔力警告 * * *
+* * * 低法力警告 * * *
 %%%%
 * * * LOW HITPOINT WARNING * * *
 * * * 低生命警告 * * *
@@ -18260,7 +18260,7 @@ HP casting
 生命施法
 %%%%
 MP-powered wands
-魔杖消耗魔力
+魔杖消耗法力
 %%%%
 Mark of Annihilation
 湮灭印记
@@ -18488,7 +18488,7 @@ heat vulnerability
 炎热弱点
 %%%%
 high MP
-高魔力
+高法力
 %%%%
 icemail
 冰甲
@@ -18542,13 +18542,13 @@ large bone plates
 大型骨板
 %%%%
 low MP
-低魔力
+低法力
 %%%%
 lucky
 幸运
 %%%%
 magic link
-魔力链接
+法力链接
 %%%%
 magic shield
 魔法护盾
@@ -18923,10 +18923,10 @@ Spells you cast and wands you use may paralyse nearby enemies.
 你施放的法术和使用的魔杖可能会麻痹附近的敌人。
 %%%%
 Spells you cast cost 1 less MP (to a minimum of 1).
-你施放的法术消耗减少1点魔力（最低为1）。
+你施放的法术消耗减少1点法力（最低为1）。
 %%%%
 Spells you cast cost 2 less MP (to a minimum of 1).
-你施放的法术消耗减少2点魔力（最低为1）。
+你施放的法术消耗减少2点法力（最低为1）。
 %%%%
 Spells you cast may paralyse adjacent enemies.
 你施放的法术可能会麻痹相邻的敌人。
@@ -18947,10 +18947,10 @@ The West Wind empowers your ranged attacks as you Rampage.
 西风在你冲锋时增强你的远程攻击。
 %%%%
 When hurt, damage is shared between your health and your magic reserves.
-受伤时，伤害在你的生命和魔力储备之间分摊。
+受伤时，伤害在你的生命和法力储备之间分摊。
 %%%%
 When low on magic, you restore magic in place of health.
-当魔力不足时，你以消耗生命为代价恢复魔力。
+当法力不足时，你会恢复法力而非生命。
 %%%%
 When seriously injured, your blood forms armour. (AC +
 当你严重受伤时，血液会形成护甲。（防御+
@@ -19475,7 +19475,7 @@ You draw destruction from the wailing grief of Tartarus.
 你从塔尔塔罗斯的哀嚎悲伤中汲取毁灭之力。
 %%%%
 You expend magic power (3 MP) to strengthen your wands.
-你消耗魔力（3点）来增强你的魔杖。
+你消耗法力（3点）来增强你的魔杖。
 %%%%
 You float through the air rather than walking.
 你在空中漂浮，而非行走。
@@ -19493,7 +19493,7 @@ You gain AC when you inflict magical misfortune on nearby enemies.
 当你对附近的敌人施加魔法灾厄时，你获得防御。
 %%%%
 You gain doubled healing and magic from potions.
-你从药水中获得双倍的治疗和魔力恢复。
+你从药水中获得双倍的治疗和法力恢复。
 %%%%
 You gain extra lives every three experience levels.
 你每三级获得一条额外生命。
@@ -19505,10 +19505,10 @@ You have a beak for a mouth.
 你有一张喙状的嘴。
 %%%%
 You have a considerably increased reservoir of magic. (+20% MP)
-你的魔力储备大幅增加。（+20%魔力）
+你的法力储备大幅增加。（+20%法力）
 %%%%
 You have a greatly increased reservoir of magic. (+30% MP)
-你的魔力储备极大增加。（+30%魔力）
+你的法力储备极大增加。（+30%法力）
 %%%%
 You have a heavy armoured tail.
 你有一条沉重的装甲尾巴。
@@ -19571,7 +19571,7 @@ You have an extremely huge brain. (Int +4)
 你有一个极其巨大的大脑。（智力+4）
 %%%%
 You have an increased reservoir of magic. (+10% MP)
-你的魔力储备增加。（+10%魔力）
+你的法力储备增加。（+10%法力）
 %%%%
 You have an uncanny knack for detecting items.
 你有探测物品的奇特能力。
@@ -19721,7 +19721,7 @@ You refuse to read scrolls in combat unless seriously injured.
 除非严重受伤，否则你在战斗中拒绝阅读卷轴。
 %%%%
 You regain HP and MP as you explore.
-你在探索时恢复生命和魔力。
+你在探索时恢复生命和法力。
 %%%%
 You regenerate a little health from kills.
 你通过击杀恢复少量生命。
@@ -19733,7 +19733,7 @@ You regenerate health from kills.
 你通过击杀恢复生命。
 %%%%
 You regenerate magic rapidly.
-你快速恢复魔力。
+你快速恢复法力。
 %%%%
 You regenerate.
 你具有再生能力。
@@ -19874,13 +19874,13 @@ Your magical and physical power is slightly enhanced at high health.
 你在高生命时魔法和物理力量略微增强。
 %%%%
 Your magical capacity is extremely low. (-30% MP)
-你的魔力容量极低。（-30%魔力）
+你的法力上限极低。（-30%法力）
 %%%%
 Your magical capacity is low. (-10% MP)
-你的魔力容量较低。（-10%魔力）
+你的法力上限较低。（-10%法力）
 %%%%
 Your magical capacity is very low. (-20% MP)
-你的魔力容量很低。（-20%魔力）
+你的法力上限很低。（-20%法力）
 %%%%
 Your magical flight helps you evade attacks. (EV +4)
 你的魔法飞行帮助你闪避攻击。（闪避+4）
@@ -19889,7 +19889,7 @@ Your magical power and effects resist disruption.
 你的魔法力量和效果能够抵抗干扰。
 %%%%
 Your magical power is your life essence.
-你的魔力就是你的生命精华。
+你的法力就是你的生命精华。
 %%%%
 Your melee attacks may debilitate your foes.
 你的近战攻击可能会削弱你的敌人。
@@ -21266,7 +21266,7 @@ Disabling autothrow.
 禁用自动投掷。
 %%%%
 You don't have enough magic to cast 
-你没有足够的魔力来施放 
+你没有足够的法力来施放 
 %%%%
 You are too depleted to cast spells recklessly!
 你消耗太大，无法随意施放法术！
@@ -22796,13 +22796,13 @@ you don't have enough health to cast this spell.
 你没有足够的生命值来施放此法术。
 %%%%
 you don't have enough magic to cast this spell.
-你没有足够的魔力来施放此法术。
+你没有足够的法力来施放此法术。
 %%%%
 your magic and health are inextricable.
-你的魔力和生命密不可分。
+你的法力和生命密不可分。
 %%%%
 your reserves of magic are already full.
-你的魔力储备已经满了。
+你的法力储备已经满了。
 %%%%
 you cannot cast such powerful magic in your current form.
 当前形态下你无法施放如此强大的魔法。
@@ -24819,10 +24819,10 @@ You are radiating toxic energy.
 你正在散发毒性能量。
 %%%%
 You are rapidly regenerating health and magic.
-你的生命和魔力正在快速再生。
+你的生命和法力正在快速再生。
 %%%%
 You are rapidly regenerating magical energy.
-你的魔力正在快速再生。
+你的法力正在快速再生。
 %%%%
 You are reanimating the dead.
 你正在复活死者。
@@ -24936,7 +24936,7 @@ You begin to regenerate health when rolling toward enemies.
 你向敌人翻滚时开始恢复生命。
 %%%%
 You begin to regenerate magic when rolling toward enemies.
-你向敌人翻滚时开始恢复魔力。
+你向敌人翻滚时开始恢复法力。
 %%%%
 You begin to regenerate regardless of the presence of monsters.
 无论附近是否有怪物，你都开始再生了。
@@ -25890,7 +25890,7 @@ Your lower body turns into a snake tail.
 你的下半身变成了一条蛇尾。
 %%%%
 Your magic begins to regenerate rapidly.
-你的魔力开始快速再生。
+你的法力开始快速再生。
 %%%%
 Your magic grows more menacing.
 你的魔法变得更加凶险。
@@ -25911,7 +25911,7 @@ Your magical nature develops, letting you fly evasively.
 你的魔法本质发展了，使你能以闪避之姿飞行。
 %%%%
 Your magical power and health merge together.
-你的魔力和生命融合在了一起。
+你的法力和生命融合在了一起。
 %%%%
 Your magical power grows resistant to disruption.
 你的魔力变得能够抵御干扰。
@@ -26268,7 +26268,7 @@ It affects your health (%d).
 影响你的生命值（%d）。
 %%%%
 It affects your magic capacity (%d).
-影响你的魔力容量（%d）。
+影响你的法力上限（%d）。
 %%%%
 It lets you see invisible.
 让你能看见隐形之物。
@@ -26376,7 +26376,7 @@ It increases your evasion after moving or waiting.
 移动或等待后提高你的闪避。
 %%%%
 It increases your rate of magic regeneration.
-提高你的魔力恢复速度。
+提高你的法力恢复速度。
 %%%%
 It increases the success rate of your magical spells.
 提高你魔法法术的成功率。
@@ -26391,7 +26391,7 @@ buggy
 有问题
 %%%%
 It causes incoming damage to be divided between your reserves of health and magic.
-使受到的伤害在你的生命值和魔力储备之间分摊。
+使受到的伤害在你的生命值和法力储备之间分摊。
 %%%%
 It allows you to gain divine favour quickly.
 使你能够快速获得神眷。
@@ -29401,7 +29401,7 @@ If the wielder is skilled in Evocations, they can envenom those struck by it, de
 若使用者精通魔力释放技能，就能使被这根法杖击中的目标中毒，造成无视护甲的毒素伤害。
 %%%%
 Whenever a successful spell causes magic to be channelled from it, it may also drain additional magic from other enemies in sight, with a chance increasing with spell level.
-每当成功施法从中引导魔力时，也可能从视野内的其他敌人身上汲取额外魔力，几率随法术等级提高。
+每当成功施法从中引导法力时，也可能从视野内的其他敌人身上汲取额外法力，几率随法术等级提高。
 %%%%
 It occasionally heals its wielder for the full amount of damage dealt when it wounds a living foe.
 攻击活着的敌人时，偶尔将造成伤害的全额转化为使用者的生命值。
@@ -29596,7 +29596,7 @@ When moving toward enemies, its wearer moves as far as possible, alerting their 
 向敌人移动时，穿戴者尽可能移动最大距离，途中会惊醒目标。
 %%%%
 It empowers its wearer's blows with all of their magic.
-将穿戴者的魔力全部灌注于其攻击之中。
+将穿戴者的法力全部灌注于其攻击之中。
 %%%%
 Blows struck in melee replenish the wearer's magic.
 近战攻击会补充穿戴者的法力。
@@ -31135,7 +31135,7 @@ Blood for Blood
 以血还血
 %%%%
 Channel Magic
-魔力引导
+法力引导
 %%%%
 Convert to Beogh
 皈依比欧弗
@@ -31309,7 +31309,7 @@ Jiyva prevents you from harming jellies.\n
 吉瓦阻止你伤害果冻。\n
 %%%%
 Your life and magic regeneration are%s increased.\n
-你的生命和魔力恢复速度%s加快。\n
+你的生命和法力恢复速度%s加快。\n
 %%%%
 %s%s slows your movement.\n
 %s%s减缓你的移动速度。\n
@@ -33545,7 +33545,7 @@ Zot clock should be between 0 and %d
 佐特时钟必须在 0 到 %d 之间
 %%%%
  magic
-魔法
+法力
 %%%%
 %s shudders%s.
 %1$s%2$s颤抖了。
@@ -34467,7 +34467,7 @@ Lash (%u)
 鞭击（%u）
 %%%%
 MPRegen (%d)
-魔力再生（%d）
+法力再生（%d）
 %%%%
 Memories (%d)
 记忆（%d）
@@ -35229,7 +35229,7 @@ Xom revived you
 佐姆复活了你
 %%%%
 Magic: 
-魔力：
+法力：
 %%%%
 Reached 
 达到了
@@ -35238,7 +35238,7 @@ Reached
  最大生命值
 %%%%
  max magic points
- 最大魔力值
+ 法力上限
 %%%%
 Reached XP level 
 达到经验等级
