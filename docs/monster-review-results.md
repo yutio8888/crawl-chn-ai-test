@@ -1,8 +1,8 @@
 # Issue #24 怪物翻译全量复审结果
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
-- 术语表 SHA-256：`2534b6d47d80fc9be65d628faf77d8669b94bbeb2e160b06fe5cf1c6381329ac`
-- 清单 SHA-256：`203c62b1083ef605f650e65340ad7d4f28b367fca46b743c5f94bbb226db05e6`
+- 术语表 SHA-256：`66f83c839bf57371ef768a5ec3cb6bcd790409e2fbed0c4a5b0f0a68856ddbb5`
+- 清单 SHA-256：`553a48fabcb2ee469176ff58a88e73e5df3c3c50df8945b810a6c7cce0641115`
 - 身份总数：815（现行 691；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -638,7 +638,7 @@
 | `monster:MONS_ANCESTOR` | current; exposure=ordinary; name=ancestor→先祖; genus=MONS_ANCESTOR; species=MONS_ANCESTOR; data=crawl-ref/source/dat/mons/ancestor.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ANCESTOR_KNIGHT` | current; exposure=ordinary; name=knight→骑士; genus=MONS_ANCESTOR; species=MONS_ANCESTOR_KNIGHT; data=crawl-ref/source/dat/mons/ancestor-knight.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ANCESTOR_ELEMENTALIST` | current; exposure=ordinary; name=elementalist→元素师; genus=MONS_ANCESTOR; species=MONS_ANCESTOR_ELEMENTALIST; data=crawl-ref/source/dat/mons/ancestor-elementalist.yaml; desc=EN/ZH | retranslate: description corrected |
-| `monster:MONS_ANCESTOR_HEXER` | current; exposure=ordinary; name=hexer→诅咒师; genus=MONS_ANCESTOR; species=MONS_ANCESTOR_HEXER; data=crawl-ref/source/dat/mons/ancestor-hexer.yaml; desc=EN/ZH | retranslate: description corrected |
+| `monster:MONS_ANCESTOR_HEXER` | current; exposure=ordinary; name=hexer→妖术师; genus=MONS_ANCESTOR; species=MONS_ANCESTOR_HEXER; data=crawl-ref/source/dat/mons/ancestor-hexer.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_MELIAI` | current; exposure=ordinary; name=meliai→墨利埃; genus=MONS_KILLER_BEE; species=MONS_MELIAI; data=crawl-ref/source/dat/mons/meliai.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_BAI_SUZHEN` | current; exposure=unique; name=Bai Suzhen→白素贞; genus=MONS_DRAGON; species=MONS_STORM_DRAGON; data=crawl-ref/source/dat/mons/bai-suzhen.yaml; desc=EN/ZH | keep |
 | `monster:MONS_BAI_SUZHEN_DRAGON` | current; exposure=unique; name=Bai Suzhen→白素贞; genus=MONS_DRAGON; species=MONS_STORM_DRAGON; data=crawl-ref/source/dat/mons/bai-suzhen-dragon.yaml; desc=EN/ZH | keep |
@@ -1599,3 +1599,8 @@ EN与ZH同步：Donald改静态完整叙述，避免不完整物种条件误称�
 ### 感知怪物名称关联同步
 
 末批 SourceDB 全量复审已按 D-A-026 完成感知怪物完整依赖组审校与修后复核（见 `source-review-results.md` 的 legacy-dynamic-source 及 J 主卡）。本次仅将五个严格名称卡和对应正文卡的名称关联字段同步到已审现值；正文全文、机制证据、原有 MON-175/MON-176 建议记录及其余 808 个严格卡均保留，不将这次账本同步当作新增全域语言审查。
+
+### D-C-110：妖术学派与先祖职业词根
+
+- `MONS_ANCESTOR_HEXER`：hexer 从诅咒师改为妖术师；沿用既有 retranslate 终态（生成器细化为 name and description corrected），名称遵循 D-C-110，描述和机制不变。
+- `MONS_IMPERIAL_MYRMIDON`：描述中的 hexes 从诅咒系法术改为妖术系法术；沿用既有 retranslate 结论，其他命题与机制不变（D-C-110）。
