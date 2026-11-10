@@ -13,7 +13,7 @@ repulsion field mutation
 
 你被排斥力场围绕，这会提供少量闪避。
 这个变异每升一级会提供更多闪避。
-这个变异达到第三级也会使射向你的远程攻击的命中率减半。
+此变异达到第三级时还会偏转飞弹，大幅提高你应对这类攻击时的闪避。
 %%%%
 icy blue scales mutation
 
@@ -60,7 +60,7 @@ large bone plates mutation
 %%%%
 thin skeletal structure mutation
 
-你的骨头变得轻巧、多孔。这个变异每升一级会加2点敏捷和潜行。
+你的骨头变得轻巧、多孔。此变异每级提供+2敏捷，并提升潜行能力。
 %%%%
 strong mutation
 
@@ -186,8 +186,8 @@ armoured tail mutation
 %%%%
 pseudopods mutation
 
-你身上长满了伪足，在近战时能够扫打敌人，但在一定程度上会削弱护甲提供的防护。
-这对护甲附魔提供的防护没有影响，也不会影响训练的护甲技能的防御效果。
+你身上长满了伪足，在近战时能够扫打敌人，但在一定程度上会削弱身体护甲提供的防护。
+这对护甲附魔提供的防护没有影响。
 这个变异每升一级，你的伪足就会更大、更强。
 %%%%
 # ------ 抗性变异 -----
@@ -333,7 +333,7 @@ teleportitis mutation
 deformed body mutation
 
 你的身体被一种非人的方式塑造，这在一定程度上削弱了铠甲提供的防护。
-这对护甲附魔提供的防护没有影响，也不会影响训练的护甲技能的防御效果。
+这对护甲附魔提供的防护没有影响。
 %%%%
 screaming mutation
 
@@ -344,7 +344,7 @@ screaming mutation
 no potion heal mutation
 
 你的系统会抗拒饮用的灵丹妙药，削弱了各种治疗药水的效果。
-这个变异达到第二级，会完全阻断药水的疗效。（哥萨戈神的援助不受影响。）
+这个变异达到第二级，会完全阻止药水恢复生命值。（哥萨戈神的援助不受影响。）
 %%%%
 persistent drain mutation
 
@@ -426,7 +426,7 @@ sanguine armour mutation
 %%%%
 big brain mutation
 
-出什么事了？你有一个大脑袋。这个变异每升一级会加2点智力。
+出什么事了？你有一个硕大的大脑。这个变异每升一级会加2点智力。
 这个变异达到第三级，你在施法时就更不容易失误。
 %%%%
 ignite blood mutation
@@ -487,7 +487,7 @@ in touch with death mutation
 %%%%
 acrobatic mutation
 
-你那神奇的天性有助于你杂技般地翻滚你的空心骨头，从而能在移动或等待时躲避攻击。
+你的魔法天性让中空骨架的身体能灵活翻腾，在移动或等待时更容易闪避攻击。
 %%%%
 evasive flight mutation
 
@@ -557,7 +557,7 @@ distributed training mutation
 
 无论你何时获得经验，它都会分配到你的所有技能之中。
 你无法选择技能进行着重训练。
-此效果让你无法训练特定技能，仿佛是神的限制，不会让你的其他技能提升得更快。
+神祇限制等阻止你训练特定技能的效果，并不会使你的其他技能提升得更快。
 %%%%
 nimble swimmer mutation
 
@@ -707,7 +707,7 @@ reduced AC mutation
 %%%%
 reduced EV mutation
 
-你的反应很慢，敌人很容易攻击你。
+你的反应迟缓，敌人更容易命中你。
 %%%%
 inexperienced mutation
 
@@ -896,8 +896,8 @@ accursed mutation
 %%%%
 airstrike attack mutation
 
-每当你近战攻击一个敌人时，风会扭曲并攻击他们，造成额外伤害，
-其伤害随他们相邻的空白空间数量增加。
+每当你在近战中命中敌人时，风就会扭转并袭击它，造成额外伤害；
+与该敌人相邻的空位越多，额外伤害就越高。
 %%%%
 armoured shell mutation
 
@@ -925,7 +925,7 @@ bloodcurse mutation
 %%%%
 booming voice mutation
 
-当你在敌对怪物的视线范围内阅读卷轴时，你的声音会以惊人的音量响起。
+当你在视野内有敌对怪物时阅读卷轴，你的声音会变得异常响亮。
 %%%%
 claustrophobia bane
 
@@ -939,7 +939,7 @@ contaminating mutation
 %%%%
 contamination susceptible mutation
 
-你从魔法污染中吸收双倍的诱变能量。
+你从魔法污染中吸收的诱变能量为正常的两倍。
 %%%%
 devouring maw mutation
 
@@ -1004,7 +1004,7 @@ foul shadow mutation
 %%%%
 freeze response mutation
 
-每当你受到寒冷伤害时，都有一定几率陷入冰封，短时间内降低移动速度。
+每当你受到寒冷伤害时，都有一定概率陷入冰封，短时间内降低移动速度。
 %%%%
 frigid aura mutation
 
@@ -1035,12 +1035,12 @@ heatstroke bane
 %%%%
 hex mastery mutation
 
-你的诅咒系法术更易施放，施法失败的概率及后果严重程度都会降低，
+你的诅咒系法术更易施放，施法失误的概率及后果严重程度都会降低，
 且敌人在抵抗你的所有效果时，意志力都会降低。
 %%%%
 hive swarm mutation
 
-每当受伤使你的生命值降至上限的50%或以下时，愤怒的蜜蜂就会从你体内蜂拥而出，保护你。
+每当受伤使你的生命值降至上限的50%或更低时，愤怒的蜜蜂就会从你体内蜂拥而出，保护你。
 
 在你的生命值完全恢复之前，此效果不会再次触发。
 %%%%
