@@ -59,6 +59,12 @@
 #include "options.h"         // Options.language
 #include "lang-t.h"          // lang_t
 #include "lookup-help.h"     // lookup_help_type_name, NUM_LOOKUP_HELP_TYPES
+#include "syscalls.h"
+#include "unwind.h"
+#include <clocale>
+#include "hints.h"
+#include "menu.h"
+#include "format.h"
 #include "command.h"         // localized standalone guide resolution
 
 #include <algorithm>
@@ -1129,5 +1135,39 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         const string zh = T_(branches[b].longname);
         INFO("branch: " << branches[b].longname << " → " << zh);
         CHECK_FALSE(zh.empty());
+    }
+}
+
+// print_hint() sends each paragraph via mprf(MSGCH_TUTORIAL); message_window
+// uses this same linebreak_string() before rendering formatted rows.
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh-help: fleeing hint reflows at message window widths",
+                 "[zh-help][hint-reflow]")
+{
+#if defined(UNIX) && !defined(__ANDROID__)
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]()
+                           { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    string hint = getHintString("HINT_FLEEING_MONSTER");
+    REQUIRE_FALSE(hint.empty());
+    hint_replace_cmds(hint);
+    REQUIRE(hint.find("$cmd[") == string::npos);
+    const string plain = formatted_string::parse_string(hint).tostring();
+    for (const int width : { 20, 40, 79 })
+    {
+        string wrapped = hint;
+        CHECK(linebreak_string(wrapped, width) > 0);
+        string joined;
+        for (const string &line : split_string("\n", wrapped))
+        {
+            const auto rendered = formatted_string::parse_string(line);
+            CHECK(rendered.width() <= width);
+            joined += rendered.tostring();
+        }
+        // Wrapping may consume boundary spaces; it must retain all content.
+        CHECK(replace_all(replace_all(joined, " ", ""), "\n", "")
+              == replace_all(replace_all(plain, " ", ""), "\n", ""));
     }
 }
