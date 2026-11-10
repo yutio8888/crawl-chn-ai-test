@@ -10280,7 +10280,7 @@ You no longer feel sluggish.
 你不再感觉迟缓。
 %%%%
 You now have %1$d gold piece%2$s.
-你还有%1$d枚金币。
+你现在有%1$d枚金币%2$.0s。
 %%%%
 You now have %d runes.
 你现在有%d个符文。
