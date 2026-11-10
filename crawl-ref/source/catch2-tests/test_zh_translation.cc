@@ -203,7 +203,18 @@ TEST_CASE_METHOD(ZhTranslationFixture,
           == "你的法术 (描述)");
     CHECK(make_stringf(T_("Select a spell to %s"), T_("describe"))
           == "选择一个要描述的法术");
+    CHECK(std::string(C_("monster equipment", ",")) == "，");
+    CHECK(make_stringf(T_("Casting: <w>%s</w> <lightgrey>(%s)</lightgrey>"),
+                       "魔法飞弹", "安全；失败率 1%")
+          == "正在施放：<w>魔法飞弹</w><lightgrey>（安全；失败率 1%）</lightgrey>");
+    CHECK(make_stringf(T_("You pick up the %s and begin to read..."),
+                       "冬眠羊皮纸")
+          == "你捡起了冬眠羊皮纸并开始阅读……");
     CHECK(std::string(C_("gold quantity", "pieces")) == "枚");
+    CHECK(std::string(T_(" (once)")) == "（1次）");
+    CHECK(std::string(T_(" (twice)")) == "（2次）");
+    CHECK(std::string(T_(" (thrice)")) == "（3次）");
+    CHECK(make_stringf(T_(" (%d times)"), 4) == "（4次）");
 
     item_def gold;
     gold.base_type = OBJ_GOLD;
@@ -7914,5 +7925,24 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     msg::tee departed;
     simple_monster_message(*orc, T_(" departs this earthly plane."));
     CHECK(departed.get_store().find(" ") == string::npos);
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: axe category description has no English spacing or period",
+                 "[zh-translation][item-description][playtest]")
+{
+    item_def axe;
+    axe.base_type = OBJ_WEAPONS;
+    axe.sub_type = WPN_HAND_AXE;
+    axe.quantity = 1;
+    axe.flags = ISFLAG_IDENTIFIED;
+    axe.pos = coord_def(-1, -1);
+
+    const string description = get_item_description(axe);
+    CHECK(description.find("斧类") != string::npos);
+    CHECK(description.find("。 它会") == string::npos);
+    CHECK(description.find("较少伤害.") == string::npos);
+    CHECK(description.find("较少伤害。") != string::npos);
 }
 

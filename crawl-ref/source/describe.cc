@@ -1867,13 +1867,13 @@ static string _category_string(const item_def &item, bool monster)
         description += T_("It has an extended reach");
         if (!monster)
             description += T_(" (target with [<white>v</white>])");
-        description += ". ";
+        description += T_(". ");
         break;
     case SK_AXES:
         description += T_("It hits all enemies adjacent to the wielder");
         if (!is_unrandom_artefact(item, UNRAND_WOE))
             description += T_(", dealing less damage to non-targets");
-        description += ". ";
+        description += T_(". ");
         break;
     case SK_SHORT_BLADES:
         {

@@ -427,23 +427,17 @@ static string n_names(const string &name, int n)
 //
 static string kill_times(int kills)
 {
-    char buf[50];
     switch (kills)
     {
     case 1:
-        strcpy(buf, " (once)");
-        break;
+        return T_(" (once)");
     case 2:
-        strcpy(buf, " (twice)");
-        break;
+        return T_(" (twice)");
     case 3:
-        strcpy(buf, " (thrice)");
-        break;
+        return T_(" (thrice)");
     default:
-        snprintf(buf, sizeof buf, " (%d times)", kills);
-        break;
+        return make_stringf(T_(" (%d times)"), kills);
     }
-    return string(buf);
 }
 
 void kill_def::merge(const kill_def &k, bool uniq)
