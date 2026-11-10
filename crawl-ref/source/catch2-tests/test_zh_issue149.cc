@@ -969,7 +969,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             INFO(listed);
             CHECK(listed.find(language == lang_t::ZH ? "友善" : "friendly") != string::npos);
             CHECK(listed.find(language == lang_t::ZH ? "中立" : "neutral") != string::npos);
-            CHECK(listed.find(language == lang_t::ZH ? "诅咒师Xochitl" : "Xochitl the hexer") != string::npos);
+            CHECK(listed.find(language == lang_t::ZH ? "妖术师Xochitl" : "Xochitl the hexer") != string::npos);
             if (language == lang_t::ZH)
             {
                 CHECK(listed.find("friendly") == string::npos);
@@ -1047,12 +1047,12 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             CHECK(dump.find(english_life) == string::npos);
         }
         const string menu = ability_name(ABIL_HEPLIAKLQANA_TYPE_HEXER, false);
-        CHECK(menu == (language == lang_t::ZH ? "先祖生涯：诅咒师" : "Ancestor Life: Hexer"));
+        CHECK(menu == (language == lang_t::ZH ? "先祖生涯：妖术师" : "Ancestor Life: Hexer"));
         CHECK(ability_name(ABIL_HEPLIAKLQANA_TYPE_HEXER, true) == "Ancestor Life: Hexer");
         const string details = get_ability_desc(ABIL_HEPLIAKLQANA_TYPE_HEXER, false);
         INFO(details);
         CHECK(details.find(language == lang_t::ZH
-            ? "回想起你的先祖是个诅咒师，一个刀法迅捷、擅长施展削弱性法术的狡猾贼人。"
+            ? "回想起你的先祖是个妖术师，一个刀法迅捷、擅长施展削弱性法术的狡猾贼人。"
             : "Remembers your ancestor as a hexer") != string::npos);
         const string type_name = language == lang_t::ZH
             ? mons_type_name(MONS_ANCESTOR_HEXER, DESC_PLAIN)
@@ -1060,16 +1060,16 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         const string confirmation = make_stringf(
             T_("Are you sure you want to remember your ancestor as %s?"), type_name.c_str());
         CHECK(confirmation == (language == lang_t::ZH
-            ? "你确定要记住你的先祖作为诅咒师吗？"
+            ? "你确定要记住你的先祖作为妖术师吗？"
             : "Are you sure you want to remember your ancestor as a hexer?"));
         monster_info ancestor(MONS_ANCESTOR_HEXER);
         ancestor.mname = "Xochitl";
-        CHECK(ancestor.full_name() == (language == lang_t::ZH ? "诅咒师Xochitl" : "Xochitl the hexer"));
+        CHECK(ancestor.full_name() == (language == lang_t::ZH ? "妖术师Xochitl" : "Xochitl the hexer"));
         const string identity = mons_type_name_en(MONS_ANCESTOR_HEXER, DESC_A);
         const Note note(NOTE_ANCESTOR_TYPE, 0, 0, identity);
         const string displayed_note = note.describe(false, false);
         INFO(displayed_note);
-        CHECK(displayed_note.find(language == lang_t::ZH ? "诅咒师" : "a hexer") != string::npos);
+        CHECK(displayed_note.find(language == lang_t::ZH ? "妖术师" : "a hexer") != string::npos);
         CHECK(note.name == "a hexer");
         CHECK(identity == "a hexer");
         CHECK(you.props[HEPLIAKLQANA_ALLY_NAME_KEY].get_string() == "Xochitl");

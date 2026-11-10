@@ -4744,3 +4744,20 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   `crawl-ref/source/dat/descript/zh/{status,monsters,items,monstatus}.txt`、
   `crawl-ref/source/dat/defaults/messages.txt`、`docs/glossary.md`、
   `docs/glossary.utf8`、`docs/decisions.md`。
+
+### D-C-110 — Hexes 与 curse 词根分离
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-10
+- **Choice**: `Hexes → 妖术系`；两字简称 `Hex → 妖术`；
+  `hexer → 妖术师`；`Hexslinger → 妖术射手`；`hex mastery → 妖术精通`。
+  `hexed → 被支配`（ENCH_HEXED 是支配状态）。
+- **Source**: 用户在两模型术语审阅后确认；学派与技能、先祖职业及相关描述。
+- **Rationale**: 将妖术学派与真正的 curse 诅咒区分，统一菜单、物品铭文与说明。
+- **Scope / boundaries**: 取代 D-C-101 的 Hex 简称及旧 Hexes 词根；
+  `curse → 诅咒`、`Maledictor → 诅咒师` 确认不变；
+  Maledictions 书名后缀和神器属性 `curses,` 不变。
+  随机书名中的 Curses / Malediction 等仍保留诅咒，不按池名整体替换。
+- **Affected files**: 中文 source、descript、randbook 资产；glossary 及生成伴随文件；
+  test_zh_issue149.cc 的先祖职业预期字符串。

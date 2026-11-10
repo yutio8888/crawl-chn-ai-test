@@ -68,7 +68,7 @@
 | EN | ZH |
 |----|----|
 | Conjuration / Conjurations | 咒法系 |
-| Hexes | 诅咒系 |
+| Hexes | 妖术系 |
 | Summoning / Summonings | 召唤系 |
 | Necromancy | 死灵系 |
 | Translocation / Translocations | 传送系 |
@@ -92,7 +92,7 @@
 | EN | ZH | 作用域 |
 |----|----|--------|
 | Conj | 咒法 | 学派简称；法术列表；D-C-101 |
-| Hex | 诅咒 | 学派简称；法术列表；D-C-101 |
+| Hex | 妖术 | 学派简称；法术列表；D-C-101 |
 | Summ | 召唤 | 学派简称；法术列表；D-C-101 |
 | Necr | 死灵 | 学派简称；法术列表；D-C-101 |
 | Tloc | 传送 | 学派简称；法术列表；D-C-101 |
@@ -519,6 +519,7 @@
 |----|----|----------------|
 | chaos | 混沌 | weapon brand verbose/terse; decision=D-B-016/D-B-020 |
 | chaotic | 混沌 | weapon brand adjective; decision=D-B-016/D-B-020 |
+| hexed | 被支配 | ENCH_HEXED 支配状态；不是学派名；decision=D-C-110 |
 | confusion | 混乱 | internal weapon brand verbose; decision=D-B-016/D-B-020 |
 | Confuse | 混乱 | internal weapon brand terse; decision=D-B-016/D-B-020 |
 | confusing | 混乱 | internal weapon brand adjective; decision=D-B-016/D-B-020 |
@@ -927,7 +928,7 @@
 | Fire Elementalist | 火元素使 | background; source=backgrounds.txt |
 | Gladiator | 角斗士 | background; source=backgrounds.txt |
 | Hedge Wizard | 杂学巫师 | background; source=backgrounds.txt |
-| Hexslinger | 诅咒射手 | background; source=backgrounds.txt |
+| Hexslinger | 妖术射手 | background; source=backgrounds.txt |
 | Hunter | 猎手 | background; source=backgrounds.txt |
 | Ice Elementalist | 冰元素使 | background; source=backgrounds.txt |
 | Monk | 武僧 | background; source=backgrounds.txt |
@@ -1000,7 +1001,8 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 | Curse Item | 诅咒物品 | 旧能力标题保留兼容；当前装备仪式用 Ritual of Binding；decision=D-C-095 |
 | Ancestor Life: Elementalist | 先祖生涯：元素师 | ability.cc；先祖类型 Elementalist，非新玩家背景；decision=D-C-095 |
 | Ancestor Life: Knight | 先祖生涯：骑士 | 现行先祖职业回忆；Life指生前经历，非生命值；decision=D-C-102 |
-| Ancestor Life: Hexer | 先祖生涯：诅咒师 | 与现行Knight/Elementalist共用生涯词根；decision=D-C-102 |
+| hexer | 妖术师 | 先祖职业；decision=D-C-110 |
+| Ancestor Life: Hexer | 先祖生涯：妖术师 | 与现行Knight/Elementalist共用生涯词根；decision=D-C-102 |
 | Sacrifice Love | 献祭爱 | 入的献祭能力；覆盖爱与友好关系，不限爱情；decision=D-C-102 |
 | Chaos Eisegesis | 混沌曲解 | 佐姆能力：以魔法污染为代价施放借来的法术；与 Divine Exegesis 神圣释经相对；decision=D-C-109 |
 
@@ -1109,7 +1111,7 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 | unshakeable will | 意志不可动摇 | form 伪变异／特征标签；slaughter:fakemuts；不声称是可遗传突变；保留 unshakeable 的绝对强度，不弱化为普通坚韧；catalog 待负责译者修订；decision=D-C-098 |
 | demonic bargain | 恶魔契约 | form 伪变异／特征标签；slaughter:badmuts；不声称是可遗传突变；decision=D-C-098 |
 | airstrike attack | 空袭攻击 | form 伪变异／特征标签；sphinx:fakemuts；不声称是可遗传突变；decision=D-C-098 |
-| hex mastery | 诅咒精通 | form 伪变异／特征标签；sphinx:fakemuts；不声称是可遗传突变；decision=D-C-098 |
+| hex mastery | 妖术精通 | form 伪变异／特征标签；sphinx:fakemuts；不声称是可遗传突变；decision=D-C-098 |
 | riddle compulsion | 谜语冲动 | form 伪变异／特征标签；sphinx:badmuts；不声称是可遗传突变；decision=D-C-098 |
 | ensnaring attack | 蛛网攻击 | form 伪变异／特征标签；spider:fakemuts；不声称是可遗传突变；decision=D-C-098 |
 | jumping | 跳跃 | form 伪变异／特征标签；spider:fakemuts；不声称是可遗传突变；decision=D-C-098 |
