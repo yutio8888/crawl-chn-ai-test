@@ -49601,4 +49601,7 @@ Your pack is full.
 
 %%%%
 Pick up %s? ((y)es/(n)o/(a)ll/(m)enu/*?g,/q)
-拾取%s？是（y）/否（n）/全部（a）/菜单（m）/*?g,/q
+拾取%s？是（y）/否（n）/全部（a）/菜单（m、*、?、g、,）/取消（q、Esc）
+%%%%
+%s (improved by +1).
+%s（提升了+1）。
