@@ -7554,10 +7554,7 @@ TEST_CASE("playtest: Maxwell's coupling charge light keeps raw frames and transl
             // Stable Tiles and topbar consumers resolve the canonical key directly.
             string detail = getLongDescription(info.db_key + " status");
             trim_string_right(detail);
-            string raw_detail = getLongDescription(info.db_key + " status");
-            trim_string_right(raw_detail);
-            CAPTURE(detail, raw_detail);
-            CHECK(detail == raw_detail);
+            CAPTURE(detail);
             CHECK(detail != T_("No description found"));
             CHECK(detail.find("<Charge- status>") == string::npos);
             if (zh)
