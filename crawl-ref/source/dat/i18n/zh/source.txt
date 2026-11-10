@@ -1463,7 +1463,7 @@ mimic reveal plural|%s are mimics!
 %s每回合有%d%%几率注意到你。\n
 %%%%
 %s has about %d%% to hit you.\n
-%s有约%d%% 几率命中你。\n
+%s有约%d%%几率命中你。\n
 %%%%
 %s has entered your field of view.
 %s进入了视野。
@@ -1472,7 +1472,7 @@ mimic reveal plural|%s are mimics!
 %s每回合有%d%%几率注意到你。\n
 %%%%
 %s have about %d%% to hit you.\n
-%s有约%d%% 几率命中你。\n
+%s有约%d%%几率命中你。\n
 %%%%
 %s hums with potential!
 %s嗡嗡作响，充满潜力！
@@ -1598,7 +1598,7 @@ mimic reveal plural|%s are mimics!
 %s不在附近！
 %%%%
 %s leaves your view.
-%s 离开了你的视野。
+%s离开了你的视野。
 %%%%
 %s life force is offered up.
 %s的生命力被献祭了。
@@ -2246,7 +2246,7 @@ barrage of energy
 ；使用<white>(s)</white>将%3$s的目标设置为%1$d.%2$d。
 %%%%
 <%s>%s</%s>; <%s>%s</%s> risk of failure
-<%s>%s</%s>; <%s>%s</%s> 失败风险
+<%s>%s</%s>；失败率 <%s>%s</%s>
 %%%%
 <blue>Apt </blue>
 <blue>资质</blue>
@@ -5511,7 +5511,7 @@ Please finish your current recitation first.
  请输入 [Y]是 或 [n]否。
 %%%%
  Please select your 
- 请选择你的
+请选择你的
 %%%%
 Please submit a bug report.
 请提交一个错误报告。
@@ -8975,7 +8975,7 @@ You can't see any susceptible monsters within range!
 你在范围内看不到任何可受影响怪物！（按<w>Z</w>强制施放）
 %%%%
 You can't see any susceptible monsters within range! (Use <w>Z</w> to cast anyway.)
-你在范围内看不到任何可受影响怪物！（按<w>Z</w>强制施放）
+你在范围内看不到任何可受影响的怪物！（按<w>Z</w>强制施放）
 %%%%
 You can't see anything there to clone.
 你看不到任何可以克隆的东西。
@@ -9305,7 +9305,7 @@ You devour %s%s!
 你吞噬了%s%s!
 %%%%
 You die...
-你死了...
+你死了……
 %%%%
 You dig through %s.
 你挖穿了%s。
@@ -23516,7 +23516,7 @@ average
 平均
 %%%%
 Your damage rating with %s is about %s.
-你用%s的伤害评级约为%s
+%s的伤害评级约为%s
 %%%%
 You fade completely from view now that you are no longer glowing from magical contamination.
 你完全从视野中消失了，因为你不再因魔法污染而发光。
@@ -27904,16 +27904,16 @@ mark item for purchase
 标记购买物品         
 %%%%
 examine item             
-检查物品                 
+检视物品                 
 %%%%
 Choose to examine item  
-选择检查物品        
+选择检视物品        
 %%%%
  on 
  ，位于
 %%%%
 , or 
-、或 
+或
 %%%%
 :
 ：
@@ -49446,3 +49446,151 @@ Cont
 %%%%
 form melding|All Headgear
 全部头部装备
+
+%%%%
+hit chance|You have about %1$d%% chance to hit with %2$s
+%2$s的命中率约为%1$d%%
+
+%%%%
+Loading complete, press any key to start.
+载入完成，按任意键开始。
+
+%%%%
+Loading spells and features...
+正在载入法术和地形……
+
+%%%%
+Loading maps...
+正在载入地图……
+
+%%%%
+[L-Click] Move
+[左键] 移动
+
+%%%%
+[L-Click] Attack
+[左键] 攻击
+
+%%%%
+[L-Click] Move towards
+[左键] 向此处移动
+
+%%%%
+[L-Click] Travel
+[左键] 旅行
+
+%%%%
+[L-Click] Open door (%)
+[左键] 开门 (%)
+
+%%%%
+[L-Click] Pick up items (%)
+[左键] 拾取物品 (%)
+
+%%%%
+[L-Click] Use stairs (%)
+[左键] 使用楼梯 (%)
+
+%%%%
+[L-Click] Pray at altar (%)
+[左键] 在祭坛前祈祷 (%)
+
+%%%%
+[L-Click] Wait one turn (%)
+[左键] 等待一回合 (%)
+
+%%%%
+[Shift + L-Click] Close (%)
+[Shift + 左键] 关门 (%)
+
+%%%%
+[R-Click] Overview (%)
+[右键] 角色概览 (%)
+
+%%%%
+[R-Click] Describe
+[右键] 查看描述
+
+%%%%
+[Shift + R-Click] Religion (%)
+[Shift + 右键] 宗教 (%)
+
+%%%%
+[L-Click] 
+[左键] 
+
+%%%%
+[L-Click / Shift + L-Click] 
+[左键 / Shift + 左键] 
+
+%%%%
+[Shift + L-Click] 
+[Shift + 左键] 
+
+%%%%
+[Shift + L-Click] enter shop (%)
+[Shift + 左键] 进入商店 (%)
+
+%%%%
+[Shift + L-Click] pray at altar (%)
+[Shift + 左键] 在祭坛前祈祷 (%)
+
+%%%%
+[Shift + L-Click] enter gate (%)
+[Shift + 左键] 进入大门 (%)
+
+%%%%
+[Shift + L-Click] use stairs (%)
+[Shift + 左键] 使用楼梯 (%)
+
+%%%%
+unarmed hit chance|You have about %1$d%% chance to hit with %2$s
+你用%2$s攻击的命中率约为%1$d%%
+
+%%%%
+stone stack quantity|%s 
+%s块
+
+%%%%
+score birth|Began as a %1$s %2$s on %3$s.
+%3$s以%1$s%2$s开始冒险。
+
+%%%%
+score death place|...
+……
+
+%%%%
+score sentence|.
+。
+
+%%%%
+feature note|Found %s.
+发现了%s。
+
+%%%%
+Do you really want to enter wizard mode?
+你真的想进入巫师模式吗？
+
+%%%%
+Make which kind of shop?
+创造哪种商店？
+
+%%%%
+shop type|any
+任意类型
+
+%%%%
+monster equipment| armed with 
+装备着
+
+%%%%
+monster equipment| wielding 
+持握着
+
+%%%%
+monster equipment| and 
+以及
+
+%%%%
+monster equipment|carrying 
+携带着

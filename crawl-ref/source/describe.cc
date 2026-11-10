@@ -6185,41 +6185,55 @@ void describe_to_hit(const monster_info &mi, ostringstream &result,
 void describe_hit_chance(int hit_chance, ostringstream &result, const item_def *weapon,
                          bool verbose, int distance_from)
 {
-    if (verbose)
-        result << (T_("about "));
-
-    result << hit_chance << (T_("% to hit"));
-
-    if (verbose)
+    if (verbose && Options.language == lang_t::ZH)
     {
-        result << (T_(" with "));
-        if (weapon == nullptr)
+        const string attack_name = weapon
+            ? weapon->name(DESC_YOUR, false, false, false)
+            : you.hand_name(true);
+        result << make_stringf_p(
+            weapon
+                ? C_("hit chance", "You have about %1$d%% chance to hit with %2$s")
+                : C_("unarmed hit chance", "You have about %1$d%% chance to hit with %2$s"),
+            hit_chance, attack_name.c_str());
+    }
+    else
+    {
+        if (verbose)
+            result << (T_("about "));
+    
+        result << hit_chance << (T_("% to hit"));
+    
+        if (verbose)
         {
-            // Match against the English plural form returned by
-            // hand_name(true) — in ZH mode hand_name may return
-            // Chinese (C_ translation) or singular English (fallback),
-            // neither of which will match, so we handle that in the else.
-            const map<string, string> hand_names = {
-                { "hands",     T_("your hands") },
-                { "claws",     T_("your claws") },
-                { "tentacles", T_("your tentacles") },
-                { "paws",      T_("your paws") },
-                { "talons",    T_("your talons") },
-                { "hooves",    T_("your hooves") },
-            };
-            const string hand_en = you.hand_name(true);
-            auto it = hand_names.find(hand_en);
-            if (it != hand_names.end())
-                result << it->second;
-            else if (Options.language == lang_t::ZH)
-                // hand_name returned Chinese body part (C_ translation)
-                // or English singular — no "your" needed in Chinese.
-                result << hand_en;
+            result << (T_(" with "));
+            if (weapon == nullptr)
+            {
+                // Match against the English plural form returned by
+                // hand_name(true) — in ZH mode hand_name may return
+                // Chinese (C_ translation) or singular English (fallback),
+                // neither of which will match, so we handle that in the else.
+                const map<string, string> hand_names = {
+                    { "hands",     T_("your hands") },
+                    { "claws",     T_("your claws") },
+                    { "tentacles", T_("your tentacles") },
+                    { "paws",      T_("your paws") },
+                    { "talons",    T_("your talons") },
+                    { "hooves",    T_("your hooves") },
+                };
+                const string hand_en = you.hand_name(true);
+                auto it = hand_names.find(hand_en);
+                if (it != hand_names.end())
+                    result << it->second;
+                else if (Options.language == lang_t::ZH)
+                    // hand_name returned Chinese body part (C_ translation)
+                    // or English singular — no "your" needed in Chinese.
+                    result << hand_en;
+                else
+                    result << T_("your ") << hand_en;
+            }
             else
-                result << T_("your ") << hand_en;
+                result << weapon->name(DESC_YOUR, false, false, false);
         }
-        else
-            result << weapon->name(DESC_YOUR, false, false, false);
     }
 
     if (you.duration[DUR_BLIND])

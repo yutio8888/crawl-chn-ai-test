@@ -3442,11 +3442,11 @@ static string _describe_monster_weapon(const monster_info& mi)
         return desc;
 
     if (mi.type == MONS_PANDEMONIUM_LORD)
-        desc += T_(" armed with ");
+        desc += C_("monster equipment", " armed with ");
     else if (mons_class_is_animated_weapon(mi.type))
         desc += " ";
     else
-        desc += T_(" wielding ");
+        desc += C_("monster equipment", " wielding ");
     desc += name1;
 
     if (mi.is(MB_ARMED))
@@ -3454,7 +3454,7 @@ static string _describe_monster_weapon(const monster_info& mi)
 
     if (!name2.empty())
     {
-        desc += T_(" and ");
+        desc += C_("monster equipment", " and ");
         desc += name2;
     }
 
@@ -3692,13 +3692,13 @@ string get_monster_equipment_desc(const monster_info& mi,
 
     if (mon_carry)
     {
-        string carried_desc = T_("carrying ");
+        string carried_desc = C_("monster equipment", "carrying ");
 
         if (mon_alt)
         {
             carried_desc += mon_alt->name(DESC_A);
             if (mon_has_wand)
-                carried_desc += T_(" and ");
+                carried_desc += C_("monster equipment", " and ");
         }
 
         if (mon_has_wand)
@@ -3710,7 +3710,7 @@ string get_monster_equipment_desc(const monster_info& mi,
     const string item_description = comma_separated_line(
                                                 item_descriptions.begin(),
                                                 item_descriptions.end(),
-                                                T_(" and "),
+                                                C_("monster equipment", " and "),
                                                 T_(", "));
 
     if (!item_description.empty() && !desc.empty())

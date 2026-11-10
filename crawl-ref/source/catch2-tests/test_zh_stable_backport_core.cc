@@ -562,3 +562,465 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(string(C_("flood substance", "ooze")) == "ooze");
     }
 }
+
+// Regression cases adapted from trunk PR #245.
+#include "directn.h"
+#include "describe.h"
+#include "item-name.h"
+#include "items.h"
+#include "mon-info.h"
+#include "monster.h"
+#include "player-notices.h"
+#include "viewgeom.h"
+#include "mutation.h"
+#include <sstream>
+
+namespace {
+void stage_b_player()
+{
+    you = player();
+    you.species = SP_HUMAN;
+    you.set_position(coord_def(20, 20));
+    you.hp = you.hp_max = 28;
+    you.experience_level = 12;
+    you.base_stats[STAT_INT] = 25;
+}
+}
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "stone stack display counts preserve identity and English quantities",
+                 "[zh-translation][playtest-004][items]")
+{
+    init_properties();
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (missile_type subtype : {MI_STONE, MI_LARGE_ROCK})
+        {
+            item_def item;
+            item.base_type = OBJ_MISSILES;
+            item.sub_type = subtype;
+            item.quantity = 1;
+            item.flags = ISFLAG_IDENTIFIED;
+            const string basename = item.name(DESC_BASENAME);
+            const string dbname = item.name(DESC_DBNAME);
+            const string qualname = item.name(DESC_QUALNAME);
+            item.quantity = 5;
+            CHECK(item.name(DESC_DBNAME) == dbname);
+            CHECK(item.name(DESC_BASENAME) == basename);
+            CHECK(item.name(DESC_QUALNAME) == qualname);
+            const string displayed = item.name(DESC_A);
+            if (language == lang_t::ZH)
+            {
+                CHECK(displayed == "5块" + basename);
+                CHECK(make_stringf(T_("Found %s."), displayed.c_str())
+                      == "发现了5块" + basename + "。");
+                CHECK(make_stringf(T_("You see here %s."), displayed.c_str())
+                      == "你在这里看到5块" + basename + "。");
+                CHECK(item.name(DESC_A, false, false, false, true)
+                      == "五块" + basename);
+            }
+            else
+            {
+                CHECK(displayed == (subtype == MI_STONE ? "5 stones" : "5 large rocks"));
+                CHECK(item.name(DESC_A, false, false, false, true)
+                      == (subtype == MI_STONE ? "five stones" : "five large rocks"));
+            }
+            ScopedLangEn english_identity;
+            CHECK(item.name(DESC_DBNAME)
+                  == (subtype == MI_STONE ? "stone" : "large rock"));
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "unarmed hit chance describes body parts independently of weapon phrasing",
+                 "[zh-translation][playtest-004][descriptions]")
+{
+    init_properties();
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (species_type species : {SP_HUMAN, SP_FELID, SP_OCTOPODE})
+        {
+            stage_b_player();
+            you.species = species;
+            you.duration[DUR_BLIND] = 1;
+            ostringstream displayed;
+            describe_hit_chance(73, displayed, nullptr, true, 2);
+            const string text = displayed.str();
+            CHECK(text.find("73%") != string::npos);
+            CHECK(text.find(you.hand_name(true)) != string::npos);
+            if (language == lang_t::ZH)
+            {
+                CHECK(text.find("你用" + you.hand_name(true) + "攻击的命中率") != string::npos);
+                CHECK(text.find("使用手") == string::npos);
+            }
+            else
+                CHECK(text.find("% to hit with your ") != string::npos);
+        }
+    }
+}
+
+#ifdef USE_TILE_LOCAL
+#include "tilereg-dgn.h"
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "local tiles dungeon tooltip translates movement and description actions",
+                 "[zh-translation][playtest-004][tiles]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    stage_b_player();
+    you.on_current_level = true;
+    you.wizard_vision = true;
+    you.current_vision = 8;
+    you.equipment.update();
+    const coord_def target = you.pos() + coord_def(1, 0);
+    unwind_var<dungeon_feature_type> restore_floor(env.grid(target), DNGN_FLOOR);
+    unwind_var<unsigned short> restore_monster(env.mgrid(target), NON_MONSTER);
+    unwind_var<map_cell> restore_map(env.map_knowledge(target), map_cell());
+    env.map_knowledge(target).set_feature(DNGN_FLOOR);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        string displayed;
+        REQUIRE(tile_dungeon_tip(target, displayed));
+        CHECK(displayed == string(T_("[L-Click] Move")) + "\n" + T_("[R-Click] Describe"));
+        CHECK(displayed.find(language == lang_t::ZH ? "[左键]" : "[L-Click]") != string::npos);
+        if (language == lang_t::ZH)
+            CHECK(displayed.find("Describe") == string::npos);
+    }
+}
+#endif
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "corpse display joins species without changing persisted names",
+                 "[zh-translation][playtest-round2][items]")
+{
+    init_monsters();
+    init_properties();
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (monster_type species : {MONS_BALL_PYTHON, MONS_BAT})
+        {
+            item_def corpse;
+            corpse.base_type = OBJ_CORPSES;
+            corpse.quantity = 1;
+            corpse.mon_type = species;
+            corpse.orig_monnum = species;
+            for (int form : {CORPSE_BODY, CORPSE_SKELETON})
+            {
+                corpse.sub_type = form;
+                const string body = T_(form == CORPSE_BODY ? "corpse" : "skeleton");
+                const string name = mons_type_name(species, DESC_PLAIN);
+                CHECK(corpse.name(DESC_PLAIN)
+                      == name + (language == lang_t::ZH ? "" : " ") + body);
+                const string identity = corpse.name(DESC_DBNAME);
+                corpse.props[CORPSE_NAME_KEY] = "CustomName";
+                corpse.props[CORPSE_NAME_TYPE_KEY] = static_cast<int64_t>(0);
+                CHECK(corpse.name(DESC_PLAIN).find("CustomName") != string::npos);
+                CHECK(get_corpse_name(corpse) == "CustomName");
+                CHECK(corpse.name(DESC_DBNAME) == identity);
+                corpse.props.erase(CORPSE_NAME_KEY);
+                corpse.props.erase(CORPSE_NAME_TYPE_KEY);
+                CHECK(corpse.orig_monnum == species);
+            }
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "encounter lists keep English count spacing and join Chinese conjunctions",
+                 "[zh-translation][playtest-round2][messages]")
+{
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    stage_b_player();
+    // The production notice consumer expects already-visible monsters. Use
+    // the same lightweight wizard-vision setup as the other consumer tests;
+    // no allocator or dungeon cells are changed by these stack-local actors.
+    you.on_current_level = true;
+    you.wizard_vision = true;
+    you.current_vision = LOS_DEFAULT_RANGE;
+    monster kobold, rat, second_rat;
+    kobold.type = MONS_KOBOLD;
+    rat.type = second_rat.type = MONS_RAT;
+    kobold.set_position(you.pos() + coord_def(1, 0));
+    rat.set_position(you.pos() + coord_def(0, 1));
+    second_rat.set_position(you.pos() + coord_def(1, 1));
+    REQUIRE(you.can_see(kobold));
+    REQUIRE(you.can_see(rat));
+    REQUIRE(you.can_see(second_rat));
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string pair = describe_monsters_condensed({&kobold, &rat});
+        if (language == lang_t::ZH)
+        {
+            CHECK(pair.find("和") != string::npos);
+            CHECK(pair.find(' ') == string::npos);
+            CHECK(describe_monsters_condensed({&rat, &second_rat}).find(' ')
+                  == string::npos);
+        }
+        else
+        {
+            CHECK(pair.find(" and ") != string::npos);
+            CHECK(describe_monsters_condensed({&rat, &second_rat}) == "2 rats");
+        }
+        CHECK(kobold.type == MONS_KOBOLD);
+        CHECK(rat.type == MONS_RAT);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "feature notes localize punctuation without rewriting saved snapshots",
+                 "[zh-translation][playtest-round2][notes]")
+{
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string feature = language == lang_t::ZH ? "褪色祭坛" : "a faded altar";
+        const Note note(NOTE_SEEN_FEAT, 0, 0, feature + ".");
+        CHECK(note.describe(false, false)
+              == make_stringf(C_("feature note", "Found %s."), feature.c_str()));
+        CHECK(note.name == feature + ".");
+        const Note historic(NOTE_SEEN_FEAT, 0, 0, "historic feature");
+        CHECK(historic.describe(false, false) == string(T_("Found ")) + historic.name);
+        CHECK(historic.name == "historic feature");
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "verbose score date grammar and punctuation preserve canonical xlog",
+                 "[zh-translation][playtest-round2][protocol]")
+{
+    const string raw = "v=0.34.1:name=TilesReview:race=Human:cls=Fighter:xl=1:"
+        "sk=Fighting:title=Adventurer:br=D:lvl=5:god=No God:ktyp=mon:"
+        "killer=an orc:start=20261003120000S:end=20261003130000S";
+    scorefile_entry saved;
+    REQUIRE(saved.parse(raw));
+    string english_birth, english_place;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string birth = saved.character_description(scorefile_entry::DDV_VERBOSE);
+        const string place = saved.death_place(scorefile_entry::DDV_VERBOSE);
+        if (language == lang_t::ZH)
+        {
+            CHECK(birth.find("2026年11月03日") < birth.find("人类战士"));
+            CHECK(place.find("……") == 0);
+            CHECK(place.find("。") != string::npos);
+            CHECK(place.find("...") == string::npos);
+            ScopedLangEn canonical;
+            CHECK(saved.character_description(scorefile_entry::DDV_VERBOSE) == english_birth);
+            CHECK(saved.death_place(scorefile_entry::DDV_VERBOSE) == english_place);
+        }
+        else
+        {
+            CHECK(birth.find("Began as a Human Fighter on 2026-11-03.") != string::npos);
+            CHECK(place.find("... ") == 0);
+            english_birth = birth;
+            english_place = place;
+        }
+        CHECK(saved.raw_string() == raw);
+        CHECK(saved.get_fields().str_field("race") == "Human");
+        CHECK(saved.get_fields().str_field("cls") == "Fighter");
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "derived monster display joins suffixes and retains names and hydra head counts",
+                 "[zh-translation][playtest-round3][monster-info]")
+{
+    init_monsters();
+    const vector<pair<monster_type, const char*>> forms = {
+        {MONS_ZOMBIE, "zombie"}, {MONS_DRAUGR, "draugr"},
+        {MONS_SIMULACRUM, "simulacrum"}
+    };
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (const auto& form : forms)
+        {
+            monster_info ordinary(form.first, MONS_KOBOLD);
+            const string displayed = ordinary.full_name(DESC_PLAIN);
+            const string species = mons_type_name(MONS_KOBOLD, DESC_PLAIN);
+            const string suffix = T_(form.second);
+            CHECK(displayed.find(species) != string::npos);
+            CHECK(displayed.find(suffix) != string::npos);
+            CHECK(displayed.find(species + " " + suffix)
+                  == (language == lang_t::ZH ? string::npos : 0));
+            CHECK(displayed.find(species + suffix)
+                  == (language == lang_t::ZH ? 0 : string::npos));
+
+            ordinary.mname = "Legacy Name";
+            CHECK(ordinary.full_name(DESC_A).find("Legacy Name") != string::npos);
+            CHECK(ordinary.proper_name() == "Legacy Name");
+            CHECK(ordinary.mname == "Legacy Name");
+            CHECK(ordinary.type == form.first);
+            CHECK(ordinary.base_type == MONS_KOBOLD);
+
+            monster_info hydra(form.first, MONS_HYDRA);
+            for (int heads : {1, 10, 11})
+            {
+                hydra.num_heads = heads;
+                const string name = hydra.full_name(DESC_PLAIN);
+                INFO(name);
+                if (language == lang_t::ZH)
+                {
+                    CHECK(name.find(" " + suffix) == string::npos);
+                    CHECK(name.find(heads == 1 ? "（一头）"
+                                    : heads == 10 ? "（十头）" : "（11头）")
+                          != string::npos);
+                }
+                else
+                {
+                    CHECK(name.find(heads == 1 ? "one-headed hydra "
+                                    : heads == 10 ? "ten-headed hydra "
+                                                  : "11-headed hydra ") == 0);
+                    CHECK(name.find(suffix) != string::npos);
+                }
+                CHECK(hydra.num_heads == heads);
+                CHECK(hydra.base_type == MONS_HYDRA);
+            }
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "prefix dart brands join Chinese names without changing lookup or terse forms",
+                 "[zh-translation][playtest-round3][items]")
+{
+    init_properties();
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (special_missile_type brand : {SPMSL_POISONED, SPMSL_CURARE,
+                                           SPMSL_BLINDING, SPMSL_FRENZY})
+        {
+            item_def dart;
+            dart.base_type = OBJ_MISSILES;
+            dart.sub_type = MI_DART;
+            dart.brand = brand;
+            dart.quantity = 1;
+            dart.flags = ISFLAG_IDENTIFIED;
+            const string noun = missile_name(MI_DART);
+            const string modifier = missile_brand_name(dart, MBN_NAME);
+            const string displayed = dart.name(DESC_PLAIN);
+            CHECK(displayed.find(modifier) == 0);
+            CHECK(displayed.substr(displayed.size() - noun.size()) == noun);
+            CHECK(displayed.find(modifier + " " + noun)
+                  == (language == lang_t::ZH ? string::npos : 0));
+            CHECK(dart.name(DESC_DBNAME) == noun);
+            CHECK(dart.name(DESC_BASENAME) == noun);
+            const string terse = dart.name(DESC_PLAIN, true);
+            CHECK(terse.find(noun) == 0);
+            CHECK(terse.find(" (") != string::npos);
+            CHECK(terse.find(missile_brand_name(dart, MBN_TERSE)) != string::npos);
+            {
+                ScopedLangEn canonical;
+                CHECK(dart.name(DESC_DBNAME) == "dart");
+                CHECK(dart.name(DESC_BASENAME) == "dart");
+            }
+            CHECK(dart.brand == brand);
+            CHECK(dart.sub_type == MI_DART);
+            CHECK(dart.quantity == 1);
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "visible monster equipment joins weapon armour and branded darts in both languages",
+                 "[zh-translation][playtest-round3][equipment]")
+{
+    init_properties();
+    init_monsters();
+    // A visible monster_info inventory is the snapshot consumed by targeting
+    // descriptions. Exercise the complete public producer, including the
+    // weapon action, armour list, missile naming, and final conjunction.
+    monster_info target(MONS_KOBOLD);
+    for (mon_inv_type slot : {MSLOT_WEAPON, MSLOT_ARMOUR, MSLOT_MISSILE})
+    {
+        target.inv[slot].reset(new item_def);
+        target.inv[slot]->quantity = 1;
+        target.inv[slot]->flags = ISFLAG_IDENTIFIED;
+    }
+    item_def& weapon = *target.inv[MSLOT_WEAPON];
+    weapon.base_type = OBJ_WEAPONS;
+    weapon.sub_type = WPN_DAGGER;
+    item_def& armour = *target.inv[MSLOT_ARMOUR];
+    armour.base_type = OBJ_ARMOUR;
+    armour.sub_type = ARM_ROBE;
+    item_def& missile = *target.inv[MSLOT_MISSILE];
+    missile.base_type = OBJ_MISSILES;
+    missile.sub_type = MI_DART;
+    missile.brand = SPMSL_CURARE;
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string displayed = get_monster_equipment_desc(target, DESC_FULL);
+        CHECK(displayed.find(weapon.name(DESC_A)) != string::npos);
+        CHECK(displayed.find(armour.name(DESC_A)) != string::npos);
+        CHECK(displayed.find(missile.name(DESC_PLAIN)) != string::npos);
+        if (language == lang_t::ZH)
+        {
+            const string conjunction = C_("monster equipment", " and ");
+            const size_t join = displayed.find(conjunction);
+            REQUIRE(join != string::npos);
+            REQUIRE(join > 0);
+            REQUIRE(join + conjunction.size() < displayed.size());
+            CHECK(displayed[join - 1] != ' ');
+            CHECK(displayed[join + conjunction.size()] != ' ');
+            CHECK(displayed.find(" wielding ") == string::npos);
+            CHECK(displayed.find(" and ") == string::npos);
+        }
+        else
+        {
+            CHECK(displayed.find("wielding ") != string::npos);
+            CHECK(displayed.find(" and ") != string::npos);
+            CHECK(displayed.find("curare-tipped darts") != string::npos);
+        }
+        CHECK(weapon.sub_type == WPN_DAGGER);
+        CHECK(armour.sub_type == ARM_ROBE);
+        CHECK(missile.sub_type == MI_DART);
+        CHECK(missile.brand == SPMSL_CURARE);
+        CHECK(weapon.quantity == 1);
+        CHECK(armour.quantity == 1);
+        CHECK(missile.quantity == 1);
+        ScopedLangEn canonical;
+        CHECK(weapon.name(DESC_DBNAME) == "dagger");
+        CHECK(armour.name(DESC_DBNAME) == "robe");
+        CHECK(missile.name(DESC_DBNAME) == "dart");
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "wizard item origin has no trailing space before its terminator",
+                 "[zh-translation][playtest-004][items]")
+{
+    init_properties();
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        item_def item;
+        item.base_type = OBJ_WEAPONS;
+        item.sub_type = WPN_DAGGER;
+        item.quantity = 1;
+        item.flags = ISFLAG_IDENTIFIED;
+        item.orig_place = level_id(BRANCH_DUNGEON, 3);
+        item.orig_monnum = -AQ_WIZMODE;
+        REQUIRE(origin_describable(item));
+        const string conjured = origin_desc(item);
+        REQUIRE_FALSE(conjured.empty());
+        CHECK(conjured.back() != ' ');
+        const string terminator = language == lang_t::ZH ? "。" : ".";
+        CHECK(get_item_description(item).find(conjured + terminator) != string::npos);
+        if (language == lang_t::EN)
+            CHECK(conjured == "Your wizardly powers created it on level 3 of the Dungeon");
+        CHECK(item.orig_monnum == -AQ_WIZMODE);
+        CHECK(item.orig_place == level_id(BRANCH_DUNGEON, 3));
+    }
+}
