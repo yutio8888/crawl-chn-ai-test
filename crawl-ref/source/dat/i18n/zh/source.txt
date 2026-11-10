@@ -37438,7 +37438,7 @@ When enemies are summoned, they will appear beside you instead.
 敌人被召唤时，它们会转而出现在你身边。
 %%%%
 Mortality
-必死
+索命
 %%%%
 When alone and injured, reapers sometimes come to claim you.
 独自一人且受伤时，收割者有时会来索命。
