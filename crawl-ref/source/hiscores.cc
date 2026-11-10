@@ -3557,7 +3557,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
 
         if (!semiverbose && needs_damage && damage > 0)
         {
-            desc += " " + damage_string();
+            desc += (chinese ? "" : " ") + damage_string();
             needs_damage = false;
             done_damage = true;
         }
@@ -3666,7 +3666,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             if (!semiverbose)
             {
                 if (needs_damage && !done_damage && damage > 0)
-                    desc += " " + damage_string();
+                    desc += (chinese ? "" : " ") + damage_string();
 
                 if (needs_damage && !done_damage)
                     desc += _hiscore_newline_string();
