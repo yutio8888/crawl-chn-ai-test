@@ -4097,7 +4097,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-093 | Dungeon world display-text review | 789 identities；524 DES slots；localized note snapshots；production-bound evidence | active |
 | D-C-094 | montitle review (#24 extension, Issue #71) | 86 identities；80 keep + 6 adjust | active |
 | D-C-096 | Issue #147 stable shared terminology subset | 72 shared identities；context boundaries + mutagenic roots | active |
-| D-C-098 | Issue #147 stable shared status-label exceptions | Barbs → 尖刺；ambrosia-drunk → 仙酒醉 | active |
+| D-C-098 | Issue #147 stable shared status-label exceptions | Barbs → 尖刺；ambrosia-drunk 单项由 D-C-107 取代 | active (narrowed) |
 | D-B-023 | lance / Wyrmbane | 骑枪 / 屠龙者；spear 保留长矛 | active |
 | D-C-100 | GENDER_NEUTRAL singular pronouns | 他 / 他的 / 他自己 / 他；EN 与存档不变 | active |
 | D-C-101 | Spell school display names | 全称统一为系；法术列表两字简称；例外保留 | active |
@@ -4113,16 +4113,16 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   长描述 `You are regenerating under the effects of ambrosia. → 你正在神食的作用下再生。`
   三处与既有 `ambrosia → 神食` 药水名共用神食词根。
 - **Rejected**: `status|ambrosia-drunk → 仙酒醉`（与神食药水错开词根的旧保留）, `status|Ambros → 仙酒`（同一状态的第二套词根）
-- **Source**: `duration-data.h:611` 的 DUR_AMBROSIA 定义（灯标 `Ambros`、
+- **Source**: `duration-data.h:DUR_AMBROSIA` 的 DUR_AMBROSIA 定义（灯标 `Ambros`、
   短标签 `ambrosia-drunk`、内部名 `ambrosia`、长描述 `You are regenerating
-  under the effects of ambrosia.`）；`status.cc:201` 对灯标与短标签使用
-  `C_("status", …)`、对长描述使用 `T_(…)`；`item-name.cc:934` 的
-  `T_("ambrosia")` 与药水名；`potion.cc:423` 的 PotionAmbrosia（困惑 +
+  under the effects of ambrosia.`）；`status.cc:_fill_inf_from_ddef` 对灯标与短标签使用
+  `C_("status", …)`、对长描述使用 `T_(…)`；`item-name.cc:POT_AMBROSIA` 的
+  `T_("ambrosia")` 与药水名；`potion.cc:PotionAmbrosia` 的 PotionAmbrosia（困惑 +
   DUR_AMBROSIA 再生）；`descript/zh/backgrounds.txt` 武僧开局的“神食药水”。
 - **Rationale**: 玩家报告“神食药水”与其状态“仙酒”不一致。药水名、
   武僧描述与 glossary items 行一直是神食；状态灯与短标签沿用旧共享键的
-  仙酒／仙酒醉，长描述又残留第三种写法“仙酿”（D-C-096 已判定弃用），同一效果在三个显示面各叫
-  一名。D-C-096 原本已定“药水词根神食、状态神食酣醉并弃用仙酿／仙酒”，
+  仙酒／仙酒醉。trunk 的长描述曾残留第三种写法“仙酿”（D-C-096 已判定弃用）；
+  稳定线的长描述已为“神食”，本次保留原值，只对齐剩余两个显示面。D-C-096 原本已定“药水词根神食、状态神食酣醉并弃用仙酿／仙酒”，
   D-C-098 为不改既有 catalog 只把短标签退回仙酒醉，属最小改动取舍而非
   语义裁决；该取舍被当成“故意保留”留到现在，用户本次明确要求统一。
   机制核对：DUR_AMBROSIA 期间持续恢复生命与法力并伴随困惑，灯标
@@ -4160,12 +4160,12 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 - **Choice**: `You are enlightened. (Will+) → 你处于启迪状态。（意志+）`；
   `status|confused → 混乱`。
 - **Rejected**: `status|confused → 困惑`（同一状态的灯标与长描述已用混乱；困惑保留给固定法术名与感受消息）
-- **Source**: `duration-data.h:247` 的 DUR_CONF（灯标 `Conf`、短标签
-  `confused`、长描述 `You are confused.`）；`duration-data.h:502-506` 的
+- **Source**: `duration-data.h:DUR_CONF` 的 DUR_CONF（灯标 `Conf`、短标签
+  `confused`、长描述 `You are confused.`）；`duration-data.h:DUR_ENLIGHTENED` 的
   DUR_ENLIGHTENED（灯标 `Will+`、短标签 `enlightened`、长描述
   `You are enlightened. (Will+)`、结束消息 `Your enlightenment fades.`）；
-  `status.cc:201-203` 对灯标/短标签用 `C_("status", …)`、对长描述用 `T_(…)`；
-  DUR_CONF 的生产者 `player.cc:4797` `confuse_player()`（beam.cc、cloud.cc、
+  `status.cc:_fill_inf_from_ddef` 对灯标/短标签用 `C_("status", …)`、对长描述用 `T_(…)`；
+  DUR_CONF 的生产者 `player.cc:confuse_player` `confuse_player()`（beam.cc、cloud.cc、
   god-wrath.cc、xom.cc、potion.cc 的 ambrosia 均经此入口）。
 - **Rationale**: 两个状态各自只差一个显示面就同根，属同一类词根漂移。
   DUR_CONF 的灯标（`status|Conf`）与长描述（`You are confused.`）已是
@@ -4173,8 +4173,8 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   说明也统一用“混乱”，只有短标签仍是“困惑”，玩家在 `@` 行、标记与取消
   药水说明会看到与状态灯不同的词。DUR_ENLIGHTENED 的短标签（启迪）、
   结束消息（`你的启迪消退了。`）与药水名“启迪药水”都是“启迪”，
-  `docs/glossary.md:584` 也明定效果／状态词根为“启迪”，只有长描述写成
-  “顿悟”；`descript/zh/status.txt:711` 的“顿悟”是英文 `epiphany` 的散文
+  稳定线 SourceDB 的 `status|enlightened` 与结束消息均使用“启迪”，只有长描述写成
+  “顿悟”；`descript/zh/status.txt` 的“顿悟”是英文 `epiphany` 的散文
   译法，不是状态名，保留不动。
 - **Scope / boundaries**: 只改这两个状态的显示面与 glossary 登记，不改变
   DUR_CONF／DUR_ENLIGHTENED 的枚举、时长、来源或联动。明确不改：固定

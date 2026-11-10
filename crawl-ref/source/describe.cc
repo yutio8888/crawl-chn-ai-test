@@ -6200,9 +6200,9 @@ void describe_hit_chance(int hit_chance, ostringstream &result, const item_def *
     {
         if (verbose)
             result << (T_("about "));
-    
+
         result << hit_chance << (T_("% to hit"));
-    
+
         if (verbose)
         {
             result << (T_(" with "));
