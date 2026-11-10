@@ -27,6 +27,8 @@
 #include "evoke.h"
 #include "fight.h"
 #include "god-item.h"
+#include "god-abil.h"
+#include "curse-type.h"
 #include "god-passive.h" // passive_t::want_curses, no_haste
 #include "invent.h"
 #include "item-prop.h"
@@ -127,7 +129,41 @@ static string _item_inscription(const item_def &item)
     }
 
     if (!item.inscription.empty())
-        insparts.push_back(item.inscription);
+    {
+        string inscription = item.inscription;
+        if (Options.language == lang_t::ZH
+            && item.props.exists(CURSE_KNOWLEDGE_KEY))
+        {
+            // Replace only complete comma-delimited automatic tokens. Preserve
+            // all other bytes, including whitespace and functional inscriptions.
+            size_t start = 0;
+            while (start < inscription.size())
+            {
+                size_t end = inscription.find(',', start);
+                if (end == string::npos)
+                    end = inscription.size();
+                size_t first = start;
+                size_t last = end;
+                while (first < last && inscription[first] == ' ')
+                    ++first;
+                while (last > first && inscription[last - 1] == ' ')
+                    --last;
+                const string token = inscription.substr(first, last - first);
+                for (const auto &curse : item.props[CURSE_KNOWLEDGE_KEY].get_vector())
+                {
+                    if (token == curse_abbr(static_cast<curse_type>(curse.get_int())))
+                    {
+                        const string translated = C_("curse abbreviation", token.c_str());
+                        inscription.replace(first, last - first, translated);
+                        end = end - (last - first) + translated.size();
+                        break;
+                    }
+                }
+                start = end + 1;
+            }
+        }
+        insparts.push_back(inscription);
+    }
 
     if (insparts.empty())
         return "";
@@ -1776,8 +1812,8 @@ static string _name_weapon(const item_def &weap, description_level_type desc,
                                    && inscr;
             const string inscription = _item_inscription(weap);
 
-            const int total_length = long_name.size()
-                                     + (has_inscript ? inscription.size() : 0);
+            const int total_length = strwidth(long_name)
+                                     + (has_inscript ? strwidth(inscription) : 0);
             const string inv_slot_text = "x) ";
             const int max_length = crawl_view.hudsz.x - inv_slot_text.size();
             if (!terse || total_length <= max_length)
@@ -1886,7 +1922,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
             buff << T_("bound ");
 
         if (testbits(flags, ISFLAG_CHAOTIC))
-            buff << "chaotic ";
+            buff << (dbname ? "chaotic " : T_("chaotic "));
 
         // Don't list unenchantable armor as +0.
         if (identified && !dbname && !qualname && armour_is_enchantable(*this))
@@ -2187,7 +2223,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 
     case OBJ_TALISMANS:
         if (!dbname && !basename && testbits(flags, ISFLAG_CHAOTIC))
-            buff << "chaotic ";
+            buff << (dbname ? "chaotic " : T_("chaotic "));
         if (is_random_artefact(*this) && !dbname && !basename)
             buff << get_artefact_name(*this, ident);
         else

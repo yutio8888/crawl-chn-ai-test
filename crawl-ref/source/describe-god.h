@@ -19,3 +19,5 @@ std::vector<std::pair<std::string, std::string>>
     god_title_translation_pairs(species_type species);
 void describe_god(god_type which_god);
 bool describe_god_with_join(god_type which_god);
+
+string describe_ash_skill_boost();

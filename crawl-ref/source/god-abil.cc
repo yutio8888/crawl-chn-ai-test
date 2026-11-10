@@ -2245,12 +2245,12 @@ struct curse_data
 static map<curse_type, curse_data> _ashenzari_curses =
 {
     { CURSE_MELEE, {
-        N_("Melee Combat"), "Melee",
+        N_("Melee Combat"), NC_("curse abbreviation", "Melee"),
         { SK_SHORT_BLADES, SK_LONG_BLADES, SK_AXES, SK_MACES_FLAILS,
             SK_POLEARMS, SK_STAVES, SK_UNARMED_COMBAT }, 3
     } },
     { CURSE_RANGED, {
-        N_("Ranged Combat"), "Range",
+        N_("Ranged Combat"), NC_("curse abbreviation", "Range"),
         { SK_RANGED_WEAPONS, SK_THROWING },
     } },
 #if TAG_MAJOR_VERSION == 34
@@ -2428,7 +2428,9 @@ static string ashenzari_curse_knowledge_list()
     const CrawlVector& curses = you.props[CURSE_KNOWLEDGE_KEY].get_vector();
 
     return lowercase_string(comma_separated_fn(curses.begin(), curses.end(),
-                              curse_display_name));
+                              curse_display_name,
+                              Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                              Options.language == lang_t::ZH ? T_(",") : ", "));
 }
 
 string desc_curse_skills(const CrawlVector& curse)
@@ -2444,7 +2446,9 @@ string desc_curse_skills(const CrawlVector& curse)
                 trainable.push_back(sk);
     }
 
-    return comma_separated_fn(trainable.begin(), trainable.end(), skill_name);
+    return comma_separated_fn(trainable.begin(), trainable.end(), skill_name,
+        Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+        Options.language == lang_t::ZH ? T_(",") : ", ");
 }
 
 /**
@@ -2523,8 +2527,8 @@ static void _do_curse_item(item_def &item)
     for (auto & curse : you.props[CURSE_KNOWLEDGE_KEY].get_vector())
     {
         // Automatic inscriptions are persistent, user-editable save content.
-        // Keep the canonical English abbreviation; display menus translate it
-        // separately with the "curse abbreviation" context.
+        // Keep the canonical English abbreviation; item names translate matching
+        // automatic tokens only at the display boundary.
         add_inscription(item,
                 curse_abbr(static_cast<curse_type>(curse.get_int())));
         item.props[CURSE_KNOWLEDGE_KEY].get_vector().push_back(curse);

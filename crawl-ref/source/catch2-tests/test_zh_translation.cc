@@ -12703,3 +12703,115 @@ TEST_CASE("saved artefact line breaks stay inside one coloured floor message",
         CHECK(item.name(DESC_A) == raw_full_name);
     }
 }
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Ashenzari columns and weapon crop use display width",
+                 "[zh-translation][ashenzari-ui]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    unwind_var<int> restore_width(crawl_view.hudsz.x, 40);
+    you = player();
+    you.species = SP_HUMAN;
+    you.equipment.update();
+    item_def &item = you.inv[0];
+    item.base_type = OBJ_WEAPONS;
+    item.sub_type = WPN_DAGGER;
+    item.quantity = 1;
+    item.link = 0;
+    item.pos = ITEM_IN_INVENTORY;
+    REQUIRE(make_item_randart(item, true));
+    item.flags |= ISFLAG_IDENTIFIED | ISFLAG_CURSED;
+    item.props[CURSE_KNOWLEDGE_KEY].new_vector(SV_INT);
+    you.equipment.add(item, SLOT_WEAPON);
+
+    for (const string name : {string("测试blade"), string(45, 'x')})
+    {
+        item.props[ARTEFACT_NAME_KEY].get_string() = name;
+        const string full = item.name(DESC_QUALNAME, true, false, false);
+        const string table = describe_ash_skill_boost();
+        const size_t start = table.find(full);
+        REQUIRE(start != string::npos);
+        const size_t bonus = table.find(T_("None"), start + full.size());
+        REQUIRE(bonus != string::npos);
+        CHECK(strwidth(table.substr(start, bonus - start))
+              == max(40, strwidth(full) + 1));
+        CHECK(table[bonus - 1] == ' ');
+    }
+
+    item.props[ARTEFACT_NAME_KEY].get_string() = "测试测试测试测试blade";
+    crawl_view.hudsz.x = 200;
+    const string full = item.name(DESC_PLAIN, true, false, false);
+    crawl_view.hudsz.x = 40;
+    REQUIRE(strwidth(full) < 37);
+    REQUIRE(full.size() > 37);
+    CHECK(item.name(DESC_PLAIN, true, false, false, false) == full);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Ashenzari abbreviations use context and lists use enumeration",
+                 "[zh-translation][ashenzari-ui]")
+{
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    CrawlVector &curses = you.props[CURSE_KNOWLEDGE_KEY].new_vector(SV_INT);
+    curses.push_back(CURSE_MELEE);
+    curses.push_back(CURSE_RANGED);
+    const string cost = make_cost_description(ABIL_ASHENZARI_BIND);
+    for (curse_type curse : {CURSE_MELEE, CURSE_RANGED})
+    {
+        CHECK(cost.find(C_("curse abbreviation", curse_abbr(curse).c_str()))
+              != string::npos);
+    }
+    const string skills = desc_curse_skills(curses);
+    CHECK(skills.find(T_(",")) != string::npos);
+    CHECK(skills.find(", ") == string::npos);
+    CHECK(skills.find(T_(" and ")) == string::npos);
+    EnTranslationFixture english;
+    const string en = desc_curse_skills(curses);
+    CHECK(en.find(", ") != string::npos);
+    CHECK(en.find(" and ") != string::npos);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: bound inscription display preserves saved and functional text",
+                 "[zh-translation][ashenzari-ui]")
+{
+    init_properties();
+    item_def item;
+    item.base_type = OBJ_WEAPONS;
+    item.sub_type = WPN_DAGGER;
+    item.quantity = 1;
+    item.rnd = 1;
+    item.inscription = "Melee, Fire, custom, !w, @w1, =g";
+    const string saved = item.inscription;
+    CHECK(item.name(DESC_PLAIN).find(saved) != string::npos);
+    item.props[CURSE_KNOWLEDGE_KEY].new_vector(SV_INT).push_back(CURSE_MELEE);
+    const string expected = string(C_("curse abbreviation", "Melee"))
+                            + ", Fire, custom, !w, @w1, =g";
+    CHECK(item.name(DESC_PLAIN).find(expected) != string::npos);
+    CHECK(item.inscription == saved);
+    item.inscription = "custom, !w";
+    CHECK(item.name(DESC_PLAIN).find(item.inscription) != string::npos);
+    item.inscription = saved;
+    EnTranslationFixture english;
+    CHECK(item.name(DESC_PLAIN).find(saved) != string::npos);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: chaotic armour prefix translates at display",
+                 "[zh-translation][ashenzari-ui]")
+{
+    init_properties();
+    item_def item;
+    item.base_type = OBJ_ARMOUR;
+    item.sub_type = ARM_ROBE;
+    item.quantity = 1;
+    item.rnd = 1;
+    item.flags = ISFLAG_CHAOTIC;
+    CHECK(item.name(DESC_PLAIN).find(T_("chaotic ")) != string::npos);
+    CHECK(item.name(DESC_DBNAME).find(T_("chaotic ")) == string::npos);
+    EnTranslationFixture english;
+    CHECK(item.name(DESC_PLAIN).find("chaotic ") != string::npos);
+}
