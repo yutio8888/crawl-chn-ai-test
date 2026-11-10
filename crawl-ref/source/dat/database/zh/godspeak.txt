@@ -683,6 +683,7 @@ Pakellas welcome
 
 帕克拉斯说：前进或是消亡！
 
+# 尼古拉-
 w:5
 帕克拉斯说：谁也别想叫神停止扮演神！
 
@@ -1007,7 +1008,7 @@ Xom dragon armour
 %%%%
 Xom drinkless confusion
 
-"尽情踉跄，我的宠物！"
+"尽情踉跄吧，我的宠物！"
 
 佐姆的力量短暂地触动了你的身心。
 
@@ -1652,12 +1653,12 @@ w:20
 Xom drained brain
 
 w:20
-你的魔力从昏沉的心智中溜走了！
+你的法力从昏沉的心智中溜走了！
 
 具现出的噬魔者压倒了你的力量与思绪！
 
-你的魔力硬生生从你的[@random_body_part_internal_singular@|@random_body_part_internal_plural@]中挣脱了出来！
+你的法力硬生生从你的[@random_body_part_internal_singular@|@random_body_part_internal_plural@]中挣脱了出来！
 
-你的魔力从你的[@random_body_part_external_singular@|@random_body_part_external_plural@]中流了出去！
+你的法力从你的[@random_body_part_external_singular@|@random_body_part_external_plural@]中流了出去！
 
-你的魔力从你的[@random_body_part_any_singular@|@random_body_part_any_plural@]中撕裂而出！
+你的法力从你的[@random_body_part_any_singular@|@random_body_part_any_plural@]中撕裂而出！

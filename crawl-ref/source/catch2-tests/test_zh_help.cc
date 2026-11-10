@@ -853,7 +853,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     const string zh = getLongDescription("destr+++ status");
 
     CHECK(zh.find("你的释放毁灭能力") != string::npos);
-    CHECK(zh.find("如果你再次使用它") != string::npos);
+    CHECK(zh.find("如果你再次使用此能力") != string::npos);
     CHECK(zh.find("<Destr status>") == string::npos);
     CHECK(zh.find("[[Destr status]]") == string::npos);
 

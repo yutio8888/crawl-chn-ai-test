@@ -51,7 +51,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     result.primary_sort = result.match;
     const string canonical = result.match;
 
-    REQUIRE(result.display_match() == "[随身携带] b - +0 short sword");
+    REQUIRE(result.display_match() == "[携带] b - +0 short sword");
     REQUIRE(result.match == canonical);
     REQUIRE(result.primary_sort == canonical);
 

@@ -261,7 +261,7 @@ Ensnare natural cast
 %%%%
 unseen Ensnare natural cast
 
-稀薄的空气中冒出一串黏性的网。
+一缕黏性蛛网凭空射出。
 %%%%
 unseen Cold Breath cast
 
@@ -423,18 +423,18 @@ VISUAL:@The_monster_possessive@眼柄伸展开来，然后又恢复到正常大�
 
 你短暂地有种迟钝感。
 
-你突然有种对盐的厌恶感。
+你突然对盐产生了一阵厌恶。
 
 w:5
 你突然有种冲动，想转动你那并不存在的眼柄。
 %%%%
 Gastronok cast targeted
 
-@The_monster@在吟诵时，@at@ @target@看去。
+@The_monster@一边吟诵，一边@at@ @target@看去。
 
-@The_monster@在咕哝着一些奇怪的话时，@at@ @target@看去。
+@The_monster@一边咕哝着一些奇怪的话，一边@at@ @target@看去。
 
-@The_monster@@at@@target@施展了一个法术。
+@The_monster@@at@ @target@施展了一个法术。
 %%%%
 Gastronok cast
 
@@ -481,7 +481,7 @@ Ensnare Arachne cast
 %%%%
 unseen Ensnare Arachne cast
 
-一连串的网从稀薄的空气中喷射而来。
+一股蛛网凭空射出。
 %%%%
 Mennas cast
 
@@ -489,9 +489,9 @@ VISUAL:@The_monster@疯狂地做着手势。
 %%%%
 Paralyse Xtahua cast
 
-@The_monster@@at@@target@发出势不可挡的咆哮！
+@The_monster@@at@ @target@发出势不可挡的咆哮！
 
-@The_monster@@at@@target@发出雷霆般凶猛的吼声！
+@The_monster@@at@ @target@发出雷霆般凶猛的吼声！
 %%%%
 Vv cast
 
@@ -516,7 +516,7 @@ Smiting Jeremiah cast
 
 VISUAL:@The_monster@恳切地举起@possessive@手臂。
 
-@The_monster@喊道：“敬畏的主人，保护我吧！”
+@The_monster@喊道：“可畏的主人，保护我吧！”
 
 @The_monster@叫道：“啊，威严的主，毁灭我的敌人！”
 %%%%
@@ -686,7 +686,7 @@ unseen ghost moth cast targeted
 %%%%
 golden eye cast targeted
 
-@The_monster@@at@ @target@眨了眨眼。
+@The_monster@@at@ @target@眨眼。
 %%%%
 weeping skull cast
 
@@ -869,7 +869,7 @@ w:3
 %%%%
 guardian serpent cast
 
-@The_monster@施放了一个法术。
+@The_monster@施展了一个法术。
 %%%%
 Bolt of Fire ophan cast
 

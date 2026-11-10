@@ -631,11 +631,11 @@ android command menu|Fire Item
 %%%%
 android command menu summary|Fire Item
 
-投掷或发射一件物品，不改变箭袋
+投掷或发射一件物品，不改变快捷动作
 %%%%
 android command menu|Quiver
 
-箭袋
+快捷动作
 %%%%
 android command menu summary|Quiver
 
@@ -755,15 +755,15 @@ CMD_TARGET_SELECT_FORCE_ENDPOINT
 %%%%
 CMD_TARGET_CYCLE_QUIVER_FORWARD
 
-下一个箭袋动作
+下一个快捷动作
 %%%%
 CMD_TARGET_CYCLE_QUIVER_BACKWARD
 
-上一个箭袋动作
+上一个快捷动作
 %%%%
 CMD_TARGET_SELECT_ACTION
 
-选择箭袋动作
+选择快捷动作
 %%%%
 CMD_TARGET_OBJ_CYCLE_FORWARD
 

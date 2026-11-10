@@ -10,7 +10,7 @@ antimagic (antimagic) weapon ego
 %%%%
 chaos (chaos) weapon ego
 
-它的每次攻击都会产生不同的随机效果。
+它的每次命中都会产生不同的随机效果。
 %%%%
 concussion (concuss) weapon ego
 
@@ -209,7 +209,7 @@ ice (Ice) armour ego
 %%%%
 infusion (Infuse) armour ego
 
-它用你的一小部分魔法来增强你的每次近战攻击。
+它用你的一小部分法力来增强你的每次近战攻击。
 %%%%
 intelligence (Int+3) armour ego
 

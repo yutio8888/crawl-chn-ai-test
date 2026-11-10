@@ -29,7 +29,7 @@ mayhem passive
 %%%%
 repel missiles passive
 
-你会偏转飞弹，提升了躲开它们的几率。
+你会偏转飞弹，从而更容易避开它们。
 %%%%
 reflection passive
 
@@ -49,11 +49,11 @@ resist mutation passive
 %%%%
 guardian spirit passive
 
-你受到的任何伤害，都会被生命和魔力储备分摊承受。
+你受到的任何伤害，都会被生命和法力储备分摊承受。
 %%%%
 rampage passive
 
-当你向敌人移动时，你会获得额外的一个自由步。
+当你向敌人移动时，你会额外前进一步，而且这一步不消耗额外时间。
 %%%%
 roll passive
 
@@ -61,7 +61,7 @@ roll passive
 %%%%
 faith passive
 
-神很快会眷顾你，但也会更容易察觉到你在信仰上的冒犯行为。
+你能更快获得神的眷顾，但神也会更加留意你在信仰上的冒犯行为。
 %%%%
 wizardry passive
 
@@ -73,10 +73,10 @@ archmagi passive
 %%%%
 channel magic passive
 
-当你成功施法时，有可能重新获得施法时所消耗的魔力；
-当你发生施法失误时，总是能重新获得所消耗的魔力。
+当你成功施法时，有可能重新获得施法时所消耗的法力；
+当你发生施法失误时，总是能重新获得所消耗的法力。
 %%%%
 infuse magic passive
 
-你每次近战攻击时都会消耗魔力，让你的攻击更有力量。
+你每次近战攻击时都会消耗法力，让你的攻击更有力量。
 %%%%
