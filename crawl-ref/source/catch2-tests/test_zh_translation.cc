@@ -1306,7 +1306,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         Row{possible_forced_prompt_context::toxic_bog, "",
             "这可能使你踉跄着退入毒沼。要继续吗？"},
         Row{possible_forced_prompt_context::exclusion, "",
-            "这可能使你踉跄着退入禁区。要继续吗？"},
+            "这可能使你踉跄着退入旅行禁区。要继续吗？"},
         Row{possible_forced_prompt_context::over_losing_buoyancy, "熔岩",
             "你的浮力正在消失；这可能使你踉跄着退到熔岩上方。要继续吗？"},
         Row{possible_forced_prompt_context::into_losing_buoyancy, "熔岩",
@@ -6027,7 +6027,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         REQUIRE_FALSE(mut_is_compatible(MUT_NIMBLE_SWIMMER));
         const string legend = mutation_menu_legend(false);
         CHECK(legend == (language == lang_t::ZH
-            ? "<darkgrey>()</darkgrey>: 被抑制的变异。\n"
+            ? "<darkgrey>()</darkgrey>：被抑制。\n"
             : "<darkgrey>()</darkgrey>: Suppressed.\n"));
         // The actual compatibility predicate controls disappearance in water.
         env.grid(you.pos()) = DNGN_SHALLOW_WATER;
@@ -7082,8 +7082,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         you.species = SP_HUMAN;
         you.hp = you.hp_max = 100;
         scoped_monspeak_world world;
-        CHECK(mpr_monster_list(false) == (zh ? "视野内没有任何怪物！" : "There are no monsters in sight!"));
-        CHECK(mpr_monster_list(true) == (zh ? "当时视野内没有任何怪物！" : "There were no monsters in sight!"));
+        CHECK(mpr_monster_list(false) == (zh ? "视野内没有怪物！" : "There are no monsters in sight!"));
+        CHECK(mpr_monster_list(true) == (zh ? "当时视野内没有怪物！" : "There were no monsters in sight!"));
         monster *mon = world.place(MONS_ORC);
         REQUIRE(mon != nullptr);
         for (const auto &row : {make_pair(DNGN_FLOOR, "ground"),
@@ -8259,5 +8259,62 @@ TEST_CASE("stable followup fallback front feet and singular tentacles stay local
         CAPTURE(type);
         CHECK(mons.foot_name(false) == (language == lang_t::ZH ? "触手" : "tentacle"));
         CHECK(mons.foot_name(true) == (language == lang_t::ZH ? "触手" : "tentacles"));
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: stable possessive arguments compose through real producers",
+                 "[zh-translation][stable-terminology][possessive]")
+{
+    init_monsters();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 100;
+    scoped_monspeak_world world;
+    monster *mons = world.place(MONS_ORC);
+    REQUIRE(mons != nullptr);
+    REQUIRE(you.can_see(*mons));
+    const string possessive_name = mons->name(DESC_ITS);
+    const string possessive_pronoun = mons->pronoun(PRONOUN_POSSESSIVE);
+    REQUIRE(possessive_name == mons->name(DESC_PLAIN) + "的");
+    REQUIRE(possessive_pronoun == "它的");
+
+    SECTION("recall interruption consumes a possessive name")
+    {
+        REQUIRE(mons->add_ench(mon_enchant(ENCH_WORD_OF_RECALL, mons, 100)));
+        REQUIRE(mons->add_ench(mon_enchant(ENCH_CONFUSION, mons, 100)));
+        msg::tee messages;
+        mons->apply_enchantments();
+        INFO(messages.get_store());
+        CHECK(messages.get_store().find(possessive_name + "吟唱被打断了。")
+              != string::npos);
+        CHECK(messages.get_store().find("的的") == string::npos);
+        CHECK_FALSE(mons->has_ench(ENCH_WORD_OF_RECALL));
+    }
+    SECTION("searing ray interruption consumes a possessive name")
+    {
+        REQUIRE(mons->add_ench(mon_enchant(ENCH_CHANNEL_SEARING_RAY, mons, 100)));
+        REQUIRE(mons->add_ench(mon_enchant(ENCH_CONFUSION, mons, 100)));
+        msg::tee messages;
+        mons->apply_enchantments();
+        INFO(messages.get_store());
+        CHECK(messages.get_store().find(possessive_name + "灼热射线被打断了。")
+              != string::npos);
+        CHECK(messages.get_store().find("的的") == string::npos);
+        CHECK_FALSE(mons->has_ench(ENCH_CHANNEL_SEARING_RAY));
+    }
+    SECTION("frenzy consumes a possessive pronoun")
+    {
+        REQUIRE(mons->add_ench(mon_enchant(ENCH_SLOW, mons, 100)));
+        msg::tee messages;
+        REQUIRE(mons->go_frenzy(&you));
+        INFO(messages.get_store());
+        CHECK(messages.get_store().find("摆脱了" + possessive_pronoun + "昏沉。")
+              != string::npos);
+        CHECK(messages.get_store().find("的的") == string::npos);
+        CHECK_FALSE(mons->has_ench(ENCH_SLOW));
     }
 }
