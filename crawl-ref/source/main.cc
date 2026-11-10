@@ -342,7 +342,8 @@ int main(int argc, char *argv[])
 #ifdef USE_TILE_LOCAL
     // Hook up text colour redefinitions
     for (auto col : Options.custom_text_colours)
-        term_colours[col.colour_index] = col.colour_def;
+        if (col.valid())
+            term_colours[col.colour_index] = col.colour_def;
 #endif
 
     _launch_game_loop();

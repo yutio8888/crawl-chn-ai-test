@@ -680,3 +680,83 @@ TEST_CASE("playtest: corrosion translates canonical causes at player and monster
     CHECK(rng::current_generator().get_state() == corrosion_parent_state);
     CHECK(rng::current_generator().get_count() == corrosion_parent_count);
 }
+
+#include "mon-abil.h"
+#include "notes.h"
+TEST_CASE("starcursed screams translate complete player and monster messages",
+          "[zh-translation][monster-abilities][starcursed]")
+{
+    rng::subgenerator local_rng(0x53544152ULL, 0x5343524dULL);
+    const char *const player_frames[] = {
+        "The starcursed mass shrieks in your mind.",
+        "A chorus of shrieks assaults your mind.",
+        "A deafening chorus of shrieks assaults your mind!",
+        "A cacophony of accursed wailing tears at your sanity!",
+    };
+    const coord_def positions[] = {
+        {22, 20}, {22, 21}, {22, 22}, {21, 22},
+        {20, 22}, {23, 20}, {23, 21}, {23, 22},
+    };
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    for (int branch = 0; branch < 5; ++branch)
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        issue10_world world;
+        no_notes suppress_notes;
+        const bool player_target = branch < 4;
+        const int count = player_target ? (branch == 0 ? 1 : branch == 1 ? 2 : branch == 2 ? 5 : 8) : 1;
+        actor *target = &you;
+        if (!player_target)
+        {
+            monster *victim = world.place(branch == 4 ? MONS_ORC : MONS_FIRE_VORTEX,
+                                          coord_def(21, 20));
+            victim->attitude = ATT_FRIENDLY;
+            victim->hit_points = victim->max_hit_points = 100;
+            REQUIRE((mons_intel(*victim) > I_BRAINLESS) == (branch == 4));
+            target = victim;
+        }
+        monster *source = nullptr;
+        for (int i = 0; i < count; ++i)
+        {
+            monster *voice = world.place(MONS_STARCURSED_MASS, positions[i]);
+            // Seven HP retains a live screamer but makes splitting impossible.
+            voice->hit_points = 7;
+            voice->blob_size = 1;
+            voice->target = target->pos();
+            voice->foe = player_target ? MHITYOU : target->as_monster()->mindex();
+            if (!source)
+                source = voice;
+        }
+        REQUIRE(source->near_foe());
+        const string raw_frame = player_target ? player_frames[branch]
+            : "%s writhes in pain as voices assail %s mind.";
+        const string frame = T_(raw_frame.c_str());
+        const string expected = player_target ? frame
+            : make_stringf(frame.c_str(), target->name(DESC_THE).c_str(),
+                            target->pronoun(PRONOUN_POSSESSIVE).c_str());
+        const int old_hp = target->stat_hp();
+        const string output = observe_message([&] {
+            // Run the real chance-gated ability with a fixed local RNG stream.
+            // Stop after its first scream/cooldown; this is not a seed search.
+            for (int attempt = 0; attempt < 256
+                 && !source->has_ench(ENCH_SCREAMED); ++attempt)
+            {
+                mon_special_ability(source);
+            }
+        });
+        CAPTURE(language, branch, count, output, expected);
+        CHECK(source->has_ench(ENCH_SCREAMED));
+        CHECK(output.find(expected) != string::npos);
+        CHECK(target->stat_hp() < old_hp);
+        for (monster *voice : world.monsters)
+            if (voice->type == MONS_STARCURSED_MASS)
+                CHECK(voice->has_ench(ENCH_SCREAMED));
+        if (language == lang_t::ZH)
+        {
+            CHECK(frame != raw_frame);
+            CHECK(output.find("writhes") == string::npos);
+            CHECK(output.find("voices assail") == string::npos);
+            CHECK(output.find("being.") == string::npos);
+        }
+    }
+}
