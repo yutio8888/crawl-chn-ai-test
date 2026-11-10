@@ -50037,3 +50037,43 @@ grips
 %%%%
 slices through
 贯穿
+
+%%%%
+verb|constrict
+缠住
+
+%%%%
+verb|envenom
+毒害
+
+%%%%
+verb|freeze
+冻住
+
+%%%%
+verb|shock
+电击
+
+%%%%
+escape verb|slip
+滑脱
+
+%%%%
+escape verb|burst
+猛然
+
+%%%%
+escape verb|dance
+舞动
+
+%%%%
+escape verb|jump
+跃起
+
+%%%%
+attack verb|touch
+触碰
+
+%%%%
+attack verb|constrict
+缠住

@@ -24,6 +24,7 @@
 #include "mon-behv.h"
 #include "mon-death.h"
 #include "mon-util.h"
+#include "options.h"
 #include "religion.h"
 #include "spl-damage.h"
 #include "stepdown.h"
@@ -476,8 +477,13 @@ void actor::end_constriction(mid_t whom, bool intentional, bool quiet,
         // blinking or similar
         if (!escape_verb.empty())
         {
+            // Other callers already supply localized movement displays.
+            const bool escape_action = escape_verb == "slip" || escape_verb == "burst"
+                || escape_verb == "dance" || escape_verb == "jump";
+            const string display = Options.language == lang_t::ZH && escape_action
+                ? C_("escape verb", escape_verb.c_str()) : escape_verb;
             mprf(T_("%s %s free of %s!"),
-                 constrictee->name(DESC_THE).c_str(), escape_verb.c_str(),
+                 constrictee->name(DESC_THE).c_str(), display.c_str(),
                  lowercase(attacker_desc).c_str());
         }
         else
@@ -788,8 +794,9 @@ void actor::constriction_damage_defender(actor &defender)
         }
 
         mprf_p(T_("%s %s %s%s%s"), attacker_desc.c_str(),
-             force_plural ? T_("constrict")
-                          : verb_for_display(N_("constrict")).c_str(),
+             force_plural ? C_("verb", "constrict")
+                          : verb_for_display(NC_("verb", "constrict"),
+                                             "verb").c_str(),
              defender.name(DESC_THE).c_str(),
 #ifdef DEBUG_DIAGNOSTICS
              make_stringf(" for %d", damage).c_str(),
