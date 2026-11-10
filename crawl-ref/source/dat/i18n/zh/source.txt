@@ -1080,7 +1080,7 @@ mimic reveal plural|%s are mimics!
 %1$s继续给%2$s发条蜜蜂上弦……
 %%%%
 %1$s fails to defend %2$s.
-%1$s未能防守%2$s。
+%1$s未能保护%2$s。
 %%%%
 %1$s loses %2$s in your eye%3$s.
 %1$s在你的眼中%2$s失去了自我。
@@ -1329,7 +1329,7 @@ mimic reveal plural|%s are mimics!
 %s化为尘土！
 %%%%
 %s crushes %s against %s and falls apart!
-%s把%s压在%s上撞碎了！
+%s将%s压在%s上，自身随即碎裂！
 %%%%
 %s dances into the air!
 %s舞到了空中！
@@ -2309,7 +2309,7 @@ barrage of energy
 <w>%</w>/<w>%</w> : 佩戴或摘下首饰
 %%%%
 <w>%</w>/<w>%</w> : Wear or Take off armour
-<w>%</w>/<w>%</w> : 穿戴或脱下防具
+<w>%</w>/<w>%</w> : 穿戴或脱下护甲
 %%%%
 <w>Cast</w>|Describe|Hide|Show
 <w>施放</w>|描述|隐藏|显示
@@ -2522,7 +2522,7 @@ A dragon arrives to answer your call!
 一条龙回应你的召唤到来了！
 %%%%
 A dragon tries to answer your call, but you don't have enough magical power!
-一条龙试图回应你的召唤，但你没有足够的
+一条龙试图回应你的召唤，但你的法力不足！
 %%%%
 A fierce wind blows from the card.
 一阵猛烈的风从牌中吹出。
@@ -4460,10 +4460,10 @@ indifferent
 中立
 %%%%
 Indom (%d)
-不屈（%d）
+刚毅（%d）
 %%%%
 indomitable (%d)
-不屈（%d）
+刚毅（%d）
 %%%%
 infuse magic (%d %s)
 法力灌注（%d %s）
@@ -4619,7 +4619,7 @@ is lit by a halo
 不再被冰封。
 %%%%
  is no longer exposed.
-不再暴露弱点。
+不再处于暴露状态。
 %%%%
  is no longer haunted by guilt.
 不再被内疚所困扰。
@@ -6337,7 +6337,7 @@ Something shoots a net at you.
 有什么东西向你发射了一张网。
 %%%%
 Something tries to affect you, but you %s.
-有什么东西试图影响你，但你%s了。
+有什么东西试图影响你，但你%s。
 %%%%
 Something unexpectedly blocks you, preventing you from leaping!
 有什么东西意外地挡住了你，阻止了你的跳跃！
@@ -6558,7 +6558,7 @@ Stopped running for exclusion.
 停止滚动并展开了。
 %%%%
  stops stampeding.
-停止了狂奔。
+停止了奔踏。
 %%%%
 Storm clouds gather above %s.
 风暴之云在%s上方聚集。
@@ -8202,7 +8202,7 @@ With a terrible screech, the alarm sounds!
 以惊人的势头
 %%%%
 With Pikel's spell broken, his former %s freedom.
-皮克尔的法术被打破了，他曾经的%s自由了。
+皮克尔的法术被打破了，他曾经的%s自由。
 %%%%
  withdraws the vision and curse.
  收回了幻象和诅咒。
@@ -8296,7 +8296,7 @@ You %s %s peals of thunder!
 你%s阵阵%s的雷鸣！
 %%%%
 You %s %s%s.
-你%s%s%s。
+你%3$s%1$s%2$s。
 %%%%
 You %s %s, but do no damage.
 
@@ -8336,7 +8336,7 @@ You acquired
 你获得了
 %%%%
 You add the spell%1$s %2$s to your library.
-你将法术<yellow>%2$s</yellow>添加到你的法术书中。
+你将法术<yellow>%2$s</yellow>添加到你的法术库中。
 %%%%
 You already have all the faith you need.
 你已拥有所需的全部信仰。
@@ -8351,16 +8351,16 @@ You already know that spell!
 你已经掌握那个法术了！
 %%%%
 You also have %d voucher%s.
-你还有 %d 张优惠券%s。
+你还有%d张优惠券%.0s。
 %%%%
 You announce your regal presence to all who look upon you.
 你向所有仰望你的人宣告了你的王者存在。
 %%%%
 you anoint %1$s with ash and charcoal and welcome %1$s as a companion.
-你用灰烬和炭为%1$s涂油，欢迎其成为同伴。
+你将灰烬和木炭涂在%1$s身上，欢迎%1$s成为同伴。
 %%%%
 You anoint %1$s with ash and charcoal and welcome %2$s as a companion.
-你用灰烬和炭为%1$s涂油，欢迎其成为同伴。%2$.0s
+你将灰烬和木炭涂在%1$s身上，欢迎%2$s成为同伴。
 %%%%
 You are %s empty-clawed.
 你%s是空爪状态。
@@ -8972,7 +8972,7 @@ You can't see any nearby targets.
 你看不到附近有任何目标。
 %%%%
 You can't see any susceptible monsters within range!
-你在范围内看不到任何可受影响怪物！（按<w>Z</w>强制施放）
+你在范围内看不到任何可受影响的怪物！
 %%%%
 You can't see any susceptible monsters within range! (Use <w>Z</w> to cast anyway.)
 你在范围内看不到任何可受影响的怪物！（按<w>Z</w>强制施放）
@@ -9380,7 +9380,7 @@ you donate money
 你捐赠金钱
 %%%%
 You drain %s %s.
-你从%s吸取了%s。
+你吸取了%s%s。
 %%%%
 You draw in some of the released energy.
 你吸收了部分释放的能量。
@@ -9488,7 +9488,7 @@ You feel %sfirmly anchored in space.
 你感到%s牢牢固定在空间中。
 %%%%
 You feel %sprotected from %s.
-你感到%s抵御了%s。
+你感到%s能抵御%s。
 %%%%
 You feel %sweakened.
 你感觉%s虚弱了。
@@ -9626,7 +9626,7 @@ You feel less perceptive.
 你感到感知力减弱了。
 %%%%
 You feel less pious.
-你感到虔诚度降低了。
+你感到自己的虔诚值降低了。
 %%%%
 You feel less protected from negative energy.
 你感到对负能量的抵抗力减弱了。
@@ -10508,7 +10508,7 @@ You set the figurine down, and a mystic portal to a ziggurat forms.
 你放下了雕像，一道通往通天塔的神秘传送门形成了。
 %%%%
 You shatter%s
-你%s碎裂了
+你碎裂了%s
 %%%%
 You should not fight recklessly!
 你不应该鲁莽战斗！
@@ -10759,7 +10759,7 @@ your
 你的
 %%%%
 Your %1$s attune%2$s to your body, and you begin to %3$s.
-%1$s适应了你的身体，你开始%3$s。
+你的%1$s适应了你的身体，你开始%3$s。
 %%%%
 Your %1$s meld%2$s into your body.
 你的%1$s融入了你的身体。
@@ -13437,7 +13437,7 @@ Portalist
 传送门师
 %%%%
 Plane @Walker@
-位面行者
+位面@Walker@
 %%%%
 Tinkerer
 修补匠
@@ -17286,7 +17286,7 @@ Ench
 附魔
 %%%%
 Slay
-杀敌
+杀戮
 %%%%
 %d (Base %s x %d%% (%s) x %d%% (%s)%s)%s.
 %d (基础 %s x %d%% (%s) x %d%% (%s)%s)%s。
@@ -18170,7 +18170,7 @@ fragments
 碎片
 %%%%
 gore
-凝血
+血肉
 %%%%
 healing
 治疗
@@ -20915,7 +20915,7 @@ sleepcap
 \n\n它影响你的敏捷(%+d)。
 %%%%
 \n\nit affects your accuracy and damage with ranged weapons and melee (%+d).
-\n\n它影响你远程和近战武器的命中与伤害(%+d)。
+\n\n它影响你使用远程武器和进行近战攻击时的命中与伤害(%+d)。
 %%%%
 \n\nspell refund chance: %d%% (max %d%%)
 \n\n法术返还几率：%d%%（最大%d%%）
@@ -24228,7 +24228,7 @@ their
 %1$s怒视着%2$s！
 %%%%
 %1$s loses %2$s grip on your mind.
-%1$s对你精神的控制力减弱了。
+%1$s失去了对你心智的控制。
 %%%%
 %1$s shimmers and splits apart.
 %1$s闪烁着分裂开来。
@@ -26253,7 +26253,7 @@ It affects your dexterity (%d).
 影响你的敏捷（%d）。
 %%%%
 It affects your accuracy & damage with ranged weapons and melee (%d).
-影响你远程和近战武器的命中率与伤害（%d）。
+它影响你使用远程武器和进行近战攻击时的命中与伤害（%d）。
 %%%%
 It insulates you from electricity.
 使你能抵抗电击。
@@ -26292,7 +26292,7 @@ It prevents most forms of teleportation.
 阻止大多数形式的传送。
 %%%%
 It berserks you when you make melee attacks (%d% chance).
-近战攻击时有概率使你狂暴（%d%%概率）。
+近战攻击时有概率使你狂暴（%d%概率）。
 %%%%
 It protects you from confusion, rage, mesmerisation and fear.
 保护你免受混乱、狂暴、迷魂和恐惧。
@@ -27473,7 +27473,7 @@ half of
 %%%%
 helpless 
 
-无助
+无助的
 %%%%
 its 
 
@@ -27862,7 +27862,7 @@ Put travel exclusion on door? (Y/n)
 ；仍然使用吗？
 %%%%
 Spend multiple turns changing equipment while %s?
-在%s的情况下花费多回合更换装备吗？
+仍要花费多回合更换装备吗？（%s）
 %%%%
 Really %s? This action would place you under penance%s!
 确定要%s吗？此行为会让你遭受苦修%s！
@@ -29149,7 +29149,7 @@ kneel at
 %s记起了%s%s的%s。
 %%%%
 %s remembers more of %s old skill.
-%s回忆起更多%s昔日技能。
+%s想起了更多%s昔日技能。
 %%%%
 %s riposte.
 %s发动了反击。
@@ -29215,7 +29215,7 @@ the %s is presently inert.
 %s目前处于休眠状态。
 %%%%
 the dream sheep ruffle%s wool and motes of dream dust sparkle, to no effect.
-梦境羊抖了抖羊毛，梦境尘埃闪烁，但毫无效果。
+梦之羊抖了抖羊毛，梦境尘埃闪烁，但毫无效果。
 %%%%
 the dream sheep shake%s wool and sparkle%s.
 梦境羊抖了抖羊毛，闪闪发光。
@@ -30715,7 +30715,7 @@ which it recharges.
 其充能的速率。
 %%%%
 \n\nWith your current SH, it has a %d%% chance to reflect attacks against your willpower and other normally unblockable effects.
-\n\n根据你当前的SH，它有%d%%的几率反射针对你意志力和其他通常无法格挡效果的攻击。
+\n\n根据你当前的SH，它有%d%%的几率反射针对你意志力的攻击，以及其他通常无法格挡的效果。
 %%%%
 \nIt deals %s damage.\n
 \n它造成%s点伤害。\n
@@ -30736,7 +30736,7 @@ which it recharges.
 %s%s火焰吞没%s
 %%%%
 %s %s vitality from %s injuries!
-%s%s了%s伤势中的生命力！
+%s%s了来自%s伤口的生命力！
 %%%%
 %s to where?
 %s到哪？
@@ -33461,7 +33461,7 @@ Can't change a useless skill.
 无法修改无用的技能。
 %%%%
 %s %s to skill level %.1f.
-%1$s%2$s技能等级至 %.1f。
+%1$s%2$s技能等级至 %3$.1f。
 %%%%
 Ignoring mut resistance to apply mutation.
 忽略突变抗性以强制应用突变。
@@ -34209,7 +34209,7 @@ Build '%s'
   Sigmund v Jessica\n
 %%%%
   99 orc v Royal Jelly\n
-  99只兽人 对阵 果冻王\n
+  99 orc v Royal Jelly\n
 %%%%
   20-headed hydra v 10 kobold ; scimitar ego:flaming
   20-headed hydra v 10 kobold ; scimitar ego:flaming
@@ -34554,7 +34554,7 @@ chance to affect: %d%%
 影响几率：%d%%
 %%%%
 chance to blink: %d%%
-瞬移几率：%d%%
+闪烁几率：%d%%
 %%%%
 chance to confuse: %d%%
 使目标混乱的几率：%d%%
@@ -34851,7 +34851,7 @@ morgue item inscription|unknown
 %s怪物状态
 %%%%
 %s other creatures
-%s个其他生物
+另外%s个生物
 %%%%
 %s pulls itself out of thin air.
 %s从空气中凝聚成形。
@@ -37249,7 +37249,7 @@ Error! The help for "%s" is missing!
 <lightgray>（选择以%1$s、%2$s以检视）</lightgray>
 %%%%
  while about to teleport
-，即将传送
+（即将传送）
 %%%%
  You'd be excommunicated if you did!
 如果你这样做将被逐出教会！
@@ -37303,7 +37303,7 @@ One of the many lords of Pandemonium,
 ：
 %%%%
 'Of %s': 
-%s之
+%s：
 %%%%
 <lightgrey>Options read from "%s".</lightgrey>
 <lightgrey>选项读取自"%s"。</lightgrey>
@@ -38017,7 +38017,7 @@ status|Liquid
 液化
 %%%%
 status|MPRegen (%d)
-魔恢(%d)
+法恢(%d)
 %%%%
 status|Mark
 标记
@@ -40411,7 +40411,7 @@ Really %s onto that %s?
 确定要%s那个%s吗？
 %%%%
 Really %s into that %s?
-确定要%s那个%s吗？
+确定要%s那边的%s吗？
 %%%%
 Really %s into a travel-excluded area?
 确定要%s禁区吗？
@@ -40585,10 +40585,10 @@ Menu
 <h>自动战斗：\n<w>Tab</w>          ：攻击最近的怪物，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发已装填的动作；\n               若需要目标，则瞄准\n               最近的怪物\n
 %%%%
 <brown>(</brown> : missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
-<brown>(</brown> ：弹药（<w>%</w>装填、<w>%</w>瞄准、<w>%</w>/<w>%</w>切换）
+<brown>(</brown> ：弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
 %%%%
 </lightcyan> : books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pick up to add to library)
-</lightcyan> ：书籍（<w>%</w>记忆、<w>%</w>翻阅、<w>%</w>翻阅、\n    捡起以添加至法术库）
+</lightcyan> ：书籍（<w>%</w>记忆、<w>%</w>施法、<w>%</w>强制施法、\n    捡起以添加至法术库）
 %%%%
 <lightmagenta>0</lightmagenta> : the Orb of Zot\n    Carry it to the surface and win!\n
 <lightmagenta>0</lightmagenta> ：佐特宝珠\n    带上它回到地面即可获胜！\n
@@ -40606,7 +40606,7 @@ Memorise spells and view spell\n    library (get books to add to it)
 <console><cyan>)</cyan> ：</console>手持武器（<w>%</w>持）
 %%%%
 <console><brown>(</brown> : </console>missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
-<console><brown>(</brown> ：</console>弹药（<w>%</w>装填、<w>%</w>瞄准、<w>%</w>/<w>%</w>切换）
+<console><brown>(</brown> ：</console>弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
 %%%%
 <console><cyan>[</cyan> : </console>armour (<w>%</w>ear and <w>%</w>ake off)
 <console><cyan>[</cyan> ：</console>护甲（<w>%</w>穿上和<w>%</w>脱下）
@@ -40630,7 +40630,7 @@ Memorise spells and view spell\n    library (get books to add to it)
 <console><lightgrey>/</lightgrey> ：</console>魔杖（<w>%</w>激发）
 %%%%
 </lightcyan> : </console>books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pick up to add to spell library)
-</lightcyan> ：</console>书籍（<w>%</w>记忆、<w>%</w>翻阅、<w>%</w>翻阅、\n    捡起以添加至法术库）
+</lightcyan> ：</console>书籍（<w>%</w>记忆、<w>%</w>施法、<w>%</w>强制施法、\n    捡起以添加至法术库）
 %%%%
 </brown> : </console>staves (<w>%</w>ield)
 </brown> ：</console>法杖（<w>%</w>持）
