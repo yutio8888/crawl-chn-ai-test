@@ -14,6 +14,7 @@
 #include "fight.h" // weapon_cleaves
 #include "item-prop.h"
 #include "level-state-type.h"
+#include "lang-en-guard.h"
 #include "mon-abil.h"
 #include "mutation.h"
 #include "options.h"
