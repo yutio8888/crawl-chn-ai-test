@@ -303,8 +303,10 @@ TEST_CASE("issue 10 blink escapes use contextual movement at the real sink",
     const string announcement = observe_message([&] {
         REQUIRE(mon->blink_to(coord_def(20, 23), false, get<1>(row)));
     });
-    CHECK(announcement.find(mon->name(DESC_THE) + " " + movement + "!")
-          != string::npos);
+    const string announcement_expected = language == lang_t::ZH
+        ? mon->name(DESC_THE) + movement + "！"
+        : mon->name(DESC_THE) + " " + movement + "!";
+    CHECK(announcement.find(announcement_expected) != string::npos);
     if (language == lang_t::ZH)
         CHECK(announcement.find(movement + "s") == string::npos);
 }
@@ -776,7 +778,7 @@ TEST_CASE("target descriptions translate silence without changing status identit
     {
         TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
         you.duration[DUR_SILENCE] = 100;
-        invalidate_agrid();
+        invalidate_agrid(true);
         REQUIRE(silenced(pos));
         for (int rebuild = 0; rebuild < 2; ++rebuild)
         {
@@ -796,7 +798,7 @@ TEST_CASE("target descriptions translate silence without changing status identit
             CHECK(details.front() == label);
         }
         you.duration[DUR_SILENCE] = 0;
-        invalidate_agrid();
+        invalidate_agrid(true);
         CHECK_FALSE(silenced(pos));
         CHECK(cell_monster_description(pos, true).find(T_("silenced")) == string::npos);
     }

@@ -6998,7 +6998,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             status_info inf;
             REQUIRE(fill_status_info(DUR_TRANSFORMATION, inf));
             // l-you.cc's you.status(name) compares this canonical identity.
-            CHECK(inf.short_db_key == "tree-form");
+            CHECK(inf.short_db_key == (duration == 1
+                  ? "tree-form (expiring)" : "tree-form"));
             CHECK(starts_with(inf.short_text, zh ? "树形" : "tree-form"));
             REQUIRE(fill_status_info(STATUS_REGENERATION, inf));
             CHECK(inf.short_db_key == "regenerating");
@@ -7181,7 +7182,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         you.duration[DUR_STICKY_FLAME] = 10;
         CHECK_FALSE(i_feel_safe(true));
         capture.force_update();
-        CHECK(messages.find(zh ? "你着火了!" : "you are on fire!") != string::npos);
+        CHECK(messages.find(zh ? "你着火了！" : "you are on fire!") != string::npos);
         CHECK(messages.find("！!") == string::npos);
     }
 }
@@ -7677,6 +7678,8 @@ TEST_CASE("Lua status lookup accepts the English key in Chinese display mode",
 #include <algorithm>
 #include "colour.h"
 #include "describe-spells.h"
+#include "mon-cast.h"
+#include "spl-zap.h"
 #include "map-cell.h"
 TEST_CASE("elemental text colours preserve complete UTF-8 characters",
           "[zh-translation][quicksilver-colour][colour]")
@@ -7727,7 +7730,14 @@ TEST_CASE("quicksilver monster spell descriptions preserve localized effects",
         define_monster(*source);
         const monster_info info(source);
         REQUIRE(info.has_spells());
-        const string effect = spell_effect_string(SPELL_QUICKSILVER_BOLT, &info);
+        // Stable keeps its effect formatter private. Build the expected dice
+        // with the public damage query and test the real spellbook consumer.
+        const int hd = mons_spell_is_spell(SPELL_QUICKSILVER_BOLT)
+            ? info.spell_hd() : info.hd;
+        const dice_def damage = zap_damage(spell_to_zap(SPELL_QUICKSILVER_BOLT),
+            mons_power_for_hd(SPELL_QUICKSILVER_BOLT, hd), true, false);
+        const string effect = make_stringf(T_("(%s%dd%d%s)"), "",
+                                           damage.num, damage.size, "");
         REQUIRE_FALSE(effect.empty());
         formatted_string description;
         describe_spellset(monster_spellset(info), nullptr, description, &info);

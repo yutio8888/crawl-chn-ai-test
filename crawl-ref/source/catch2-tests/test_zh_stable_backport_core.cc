@@ -1016,7 +1016,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         const string conjured = origin_desc(item);
         REQUIRE_FALSE(conjured.empty());
         CHECK(conjured.back() != ' ');
-        const string terminator = language == lang_t::ZH ? "。" : ".";
+        // Stable description uses an ASCII terminator on this existing path.
+        const string terminator = ".";
         CHECK(get_item_description(item).find(conjured + terminator) != string::npos);
         if (language == lang_t::EN)
             CHECK(conjured == "Your wizardly powers created it on level 3 of the Dungeon");
