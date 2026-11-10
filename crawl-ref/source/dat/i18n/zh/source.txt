@@ -17004,7 +17004,7 @@ Rakshasa Summon
 召唤罗刹
 %%%%
 Fire Brand
-火焰铭印
+火焰烙印
 %%%%
 Flight
 飞行术
@@ -17247,7 +17247,7 @@ The frigid air chills %s%s%s
 寒冷的空气侵袭了%s%s%s
 %%%%
 Drain Magic
-汲取法力
+汲取魔力
 %%%%
 Your %s skill: %s%d.%d%s
 你的%s技能: %s%d.%d%s
