@@ -3109,7 +3109,7 @@ Beogh
 比欧弗
 %%%%
 Beogh appreciates your bravery.
-比奥格赞赏你的勇敢。
+比欧弗赞赏你的勇敢。
 %%%%
 Beogh is disappointed with your cowardice.
 比欧弗对你的懦弱感到失望。
@@ -4239,7 +4239,7 @@ Gozag
 哥萨戈
 %%%%
 Gozag incites %s against you.
-戈扎格煽动%s对抗你。
+哥萨戈煽动%s对抗你。
 %%%%
 Gozag's golden gift will leave your new mouth with nothing to eat.
 哥萨戈的金色礼物会让你的新嘴无食可吃。
@@ -23273,7 +23273,7 @@ Walls emerge from the floor!
 墙壁从地面升起！
 %%%%
 Beogh will not strike down an ally of the cause.
-贝奥不会击倒同道中人。
+比欧弗不会击倒同道中人。
 %%%%
  booms: This is a trial of mortal prowess. Fight with your own strength!
 洪声说道：这是对凡人之力的考验。用你自己的力量战斗吧！
@@ -24033,7 +24033,7 @@ You %1$sdonated %2$d %3$s to Zin.\n
 你向辛捐献了%2$d%3$s。\n
 %%%%
 You %1$spaid %2$d %3$s to Gozag.\n
-你向戈扎格支付了%2$d%3$s。\n
+你向哥萨戈支付了%2$d%3$s。\n
 %%%%
 You %1$sused %2$d %3$s for miscellaneous purposes.\n
 你将%2$d%3$s用于了各种用途。\n
@@ -31288,7 +31288,7 @@ Recruit Apostle
 %s%s守护你的生命。\n
 %%%%
 Orcs frequently recognise you as Beogh's chosen one.\n
-兽人经常认出你是贝奥格的选民。\n
+兽人经常认出你是比欧弗的选民。\n
 %%%%
 Orcs sometimes recognise you as one of them.\n
 兽人有时认出你是他们的一员。\n
@@ -37780,7 +37780,7 @@ status|Bearserk
 熊狂
 %%%%
 status|Beogh
-贝奥
+比欧弗
 %%%%
 status|Berserk
 狂暴
