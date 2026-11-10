@@ -240,13 +240,13 @@ otherworldly statue
 异界雕像
 %%%%
 one-way staircase leading up
-通往楼上的单向楼梯
+通往上层的单向楼梯
 %%%%
 one-way staircase leading down
-通往楼下的单向楼梯
+通往下层的单向楼梯
 %%%%
 metal staircase leading up
-通往楼上的金属楼梯
+通往上层的金属楼梯
 %%%%
 merfolk statue
 人鱼雕像
@@ -1511,7 +1511,7 @@ mimic reveal plural|%s are mimics!
 %s被驱散了%s
 %%%%
 %s is drained!
-%s的生命力被汲取了！
+%s陷入衰竭！
 %%%%
 %s is engulfed in flames!
 %s被火焰吞没了！
@@ -4529,7 +4529,7 @@ is covered in magical glow
 被施加了预示剧痛的诅咒。
 %%%%
  is dazed by the mutagenic energy.
-被变异能量弄得眩晕。
+被诱变能量弄得眩晕。
 %%%%
  is dazed by the spores.
  被孢子弄得眩晕。
@@ -6531,10 +6531,10 @@ stomp
 重踏
 %%%%
 stone staircase leading down
-向下的石阶
+通往下层的石梯
 %%%%
 stone staircase leading up
-向上的石阶
+通往上层的石梯
 %%%%
 Stop fighting!
 停止战斗！
@@ -8118,7 +8118,7 @@ Which rune (ESC to exit)?
  低语道：这些会让你开口的！
 %%%%
 Whoops, nicked a vault in slime connectivity fixup
-哎呀，修复黏液区域连通性时挖到了地图模板。
+哎呀，修复史莱姆之坑连通性时挖到了地图模板。
 %%%%
 Why would you want to do that?
 你为什么要那样做？
@@ -27838,10 +27838,10 @@ You can't see anything. Try to condense clouds anyway?
 你什么也看不见。仍然尝试凝结云雾吗？
 %%%%
 You are standing in a cloud of %s! Ignite poison anyway?
-你正站在%s之中！仍然引燃毒素吗？
+你正站在%s之中！仍然点燃毒素吗？
 %%%%
 You might harm nearby allies! Ignite poison anyway?
-可能会伤害附近的友方！仍然引燃毒素吗？
+可能会伤害附近的友方！仍然点燃毒素吗？
 %%%%
 You can't see anything there. Cast anyway?
 那里什么也看不见。仍然施法吗？
@@ -29218,13 +29218,13 @@ the dream sheep ruffle%s wool and motes of dream dust sparkle, to no effect.
 梦之羊抖了抖羊毛，梦境尘埃闪烁，但毫无效果。
 %%%%
 the dream sheep shake%s wool and sparkle%s.
-梦境羊抖了抖羊毛，闪闪发光。
+梦之羊抖了抖羊毛，闪闪发光。
 %%%%
 The dream sheep shakes its wool and sparkles.
-梦羊抖动着自己的羊毛，闪闪发亮。
+梦之羊抖动着自己的羊毛，闪闪发亮。
 %%%%
 The dream sheep shake their wool and sparkle.
-梦羊们抖动着自己的羊毛，闪闪发亮。
+梦之羊们抖动着自己的羊毛，闪闪发亮。
 %%%%
 the sanctuary denies %s grip on your mind.
 庇护所让你摆脱了%s心智控制。
@@ -30514,7 +30514,7 @@ The apparition of %s
 %s的幽灵
 %%%%
 The dream sheep attempt%s to lull %s to sleep.
-梦羊尝试催眠%s。
+梦之羊尝试催眠%s。
 %%%%
 The substance of the Abyss twists violently, and a gateway leading down appears!
 深渊的物质剧烈扭曲，一道通向深处的传送门出现了！
@@ -37288,7 +37288,7 @@ a magic seal in the Gauntlet prevents this spell from working.
 试炼场中的魔法封印阻止了此法术生效。
 %%%%
 you must imprint a weapon on your paragon first! (Use the Imprint Weapon ability)
-你必须先给典范烙印武器！（使用烙印武器能力）
+你必须先给白金典范烙印武器！（使用烙印武器能力）
 %%%%
 One of the many lords of Pandemonium, 
 众多万魔殿领主之一，
@@ -40582,7 +40582,7 @@ Menu
 <w>/ 方向</w>、<w>Shift-方向</w>：长距离移动\n<w>* 方向</w>、<w>Ctrl-方向</w>：原地攻击\n
 %%%%
 <h>Autofight:\n<w>Tab</w>          : attack nearest monster,\n               moving if necessary\n<w>Shift-Tab</w>, <w>p</w> : trigger quivered action;\n               if targeted, aims at\n               nearest monster\n
-<h>自动战斗：\n<w>Tab</w>          ：攻击最近的怪物，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发已装填的动作；\n               若需要目标，则瞄准\n               最近的怪物\n
+<h>自动战斗：\n<w>Tab</w>          ：攻击最近的怪物，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发快捷动作；\n               若需要目标，则瞄准\n               最近的怪物\n
 %%%%
 <brown>(</brown> : missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
 <brown>(</brown> ：弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
@@ -43423,7 +43423,7 @@ item warning action|evoke
 激活
 %%%%
 item warning action|quiver
-设入快捷栏
+将快捷动作设为
 %%%%
 item warning action|equip
 装备
@@ -45904,7 +45904,7 @@ Option 'lua_max_memory' is disabled in this build.
 %%%%
 The dream sheep are wreathed in dream dust.
 
-梦羊被梦境尘埃笼罩。
+梦之羊被梦境尘埃笼罩。
 %%%%
 The dungeon churns and shimmers intensely around you.
 
@@ -47648,7 +47648,7 @@ No longer under Kirke's spell, the hogs return to their original forms!
 %%%%
 The dream sheep attempt%1$s to lull %2$s to sleep.
 
-梦羊尝试催眠%2$s。
+梦之羊尝试催眠%2$s。
 %%%%
 You %1$s for attention%2$s!
 

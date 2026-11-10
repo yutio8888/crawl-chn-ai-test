@@ -599,7 +599,7 @@ w:1
 %%%%
 Jiyva death corpse
 
-吉瓦派来一个胶冻来消化你的尸体。
+吉瓦派来一个果冻怪来消化你的尸体。
 %%%%
 Jiyva death corpse undead
 
@@ -607,7 +607,7 @@ Jiyva death corpse undead
 %%%%
 Jiyva death corpse nonliving
 
-吉瓦派来一个胶冻来消化你的装备。
+吉瓦派来一个果冻怪来消化你的装备。
 %%%%
 Kikubaaqudgha welcome
 

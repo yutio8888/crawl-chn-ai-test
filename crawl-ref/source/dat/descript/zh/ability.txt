@@ -185,7 +185,7 @@ Receive Armour ability
 %%%%
 Channel Magic ability
 
-显著提高使用者的法力回复能力，持续时间随着法术施展技能的提升而增加。
+显著提高使用者的法力恢复速度，持续时间随祈神技能的提升而增加。
 %%%%
 Forget Spell ability
 

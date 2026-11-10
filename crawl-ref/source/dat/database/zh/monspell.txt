@@ -430,11 +430,11 @@ w:5
 %%%%
 Gastronok cast targeted
 
-@The_monster@一边吟诵，一边@at@ @target@看去。
+@The_monster@一边吟诵，一边@at@@target@看去。
 
-@The_monster@一边咕哝着一些奇怪的话，一边@at@ @target@看去。
+@The_monster@一边咕哝着一些奇怪的话，一边@at@@target@看去。
 
-@The_monster@@at@ @target@施展了一个法术。
+@The_monster@@at@@target@施展了一个法术。
 %%%%
 Gastronok cast
 
@@ -489,9 +489,9 @@ VISUAL:@The_monster@疯狂地做着手势。
 %%%%
 Paralyse Xtahua cast
 
-@The_monster@@at@ @target@发出势不可挡的咆哮！
+@The_monster@@at@@target@发出势不可挡的咆哮！
 
-@The_monster@@at@ @target@发出雷霆般凶猛的吼声！
+@The_monster@@at@@target@发出雷霆般凶猛的吼声！
 %%%%
 Vv cast
 
