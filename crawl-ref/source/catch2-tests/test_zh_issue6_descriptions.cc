@@ -176,11 +176,11 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(has_stats);
     const string desc = info.body.str();
     const string plain = formatted_string::parse_string(desc).tostring();
-    for (const auto label : {"护甲:", "闪避:", "格挡:", "负能量抗性:"})
+    for (const auto label : {"护甲:", "闪避:", "格挡:", "负能抗:"})
         CHECK(plain.find(label) != string::npos);
     // These rows share columns: the longer resistance label must leave room
     // for its pips and the following electric-resistance cell.
-    const size_t start = plain.find("负能量抗性:");
+    const size_t start = plain.find("负能抗:");
     REQUIRE(start != string::npos);
     const string tail = plain.substr(start, plain.find('\n', start) - start);
     CHECK(tail.find("电抗:") != string::npos);
@@ -188,7 +188,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     std::istringstream lines(plain);
     string line;
     while (std::getline(lines, line))
-        if (line.find("负能量抗性:") != string::npos
+        if (line.find("负能抗:") != string::npos
             || line.find("护甲:") != string::npos)
         {
             CHECK(strwidth(line) <= 80);

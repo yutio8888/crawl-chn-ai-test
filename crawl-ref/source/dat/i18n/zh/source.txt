@@ -5898,7 +5898,7 @@ ring of
 戒指
 %%%%
 rNeg
-负能量抗性
+负能抗
 %%%%
 roots
 根须
@@ -49769,3 +49769,19 @@ A chorus of shrieks assaults your mind.
 %%%%
 The starcursed mass shrieks in your mind.
 受星诅咒的聚合体在你的脑海中尖啸。
+
+%%%%
+blast of magma
+岩浆冲击
+
+%%%%
+blast of ice
+寒冰冲击
+
+%%%%
+cutting wind
+凌厉之风
+
+%%%%
+blast of rubble
+碎石冲击

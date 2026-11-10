@@ -7608,3 +7608,221 @@ TEST_CASE("Lua status lookup accepts the English key in Chinese display mode",
         i18n_cache_clear();
     }
 }
+
+#include <algorithm>
+#include "colour.h"
+#include "describe-spells.h"
+#include "map-cell.h"
+TEST_CASE("elemental text colours preserve complete UTF-8 characters",
+          "[zh-translation][quicksilver-colour][colour]")
+{
+    if (str_to_colour("magic", -1, false, true) != ETC_MAGIC)
+        init_element_colours();
+    const uint64_t parent_state = rng::current_generator().get_state();
+    const uint64_t parent_count = rng::current_generator().get_count();
+    const colour_t colours[] = {ETC_MAGIC, ETC_FIRE, ETC_ORB_GLOW, RED, BLACK};
+    for (const colour_t colour : colours)
+        for (const string text : {"(3d20)", "（3d20）", "水银", "A水银🧪z", "𠀀", ""})
+        {
+            CAPTURE(colour, text);
+            const string coloured = colourize_str(text, colour);
+            CHECK_FALSE(rule_garbled_utf8(coloured));
+            CHECK(formatted_string::parse_string(coloured).tostring() == text);
+        }
+    // Preserve the existing ASCII palette order and the ordinary-colour path.
+    CHECK(colourize_str("Ab3", ETC_MAGIC)
+          == "<lightmagenta>A</lightmagenta><lightblue>b</lightblue><magenta>3</magenta>");
+    CHECK(colourize_str("（3d20）", RED) == "<red>（3d20）</red>");
+    CHECK(colourize_str("A", BLACK) == "<darkgrey>A</darkgrey>");
+    // Elemental colours are hashes/palettes, not draws from gameplay RNG.
+    CHECK(rng::current_generator().get_state() == parent_state);
+    CHECK(rng::current_generator().get_count() == parent_count);
+}
+
+TEST_CASE("quicksilver monster spell descriptions preserve localized effects",
+          "[zh-translation][quicksilver-colour][monster-spells]")
+{
+    if (str_to_colour("magic", -1, false, true) != ETC_MAGIC)
+        init_element_colours();
+    init_properties();
+    init_monsters();
+    init_zap_index();
+    init_spell_descs();
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.hp = you.hp_max = 100;
+    rng::subgenerator random(0x515549434bULL, 0x53494c564552ULL);
+    for (const monster_type type : {MONS_QUICKSILVER_ELEMENTAL, MONS_QUICKSILVER_DRAGON})
+    {
+        scoped_monspeak_world world;
+        monster* source = world.place(type);
+        REQUIRE(source);
+        define_monster(*source);
+        const monster_info info(source);
+        REQUIRE(info.has_spells());
+        const string effect = spell_effect_string(SPELL_QUICKSILVER_BOLT, &info);
+        REQUIRE_FALSE(effect.empty());
+        formatted_string description;
+        describe_spellset(monster_spellset(info), nullptr, description, &info);
+        const string markup = description.to_colour_string();
+        CAPTURE(language, type, effect, markup);
+        CHECK_FALSE(rule_garbled_utf8(markup));
+        CHECK(description.tostring().find(effect) != string::npos);
+        CHECK(description.tostring().find(spell_title(SPELL_QUICKSILVER_BOLT)) != string::npos);
+    }
+}
+
+TEST_CASE("upheaval beam hits translate names while preserving raw identities",
+          "[zh-translation][playtest-fixes][upheaval-names]")
+{
+    init_properties();
+    init_monsters();
+    init_zap_index();
+    init_spell_descs();
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 1000;
+    scoped_monspeak_world world;
+    monster* source = world.place(MONS_SALAMANDER_TYRANT);
+    REQUIRE(source);
+    no_notes suppress_notes;
+    rng::subgenerator random(0x555048454156ULL, 0x414c4e414d45ULL);
+    const pair<const char*, beam_type> cases[] = {
+        {"blast of magma", BEAM_LAVA}, {"blast of ice", BEAM_ICE},
+        {"cutting wind", BEAM_AIR}, {"blast of rubble", BEAM_FRAG},
+    };
+    for (const auto& test : cases)
+    {
+        bolt beam;
+        beam.name = test.first;
+        beam.flavour = beam.real_flavour = test.second;
+        beam.thrower = KILL_MON_MISSILE;
+        beam.source_id = source->mid;
+        // Upheaval fires a local beam at each affected square.
+        beam.source = beam.target = you.pos();
+        beam.hit = AUTOMATIC_HIT;
+        beam.damage = dice_def(1, 1);
+        if (test.second == BEAM_LAVA)
+            beam.hit_verb = "engulfs";
+        msg::tee messages;
+        beam.fire();
+        const string output = messages.get_store();
+        const string display = T_(test.first);
+        CAPTURE(language, beam.name, output);
+        CHECK(beam.msg_generated);
+        CHECK(output.find(display) != string::npos);
+        CHECK(beam.name == test.first);
+        CHECK(beam.origin_spell == SPELL_NO_SPELL);
+        if (language == lang_t::ZH)
+        {
+            CHECK(display != test.first);
+            CHECK(output.find(test.first) == string::npos);
+        }
+    }
+}
+
+
+// The existing stream registry has no public initialized-state accessor.
+// Inspect it only here so this fixture never duplicates or destroys streams
+// already owned by its caller; no production API is added.
+namespace msg
+{
+extern vector<ostream*> stream_ptrs;
+}
+
+TEST_CASE("saved artefact line breaks stay inside one coloured floor message",
+          "[zh-translation][artefact][artefact-name-newline]")
+{
+    const bool owns_streams = msg::stream_ptrs.empty();
+    if (owns_streams)
+        msg::initialise_mpr_streams();
+    unwinder restore_streams([owns_streams]() {
+        if (owns_streams)
+            msg::deinitialise_mpr_streams();
+    });
+    init_properties();
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    scoped_monspeak_world world;
+    unwind_var<map_cell> restore_cell(env.map_knowledge(you.pos()));
+    env.map_knowledge(you.pos()).set_feature(DNGN_FLOOR);
+    unwind_var<int> restore_grid(env.igrid(you.pos()), NON_ITEM);
+    int slot = NON_ITEM;
+    for (int i = 0; i < MAX_ITEMS; ++i)
+        if (!env.item[i].defined())
+        {
+            slot = i;
+            break;
+        }
+    REQUIRE(slot != NON_ITEM);
+    unwind_var<item_def> restore_item(env.item[slot]);
+    item_def& item = env.item[slot];
+    item.clear();
+    item.base_type = OBJ_ARMOUR;
+    item.sub_type = ARM_ROBE;
+    item.quantity = 1;
+    item.flags = ISFLAG_IDENTIFIED;
+    rng::subgenerator random(0x4e414d454c494e45ULL, 0x464c4f4f52ULL);
+    REQUIRE(make_item_randart(item, true));
+    item.pos = you.pos();
+    item.link = NON_ITEM;
+    env.igrid(you.pos()) = slot;
+    unwind_var<vector<colour_mapping>> restore_colours(
+        Options.menu_colour_mappings, {colour_mapping("white:.*")});
+
+    // Simulate the already-stored name: no random name needs regenerating.
+    for (const string line_break : {"\n", "\r", "\r\n", ""})
+    {
+        const string first = language == lang_t::ZH ? "干净的毛皮匠" : "Clean Furrier";
+        const string second = language == lang_t::ZH ? "王子" : "Prince";
+        const string raw_name = first + line_break + second;
+        set_artefact_name(item, raw_name);
+        const string raw_full_name = item.name(DESC_A);
+        const string expected_name = line_break.empty() ? raw_full_name
+            : replace_all(raw_full_name, line_break, " ");
+        const string coloured = menu_colour_item_name(item, DESC_A);
+        CAPTURE(language, line_break, raw_full_name, coloured);
+        CHECK(coloured == "<white>" + expected_name + "</white>");
+        CHECK(formatted_string::parse_string(coloured).tostring() == expected_name);
+        CHECK(coloured.find('\n') == string::npos);
+        CHECK(coloured.find('\r') == string::npos);
+
+        // Flush the caller's pending message before serializing its history.
+        const string history_before = get_last_messages(NUM_STORED_MESSAGES, true);
+        vector<unsigned char> saved_history;
+        writer history_output(&saved_history);
+        save_messages(history_output);
+        {
+            unwinder restore_history([&saved_history]() {
+                clear_message_store();
+                reader history_input(saved_history);
+                history_input.setMinorVersion(TAG_MINOR_VERSION);
+                load_messages(history_input);
+            });
+            clear_message_store();
+            string observed;
+            channel_capturing_tee messages(observed);
+            item_check();
+            CHECK(messages.appends == 1);
+            CHECK(messages.channel == MSGCH_FLOOR_ITEMS);
+            const string captured = messages.get_store();
+            CHECK(captured.find(coloured) != string::npos);
+            CHECK(std::count(captured.begin(), captured.end(), '\n') == 1);
+            const string rendered = get_last_messages(1, false);
+            CHECK(rendered.find(expected_name) != string::npos);
+            CHECK(rendered.find("</white>") == string::npos);
+        }
+        CHECK(get_last_messages(NUM_STORED_MESSAGES, true) == history_before);
+        CHECK(item.props[ARTEFACT_NAME_KEY].get_string() == raw_name);
+        CHECK(get_artefact_name(item, true) == raw_name);
+        CHECK(item.name(DESC_A) == raw_full_name);
+    }
+}
