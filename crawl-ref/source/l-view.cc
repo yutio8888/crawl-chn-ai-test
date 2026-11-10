@@ -47,6 +47,26 @@ LUAFN(view_feature_at)
     return 1;
 }
 
+/*** Have we actually seen this location before? A square that's only magic
+ * mapped or that was forgotten with X->^F doesn't count as seen.
+ * @tparam int x
+ * @tparam int y
+ * @treturn boolean True if we've actually seen this location, false
+ *                  otherwise.
+ * @function seen_at
+ */
+LUAFN(view_seen_at)
+{
+    PLAYERCOORDS(p, 1, 2)
+    if (!map_bounds(p))
+    {
+        lua_pushboolean(ls, false);
+        return 1;
+    }
+    lua_pushboolean(ls, env.map_knowledge(p).seen());
+    return 1;
+}
+
 /*** What kind of cloud (if any) is here?
  * @tparam int x
  * @tparam int y
@@ -422,6 +442,7 @@ LUAFN(view_update_monsters)
 static const struct luaL_Reg view_lib[] =
 {
     { "feature_at", view_feature_at },
+    { "seen_at", view_seen_at },
     { "cloud_at", view_cloud_at },
     { "trap_at", view_trap_at },
     { "is_safe_square", view_is_safe_square },

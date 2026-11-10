@@ -625,7 +625,7 @@ static bool _issue_order(int keyn, int &mons_targd)
             args.restricts = DIR_TARGET;
             args.mode = TARG_NON_ACTOR;
             args.needs_path = false;
-            args.top_prompt = "Retreat in which direction?";
+            args.top_prompt = T_("Retreat in which direction?");
             dist targ;
             direction(targ, args);
 

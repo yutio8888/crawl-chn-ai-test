@@ -38,7 +38,7 @@ alligator	短吻鳄	domain=monsters; source=EN/ZH; Scope / comment=monster; sour
 alligator snapping turtle	巨鳄龟	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from snapping turtle → 鳄龟
 Amaemon	亚麦蒙	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Amaemon title	恶魔投毒者亚麦蒙	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
-ambrosia	神食	domain=items; source=EN/ZH; 依据 / 作用域=药水效果词根，沿用 catalog 与武僧描述；弃用该效果的“仙酿／仙酒”；普通传说中的 ambrosial nectar 按语境翻译；decision=D-C-096
+ambrosia	神食	domain=items; source=EN/ZH; 依据 / 作用域=药水效果词根，沿用 catalog 与武僧描述；该效果的状态灯、短标签与长描述同用此词根；弃用“仙酿／仙酒／仙酒醉”；普通传说中的 ambrosial nectar 按语境翻译；decision=D-C-096、D-C-107
 amulet	项链	domain=items; source=EN/ZH
 amulet of the Air	空气项链	domain=items; source=EN/ZH; Scope / comment=unrand; decision=D-B-021
 anaconda	水蟒	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -963,9 +963,11 @@ St. Lee	圣李	domain=items; source=EN/ZH; Scope / comment=unrand lore proper na
 Starburst	星爆	domain=spells; source=EN/ZH; 备注=✅
 Static Discharge	静电释放	domain=spells; source=EN/ZH; 备注=✅
 Statue Form	石像变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
-status|ambrosia-drunk	仙酒醉	domain=status; source=EN/ZH; 依据 / 作用域=药水作用状态的稳定版共享上下文键；ambrosia 药水仍用神食；decision=D-C-098（取代 D-C-096 的神食酣醉标签译法）
+status|Ambros	神食	domain=status; source=EN/ZH; 依据 / 作用域=ambrosia 状态灯短标签；与药水名及短标签同词根，宽度仍为两字；decision=D-C-107
+status|ambrosia-drunk	神食酣醉	domain=status; source=EN/ZH; 依据 / 作用域=药水作用状态的短标签（取消药水说明、@ 行与标记）；与 ambrosia 药水、状态灯同用神食词根；弃用仙酒醉；decision=D-C-107（取代 D-C-098 的仙酒醉及本行的兼容保留）
 status|Barbs	尖刺	domain=status; source=EN/ZH; 依据 / 作用域=玩家状态的稳定版共享上下文键；普通 barbs 仍用倒刺；decision=D-C-098（取代 D-C-096 的此状态标签译法）
 status|Blood	血甲	domain=status; source=EN/ZH; Scope / comment=defensive sanguine armour status; decision=D-D-005
+status|confused	混乱	domain=status; source=EN/ZH; 依据 / 作用域=玩家困惑状态的短标签（@ 行、标记、取消药水说明）；与灯标 `status|Conf`、长描述及怪物状态说明同根；不重命名固定法术名“困惑之触／困惑凝视”与感受消息；decision=D-C-108
 Staves	杖类	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Steam Ball	蒸汽球	domain=spells; source=EN/ZH; 备注=✅
 Steam Breath	蒸汽吐息	domain=spells; source=EN/ZH; 备注=✅

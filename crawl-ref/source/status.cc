@@ -14,6 +14,7 @@
 #include "fight.h" // weapon_cleaves
 #include "item-prop.h"
 #include "level-state-type.h"
+#include "lang-en-guard.h"
 #include "mon-abil.h"
 #include "mutation.h"
 #include "options.h"
@@ -305,6 +306,7 @@ bool fill_status_info(int status, status_info& inf)
                 inf.light_text = T_("Torch");
 
             inf.db_key     = "Torch";
+            inf.short_db_key = "lit torch";
             inf.short_text = T_("lit torch");
         }
     break;
@@ -352,6 +354,7 @@ bool fill_status_info(int status, status_info& inf)
             inf.light_colour = !you.can_drink(false) ? DARKGREY : RED;
             inf.light_text   = T_("-Potion");
             inf.db_key       = "-Potion";
+            inf.short_db_key = "unable to drink";
             inf.short_text   = T_("unable to drink");
             inf.long_text    = T_("You cannot drink potions.");
         }
@@ -390,6 +393,7 @@ bool fill_status_info(int status, status_info& inf)
             inf.light_colour = RED;
             inf.light_text   = T_("Mesm");
             inf.db_key       = "Mesm";
+            inf.short_db_key = "mesmerised";
             inf.short_text   = T_("mesmerised");
             inf.long_text    = T_("You are mesmerised.");
         }
@@ -402,6 +406,7 @@ bool fill_status_info(int status, status_info& inf)
             inf.light_colour = WHITE;
             inf.light_text   = T_("Peek");
             inf.db_key       = "Peek";
+            inf.short_db_key = "peeking";
             inf.short_text   = T_("peeking");
             inf.long_text    = T_("You are peeking down the stairs.");
         }
@@ -414,6 +419,7 @@ bool fill_status_info(int status, status_info& inf)
     case STATUS_BACKLIT:
         if (you.backlit())
         {
+            inf.short_db_key = "glowing";
             inf.short_text = T_("glowing");
             inf.long_text  = T_("You are glowing.");
         }
@@ -422,6 +428,7 @@ bool fill_status_info(int status, status_info& inf)
     case STATUS_UMBRA:
         if (you.umbra())
         {
+            inf.short_db_key = "wreathed by umbra";
             inf.short_text   = T_("wreathed by umbra");
             inf.long_text    = T_("You are wreathed by an umbra.");
         }
@@ -433,6 +440,7 @@ bool fill_status_info(int status, status_info& inf)
             inf.light_colour = RED;
             inf.light_text   = T_("Held");
             inf.db_key       = "Held";
+            inf.short_db_key = "held";
             inf.short_text   = T_("held");
             inf.long_text    = make_stringf(T_("You are %s."), held_status());
         }
@@ -454,6 +462,7 @@ bool fill_status_info(int status, status_info& inf)
             inf.light_colour = BROWN;
             inf.light_text   = T_("SlowM");
             inf.db_key       = "SlowM";
+            inf.short_db_key = "slowed movement";
             inf.short_text   = T_("slowed movement");
             inf.long_text    = T_("Your movement is slowed on this liquid ground.");
         }
@@ -527,6 +536,10 @@ bool fill_status_info(int status, status_info& inf)
         string skills = manual_skill_names();
         if (!skills.empty())
         {
+            {
+                ScopedLangEn english;
+                inf.short_db_key = "studying " + manual_skill_names(true);
+            }
             inf.short_text = T_("studying ") + manual_skill_names(true);
             inf.long_text = T_("You are studying ") + skills + T_(".");
         }
@@ -699,6 +712,7 @@ bool fill_status_info(int status, status_info& inf)
             inf.light_colour = MAGENTA;
             inf.light_text   = C_("status", "Drain");
             inf.db_key       = "Drain";
+            inf.short_db_key = "extremely drained";
             inf.short_text   = C_("status", "extremely drained");
             inf.long_text    = C_("status", "Your life force is extremely drained.");
         }
@@ -707,6 +721,7 @@ bool fill_status_info(int status, status_info& inf)
             inf.light_colour = RED;
             inf.light_text   = C_("status", "Drain");
             inf.db_key       = "Drain";
+            inf.short_db_key = "very heavily drained";
             inf.short_text   = C_("status", "very heavily drained");
             inf.long_text    = C_("status", "Your life force is very heavily drained.");
         }
@@ -715,6 +730,7 @@ bool fill_status_info(int status, status_info& inf)
             inf.light_colour = LIGHTRED;
             inf.light_text   = C_("status", "Drain");
             inf.db_key       = "Drain";
+            inf.short_db_key = "heavily drained";
             inf.short_text   = C_("status", "heavily drained");
             inf.long_text    = C_("status", "Your life force is heavily drained.");
         }
@@ -723,6 +739,7 @@ bool fill_status_info(int status, status_info& inf)
             inf.light_colour = YELLOW;
             inf.light_text   = C_("status", "Drain");
             inf.db_key       = "Drain";
+            inf.short_db_key = "drained";
             inf.short_text   = C_("status", "drained");
             inf.long_text    = C_("status", "Your life force is drained.");
         }
@@ -731,6 +748,7 @@ bool fill_status_info(int status, status_info& inf)
             inf.light_colour = LIGHTGREY;
             inf.light_text   = C_("status", "Drain");
             inf.db_key       = "Drain";
+            inf.short_db_key = "lightly drained";
             inf.short_text   = C_("status", "lightly drained");
             inf.long_text    = C_("status", "Your life force is lightly drained.");
         }
@@ -776,6 +794,8 @@ bool fill_status_info(int status, status_info& inf)
 
             inf.light_text = T_("Bribe");
             inf.db_key     = "Bribe";
+            inf.short_db_key = make_stringf("bribing [%s]",
+                comma_separated_line(places.begin(), places.end(), ", ", ", ").c_str());
             inf.short_text = make_stringf(T_("bribing [%s]"),
                                            comma_separated_line(places.begin(),
                                                                 places.end(),
@@ -997,6 +1017,7 @@ bool fill_status_info(int status, status_info& inf)
         inf.light_colour = WHITE;
         inf.light_text = T_("Blast") + string(max(0, (40 - you.duration[DUR_FORTRESS_BLAST_TIMER]) / 10), '.');
         inf.db_key     = "Blast";
+        inf.short_db_key = "fortress blast";
         inf.short_text = T_("fortress blast");
         inf.long_text = T_("Preparing a Fortress Blast.");
         break;
@@ -1018,6 +1039,7 @@ bool fill_status_info(int status, status_info& inf)
             const int bonus = trickster_bonus();
             if (bonus > 0)
             {
+                inf.short_db_key = make_stringf("trickster (+%d AC)", bonus);
                 inf.short_text = make_stringf(T_("trickster (+%d AC)"), bonus);
                 inf.long_text = make_stringf(T_("You are bolstered by spread misfortune (+%d AC)"), bonus);
             }
@@ -1182,6 +1204,7 @@ static void _describe_zot(status_info& inf)
     const int lvl = bezotting_level();
     if (lvl > 0)
     {
+        inf.short_db_key = "bezotted";
         inf.short_text = T_("bezotted");
         inf.long_text = T_("Zot is approaching!");
     }
@@ -1225,6 +1248,13 @@ static void _describe_glow(status_info& inf)
     inf.light_text = T_("Contam");
     inf.db_key     = "Contam";
 
+    // short_db_key is a canonical English @:-status identity consumed by
+    // C_("status", ...) and Lua status queries, so keep it English while the
+    // @: and long descriptions are displayed in the current language.
+    {
+        ScopedLangEn english;
+        inf.short_db_key = describe_contamination(false);
+    }
     inf.short_text = describe_contamination(false);
     inf.long_text = describe_contamination();
 }
@@ -1293,13 +1323,16 @@ static void _describe_poison(status_info& inf)
                         ? DARKGREY : _bad_ench_colour(pois_perc, 35, 100));
     inf.light_text   = T_("Pois");
     inf.db_key       = "Pois";
-    const string adj =
-         (pois_perc >= 100) ? (T_("lethally")) :
-         (pois_perc > 65)   ? (T_("seriously")) :
-         (pois_perc > 35)   ? (T_("quite"))
-                            : (T_("mildly"));
-    inf.short_text   = adj + T_(" poisoned");
-    inf.short_text  += make_stringf(T_(" (%d -> %d)"), you.hp, poison_survival());
+    const char *const adj_key =
+         (pois_perc >= 100) ? N_("lethally") :
+         (pois_perc > 65)   ? N_("seriously") :
+         (pois_perc > 35)   ? N_("quite")
+                            : N_("mildly");
+    const int survival = poison_survival();
+    inf.short_db_key = make_stringf("%s poisoned (%d -> %d)",
+                                   adj_key, you.hp, survival);
+    inf.short_text   = string(T_(adj_key)) + T_(" poisoned");
+    inf.short_text  += make_stringf(T_(" (%d -> %d)"), you.hp, survival);
     inf.long_text    = T_("You are ") + inf.short_text + T_(".");
 }
 
@@ -1371,6 +1404,12 @@ static void _describe_transform(status_info& inf)
     inf.long_text = form->get_description();
 
     const bool expire  = dur_expiring(DUR_TRANSFORMATION);
+    {
+        ScopedLangEn english;
+        inf.short_db_key = form->get_long_name();
+    }
+    if (expire && !inf.short_db_key.empty())
+        inf.short_db_key += " (expiring)";
     inf.light_colour = _dur_colour(GREEN, expire);
     _mark_expiring(inf, expire);
 }
@@ -1454,7 +1493,11 @@ static void _describe_channelled_spell(status_info& inf)
 
         case SPELL_MAXWELLS_COUPLING:
             inf.light_colour = LIGHTCYAN;
-            inf.light_text   = _charge_text().c_str();
+            // Keep an owned display string and publish the raw English frame
+            // as the canonical key, so the shared status translation and the
+            // status.txt detail lookup both apply after this switch.
+            inf.light_text   = _charge_text();
+            inf.db_key       = inf.light_text;
             break;
 
         case SPELL_CLOCKWORK_BEE:

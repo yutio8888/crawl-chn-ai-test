@@ -1128,6 +1128,7 @@ int SkillMenu::read_skill_target(skill_type sk)
 void SkillMenu::clear()
 {
     PrecisionMenu::clear(); // deletes m_ff, which deletes its entries
+    m_unattached_items.clear();
     m_switches.clear();
     m_ff = nullptr;
     m_help_button = nullptr;
@@ -1303,6 +1304,12 @@ void SkillMenu::toggle_flag(int flag)
     m_flags ^= flag;
 }
 
+void SkillMenu::attach_item(TextItem* item)
+{
+    if (!m_ff->attach_item(item))
+        m_unattached_items.emplace_back(item);
+}
+
 void SkillMenu::add_item(TextItem* item, const int size, coord_def &coord)
 {
     if (coord.x + size > m_max_coord.x)
@@ -1312,7 +1319,7 @@ void SkillMenu::add_item(TextItem* item, const int size, coord_def &coord)
     }
     item->set_bounds(coord, coord_def(coord.x + size, coord.y + 1));
     item->set_visible(true);
-    m_ff->attach_item(item);
+    attach_item(item);
     if (size)
         coord.x += size + 1;
 }
@@ -1589,7 +1596,7 @@ void SkillMenu::init_title()
                         coord_def(m_max_coord.x, m_pos.y + 1));
     ++m_pos.y;
     m_title->set_fg_colour(WHITE);
-    m_ff->attach_item(m_title);
+    attach_item(m_title);
     m_title->set_visible(true);
 }
 
@@ -1607,7 +1614,7 @@ void SkillMenu::init_button_row()
 
     m_help->set_bounds(m_pos, coord_def(m_max_coord.x, m_pos.y + help_height));
     m_pos.y += help_height;
-    m_ff->attach_item(m_help);
+    attach_item(m_help);
     m_help->set_fg_colour(LIGHTGREY);
     m_help->set_visible(true);
 

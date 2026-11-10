@@ -1463,7 +1463,7 @@ mimic reveal plural|%s are mimics!
 %s每回合有%d%%几率注意到你。\n
 %%%%
 %s has about %d%% to hit you.\n
-%s有约%d%% 几率命中你。\n
+%s有约%d%%几率命中你。\n
 %%%%
 %s has entered your field of view.
 %s进入了视野。
@@ -1472,7 +1472,7 @@ mimic reveal plural|%s are mimics!
 %s每回合有%d%%几率注意到你。\n
 %%%%
 %s have about %d%% to hit you.\n
-%s有约%d%% 几率命中你。\n
+%s有约%d%%几率命中你。\n
 %%%%
 %s hums with potential!
 %s嗡嗡作响，充满潜力！
@@ -1598,7 +1598,7 @@ mimic reveal plural|%s are mimics!
 %s不在附近！
 %%%%
 %s leaves your view.
-%s 离开了你的视野。
+%s离开了你的视野。
 %%%%
 %s life force is offered up.
 %s的生命力被献祭了。
@@ -2246,7 +2246,7 @@ barrage of energy
 ；使用<white>(s)</white>将%3$s的目标设置为%1$d.%2$d。
 %%%%
 <%s>%s</%s>; <%s>%s</%s> risk of failure
-<%s>%s</%s>; <%s>%s</%s> 失败风险
+<%s>%s</%s>；失败率 <%s>%s</%s>
 %%%%
 <blue>Apt </blue>
 <blue>资质</blue>
@@ -2281,11 +2281,11 @@ barrage of energy
 <green>Wyrmbane glows as a worthy foe approaches.</green>
 <green>屠龙者在强大的敌人接近时发出光芒。</green>
 %%%%
-<lightgreen>%d spell level left </lightgreen>
-<lightgreen>%d法术等级剩余</lightgreen>
+<lightgreen>%d spell slot left </lightgreen>
+<lightgreen>剩余法术容量：%d </lightgreen>
 %%%%
-<lightgreen>%d spell levels left</lightgreen>
-<lightgreen>%d法术等级剩余</lightgreen>
+<lightgreen>%d spell slots left</lightgreen>
+<lightgreen>剩余法术容量：%d</lightgreen>
 %%%%
 <lightgreen>Casting with Divine Exegesis: %d MP available</lightgreen>
 <lightgreen>用神圣释经施放：%d MP可用</lightgreen>
@@ -2432,7 +2432,7 @@ Clear target
 \n神眷 -
 %%%%
 \nLevel: %d
-\n等级: %d
+\n等级：%d
 %%%%
 \nTo read a description, press the key listed above. (AdB) indicates damage (the sum of A B-sided dice), (x%%) indicates the chance to defeat your Will, and (y) indicates the spell range
 \n要阅读描述，请按上方列出的按键。(AdB) 表示伤害（A个B面骰子之和），(x%%) 表示穿透意志的几率，(y) 表示法术射程
@@ -2720,7 +2720,7 @@ accepted the %s
 接受了%s
 %%%%
  accepts your kill.
- 接受了你的杀戮。
+接受了你的杀戮。
 %%%%
 acid
 强酸
@@ -2890,16 +2890,16 @@ Antique Weapon
 显得混乱了。
 %%%%
  appreciates the change of pace.
- 欣赏这种节奏的变化。
+欣赏这种节奏的变化。
 %%%%
  appreciates your contribution to the ecosystem.
- 对你为生态系统做出的贡献表示赞赏。
+对你为生态系统做出的贡献表示赞赏。
 %%%%
  appreciates your killing of a heretic priest.
- 对你杀死异端牧师表示赞赏。
+对你杀死异端牧师表示赞赏。
 %%%%
  appreciates your killing of a magic user.
- 对你杀死魔法使用者表示赞赏。
+对你杀死魔法使用者表示赞赏。
 %%%%
 archmagi
 大法师
@@ -3359,7 +3359,7 @@ Casting now could cause dangerous contamination. Continue?
 现在施放可能会对你造成危险的污染。继续吗？
 %%%%
 Casting: <w>%s</w> <lightgrey>(%s)</lightgrey>
-正在施放: <w>%s</w> <lightgrey>(%s)</lightgrey>
+正在施放：<w>%s</w><lightgrey>（%s）</lightgrey>
 %%%%
  casts you out from the arena!
 将你逐出了竞技场！
@@ -3684,7 +3684,7 @@ Demonic plants sprout around you!
  离开熔炉。
 %%%%
  departs this earthly plane.
- 离开了这个位面。
+离开了这个位面。
 %%%%
  detonates violently!
  剧烈地爆炸了！
@@ -3735,7 +3735,7 @@ disrobing
 消散了！
 %%%%
  dissipates.
- 消散了。
+消散了。
 %%%%
 dissipation
 消散
@@ -5116,8 +5116,8 @@ melt
  melts!
 融化了！
 %%%%
-Memorise %1$s, consuming %2$d spell level%3$s and leaving %4$d?%5$s%6$s
-记忆%1$s，消耗%2$d个法术等级，剩余%4$d个法位？%6$s
+Memorise %1$s, consuming %2$d spell slot%3$s and leaving %4$d?%5$s%6$s
+记忆%1$s，消耗%2$d法术容量，剩余%4$d？%5$s%6$s
 %%%%
  memory burns away to nothing.
 记忆燃烧殆尽。
@@ -5511,7 +5511,7 @@ Please finish your current recitation first.
  请输入 [Y]是 或 [n]否。
 %%%%
  Please select your 
- 请选择你的
+请选择你的
 %%%%
 Please submit a bug report.
 请提交一个错误报告。
@@ -5787,7 +5787,7 @@ rElec
 电抗
 %%%%
  religion
- 宗教
+宗教
 %%%%
 Remember %s name as what?
 将%s的名字记作什么？
@@ -5898,7 +5898,7 @@ ring of
 戒指
 %%%%
 rNeg
-负能量抗性
+负能抗
 %%%%
 roots
 根须
@@ -7645,7 +7645,7 @@ Thorny briars emerge from the ground!
 带刺的荆棘从地面冒出！
 %%%%
  thoroughly appreciates the change of pace.
- 非常欣赏这种节奏的变化。
+非常欣赏这种节奏的变化。
 %%%%
 Those are too big for your %s.
 那对你的%s来说太大了。
@@ -8975,7 +8975,7 @@ You can't see any susceptible monsters within range!
 你在范围内看不到任何可受影响怪物！（按<w>Z</w>强制施放）
 %%%%
 You can't see any susceptible monsters within range! (Use <w>Z</w> to cast anyway.)
-你在范围内看不到任何可受影响怪物！（按<w>Z</w>强制施放）
+你在范围内看不到任何可受影响的怪物！（按<w>Z</w>强制施放）
 %%%%
 You can't see anything there to clone.
 你看不到任何可以克隆的东西。
@@ -9305,7 +9305,7 @@ You devour %s%s!
 你吞噬了%s%s!
 %%%%
 You die...
-你死了...
+你死了……
 %%%%
 You dig through %s.
 你挖穿了%s。
@@ -10211,7 +10211,7 @@ You may now remember your ancestor's life.
 你现在可以回忆起先祖的生平了。
 %%%%
 You miscast %s.
-你施法%s失误了。
+你施放%s时出现施法失误。
 %%%%
 You must be standing atop the corpse of a fallen apostle!
 你必须站在倒下的使徒的尸体上！
@@ -12924,25 +12924,25 @@ completely
 <yellow>你好，欢迎来到地牢爬行石汤 %s！</yellow>\n<brown>(c) 版权所有 1997-2002 Linley Henzell，2002-2025 Crawl 开发团队
 %%%%
  are unaffected.
- 不受影响。
+不受影响。
 %%%%
  barely resist.
- 勉强抵抗住了。
+勉强抵抗住了。
 %%%%
  struggle to resist.
- 奋力抵抗。
+奋力抵抗。
 %%%%
  resist with significant effort.
- 费了很大力气抵抗住了。
+费了很大力气抵抗住了。
 %%%%
  resist with some effort.
- 费了些力气抵抗住了。
+费了些力气抵抗住了。
 %%%%
  easily resist.
- 轻松抵抗住了。
+轻松抵抗住了。
 %%%%
  resist with almost no effort.
- 几乎毫不费力就抵抗住了。
+几乎毫不费力就抵抗住了。
 %%%%
 , vulnerable to %s
 ，受%s影响
@@ -17313,10 +17313,10 @@ Your heavy armour
 你的重甲
 %%%%
  slows your attacks with this weapon by %.1f
- 使此武器的攻击延迟增加%.1f
+使此武器的攻击延迟增加%.1f
 %%%%
  slightly slows your attacks with this weapon
- 略微减慢了此武器的攻击速度
+略微减慢了此武器的攻击速度
 %%%%
 Wearing heavy armour would reduce your attack speed with this weapon
 穿戴重甲会降低你使用此武器的攻击速度
@@ -17489,7 +17489,7 @@ You feel more buoyant.
 你感觉更加有浮力。
 %%%%
 You pick up the %s and begin to read...
-你捡起了%s并开始阅读...
+你捡起了%s并开始阅读……
 %%%%
 %s stands up to serve you!
 %s站起来为你服务！
@@ -21089,7 +21089,7 @@ No target in view!
  选择物品
 %%%%
 describe
- 描述
+描述
 %%%%
  in shopping list
 （在购物清单中）
@@ -23516,7 +23516,7 @@ average
 平均
 %%%%
 Your damage rating with %s is about %s.
-你用%s的伤害评级约为%s
+%s的伤害评级约为%s。
 %%%%
 You fade completely from view now that you are no longer glowing from magical contamination.
 你完全从视野中消失了，因为你不再因魔法污染而发光。
@@ -24750,7 +24750,7 @@ You are divinely vitalised.
 你被神圣力量注入了活力。
 %%%%
 You are enlightened. (Will+)
-你处于顿悟状态。（意志+）
+你处于启迪状态。（意志+）
 %%%%
 You are enveloped in primordial darkness.
 你被原初黑暗包围了。
@@ -26703,7 +26703,7 @@ Select a spell, or
         学派：%2$s
 %%%%
         Fail: %s
-        失败率: %s
+        失败率：%s
 %%%%
 Power
 威力
@@ -27904,16 +27904,16 @@ mark item for purchase
 标记购买物品         
 %%%%
 examine item             
-检查物品                 
+检视物品                 
 %%%%
 Choose to examine item  
-选择检查物品        
+选择检视物品        
 %%%%
  on 
  ，位于
 %%%%
 , or 
-、或 
+或
 %%%%
 :
 ：
@@ -37438,7 +37438,7 @@ When enemies are summoned, they will appear beside you instead.
 敌人被召唤时，它们会转而出现在你身边。
 %%%%
 Mortality
-必死
+索命
 %%%%
 When alone and injured, reapers sometimes come to claim you.
 独自一人且受伤时，收割者有时会来索命。
@@ -37756,7 +37756,7 @@ status|Agi
 敏捷
 %%%%
 status|Ambros
-仙酒
+神食
 %%%%
 status|Aqua
 水灵
@@ -38338,7 +38338,7 @@ status|agile
 敏捷
 %%%%
 status|ambrosia-drunk
-仙酒醉
+神食酣醉
 %%%%
 status|animating dead
 复活死者
@@ -38383,7 +38383,7 @@ status|cleaving
 横扫中
 %%%%
 status|confused
-困惑
+混乱
 %%%%
 status|confusing by touch
 触之迷惑
@@ -49425,3 +49425,703 @@ tile offsets|weapon
 %%%%
 conjure a freezing cloud
 制造冰冻云
+%%%%
+    (Left/Right/Tab to switch category)
+    （左/右/Tab切换类别）
+%%%%
+Drop what? (Left/Right/Tab to switch category) 
+丢弃什么？（左/右/Tab切换类别） 
+%%%%
+Doom: 
+厄运: 
+%%%%
+Doom 
+厄运 
+%%%%
+Contam: 
+诱变辐射: 
+%%%%
+Cont 
+辐射 
+%%%%
+form melding|All Headgear
+全部头部装备
+
+%%%%
+hit chance|You have about %1$d%% chance to hit with %2$s
+%2$s的命中率约为%1$d%%
+
+%%%%
+Loading complete, press any key to start.
+载入完成，按任意键开始。
+
+%%%%
+Loading spells and features...
+正在载入法术和地形……
+
+%%%%
+Loading maps...
+正在载入地图……
+
+%%%%
+[L-Click] Move
+[左键] 移动
+
+%%%%
+[L-Click] Attack
+[左键] 攻击
+
+%%%%
+[L-Click] Move towards
+[左键] 向此处移动
+
+%%%%
+[L-Click] Travel
+[左键] 旅行
+
+%%%%
+[L-Click] Open door (%)
+[左键] 开门 (%)
+
+%%%%
+[L-Click] Pick up items (%)
+[左键] 拾取物品 (%)
+
+%%%%
+[L-Click] Use stairs (%)
+[左键] 使用楼梯 (%)
+
+%%%%
+[L-Click] Pray at altar (%)
+[左键] 在祭坛前祈祷 (%)
+
+%%%%
+[L-Click] Wait one turn (%)
+[左键] 等待一回合 (%)
+
+%%%%
+[Shift + L-Click] Close (%)
+[Shift + 左键] 关门 (%)
+
+%%%%
+[R-Click] Overview (%)
+[右键] 角色概览 (%)
+
+%%%%
+[R-Click] Describe
+[右键] 查看描述
+
+%%%%
+[Shift + R-Click] Religion (%)
+[Shift + 右键] 宗教 (%)
+
+%%%%
+[L-Click] 
+[左键] 
+
+%%%%
+[L-Click / Shift + L-Click] 
+[左键 / Shift + 左键] 
+
+%%%%
+[Shift + L-Click] 
+[Shift + 左键] 
+
+%%%%
+[Shift + L-Click] enter shop (%)
+[Shift + 左键] 进入商店 (%)
+
+%%%%
+[Shift + L-Click] pray at altar (%)
+[Shift + 左键] 在祭坛前祈祷 (%)
+
+%%%%
+[Shift + L-Click] enter gate (%)
+[Shift + 左键] 进入大门 (%)
+
+%%%%
+[Shift + L-Click] use stairs (%)
+[Shift + 左键] 使用楼梯 (%)
+
+%%%%
+unarmed hit chance|You have about %1$d%% chance to hit with %2$s
+你用%2$s攻击的命中率约为%1$d%%
+
+%%%%
+stone stack quantity|%s 
+%s块
+
+%%%%
+score birth|Began as a %1$s %2$s on %3$s.
+%3$s以%1$s%2$s开始冒险。
+
+%%%%
+score death place|...
+……
+
+%%%%
+score sentence|.
+。
+
+%%%%
+feature note|Found %s.
+发现了%s。
+
+%%%%
+Do you really want to enter wizard mode?
+你真的想进入巫师模式吗？
+
+%%%%
+Make which kind of shop?
+创造哪种商店？
+
+%%%%
+shop type|any
+任意类型
+
+%%%%
+monster equipment| armed with 
+装备着
+
+%%%%
+monster equipment| wielding 
+持握着
+
+%%%%
+monster equipment| and 
+以及
+
+%%%%
+monster equipment|carrying 
+携带着
+
+%%%%
+Your pack is full.
+你的背包已满。
+
+%%%%
+Pick up %s? ((y)es/(n)o/(a)ll/(m)enu/*?g,/q)
+拾取%s？是（y）/否（n）/全部（a）/菜单（m、*、?、g、,）/取消（q、Esc）
+%%%%
+%s (improved by +1).
+%s（提升了+1）。
+
+%%%%
+attack prompt action|attack
+攻击
+
+%%%%
+attack prompt action|blast
+冲击
+
+%%%%
+attack prompt action|blind
+施放致盲法术
+
+%%%%
+attack prompt action|conjure a freezing cloud
+制造冰冻云
+
+%%%%
+attack prompt action|drain life
+汲取生命
+
+%%%%
+attack prompt action|hailstorm
+降下冰雹
+
+%%%%
+attack prompt action|hurl reagents
+投掷炼金试剂
+
+%%%%
+attack prompt action|irradiate
+释放辐射
+
+%%%%
+attack prompt action|make a polar vortex
+制造极地漩涡
+
+%%%%
+attack prompt action|poison
+释放毒素
+
+%%%%
+attack prompt action|refrigerate
+施放制冷法术
+
+%%%%
+attack prompt action|release a tremorstone
+释放震石
+
+%%%%
+attack prompt action|Slouch
+施展懒散步伐
+
+%%%%
+attack prompt action|unravel
+解构魔法效果
+
+%%%%
+attack prompt action|zap
+电击
+
+%%%%
+[Stash: %s]
+[储藏：%s]
+
+%%%%
+Aim the phial where?
+要将洪水之瓶瞄准哪里？
+
+%%%%
+Aiming: <white>Phantom Mirror</white>
+瞄准：<white>幻影镜</white>
+
+%%%%
+Aiming: <white>Overgrow</white>
+瞄准：<white>过度生长</white>
+
+%%%%
+Retreat in which direction?
+向哪个方向撤退？
+
+%%%%
+You are lightly contaminated with residual magic.
+你受到残余魔法的轻度污染。
+
+%%%%
+You are dangerously contaminated with residual magic.
+你受到残余魔法的污染，已达危险程度。
+
+%%%%
+You are extremely contaminated with residual magic.
+你受到残余魔法的极重度污染。
+
+%%%%
+You are completely saturated with residual magic!
+你的身体已被残余魔法完全浸透！
+
+%%%%
+lightly contaminated
+轻度污染
+
+%%%%
+dangerously contaminated
+污染已达危险程度
+
+%%%%
+extremely contaminated
+极重度污染
+
+%%%%
+completely saturated
+完全浸透
+
+%%%%
+Your magical contamination has faded to a safe level.
+你的魔法污染已减轻至安全程度。
+
+%%%%
+the entropic weave
+熵之编织
+
+%%%%
+Your corrupting presence
+你的腐化存在
+
+%%%%
+a flying bit
+飞来的碎块
+
+%%%%
+status|Charge-
+蓄电-
+
+%%%%
+status|Charge/
+蓄电/
+
+%%%%
+status|Charge|
+蓄电|
+
+%%%%
+status|Charge\\
+蓄电\
+
+%%%%
+%s writhes in pain as voices assail %s mind.
+%s痛苦地扭动着，阵阵声音正冲击着%s心智。
+
+%%%%
+A cacophony of accursed wailing tears at your sanity!
+杂乱刺耳的诅咒哀嚎声撕扯着你的理智！
+
+%%%%
+A deafening chorus of shrieks assaults your mind!
+震耳欲聋的齐声尖啸冲击着你的心智！
+
+%%%%
+A chorus of shrieks assaults your mind.
+齐声尖啸冲击着你的心智。
+
+%%%%
+The starcursed mass shrieks in your mind.
+受星诅咒的聚合体在你的脑海中尖啸。
+
+%%%%
+blast of magma
+岩浆冲击
+
+%%%%
+blast of ice
+寒冰冲击
+
+%%%%
+cutting wind
+凌厉之风
+
+%%%%
+blast of rubble
+碎石冲击
+
+%%%%
+gold quantity|pieces
+枚
+
+%%%%
+?
+？
+
+%%%%
+ (once)
+（1次）
+
+%%%%
+ (twice)
+（2次）
+
+%%%%
+ (thrice)
+（3次）
+
+%%%%
+monster equipment|,
+，
+
+%%%%
+slime size|large
+大型
+
+%%%%
+slime size|very large
+超大型
+
+%%%%
+slime size|enormous
+巨型
+
+%%%%
+slime size|titanic
+泰坦级
+
+%%%%
+hand|front paw
+前爪
+
+%%%%
+hand|front paws
+前爪
+
+%%%%
+hand|front talon
+前爪
+
+%%%%
+hand|front talons
+前爪
+
+%%%%
+hand|front hoof
+前蹄
+
+%%%%
+hand|pincer
+螯钳
+
+%%%%
+hand|wing
+翅膀
+
+%%%%
+hand|wings
+翅膀
+
+%%%%
+hand|antenna
+触角
+
+%%%%
+hand|antennae
+触角
+
+%%%%
+hand|eye-stalk
+眼柄
+
+%%%%
+hand|eye-stalks
+眼柄
+
+%%%%
+hand|leaf
+叶片
+
+%%%%
+hand|leaves
+叶片
+
+%%%%
+hand|stratum
+云层
+
+%%%%
+hand|strata
+云层
+
+%%%%
+hand|body
+身体
+
+%%%%
+hand|rhizome
+根茎
+
+%%%%
+hand|rhizomes
+根茎
+
+%%%%
+hand|pupil
+瞳孔
+
+%%%%
+hand|pupils
+瞳孔
+
+%%%%
+hand|handbug
+虫手
+
+%%%%
+hand|handbugs
+虫手
+
+%%%%
+foot|leg
+腿
+
+%%%%
+foot|legs
+腿
+
+%%%%
+foot|claw
+爪
+
+%%%%
+foot|claws
+爪
+
+%%%%
+foot|stem
+茎
+
+%%%%
+foot|underside
+腹部
+
+%%%%
+foot|footbug
+虫足
+
+%%%%
+foot|footbugs
+虫足
+
+%%%%
+dancing weapon|dancing %s
+舞动的%s
+
+%%%%
+spectral weapon|spectral %s
+灵体%s
+
+%%%%
+armour echo|echoed %s
+回响的%s
+
+%%%%
+haunted armour|haunted %s
+怨灵%s
+
+%%%%
+draconic colour|black
+黑
+
+%%%%
+draconic colour|yellow
+黄
+
+%%%%
+draconic colour|green
+绿
+
+%%%%
+draconic colour|purple
+紫
+
+%%%%
+draconic colour|red
+红
+
+%%%%
+draconic colour|white
+白
+
+%%%%
+draconic colour|grey
+灰
+
+%%%%
+draconic colour|pale
+苍白
+
+%%%%
+ugly thing colour|red
+红色
+
+%%%%
+ugly thing colour|brown
+褐色
+
+%%%%
+ugly thing colour|green
+绿色
+
+%%%%
+ugly thing colour|cyan
+青色
+
+%%%%
+ugly thing colour|purple
+紫色
+
+%%%%
+ugly thing colour|white
+白色
+
+%%%%
+batters
+砸中
+
+%%%%
+grasp
+攫住
+
+%%%%
+grips
+攫住
+
+%%%%
+slices through
+贯穿
+
+%%%%
+verb|constrict
+缠住
+
+%%%%
+verb|envenom
+毒害
+
+%%%%
+verb|freeze
+冻住
+
+%%%%
+verb|shock
+电击
+
+%%%%
+escape verb|slip
+滑脱
+
+%%%%
+escape verb|burst
+猛然
+
+%%%%
+escape verb|dance
+舞动
+
+%%%%
+escape verb|jump
+跃起
+
+%%%%
+attack verb|touch
+触碰
+
+%%%%
+attack verb|constrict
+缠住
+
+%%%%
+Cast it anyway?
+仍要施放吗？
+
+%%%%
+Attack anyway?
+仍要攻击吗？
+
+%%%%
+The arc blade's discharge
+电弧之刃的放电
+
+%%%%
+Detonate Monarch Bomb
+引爆君主炸弹
+
+%%%%
+The tentacle is hauled back through the portal!
+触手被拖回了传送门！
+
+%%%%
+With a roar, the tentacle is hauled back through the portal!
+伴随着一声咆哮，触手被拖回了传送门！
+
+%%%%
+hand|front foot
+前足
+
+%%%%
+hand|front feet
+前足
+
+%%%%
+foot|tentacle
+触手
+
+%%%%
+attack prompt action|invoke Cleansing Flame
+祈求净化之焰
+
+%%%%
+escape verb|bolt
+疾冲
+
+%%%%
+Breathe anyway?
+仍要吐息吗？

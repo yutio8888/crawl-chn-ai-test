@@ -399,9 +399,7 @@ static bool _sack_of_spiders()
 
     const bool made_mons = _spill_out_spiders();
     if (made_mons)
-    {
         mpr(T_("...and things crawl out!"));
-    }
 
     const bool webbed = _place_webs();
     if (!made_mons && !webbed)
@@ -411,9 +409,7 @@ static bool _sack_of_spiders()
     }
 
     if (!made_mons)
-    {
         mpr(T_("...but only cobwebs fall out."));
-    }
     return true;
 }
 
@@ -508,13 +504,9 @@ void wind_blast(actor* agent, int pow, coord_def target)
     {
         // Nemelex card only.
         if (pow > 120)
-        {
             mpr(T_("A mighty gale blasts forth from the card!"));
-        }
         else
-        {
             mpr(T_("A fierce wind blows from the card."));
-        }
     }
 
     noisy(8, agent->pos());
@@ -615,7 +607,7 @@ static bool _phial_of_floods(dist *target)
     // TODO: this needs a custom targeter
     direction_chooser_args args;
     args.mode = TARG_HOSTILE;
-    args.top_prompt = "Aim the phial where?";
+    args.top_prompt = T_("Aim the phial where?");
 
     unique_ptr<targeter> hitfunc = find_spell_targeter(SPELL_PRIMAL_WAVE,
             power, beam.range);
@@ -651,7 +643,7 @@ static spret _phantom_mirror(dist *target)
     args.restricts = DIR_TARGET;
     args.needs_path = false;
     args.self = confirm_prompt_type::cancel;
-    args.top_prompt = "Aiming: <white>Phantom Mirror</white>";
+    args.top_prompt = T_("Aiming: <white>Phantom Mirror</white>");
     args.hitfunc = &tgt;
     if (!spell_direction(*target, beam, &args))
         return spret::abort;

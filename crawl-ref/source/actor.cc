@@ -24,6 +24,8 @@
 #include "mon-behv.h"
 #include "mon-death.h"
 #include "mon-util.h"
+#include "movement-i18n.h"
+#include "options.h"
 #include "religion.h"
 #include "spl-damage.h"
 #include "stepdown.h"
@@ -476,8 +478,24 @@ void actor::end_constriction(mid_t whom, bool intentional, bool quiet,
         // blinking or similar
         if (!escape_verb.empty())
         {
+            // Some callers pass raw identities; monster movement can already
+            // supply a localized display. Preserve English and unknown values.
+            string display = escape_verb;
+            if (Options.language == lang_t::ZH)
+            {
+                if (escape_verb == "blink" || escape_verb == "hop"
+                    || escape_verb == "leap")
+                {
+                    display = translated_move_phrase(escape_verb.c_str(),
+                                                     move_phrase_context::bare);
+                }
+                else if (escape_verb == "slip" || escape_verb == "burst"
+                         || escape_verb == "dance" || escape_verb == "jump"
+                         || escape_verb == "bolt")
+                    display = C_("escape verb", escape_verb.c_str());
+            }
             mprf(T_("%s %s free of %s!"),
-                 constrictee->name(DESC_THE).c_str(), escape_verb.c_str(),
+                 constrictee->name(DESC_THE).c_str(), display.c_str(),
                  lowercase(attacker_desc).c_str());
         }
         else
@@ -788,8 +806,9 @@ void actor::constriction_damage_defender(actor &defender)
         }
 
         mprf_p(T_("%s %s %s%s%s"), attacker_desc.c_str(),
-             force_plural ? T_("constrict")
-                          : verb_for_display(N_("constrict")).c_str(),
+             force_plural ? C_("verb", "constrict")
+                          : verb_for_display(NC_("verb", "constrict"),
+                                             "verb").c_str(),
              defender.name(DESC_THE).c_str(),
 #ifdef DEBUG_DIAGNOSTICS
              make_stringf(" for %d", damage).c_str(),

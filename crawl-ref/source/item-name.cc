@@ -230,7 +230,20 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
         if (descrip != DESC_BASENAME && descrip != DESC_QUALNAME
             && descrip != DESC_DBNAME && !always_plural)
         {
-            if (quantity_in_words)
+            if (Options.language == lang_t::ZH && base_type == OBJ_MISSILES
+                && (sub_type == MI_STONE || sub_type == MI_LARGE_ROCK))
+            {
+                const string count = quantity_in_words
+                    ? number_in_words(quantity) : make_stringf("%d", quantity);
+                buff << make_stringf(C_("stone stack quantity", "%s "), count.c_str());
+            }
+            else if (Options.language == lang_t::ZH && base_type == OBJ_GOLD)
+            {
+                const string count = quantity_in_words
+                    ? number_in_words(quantity) : make_stringf("%d", quantity);
+                buff << count << C_("gold quantity", "pieces");
+            }
+            else if (quantity_in_words)
                 buff << number_in_words(quantity) << " ";
             else
                 buff << quantity << " ";
@@ -1823,7 +1836,11 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         if (!terse && !dbname && !basename)
         {
             if (_missile_brand_is_prefix(msl_brand)) // see below for postfix brands
-                buff << missile_brand_name(*this, MBN_NAME) << ' ';
+            {
+                buff << missile_brand_name(*this, MBN_NAME);
+                if (Options.language != lang_t::ZH)
+                    buff << ' ';
+            }
         }
 
         buff << missile_name(static_cast<missile_type>(item_typ));
@@ -2244,16 +2261,17 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         if (dbname && item_typ == CORPSE_SKELETON)
             return T_("decaying skeleton");
 
+        const char *separator = Options.language == lang_t::ZH && !dbname ? "" : " ";
         monster_flags_t name_flags;
         const string _name = get_corpse_name(*this, &name_flags);
         const monster_flags_t name_type = name_flags & MF_NAME_MASK;
 
         if (!_name.empty() && name_type == MF_NAME_ADJECTIVE)
-            buff << _name << " ";
+            buff << _name << separator;
 
         string corpse_species;
         if ((name_flags & MF_NAME_SPECIES) && name_type == MF_NAME_REPLACE)
-            buff << _name << " ";
+            buff << _name << separator;
         else if (!dbname && !starts_with(_name, "the "))
         {
             const monster_type mc = mon_type;
@@ -2264,14 +2282,14 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         if (!corpse_species.empty() && !_name.empty()
             && name_type == MF_NAME_SUFFIX)
         {
-            buff << mons_name_with_suffix(corpse_species, _name) << ' ';
+            buff << mons_name_with_suffix(corpse_species, _name) << separator;
         }
         else
         {
             if (!corpse_species.empty())
-                buff << corpse_species << ' ';
+                buff << corpse_species << separator;
             if (!_name.empty() && name_type == MF_NAME_SUFFIX)
-                buff << _name << " ";
+                buff << _name << separator;
         }
 
         if (item_typ == CORPSE_BODY)
@@ -4001,7 +4019,10 @@ string item_prefix(const item_def &item, bool temp)
 string menu_colour_item_name(const item_def &item, description_level_type desc)
 {
     const string cprf      = item_prefix(item, false);
-    const string item_name = item.name(desc);
+    // Names loaded from old saves can contain TextDB line breaks. Keep the
+    // stored name intact, but do not split a colour span across messages.
+    const string item_name = replace_all_of(
+        replace_all(item.name(desc), "\r\n", " "), "\r\n", " ");
 
     const int col = menu_colour(item_name, cprf, "pickup", false);
     if (col == -1)

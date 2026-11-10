@@ -442,6 +442,30 @@ bool FTFontWrapper::is_cjk_primary() const
     return FT_Get_Char_Index(face, 0x4E00) != 0;
 }
 
+// Both the cached free-form metrics and the atlas must resolve the same glyph.
+FT_Face FTFontWrapper::glyph_face(char32_t ch, FT_UInt &index) const
+{
+    FT_Face selected = face;
+    index = tilefont_internal::lookup_glyph(ch, [&](char32_t candidate)
+    {
+        selected = face;
+        FT_UInt found = FT_Get_Char_Index(face, candidate);
+        if (!found && cjk_face)
+        {
+            found = FT_Get_Char_Index(cjk_face, candidate);
+            if (found)
+                selected = cjk_face;
+        }
+        return found;
+    });
+    if (!index)
+    {
+        selected = face;
+        index = FT_Get_Char_Index(face, MISSING_CHAR);
+    }
+    return selected;
+}
+
 FTFontWrapper::GlyphInfo& FTFontWrapper::get_glyph_info(char32_t ch)
 {
     // cache glyph info in a single large buffer by unicode codepoint
@@ -456,19 +480,8 @@ FTFontWrapper::GlyphInfo& FTFontWrapper::get_glyph_info(char32_t ch)
     GlyphInfo &glyph = m_glyphs[ch];
     if (!glyph.valid)
     {
-        FT_Int glyph_index = FT_Get_Char_Index(face, ch);
-        FT_Face use_face = face;
-
-        // Try CJK fallback font if the primary font lacks this glyph
-        if (!glyph_index && cjk_face)
-        {
-            glyph_index = FT_Get_Char_Index(cjk_face, ch);
-            if (glyph_index)
-                use_face = cjk_face;
-        }
-
-        if (!glyph_index)
-            glyph_index = FT_Get_Char_Index(use_face, MISSING_CHAR);
+        FT_UInt glyph_index;
+        FT_Face use_face = glyph_face(ch, glyph_index);
 
         // need to use FT_LOAD_RENDER, otherwise glyph->bitmap isn't loaded
         FT_Error error = FT_Load_Glyph(use_face, glyph_index, FT_LOAD_RENDER |
@@ -517,19 +530,8 @@ void FTFontWrapper::load_glyph(unsigned int c, char32_t uchar)
 {
     // get on with rendering the new glyph
     FT_Error error;
-    FT_Int glyph_index = FT_Get_Char_Index(face, uchar);
-    FT_Face use_face = face;
-
-    // Try CJK fallback font if the primary font lacks this glyph
-    if (!glyph_index && cjk_face)
-    {
-        glyph_index = FT_Get_Char_Index(cjk_face, uchar);
-        if (glyph_index)
-            use_face = cjk_face;
-    }
-
-    if (!glyph_index)
-        glyph_index = FT_Get_Char_Index(use_face, MISSING_CHAR);
+    FT_UInt glyph_index;
+    FT_Face use_face = glyph_face(uchar, glyph_index);
 
     error = FT_Load_Glyph(use_face, glyph_index, FT_LOAD_RENDER |
         (Options.tile_font_ft_light ? FT_LOAD_TARGET_LIGHT : 0));

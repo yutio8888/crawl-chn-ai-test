@@ -687,20 +687,20 @@ static void _starcursed_scream(monster* mon, actor* target)
 
     if (n > 7)
     {
-        message = "A cacophony of accursed wailing tears at your sanity!";
+        message = N_("A cacophony of accursed wailing tears at your sanity!");
         if (coinflip())
             stun = 2;
     }
     else if (n > 4)
     {
-        message = "A deafening chorus of shrieks assaults your mind!";
+        message = N_("A deafening chorus of shrieks assaults your mind!");
         if (one_chance_in(3))
             stun = 1;
     }
     else if (n > 1)
-        message = "A chorus of shrieks assaults your mind.";
+        message = N_("A chorus of shrieks assaults your mind.");
     else
-        message = "The starcursed mass shrieks in your mind.";
+        message = N_("The starcursed mass shrieks in your mind.");
 
     dam = 4 + random2(5) + random2(n * 3 / 2);
 
@@ -710,13 +710,13 @@ static void _starcursed_scream(monster* mon, actor* target)
         {
             mprf(target->as_monster()->friendly() ? MSGCH_FRIEND_SPELL
                                                   : MSGCH_MONSTER_SPELL,
-                 "%s writhes in pain as voices assail %s mind.",
+                 T_("%s writhes in pain as voices assail %s mind."),
                  target->name(DESC_THE).c_str(),
                  target->pronoun(PRONOUN_POSSESSIVE).c_str());
         }
     }
     else
-        mprf(MSGCH_MONSTER_SPELL, "%s", message);
+        mprf(MSGCH_MONSTER_SPELL, "%s", T_(message));
     target->hurt(mon, dam, BEAM_MISSILE, KILLED_BY_BEAM, "",
                  "accursed screaming");
 

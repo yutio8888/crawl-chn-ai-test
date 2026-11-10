@@ -262,7 +262,7 @@
 
 | EN | ZH | 依据 / 作用域 |
 |----|----|---------------|
-| ambrosia | 神食 | 药水效果词根，沿用 catalog 与武僧描述；弃用该效果的“仙酿／仙酒”；普通传说中的 ambrosial nectar 按语境翻译；decision=D-C-096 |
+| ambrosia | 神食 | 药水效果词根，沿用 catalog 与武僧描述；该效果的状态灯、短标签与长描述同用此词根；弃用“仙酿／仙酒／仙酒醉”；普通传说中的 ambrosial nectar 按语境翻译；decision=D-C-096、D-C-107 |
 
 ### 基础物品显示名称（脚本 SSOT）
 
@@ -553,7 +553,9 @@
 | dazed | 眩晕 | catalog 状态与催眠相关描述；该状态叙述的 daze／dazing 同根；不全局替换其他机制的“震慑”或一般“恍惚”；decision=D-C-096 |
 | barbs | 倒刺 | 造成移动伤害的刺及状态词根；复用 Throw Barbs，不混作普通尖刺；decision=D-C-096 |
 | `status\|Barbs` | 尖刺 | 玩家状态的稳定版共享上下文键；普通 barbs 仍用倒刺；decision=D-C-098（取代 D-C-096 的此状态标签译法） |
-| `status\|ambrosia-drunk` | 仙酒醉 | 药水作用状态的稳定版共享上下文键；ambrosia 药水仍用神食；decision=D-C-098（取代 D-C-096 的神食酣醉标签译法） |
+| `status\|ambrosia-drunk` | 神食酣醉 | 药水作用状态的短标签（取消药水说明、@ 行与标记）；与 ambrosia 药水、状态灯同用神食词根；弃用仙酒醉；decision=D-C-107（取代 D-C-098 的仙酒醉及本行的兼容保留） |
+| `status\|Ambros` | 神食 | ambrosia 状态灯短标签；与药水名及短标签同词根，宽度仍为两字；decision=D-C-107 |
+| `status\|confused` | 混乱 | 玩家困惑状态的短标签（@ 行、标记、取消药水说明）；与灯标 `status\|Conf`、长描述及怪物状态说明同根；不重命名固定法术名“困惑之触／困惑凝视”与感受消息；decision=D-C-108 |
 | noxious fumes | 毒烟 | 造成混乱、可被毒抗抵御的云类型；不同于 poison gas 毒气；命名及明确指称该云的正文同根；decision=D-C-096 |
 | mutagenic | 诱变 | 描述使生物发生变异的作用；固定法术名 Mutagenic Gaze → 变异凝视为保留例外，不扩展到其正文；decision=D-C-096 |
 | mutagenic energy / mutagenic energies | 诱变能量 | 普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096 |

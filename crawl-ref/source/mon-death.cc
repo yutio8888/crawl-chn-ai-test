@@ -1374,7 +1374,7 @@ static void _print_summon_poof_message(const monster& mons, bool corpse = false)
     if (!mons.is_abjurable() && mons.type != MONS_CHAOS_SPAWN)
         return;
 
-    string prefix = " ";
+    string prefix = Options.language == lang_t::ZH ? "" : " ";
     bool need_possessive = false;
 
     if (corpse && mons_class_can_leave_corpse(mons_species(mons.type)))
@@ -1384,7 +1384,8 @@ static void _print_summon_poof_message(const monster& mons, bool corpse = false)
         need_possessive = true;
     }
 
-    string msg = summoned_poof_msg(mons) + "!";
+    string msg = summoned_poof_msg(mons)
+                 + (Options.language == lang_t::ZH ? "！" : "!");
 
     simple_monster_message(mons, (prefix + msg).c_str(), need_possessive, MSGCH_MONSTER_TIMEOUT);
 }
@@ -3039,8 +3040,8 @@ item_def* monster_die(monster& mons, killer_type killer,
             if (you.can_see(mons))
             {
                 mprf(MSGCH_MONSTER_DAMAGE, MDAM_DEAD, silenced(mons.pos()) ?
-                    "The tentacle is hauled back through the portal!" :
-                    "With a roar, the tentacle is hauled back through the portal!");
+                    T_("The tentacle is hauled back through the portal!") :
+                    T_("With a roar, the tentacle is hauled back through the portal!"));
             }
             silent = true;
         }

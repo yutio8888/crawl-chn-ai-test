@@ -345,9 +345,9 @@ void InvMenu::set_title(const string &s)
         }
 #ifdef __ANDROID__
         if (!tiles.is_using_small_layout())
-            str += T_("    (Left/Right to switch category)");
+            str += T_("    (Left/Right/Tab to switch category)");
 #else
-        str += T_("    (Left/Right to switch category)");
+        str += T_("    (Left/Right/Tab to switch category)");
 #endif
         set_title(new InvTitle(this, str, title_annotate));
         return;
@@ -1570,7 +1570,7 @@ static string _drop_menu_titlefn(const Menu*, const string &)
     if (tiles.is_using_small_layout())
         return string(T_("Drop what?")) + " " + slot_description();
 #endif
-    return T_("Drop what? (Left/Right to switch category) ") + slot_description() + T_(" (_ for help)");
+    return T_("Drop what? (Left/Right/Tab to switch category) ") + slot_description() + T_(" (_ for help)");
 }
 
 /**

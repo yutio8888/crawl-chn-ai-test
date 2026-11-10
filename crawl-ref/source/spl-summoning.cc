@@ -2754,7 +2754,7 @@ spret fedhas_overgrow(bool fail)
     args.range = LOS_RADIUS;
     args.just_looking = false;
     args.needs_path = false;
-    args.top_prompt = "Aiming: <white>Overgrow</white>";
+    args.top_prompt = T_("Aiming: <white>Overgrow</white>");
     dist sdirect;
     direction(sdirect, args);
     if (!sdirect.isValid)
@@ -3794,6 +3794,10 @@ bool clockwork_bee_recharge(actor& agent, monster& bee)
     bee.heal(roll_dice(3, 5));
     bee.add_ench(mon_enchant(ENCH_SUMMON_TIMER, &agent, random_range(400, 500)));
     bee.add_ench(mon_enchant(ENCH_HAUNTING, targ, INFINITE_DURATION));
+    // Rewinding is a pseudo-resummon, so reapply Justicar's effect.
+    if (agent.is_player() && you.unrand_equipped(UNRAND_JUSTICARS_REGALIA))
+        bee.add_ench(mon_enchant(ENCH_REGENERATION, &you, random_range(300, 500)));
+
     const int pow = agent.is_player() ? calc_spell_power(SPELL_CLOCKWORK_BEE)
                                       : mons_spellpower(*agent.as_monster(), SPELL_CLOCKWORK_BEE);
     bee.number = 3 + div_rand_round(pow, 15);

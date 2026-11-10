@@ -4493,26 +4493,26 @@ string describe_contamination(bool verbose)
     if (you.magic_contamination <= 0)
         return "";
 
-    const static string verbose_desc[] =
+    static const char *const verbose_desc[] =
     {
-        "You are lightly contaminated with residual magic.",
-        "You are dangerously contaminated with residual magic.",
-        "You are extremely contaminated with residual magic.",
-        "You are completely saturated with residual magic!"
+        N_("You are lightly contaminated with residual magic."),
+        N_("You are dangerously contaminated with residual magic."),
+        N_("You are extremely contaminated with residual magic."),
+        N_("You are completely saturated with residual magic!")
     };
 
-    const static string terse_desc[] =
+    static const char *const terse_desc[] =
     {
-        "lightly contaminated",
-        "dangerously contaminated",
-        "extremely contaminated",
-        "completely saturated"
+        N_("lightly contaminated"),
+        N_("dangerously contaminated"),
+        N_("extremely contaminated"),
+        N_("completely saturated")
     };
 
     const unsigned int lvl = you.magic_contamination / 1000;
     ASSERT(lvl < ARRAYSZ(verbose_desc));
 
-    string msg = verbose ? verbose_desc[lvl] : terse_desc[lvl];
+    string msg = T_(verbose ? verbose_desc[lvl] : terse_desc[lvl]);
 
     const int dmg = contam_max_damage();
     if (dmg > 0)
@@ -4569,7 +4569,7 @@ void contaminate_player(int change, bool controlled, bool msg)
         if (!player_harmful_contamination() && was_glowing)
         {
             mprf(MSGCH_RECOVERY,
-                 "Your magical contamination has faded to a safe level.");
+                 "%s", T_("Your magical contamination has faded to a safe level."));
         }
 
         if (!player_harmful_contamination() && was_glowing && you.invisible())

@@ -235,8 +235,13 @@ static void _monster_headsup(const vector<monster*> &monsters,
         // Put equipment messages on a new line if there's more than one monster.
         // (But skip the leading space if nothing else is in this message.)
         if (listed == 0)
-            out << (monsters.size() > 1 ? "\n" : out.tellp() > 0 ? " " : "");
-        else
+        {
+            if (monsters.size() > 1)
+                out << "\n";
+            else if (out.tellp() > 0 && Options.language != lang_t::ZH)
+                out << " ";
+        }
+        else if (Options.language != lang_t::ZH)
             out << " ";
 
         ++listed;
@@ -322,7 +327,8 @@ static void _count_monster_types(const vector<monster*> &monsters,
 
 static string _describe_monsters_from_species(const vector<details> &species)
 {
-    const string and_sep = " " + string(C_("monster notice list", "and")) + " ";
+    const string padding = Options.language == lang_t::ZH ? "" : " ";
+    const string and_sep = padding + C_("monster notice list", "and") + padding;
     const string comma_sep = T_(", ");
     return comma_separated_fn(species.begin(), species.end(),
         [] (const details &det)
@@ -348,10 +354,11 @@ static string _describe_monsters_from_species(const vector<details> &species)
             else if (det.count > 1 && det.genus)
             {
                 auto genus = mons_genus(det.mon->type);
-                name = " "+pluralise(mons_type_name(genus, DESC_PLAIN));
+                name = (Options.language == lang_t::ZH ? "" : " ")
+                    + pluralise(mons_type_name(genus, DESC_PLAIN));
             }
             else if (det.count > 1)
-                name = " "+pluralise(det.name);
+                name = (Options.language == lang_t::ZH ? "" : " ") + pluralise(det.name);
             return apply_description(DESC_A, name, det.count);
         }, and_sep, comma_sep);
 }

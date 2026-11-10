@@ -90,4 +90,39 @@ TEST_CASE("tooltip CJK line breaks preserve UTF-8 and formatting", "[tilefont]")
     REQUIRE_FALSE(tilefont_internal::insert_text(text, 100, "\n"));
 }
 
+TEST_CASE("missing fullwidth punctuation uses a compatibility glyph after exact lookup",
+          "[tilefont][playtest-004]")
+{
+    vector<char32_t> queried;
+    auto lookup = [&](char32_t ch)
+    {
+        queried.push_back(ch);
+        return ch == '/' ? 42u : 0u;
+    };
+    const char32_t slash = 0xff0f;
+    CHECK(tilefont_internal::lookup_glyph(slash, lookup) == 42);
+    REQUIRE(queried.size() == 2);
+    CHECK(queried[0] == slash);
+    CHECK(queried[1] == '/');
+    CHECK(slash == 0xff0f);
+
+    queried.clear();
+    auto exact = [&](char32_t ch)
+    {
+        queried.push_back(ch);
+        return 17u;
+    };
+    CHECK(tilefont_internal::lookup_glyph(slash, exact) == 17);
+    REQUIRE(queried.size() == 1);
+    CHECK(queried[0] == slash);
+
+    queried.clear();
+    CHECK(tilefont_internal::lookup_glyph(U'中', lookup) == 0);
+    REQUIRE(queried.size() == 1);
+    CHECK(queried[0] == U'中');
+    queried.clear();
+    CHECK(tilefont_internal::lookup_glyph('/', lookup) == 42);
+    CHECK(queried.size() == 1);
+}
+
 #endif // USE_TILE_LOCAL

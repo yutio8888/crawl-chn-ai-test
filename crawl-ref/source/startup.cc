@@ -163,7 +163,7 @@ static void _initialize()
     _android_startup_marker("databases_complete");
 #endif
 
-    _loading_message("Loading spells and features...");
+    _loading_message(T_("Loading spells and features..."));
     init_feat_desc_cache();
     init_spell_name_cache();
 #ifdef DEBUG
@@ -171,7 +171,7 @@ static void _initialize()
 #endif
 
     // Read special levels and vaults.
-    _loading_message("Loading maps...");
+    _loading_message(T_("Loading maps..."));
 #ifdef __ANDROID__
     _android_startup_marker("maps_start");
 #endif

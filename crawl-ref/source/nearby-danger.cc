@@ -167,9 +167,24 @@ static string _seen_monsters_announcement(const vector<monster*> &visible,
     return "";
 }
 
+static bool _has_terminal_punctuation(const string &text)
+{
+    if (Options.language != lang_t::ZH)
+        return false;
+    return ends_with(text, ".") || ends_with(text, "!")
+        || ends_with(text, "?") || ends_with(text, T_("."))
+        || ends_with(text, T_("!")) || ends_with(text, T_("?"));
+}
+
+static string _ensure_terminal_bang(const string &text)
+{
+    return _has_terminal_punctuation(text) ? text : text + T_("!");
+}
+
+
 static void _announce_monsters(string announcement, vector<monster*> &visible)
 {
-    mprf(MSGCH_WARN, "%s!", announcement.c_str());
+    mprf(MSGCH_WARN, "%s", _ensure_terminal_bang(announcement).c_str());
 
     if (Options.use_animations & UA_MONSTER_IN_SIGHT)
     {
@@ -238,7 +253,7 @@ vector<monster* > get_nearby_monsters(bool want_move,
     if (announce || reason)                         \
     {                                               \
         if (announce)                               \
-            mprf(MSGCH_WARN, "%s!", msg);           \
+            mprf(MSGCH_WARN, "%s", _ensure_terminal_bang(msg).c_str());           \
         if (reason)                                 \
             *reason = msg;                          \
         return false;                               \

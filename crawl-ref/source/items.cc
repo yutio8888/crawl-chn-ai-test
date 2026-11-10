@@ -1099,7 +1099,7 @@ void pickup_menu(int item_link)
                 // floor.
                 if (!move_item_to_inv(j, num_to_take))
                 {
-                    pickup_warning = "You can't carry that many items.";
+                    pickup_warning = T_("You can't carry that many items.");
                     if (env.item[j].defined())
                         env.item[j].flags = oldflags;
                 }
@@ -1396,7 +1396,8 @@ string origin_desc(const item_def &item)
                 break;
 #endif
             case AQ_WIZMODE:
-                desc += (T_("Your wizardly powers created ")+ _article_it(item)+ " ");
+                desc += (T_("Your wizardly powers created ") + _article_it(item)
+                         + (Options.language == lang_t::ZH ? "" : " "));
                 break;
             default:
                 if (iorig > GOD_NO_GOD && iorig < NUM_GODS)
@@ -1560,7 +1561,7 @@ void pickup(bool partial_quantity)
 
             if (keyin != 'a')
             {
-                string prompt = "Pick up %s? ((y)es/(n)o/(a)ll/(m)enu/*?g,/q)";
+                string prompt = T_("Pick up %s? ((y)es/(n)o/(a)ll/(m)enu/*?g,/q)");
 
                 mprf(MSGCH_PROMPT, prompt.c_str(),
                      menu_colour_item_name(env.item[o], DESC_A).c_str());
@@ -1591,7 +1592,7 @@ void pickup(bool partial_quantity)
                 // attempt to actually pick up the object.
                 if (!move_item_to_inv(o, num_to_take))
                 {
-                    pickup_warning = "You can't carry that many items.";
+                    pickup_warning = T_("You can't carry that many items.");
                     env.item[o].flags = old_flags;
                 }
             }
@@ -2190,7 +2191,7 @@ static bool _merge_evokers(const item_def &it, int &inv_slot, bool quiet)
 #ifdef USE_SOUND
             parse_sound(PICKUP_SOUND);
 #endif
-            mprf_nocap("%s (improved by +1).",
+            mprf_nocap(T_("%s (improved by +1)."),
                         menu_colour_item_name(you.inv[inv_slot],
                                                     DESC_INVENTORY).c_str());
         }
@@ -2307,19 +2308,19 @@ static int _letter_for_consumable(item_def& item, bool first_pickup)
     {
         case OBJ_POTIONS:
             for (const char& key : Options.potion_shortcuts)
-                if (isalpha(key) > 0)
+                if (isaalpha(key))
                     reserved[letter_to_index(key)] = true;
             break;
         case OBJ_SCROLLS:
             for (const char& key : Options.scroll_shortcuts)
-                if (isalpha(key) > 0)
+                if (isaalpha(key))
                     reserved[letter_to_index(key)] = true;
             break;
         case OBJ_WANDS:
         case OBJ_MISCELLANY:
         case OBJ_BAUBLES:
             for (const char& key : Options.evokable_shortcuts)
-                if (isalpha(key))
+                if (isaalpha(key))
                     reserved[letter_to_index(key)] = true;
             break;
         default:
@@ -2335,7 +2336,7 @@ static int _letter_for_consumable(item_def& item, bool first_pickup)
         for (int i = MAX_GEAR; i < ENDOFPACK; ++i)
         {
             if (!you.inv[i].defined() || you.inv[i].is_identified()
-                || !isalpha(you.inv[i].slot))
+                || !isaalpha(you.inv[i].slot))
             {
                 continue;
             }
@@ -2353,7 +2354,7 @@ static int _letter_for_consumable(item_def& item, bool first_pickup)
     for (int i = MAX_GEAR; i < ENDOFPACK; ++i)
     {
         if (you.inv[i].defined() && item_to_oper(&you.inv[i]) == oper
-            && isalpha(you.inv[i].slot))
+            && isaalpha(you.inv[i].slot))
         {
             used_slots[letter_to_index(you.inv[i].slot)] = true;
         }
@@ -3545,7 +3546,7 @@ static void _do_autopickup()
             else
             {
                 n_tried_pickup++;
-                pickup_warning = "Your pack is full.";
+                pickup_warning = T_("Your pack is full.");
                 mi.flags = iflags;
             }
         }

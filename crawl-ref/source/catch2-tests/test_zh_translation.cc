@@ -1,6 +1,7 @@
 #include "catch_amalgamated.hpp"
 
 #include "AppHdr.h"
+#include "lang-en-guard.h"
 
 #include "i18n.h"                // T_()
 #include "ability.h"
@@ -177,6 +178,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 {
     CHECK(make_stringf(T_("%s blocks %s attack."), "你", "兽人的")
           == "你格挡了兽人的攻击。");
+    CHECK(string(T_("!")) == "！");
     CHECK(make_stringf_p(T_("%1$s attacks as %2$s pursue you!"), "它", "s")
           == "在追击你时发动攻击！");
 
@@ -186,6 +188,43 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(make_stringf(T_("%d creatures vanquished.\n"), 2)
           == "已消灭2只生物。\n");
     CHECK(std::string(C_("morgue item inscription", "unknown")) == "未鉴定");
+    CHECK(std::string(T_("Mortality")) == "索命");
+    CHECK(make_stringf(T_("Bane of %s"), T_("Mortality")) == "索命之灾");
+
+    CHECK(std::string(T_("\nLevel: %d")) == "\n等级：%d");
+    CHECK(std::string(T_("        Fail: %s")) == "        失败率：%s");
+    CHECK(make_stringf(T_("You miscast %s."), "魔法飞弹")
+          == "你施放魔法飞弹时出现施法失误。");
+    CHECK(std::string(T_(" slightly slows your attacks with this weapon"))
+          == "略微减慢了此武器的攻击速度");
+    CHECK(make_stringf(T_("the %s"), "箭") == "箭");
+    CHECK(strip_cjk_spaces("兽人 颤动 着。 你 好") == "兽人颤动着。你好");
+    CHECK(strip_cjk_spaces("A B") == "A B");
+    CHECK(std::string(T_("describe")) == "描述");
+    CHECK(make_stringf(T_("Your spells (%s)"), T_("describe"))
+          == "你的法术 (描述)");
+    CHECK(make_stringf(T_("Select a spell to %s"), T_("describe"))
+          == "选择一个要描述的法术");
+    CHECK(std::string(C_("monster equipment", ",")) == "，");
+    CHECK(make_stringf(T_("Casting: <w>%s</w> <lightgrey>(%s)</lightgrey>"),
+                       "魔法飞弹", "安全；失败率 1%")
+          == "正在施放：<w>魔法飞弹</w><lightgrey>（安全；失败率 1%）</lightgrey>");
+    CHECK(make_stringf(T_("You pick up the %s and begin to read..."),
+                       "冬眠羊皮纸")
+          == "你捡起了冬眠羊皮纸并开始阅读……");
+    CHECK(std::string(C_("gold quantity", "pieces")) == "枚");
+    CHECK(std::string(T_(" (once)")) == "（1次）");
+    CHECK(std::string(T_(" (twice)")) == "（2次）");
+    CHECK(std::string(T_(" (thrice)")) == "（3次）");
+    CHECK(make_stringf(T_(" (%d times)"), 4) == "（4次）");
+
+    item_def gold;
+    gold.base_type = OBJ_GOLD;
+    gold.sub_type = 0;
+    gold.quantity = 16;
+    CHECK(gold.name(DESC_PLAIN) == "16枚金币");
+    gold.quantity = 1;
+    CHECK(gold.name(DESC_PLAIN) == "金币");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
@@ -615,6 +654,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: Issue 16 real score entries keep protocol fields English",
                  "[zh-translation][issue-16][hiscores][issue-114]")
 {
+    init_duration_index();
     unwind_var<player> restore_player(you);
     you = player();
     you.your_name = "Issue16";
@@ -635,6 +675,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         you.skills[sk] = 0;
     you.skills[SK_FIGHTING] = 27;
     you.skills[SK_AXES] = 15;
+    you.duration[DUR_AGILITY] = 100;
     you.duration[DUR_HASTE] = 100;
 
     REQUIRE(Options.language == lang_t::ZH);
@@ -1508,6 +1549,41 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(std::string(C_("status", "Drain")) == "衰竭");
     REQUIRE(std::string(C_("status", "Might")) == "强效");
     REQUIRE(std::string(C_("status", "Invis")) == "隐形");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: potion status info keeps one root per effect",
+                 "[zh-translation][status][potion-status]")
+{
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    you = player();
+
+    // Ambrosia: light, short label and @ long description all use 神食, the
+    // same root as the potion name (神食药水).
+    you.duration[DUR_AMBROSIA] = 10;
+    status_info ambrosia;
+    REQUIRE(fill_status_info(DUR_AMBROSIA, ambrosia));
+    CHECK(ambrosia.light_text == "神食");
+    CHECK(ambrosia.short_text == "神食酣醉");
+    CHECK(ambrosia.long_text == "你正在神食的作用下再生。");
+
+    // Confused: the three display surfaces share the established 混乱 root.
+    you.duration[DUR_CONF] = 10;
+    status_info confused;
+    REQUIRE(fill_status_info(DUR_CONF, confused));
+    CHECK(confused.light_text == "混乱");
+    CHECK(confused.short_text == "混乱");
+    CHECK(confused.long_text == "你处于混乱状态。");
+
+    // Enlightened: the @ long description uses the 启迪 effect root from the
+    // same status entry and the potion name, not the epiphany prose.
+    you.duration[DUR_ENLIGHTENED] = 10;
+    status_info enlightened;
+    REQUIRE(fill_status_info(DUR_ENLIGHTENED, enlightened));
+    CHECK(enlightened.light_text == "意志+");
+    CHECK(enlightened.short_text == "启迪");
+    CHECK(enlightened.long_text == "你处于启迪状态。（意志+）");
 }
 
 TEST_CASE("UNTRANSLATED rule", "[zh-translation][zh-helpers]")
@@ -2502,6 +2578,7 @@ struct eel_observation
     string tee_raw;           // raw msg::tee stream (colour tag + text + newline)
     msg_channel_type channel = MSGCH_PLAIN;
     int appends = 0;
+    bool temporary_history_restored = false;
     bool history_restored = false; // complete retained history == pre-call
     bool parent_rng_unchanged = false;
 };
@@ -2517,27 +2594,41 @@ eel_observation observe_eel_flavour(lang_t language, uint64_t seed)
 
     eel_observation obs;
     const string history_before = get_last_messages(NUM_STORED_MESSAGES, true);
+    vector<unsigned char> saved_history;
+    writer history_output(&saved_history);
+    save_messages(history_output);
     const uint64_t parent_before = rng::peek_uint64();
     {
-        // Every observed emission runs inside the existing temporary mode;
-        // the rollback guard clears it on the normal path and on REQUIRE
-        // unwinding, so the emission never survives this scope.
-        msgwin_temporary_mode temporary;
-        temporary_message_rollback rollback;
-        rng::subgenerator scoped_rng(seed, EEL_RNG_SEQUENCE);
-        channel_capturing_tee tee(obs.tee_raw);
-        do_eel_flavour_msg();
-        // Capture the exact emission while it is still active in the store,
-        // the tee and the channel, before the rollback at scope exit.
-        obs.store = get_last_messages(1, true);
-        obs.channel = tee.channel;
-        obs.appends = tee.appends;
+        unwinder restore_history([&saved_history]() {
+            clear_message_store();
+            reader history_input(saved_history);
+            history_input.setMinorVersion(TAG_MINOR_VERSION);
+            load_messages(history_input);
+        });
+        clear_message_store();
+        {
+            // Every observed emission runs inside the existing temporary mode;
+            // the rollback guard clears it on the normal path and on REQUIRE
+            // unwinding, so the emission never survives this scope.
+            msgwin_temporary_mode temporary;
+            temporary_message_rollback rollback;
+            rng::subgenerator scoped_rng(seed, EEL_RNG_SEQUENCE);
+            channel_capturing_tee tee(obs.tee_raw);
+            do_eel_flavour_msg();
+            // Capture the exact emission while it is still active in the store,
+            // the tee and the channel, before the rollback at scope exit.
+            obs.store = get_last_messages(1, true);
+            obs.channel = tee.channel;
+            obs.appends = tee.appends;
+        }
+        obs.temporary_history_restored =
+            get_last_messages(NUM_STORED_MESSAGES, true).empty();
     }
-    // Rollback already ran at scope exit; prove the complete retained
+    // Caller history has been restored; prove the complete retained
     // message history equals the pre-call snapshot (isolation from later
     // cases and helper calls).
-    obs.history_restored =
-        get_last_messages(NUM_STORED_MESSAGES, true) == history_before;
+    const string history_after = get_last_messages(NUM_STORED_MESSAGES, true);
+    obs.history_restored = history_after == history_before;
     obs.parent_rng_unchanged = rng::peek_uint64() == parent_before;
     return obs;
 }
@@ -2562,9 +2653,10 @@ void check_eel_observation(const eel_observation &obs,
     CHECK(obs.appends == 1);
     // The replay drew only from the fixed subgenerator, never the parent RNG.
     CHECK(obs.parent_rng_unchanged);
-    // Full isolation: after the temporary-mode rollback, the complete
-    // retained message history is byte-identical to the pre-call snapshot,
+    // Full isolation: temporary-mode rollback empties the working store,
+    // then restoration makes the caller history byte-identical to its snapshot,
     // so no later case or helper call can see this emission.
+    CHECK(obs.temporary_history_restored);
     CHECK(obs.history_restored);
 }
 
@@ -3593,7 +3685,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                 result = legacy_bind_body_parts(result, false);
                 return legacy_bind_body_parts(result, true);
             });
-        CHECK(mon.result == mon_control.result);
+        // Production monster text passes through strip_cjk_spaces();
+        // normalize the legacy control the same way for this parity check.
+        CHECK(strip_cjk_spaces(mon.result)
+              == strip_cjk_spaces(mon_control.result));
         CHECK(mon.state == mon_control.state);
         CHECK(mon.count == mon_control.count);
         CHECK(mon.result.find("@random_body_part") == string::npos);
@@ -4632,8 +4727,8 @@ void check_mons_speaks_genus_fallback()
         rng::subgenerator scoped_rng(seed, sequence);
         (void)random2(2);   // exact-name miss coinflip
         (void)random2(2);   // genus __try_exact_string coinflip
-        const string expected =
-            do_mon_str_replacements(getSpeakString("orc"), *orc);
+        const string expected = strip_cjk_spaces(
+            do_mon_str_replacements(getSpeakString("orc"), *orc));
         const string &emitted = language == lang_t::EN
             ? english.line : chinese.line;
         INFO("language=" << (language == lang_t::ZH ? "zh" : "en"));
@@ -4697,8 +4792,8 @@ void check_mons_speaks_glyph_fallback()
         (void)random2(2);   // exact-name miss coinflip
         (void)random2(2);   // genus miss coinflip
         (void)random2(2);   // glyph-path __try_exact_string coinflip
-        const string expected =
-            do_mon_str_replacements(getSpeakString("'l'"), *basilisk);
+        const string expected = strip_cjk_spaces(
+            do_mon_str_replacements(getSpeakString("'l'"), *basilisk));
         const string &emitted = language == lang_t::EN
             ? english.line : chinese.line;
         INFO("language=" << (language == lang_t::ZH ? "zh" : "en"));
@@ -4706,6 +4801,30 @@ void check_mons_speaks_glyph_fallback()
     }
 }
 } // namespace
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: monspeak removes English spacing between Chinese words",
+                 "[zh-translation][monspeak][playtest]")
+{
+    init_monsters();
+    init_mon_name_cache();
+    scoped_monspeak_world world;
+    monster *orc = world.place(MONS_ORC);
+    REQUIRE(orc != nullptr);
+
+    monspeak_capture capture;
+    const mon_speech_emission_observer observer = {
+        monspeak_capture::observe, &capture };
+    REQUIRE(mons_speaks_msg(orc,
+        "@The_monster@ 颤动着。 @The_monster@ 对 @foe@ 尖叫道：\"站住！\"",
+        MSGCH_TALK, false, false, &observer));
+    REQUIRE(capture.emissions.size() == 1);
+
+    const string &rendered = capture.emissions[0].line;
+    CHECK(rendered.find(' ') == string::npos);
+    CHECK(rendered.find("兽人颤动着") != string::npos);
+    CHECK(rendered.find("兽人对你尖叫道") != string::npos);
+}
 
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: mons_speaks genus fallback resolves through the production seam",
@@ -6881,7 +7000,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             status_info inf;
             REQUIRE(fill_status_info(DUR_TRANSFORMATION, inf));
             // l-you.cc's you.status(name) compares this canonical identity.
-            CHECK(inf.short_db_key == "tree-form");
+            CHECK(inf.short_db_key == (duration == 1
+                  ? "tree-form (expiring)" : "tree-form"));
             CHECK(starts_with(inf.short_text, zh ? "树形" : "tree-form"));
             REQUIRE(fill_status_info(STATUS_REGENERATION, inf));
             CHECK(inf.short_db_key == "regenerating");
@@ -7064,7 +7184,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         you.duration[DUR_STICKY_FLAME] = 10;
         CHECK_FALSE(i_feel_safe(true));
         capture.force_update();
-        CHECK(messages.find(zh ? "你着火了!" : "you are on fire!") != string::npos);
+        CHECK(messages.find(zh ? "你着火了！" : "you are on fire!") != string::npos);
         CHECK(messages.find("！!") == string::npos);
     }
 }
@@ -7216,4 +7336,928 @@ TEST_CASE("Issue 237 compact item properties preserve resistance levels",
     item.flags &= ~ISFLAG_ARTEFACT_MASK;
     item.special = SPARM_POSITIVE_ENERGY;
     CHECK(string(armour_ego_name(item, true)) == (zh ? "负能抗+" : "rN+"));
+}
+
+TEST_CASE("playtest: contamination display localizes at the sink and keeps English status keys",
+          "[zh-translation][playtest-fixes][contamination][status]")
+{
+    init_duration_index();
+    init_zap_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+
+    const char *const verbose_keys[] = {
+        "You are lightly contaminated with residual magic.",
+        "You are dangerously contaminated with residual magic.",
+        "You are extremely contaminated with residual magic.",
+        "You are completely saturated with residual magic!",
+    };
+    const char *const terse_keys[] = {
+        "lightly contaminated",
+        "dangerously contaminated",
+        "extremely contaminated",
+        "completely saturated",
+    };
+
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        you = player();
+        you.species = SP_HUMAN;
+        you.experience_level = 12;
+        set<string> seen_verbose;
+        set<string> seen_terse;
+
+        for (int level = 0; level < 4; ++level)
+        {
+            // 0..3 map to the four documented contamination tiers; keep the
+            // production thresholds and the 3000 cap untouched.
+            you.magic_contamination = level == 0 ? 500 : level * 1000;
+            CAPTURE(language, level, you.magic_contamination);
+
+            const int damage = contam_max_damage();
+            const string verbose_plain = string(T_(verbose_keys[level]));
+            const string terse_plain = string(T_(terse_keys[level]));
+            const string verbose = describe_contamination(true);
+            const string terse = describe_contamination(false);
+
+            CHECK(verbose_plain == T_(verbose_keys[level]));
+            CHECK(terse_plain == T_(terse_keys[level]));
+            if (zh)
+            {
+                CHECK(verbose_plain != verbose_keys[level]);
+                CHECK(terse_plain != terse_keys[level]);
+            }
+            else
+            {
+                CHECK(verbose_plain == verbose_keys[level]);
+                CHECK(terse_plain == terse_keys[level]);
+            }
+            // Levels stay distinguishable and severity is not collapsed.
+            CHECK(seen_verbose.insert(verbose_plain).second);
+            CHECK(seen_terse.insert(terse_plain).second);
+
+            // The maximum-damage suffix is unchanged and keeps its number.
+            if (level > 0)
+            {
+                REQUIRE(damage > 0);
+                CHECK(verbose == make_stringf(T_("%s (up to %d damage)"),
+                                              verbose_plain.c_str(), damage));
+                CHECK(terse == make_stringf(T_("%s (up to %d damage)"),
+                                            terse_plain.c_str(), damage));
+            }
+            else
+            {
+                CHECK(damage == 0);
+                CHECK(verbose == verbose_plain);
+                CHECK(terse == terse_plain);
+            }
+
+            // Owned display copies survive a cache clear; no borrowed T_()
+            // pointer may be retained across i18n_cache_clear().
+            const string verbose_before = verbose;
+            const string terse_before = terse;
+            i18n_cache_clear();
+            CHECK(verbose == verbose_before);
+            CHECK(terse == terse_before);
+            CHECK(describe_contamination(true) == verbose_before);
+            CHECK(describe_contamination(false) == terse_before);
+
+            if (level == 0)
+                continue;
+
+            // The @: status identity stays English and the light/db keys stay
+            // canonical, while the descriptions follow the display language.
+            status_info info;
+            REQUIRE(fill_status_info(STATUS_CONTAMINATION, info));
+            CAPTURE(info.db_key, info.short_db_key, info.light_text,
+                    info.short_text, info.long_text);
+            CHECK(info.db_key == "Contam");
+            CHECK(info.light_text == T_("Contam"));
+            CHECK(info.short_text == terse_before);
+            CHECK(info.long_text == verbose_before);
+            string english_terse;
+            {
+                ScopedLangEn english;
+                english_terse = describe_contamination(false);
+            }
+            CHECK(info.short_db_key == english_terse);
+            CHECK(info.short_db_key == make_stringf("%s (up to %d damage)",
+                                                    terse_keys[level], damage));
+            if (zh)
+                CHECK(info.short_db_key != info.short_text);
+            else
+                CHECK(info.short_db_key == info.short_text);
+        }
+
+        // No contamination: no status text and no bare English frame.
+        you.magic_contamination = 0;
+        CHECK(describe_contamination() == "");
+        CHECK(describe_contamination(false) == "");
+    }
+
+    // The safe-level recovery message is translated at the emission sink.
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_HUMAN;
+        you.magic_contamination = 1000;
+        REQUIRE(player_harmful_contamination());
+        string observed;
+        {
+            msgwin_temporary_mode temporary;
+            unwinder clear_messages([]() { msgwin_clear_temporary(); });
+            contaminate_player(-500, false, true);
+            observed = get_last_messages(4, true);
+        }
+        CAPTURE(language, observed);
+        CHECK(you.magic_contamination == 500);
+        CHECK_FALSE(player_harmful_contamination());
+        const char *faded = "Your magical contamination has faded to a safe level.";
+        CHECK(observed.find(T_(faded)) != string::npos);
+        if (language == lang_t::ZH)
+            CHECK(observed.find(faded) == string::npos);
+        else
+            CHECK(observed.find(faded) != string::npos);
+    }
+}
+
+TEST_CASE("playtest: Maxwell's coupling charge light keeps raw frames and translates at the sink",
+          "[zh-translation][playtest-fixes][status][charge]")
+{
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    const char *const frames[] = { "Charge-", "Charge/", "Charge|", "Charge\\" };
+    // English status.txt details, fetched under an EN layer for comparison.
+    string english_detail[4];
+    {
+        EnTranslationFixture english;
+        for (int i = 0; i < 4; ++i)
+        {
+            english_detail[i] = getLongDescription(string(frames[i]) + " status");
+            // status_light_description() trims the trailing newline itself.
+            trim_string_right(english_detail[i]);
+        }
+    }
+    for (int i = 0; i < 4; ++i)
+    {
+        CAPTURE(i, frames[i], english_detail[i]);
+        REQUIRE_FALSE(english_detail[i].empty());
+        REQUIRE(english_detail[i].find("channelling electrical charge")
+                != string::npos);
+    }
+
+    for (lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        you = player();
+        you.species = SP_HUMAN;
+        you.attribute[ATTR_CHANNELLED_SPELL] = SPELL_MAXWELLS_COUPLING;
+        you.attribute[ATTR_CHANNEL_DURATION] = 5;
+
+        // One full rotation: the frame cycle mechanism must keep all four raw
+        // frames, with their symbols, in the same order-independent set.
+        set<string> seen;
+        for (int step = 0; step < 8; ++step)
+        {
+            status_info info;
+            REQUIRE(fill_status_info(STATUS_CHANNELLING_SPELL, info));
+            CAPTURE(language, step, info.light_text, info.db_key,
+                    info.long_text);
+            CHECK(info.light_colour == LIGHTCYAN);
+            // The canonical key is always one raw English frame with its
+            // trailing symbol, never localized text.
+            int frame = -1;
+            for (int i = 0; i < 4; ++i)
+                if (info.db_key == frames[i])
+                    frame = i;
+            REQUIRE(frame >= 0);
+            CHECK(info.db_key.back() == string(frames[frame]).back());
+            seen.insert(info.db_key);
+            if (step < 4)
+                CHECK(seen.size() == static_cast<size_t>(step) + 1);
+
+            // The shared status tail applies C_("status", ...) to that key.
+            CHECK(info.light_text == C_("status", info.db_key.c_str()));
+            CHECK(info.light_text.back() == info.db_key.back());
+            if (zh)
+            {
+                CHECK(info.light_text != info.db_key);
+                CHECK(info.light_text.rfind("蓄电", 0) == 0);
+            }
+            else
+                CHECK(info.light_text == info.db_key);
+
+            // The detail line resolves through the canonical key, so Chinese
+            // mode hits the translated status.txt body instead of falling back.
+            // Stable Tiles and topbar consumers resolve the canonical key directly.
+            string detail = getLongDescription(info.db_key + " status");
+            trim_string_right(detail);
+            CAPTURE(detail);
+            CHECK(detail != T_("No description found"));
+            CHECK(detail.find("<Charge- status>") == string::npos);
+            if (zh)
+                CHECK(detail != english_detail[frame]);
+            else
+                CHECK(detail == english_detail[frame]);
+
+            // The mechanism itself is untouched.
+            CHECK(you.attribute[ATTR_CHANNELLED_SPELL] == SPELL_MAXWELLS_COUPLING);
+            CHECK(you.attribute[ATTR_CHANNEL_DURATION] == 5);
+        }
+        CHECK(seen.size() == 4);
+        for (const char *frame : frames)
+            CHECK(seen.count(frame) == 1);
+    }
+}
+
+#include "clua.h"
+TEST_CASE("status identities remain English across display languages",
+          "[zh-translation][status][status-identities]")
+{
+    init_duration_index();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    unwind_var<game_type> restore_game(crawl_state.type, GAME_TYPE_NORMAL);
+    struct status_case
+    {
+        int status;
+        std::function<void()> setup;
+        const char *prefix;
+    };
+    const status_case cases[] = {
+        {STATUS_BACKLIT, [] { you.duration[DUR_CORONA] = 100; }, "glowing"},
+        {STATUS_NO_POTIONS, [] { you.duration[DUR_NO_POTIONS] = 100; }, "unable to drink"},
+        {STATUS_MANUAL, [] { you.skill_manual_points[SK_CONJURATIONS] = 100; }, "studying "},
+        {STATUS_MANUAL, [] {
+            you.skill_manual_points[SK_CONJURATIONS] = 100;
+            you.skill_manual_points[SK_FIRE_MAGIC] = 100;
+        }, "studying 2 skills"},
+        {STATUS_DRAINED, [] { you.hp_max_adj_temp = -30; }, ""},
+        {DUR_FORTRESS_BLAST_TIMER, [] { you.duration[DUR_FORTRESS_BLAST_TIMER] = 20; }, "fortress blast"},
+        {DUR_POISONING, [] { you.duration[DUR_POISONING] = 100; }, ""},
+        {DUR_TRANSFORMATION, [] {
+            you.form = transformation::tree;
+            you.duration[DUR_TRANSFORMATION] = 1;
+        }, "tree-form (expiring)"},
+        // Existing canonical defaults must stay unchanged when a producer
+        // overrides its displayed description.
+        {DUR_CORROSION, [] { you.duration[DUR_CORROSION] = 100; }, "corroded"},
+    };
+    for (const auto &entry : cases)
+    {
+        you = player();
+        you.species = SP_HUMAN;
+        you.experience_level = 12;
+        you.hp = 30;
+        you.hp_max = 40;
+        you.where_are_you = BRANCH_DUNGEON;
+        you.depth = 1;
+        entry.setup();
+        status_info english;
+        {
+            EnTranslationFixture language;
+            REQUIRE(fill_status_info(entry.status, english));
+            REQUIRE_FALSE(english.short_db_key.empty());
+            CHECK(english.short_db_key.find(entry.prefix) == 0);
+        }
+        for (lang_t language : {lang_t::ZH, lang_t::EN, lang_t::ZH})
+        {
+            TranslationFixture display(language, language == lang_t::ZH ? "zh" : nullptr);
+            status_info info;
+            REQUIRE(fill_status_info(entry.status, info));
+            CAPTURE(entry.status, language, info.short_db_key, info.short_text);
+            CHECK(info.short_db_key == english.short_db_key);
+            CHECK(info.db_key == english.db_key);
+            if (language == lang_t::ZH)
+                CHECK(info.short_text != english.short_text);
+            else
+                CHECK(info.short_text == english.short_text);
+            const string saved_display = info.short_text;
+            i18n_cache_clear();
+            status_info rebuilt;
+            REQUIRE(fill_status_info(entry.status, rebuilt));
+            CHECK(rebuilt.short_db_key == english.short_db_key);
+            CHECK(rebuilt.short_text == saved_display);
+        }
+    }
+}
+
+TEST_CASE("Lua status lookup accepts the English key in Chinese display mode",
+          "[zh-translation][status][status-identities]")
+{
+    init_duration_index();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    unwind_var<game_type> restore_game(crawl_state.type, GAME_TYPE_NORMAL);
+    you = player();
+    you.species = SP_HUMAN;
+    you.experience_level = 12;
+    you.hp = 30;
+    you.hp_max = 40;
+    you.where_are_you = BRANCH_DUNGEON;
+    you.depth = 1;
+    you.duration[DUR_CORONA] = 100;
+    for (lang_t language : {lang_t::ZH, lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture display(language, language == lang_t::ZH ? "zh" : nullptr);
+        lua_State *ls = clua.state();
+        lua_stack_cleaner restore_stack(ls);
+        REQUIRE(clua.execstring("return you.status('glowing')",
+                               "status-identity-language", 1) == 0);
+        REQUIRE(lua_isboolean(ls, -1));
+        CHECK(lua_toboolean(ls, -1));
+        i18n_cache_clear();
+    }
+}
+
+#include <algorithm>
+#include "colour.h"
+#include "describe-spells.h"
+#include "mon-cast.h"
+#include "spl-zap.h"
+#include "map-cell.h"
+TEST_CASE("elemental text colours preserve complete UTF-8 characters",
+          "[zh-translation][quicksilver-colour][colour]")
+{
+    if (str_to_colour("magic", -1, false, true) != ETC_MAGIC)
+        init_element_colours();
+    const uint64_t parent_state = rng::current_generator().get_state();
+    const uint64_t parent_count = rng::current_generator().get_count();
+    const colour_t colours[] = {ETC_MAGIC, ETC_FIRE, ETC_ORB_GLOW, RED, BLACK};
+    for (const colour_t colour : colours)
+        for (const string text : {"(3d20)", "（3d20）", "水银", "A水银🧪z", "𠀀", ""})
+        {
+            CAPTURE(colour, text);
+            const string coloured = colourize_str(text, colour);
+            CHECK_FALSE(rule_garbled_utf8(coloured));
+            CHECK(formatted_string::parse_string(coloured).tostring() == text);
+        }
+    // Preserve the existing ASCII palette order and the ordinary-colour path.
+    CHECK(colourize_str("Ab3", ETC_MAGIC)
+          == "<lightmagenta>A</lightmagenta><lightblue>b</lightblue><magenta>3</magenta>");
+    CHECK(colourize_str("（3d20）", RED) == "<red>（3d20）</red>");
+    CHECK(colourize_str("A", BLACK) == "<darkgrey>A</darkgrey>");
+    // Elemental colours are hashes/palettes, not draws from gameplay RNG.
+    CHECK(rng::current_generator().get_state() == parent_state);
+    CHECK(rng::current_generator().get_count() == parent_count);
+}
+
+TEST_CASE("quicksilver monster spell descriptions preserve localized effects",
+          "[zh-translation][quicksilver-colour][monster-spells]")
+{
+    if (str_to_colour("magic", -1, false, true) != ETC_MAGIC)
+        init_element_colours();
+    init_properties();
+    init_monsters();
+    init_zap_index();
+    init_spell_descs();
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.hp = you.hp_max = 100;
+    rng::subgenerator random(0x515549434bULL, 0x53494c564552ULL);
+    for (const monster_type type : {MONS_QUICKSILVER_ELEMENTAL, MONS_QUICKSILVER_DRAGON})
+    {
+        scoped_monspeak_world world;
+        monster* source = world.place(type);
+        REQUIRE(source);
+        define_monster(*source);
+        const monster_info info(source);
+        REQUIRE(info.has_spells());
+        // Stable keeps its effect formatter private. Build the expected dice
+        // with the public damage query and test the real spellbook consumer.
+        const int hd = mons_spell_is_spell(SPELL_QUICKSILVER_BOLT)
+            ? info.spell_hd() : info.hd;
+        const dice_def damage = zap_damage(spell_to_zap(SPELL_QUICKSILVER_BOLT),
+            mons_power_for_hd(SPELL_QUICKSILVER_BOLT, hd), true, false);
+        const string effect = make_stringf(T_("(%s%dd%d%s)"), "",
+                                           damage.num, damage.size, "");
+        REQUIRE_FALSE(effect.empty());
+        formatted_string description;
+        describe_spellset(monster_spellset(info), nullptr, description, &info);
+        const string markup = description.to_colour_string();
+        CAPTURE(language, type, effect, markup);
+        CHECK_FALSE(rule_garbled_utf8(markup));
+        CHECK(description.tostring().find(effect) != string::npos);
+        CHECK(description.tostring().find(spell_title(SPELL_QUICKSILVER_BOLT)) != string::npos);
+    }
+}
+
+TEST_CASE("upheaval beam hits translate names while preserving raw identities",
+          "[zh-translation][playtest-fixes][upheaval-names]")
+{
+    init_properties();
+    init_monsters();
+    init_zap_index();
+    init_spell_descs();
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 1000;
+    scoped_monspeak_world world;
+    monster* source = world.place(MONS_SALAMANDER_TYRANT);
+    REQUIRE(source);
+    no_notes suppress_notes;
+    rng::subgenerator random(0x555048454156ULL, 0x414c4e414d45ULL);
+    const pair<const char*, beam_type> cases[] = {
+        {"blast of magma", BEAM_LAVA}, {"blast of ice", BEAM_ICE},
+        {"cutting wind", BEAM_AIR}, {"blast of rubble", BEAM_FRAG},
+    };
+    for (const auto& test : cases)
+    {
+        bolt beam;
+        beam.name = test.first;
+        beam.flavour = beam.real_flavour = test.second;
+        beam.thrower = KILL_MON_MISSILE;
+        beam.source_id = source->mid;
+        // Upheaval fires a local beam at each affected square.
+        beam.source = beam.target = you.pos();
+        beam.hit = AUTOMATIC_HIT;
+        beam.damage = dice_def(1, 1);
+        if (test.second == BEAM_LAVA)
+            beam.hit_verb = "engulfs";
+        msg::tee messages;
+        beam.fire();
+        const string output = messages.get_store();
+        const string display = T_(test.first);
+        CAPTURE(language, beam.name, output);
+        CHECK(beam.msg_generated);
+        CHECK(output.find(display) != string::npos);
+        CHECK(beam.name == test.first);
+        CHECK(beam.origin_spell == SPELL_NO_SPELL);
+        if (language == lang_t::ZH)
+        {
+            CHECK(display != test.first);
+            CHECK(output.find(test.first) == string::npos);
+        }
+    }
+}
+
+
+// The existing stream registry has no public initialized-state accessor.
+// Inspect it only here so this fixture never duplicates or destroys streams
+// already owned by its caller; no production API is added.
+namespace msg
+{
+extern vector<ostream*> stream_ptrs;
+}
+
+TEST_CASE("saved artefact line breaks stay inside one coloured floor message",
+          "[zh-translation][artefact][artefact-name-newline]")
+{
+    const bool owns_streams = msg::stream_ptrs.empty();
+    if (owns_streams)
+        msg::initialise_mpr_streams();
+    unwinder restore_streams([owns_streams]() {
+        if (owns_streams)
+            msg::deinitialise_mpr_streams();
+    });
+    init_properties();
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    scoped_monspeak_world world;
+    unwind_var<map_cell> restore_cell(env.map_knowledge(you.pos()));
+    env.map_knowledge(you.pos()).set_feature(DNGN_FLOOR);
+    unwind_var<int> restore_grid(env.igrid(you.pos()), NON_ITEM);
+    int slot = NON_ITEM;
+    for (int i = 0; i < MAX_ITEMS; ++i)
+        if (!env.item[i].defined())
+        {
+            slot = i;
+            break;
+        }
+    REQUIRE(slot != NON_ITEM);
+    unwind_var<item_def> restore_item(env.item[slot]);
+    item_def& item = env.item[slot];
+    item.clear();
+    item.base_type = OBJ_ARMOUR;
+    item.sub_type = ARM_ROBE;
+    item.quantity = 1;
+    item.flags = ISFLAG_IDENTIFIED;
+    rng::subgenerator random(0x4e414d454c494e45ULL, 0x464c4f4f52ULL);
+    REQUIRE(make_item_randart(item, true));
+    item.pos = you.pos();
+    item.link = NON_ITEM;
+    env.igrid(you.pos()) = slot;
+    unwind_var<vector<colour_mapping>> restore_colours(
+        Options.menu_colour_mappings, {colour_mapping("white:.*")});
+
+    // Simulate the already-stored name: no random name needs regenerating.
+    for (const string line_break : {"\n", "\r", "\r\n", ""})
+    {
+        const string first = language == lang_t::ZH ? "干净的毛皮匠" : "Clean Furrier";
+        const string second = language == lang_t::ZH ? "王子" : "Prince";
+        const string raw_name = first + line_break + second;
+        set_artefact_name(item, raw_name);
+        const string raw_full_name = item.name(DESC_A);
+        const string expected_name = line_break.empty() ? raw_full_name
+            : replace_all(raw_full_name, line_break, " ");
+        const string coloured = menu_colour_item_name(item, DESC_A);
+        CAPTURE(language, line_break, raw_full_name, coloured);
+        CHECK(coloured == "<white>" + expected_name + "</white>");
+        CHECK(formatted_string::parse_string(coloured).tostring() == expected_name);
+        CHECK(coloured.find('\n') == string::npos);
+        CHECK(coloured.find('\r') == string::npos);
+
+        // Flush the caller's pending message before serializing its history.
+        const string history_before = get_last_messages(NUM_STORED_MESSAGES, true);
+        vector<unsigned char> saved_history;
+        writer history_output(&saved_history);
+        save_messages(history_output);
+        {
+            unwinder restore_history([&saved_history]() {
+                clear_message_store();
+                reader history_input(saved_history);
+                history_input.setMinorVersion(TAG_MINOR_VERSION);
+                load_messages(history_input);
+            });
+            clear_message_store();
+            string observed;
+            channel_capturing_tee messages(observed);
+            item_check();
+            CHECK(messages.appends == 1);
+            CHECK(messages.channel == MSGCH_FLOOR_ITEMS);
+            const string captured = messages.get_store();
+            CHECK(captured.find(coloured) != string::npos);
+            CHECK(std::count(captured.begin(), captured.end(), '\n') == 1);
+            const string rendered = get_last_messages(1, false);
+            CHECK(rendered.find(expected_name) != string::npos);
+            CHECK(rendered.find("</white>") == string::npos);
+        }
+        CHECK(get_last_messages(NUM_STORED_MESSAGES, true) == history_before);
+        CHECK(item.props[ARTEFACT_NAME_KEY].get_string() == raw_name);
+        CHECK(get_artefact_name(item, true) == raw_name);
+        CHECK(item.name(DESC_A) == raw_full_name);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: monster equipment messages localize the final period",
+                 "[zh-translation][monster-equipment]")
+{
+    init_properties();
+    init_mut_index();
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    scoped_monspeak_world world;
+    monster *orc = world.place(MONS_ORC);
+    REQUIRE(orc != nullptr);
+
+    const int index = get_mitm_slot();
+    REQUIRE(index != NON_ITEM);
+    item_def &weapon = env.item[index];
+    weapon.base_type = OBJ_WEAPONS;
+    weapon.sub_type = WPN_CLUB;
+    weapon.quantity = 1;
+    weapon.flags = ISFLAG_IDENTIFIED;
+    weapon.pos = coord_def(-1, -1);
+    weapon.set_holding_monster(*orc);
+    orc->inv[MSLOT_WEAPON] = index;
+
+    msgwin_temporary_mode temporary;
+    unwinder clear_messages([]() { msgwin_clear_temporary(); });
+
+    msg::tee unequipped;
+    REQUIRE(orc->unequip(MSLOT_WEAPON, true));
+    CHECK(unequipped.get_store().find("卸下") != string::npos);
+    CHECK(unequipped.get_store().find(".") == string::npos);
+    CHECK(unequipped.get_store().find("。") != string::npos);
+
+    msgwin_clear_temporary();
+    msg::tee departed;
+    simple_monster_message(*orc, T_(" departs this earthly plane."));
+    CHECK(departed.get_store().find(" ") == string::npos);
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: axe category description has no English spacing or period",
+                 "[zh-translation][item-description][playtest]")
+{
+    item_def axe;
+    axe.base_type = OBJ_WEAPONS;
+    axe.sub_type = WPN_HAND_AXE;
+    axe.quantity = 1;
+    axe.flags = ISFLAG_IDENTIFIED;
+    axe.pos = coord_def(-1, -1);
+
+    const string description = get_item_description(axe);
+    CHECK(description.find("斧类") != string::npos);
+    CHECK(description.find("。 它会") == string::npos);
+    CHECK(description.find("较少伤害.") == string::npos);
+    CHECK(description.find("较少伤害。") != string::npos);
+}
+
+
+TEST_CASE("zh: monster body-part names localize while EN stays canonical",
+          "[zh-translation][body-part]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language,
+                                   language == lang_t::ZH ? "zh" : nullptr);
+    const bool zh = language == lang_t::ZH;
+    init_monsters();
+
+    struct part_case
+    {
+        monster_type type;
+        const char *en;
+        const char *zh;
+        bool hand;
+    };
+    const part_case cases[] = {
+        { MONS_HOUND,     "front paw", "前爪",   true  },
+        { MONS_HOUND,     "paw",       "爪",     false },
+        { MONS_SCORPION,  "pincer",    "螯钳",   true  },
+        { MONS_ADDER,     "tail",      "尾巴",   false },
+        { MONS_BAT,       "claw",      "爪",     false },
+        { MONS_BAT,       "wing",      "翅膀",   true  },
+        { MONS_PLANT,     "root",      "根部",   false },
+        { MONS_ORC,       "hand",      "手",     true  },
+    };
+
+    for (const part_case &test : cases)
+    {
+        monster mons;
+        mons.type = test.type;
+        const string got = test.hand ? mons.hand_name(false)
+                                     : mons.foot_name(false);
+        INFO("type=" << test.type << " hand=" << test.hand);
+        CHECK(got == (zh ? test.zh : test.en));
+    }
+}
+
+
+TEST_CASE("zh: merged slime size stays visible in monster names",
+          "[zh-translation][monster-name][slime]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language,
+                                   language == lang_t::ZH ? "zh" : nullptr);
+    const bool zh = language == lang_t::ZH;
+    init_monsters();
+
+    struct slime_case
+    {
+        int size;
+        const char *en;
+        const char *zh;
+    };
+    const slime_case cases[] = {
+        { 1, "slime creature",           "史莱姆生物" },
+        { 2, "large slime creature",     "大型史莱姆生物" },
+        { 3, "very large slime creature", "超大型史莱姆生物" },
+        { 4, "enormous slime creature",  "巨型史莱姆生物" },
+        { 5, "titanic slime creature",   "泰坦级史莱姆生物" },
+    };
+
+    for (const slime_case &test : cases)
+    {
+        monster_info mi(MONS_SLIME_CREATURE);
+        mi.slime_size = test.size;
+        INFO("blob_size=" << test.size);
+        CHECK(mi.common_name(DESC_PLAIN) == (zh ? test.zh : test.en));
+    }
+}
+
+
+TEST_CASE("zh: dynamic monster name modifiers stay localized",
+          "[zh-translation][monster-name]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language,
+                                   language == lang_t::ZH ? "zh" : nullptr);
+    const bool zh = language == lang_t::ZH;
+    init_monsters();
+    init_properties();
+
+    // Draconian job colour: the base colour is dynamic, not part of the
+    // job's static monster name.
+    {
+        monster_info mi(MONS_DRACONIAN_KNIGHT, MONS_RED_DRACONIAN);
+        CHECK(mi.common_name(DESC_PLAIN)
+              == (zh ? "红龙人骑士" : "red draconian knight"));
+    }
+
+    // Ugly thing colour changes with its current attack/resistance set.
+    {
+        monster_info mi(MONS_UGLY_THING);
+        mi._colour = RED;
+        CHECK(mi.common_name(DESC_PLAIN)
+              == (zh ? "红色丑陋之物" : "red ugly thing"));
+    }
+
+    // Animated weapon and armour names include the defining item.
+    const auto make_item = [](object_class_type base_type, int sub_type)
+    {
+        item_def item;
+        item.base_type = base_type;
+        item.sub_type = sub_type;
+        item.quantity = 1;
+        item.flags |= ISFLAG_IDENTIFIED;
+        return item;
+    };
+
+    {
+        monster_info mi(MONS_DANCING_WEAPON);
+        mi.inv[MSLOT_WEAPON].reset(
+            new item_def(make_item(OBJ_WEAPONS, WPN_LONG_SWORD)));
+        const string item_name = mi.inv[MSLOT_WEAPON]->name(DESC_PLAIN);
+        CHECK(mi.common_name(DESC_PLAIN)
+              == (zh ? "舞动的" + item_name : "dancing " + item_name));
+    }
+
+    {
+        monster_info mi(MONS_SPECTRAL_WEAPON);
+        mi.inv[MSLOT_WEAPON].reset(
+            new item_def(make_item(OBJ_WEAPONS, WPN_LONG_SWORD)));
+        const string item_name = mi.inv[MSLOT_WEAPON]->name(DESC_PLAIN);
+        CHECK(mi.common_name(DESC_PLAIN)
+              == (zh ? "灵体" + item_name : "dancing " + item_name));
+    }
+
+    {
+        monster_info mi(MONS_ARMOUR_ECHO);
+        mi.inv[MSLOT_ARMOUR].reset(
+            new item_def(make_item(OBJ_ARMOUR, ARM_PLATE_ARMOUR)));
+        const string item_name = mi.inv[MSLOT_ARMOUR]->name(DESC_PLAIN);
+        CHECK(mi.common_name(DESC_PLAIN)
+              == (zh ? "回响的" + item_name : "echoed " + item_name));
+    }
+
+    {
+        monster_info mi(MONS_HAUNTED_ARMOUR);
+        mi.inv[MSLOT_ARMOUR].reset(
+            new item_def(make_item(OBJ_ARMOUR, ARM_PLATE_ARMOUR)));
+        const string item_name = mi.inv[MSLOT_ARMOUR]->name(DESC_QUALNAME);
+        CHECK(mi.common_name(DESC_PLAIN)
+              == (zh ? "怨灵" + item_name : "haunted " + item_name));
+    }
+}
+
+
+TEST_CASE("zh: monster beam hit verbs are localized",
+          "[zh-translation][beam-hit-verb][creeping-frost]")
+{
+    init_properties();
+    init_monsters();
+    init_zap_index();
+    init_spell_descs();
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    const bool zh = language == lang_t::ZH;
+
+    CHECK(string(T_("grips")) == (zh ? "攫住" : "grips"));
+    CHECK(string(T_("grasp")) == (zh ? "攫住" : "grasp"));
+    CHECK(string(T_("batters")) == (zh ? "砸中" : "batters"));
+    CHECK(string(T_("slices through")) == (zh ? "贯穿" : "slices through"));
+
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 1000;
+    scoped_monspeak_world world;
+    monster* source = world.place(MONS_SALAMANDER_TYRANT);
+    REQUIRE(source);
+    no_notes suppress_notes;
+
+    // Mirrors _setup_creeping_frost(): the displayed beam name comes from
+    // the spell title, while hit_verb is the raw English verb.
+    bolt beam;
+    beam.name = "frost";
+    beam.origin_spell = SPELL_CREEPING_FROST;
+    beam.flavour = beam.real_flavour = BEAM_COLD;
+    beam.thrower = KILL_MON_MISSILE;
+    beam.source_id = source->mid;
+    beam.source = beam.target = you.pos();
+    beam.hit = AUTOMATIC_HIT;
+    beam.damage = dice_def(1, 1);
+    beam.hit_verb = "grips";
+    msg::tee messages;
+    beam.fire();
+    const string output = messages.get_store();
+    CAPTURE(language, output);
+    if (zh)
+    {
+        CHECK(output.find("蔓延冰霜攫住了你") != string::npos);
+        CHECK(output.find("grips") == string::npos);
+    }
+    else
+        CHECK(output.find("frost grips you") != string::npos);
+}
+
+
+TEST_CASE("zh: dynamic verbs are localized without shadowing spell names",
+          "[zh-translation][verb]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language,
+                                   language == lang_t::ZH ? "zh" : nullptr);
+    const bool zh = language == lang_t::ZH;
+
+    // Verb contexts avoid the capitalized spell/ability keys.
+    CHECK(string(C_("verb", "freeze")) == (zh ? "冻住" : "freeze"));
+    CHECK(string(C_("verb", "envenom")) == (zh ? "毒害" : "envenom"));
+    CHECK(string(C_("verb", "shock")) == (zh ? "电击" : "shock"));
+    CHECK(string(C_("verb", "constrict")) == (zh ? "缠住" : "constrict"));
+    CHECK(string(C_("attack verb", "touch")) == (zh ? "触碰" : "touch"));
+    CHECK(string(C_("attack verb", "constrict"))
+          == (zh ? "缠住" : "constrict"));
+
+    // The capitalized spell/ability names stay distinct.
+    CHECK(string(T_("Touch")) == (zh ? "接触" : "Touch"));
+    CHECK(string(T_("Constrict")) == (zh ? "束缚" : "Constrict"));
+    CHECK(string(T_("Envenom")) == (zh ? "淬毒" : "Envenom"));
+    CHECK(string(T_("Freeze")) == (zh ? "冰冻" : "Freeze"));
+    CHECK(string(T_("Shock")) == (zh ? "震击" : "Shock"));
+    CHECK(string(T_("Jump")) == (zh ? "跳跃" : "Jump"));
+
+    // Constriction escape verbs use their own context, avoiding the
+    // capitalized ability key for "Jump".
+    CHECK(string(C_("escape verb", "slip")) == (zh ? "滑脱" : "slip"));
+    CHECK(string(C_("escape verb", "burst")) == (zh ? "猛然" : "burst"));
+    CHECK(string(C_("escape verb", "dance")) == (zh ? "舞动" : "dance"));
+    CHECK(string(C_("escape verb", "jump")) == (zh ? "跃起" : "jump"));
+
+    // Monster attack verbs use the contextual keys.
+    CHECK(mon_attack_name(AT_TOUCH) == (zh ? "触碰" : "touch"));
+    CHECK(mon_attack_name(AT_CONSTRICT) == (zh ? "缠住" : "constrict"));
+
+    // verb_for_display exercises the same production lookup.
+    monster mons;
+    mons.type = MONS_ORC;
+    CHECK(mons.verb_for_display(NC_("verb", "freeze"), "verb")
+          == (zh ? "冻住" : "freezes"));
+    CHECK(mons.verb_for_display(NC_("verb", "envenom"), "verb")
+          == (zh ? "毒害" : "envenoms"));
+    CHECK(mons.verb_for_display(NC_("verb", "shock"), "verb")
+          == (zh ? "电击" : "shocks"));
+    CHECK(mons.verb_for_display(NC_("verb", "constrict"), "verb")
+          == (zh ? "缠住" : "constricts"));
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: bad-target prompts localize the action phrase",
+                 "[zh-translation][targeting]")
+{
+    CHECK(string(T_("Cast it anyway?")) == "仍要施放吗？");
+    CHECK(string(T_("Attack anyway?")) == "仍要攻击吗？");
+    CHECK(string(T_("The arc blade's discharge")) == "电弧之刃的放电");
+    CHECK(string(T_("Detonate Monarch Bomb")) == "引爆君主炸弹");
+    CHECK(string(T_("Static Discharge")) == "静电释放");
+
+    const string prompt = make_stringf(T_("%s might hit %s%s. %s"),
+                                       T_("Static Discharge"),
+                                       "兽人", "",
+                                       T_("Cast it anyway?"));
+    CHECK(prompt.find("静电释放可能击中兽人") != string::npos);
+    CHECK(prompt.find("仍要施放吗？") != string::npos);
+    CHECK(prompt.find("Cast it anyway?") == string::npos);
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: eldritch tentacle portal return messages are localized",
+                 "[zh-translation][tentacle][portal]")
+{
+    CHECK(string(T_("The tentacle is hauled back through the portal!"))
+          == "触手被拖回了传送门！");
+    CHECK(string(T_("With a roar, the tentacle is hauled back through the portal!"))
+          == "伴随着一声咆哮，触手被拖回了传送门！");
+}
+
+TEST_CASE("stable followup fallback front feet and singular tentacles stay localized",
+          "[zh-translation][stable-followup][body-part]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    init_monsters();
+    for (monster_type type : {MONS_RAT, MONS_ELEPHANT, MONS_DREAM_SHEEP,
+                              MONS_BULLFROG, MONS_SWAMP_DRAKE, MONS_ICE_BEAST,
+                              MONS_QUOKKA})
+    {
+        monster mons;
+        mons.type = type;
+        CAPTURE(type);
+        CHECK(mons.hand_name(false) == (language == lang_t::ZH ? "前足" : "front foot"));
+        CHECK(mons.hand_name(true) == (language == lang_t::ZH ? "前足" : "front feet"));
+    }
+    for (monster_type type : {MONS_ABOMINATION_SMALL, MONS_TENTACLED_MONSTROSITY})
+    {
+        monster mons;
+        mons.type = type;
+        CAPTURE(type);
+        CHECK(mons.foot_name(false) == (language == lang_t::ZH ? "触手" : "tentacle"));
+        CHECK(mons.foot_name(true) == (language == lang_t::ZH ? "触手" : "tentacles"));
+    }
 }

@@ -3503,7 +3503,7 @@ string melee_attack::staff_message(stave_type staff, int dam) const
         return make_stringf_p(
                 T_("%s %s %s%s"),
                 attacker->name(DESC_THE).c_str(),
-                attacker->verb_for_display(N_("freeze")).c_str(),
+                attacker->verb_for_display(NC_("verb", "freeze"), "verb").c_str(),
                 defender->name(DESC_THE).c_str(),
                 attack_strength_punctuation(dam).c_str());
 
@@ -3524,7 +3524,7 @@ string melee_attack::staff_message(stave_type staff, int dam) const
         return make_stringf_p(
                 T_("%s %s %s%s"),
                 attacker->name(DESC_THE).c_str(),
-                attacker->verb_for_display(N_("envenom")).c_str(),
+                attacker->verb_for_display(NC_("verb", "envenom"), "verb").c_str(),
                 defender->name(DESC_THE).c_str(),
                 attack_strength_punctuation(dam).c_str());
 
@@ -4069,7 +4069,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         {
             mprf_p(T_("%s %s %s%s"),
                  atk_name(DESC_THE).c_str(),
-                 attacker->verb_for_display(N_("freeze")).c_str(),
+                 attacker->verb_for_display(NC_("verb", "freeze"), "verb").c_str(),
                  defender_name(true).c_str(),
                  attack_strength_punctuation(special_damage).c_str());
 
@@ -4090,7 +4090,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         {
             mprf_p(T_("%s %s %s%s"),
                  atk_name(DESC_THE).c_str(),
-                 attacker->verb_for_display(N_("shock")).c_str(),
+                 attacker->verb_for_display(NC_("verb", "shock"), "verb").c_str(),
                  defender_name(true).c_str(),
                  attack_strength_punctuation(special_damage).c_str());
 
