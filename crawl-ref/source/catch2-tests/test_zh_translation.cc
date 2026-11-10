@@ -896,7 +896,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     const char* enter = translated_move_phrase(
         "walk", move_phrase_context::enter_area);
     REQUIRE(make_stringf(T_("Really %s into a travel-excluded area?"), enter)
-            == "确定要走进禁区吗？");
+            == "确定要走进旅行禁区吗？");
 
     const char* through = translated_move_phrase(
         "stride", move_phrase_context::through_obstacle);
@@ -1473,7 +1473,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(std::string(brand_type_name(SPWPN_DRAINING, true)) == "汲取");
     REQUIRE(std::string(brand_type_adj(SPWPN_DRAINING)) == "汲取");
     REQUIRE(std::string(T_("drain")) == "吸血");
-    REQUIRE(std::string(T_("draining")) == "汲取");
+    REQUIRE(std::string(T_("draining")) == "负能量");
 
     init_spell_descs();
     init_spell_name_cache();
@@ -6992,7 +6992,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(form->get_fakemuts()[0].first == "resilient");
         CHECK(form->transform_message() == (zh ? "你变成了一棵树。" : "You turn into a tree."));
         CHECK(form->get_description() == (zh ? "你是一棵树。" : "You are a tree."));
-        CHECK(form->get_description(true) == (zh ? "你曾是一棵树。" : "You were a tree."));
+        CHECK(form->get_description(true) == (zh ? "你当时是一棵树。" : "You were a tree."));
         for (int duration : {1, 1000})
         {
             you.duration[DUR_TRANSFORMATION] = duration;
