@@ -523,7 +523,7 @@ Force Lance spell
 %%%%
 Forceful Invitation spell
 
-从蛇穴、蜘蛛巢穴、沼泽、海滩、精灵殿堂、宝库或墓室之一召唤一些生物；
+从蛇坑、蜘蛛巢穴、沼泽、海滩、精灵殿堂、宝库或墓室之一召唤一些生物；
 具体分支因施法者而异。
 %%%%
 Foxfire spell
@@ -990,7 +990,7 @@ Phantom Mirror spell
 %%%%
 Plane Rend spell
 
-从史莱姆之坑、精灵殿堂、宝库、墓室、远古坟冢或佐特领域之一
+从史莱姆之坑、精灵殿堂、宝库、墓室、远古陵墓或佐特领域之一
 召唤强大威胁；每次施法选择的分支都可能不同。
 %%%%
 Plasma Beam spell

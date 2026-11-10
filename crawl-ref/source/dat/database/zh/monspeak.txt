@@ -1396,7 +1396,7 @@ VISUAL:@The_monster@ 不祥地朝 @foe@ 打了个手势。
 
 @The_monster@ 对 @foe@ 喊道："你打扰了我的安息！死！"
 
-@The_monster@ 对 @foe@ @_Menkaure_verb_@："尘归尘，土归土。"
+@The_monster@ 对@foe@@_Menkaure_verb_@："尘归尘，土归土。"
 
 @The_monster@ 对 @foe@ 喊道："时光之沙将把你从历史中抹去！"
 
@@ -1524,7 +1524,7 @@ VISUAL:@The_monster@ 检查着 @possessive@钱袋，皱起眉头。
 
 @The_monster@ 说："反正我相信他们会被善待的。"
 
-@The_monster@ 说："我敢肯定兽人矿山就在这附近的某个地方……"
+@The_monster@ 说："我敢肯定兽人矿坑就在这附近的某个地方……"
 
 @The_monster@ 说："我就知道该带张地图来。"
 
@@ -1726,23 +1726,23 @@ VISUAL:@The_monster@ 看起来很放松。
 
 @The_monster@ 唱着："和平当下，自由当下！和平当下，自由当下！"
 
-@The_monster@ 对 @foe@ @_Norris_verb_@："人生就是苦难。我来帮你。"
+@The_monster@ 对@foe@@_Norris_verb_@："人生就是苦难。我来帮你。"
 
-@The_monster@ 对 @foe@ @_Norris_verb_@："重回宇宙之流吧！"
+@The_monster@ 对@foe@@_Norris_verb_@："重回宇宙之流吧！"
 
 @The_monster@ 对 @foe@ 说："有时候，沉下去比游着更好。"
 
 @The_monster@ 对 @foe@ 说："深呼吸。"
 
-@The_monster@ 对 @foe@ @_Norris_verb_@："平和！我为你带来永恒的平和！"
+@The_monster@ 对@foe@@_Norris_verb_@："平和！我为你带来永恒的平和！"
 
-@The_monster@ 对 @foe@ @_Norris_verb_@："让浪涛带走你吧。"
+@The_monster@ 对@foe@@_Norris_verb_@："让浪涛带走你吧。"
 
-@The_monster@ 对 @foe@ @_Norris_verb_@："顺其自然就好。"
+@The_monster@ 对@foe@@_Norris_verb_@："顺其自然就好。"
 
-@The_monster@ 对 @foe@ @_Norris_verb_@："何必拖延那不可避免之事？"
+@The_monster@ 对@foe@@_Norris_verb_@："何必拖延那不可避免之事？"
 
-@The_monster@ 对 @foe@ @_Norris_verb_@："先抓住小浪，再追大浪。"
+@The_monster@ 对@foe@@_Norris_verb_@："先抓住小浪，再追大浪。"
 %%%%
 _Norris_rare_
 VISUAL:@The_monster@ 看起来非常心平气和。
@@ -1751,15 +1751,15 @@ VISUAL:@The_monster@ 看起来非常心平气和。
 
 @The_monster@ @_Norris_verb_@："我觉得我真该试一次死亡。"
 
-@The_monster@ 对 @foe@ @_Norris_verb_@："你对接下来发生的事就一点也不好奇吗？"
+@The_monster@ 对@foe@@_Norris_verb_@："你对接下来发生的事就一点也不好奇吗？"
 
-@The_monster@ 对 @foe@ @_Norris_verb_@："宇宙就像一条大鱼。"
+@The_monster@ 对@foe@@_Norris_verb_@："宇宙就像一条大鱼。"
 
 @The_monster@ @_Norris_verb_@："智慧在于知道何时该放弃。"
 
-@The_monster@ 对 @foe@ @_Norris_verb_@："只有傻瓜才怕死。我拥抱它。"
+@The_monster@ 对@foe@@_Norris_verb_@："只有傻瓜才怕死。我拥抱它。"
 
-@The_monster@ 对 @foe@ @_Norris_verb_@："死后你会找到内心的平和。"
+@The_monster@ 对@foe@@_Norris_verb_@："死后你会找到内心的平和。"
 
 @The_monster@ 沉思道："人能两次踏入同一条河流吗？"
 
@@ -1767,9 +1767,9 @@ VISUAL:@The_monster@ 看起来非常心平气和。
 
 @The_monster@ 对 @foe@ 叹气道："觉悟是一种沉重的责任。"
 
-@The_monster@ 对 @foe@ @_Norris_verb_@："让我们一起喂天鲨吧。"
+@The_monster@ 对@foe@@_Norris_verb_@："让我们一起喂天鲨吧。"
 
-@The_monster@ 对 @foe@ @_Norris_verb_@："我们都由神明构成。"
+@The_monster@ 对@foe@@_Norris_verb_@："我们都由神明构成。"
 %%%%
 ############ ROXANNE ### 岩石学法师
 Roxanne
