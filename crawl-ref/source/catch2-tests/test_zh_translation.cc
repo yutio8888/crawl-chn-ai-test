@@ -8234,3 +8234,28 @@ TEST_CASE_METHOD(ZhTranslationFixture,
           == "伴随着一声咆哮，触手被拖回了传送门！");
 }
 
+TEST_CASE("stable followup fallback front feet and singular tentacles stay localized",
+          "[zh-translation][stable-followup][body-part]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    init_monsters();
+    for (monster_type type : {MONS_RAT, MONS_ELEPHANT, MONS_DREAM_SHEEP,
+                              MONS_BULLFROG, MONS_SWAMP_DRAKE, MONS_ICE_BEAST,
+                              MONS_QUOKKA})
+    {
+        monster mons;
+        mons.type = type;
+        CAPTURE(type);
+        CHECK(mons.hand_name(false) == (language == lang_t::ZH ? "前足" : "front foot"));
+        CHECK(mons.hand_name(true) == (language == lang_t::ZH ? "前足" : "front feet"));
+    }
+    for (monster_type type : {MONS_ABOMINATION_SMALL, MONS_TENTACLED_MONSTROSITY})
+    {
+        monster mons;
+        mons.type = type;
+        CAPTURE(type);
+        CHECK(mons.foot_name(false) == (language == lang_t::ZH ? "触手" : "tentacle"));
+        CHECK(mons.foot_name(true) == (language == lang_t::ZH ? "触手" : "tentacles"));
+    }
+}

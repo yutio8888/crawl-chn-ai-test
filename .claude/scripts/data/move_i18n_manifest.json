@@ -1,7 +1,7 @@
 {
   "contexts": {
     "move.bare": {
-      "description": "Standalone action labels, movement announcements, and escape verbs without a directional complement.",
+      "description": "Standalone action labels, movement announcements, and escape verbs (including raw player escape identities) without a directional complement.",
       "verbs": ["blink", "hop", "leap", "climb up", "climb down", "fly up", "fly down"]
     },
     "move.enter-area": {

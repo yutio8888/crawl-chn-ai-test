@@ -3891,6 +3891,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 - **Type**: C — Shared-key constraint and catalog terminology ruling
 - **Status**: active
+- **Superseded item**: `status|ambrosia-drunk` 单项已由 D-C-107 取代为“神食酣醉”；本节的“仙酒醉”保留为历史裁决，`status|Barbs → 尖刺` 继续有效。
 - **Date**: 2026-10-07
 - **Source authority**: 冻结 trunk 提交
   `32f0ede89ed48563682b68436944e84c10621afb` 的 D-C-098；
@@ -4103,6 +4104,8 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-101 | Spell school display names | 全称统一为系；法术列表两字简称；例外保留 | active |
 | D-C-102 | Ability/mutation semantic names (stable subset) | 资质欠佳；持久衰竭 | active |
 | D-C-103 | Four Hell domain names | 欣嫩谷／悲叹河／塔尔塔罗斯／迪斯；迪斯铁城；文学例外 | active |
+| D-C-107 | Ambrosia potion/status root | 神食／神食酣醉；取代 D-C-098 的 ambrosia 单项 | active |
+| D-C-108 | Potion-related state roots | enlightened 长描述用启迪；confused 短标签用混乱 | active |
 
 ### D-C-107 — ambrosia 药水与状态词根统一为神食
 
@@ -4129,7 +4132,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   `Ambros` 只指物质本身，短标签 `ambrosia-drunk` 指饮下神食后的沉醉状态；
   “神食”对应物质、“神食酣醉”对应状态；状态灯仍为两字，短标签由
   三字增至四字；顶栏显示依现有截断逻辑处理。状态说明正文（`descript/zh/status.txt` 的 ambros 条）
-  用“恢复生命值和法力，但同时也处于混乱状态”陈述机制，不指称物质名，
+  用“你正在恢复生命和法力，但会陷入混乱。”陈述机制，不指称物质名，
   无需改词。
 - **Scope**: 只统一这一效果的三个显示面及其 glossary 登记、导出与机制
   审阅卡，不改变 DUR_AMBROSIA 的枚举、持续时间、困惑联动、药水注册或

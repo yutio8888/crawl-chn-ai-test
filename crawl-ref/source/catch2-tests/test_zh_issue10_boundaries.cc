@@ -20,6 +20,8 @@
 #include "mon-place.h"
 #include "mon-util.h"
 #include "movement-i18n.h"
+#include "mutation.h"
+#include "status.h"
 #include "options.h"
 #include "player.h"
 #include "player-equip.h"
@@ -523,6 +525,7 @@ TEST_CASE("playtest: area attack prompts resolve actions in their own context",
         "drain life", "hailstorm", "hurl reagents",
         "irradiate", "make a polar vortex", "poison",
         "refrigerate", "release a tremorstone", "Slouch", "unravel", "zap",
+        "invoke Cleansing Flame",
     };
     for (const char *verb : verbs)
     {
@@ -802,4 +805,77 @@ TEST_CASE("target descriptions translate silence without changing status identit
         CHECK_FALSE(silenced(pos));
         CHECK(cell_monster_description(pos, true).find(T_("silenced")) == string::npos);
     }
+}
+
+TEST_CASE("stable followup raw movement escapes translate at the real sink",
+          "[zh-translation][stable-followup][raw-escape]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *constrictor = world.place(MONS_BALL_PYTHON, coord_def(21, 20));
+    const pair<const char*, const char*> verbs[] = {
+        {"blink", "闪烁"}, {"hop", "跳跃"},
+        {"leap", "飞扑"}, {"bolt", "疾冲"},
+    };
+    for (const auto &verb : verbs)
+    {
+        constrictor->start_constricting(you, CONSTRICT_MELEE);
+        REQUIRE(you.is_constricted());
+        const string output = observe_message([&] {
+            // Spell and ability callers pass these exact raw identities.
+            you.stop_being_constricted(false, verb.first);
+        });
+        CHECK_FALSE(you.is_constricted());
+        CHECK_FALSE(constrictor->is_constricting());
+        const string displayed = language == lang_t::ZH ? verb.second : verb.first;
+        const string expected = make_stringf(T_("%s %s free of %s!"),
+            you.name(DESC_THE).c_str(), displayed.c_str(),
+            lowercase_string(constrictor->name(DESC_THE)).c_str());
+        CAPTURE(language, verb.first, output, expected);
+        CHECK(output.find(expected) != string::npos);
+        if (language == lang_t::ZH)
+            CHECK(output.find(verb.first) == string::npos);
+    }
+    // Blinkbolt's verb context must not replace the projectile noun.
+    CHECK(string(T_("bolt")) == (language == lang_t::ZH ? "弩箭" : "bolt"));
+}
+
+TEST_CASE("stable followup Golden Breath bad target prompt localizes its action",
+          "[zh-translation][stable-followup][bad-target]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *ally = world.place(MONS_ORC, coord_def(21, 20));
+    ally->attitude = ATT_FRIENDLY;
+    action_prompt_capture captured;
+    REQUIRE(warn_about_bad_targets(SPELL_GOLDEN_BREATH, {ally->pos()},
+                                   nullptr, "Breathe anyway?"));
+    const string expected = language == lang_t::ZH ? "仍要吐息吗？" : "Breathe anyway?";
+    CHECK(captured.prompt.find(expected) != string::npos);
+    CHECK(captured.prompt.find(ally->name(DESC_THE)) != string::npos);
+    if (language == lang_t::ZH)
+        CHECK(captured.prompt.find("Breathe anyway?") == string::npos);
+}
+
+TEST_CASE("stable followup damage rating keeps its localized label and full stop",
+          "[zh-translation][stable-followup][damage-rating]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    init_mut_index();
+    init_duration_index();
+    you.equipment.items.clear();
+    you.equipment.update();
+    REQUIRE(you.weapon() == nullptr);
+    // SourceDB lookup is case-folded: the existing unarmed key is sufficient.
+    CHECK(string(T_("Unarmed")) == (language == lang_t::ZH ? "空手" : "Unarmed"));
+    const string output = observe_message([] { display_char_status(); });
+    const string rating = damage_rating(nullptr);
+    const string expected = language == lang_t::ZH
+        ? "空手的伤害评级约为" + rating + "。"
+        : "Your damage rating with Unarmed is about " + rating + ".";
+    CHECK(output.find(expected) != string::npos);
 }
