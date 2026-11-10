@@ -407,7 +407,7 @@ protected:
     string unalias(const string &key) const;
     string expand_vars(const string &field) const;
     void add_alias(const string &alias, const string &name);
-    void set_option_fragment(const string &s, bool prepend);
+    void set_option_fragment(const string &s, bool runscripts);
     void include_impl(const string &file, bool resolve, bool runscripts,
                       bool utf8);
 };
