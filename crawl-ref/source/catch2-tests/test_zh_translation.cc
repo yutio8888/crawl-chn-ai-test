@@ -8216,3 +8216,14 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(prompt.find("Cast it anyway?") == string::npos);
 }
 
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: eldritch tentacle portal return messages are localized",
+                 "[zh-translation][tentacle][portal]")
+{
+    CHECK(string(T_("The tentacle is hauled back through the portal!"))
+          == "触手被拖回了传送门！");
+    CHECK(string(T_("With a roar, the tentacle is hauled back through the portal!"))
+          == "伴随着一声咆哮，触手被拖回了传送门！");
+}
+

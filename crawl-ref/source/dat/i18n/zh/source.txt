@@ -50093,3 +50093,11 @@ The arc blade's discharge
 %%%%
 Detonate Monarch Bomb
 引爆君主炸弹
+
+%%%%
+The tentacle is hauled back through the portal!
+触手被拖回了传送门！
+
+%%%%
+With a roar, the tentacle is hauled back through the portal!
+伴随着一声咆哮，触手被拖回了传送门！
