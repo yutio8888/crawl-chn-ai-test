@@ -760,3 +760,44 @@ TEST_CASE("starcursed screams translate complete player and monster messages",
         }
     }
 }
+
+#include "map-cell.h"
+#include "directn.h"
+TEST_CASE("target descriptions translate silence without changing status identities",
+          "[zh-translation][playtest-fixes][target-silence]")
+{
+    issue10_world world;
+    monster* target = world.place(MONS_ORC, coord_def(20, 21));
+    const coord_def pos = target->pos();
+    unwind_var<map_cell> saved_memory(env.map_knowledge(pos), map_cell());
+    env.map_knowledge(pos).set_monster(monster_info(target));
+
+    for (const lang_t language : {lang_t::EN, lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+        you.duration[DUR_SILENCE] = 100;
+        invalidate_agrid();
+        REQUIRE(silenced(pos));
+        for (int rebuild = 0; rebuild < 2; ++rebuild)
+        {
+            if (rebuild)
+                i18n_cache_clear();
+            const string display = cell_monster_description(pos, true);
+            const string label = T_("silenced");
+            CHECK(display.find(label) != string::npos);
+            if (language == lang_t::ZH)
+            {
+                REQUIRE(label != "silenced");
+                CHECK(display.find("silenced") == string::npos);
+            }
+            CHECK(cell_monster_description(pos, false).find(label) == string::npos);
+            const auto details = get_monster_status_descriptors(monster_info(target));
+            REQUIRE_FALSE(details.empty());
+            CHECK(details.front() == label);
+        }
+        you.duration[DUR_SILENCE] = 0;
+        invalidate_agrid();
+        CHECK_FALSE(silenced(pos));
+        CHECK(cell_monster_description(pos, true).find(T_("silenced")) == string::npos);
+    }
+}
