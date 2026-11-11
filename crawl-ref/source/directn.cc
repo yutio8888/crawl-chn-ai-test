@@ -2969,7 +2969,11 @@ static void _describe_oos_square(const coord_def& where)
         if (!in_bounds(where))
             dprf("(out of bounds)");
         else
-            dprf("(map: %lx)", env.map_knowledge(where).flags);
+            // %llx with an explicit cast instead of PRIx64: the gate's
+            // tree-sitter grammar cannot parse a macro between string
+            // literals, and the rendered text is identical.
+            dprf("(map: 0x%llx)",
+                 static_cast<unsigned long long>(env.map_knowledge(where).flags));
 #endif
         return;
     }
@@ -3810,7 +3814,7 @@ static void _debug_describe_feature_at(const coord_def &where)
     char32_t ch = get_cell_glyph(where).ch;
     // TODO: expand out some of this in the cell description for console in a
     // more readable fashion
-    dprf("(%d,%d): %s - %s. (%d/%s)%s%s%s%s map: %lx%s",
+    dprf("(%d,%d): %s - %s. (%d/%s)%s%s%s%s map: 0x%llx%s",
          where.x, where.y,
          ch == '<' ? "<<" : stringize_glyph(ch).c_str(),
          feature_desc.c_str(),
@@ -3820,7 +3824,7 @@ static void _debug_describe_feature_at(const coord_def &where)
          traveldest.c_str(),
          height_desc.c_str(),
          vault.c_str(),
-         env.map_knowledge(where).flags,
+         static_cast<unsigned long long>(env.map_knowledge(where).flags),
          (env.pgrid(where) & FPROP_NO_TELE_INTO) ? ", no_tele" : "");
 }
 #endif
