@@ -184,7 +184,7 @@
 | Jolt damage | 放电伤害 | form 名称／伤害标签；eel-hands:special_damage_name；decision=D-C-098 |
 | Flux | 变形 | form 名称／伤害标签；flux:short_name；decision=D-C-098 |
 | flux-form | 变形形态 | form 名称／伤害标签；flux:long_name；decision=D-C-098 |
-| Contam Dmg | 辐射伤害 | form 名称／伤害标签；flux:special_damage_name；decision=D-C-098 |
+| Contam Dmg | 污染伤害 | form 名称／伤害短标签；flux:special_damage_name；沿用 D-C-098 的作用域；魔法污染简称，裁决 [D-C-112] |
 | crab-form | 蟹形态 | form 名称／伤害标签；fortress-crab:long_name；decision=D-C-098 |
 | fungus-form | 菌类形态 | form 名称／伤害标签；fungus:long_name；decision=D-C-098 |
 | Hive | 蜂巢 | form 名称／伤害标签；hive:short_name；decision=D-C-098 |
@@ -835,7 +835,7 @@
 | Berserk | 狂暴 | status; source=status.txt |
 | Poison | 中毒 | status; source=status.txt |
 | Confusion | 混乱 | status; source=status.txt |
-| Contamination | 诱变辐射 | status; source=status.txt |
+| Contamination | 魔法污染 | contamination / magic contamination / magical contamination 的累积、消退机制；HUD 短标签可简称“污染”；裁决 [D-C-112] |
 | Drain | 衰竭 | status; source=status.txt |
 | Slow | 减速 | status; source=status.txt |
 | Paralysis | 麻痹 | status; source=status.txt |
@@ -890,7 +890,7 @@
 | mutagenic energy / mutagenic energies | 诱变能量 | 普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096 |
 | mutagenic power | 诱变力量 | 四肢增强效果的力量；区别发生的变异（mutation）；decision=D-C-096 |
 | mutagenic glow | 诱变光芒 | 魔法污染的发光描述；与 mutagenic radiation 同词根；decision=D-C-096 |
-| mutagenic radiation | 诱变辐射 | 复用 Contamination 既有译法；decision=D-C-096 |
+| mutagenic radiation | 诱变辐射 | 仅用于英文明确写出 mutagenic radiation 的字面辐射；不作 Contamination 的机制名；保留 D-C-096 的诱变词根；裁决 [D-C-112] |
 | mutagenic fog | 诱变雾气 | 云类型及鬃毛药水云、怪物状态描述；弃用“致变雾气／变异雾气”；decision=D-C-096 |
 | mutagenic serum | 诱变血清 | 净化诱变催化器正文；沿用 features 既有译法；decision=D-C-096 |
 | `Cleave+` | 顺劈+ | 佐姆顺劈祝福状态灯；沿用 Cleave status 的“顺劈”词根；decision=D-C-109 |

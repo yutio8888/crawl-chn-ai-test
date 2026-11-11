@@ -829,7 +829,7 @@ potion of brilliance
 potion of cancellation
 
 这瓶药水对饮用它的人来说，能终结大多数或好或坏的魔法效果。
-它也能减少诱变辐射。
+它也能减少魔法污染。
 %%%%
 potion of curing
 
@@ -1398,7 +1398,7 @@ amulet of chemistry
 %%%%
 amulet of dissipation
 
-这条项链使佩戴者身上的诱变辐射和负面状态效果随时间消退的速度加倍。
+这条项链使佩戴者身上的魔法污染和负面状态效果随时间消退的速度加倍。
 %%%%
 amulet of wildshape
 

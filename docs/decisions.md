@@ -4783,3 +4783,30 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   英文随机池及其随机数抽取保持原样；共同说话者仅调整 `The Council` 的中文译文。
 - **Affected files**: `message.cc`、`religion.cc`、中文 `source.txt`、
   `docs/glossary.md` 及其生成伴随文件。
+
+### D-C-112 — contamination 与 mutagenic radiation 分离
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-11
+- **Choice**: `contamination / magic contamination / magical contamination
+  → 魔法污染`；`mutagenic radiation → 诱变辐射`。
+  HUD 的 `Contam`、紧凑 `Cont ` 以及污染程度／污染伤害等短标签可简称“污染”；
+  `status|Contam` 和完整 `Contam:` 标题使用“魔法污染”。
+- **Rejected**: 所有 contamination 均译为“诱变辐射”（把污染误译为辐射，
+  并将英文两个不同概念混为同一机制名）。
+- **Source**: 用户确认；`player.cc` 的污染累积与衰减机制、`output.cc` 的
+  Contam 百分比 HUD，以及英文 `dat/descript/{status,spells}.txt`。
+- **Rationale**: contamination 是可累积并随时间消退的魔法量，采用“魔法污染”
+  能直接对应数值、状态、施法代价与消退过程。当前英文描述资产仅在
+  `Contam status` 与 `Yara's Violent Unravelling spell` 中明确使用
+  `mutagenic radiation`，这两处保留“诱变辐射”，不反向用它替代机制名。
+- **Scope / boundaries**: 统一中文 catalog、状态、物品、法术、云雾、地形、
+  神罚和神器描述中的 contamination；替代旧 Contamination 译法及 D-C-096
+  中将 mutagenic radiation 复用为机制名的依据。D-C-096 的“诱变”词根及
+  诱变光芒、诱变能量、诱变排水口等其他复合词不变；英文明确使用
+  magical radiation、irradiate 等的辐射描述不按 contamination 替换。
+  英文协议、查找键与法术专名不变。
+- **Affected files**: `crawl-ref/source/dat/i18n/zh/source.txt`、
+  `crawl-ref/source/dat/descript/zh/{status,items,spells,clouds,features,gods,unrand}.txt`、
+  `docs/glossary.md`、`docs/glossary.utf8`、`docs/decisions.md`。
