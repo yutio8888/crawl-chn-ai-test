@@ -906,6 +906,8 @@ string terse_spell_list(const item_def &item)
     }
     // could use comma_separated_fn and skip the intervening vec?
     const string spells = comma_separated_line(spell_descs.begin(),
-                                               spell_descs.end());
+                                               spell_descs.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ");
     return make_stringf(T_("Spells: %s"), spells.c_str());
 }

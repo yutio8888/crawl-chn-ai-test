@@ -484,7 +484,9 @@ public:
                  you.duration[DUR_INVIS] ? C_("state intensity", "more ") : "",
                  you.haloed() && you.halo_radius() == -1 ? T_("the") : T_("your"),
                  comma_separated_line(afflictions.begin(),
-                                      afflictions.end()).c_str());
+                                      afflictions.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ").c_str());
         }
         else
         {

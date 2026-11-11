@@ -633,24 +633,27 @@ static void _show_commandline_options_help()
 #endif
 }
 
-static string _wanderer_equip_str()
+static string _wanderer_equip_str(bool display = false)
 {
     return string(T_("the following items: "))
         + comma_separated_fn(begin(you.inv), end(you.inv),
-                         [] (const item_def &item) -> string
+                         [display] (const item_def &item) -> string
                          {
-                             return item.name(DESC_A, false, true);
-                         }, ", ", ", ", mem_fn(&item_def::defined));
+                             return item.name(DESC_A, false, true, true, false, display);
+                         }, display && Options.language == lang_t::ZH ? T_(",") : ", ",
+                         display && Options.language == lang_t::ZH ? T_(",") : ", ",
+                         mem_fn(&item_def::defined));
 }
 
-static string _wanderer_spell_str()
+static string _wanderer_spell_str(bool display = false)
 {
     return comma_separated_fn(begin(you.spells), end(you.spells),
                               [] (const spell_type spell) -> string
                               {
                                   return spell_title(spell);
                               },
-                              ", ", ", ",
+                             display && Options.language == lang_t::ZH ? T_(",") : ", ",
+                             display && Options.language == lang_t::ZH ? T_(",") : ", ",
                               // Don't include empty spell slots
                               [] (const spell_type spell) -> bool
                               {
@@ -658,12 +661,12 @@ static string _wanderer_spell_str()
                               });
 }
 
-static string _get_equip_str()
+static string _get_equip_str(bool display = false)
 {
     if (inv_count() == 0)
         return "";
     if (you.char_class == JOB_WANDERER)
-        return _wanderer_equip_str();
+        return _wanderer_equip_str(display);
     return "";
 }
 
@@ -678,7 +681,19 @@ static void _djinn_announce_spells()
 
     const string spacer = spell_str.empty() || equip_str.empty()
         ? "" : T_("; and ");
-    mprf(T_("You begin with %s%s%s."), equip_str.c_str(), spacer.c_str(), spell_str.c_str());
+    string display_equip = equip_str;
+    string display_spells = spell_str;
+    if (Options.language == lang_t::ZH)
+    {
+        // Display-only item naming must not advance gameplay RNG, even if a
+        // custom starting artefact lacks its cached name.
+        rng::subgenerator display_rng(0x5354415254ULL, 0x444953504c4159ULL);
+        display_equip = _get_equip_str(true);
+        display_spells = you.spell_no
+            ? T_("the following spells memorised: ") + _wanderer_spell_str(true) : "";
+    }
+    mprf(T_("You begin with %s%s%s."), display_equip.c_str(), spacer.c_str(),
+         display_spells.c_str());
 
     // Audited game-start display snapshot; the separate begin milestone
     // remains canonical English. Historical notes are not reconstructed.
@@ -706,19 +721,37 @@ static void _wanderer_note_equipment()
         ? "" : T_("; and ");
 
     auto const library = get_sorted_spell_list(true, true);
-    const string library_str =
-        !library.size() ? "" :
-        spell_spacer + T_("the following spells available to memorise: ")
-        + comma_separated_fn(library.begin(), library.end(),
+    const auto library_desc = [&library](bool display)
+    {
+        return comma_separated_fn(library.begin(), library.end(),
                              [] (const spell_type spell) -> string
                              {
                                  return spell_title(spell);
-                             }, ", ", ", ");
+                              },
+                             display && Options.language == lang_t::ZH ? T_(",") : ", ",
+                             display && Options.language == lang_t::ZH ? T_(",") : ", ");
+    };
+    const string library_str = library.empty() ? ""
+        : spell_spacer + T_("the following spells available to memorise: ")
+          + library_desc(false);
 
     // Announce the starting equipment and spells, because it is otherwise
     // not obvious if the player has any spells.
-    mprf(T_("You begin with %s%s%s."), equip_str.c_str(),
-         spell_str.c_str(), library_str.c_str());
+    string display_equip = equip_str;
+    string display_spells = spell_str;
+    string display_library = library_str;
+    if (Options.language == lang_t::ZH)
+    {
+        rng::subgenerator display_rng(0x5354415254ULL, 0x444953504c4159ULL);
+        display_equip = inv_count() > 0 ? _wanderer_equip_str(true) : "";
+        display_spells = !you.spell_no ? ""
+            : eq_spacer + T_("the following spell memorised: ") + _wanderer_spell_str(true);
+        display_library = library.empty() ? ""
+            : spell_spacer + T_("the following spells available to memorise: ")
+              + library_desc(true);
+    }
+    mprf(T_("You begin with %s%s%s."), display_equip.c_str(),
+         display_spells.c_str(), display_library.c_str());
 
     // This note remains a display snapshot in the language used at creation.
     const string combined_str = make_stringf(

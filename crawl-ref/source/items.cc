@@ -1001,7 +1001,7 @@ void identify_item(item_def& item)
         && !(item.flags & (ISFLAG_NOTED_ID)))
     {
         // Make a note of it.
-        take_note(Note(NOTE_ID_ITEM, 0, 0, item.name(DESC_A),
+        take_note(Note(NOTE_ID_ITEM, 0, 0, item.name(DESC_A, false, false, true, false, false),
                        origin_desc(item)));
 
         // Sometimes (e.g. shops) you can ID an item before you get it;
@@ -1194,7 +1194,7 @@ static void _check_note_item(item_def &item)
     if (item_is_collectible(item) || is_artefact(item))
     {
         int v = item.base_type == OBJ_GEMS ? gem_time_left(item.sub_type) : 0;
-        take_note(Note(NOTE_GET_ITEM, v, 0, item.name(DESC_A),
+        take_note(Note(NOTE_GET_ITEM, v, 0, item.name(DESC_A, false, false, true, false, false),
                        origin_desc(item)));
         item.flags |= ISFLAG_NOTED_GET;
 

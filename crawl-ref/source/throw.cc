@@ -92,7 +92,7 @@ public:
     string get_error() override
     {
         if (you.confused())
-            return "You are confused and cannot control your aim.";
+            return T_("You are confused and cannot control your aim.");
         else
             return targeting_behaviour::get_error();
     }

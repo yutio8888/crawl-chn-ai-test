@@ -4581,10 +4581,10 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         }
         simple_monster_message(*attacker->as_monster(),
                                 attacker->type == MONS_GLOWMURK_GHAST
-                                ? contam ? " fades away in a splash of mutagenic energy!"
-                                : " fades away." :
-                                contam ? " sprays mutagenic energy!"
-                                : " fails to spray mutagenic energy.");
+                                ? contam ? T_(" fades away in a splash of mutagenic energy!")
+                                : T_(" fades away.") :
+                                contam ? T_(" sprays mutagenic energy!")
+                                : T_(" fails to spray mutagenic energy."));
         }
         break;
 

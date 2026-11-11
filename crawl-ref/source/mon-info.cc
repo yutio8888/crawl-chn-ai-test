@@ -1870,12 +1870,14 @@ string monster_info::constriction_description() const
     }
 
     string constricting = comma_separated_line(constricting_name.begin(),
-                                               constricting_name.end());
+                                               constricting_name.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ");
 
     if (!constricting.empty())
     {
         if (bymsg)
-            cinfo += ", ";
+            cinfo += Options.language == lang_t::ZH ? T_(",") : ", ";
         cinfo += constricting;
     }
     return cinfo;
@@ -1993,7 +1995,10 @@ string monster_info::speed_description() const
                      speed, unusuals);
 
     if (!unusuals.empty())
-        result << " (" << join_strings(unusuals.begin(), unusuals.end(), ", ") << ")";
+    {
+        result << " (" << join_strings(unusuals.begin(), unusuals.end(),
+                                      Options.language == lang_t::ZH ? T_(",") : ", ") << ")";
+    }
 
     if (type == MONS_SIXFIRHY || type == MONS_JIANGSHI)
         result << (T_(" (but often pauses)"));
@@ -2479,7 +2484,8 @@ void mons_conditions_string(string& desc, const vector<monster_info>& mi,
         return;
 
     desc += " ("
-         + join_strings(conditions.begin(), conditions.end(), ", ") + ")";
+         + join_strings(conditions.begin(), conditions.end(),
+                        Options.language == lang_t::ZH ? T_(",") : ", ") + ")";
 }
 
 monster_type monster_info::draconian_subspecies() const

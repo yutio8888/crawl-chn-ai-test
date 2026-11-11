@@ -1164,7 +1164,7 @@ static bool _maybe_note_found_unrand(const item_def &item)
 {
     if (is_unrandom_artefact(item) && !(item.flags & ISFLAG_SEEN))
     {
-        take_note(Note(NOTE_FOUND_UNRAND, 0, 0, item.name(DESC_THE),
+        take_note(Note(NOTE_FOUND_UNRAND, 0, 0, item.name(DESC_THE, false, false, true, false, false),
                        origin_desc(item)));
         return true;
     }

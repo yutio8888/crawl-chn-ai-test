@@ -1888,7 +1888,9 @@ string cell_monster_description(const coord_def& pos, bool include_areas, target
     if (!suffixes.empty())
     {
         const string suffix_desc =
-            comma_separated_line(suffixes.begin(), suffixes.end(), ", ");
+            comma_separated_line(suffixes.begin(), suffixes.end(),
+                Options.language == lang_t::ZH ? T_(",") : ", ",
+                Options.language == lang_t::ZH ? T_(",") : ", ");
         text += make_stringf(T_(" (%s)"), suffix_desc.c_str());
     }
     return text;
@@ -2814,7 +2816,7 @@ bool direction_chooser::choose_direction()
 string get_cell_mouseover_tag(const coord_def &gc)
 {
     string desc = "";
-    const char *unseen_desc = "[unseen terrain]";
+    const string unseen_desc = T_("[unseen terrain]");
 
     if (gc == you.pos())
         desc = you.your_name;
@@ -3585,7 +3587,9 @@ string get_monster_equipment_desc(const monster_info& mi,
             _append_container(attributes, mi.attributes());
 
             string str = comma_separated_line(attributes.begin(),
-                                              attributes.end());
+                                              attributes.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ");
 
             if (mons_class_is_animated_weapon(mi.type)
                 || mi.type == MONS_PANDEMONIUM_LORD
@@ -3682,7 +3686,9 @@ string get_monster_equipment_desc(const monster_info& mi,
     {
         item_descriptions.push_back(make_stringf(T_("wearing %s"),
                 comma_separated_line(wearing_descriptions.begin(),
-                                     wearing_descriptions.end()).c_str()));
+                                     wearing_descriptions.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ").c_str()));
     }
 
     if (mon_qvr)
@@ -3753,7 +3759,9 @@ static string _get_cloud_desc(const coord_def& where)
     if (!areas.empty())
     {
         out << make_stringf(T_("This square %s."),
-             comma_separated_line(areas.begin(), areas.end()).c_str());
+             comma_separated_line(areas.begin(), areas.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ").c_str());
     }
 
     if (cloud_struct* cloud = cloud_at(where))

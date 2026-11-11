@@ -18,6 +18,7 @@
 #include "branch.h"
 #include "clua.h"
 #include "cloud.h"
+#include "chardump.h"
 #include "colour.h"
 #include "dlua.h"
 #include "database.h"
@@ -101,6 +102,7 @@
 #include "spl-goditem.h"
 #include "spell-type.h"
 #include "state.h"
+#include "stash.h"
 #include "stringutil.h"
 #include "status.h"
 #include "tags.h"
@@ -9499,7 +9501,7 @@ TEST_CASE("spell details expand defence and resistance labels in context",
     };
     const defence_case cases[] = {
         { SPELL_AIRSTRIKE, "AC", "护甲", "None", "无" },
-        { SPELL_STONE_ARROW, "AC, EV, SH", "护甲, 闪避, 盾牌格挡", "None", "无" },
+        { SPELL_STONE_ARROW, "AC, EV, SH", "护甲、闪避、盾牌格挡", "None", "无" },
         { SPELL_FIREBALL, "AC", "护甲", "rF", "火焰抗性" },
         { SPELL_DISCHARGE, "AC (50%)", "护甲（减伤效果为50%）", "rElec", "电击抗性" },
         { SPELL_FREEZING_CLOUD, "None", "无", "rC", "寒冷抗性" },
@@ -9512,7 +9514,7 @@ TEST_CASE("spell details expand defence and resistance labels in context",
           "None (50% rC for icy explosions)", "无（冰爆伤害的50%受寒冷抗性影响）" },
         { SPELL_PERMAFROST_ERUPTION, "AC (main blast only)", "护甲（仅主冲击）",
           "rC (explosion only)", "寒冷抗性（仅爆炸）" },
-        { SPELL_PLASMA_BEAM, "AC, EV", "护甲, 闪避",
+        { SPELL_PLASMA_BEAM, "AC, EV", "护甲、闪避",
           "rF, rElec (one beam each)", "火焰抗性、电击抗性（各影响一道射线）" },
         { SPELL_SHATTER, "AC", "护甲", "Flying, gelatinous, insubstantial", "飞行、胶质、虚体" },
         { SPELL_BLINK, "", "", "", "" },
@@ -13201,3 +13203,196 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     const ScopedLangEn english;
     CHECK(prayer.describe(false, false, true) == prayer.name);
 }
+
+TEST_CASE("domain gaps: gift inscriptions localize display and preserve note snapshots",
+          "[zh-translation][domain-gaps]")
+{
+    init_properties();
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    unwind_var<maybe_bool> restore_gifts(Options.show_god_gift, true);
+    item_def gift;
+    gift.base_type = OBJ_ARMOUR;
+    gift.sub_type = ARM_ROBE;
+    gift.quantity = 1;
+    gift.flags = ISFLAG_IDENTIFIED;
+    gift.orig_monnum = -GOD_OKAWARU;
+    gift.inscription = "custom, !w";
+    const string display = gift.name(DESC_A);
+    const string snapshot = gift.name(DESC_A, false, false, true, false, false);
+    CHECK(snapshot.find(" {god gift, custom, !w}") != string::npos);
+    CHECK(display.find(language == lang_t::ZH ? " {神赐、custom, !w}"
+                                            : " {god gift, custom, !w}") != string::npos);
+    CHECK(gift.inscription == "custom, !w");
+    CHECK(gift.orig_monnum == -GOD_OKAWARU);
+}
+
+TEST_CASE("domain gaps: mutation tags and spell defence lists use display punctuation",
+          "[zh-translation][domain-gaps]")
+{
+    init_mut_index();
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    const string tags = formatted_string::parse_string(get_mutation_tags(MUT_TOUGH_SKIN)).tostring();
+    CHECK(tags == (language == lang_t::ZH ? "[身体构造、身体材质]" : "[Anatomy, Substance]"));
+    init_spell_descs();
+    init_zap_index();
+    const string defences = spell_defence_string(SPELL_STONE_ARROW, false, 100);
+    CHECK(defences == (language == lang_t::ZH ? "护甲、闪避、盾牌格挡" : "AC, EV, SH"));
+}
+
+TEST_CASE("domain gaps: monster constriction lists localize every separator",
+          "[zh-translation][domain-gaps]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    monster_info info(MONS_ORC);
+    info.constrictor_name = language == lang_t::ZH ? "被缠绕" : "constricted";
+    info.constricting_name = language == lang_t::ZH
+        ? vector<string>{"兽人", "巨魔", "娜迦"}
+        : vector<string>{"orc", "troll", "naga"};
+    CHECK(info.constriction_description() == (language == lang_t::ZH
+        ? "被缠绕、兽人、巨魔、娜迦" : "constricted, orc, troll and naga"));
+}
+
+TEST_CASE("domain gaps: branch bribes separate English database keys from display",
+          "[zh-translation][domain-gaps]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    unwind_var<player> restore_player(you);
+    unwind_var<decltype(branch_bribe)> restore_bribes(branch_bribe);
+    you = player();
+    you.where_are_you = BRANCH_DUNGEON;
+    branch_bribe.init(0);
+    for (branch_type br : {BRANCH_DUNGEON, BRANCH_ORC, BRANCH_LAIR})
+        branch_bribe[br] = 2000;
+    status_info info;
+    REQUIRE(fill_status_info(STATUS_BRIBE, info));
+    CHECK(info.short_db_key == "bribing [the Dungeon, the Orcish Mines, the Lair of Beasts]");
+    if (language == lang_t::ZH)
+    {
+        CHECK(info.short_text.find("the Dungeon") == string::npos);
+        CHECK(info.short_text.find(T_(branches[BRANCH_ORC].longname)) != string::npos);
+        CHECK(info.short_text.find("、") != string::npos);
+        CHECK(info.long_text.find(", ") == string::npos);
+    }
+    else
+    {
+        CHECK(info.short_text == info.short_db_key);
+        CHECK(info.long_text == "You are bribing the Dungeon, the Orcish Mines and the Lair of Beasts.");
+    }
+}
+
+TEST_CASE("domain gaps: exact persisted note conversion preserves bytes and unknown history",
+          "[zh-translation][domain-gaps]")
+{
+    init_mut_index();
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    const auto rng_before = rng::current_generator().get_state();
+    const auto count_before = rng::current_generator().get_count();
+    for (const char* key : {"Voluntarily entered the Abyss.", "Took an exit into the Abyss.",
+                           "Escaped the Abyss", "Escaped Pandemonium", "Escaped into the Abyss",
+                           "Glimpsed the power of Zot."})
+    {
+        Note note(NOTE_MESSAGE, 0, 0, key);
+        vector<unsigned char> before, after;
+        writer out_before(&before);
+        note.save(out_before);
+        CHECK(note.describe(false, false, true) == T_(key));
+        if (language == lang_t::ZH)
+            CHECK(note.describe(false, false, true) != key);
+        writer out_after(&after);
+        note.save(out_after);
+        CHECK(after == before);
+        reader input(before);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        Note loaded;
+        loaded.load(input);
+        CHECK(loaded.name == key);
+        CHECK(loaded.desc.empty());
+        CHECK(loaded.describe(false, false, true) == note.describe(false, false, true));
+        const Note user(NOTE_USER_NOTE, 0, 0, key);
+        CHECK(user.describe(false, false, true) == Options.user_note_prefix + key);
+        const Note marked(NOTE_MESSAGE, 0, 0, key, "unknown marker");
+        CHECK(marked.describe(false, false, true) == key);
+    }
+    const Note unknown(NOTE_MESSAGE, 0, 0, "Escaped the Abyss (historical suffix)");
+    CHECK(unknown.describe(false, false, true) == unknown.name);
+    for (NOTE_TYPES type : {NOTE_GET_MUTATION, NOTE_LOSE_MUTATION, NOTE_PERM_MUTATION})
+    for (const char* key : {"hidden defects", "hidden potential", "hidden defects expressed",
+                           "hidden potential expressed", "breaking open a mutation catalyst",
+                           "hidden potential (unknown historical cause)"})
+    {
+        const Note note(type, MUT_TOUGH_SKIN, 1, key);
+        const string display = note.describe(false, false, true);
+        CHECK(ends_with(display, string(" [") + T_(key) + "]"));
+        CHECK(note.name == key);
+        if (language == lang_t::ZH && string(key).find("unknown") == string::npos)
+            CHECK(display.find(key) == string::npos);
+    }
+    CHECK(rng::current_generator().get_state() == rng_before);
+    CHECK(rng::current_generator().get_count() == count_before);
+}
+
+#ifndef TARGET_OS_WINDOWS
+TEST_CASE("domain gaps: real note and piety dumps align Chinese columns and translate stash output",
+          "[zh-translation][domain-gaps]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([&]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    unwind_var<player> restore_player(you);
+    unwind_var<vector<Note>> restore_notes(note_list);
+    unwind_var<StashTracker> restore_stashes(StashTrack);
+    unwind_var<vector<string>> restore_order(Options.dump_order, {"notes", "piety_info"});
+    char temporary[] = "/tmp/crawl-domain-gaps-XXXXXX";
+    REQUIRE(mkdtemp(temporary) != nullptr);
+    const string directory = temporary;
+    unwind_var<string> restore_directory(Options.morgue_dir, directory);
+    unwinder cleanup([&]() {
+        unlink_u((directory + "/columns.txt").c_str());
+        unlink_u((directory + "/columns.lst").c_str());
+        rmdir(directory.c_str());
+    });
+    you = player();
+    you.your_name = "domain-gaps";
+    StashTrack = StashTracker();
+    Note note(NOTE_MESSAGE, 0, 0, string(100, 'x') + " end");
+    note.place = level_id(BRANCH_SPIDER, 2);
+    note_list = {note};
+    RankPietyInfo rank;
+    rank.god = GOD_CHEIBRIADOS;
+    you.piety_info.rank_info.push_back(rank);
+    REQUIRE(dump_char("columns", true, true));
+    ifstream dump(directory + "/columns.txt");
+    const string text((istreambuf_iterator<char>(dump)), istreambuf_iterator<char>());
+    const string prefix = note.describe(true, true, false);
+    // Production note prefixes use canonical ASCII branch abbreviations.
+    CHECK(prefix.size() == static_cast<size_t>(strwidth(prefix)));
+    CHECK(text.find(prefix) != string::npos);
+    CHECK(text.find("\n" + string(strwidth(prefix) - 2, ' ') + "| ") != string::npos);
+    const string deity = chop_string(god_name(rank.god), 16);
+    const string aligned = " " + string(16 - strwidth(deity), ' ') + deity + " |";
+    CHECK(text.find(aligned) != string::npos);
+    CHECK(strwidth(aligned.substr(0, aligned.size() - 1)) == 18);
+    if (language == lang_t::EN)
+        CHECK(starts_with(aligned, make_stringf(" %16s |", deity.c_str())));
+    ifstream stash(directory + "/columns.lst");
+    const string contents((istreambuf_iterator<char>(stash)), istreambuf_iterator<char>());
+    CHECK(contents == (language == lang_t::ZH ? "domain-gaps\n\n  你没有藏物点。\n"
+                                            : "domain-gaps\n\n  You have no stashes.\n"));
+}
+#endif

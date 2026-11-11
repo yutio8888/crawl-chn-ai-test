@@ -1006,7 +1006,7 @@ void floor_transition(dungeon_feature_type how,
         if (have_passive(passive_t::slow_abyss))
         {
             mprf(MSGCH_GOD, you.religion,
-                 "You feel %s slowing down the madness of this place.",
+                 T_("You feel %s slowing down the madness of this place."),
                  god_name(you.religion).c_str());
         }
 

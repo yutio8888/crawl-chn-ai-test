@@ -129,7 +129,9 @@ string Form::melding_description(bool itemized) const
                     return make_stringf(tags.size() > 1
                                             ? T_("Your %s are melded.")
                                             : T_("Your %s is melded."),
-                                        comma_separated_line(tags.begin(), tags.end()).c_str());
+                                        comma_separated_line(tags.begin(), tags.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ").c_str());
                 }
             }
         }
@@ -155,7 +157,9 @@ string Form::melding_description(bool itemized) const
         }
     }
 
-    return comma_separated_line(tags.begin(), tags.end(), ", ");
+    return comma_separated_line(tags.begin(), tags.end(),
+        Options.language == lang_t::ZH ? T_(",") : ", ",
+        Options.language == lang_t::ZH ? T_(",") : ", ");
 }
 
 static const FormAttackVerbs DEFAULT_VERBS = FormAttackVerbs(nullptr, nullptr,

@@ -5,6 +5,7 @@
 
 #include "database.h"
 #include "item-name.h"
+#include "options.h"
 #include "player.h"
 #include "state.h"
 #include "stringutil.h"
@@ -366,7 +367,9 @@ string branch_rune_desc(branch_type br, bool remaining_only)
     {
         desc = make_stringf(T_("This branch contains the %s rune%s of Zot."),
                             comma_separated_line(begin(rune_names),
-                                                 end(rune_names)).c_str(),
+                                                 end(rune_names),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ").c_str(),
                             rune_names.size() > 1 ? T_("s") : "");
     }
 

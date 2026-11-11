@@ -633,7 +633,7 @@ void Stash::write(FILE *f, coord_def refpos, string place, bool identify) const
         }
 
         fprintf(f, "  %s%s%s\n", OUTS(s), OUTS(ann),
-            (!visited && (items.size() > 1 || i) ? " (still there?)" : ""));
+            (!visited && (items.size() > 1 || i) ? T_(" (still there?)") : ""));
 
         if (is_dumpable_artefact(item))
         {
@@ -656,7 +656,7 @@ void Stash::write(FILE *f, coord_def refpos, string place, bool identify) const
     }
 
     if (items.size() <= 1 && !visited)
-        fprintf(f, "  (unseen)\n");
+        fprintf(f, T_("  (unseen)\n"));
 }
 
 void Stash::save(writer& outf) const
@@ -817,7 +817,7 @@ vector<stash_search_result> ShopInfo::matches_search(
 void ShopInfo::write(FILE *f, bool identify) const
 {
     no_notes nx;
-    fprintf(f, "[Shop] %s\n", OUTS(shop_name(shop)));
+    fprintf(f, T_("[Shop] %s\n"), OUTS(shop_name(shop)));
     if (!shop.stock.empty())
     {
         for (item_def item : shop.stock) // intentional copy
@@ -832,7 +832,7 @@ void ShopInfo::write(FILE *f, bool identify) const
         }
     }
     else
-        fprintf(f, "  (Shop contents are unknown)\n");
+        fprintf(f, T_("  (Shop contents are unknown)\n"));
 }
 
 LevelStashes::LevelStashes()
@@ -1174,7 +1174,7 @@ void StashTracker::write(FILE *f, bool identify) const
 {
     fprintf(f, "%s\n\n", OUTS(you.your_name));
     if (!levels.size())
-        fprintf(f, "  You have no stashes.\n");
+        fprintf(f, T_("  You have no stashes.\n"));
     else
     {
         for (const auto &entry : levels)

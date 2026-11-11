@@ -1799,13 +1799,13 @@ static void _martyr_death_wail(monster &mons)
         if (mons.friendly())
         {
             mprf(MSGCH_FRIEND_SPELL,
-                 "%s wails in agony as it relives its own death.",
+                 T_("%s wails in agony as it relives its own death."),
                  mons.name(DESC_YOUR).c_str());
         }
         else
         {
             mprf(MSGCH_MONSTER_SPELL,
-                 "%s wails in agony as it relives its own death.",
+                 T_("%s wails in agony as it relives its own death."),
                  mons.name(DESC_THE).c_str());
         }
     }
@@ -2936,7 +2936,7 @@ item_def* monster_die(monster& mons, killer_type killer,
         if (you.see_cell(mons.pos()))
         {
             mprf(MSGCH_MONSTER_DAMAGE, MDAM_DEAD,
-                 "Tendrils of ice devour %s body!", mons.name(DESC_ITS).c_str());
+                 T_("Tendrils of ice devour %s body!"), mons.name(DESC_ITS).c_str());
         }
         schedule_death_spawn_fineff(MONS_PILLAR_OF_RIME,
                                     mons.pos(),

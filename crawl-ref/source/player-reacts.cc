@@ -1305,8 +1305,12 @@ void maybe_attune_regen_items()
         msgs.emplace_back(T_("extract magic from the potions you drink"));
 
     plural = plural || eq_list.size() > 1;
-    string eq_str = comma_separated_line(eq_list.begin(), eq_list.end());
-    string msg_str = comma_separated_line(msgs.begin(), msgs.end());
+    string eq_str = comma_separated_line(eq_list.begin(), eq_list.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ");
+    string msg_str = comma_separated_line(msgs.begin(), msgs.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ");
     const char* verb_suffix = plural ? " themselves" : "s itself";
     mprf_p(T_("Your %1$s attune%2$s to your body, and you begin to %3$s."),
            eq_str.c_str(), verb_suffix, msg_str.c_str());

@@ -391,7 +391,7 @@ void item_noise(const item_def &item, actor &act, string msg, int loudness)
     if (msg.empty()) // give default noises
     {
         channel = MSGCH_SOUND;
-        msg = "You hear a strange noise.";
+        msg = T_("You hear a strange noise.");
     }
 
     // Replace weapon references through the central grammar layer.

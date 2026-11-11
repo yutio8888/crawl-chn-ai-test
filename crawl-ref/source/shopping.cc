@@ -916,7 +916,7 @@ static bool _purchase(shop_struct& shop, const level_pos& pos, int index,
 
     // Take a note of the purchase.
     take_note(Note(NOTE_BUY_ITEM, cost, 0,
-                   item.name(DESC_A).c_str()));
+                   item.name(DESC_A, false, false, true, false, false).c_str()));
 
     // But take no further similar notes.
     item.flags |= ISFLAG_NOTED_GET;
