@@ -542,9 +542,9 @@ pair of quick blades "Gyre" and "Gimble"
 Maxwell's etheric cage
 
 一个精致的网状笼子，旨在捕捉魔法能量。
-实验记录表明，当笼子捕获诱变辐射的效果也变得几乎同样出色时，研究便中止了。
+实验记录表明，当笼子捕获魔法污染的效果也变得几乎同样出色时，研究便中止了。
 任何鲁莽地将其放在头上的人会发现魔力恢复能力大大增强，
-而代价是所受到的诱变辐射成倍增加。
+而代价是所受到的魔法污染成倍增加。
 %%%%
 # TAG_MAJOR_VERSION == 34
 crown of Eternal Torment

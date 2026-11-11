@@ -339,9 +339,9 @@ ConstrBog	束缚毒沼	domain=items; source=EN/ZH; 依据 / 作用域=art-data.t
 ConstrDrown	束缚溺水	domain=items; source=EN/ZH; 依据 / 作用域=art-data.txt；攻击已受束缚目标时灌水入肺；decision=D-C-095
 Constriction	束缚	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Construct Spike Launcher	构建尖刺发射器	domain=spells; source=EN/ZH; 备注=✅
-Contam Dmg	辐射伤害	domain=magic; source=EN/ZH; 依据 / 作用域=form 名称／伤害标签；flux:special_damage_name；decision=D-C-098
+Contam Dmg	污染伤害	domain=magic; source=EN/ZH; 依据 / 作用域=form 名称／伤害短标签；flux:special_damage_name；沿用 D-C-098 的作用域；魔法污染简称，裁决 [D-C-112]
 contaminating	污染攻击	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；flux:fakemuts；不声称是可遗传突变；decision=D-C-098
-Contamination	诱变辐射	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Contamination	魔法污染	domain=status; source=EN/ZH; Scope / comment=contamination / magic contamination / magical contamination 的累积、消退机制；HUD 短标签可简称“污染”；裁决 [D-C-112]
 Control Teleport	控制传送	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审；修正中文倒装
 Control Undead	控制亡灵	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审；修正中文倒装
 Control Winds	控风术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
@@ -961,7 +961,7 @@ mutagenic fog	诱变雾气	domain=status; source=EN/ZH; 依据 / 作用域=云�
 Mutagenic Gaze	变异凝视	domain=spells; source=EN/ZH; 备注=✅；已定稿的固定法术名例外；正文 mutagenic energy 使用“诱变能量”；decision=D-C-096
 mutagenic glow	诱变光芒	domain=status; source=EN/ZH; 依据 / 作用域=魔法污染的发光描述；与 mutagenic radiation 同词根；decision=D-C-096
 mutagenic power	诱变力量	domain=status; source=EN/ZH; 依据 / 作用域=四肢增强效果的力量；区别发生的变异（mutation）；decision=D-C-096
-mutagenic radiation	诱变辐射	domain=status; source=EN/ZH; 依据 / 作用域=复用 Contamination 既有译法；decision=D-C-096
+mutagenic radiation	诱变辐射	domain=status; source=EN/ZH; 依据 / 作用域=仅用于英文明确写出 mutagenic radiation 的字面辐射；不作 Contamination 的机制名；保留 D-C-096 的诱变词根；裁决 [D-C-112]
 mutagenic serum	诱变血清	domain=status; source=EN/ZH; 依据 / 作用域=净化诱变催化器正文；沿用 features 既有译法；decision=D-C-096
 mutters	咕哝道	domain=dialogue; source=EN/ZH; 适用角色=疯狂角色（Crazy Yiuf）
 Mystic	秘术师	domain=backgrounds; source=EN/ZH; 依据 / 作用域=background; mystic.yaml；元素法术与变形并用，不与学派名“神秘”混同；decision=D-C-095

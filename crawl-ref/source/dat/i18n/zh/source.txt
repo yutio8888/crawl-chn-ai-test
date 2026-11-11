@@ -3470,7 +3470,7 @@ Casting
 施放中
 %%%%
 Casting now could cause dangerous contamination. Continue?
-现在施放可能会对你造成危险的污染。继续吗？
+现在施放可能会对你造成危险的魔法污染。继续吗？
 %%%%
 Casting: <w>%s</w> <lightgrey>(%s)</lightgrey>
 正在施放：<w>%s</w><lightgrey>（%s）</lightgrey>
@@ -8777,7 +8777,7 @@ You are cold-blooded and may be slowed by cold attacks.
 你是冷血动物，可能被寒冷攻击减速。
 %%%%
 you are contaminated with a potentially lethal amount of magic
-你受到的诱变辐射可能致命
+你受到的魔法污染可能致命
 %%%%
 You are covering ground slowly.
 你移动缓慢。
@@ -19775,7 +19775,7 @@ Whenever you drink a healing potion, you attack all around you.
 每当你饮用治疗药水时，你会攻击周围的所有敌人。
 %%%%
 You absorb twice as much mutagenic energy from being contaminated.
-你从污染中吸收双倍的变异能量。
+你从魔法污染中吸收的诱变能量为正常的两倍。
 %%%%
 You are agile. (Dex +4, Str/Int -1)
 你很敏捷。（敏捷+4，力量/智力-1）
@@ -20912,7 +20912,7 @@ drowning damage
 溺水伤害
 %%%%
 spread contamination & shallow water
-散布诱变辐射与浅水
+散布魔法污染与浅水
 %%%%
 cause corrosion
 造成腐蚀
@@ -23978,7 +23978,7 @@ You feel magically purified.
 你感觉被魔法净化了。
 %%%%
 You feel your magical contamination recede slightly.
-你感觉魔法能量污染略微减轻了。
+你感觉魔法污染略微减轻了。
 %%%%
 You feel briefly invigorated.
 你短暂地感到精力充沛。
@@ -25019,7 +25019,7 @@ something dangerously unstable.
 某种危险而不稳定的东西。
 %%%%
 Contam Dmg
-辐射伤害
+污染伤害
 %%%%
 contaminating
 污染攻击
@@ -26877,7 +26877,7 @@ You are sleeping.
 你正在沉睡。
 %%%%
 If you enter this portal, the magical contamination on the other side will temporarily mutate you thrice. Continue?
-如果进入这道传送门，另一侧的诱变辐射将使你暂时发生三次变异。继续吗？
+如果进入这道传送门，另一侧的魔法污染将使你暂时发生三次变异。继续吗？
 %%%%
 You are spewing a noxious bog.
 你正在喷射毒沼。
@@ -28323,7 +28323,7 @@ It protects you from confusion, rage, mesmerisation and fear.
 保护你免受混乱、狂暴、迷魂和恐惧。
 %%%%
 It causes magical contamination when unequipped.
-卸下时造成诱变辐射。
+卸下时造成魔法污染。
 %%%%
 It protects you from missiles.
 保护你免受投射物伤害。
@@ -28449,7 +28449,7 @@ It restores some MP whenever you drink a potion and also enhances your alchemy s
 饮用任何药水时恢复部分法力，同时增强你的炼金系法术。
 %%%%
 It reduces the duration of hostile enchantments and decays magical contamination more quickly.
-缩短敌对附魔的持续时间，并加快诱变辐射的消退速度。
+缩短敌对附魔的持续时间，并加快魔法污染的消退速度。
 %%%%
 %sIt %s%s your willpower.
 %s%s%s你的意志力。
@@ -28818,7 +28818,7 @@ either
 ； 
 %%%%
 Miscasting this spell causes magic contamination
-施放失败会导致魔法污染
+此法术施法失误会造成魔法污染
 %%%%
  and also 
 并可能造成
@@ -28839,7 +28839,7 @@ Your servitor can be imbued with this spell.\n
 你的仆从可以被赋予此法术。\n
 %%%%
 This inflicts up to 40% magical contamination when cast by you.\n
-由你施放时，此法术会造成至多40%的诱变辐射。\n
+由你施放时，此法术会造成至多40%的魔法污染。\n
 %%%%
  creature
  个生物
@@ -29662,10 +29662,10 @@ Doom
 厄运 
 %%%%
 Contam: 
-诱变辐射: 
+魔法污染: 
 %%%%
 Cont 
-辐射 
+污染 
 %%%%
 You 
 你 
@@ -30538,7 +30538,7 @@ Zealotry,
 狂热，
 %%%%
 ^Contam
-^诱变辐射
+^魔法污染
 %%%%
 ^Dim
 卸下削弱法术
@@ -40618,7 +40618,7 @@ status|Constr
 束缚
 %%%%
 status|Contam
-诱变辐射
+魔法污染
 %%%%
 status|Corona
 光晕
@@ -45976,10 +45976,10 @@ hit chance| (while you are blinded and from distance %d)
 （你失明时，在距离为%d的情况下）
 %%%%
 spell miscast|Miscasting this spell causes magic contamination and may %s.\n
-此法术施法失误会造成诱变辐射，并可能%s。\n
+此法术施法失误会造成魔法污染，并可能%s。\n
 %%%%
 spell miscast|Miscasting this spell causes magic contamination.\n
-此法术施法失误会造成诱变辐射。\n
+此法术施法失误会造成魔法污染。\n
 %%%%
 spell miscast|summon unnamed horrors
 召唤无名恐怖之物
@@ -48672,7 +48672,7 @@ Doom:
 厄运:
 %%%%
 Contam:
-诱变辐射:
+魔法污染:
 %%%%
 webtiles_hud|Silenced
 沉默
@@ -49434,7 +49434,7 @@ If you drink this now, you will no longer be %s.
 如果现在喝下它，你将不再处于以下状态：%s。
 %%%%
 Drinking this will reduce your magical contamination.
-喝下它会减轻你的诱变辐射。
+喝下它会减轻你的魔法污染。
 %%%%
 missile brand|poisoned
 涂毒
