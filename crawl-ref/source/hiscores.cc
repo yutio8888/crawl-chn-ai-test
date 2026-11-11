@@ -2397,6 +2397,15 @@ static string _death_beam_display_name(const string &cause)
         return T_(cause.c_str());
 
     static const char *const indirect_causes[] = {
+        N_("Zin's holy word"),
+        N_("the Shining One's holy word"),
+        N_("Kikubaaqudgha's torment"),
+        N_("Xom's lightning strike"),
+        N_("Xom's destruction"),
+        N_("the malice of Kikubaaqudgha"),
+        N_("the malice of Vehumet"),
+        N_("the storm"),
+        N_("electrical discharge"),
         N_("Freeze"),
         N_("the Shining One's cleansing flame"),
         N_("cleansing flame"),
@@ -2645,6 +2654,16 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                                 : _death_beam_display_name(beam)) : beam).c_str());
                 }
             }
+        }
+        else if (chinese && (auxkilldata == "Zin's holy word"
+                             || auxkilldata == "Kikubaaqudgha's torment"
+                             || auxkilldata == "Xom's lightning strike"
+                             || auxkilldata == "Xom's destruction"))
+        {
+            // Named divine causes are not preformatted missile messages.
+            const string cause = _death_beam_display_name(auxkilldata);
+            desc += terse ? cause : make_stringf(T_("Killed by %s"), cause.c_str());
+            needs_damage = true;
         }
         else if (isupper(auxkilldata[0]))  // already made (ie shot arrows)
         {
@@ -3310,8 +3329,10 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
     case KILLED_BY_SOMETHING:
         if (!auxkilldata.empty())
         {
-            desc += chinese ? (terse ? auxkilldata
-                                     : make_stringf(T_("Killed by %s"), auxkilldata.c_str()))
+            const string cause = chinese ? _death_beam_display_name(auxkilldata)
+                                         : auxkilldata;
+            desc += chinese ? (terse ? cause
+                                     : make_stringf(T_("Killed by %s"), cause.c_str()))
                             : (terse ? "" : "Killed by ") + auxkilldata;
         }
         else
@@ -3360,8 +3381,11 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         if (chinese && terse)
             desc += T_("divine wrath");
         else if (chinese)
+        {
+            const string cause = _death_beam_display_name(auxkilldata);
             desc += auxkilldata.empty() ? T_("Killed by divine wrath")
-                                        : make_stringf(T_("Killed by %s"), auxkilldata.c_str());
+                                        : make_stringf(T_("Killed by %s"), cause.c_str());
+        }
         else if (terse)
             desc += "divine wrath";
         else

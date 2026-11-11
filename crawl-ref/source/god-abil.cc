@@ -348,231 +348,231 @@ static void _zin_saltify(monster* mon);
 static const char * const book_of_zin[][3] =
 {
     {
-        "It was the word of Zin that there would not be @sin_noun@...",
-        "...and did the people not suffer until they had @smitten@...",
-        "...the @sinners@, after which all was well?",
+        N_("It was the word of Zin that there would not be @sin_noun@..."),
+        N_("...and did the people not suffer until they had @smitten@..."),
+        N_("...the @sinners@, after which all was well?"),
     },
 
     {
-        "The voice of Zin, pure and clear, did say that the @sinners@...",
-        "...were not @virtuous@! And hearing this, the people rose up...",
-        "...and embraced @virtue@, for they feared Zin's wrath.",
+        N_("The voice of Zin, pure and clear, did say that the @sinners@..."),
+        N_("...were not @virtuous@! And hearing this, the people rose up..."),
+        N_("...and embraced @virtue@, for they feared Zin's wrath."),
     },
 
     {
-        "Zin spoke of the doctrine of @virtue@, and...",
-        "...saw the @sinners@ filled with fear, for they were...",
-        "...@sin_adj@ and knew Zin's wrath would come for them.",
+        N_("Zin spoke of the doctrine of @virtue@, and..."),
+        N_("...saw the @sinners@ filled with fear, for they were..."),
+        N_("...@sin_adj@ and knew Zin's wrath would come for them."),
     },
 
     {
-        "And so Zin bade the @sinners@ to come before...",
-        "...the altar, that judgement might be passed...",
-        "...upon those who were not @virtuous@.",
+        N_("And so Zin bade the @sinners@ to come before..."),
+        N_("...the altar, that judgement might be passed..."),
+        N_("...upon those who were not @virtuous@."),
     },
 
     {
-        "To the devout, Zin provideth. From the rest...",
-        "...ye @sinners@, ye guilty...",
-        "...of @sin_noun@, Zin taketh.",
+        N_("To the devout, Zin provideth. From the rest..."),
+        N_("...ye @sinners@, ye guilty..."),
+        N_("...of @sin_noun@, Zin taketh."),
     },
 
     {
-        "Zin saw the @sin_noun@ of the @sinners@, and...",
-        "...was displeased, for did the law not say that...",
-        "...those who did not become @virtuous@ would be @smitten@?",
+        N_("Zin saw the @sin_noun@ of the @sinners@, and..."),
+        N_("...was displeased, for did the law not say that..."),
+        N_("...those who did not become @virtuous@ would be @smitten@?"),
     },
 
     {
-        "Zin said that @virtue@ shall be the law of the land, and...",
-        "...those who turn to @sin_noun@ will be @smitten@. This was fair...",
-        "...and just, and not a voice dissented.",
+        N_("Zin said that @virtue@ shall be the law of the land, and..."),
+        N_("...those who turn to @sin_noun@ will be @smitten@. This was fair..."),
+        N_("...and just, and not a voice dissented."),
     },
 
     {
-        "Damned, damned be the @sinners@ and...",
-        "...all else who abandon @virtue@! Let them...",
-        "...be @smitten@ by the jurisprudence of Zin!",
+        N_("Damned, damned be the @sinners@ and..."),
+        N_("...all else who abandon @virtue@! Let them..."),
+        N_("...be @smitten@ by the jurisprudence of Zin!"),
     },
 
     {
 
-        "And Zin said to all in attendance, 'Which of ye...",
-        "...number among the @sinners@? Come before me, that...",
-        "...I may @smite@ you now for your @sin_noun@!'",
+        N_("And Zin said to all in attendance, 'Which of ye..."),
+        N_("...number among the @sinners@? Come before me, that..."),
+        N_("...I may @smite@ you now for your @sin_noun@!'"),
     },
 
     {
-        "Yea, I say unto thee, bring forth...",
-        "...the @sinners@ that they may know...",
-        "...the wrath of Zin, and thus be @smitten@!",
+        N_("Yea, I say unto thee, bring forth..."),
+        N_("...the @sinners@ that they may know..."),
+        N_("...the wrath of Zin, and thus be @smitten@!"),
     },
 
     {
-        "In a great set of silver scales are weighed the...",
-        "...souls of the @sinners@, and with their @sin_adj@...",
-        "...ways, the balance hath tipped against them!",
+        N_("In a great set of silver scales are weighed the..."),
+        N_("...souls of the @sinners@, and with their @sin_adj@..."),
+        N_("...ways, the balance hath tipped against them!"),
     },
 
     {
-        "It is just that the @sinners@ shall be @smitten@...",
-        "...in due time, for @virtue@ is what Zin has declared...",
-        "...the law of the land, and Zin's word is law!",
+        N_("It is just that the @sinners@ shall be @smitten@..."),
+        N_("...in due time, for @virtue@ is what Zin has declared..."),
+        N_("...the law of the land, and Zin's word is law!"),
     },
 
     {
-        "Thus the people made the covenant of @virtue@ with...",
-        "...Zin, and all was good, for they knew that the...",
-        "...@sinners@ would trouble them no longer.",
+        N_("Thus the people made the covenant of @virtue@ with..."),
+        N_("...Zin, and all was good, for they knew that the..."),
+        N_("...@sinners@ would trouble them no longer."),
     },
 
     {
-        "What of the @sinners@? @Smitten@ for their...",
-        "...@sin_noun@ they shall be! Zin will @smite@ them again...",
-        "...and again, and again!",
+        N_("What of the @sinners@? @Smitten@ for their..."),
+        N_("...@sin_noun@ they shall be! Zin will @smite@ them again..."),
+        N_("...and again, and again!"),
     },
 
     {
-        "And lo, the wrath of Zin did find...",
-        "...them wherever they hid, and the @sinners@...",
-        "...were @smitten@ for their @sin_noun@!",
+        N_("And lo, the wrath of Zin did find..."),
+        N_("...them wherever they hid, and the @sinners@..."),
+        N_("...were @smitten@ for their @sin_noun@!"),
     },
 
     {
-        "Zin looked out upon the remains of the @sinners@...",
-        "...and declared it good that they had been...",
-        "...@smitten@. And thus justice was done.",
+        N_("Zin looked out upon the remains of the @sinners@..."),
+        N_("...and declared it good that they had been..."),
+        N_("...@smitten@. And thus justice was done."),
     },
 
     {
-        "The law of Zin demands thee...",
-        "...be @virtuous@, and that the punishment for @sin_noun@...",
-        "...shall be swift and harsh!",
+        N_("The law of Zin demands thee..."),
+        N_("...be @virtuous@, and that the punishment for @sin_noun@..."),
+        N_("...shall be swift and harsh!"),
     },
 
     {
-        "It was then that Zin bade them...",
-        "...not to stray from @virtue@, lest...",
-        "...they become as damned as the @sinners@.",
+        N_("It was then that Zin bade them..."),
+        N_("...not to stray from @virtue@, lest..."),
+        N_("...they become as damned as the @sinners@."),
     },
 
     {
-        "Only the @virtuous@ shall be judged worthy, and...",
-        "...all the @sinners@ will be found wanting. Such is...",
-        "...the word of Zin, and such is the law!",
+        N_("Only the @virtuous@ shall be judged worthy, and..."),
+        N_("...all the @sinners@ will be found wanting. Such is..."),
+        N_("...the word of Zin, and such is the law!"),
     },
 
     {
-        "To those who would swear an oath of @virtue@ on my altar...",
-        "...I bring ye salvation. To the rest, ye @sinners@...",
-        "...and the @sin_adj@, the name of Zin shall be thy damnation.",
+        N_("To those who would swear an oath of @virtue@ on my altar..."),
+        N_("...I bring ye salvation. To the rest, ye @sinners@..."),
+        N_("...and the @sin_adj@, the name of Zin shall be thy damnation."),
     },
 
     {
-        "And Zin decreed that the people would be...",
-        "...protected from @sin_noun@ in all its forms, and...",
-        "...preserved in their @virtue@ for all the days to come.",
+        N_("And Zin decreed that the people would be..."),
+        N_("...protected from @sin_noun@ in all its forms, and..."),
+        N_("...preserved in their @virtue@ for all the days to come."),
     },
 
     {
-        "For those who would enter Zin's holy bosom...",
-        "...and live in @virtue@, Zin provideth. Such is...",
-        "...the covenant, and such is the way of things.",
+        N_("For those who would enter Zin's holy bosom..."),
+        N_("...and live in @virtue@, Zin provideth. Such is..."),
+        N_("...the covenant, and such is the way of things."),
     },
 
     {
-        "Zin hath not damned the @sinners@, but it is they...",
-        "...that have damned themselves for their @sin_noun@, for...",
-        "...did Zin not decree that to be @sin_adj@ was wrong?",
+        N_("Zin hath not damned the @sinners@, but it is they..."),
+        N_("...that have damned themselves for their @sin_noun@, for..."),
+        N_("...did Zin not decree that to be @sin_adj@ was wrong?"),
     },
 
     {
-        "And Zin, furious at their @sin_noun@, held...",
-        "...aloft a silver sceptre! The @sinners@...",
-        "...were @smitten@, and thus the way of things was maintained.",
+        N_("And Zin, furious at their @sin_noun@, held..."),
+        N_("...aloft a silver sceptre! The @sinners@..."),
+        N_("...were @smitten@, and thus the way of things was maintained."),
     },
 
     {
-        "When the law of the land faltered, Zin rose...",
-        "...from the silver throne, and the @sinners@ were...",
-        "...@smitten@. And it was thus that the law was made good.",
+        N_("When the law of the land faltered, Zin rose..."),
+        N_("...from the silver throne, and the @sinners@ were..."),
+        N_("...@smitten@. And it was thus that the law was made good."),
     },
 
     {
-        "Zin descended from on high in a silver chariot...",
-        "...to @smite@ the @sinners@ for their...",
-        "...@sin_noun@, and thus judgement was rendered.",
+        N_("Zin descended from on high in a silver chariot..."),
+        N_("...to @smite@ the @sinners@ for their..."),
+        N_("...@sin_noun@, and thus judgement was rendered."),
     },
 
     {
-        "The @sinners@ stood before Zin, and in that instant...",
-        "...they knew they would be found guilty of @sin_noun@...",
-        "...for that is the word of Zin, and Zin's word is law.",
+        N_("The @sinners@ stood before Zin, and in that instant..."),
+        N_("...they knew they would be found guilty of @sin_noun@..."),
+        N_("...for that is the word of Zin, and Zin's word is law."),
     },
 };
 
 static const char * const sinner_text[] =
 {
-    "unbelievers",
-    "heretics",
-    "guilty",
-    "hordes of the Abyss",
-    "bastard children of Xom",
-    "amorphous wretches",
-    "fetid masses",
-    "agents of filth",
-    "squalid dregs",
-    "legions of the damned",
-    "servants of Hell",
-    "forces of darkness",
+    NC_("Zin recitation sinner", "unbelievers"),
+    NC_("Zin recitation sinner", "heretics"),
+    NC_("Zin recitation sinner", "guilty"),
+    NC_("Zin recitation sinner", "hordes of the Abyss"),
+    NC_("Zin recitation sinner", "bastard children of Xom"),
+    NC_("Zin recitation sinner", "amorphous wretches"),
+    NC_("Zin recitation sinner", "fetid masses"),
+    NC_("Zin recitation sinner", "agents of filth"),
+    NC_("Zin recitation sinner", "squalid dregs"),
+    NC_("Zin recitation sinner", "legions of the damned"),
+    NC_("Zin recitation sinner", "servants of Hell"),
+    NC_("Zin recitation sinner", "forces of darkness"),
 };
 
 // First column is adjective, then noun.
 static const char * const sin_text[][2] =
 {
-    { "unfaithful",   "unfaithfulness" },
-    { "disloyal",     "disloyalty" },
-    { "doubting",     "doubt" },
-    { "chaotic",      "chaos" },
-    { "discordant",   "discord" },
-    { "anarchic",     "anarchy" },
-    { "unclean",      "uncleanliness" },
-    { "impure",       "impurity" },
-    { "contaminated", "contamination" },
-    { "profane",      "profanity" },
-    { "blasphemous",  "blasphemy" },
-    { "sacrilegious", "sacrilege" },
+    { NC_("Zin recitation sin", "unfaithful"),   NC_("Zin recitation sin", "unfaithfulness") },
+    { NC_("Zin recitation sin", "disloyal"),     NC_("Zin recitation sin", "disloyalty") },
+    { NC_("Zin recitation sin", "doubting"),     NC_("Zin recitation sin", "doubt") },
+    { NC_("Zin recitation sin", "chaotic"),      NC_("Zin recitation sin", "chaos") },
+    { NC_("Zin recitation sin", "discordant"),   NC_("Zin recitation sin", "discord") },
+    { NC_("Zin recitation sin", "anarchic"),     NC_("Zin recitation sin", "anarchy") },
+    { NC_("Zin recitation sin", "unclean"),      NC_("Zin recitation sin", "uncleanliness") },
+    { NC_("Zin recitation sin", "impure"),       NC_("Zin recitation sin", "impurity") },
+    { NC_("Zin recitation sin", "contaminated"), NC_("Zin recitation sin", "contamination") },
+    { NC_("Zin recitation sin", "profane"),      NC_("Zin recitation sin", "profanity") },
+    { NC_("Zin recitation sin", "blasphemous"),  NC_("Zin recitation sin", "blasphemy") },
+    { NC_("Zin recitation sin", "sacrilegious"), NC_("Zin recitation sin", "sacrilege") },
 };
 
 // First column is adjective, then noun.
 static const char * const virtue_text[][2] =
 {
-    { "faithful",  "faithfulness" },
-    { "loyal",     "loyalty" },
-    { "believing", "belief" },
-    { "ordered",   "order" },
-    { "harmonic",  "harmony" },
-    { "lawful",    "lawfulness" },
-    { "clean",     "cleanliness" },
-    { "pure",      "purity" },
-    { "hygienic",  "hygiene" },
-    { "reverent",  "reverence" },
-    { "pious",     "piety" },
-    { "obedient",  "obedience" },
+    { NC_("Zin recitation virtue", "faithful"),  NC_("Zin recitation virtue", "faithfulness") },
+    { NC_("Zin recitation virtue", "loyal"),     NC_("Zin recitation virtue", "loyalty") },
+    { NC_("Zin recitation virtue", "believing"), NC_("Zin recitation virtue", "belief") },
+    { NC_("Zin recitation virtue", "ordered"),   NC_("Zin recitation virtue", "order") },
+    { NC_("Zin recitation virtue", "harmonic"),  NC_("Zin recitation virtue", "harmony") },
+    { NC_("Zin recitation virtue", "lawful"),    NC_("Zin recitation virtue", "lawfulness") },
+    { NC_("Zin recitation virtue", "clean"),     NC_("Zin recitation virtue", "cleanliness") },
+    { NC_("Zin recitation virtue", "pure"),      NC_("Zin recitation virtue", "purity") },
+    { NC_("Zin recitation virtue", "hygienic"),  NC_("Zin recitation virtue", "hygiene") },
+    { NC_("Zin recitation virtue", "reverent"),  NC_("Zin recitation virtue", "reverence") },
+    { NC_("Zin recitation virtue", "pious"),     NC_("Zin recitation virtue", "piety") },
+    { NC_("Zin recitation virtue", "obedient"),  NC_("Zin recitation virtue", "obedience") },
 };
 
 // First column is infinitive, then gerund.
 static const char * const smite_text[][2] =
 {
-    { "purify",      "purified" },
-    { "censure",     "censured" },
-    { "condemn",     "condemned" },
-    { "strike down", "struck down" },
-    { "expel",       "expelled" },
-    { "oust",        "ousted" },
-    { "smite",       "smitten" },
-    { "castigate",   "castigated" },
-    { "rebuke",      "rebuked" },
+    { NC_("Zin recitation smite", "purify"),      NC_("Zin recitation smite", "purified") },
+    { NC_("Zin recitation smite", "censure"),     NC_("Zin recitation smite", "censured") },
+    { NC_("Zin recitation smite", "condemn"),     NC_("Zin recitation smite", "condemned") },
+    { NC_("Zin recitation smite", "strike down"), NC_("Zin recitation smite", "struck down") },
+    { NC_("Zin recitation smite", "expel"),       NC_("Zin recitation smite", "expelled") },
+    { NC_("Zin recitation smite", "oust"),        NC_("Zin recitation smite", "ousted") },
+    { NC_("Zin recitation smite", "smite"),       NC_("Zin recitation smite", "smitten") },
+    { NC_("Zin recitation smite", "castigate"),   NC_("Zin recitation smite", "castigated") },
+    { NC_("Zin recitation smite", "rebuke"),      NC_("Zin recitation smite", "rebuked") },
 };
 
 /** Get the verse to recite this turn.
@@ -626,21 +626,21 @@ string zin_recite_text(const int seed, const int prayertype, int step)
     COMPILE_CHECK(ARRAYSZ(smite_text) == 9);
     const int smite_seed = (verse/3) % 9;
 
-    string recite = book_of_zin[chapter][step-1];
+    string recite = T_(book_of_zin[chapter][step-1]);
 
     const map<string, string> replacements =
     {
-        { "sinners", sinner_text[sinner_seed] },
+        { "sinners", C_("Zin recitation sinner", sinner_text[sinner_seed]) },
 
-        { "sin_adj",  sin_text[sin_seed][0] },
-        { "sin_noun", sin_text[sin_seed][1] },
+        { "sin_adj",  C_("Zin recitation sin", sin_text[sin_seed][0]) },
+        { "sin_noun", C_("Zin recitation sin", sin_text[sin_seed][1]) },
 
-        { "virtuous", virtue_text[virtue_seed][0] },
-        { "virtue",   virtue_text[virtue_seed][1] },
+        { "virtuous", C_("Zin recitation virtue", virtue_text[virtue_seed][0]) },
+        { "virtue",   C_("Zin recitation virtue", virtue_text[virtue_seed][1]) },
 
-        { "smite",   smite_text[smite_seed][0] },
-        { "smitten", smite_text[smite_seed][1] },
-        { "Smitten", uppercase_first(smite_text[smite_seed][1]) },
+        { "smite",   C_("Zin recitation smite", smite_text[smite_seed][0]) },
+        { "smitten", C_("Zin recitation smite", smite_text[smite_seed][1]) },
+        { "Smitten", uppercase_first(C_("Zin recitation smite", smite_text[smite_seed][1])) },
     };
 
     return replace_keys(recite, replacements);
@@ -1918,7 +1918,9 @@ bool kiku_gift_capstone_spells()
     }
 
     string msg = make_stringf(T_("Do you wish to receive knowledge of %s?"),
-                              comma_separated_fn(spells.begin(), spells.end(), spell_title).c_str());
+                              comma_separated_fn(spells.begin(), spells.end(), spell_title,
+                                  Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                                  Options.language == lang_t::ZH ? T_(",") : ", ").c_str());
 
     if (!yesno(msg.c_str(), true, 'n'))
     {
@@ -3549,7 +3551,9 @@ bool gozag_purchase_blessing()
             vector<string> pot_names;
             for (const CrawlStoreValue& store : *pots[i])
                 pot_names.emplace_back(potion_type_name(store.get_int()));
-            line += comma_separated_line(pot_names.begin(), pot_names.end());
+            line += comma_separated_line(pot_names.begin(), pot_names.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ");
             mpr_nojoin(MSGCH_PLAIN, line);
         }
         mprf(MSGCH_PROMPT, T_("Purchase which blessing?"));

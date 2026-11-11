@@ -27,6 +27,7 @@
 #include "random-pick.h"
 #include "shout.h"
 #include "spl-util.h"
+#include "stringutil.h"
 #include "target.h"
 #include "terrain.h"
 #include "database.h"
@@ -93,7 +94,7 @@ void explode_blastmotes_at(coord_def p)
     beam.target        = p;
     beam.source        = p;
     const string boom  = "The cloud of blastmotes explodes!";
-    const string sanct = "By Zin's power, the fiery explosion is contained.";
+    const string sanct = make_stringf(T_("By Zin's power, the %s is contained."), T_("fiery explosion"));
     schedule_explosion_fineff(beam, boom, sanct, EXPLOSION_FINEFF_CONCUSSION,
                               nullptr, "");
 }

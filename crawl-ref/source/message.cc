@@ -2316,7 +2316,8 @@ void simple_god_message(const char *event, bool need_possessive,
 void wu_jian_sifu_message(const char *event)
 {
     string msg;
-    const string name = wu_jian_random_sifu_name();
+    const string canonical_name = wu_jian_random_sifu_name();
+    const string name = C_("Wu Jian sifu", canonical_name.c_str());
     msg = make_stringf_p(C_("Wu Jian speaker", "Sifu %1$s%2$s"),
                          name.c_str(), event);
     god_speaks(GOD_WU_JIAN, msg.c_str());

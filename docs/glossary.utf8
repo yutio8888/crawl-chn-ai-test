@@ -260,6 +260,7 @@ butterfly	蝴蝶	domain=monsters; source=EN/ZH; Scope / comment=monster; source=
 cacodemon	恶灵恶魔	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 cactus giant	仙人掌巨人	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Cage of Brambles	荆棘牢笼	domain=spells; source=EN/ZH; 依据 / 作用域=spells.txt；围住各邻近敌人的环状荆棘墙；decision=D-C-095
+Cai Fang	越女	domain=gods; source=EN/ZH; 类型=无间师父人名；有意本土化替换，非音译; 裁决=D-C-111
 Call Canine Familiar	呼唤犬类使魔	domain=spells; source=EN/ZH; 备注=✅
 Call Down Damnation	降下天谴	domain=spells; source=EN/ZH; 备注=✅；`Call Down` 为“降下”，不属于呼唤词根
 Call Down Lightning	降下闪电	domain=spells; source=EN/ZH; 备注=✅
@@ -637,6 +638,7 @@ gehenna serpent of hell breath	欣嫩谷地狱巨蛇吐息	domain=spells; source
 Gell's Gavotte	盖尔之加沃特	domain=spells; source=EN/ZH; 备注=✅；重定向局部重力，使视野内生物随方向翻滚
 Gell's Gravitas	盖尔之重力	domain=spells; source=EN/ZH; 备注=✅；重力铃鼓专用效果，将怪物拉拢并固定
 GENDER_NEUTRAL	他 / 他的 / 他自己 / 他	domain=core; source=EN/ZH; 注意事项=单数中性人物的主格／所有格／反身／宾格；仅 pronoun subject|they、pronoun possessive|their、pronoun reflexive|themself、pronoun object|them 四个上下文键；不是复数；EN singular they 与存档身份不变；decision=D-C-100
+Gene Jian Bin	张三丰	domain=gods; source=EN/ZH; 类型=无间师父人名；有意本土化替换，非音译; 裁决=D-C-111
 Geryon	格律翁	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Geryon title	格律翁，地狱的守门人	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 ghost crab	幽灵螃蟹	domain=monsters; source=EN/ZH; 依据 / 作用域=新增神器命名所依赖的现行怪物基词；沿用现行资产措辞并登记于 SSOT；decision=D-C-095
@@ -729,6 +731,7 @@ Holy word	圣言术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容�
 Homunculus	人造人	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 hooves	蹄	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 horns	角	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Hu Sanniang	扈三娘	domain=gods; source=EN/ZH; 类型=无间师父人名; 裁决=D-C-111
 human	人类	domain=species; source=EN/ZH; 复合格式=人类 + 职业
 Hunter	猎手	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Hunting Call	狩猎呼唤	domain=spells; source=EN/ZH; 备注=✅
@@ -859,8 +862,10 @@ Louise	路易丝	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-mo
 Louise title	腐化的路易丝	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 low body AC	躯干护甲低	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；maw:badmuts；不声称是可遗传突变；decision=D-C-098
 low mp	低魔力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Lu Zhishen	鲁智深	domain=gods; source=EN/ZH; 类型=无间师父人名; 裁决=D-C-111
 Lugonu	卢格努	domain=gods; source=EN/ZH; 类型=音译
 lurker	潜伏者	domain=monsters; source=EN/ZH; 依据 / 作用域=mon-lurk.cc；未显现而等待触发的怪物机制类，非新增物种；区别 Stalker；decision=D-C-095
+Ma Yunglu	马云騄	domain=gods; source=EN/ZH; 类型=无间师父人名; 裁决=D-C-111
 Maces & Flails	锤与链枷	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Maggie	玛吉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Maggie title	自负的玛吉	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
@@ -1420,6 +1425,7 @@ Terence	特伦斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-m
 Terence title	老练的特伦斯	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 terrified	惊恐	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；fungus:badmuts；不声称是可遗传突变；decision=D-C-098
 the Cold Snap	骤寒	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；寒冷突然到来；decision=D-C-095
+The Council	无间门派	domain=gods; source=EN/ZH; 类型=无间门派共同说话者简称，与长名一致; 裁决=D-C-111
 the Floe	浮冰	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；漂浮冰块；decision=D-C-095
 the Frost Giant	霜巨人	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；复用现行怪物名，不另造冰系称号；decision=D-C-095
 the Iron City of Dis	迪斯铁城	domain=core; source=EN/ZH; 注意事项=分支长名；decision=D-C-103
@@ -1553,6 +1559,7 @@ Word of Chaos	混沌之语	domain=abilities; source=EN/ZH; Scope / comment=abili
 Word of Recall	召回之言	domain=spells; source=EN/ZH; 备注=✅；短暂延迟后召回同层有智慧盟友
 Wu Jian	无间	domain=gods; source=EN/ZH; 类型=运行时短名
 Xak'krixis title	王家远征炼金师扎克里西斯	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+Xiang Ba	项羽	domain=gods; source=EN/ZH; 类型=无间师父人名；上游作者确认原型为项羽（霸王）; 裁决=D-C-111
 Xom	佐姆	domain=gods; source=EN/ZH; 类型=音译
 Xom's Arena	佐姆竞技场	domain=items; source=EN/ZH; Scope / comment=佐姆竞技场分支与传送门；Arena = 竞技场；键为 `Xom's Arena`；decision=D-C-109
 XP	经验值	domain=core; source=EN/ZH
@@ -1566,6 +1573,7 @@ yellow scales	黄色鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutat
 yells	大喊	domain=dialogue; source=EN/ZH; 适用角色=战士、兽人
 Yntzoia	因佐娅	domain=core; source=EN/ZH; 依据 / 作用域=unrand lore proper name；冰龙奥术师，保守音译；decision=D-C-095
 Yredelemnul	伊莱德莱姆努尔	domain=gods; source=EN/ZH; 类型=音译
+Yunchang	云长	domain=gods; source=EN/ZH; 类型=无间师父人名; 裁决=D-C-111
 zarnium	扎尼姆	domain=core; source=EN/ZH; 依据 / 作用域=gizmo.txt；注释指 Calvin and Hobbes，虚构元素音译；decision=D-C-095
 Zenata	泽娜塔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Zenata title	泽娜塔，西泽的追寻者	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt

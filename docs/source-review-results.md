@@ -9070,7 +9070,7 @@
 | source:you spin and attack %1$s%2$s%3$s.<br>EN: You spin and attack %1$s%2$s%3$s. |  | 你%2$s旋转攻击%1$s%3$s。 | adjust | %1$s怪物目标，%2$s连续副词，%3$s势能尾句；副词前置不丢其他槽。 | crawl-ref/source/god-passive.cc:1992 |
 | source:god choice list&#124; or <br>EN: god choice list&#124; or  |  | 或 | adjust | 可能神祇之间是或，不误为各神同时拥有祭坛。 | crawl-ref/source/god-prayer.cc:67 |
 | source:god choice list&#124;, <br>EN: god choice list&#124;,  |  | 、 | adjust | 神祇中间项顿号与末项或配套，不改变字母选择。 | crawl-ref/source/god-prayer.cc:68 |
-| source:the council<br>EN: The Council |  | 无间议会 | adjust | 武术神共同说话者为无间议会，集合称号本地化而非随机个人名。 | crawl-ref/source/message.cc:2295 |
+| source:the council<br>EN: The Council |  | 无间门派 | adjust | 武术神共同说话者沿用术语表“无间门派”，集合称号本地化而非随机个人名。 | crawl-ref/source/message.cc:2295 |
 | source:wu jian speaker&#124;sifu %1$s%2$s<br>EN: Wu Jian speaker&#124;Sifu %1$s%2$s |  | %1$s师父%2$s | adjust | 第一槽随机规范姓名、第二槽已译事件；姓名＋师父＋事件自然，不猜汉字姓名。 | crawl-ref/source/message.cc:2316 |
 | source:the shining one will no longer bless your followers when you slay foes.<br>EN: The Shining One will no longer bless your followers when you slay foes. |  | 光辉者不再在你击杀敌人时祝福你的追随者。 | adjust | 光辉者不再在你杀敌时祝福追随者，停止、触发者和受益者均保留。 | crawl-ref/source/religion.cc:122 |
 | source:your bonds shatter.<br>EN: Your bonds shatter. |  | 你的枷锁破碎了。 | adjust | 枷锁破碎符合Ash当前绑定意象，不把显示退回一般诅咒。 | crawl-ref/source/religion.cc:2883 |

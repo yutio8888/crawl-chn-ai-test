@@ -6619,7 +6619,7 @@ string xom_remove_blessing()
     switch (you.attribute[ATTR_XOM_BLESSING])
     {
         case XOM_BLESSING_CLEAVE:
-            msg = "Your cleaving frenzy subsides.";
+            msg = T_("Your cleaving frenzy subsides.");
             you.props.erase(XOM_CLEAVE_BRAND_KEY);
             break;
 
@@ -6637,7 +6637,7 @@ string xom_remove_blessing()
             break;
 
         case XOM_BLESSING_MANNEQUINS:
-            msg = "Xom cuts the strings.";
+            msg = T_("Xom cuts the strings.");
             for (monster_iterator mi; mi; ++mi)
                 if (mi->was_created_by(MON_SUMM_XOM_MANNEQUIN))
                     monster_die(**mi, KILL_TIMEOUT, NON_MONSTER);
@@ -6657,12 +6657,12 @@ string xom_remove_blessing()
         break;
 
         case XOM_BLESSING_PROTEAN:
-            msg = "Your body no longer feels quite so unstable.";
+            msg = T_("Your body no longer feels quite so unstable.");
             you.duration[DUR_XOM_PROTEAN_COOLDOWN] = 0;
             break;
 
         case XOM_BLESSING_SNEAKY:
-            msg = "You feel abruptly conspicuous.";
+            msg = T_("You feel abruptly conspicuous.");
             xom_end_disguise();
             break;
 
