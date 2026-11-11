@@ -1895,7 +1895,7 @@ autoinscribe += <regex>:<inscription>
         排列顺序。
 
 show_god_gift = unident|yes|no
-        给原本是神祇赠礼的物品附加 {god gift}。如果设为 "unident"，物品的
+        给原本是神祇赠礼的物品附加 {god gift}（中文界面显示为 {神赐}）。如果设为 "unident"，物品的
         属性完全得知后就会失去此标签。无论此设置为何，都可以在物品说明中
         查看其来源。
 

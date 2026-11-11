@@ -54504,6 +54504,9 @@ You breathe a spray of caustic vapour.
 You spew a torrent of mud.
 你喷出一股泥流。
 %%%%
+You breathe wild lightning.
+你吐出狂乱的闪电。
+%%%%
 The injured %s weaves a defensive illusion!
 受伤的%s编织出一个防御幻象！
 %%%%

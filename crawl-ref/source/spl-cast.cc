@@ -2944,7 +2944,7 @@ static spret _do_cast(spell_type spell, int powc, const dist& spd,
             { SPELL_NOXIOUS_BREATH, N_("You exhale a blast of noxious fumes.") },
             { SPELL_CAUSTIC_BREATH, N_("You breathe a spray of caustic vapour.") },
             { SPELL_MUD_BREATH, N_("You spew a torrent of mud.") },
-            { SPELL_GALVANIC_BREATH, "You breathe wild lightning."}
+            { SPELL_GALVANIC_BREATH, N_("You breathe wild lightning.") }
         };
 
         if (!fail)

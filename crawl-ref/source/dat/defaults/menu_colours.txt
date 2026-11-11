@@ -91,6 +91,8 @@ menu += lightblue:^unidentified .*(药水|卷轴|魔杖|珠宝|法杖)
 
 # Colouring of autoinscribed god gifts
 menu_colour += pickup:green:god gift
+# CN: autoinscribed god gift display
+menu_colour += pickup:green:神赐
 
 # Highlight (partly) selected items
 # XX this shouldn't be done this way!
