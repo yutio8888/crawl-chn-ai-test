@@ -53767,7 +53767,7 @@ The voice of Zin, pure and clear, did say that the @sinners@...
 ……并非@virtuous@！众民闻之，遂奋起……
 %%%%
 ...and embraced @virtue@, for they feared Zin's wrath.
-……拥抱@virtue@，因他们敬畏辛之怒。
+……归向@virtue@，因他们畏惧辛之怒。
 %%%%
 Zin spoke of the doctrine of @virtue@, and...
 辛宣讲@virtue@之道，而后……
@@ -53782,10 +53782,10 @@ And so Zin bade the @sinners@ to come before...
 于是辛命那些@sinners@前来……
 %%%%
 ...the altar, that judgement might be passed...
-……祭坛之前，好施行审判……
+……祭坛之前，好让审判……
 %%%%
 ...upon those who were not @virtuous@.
-……审判那些不@virtuous@之人。
+……临到那些不@virtuous@之人。
 %%%%
 To the devout, Zin provideth. From the rest...
 辛供养虔信者。至于其余之众……
@@ -53794,16 +53794,16 @@ To the devout, Zin provideth. From the rest...
 ……尔等@sinners@，尔等身负……
 %%%%
 ...of @sin_noun@, Zin taketh.
-……@sin_noun@之罪者，辛必索取。
+……@sin_noun@之罪者，辛必夺之。
 %%%%
 Zin saw the @sin_noun@ of the @sinners@, and...
-辛见@sinners@所行的@sin_noun@，便……
+辛见@sinners@之@sin_noun@，便……
 %%%%
 ...was displeased, for did the law not say that...
 ……心生不悦，因律法岂未言明……
 %%%%
 ...those who did not become @virtuous@ would be @smitten@?
-……不归于@virtuous@者，必被@smitten@？
+……凡不肯归于@virtue@者，必被@smitten@？
 %%%%
 Zin said that @virtue@ shall be the law of the land, and...
 辛言，@virtue@当为世间之律，而……
@@ -53818,7 +53818,7 @@ Damned, damned be the @sinners@ and...
 愿诅罚临于@sinners@，临于……
 %%%%
 ...all else who abandon @virtue@! Let them...
-……一切背弃@virtue@者！使他们……
+……一切背弃@virtue@者！愿他们……
 %%%%
 ...be @smitten@ by the jurisprudence of Zin!
 ……被辛之法理@smitten@！
@@ -53830,10 +53830,10 @@ And Zin said to all in attendance, 'Which of ye...
 ……谁属@sinners@之列？到吾面前来，好让……
 %%%%
 ...I may @smite@ you now for your @sin_noun@!'
-……吾即刻因尔等的@sin_noun@而@smite@尔等！”
+……吾即刻因尔等之@sin_noun@而@smite@尔等！”
 %%%%
 Yea, I say unto thee, bring forth...
-诚然，吾告汝，当带来……
+诚然，吾告汝，当带上前来……
 %%%%
 ...the @sinners@ that they may know...
 ……那些@sinners@，使他们得知……
@@ -53860,10 +53860,10 @@ It is just that the @sinners@ shall be @smitten@...
 ……世间之律，而辛之言即为律法！
 %%%%
 Thus the people made the covenant of @virtue@ with...
-于是众民立下@virtue@之约，与……
+于是众民与辛立下@virtue@之约……
 %%%%
 ...Zin, and all was good, for they knew that the...
-……辛相约，万事皆善，因他们知晓……
+……万事皆善，因他们知晓……
 %%%%
 ...@sinners@ would trouble them no longer.
 ……那些@sinners@再不能侵扰他们。
@@ -53890,10 +53890,10 @@ Zin looked out upon the remains of the @sinners@...
 辛俯视那些@sinners@的残骸……
 %%%%
 ...and declared it good that they had been...
-……宣告此举甚善，因他们已被……
+……宣告他们已被……
 %%%%
 ...@smitten@. And thus justice was done.
-……@smitten@。正义因而得以伸张。
+……@smitten@，此乃甚善。正义因而得以伸张。
 %%%%
 The law of Zin demands thee...
 辛之律法命汝……
@@ -53956,7 +53956,7 @@ Zin hath not damned the @sinners@, but it is they...
 ……因其@sin_noun@自招诅罚，因……
 %%%%
 ...did Zin not decree that to be @sin_adj@ was wrong?
-……辛岂未宣告，@sin_adj@乃是罪错？
+……辛岂未宣告，@sin_adj@乃是罪过？
 %%%%
 And Zin, furious at their @sin_noun@, held...
 辛因其@sin_noun@而震怒，将……
@@ -53980,7 +53980,7 @@ Zin descended from on high in a silver chariot...
 辛驾白银战车自高天降临……
 %%%%
 ...to @smite@ the @sinners@ for their...
-……为@smite@那些@sinners@，因他们所行的……
+……为@smite@那些@sinners@，因其……
 %%%%
 ...@sin_noun@, and thus judgement was rendered.
 ……@sin_noun@，审判因而得以施行。
@@ -54049,7 +54049,7 @@ Zin recitation sin|doubt
 疑惑
 %%%%
 Zin recitation sin|chaotic
-混沌
+混乱无序
 %%%%
 Zin recitation sin|chaos
 混沌
@@ -54127,7 +54127,7 @@ Zin recitation virtue|order
 秩序
 %%%%
 Zin recitation virtue|harmonic
-和谐
+和顺
 %%%%
 Zin recitation virtue|harmony
 和谐
@@ -54157,7 +54157,7 @@ Zin recitation virtue|hygiene
 清洁
 %%%%
 Zin recitation virtue|reverent
-敬畏
+敬虔
 %%%%
 Zin recitation virtue|reverence
 敬畏
@@ -54211,10 +54211,10 @@ Zin recitation smite|ousted
 逐出
 %%%%
 Zin recitation smite|smite
-惩击
+击打
 %%%%
 Zin recitation smite|smitten
-惩击
+击打
 %%%%
 Zin recitation smite|castigate
 责罚
@@ -54265,13 +54265,13 @@ Magic contamination
 每团狐火1d8
 %%%%
 By Zin's power, %s's torment is averted.
-辛的力量阻止了%s的折磨。
+凭借辛之力，%s的折磨被化解了。
 %%%%
 By Zin's power, %s's fires are quelled.
-辛的力量平息了%s的火焰。
+凭借辛之力，%s的火焰被平息了。
 %%%%
 By Zin's power, %s's explosion is contained.
-辛的力量遏止了%s的爆炸。
+凭借辛之力，%s的爆炸被遏制了。
 %%%%
 Zin's holy word
 辛的圣言
@@ -54304,7 +54304,7 @@ the will of Dithmenos
 迪斯姆诺的意志
 %%%%
 electrical discharge
-电能释放
+放电
 %%%%
 Prayed at the altar of an unknown god.
 在未知神祇的祭坛前祈祷。
@@ -54382,13 +54382,13 @@ chaos upgrade
 混沌强化
 %%%%
 confusion (+ monsters)
-混乱（另加怪物）
+混乱（含怪物）
 %%%%
 confusion (+ might)
-混乱（另加强效）
+混乱（含强效）
 %%%%
 confusion (+ monsters) (+ might)
-混乱（另加怪物）（另加强效）
+混乱（含怪物）（含强效）
 %%%%
 repel stairs
 排斥楼梯
