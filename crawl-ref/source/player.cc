@@ -5252,7 +5252,7 @@ void dec_sticky_flame_player(int delay)
 
     mprf(MSGCH_WARN, T_("The liquid fire burns you%s%s"),
          damage > base_damage ? T_(" terribly") : "",
-         damage < base_damage ? T_(". You resist.") : "!");
+         damage < base_damage ? T_(". You resist.") : T_("!"));
 
     damage = div_rand_round(damage * delay, BASELINE_DELAY);
 
@@ -9166,7 +9166,9 @@ static string _constriction_description()
                 cinfo += "\n";
 
             cinfo += T_("You are constricting ");
-            cinfo += comma_separated_line(c_name.begin(), c_name.end());
+            cinfo += comma_separated_line(c_name.begin(), c_name.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ");
             cinfo += ".";
         }
     }

@@ -3325,7 +3325,7 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
 
         result = zapping(ability_to_zap(abil.ability),
                          _ability_zap_pow(abil.ability), beam, true,
-                         "You exhale a blast of poison gas.", fail);
+                         T_("You exhale a blast of poison gas."), fail);
 
         if (result == spret::success)
             you.increase_duration(DUR_BREATH_WEAPON, cooldown);

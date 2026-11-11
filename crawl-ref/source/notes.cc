@@ -788,6 +788,45 @@ static string _theft_note_display(const Note& note)
         : make_stringf_p(format.c_str(), display.c_str(), item.c_str());
 }
 
+// Persisted mutation reasons remain canonical. Unknown historical causes pass
+// through the existing wrath display gate, which also has a verbatim fallback.
+static string _mutation_reason_display(const string& reason)
+{
+    if (Options.language == lang_t::ZH)
+    {
+        const char* reasons[] =
+        {
+            N_("hidden defects"), N_("hidden potential"),
+            N_("hidden defects expressed"), N_("hidden potential expressed"),
+            N_("breaking open a mutation catalyst"),
+        };
+        for (const char* key : reasons)
+            if (reason == key)
+                return T_(key);
+    }
+    return god_wrath_display_name(reason);
+}
+
+// Only these six complete C++ producer literals are recognized. In particular,
+// arbitrary user notes and unrecognized historical messages are never parsed.
+static string _world_message_note_display(const Note& note)
+{
+    if (Options.language == lang_t::ZH && note.desc.empty())
+    {
+        const char* messages[] =
+        {
+            N_("Voluntarily entered the Abyss."),
+            N_("Took an exit into the Abyss."),
+            N_("Escaped the Abyss"), N_("Escaped Pandemonium"),
+            N_("Escaped into the Abyss"), N_("Glimpsed the power of Zot."),
+        };
+        for (const char* key : messages)
+            if (note.name == key)
+                return T_(key);
+    }
+    return _theft_note_display(note);
+}
+
 string Note::describe(bool when, bool where, bool what) const
 {
     ostringstream result;
@@ -941,21 +980,21 @@ string Note::describe(bool when, bool where, bool what) const
                    << mutation_desc(static_cast<mutation_type>(first),
                                     second == 0 ? 1 : second);
             if (!name.empty())
-                result << " [" << god_wrath_display_name(name) << "]";
+                result << " [" << _mutation_reason_display(name) << "]";
             break;
         case NOTE_LOSE_MUTATION:
             result << T_("Lost mutation: ")
                    << mutation_desc(static_cast<mutation_type>(first),
                                     second == 3 ? 3 : second+1);
             if (!name.empty())
-                result << " [" << god_wrath_display_name(name) << "]";
+                result << " [" << _mutation_reason_display(name) << "]";
             break;
         case NOTE_PERM_MUTATION:
             result << T_("Mutation became permanent: ")
                    << mutation_desc(static_cast<mutation_type>(first),
                                     second == 0 ? 1 : second);
             if (!name.empty())
-                result << " [" << god_wrath_display_name(name) << "]";
+                result << " [" << _mutation_reason_display(name) << "]";
             break;
         case NOTE_GET_BANE:
             result << T_("Gained bane: ")
@@ -985,7 +1024,7 @@ string Note::describe(bool when, bool where, bool what) const
             else if (name == "Prayed at the altar of an unknown god.")
                 result << T_("Prayed at the altar of an unknown god.");
             else
-                result << _theft_note_display(*this);
+                result << _world_message_note_display(*this);
             break;
         case NOTE_SEEN_FEAT:
             // The discovery producer stored a display snapshot with an ASCII

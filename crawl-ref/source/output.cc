@@ -2499,7 +2499,9 @@ static string _describe_from_list(string prefix,
     if (describe.size() == 1)
         msg += describe[0];
     else
-        msg += comma_separated_line(describe.begin(), describe.end());
+        msg += comma_separated_line(describe.begin(), describe.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ");
 
     return msg;
 }
@@ -3556,7 +3558,8 @@ static string _extra_passive_effects()
         return T_("no passive effects");
     else
         return comma_separated_line(passives.begin(), passives.end(),
-                                    ", ", ", ");
+                                    Options.language == lang_t::ZH ? T_(",") : ", ",
+                                    Options.language == lang_t::ZH ? T_(",") : ", ");
 
 }
 
@@ -3592,7 +3595,9 @@ static string _status_mut_rune_list(int sw)
     if (status.empty())
         text += T_("no status effects");
     else
-        text += comma_separated_line(status.begin(), status.end(), ", ", ", ");
+        text += comma_separated_line(status.begin(), status.end(),
+            Options.language == lang_t::ZH ? T_(",") : ", ",
+            Options.language == lang_t::ZH ? T_(",") : ", ");
     text += "\n";
 
     // print mutation information
@@ -3616,7 +3621,8 @@ static string _status_mut_rune_list(int sw)
                 (int)runes.size(), you.obtainable_runes,
                 you.obtainable_runes == 1 ? "" : "s",
                 comma_separated_line(runes.begin(), runes.end(),
-                                     ", ", ", ").c_str());
+                                     Options.language == lang_t::ZH ? T_(",") : ", ",
+                                     Options.language == lang_t::ZH ? T_(",") : ", ").c_str());
     }
 
     linebreak_string(text, sw);

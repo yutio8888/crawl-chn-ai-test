@@ -1077,7 +1077,7 @@ spret cast_momentum_strike(int pow, coord_def target, bool fail)
     if (you.duration[DUR_NO_MOMENTUM] < dur)
     {
         you.set_duration(DUR_NO_MOMENTUM, dur, dur,
-                         "You are unable to move.");
+                         T_("You are unable to move."));
     }
 
     return spret::success;

@@ -929,9 +929,9 @@ namespace arena
 
         string msg;
         if (was_tied)
-            msg = "Tie";
+            msg = T_("Tie");
         else
-            msg = "Winner: %s!";
+            msg = T_("Winner: %s!");
 
         if (Options.arena_dump_msgs || Options.arena_list_eq)
             msg = "---------- " + msg + " ----------";

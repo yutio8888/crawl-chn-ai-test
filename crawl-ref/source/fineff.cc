@@ -1527,7 +1527,7 @@ void rakshasa_clone_fineff::fire()
     if (you.can_see(*rakshasa))
     {
         mprf(MSGCH_MONSTER_SPELL,
-             "The injured %s weaves a defensive illusion!",
+             T_("The injured %s weaves a defensive illusion!"),
              rakshasa->name(DESC_PLAIN).c_str());
     }
 }

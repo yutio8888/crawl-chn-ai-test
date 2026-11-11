@@ -216,6 +216,8 @@ int main() {
 #include <vector>
 using namespace std;
 bool chinese = false;
+enum class lang_t { EN, ZH };
+struct { lang_t language = lang_t::EN; } Options;
 #define T_(s) (s)
 const char* C_(const char* context, const char* key) {
     assert(string(context) == "item action");
@@ -226,10 +228,11 @@ const char* C_(const char* context, const char* key) {
 int tolower_safe(int key) { return tolower(static_cast<unsigned char>(key)); }
 template<class Iterator, class F>
 string comma_separated_fn(Iterator first, Iterator last, F fn,
-                         const string& final_separator) {
+                         const string& final_separator,
+                         const string& separator = ", ") {
     string result;
     for (auto it = first; it != last; ++it) {
-        if (it != first) result += it + 1 == last ? final_separator : ", ";
+        if (it != first) result += it + 1 == last ? final_separator : separator;
         result += fn(*it);
     }
     return result;
@@ -242,14 +245,18 @@ static command_type _get_action(int key, vector<command_type> actions)
 int main() {
     for (bool language : {false, true}) {
         chinese = language;
+        Options.language = chinese ? lang_t::ZH : lang_t::EN;
         const vector<command_type> potion = {CMD_QUAFF, CMD_QUIVER_ITEM, CMD_DROP};
         const vector<command_type> scroll = {CMD_READ, CMD_QUIVER_ITEM};
         const vector<command_type> wand = {CMD_EVOKE, CMD_QUIVER_ITEM};
         const string q = chinese ? "<set:q>" : "(q)uiver";
         const string v = chinese ? "<set:v>" : "qui(v)er";
-        assert(_actions_desc(potion) == "(q)uaff, " + v + ", or (d)rop.");
-        assert(_actions_desc(scroll) == "(r)ead, or " + q + ".");
-        assert(_actions_desc(wand) == "e(v)oke, or " + q + ".");
+        // Chinese joins use the enumeration comma (identity T_ double here).
+        const string sep = chinese ? "," : ", ";
+        const string last = chinese ? "," : ", or ";
+        assert(_actions_desc(potion) == "(q)uaff" + sep + v + last + "(d)rop.");
+        assert(_actions_desc(scroll) == "(r)ead" + last + q + ".");
+        assert(_actions_desc(wand) == "e(v)oke" + last + q + ".");
         assert(_actions_desc({CMD_QUIVER_ITEM}) == q + ".");
         assert(_get_action('q', potion) == CMD_QUAFF);
         assert(_get_action('v', potion) == CMD_QUIVER_ITEM);

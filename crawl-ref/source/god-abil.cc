@@ -196,7 +196,7 @@ bool bless_weapon(god_type god, brand_type brand, colour_t colour)
         return false;
     }
 
-    string old_name = wpn.name(DESC_A);
+    string old_name = wpn.name(DESC_A, false, false, true, false, false);
     set_equip_desc(wpn, ISFLAG_GLOWING);
     set_item_ego_type(wpn, OBJ_WEAPONS, brand);
     enchant_weapon(wpn, true);
@@ -218,7 +218,7 @@ bool bless_weapon(god_type god, brand_type brand, colour_t colour)
     you.redraw_armour_class = true; // protection,
     you.redraw_evasion = true;      // or evasion
     const string desc = make_stringf(_god_blessing_description(god), old_name.c_str());
-    take_note(Note(NOTE_ID_ITEM, 0, 0, wpn.name(DESC_A), desc));
+    take_note(Note(NOTE_ID_ITEM, 0, 0, wpn.name(DESC_A, false, false, true, false, false), desc));
     wpn.flags |= ISFLAG_NOTED_ID;
     wpn.props[FORCED_ITEM_COLOUR_KEY] = colour;
 

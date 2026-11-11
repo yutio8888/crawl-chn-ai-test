@@ -3220,7 +3220,7 @@ TEST_CASE("item effects rereview: actual identification note snapshots localized
     REQUIRE(note_list.size() == 1);
     const Note& note = note_list.back();
     CHECK(note.type == NOTE_ID_ITEM);
-    CHECK(note.name == item.name(DESC_A));
+    CHECK(note.name == item.name(DESC_A, false, false, true, false, false));
     CHECK(note.desc == origin_desc(item));
     item_def rune;
     rune.base_type = OBJ_RUNES;
@@ -3604,7 +3604,8 @@ TEST_CASE("interface rereview: actual overview rune row retains real command cou
     for (int i = 0; i < NUM_RUNE_TYPES; ++i)
         if (you.runes.get(i))
             runes.emplace_back(rune_type_name(i));
-    const string list = comma_separated_line(runes.begin(), runes.end(), ", ", ", ");
+    const string list = join_strings(runes.begin(), runes.end(),
+                                     language == lang_t::ZH ? "、" : ", ");
     const string expected = formatted_string::parse_string(make_stringf_p(
         T_("\n<w>%1$s:</w> %2$d/%3$d rune%4$s: %5$s"),
         command_to_string(CMD_DISPLAY_RUNES).c_str(), count, 3, "s", list.c_str())).tostring();
@@ -3696,7 +3697,9 @@ TEST_CASE("interface rereview: actual branch rune descriptions preserve all rema
         CHECK(output.empty());
     else
     {
-        const string list = comma_separated_line(names.begin(), names.end());
+        const string list = language == lang_t::ZH
+            ? join_strings(names.begin(), names.end(), "、")
+            : comma_separated_line(names.begin(), names.end());
         const string expected = language == lang_t::ZH
             ? "这个分支包含" + list + "佐特符文。"
             : "This branch contains the " + list + " rune"

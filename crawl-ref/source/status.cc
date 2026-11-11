@@ -271,7 +271,9 @@ bool fill_status_info(int status, status_info& inf)
             }
         }
 
-        string msg = comma_separated_line(stat_str.begin(), stat_str.end());
+        string msg = comma_separated_line(stat_str.begin(), stat_str.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ");
         const string key = comma_separated_line(stat_keys.begin(), stat_keys.end(),
                                                 " and ", ", ");
 
@@ -778,6 +780,7 @@ bool fill_status_info(int status, status_info& inf)
     {
         int bribe = 0;
         vector<const char *> places;
+        vector<string> display_places;
         for (int i = 0; i < NUM_BRANCHES; i++)
         {
             branch_type br = gozag_fixup_branch(static_cast<branch_type>(i));
@@ -789,6 +792,7 @@ bool fill_status_info(int status, status_info& inf)
 
                 places.push_back(branches[static_cast<branch_type>(i)]
                                  .longname);
+                display_places.emplace_back(T_(places.back()));
             }
         }
 
@@ -803,14 +807,15 @@ bool fill_status_info(int status, status_info& inf)
             inf.short_db_key = make_stringf("bribing [%s]",
                 comma_separated_line(places.begin(), places.end(), ", ", ", ").c_str());
             inf.short_text = make_stringf(T_("bribing [%s]"),
-                                           comma_separated_line(places.begin(),
-                                                                places.end(),
-                                                                ", ", ", ")
+                                           comma_separated_line(display_places.begin(),
+                                                                display_places.end(),
+                                                                Options.language == lang_t::ZH ? T_(",") : ", ",
+                                                                Options.language == lang_t::ZH ? T_(",") : ", ")
                                                                 .c_str());
-            inf.long_text = T_("You are bribing ")
-                             + comma_separated_line(places.begin(),
-                                                    places.end())
-                             + T_(".");
+            inf.long_text = make_stringf(T_("You are bribing %s."),
+                comma_separated_line(display_places.begin(), display_places.end(),
+                    Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                    Options.language == lang_t::ZH ? T_(",") : ", ").c_str());
         }
         break;
     }

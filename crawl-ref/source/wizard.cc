@@ -395,7 +395,8 @@ void enter_explore_mode()
         mprf(MSGCH_WARN, T_("If you continue, your game will not be scored!"));
 #endif
 
-        if (!confirm_prompt("explore", "Do you really want to enter explore mode?"))
+        if (!confirm_prompt("explore",
+                            T_("Do you really want to enter explore mode?")))
         {
             canned_msg(MSG_OK);
             return;

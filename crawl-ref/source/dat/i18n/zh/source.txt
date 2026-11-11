@@ -53110,6 +53110,10 @@ Do you really want to enter wizard mode?
 你真的想进入巫师模式吗？
 
 %%%%
+Do you really want to enter explore mode?
+你真的要进入探索模式吗？
+
+%%%%
 Make which kind of shop?
 创造哪种商店？
 
@@ -54464,3 +54468,180 @@ Xom effect note|reaching
 %%%%
 the will of Dithmenos.
 迪斯姆诺的意志
+%%%%
+god gift
+神赐
+%%%%
+Capacitive Coupling
+电容耦合
+%%%%
+It may inflict chaotic effects on those who attack you.
+它可能对攻击你的生物施加混沌效果。
+%%%%
+It may inflict chaos on those you attack in melee.
+它可能对你近战攻击的生物施加混沌效果。
+%%%%
+You are confused and cannot control your aim.
+你陷入混乱，无法控制瞄准方向。
+%%%%
+<lightred>No regular actions available to quiver.</lightred>
+<lightred>没有可预备的常规动作。</lightred>
+%%%%
+You breathe a blast of explosive embers.
+你喷出一股爆裂余烬。
+%%%%
+You exhale a wave of glacial cold.
+你吐出一波冰寒之气。
+%%%%
+You exhale a blast of scalding steam.
+你吐出一股滚烫的蒸汽。
+%%%%
+You breathe a sphere of nullifying energy.
+你喷出一团消魔能量。
+%%%%
+You exhale a blast of noxious fumes.
+你吐出一股有毒烟雾。
+%%%%
+You breathe a spray of caustic vapour.
+你喷出一片腐蚀性蒸气。
+%%%%
+You spew a torrent of mud.
+你喷出一股泥流。
+%%%%
+You breathe wild lightning.
+你吐出狂乱的闪电。
+%%%%
+The injured %s weaves a defensive illusion!
+受伤的%s编织出一个防御幻象！
+%%%%
+You feel your willpower being sapped.
+你感到自己的意志力正在被削弱。
+%%%%
+You are unable to move.
+你无法移动。
+%%%%
+You are magically locked in place.
+你被魔法锁定在原地。
+%%%%
+You exhale a blast of poison gas.
+你吐出一股毒气。
+%%%%
+Category: %s
+类别：%s
+%%%%
+mutation tag|Anatomy
+身体构造
+%%%%
+mutation tag|Substance
+身体材质
+%%%%
+mutation tag|Blood
+血液
+%%%%
+mutation tag|Bones
+骨骼
+%%%%
+mutation tag|Hands
+手
+%%%%
+hidden defects
+隐藏缺陷
+%%%%
+hidden potential
+隐藏潜力
+%%%%
+hidden defects expressed
+隐藏缺陷已显现
+%%%%
+hidden potential expressed
+隐藏潜力已显现
+%%%%
+breaking open a mutation catalyst
+打破诱变催化器
+%%%%
+%s wails in agony as it relives its own death.
+%s重历自己的死亡，痛苦地哀号。
+%%%%
+Tendrils of ice devour %s body!
+冰之触须吞噬了%s身体！
+%%%%
+ fades away in a splash of mutagenic energy!
+在飞溅的诱变能量中消散了！
+%%%%
+ sprays mutagenic energy!
+喷洒出诱变能量！
+%%%%
+ fails to spray mutagenic energy.
+未能喷洒出诱变能量。
+%%%%
+You hear a crashing sound.
+你听到一声轰然巨响。
+%%%%
+You hear a sizzling sound.
+你听到一阵滋滋声。
+%%%%
+Tie
+平局
+%%%%
+Winner: %s!
+胜者：%s！
+%%%%
+You hear a strange noise.
+你听到一阵奇怪的声响。
+%%%%
+You are bribing %s.
+你正在贿赂%s。
+%%%%
+%2s%s: (show equip)
+%2s%s：（显示装备）
+%%%%
+%2s%s: (none)
+%2s%s：（无）
+%%%%
+You feel %s slowing down the madness of this place.
+你感到%s正在减缓此地的疯狂。
+%%%%
+The barbed spikes snap loose.
+带倒刺的尖刺断裂脱落了。
+%%%%
+[unseen terrain]
+[未见地形]
+%%%%
+Voluntarily entered the Abyss.
+自愿进入了深渊。
+%%%%
+Took an exit into the Abyss.
+通过出口进入了深渊。
+%%%%
+Escaped the Abyss
+逃离了深渊
+%%%%
+Escaped Pandemonium
+逃离了万魔殿
+%%%%
+Escaped into the Abyss
+逃入了深渊
+%%%%
+Glimpsed the power of Zot.
+窥见了佐特的力量。
+%%%%
+ (still there?)
+（还在那里吗？）
+%%%%
+  (unseen)\n
+  （未见）\n
+%%%%
+[Shop] %s\n
+[商店] %s\n
+%%%%
+  (Shop contents are unknown)\n
+  （商店货品未知）\n
+%%%%
+  You have no stashes.\n
+  你没有藏物点。\n
+%%%%
+Select layers to display:\n<%s>(m)onsters</%s>|<%s>(p)layer</%s>|<%s>(i)tems</%s>|<%s>(c)louds</%s>
+选择要显示的图层：\n<%s>怪物(m)</%s>|<%s>玩家(p)</%s>|<%s>物品(i)</%s>|<%s>云雾(c)</%s>
+%%%%
+Select layers to display:\n<%s>(m)onsters</%s>|<%s>(p)layer</%s>|<%s>(i)tems</%s>|<%s>(c)louds</%s>|<%s>monster (w)eapons</%s>|<%s>monster (h)ealth</%s>
+选择要显示的图层：\n<%s>怪物(m)</%s>|<%s>玩家(p)</%s>|<%s>物品(i)</%s>|<%s>云雾(c)</%s>|<%s>怪物武器(w)</%s>|<%s>怪物生命值(h)</%s>

@@ -379,7 +379,9 @@ static void _sdump_visits(dump_params &par)
     {
         text += make_stringf_p(T_("You %1$salso visited: "), have)
                 + comma_separated_line(misc_portals.begin(),
-                                       misc_portals.end())
+                                       misc_portals.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ")
                 + ".\n";
     }
 
@@ -600,11 +602,12 @@ static string _sdump_rank_piety_info(RankPietyInfo r)
 
     int rank = piety_rank(r.initial_piety);
 
-    string name = god_name(r.god);
+    const string name = chop_string(god_name(r.god), 16);
+    const string padding(max(0, 16 - strwidth(name)), ' ');
 
     out =
-        make_stringf(" %16s | %1d | %7d | %3d | %3d | %3d | %3d | %3d | %3d | %3d | %3d \n",
-                     chop_string(name, 16).c_str(), rank, r.start_time,
+        make_stringf(" %s%s | %1d | %7d | %3d | %3d | %3d | %3d | %3d | %3d | %3d | %3d \n",
+                     padding.c_str(), name.c_str(), rank, r.start_time,
                      r.initial_piety, r.piety_gained, r.piety_on_gifts,
                      r.piety_on_penance, r.piety_on_stepdowns, r.piety_at_max,
                      r.piety_decayed, r.piety_lost);

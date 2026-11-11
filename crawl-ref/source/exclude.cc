@@ -744,7 +744,9 @@ string exclude_set::get_exclusion_desc(level_id level, bool display) const
         if (!prefix.empty() && Options.language != lang_t::ZH)
             prefix += " ";
         return prefix + comma_separated_line(descriptions.begin(),
-                                             descriptions.end());
+                                             descriptions.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ");
     };
     if (display)
         return format();

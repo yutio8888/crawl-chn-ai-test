@@ -94,9 +94,12 @@ public:
     {
     }
 
+    // Persisted display snapshots pass false for display_inscription to keep
+    // their historical generated labels and separators byte-identical.
     string name(description_level_type descrip, bool terse = false,
                 bool ident = false, bool with_inscription = true,
-                bool quantity_in_words = false) const;
+                bool quantity_in_words = false,
+                bool display_inscription = true) const;
     bool has_spells() const;
     bool cursed() const;
     colour_t get_colour() const;

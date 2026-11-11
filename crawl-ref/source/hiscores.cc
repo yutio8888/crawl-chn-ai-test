@@ -1419,7 +1419,8 @@ void scorefile_entry::init_death_cause(int dam, mid_t dsrc,
             {
                 const item_def &weapon = env.item[mons->inv[MSLOT_WEAPON]];
                 const auto weapon_name = [&]() {
-                    string name = weapon.name(DESC_A);
+                    // This also feeds language-locked injury/death notes.
+                    string name = weapon.name(DESC_A, false, false, true, false, false);
                     if (mons->has_ench(ENCH_ARMED))
                         name += T_(" (from an undying armoury)");
                     return name;

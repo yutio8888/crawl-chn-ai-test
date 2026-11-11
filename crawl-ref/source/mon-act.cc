@@ -4167,14 +4167,14 @@ static bool _monster_move(monster* mons, coord_def& delta)
                 noisy(25, target);
             }
             else
-                noisy(25, target, "You hear a crashing sound.");
+                noisy(25, target, T_("You hear a crashing sound."));
         }
         // Dissolution dissolves walls.
         else if (player_can_hear(target))
         {
             mprf(MSGCH_SOUND, mons->type == MONS_DISSOLUTION
-                                ? "You hear a sizzling sound."
-                                : "You hear a grinding noise.");
+                                ? T_("You hear a sizzling sound.")
+                                : T_("You hear a grinding noise."));
         }
     }
 

@@ -5250,7 +5250,9 @@ template <class C> void explore_discoveries::say_any(
     }
 
     const auto message = make_stringf(T_("Found %s."),
-                           comma_separated_line(coll.begin(), coll.end()).c_str());
+                           comma_separated_line(coll.begin(), coll.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ").c_str());
 
     if (formatted_string::parse_string(message).width() >= get_number_of_cols())
         mprf(T_("Found %s %s."), number_in_words(size).c_str(), T_(category));
@@ -5312,7 +5314,9 @@ bool explore_discoveries::stop_explore() const
         if (!stair_descs.empty())
         {
             const string message = make_stringf(T_("Found %s."),
-                comma_separated_line(stair_descs.begin(), stair_descs.end()).c_str());
+                comma_separated_line(stair_descs.begin(), stair_descs.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ").c_str());
             if (formatted_string::parse_string(message).width() >= get_number_of_cols())
                 mprf(C_("stair discovery", "Found %d stairs."), stair_count);
             else

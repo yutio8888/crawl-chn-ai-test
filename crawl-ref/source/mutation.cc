@@ -993,7 +993,8 @@ string terse_mutation_list()
     else
     {
         return comma_separated_line(mutations.begin(), mutations.end(),
-                                     ", ", ", ");
+                                     Options.language == lang_t::ZH ? T_(",") : ", ",
+                                     Options.language == lang_t::ZH ? T_(",") : ", ");
     }
 }
 
@@ -2589,7 +2590,7 @@ string get_mutation_desc(mutation_type mut)
     string mut_tags = get_mutation_tags(mut);
     if (!mut_tags.empty())
     {
-        mut_tags = "Category: " + mut_tags;
+        mut_tags = make_stringf(T_("Category: %s"), mut_tags.c_str());
         const int spacing = 80 - formatted_string::parse_string(mut_tags).width();
         desc << "\n" << string(spacing, ' ') << mut_tags;
     }
@@ -2622,22 +2623,24 @@ string get_mutation_tags(mutation_type mut)
 
     if (_mut_has_flag(def, mutflag::anatomy))
     {
-        _add_mut_tag(tags, "Anatomy", disabled && form_changes_anatomy()
+        _add_mut_tag(tags, C_("mutation tag", "Anatomy"), disabled && form_changes_anatomy()
                                                && !_draconian_dragon_form_exception(mut));
     }
     if (_mut_has_flag(def, mutflag::substance))
-        _add_mut_tag(tags, "Substance", disabled && form_changes_substance());
+        _add_mut_tag(tags, C_("mutation tag", "Substance"), disabled && form_changes_substance());
     if (_mut_has_flag(def, mutflag::need_blood))
-        _add_mut_tag(tags, "Blood", disabled && !you.has_blood());
+        _add_mut_tag(tags, C_("mutation tag", "Blood"), disabled && !you.has_blood());
     if (_mut_has_flag(def, mutflag::need_bones))
-        _add_mut_tag(tags, "Bones", disabled && !you.has_bones());
+        _add_mut_tag(tags, C_("mutation tag", "Bones"), disabled && !you.has_bones());
     if (_mut_has_flag(def, mutflag::need_hands))
-        _add_mut_tag(tags, "Hands", disabled && you.form == transformation::eel_hands);
+        _add_mut_tag(tags, C_("mutation tag", "Hands"), disabled && you.form == transformation::eel_hands);
 
     if (tags.empty())
         return "";
 
-    return make_stringf("[%s]", comma_separated_line(tags.begin(), tags.end(), ", ").c_str());
+    return make_stringf("[%s]", comma_separated_line(tags.begin(), tags.end(),
+        Options.language == lang_t::ZH ? T_(",") : ", ",
+        Options.language == lang_t::ZH ? T_(",") : ", ").c_str());
 }
 
 

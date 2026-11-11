@@ -2079,7 +2079,9 @@ vector<string> desc_wl_success_chance(const monster_info& mi, int pow,
             return vector<string>{T_("not susceptible")};
         descs.push_back(make_stringf(T_("will become %s"),
                         comma_separated_fn(set.begin(), set.end(),
-                                           _mon_threat_string, T_(", or ")).c_str()));
+                                           _mon_threat_string,
+                                            Options.language == lang_t::ZH ? T_(",") : T_(", or "),
+                                            Options.language == lang_t::ZH ? T_(",") : ", ").c_str()));
     }
 
     const int success = hex_success_chance(wl, pow, 100);
@@ -2235,7 +2237,9 @@ string target_spell_desc(const monster_info& mi, spell_type spell)
         return "";
 
     vector<string> d = addl_desc(mi);
-    return comma_separated_line(d.begin(), d.end());
+    return comma_separated_line(d.begin(), d.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ");
 }
 
 /**
@@ -2931,20 +2935,20 @@ static spret _do_cast(spell_type spell, int powc, const dist& spd,
     case SPELL_NULLIFYING_BREATH:
     case SPELL_NOXIOUS_BREATH:
     {
-        static map<spell_type, string> breath_message =
+        static const map<spell_type, const char*> breath_message =
         {
-            { SPELL_COMBUSTION_BREATH, "You breathe a blast of explosive embers." },
-            { SPELL_GLACIAL_BREATH, "You exhale a wave of glacial cold." },
-            { SPELL_STEAM_BREATH, "You exhale a blast of scalding steam." },
-            { SPELL_NULLIFYING_BREATH, "You breathe a sphere of nullifying energy." },
-            { SPELL_NOXIOUS_BREATH, "You exhale a blast of noxious fumes." },
-            { SPELL_CAUSTIC_BREATH, "You breathe a spray of caustic vapour." },
-            { SPELL_MUD_BREATH, "You spew a torrent of mud." },
-            { SPELL_GALVANIC_BREATH, "You breathe wild lightning."}
+            { SPELL_COMBUSTION_BREATH, N_("You breathe a blast of explosive embers.") },
+            { SPELL_GLACIAL_BREATH, N_("You exhale a wave of glacial cold.") },
+            { SPELL_STEAM_BREATH, N_("You exhale a blast of scalding steam.") },
+            { SPELL_NULLIFYING_BREATH, N_("You breathe a sphere of nullifying energy.") },
+            { SPELL_NOXIOUS_BREATH, N_("You exhale a blast of noxious fumes.") },
+            { SPELL_CAUSTIC_BREATH, N_("You breathe a spray of caustic vapour.") },
+            { SPELL_MUD_BREATH, N_("You spew a torrent of mud.") },
+            { SPELL_GALVANIC_BREATH, N_("You breathe wild lightning.") }
         };
 
         if (!fail)
-            mpr(breath_message[spell].c_str());
+            mpr(T_(breath_message.at(spell)));
     }
     break;
 
@@ -3689,7 +3693,9 @@ string spell_defence_string(spell_type spell, bool is_monster, int pow)
     if (checks.empty())
         return T_("None");
 
-    return comma_separated_line(checks.begin(), checks.end(), ", ", ", ");
+    return comma_separated_line(checks.begin(), checks.end(),
+        Options.language == lang_t::ZH ? T_(",") : ", ",
+        Options.language == lang_t::ZH ? T_(",") : ", ");
 }
 
 // Description of which resistances a damage spell checks.
@@ -3722,7 +3728,9 @@ string spell_resist_string(spell_type spell, bool is_monster, int pow)
     if (descs.empty())
         return T_("None");
 
-    return comma_separated_line(descs.begin(), descs.end(), ", ", ", ");
+    return comma_separated_line(descs.begin(), descs.end(),
+        Options.language == lang_t::ZH ? T_(",") : ", ",
+        Options.language == lang_t::ZH ? T_(",") : ", ");
 }
 
 int spell_power_percent(spell_type spell)

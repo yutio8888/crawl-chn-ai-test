@@ -234,7 +234,7 @@ static const map<spschool, miscast_datum> miscast_effects = {
                     const int dur = div_rand_round(dam, 2);
                     you.set_duration(DUR_DIMENSION_ANCHOR, dur, dur);
                     you.set_duration(DUR_NO_MOMENTUM, dur, dur,
-                                     "You are magically locked in place.");
+                                     T_("You are magically locked in place."));
                 }
                 else
                 {

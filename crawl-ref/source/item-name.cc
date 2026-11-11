@@ -107,7 +107,7 @@ static const char* _interesting_origin(const item_def &item)
 /**
  * What inscription should be appended to the given item's name?
  */
-static string _item_inscription(const item_def &item)
+static string _item_inscription(const item_def &item, bool display = true)
 {
     vector<string> insparts;
 
@@ -117,7 +117,8 @@ static string _item_inscription(const item_def &item)
             || Options.show_god_gift == maybe_bool::maybe
                 && !item.is_identified())
         {
-            insparts.push_back(orig);
+            insparts.push_back(display && string(orig) == "god gift"
+                               ? T_("god gift") : orig);
         }
     }
 
@@ -171,11 +172,13 @@ static string _item_inscription(const item_def &item)
     return make_stringf(" {%s}",
                         comma_separated_line(begin(insparts),
                                              end(insparts),
-                                             ", ").c_str());
+                                             display && Options.language == lang_t::ZH ? T_(",") : ", ",
+                                             display && Options.language == lang_t::ZH ? T_(",") : ", ").c_str());
 }
 
 string item_def::name(description_level_type descrip, bool terse, bool ident,
-                      bool with_inscription, bool quantity_in_words) const
+                      bool with_inscription, bool quantity_in_words,
+                      bool display_inscription) const
 {
     if (descrip == DESC_NONE)
         return "";
@@ -366,7 +369,7 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
     if (descrip != DESC_BASENAME && descrip != DESC_DBNAME
         && descrip != DESC_QUALNAME && with_inscription)
     {
-        buff << _item_inscription(*this);
+        buff << _item_inscription(*this, display_inscription);
     }
 
     // These didn't have "bound " prepended; add them here so that

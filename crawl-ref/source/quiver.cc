@@ -1204,7 +1204,7 @@ namespace quiver
 
             // TODO: is showing the spell letter useful?
             qdesc.cprintf("%s", spell == SPELL_MAXWELLS_COUPLING ?
-                                "Capacitive Coupling" : spell_title(spell));
+                                T_("Capacitive Coupling") : spell_title(spell));
 
             if (spell == SPELL_GRAVE_CLAW)
             {
@@ -2695,7 +2695,7 @@ namespace quiver
             if (actions.size() == 0)
             {
                 more_message =
-                    "<lightred>No regular actions available to quiver.</lightred>";
+                    T_("<lightred>No regular actions available to quiver.</lightred>");
             }
             if (last_hovered < 0)
             {

@@ -513,10 +513,10 @@ static const vector<property_descriptor> & _get_all_artp_desc_data()
             N_("It inflicts you with a random bane when you equip it."),
             prop_note::plain },
         { ARTP_CHAOS_GUARD,
-            "It may inflict chaotic effects on those who attack you.",
+            N_("It may inflict chaotic effects on those who attack you."),
             prop_note::plain },
         { ARTP_CHAOS_STRIKE,
-            "It may inflict chaos on those you attack in melee.",
+            N_("It may inflict chaos on those you attack in melee."),
             prop_note::plain },
     };
     return data;
@@ -4361,7 +4361,8 @@ static string _actions_desc(const vector<command_type>& actions)
                                         return string(C_("item action", "qui(v)er"));
                                     return act_str.at(cmd);
                                 },
-                                T_(", or ")) + ".";
+                                Options.language == lang_t::ZH ? T_(",") : T_(", or "),
+                                Options.language == lang_t::ZH ? T_(",") : ", ") + ".";
 }
 
 // Take a key and a list of commands and return the command from the list

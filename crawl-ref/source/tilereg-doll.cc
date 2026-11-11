@@ -12,6 +12,7 @@
 #include "tilefont.h"
 #include "tilepick-p.h"
 #include "ui.h"
+#include "unicode.h"
 
 using namespace ui;
 
@@ -282,16 +283,18 @@ void DollEditRegion::render()
         int maxp = tile_player_part_count[i];
 
         const char *sel = (m_cat_idx == i) ? "->" : "  ";
+        const string category = string(max(0, 9 - strwidth(cat_name[i])), ' ')
+                                + cat_name[i];
 
         if (part == TILEP_SHOW_EQUIP)
         {
-            info_str = make_stringf(T_("%2s%9s: (show equip)"),
-                                    sel, cat_name[i]);
+            info_str = make_stringf(T_("%2s%s: (show equip)"),
+                                    sel, category.c_str());
         }
         else if (!part)
-            info_str = make_stringf(T_("%2s%9s: (none)"), sel, cat_name[i]);
+            info_str = make_stringf(T_("%2s%s: (none)"), sel, category.c_str());
         else
-            info_str = make_stringf("%2s%9s: %3d/%3d", sel, cat_name[i], disp, maxp);
+            info_str = make_stringf("%2s%s: %3d/%3d", sel, category.c_str(), disp, maxp);
         m_font_buf.add(info_str, VColour::white, info_x, info_y);
         info_y += m_font->char_height();
     }
