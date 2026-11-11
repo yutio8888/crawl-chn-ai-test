@@ -62,7 +62,7 @@ amulet of Tranquillity	宁静项链	domain=items; source=EN/ZH; 依据 / 作用�
 anaconda	水蟒	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 ancestor	先祖	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Ancestor Life: Elementalist	先祖生涯：元素师	domain=abilities; source=EN/ZH; 依据 / 作用域=ability.cc；先祖类型 Elementalist，非新玩家背景；decision=D-C-095
-Ancestor Life: Hexer	先祖生涯：诅咒师	domain=abilities; source=EN/ZH; 依据 / 作用域=与现行Knight/Elementalist共用生涯词根；decision=D-C-102
+Ancestor Life: Hexer	先祖生涯：妖术师	domain=abilities; source=EN/ZH; 依据 / 作用域=与现行Knight/Elementalist共用生涯词根；decision=D-C-102
 Ancestor Life: Knight	先祖生涯：骑士	domain=abilities; source=EN/ZH; 依据 / 作用域=现行先祖职业回忆；Life指生前经历，非生命值；decision=D-C-102
 ancient champion	远古冠军	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 ancient lich	远古巫妖	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -706,10 +706,12 @@ Hellfire Mortar	地狱火迫击炮	domain=spells; source=EN/ZH; 备注=✅
 Hepliaklqana	惠普利亚卡纳	domain=gods; source=EN/ZH; 类型=音译
 Hepliaklqana the Forgotten	被遗忘者惠普利亚卡纳	domain=gods; source=EN/ZH; 类型=神祇长名；Forgotten为被动称谓，非遗忘他人的施事者; 裁决=D-C-104
 herald of the Abyss	深渊先驱	domain=monsters; source=EN/ZH; 依据 / 作用域=herald-of-the-abyss.yaml；深渊来使，不凭空加圣性；decision=D-C-095
-Hex	诅咒	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
-hex mastery	诅咒精通	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；sphinx:fakemuts；不声称是可遗传突变；decision=D-C-098
-Hexes	诅咒系	domain=magic; source=EN/ZH
-Hexslinger	诅咒射手	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Hex	妖术	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
+hex mastery	妖术精通	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；sphinx:fakemuts；不声称是可遗传突变；decision=D-C-098
+hexed	被支配	domain=items; source=EN/ZH; Scope / comment=ENCH_HEXED 支配状态；不是学派名；decision=D-C-110
+hexer	妖术师	domain=abilities; source=EN/ZH; 依据 / 作用域=先祖职业；decision=D-C-110
+Hexes	妖术系	domain=magic; source=EN/ZH
+Hexslinger	妖术射手	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Hibernal	冬日的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；冬季意象，不是冬眠；decision=D-C-095
 high mp	高魔力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 highly resistant	高抗性	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；wisp:fakemuts；不声称是可遗传突变；表示多种伤害抗性较高，不套用 Might 的“强效”词根；catalog 待负责译者修订；decision=D-C-098

@@ -315,16 +315,20 @@ static string _describe_item_curse(const item_def& item)
         return T_("None");
 
     return comma_separated_fn(curses.begin(), curses.end(),
-            curse_display_name, ", ", ", ");
+            curse_display_name,
+            Options.language == lang_t::ZH ? T_(",") : ", ",
+            Options.language == lang_t::ZH ? T_(",") : ", ");
 }
 
-static string _describe_ash_skill_boost()
+string describe_ash_skill_boost()
 {
     ostringstream desc;
     desc.setf(ios::left);
     desc << "<white>";
-    desc << setw(40) << T_("Bound item");
-    desc << setw(30) << T_("Curse bonuses");
+    desc << T_("Bound item")
+         << string(max(1, 40 - strwidth(T_("Bound item"))), ' ');
+    desc << chop_string(T_("Curse bonuses"),
+                        max(30, strwidth(T_("Curse bonuses"))));
     desc << "</white>\n";
 
     vector<item_def*> eq = you.equipment.get_slot_items(SLOT_ALL_EQUIPMENT, true);
@@ -334,10 +338,10 @@ static string _describe_ash_skill_boost()
         {
             const bool meld = item_is_melded(*item);
             desc << (meld ? "<darkgrey>" : "<lightred>");
-            desc << setw(40) << item->name(DESC_QUALNAME, true, false, false);
-            desc << setw(30) << (meld
-                ? (T_("melded"))
-                : _describe_item_curse(*item));
+            const string name = item->name(DESC_QUALNAME, true, false, false);
+            desc << name << string(max(1, 40 - strwidth(name)), ' ');
+            const string bonuses = meld ? T_("melded") : _describe_item_curse(*item);
+            desc << chop_string(bonuses, max(30, strwidth(bonuses)));
             desc << (meld ? "</darkgrey>" : "</lightred>");
             desc << "\n";
         }
@@ -644,7 +648,7 @@ static formatted_string _god_extra_description(god_type which_god)
             {
                 desc.cprintf("\n");
                 _add_par(desc, T_("Ashenzari supports the following skill groups because of your curses:"));
-                _add_par(desc,  _describe_ash_skill_boost());
+                _add_par(desc,  describe_ash_skill_boost());
             }
             break;
         case GOD_BEOGH:

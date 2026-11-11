@@ -69,7 +69,7 @@ HELP_CASES = [
     ('ability', 'a', 'Berserk', '狂暴'),
     ('feature', 'f', 'wall', '墙'), ('item', 'i', 'dagger', '匕首'),
     ('mutation', 'u', 'claws', '利爪'),
-    ('mutation:pseudo', 'u', 'hex mastery', '你的诅咒系法术更易施放'),
+    ('mutation:pseudo', 'u', 'hex mastery', '你的妖术系法术更易施放'),
     ('bane', 'n', 'lethargy', '你行动迟缓'),
     ('spell_school', 's', '@咒法', '魔法飞弹'),
     ('text:spell', 's', '火球', '火球'),
