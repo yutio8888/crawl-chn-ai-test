@@ -220,9 +220,10 @@ end
 
 local zh_bane = crawl.bane_name("Lethargy")
 local en_bane = crawl.bane_name("Lethargy", true)
-assert(en_bane == "Lethargy",
-       "forced-English bane name was localized: " .. tostring(en_bane))
-assert(zh_bane == crawl.t_("Lethargy"),
+assert(en_bane == "Bane of Lethargy",
+       "forced-English bane name mismatch: " .. tostring(en_bane))
+local expected_bane = string.format(crawl.t_("Bane of %s"), crawl.t_("Lethargy"))
+assert(zh_bane == expected_bane and zh_bane ~= en_bane,
        "bane name did not use the current display language")
 
 local trove_cases = {
