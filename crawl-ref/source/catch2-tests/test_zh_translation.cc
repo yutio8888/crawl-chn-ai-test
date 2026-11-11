@@ -34,6 +34,7 @@
 #include "feature.h"
 #include "format.h"
 #include "fineff.h"
+#include "fprop.h"
 #include "files.h"
 #include "god-conduct.h"
 #include "god-wrath.h"
@@ -11777,11 +11778,12 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         REQUIRE(note.type == NOTE_XOM_EFFECT);
         // Upstream's tension rework stores the note in English; penance makes
         // the torment affect the whole area instead of only the player.
-        const string expected = make_stringf(player_only
-            ? "torment all (player (%d/%d hp)" : "torment (%d/%d hp)",
-            you.hp, you.hp_max);
+        const char* format = player_only
+            ? "torment all (player (%d/%d hp)" : "torment (%d/%d hp)";
+        const string expected = make_stringf(format, you.hp, you.hp_max);
         CHECK(note.name == expected);
-        CHECK(note.describe(false, false, true) == string(T_("XOM: ")) + expected);
+        CHECK(note.describe(false, false, true) == string(T_("XOM: "))
+              + make_stringf(T_(format), you.hp, you.hp_max));
         CHECK(you.hp < 100);
     }
 }
@@ -12814,4 +12816,388 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(item.name(DESC_DBNAME).find(T_("chaotic ")) == string::npos);
     EnTranslationFixture english;
     CHECK(item.name(DESC_PLAIN).find("chaotic ") != string::npos);
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: every Zin recitation line localizes with canonical English unchanged",
+                 "[zh-translation][god-gaps][zin-recitation]")
+{
+    rng::subgenerator random(0x5a494eULL, 0x54455354ULL);
+    const auto state = rng::current_generator().get_state();
+    const auto count = rng::current_generator().get_count();
+    uint64_t english_hash = 14695981039346656037ULL;
+    for (int prayer = 0; prayer < 4; ++prayer)
+        for (int seed = 0; seed < 27 * 81; ++seed)
+            for (int step : {2, 1, 0})
+            {
+                CAPTURE(prayer, seed, step);
+                const string zh = zin_recite_text(seed, prayer, step);
+                CHECK(zh.find('@') == string::npos);
+                CHECK_FALSE(any_of(zh.begin(), zh.end(), [](unsigned char c) {
+                    return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+                }));
+                const ScopedLangEn english;
+                const string en = zin_recite_text(seed, prayer, step);
+                for (unsigned char byte : en)
+                    english_hash = (english_hash ^ byte) * 1099511628211ULL;
+                english_hash *= 1099511628211ULL; // NUL separates displayed lines.
+            }
+    // Generated independently from the unmodified HEAD tables and algorithm.
+    CHECK(english_hash == 0x555b7363ea12fc09ULL);
+    CHECK(rng::current_generator().get_state() == state);
+    CHECK(rng::current_generator().get_count() == count);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: god duration messages and ability details use Chinese",
+                 "[zh-translation][god-gaps][god-messages]")
+{
+    init_properties();
+    init_duration_index();
+    init_spell_descs();
+    init_spell_name_cache();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 100;
+    you.magic_points = you.max_magic_points = 100;
+    you.base_stats.init(10);
+    you.equipment.update();
+    you.religion = GOD_OKAWARU;
+    you.raw_piety = 200;
+    you.skills[SK_INVOCATIONS] = 27;
+    for (const char* key : { "You gain the combat prowess of a mighty hero.",
+                            "You feel more confident with your borrowed prowess." })
+    {
+        REQUIRE(activate_talent({ ABIL_OKAWARU_HEROISM, 'a', 0, true }));
+        CHECK(get_last_messages(1).find(T_(key)) != string::npos);
+    }
+    for (const auto& message : {
+            pair<xom_event_type, const char*>{ XOM_BLESSING_CLEAVE, "Your cleaving frenzy subsides." },
+            { XOM_BLESSING_MANNEQUINS, "Xom cuts the strings." },
+            { XOM_BLESSING_PROTEAN, "Your body no longer feels quite so unstable." },
+            { XOM_BLESSING_SNEAKY, "You feel abruptly conspicuous." } })
+    {
+        CAPTURE(message.second);
+        you.attribute[ATTR_XOM_BLESSING] = message.first;
+        CHECK(xom_remove_blessing() == T_(message.second));
+        const ScopedLangEn en;
+        you.attribute[ATTR_XOM_BLESSING] = message.first;
+        CHECK(xom_remove_blessing() == message.second);
+    }
+    you.religion = GOD_XOM;
+    you.props[EISEGESIS_SPELL] = SPELL_MAGIC_DART;
+    CHECK(get_ability_desc(ABIL_XOM_CHAOS_EISEGESIS).find(
+        string("\n") + T_("Magic contamination")) != string::npos);
+    CHECK(get_ability_desc(ABIL_IGNIS_FOXFIRE).find(T_("1d8/foxfire")) != string::npos);
+    {
+        const ScopedLangEn en;
+        CHECK(get_ability_desc(ABIL_XOM_CHAOS_EISEGESIS).find("\nMagic contamination") != string::npos);
+        CHECK(get_ability_desc(ABIL_IGNIS_FOXFIRE).find("1d8/foxfire") != string::npos);
+    }
+    // Exercise both Nemelex glow branches at the minimum rank using the real emitter.
+    for (bool glow : {false, true})
+    {
+        you.duration[DUR_CORONA] = glow ? 10 : 0;
+        you.raw_piety = 1;
+        nemelex_death_message();
+        const string line = get_last_messages(1);
+        CHECK(line.find("你的身体") != string::npos);
+        CHECK(line.find("Your body") == string::npos);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: sanctuary contains each monster effect in a complete sentence",
+                 "[zh-translation][god-gaps][sanctuary]")
+{
+    init_monsters();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    unwind_var<int> sanctuary_time(env.sanctuary_time, 10);
+    for (monster_type type : {MONS_BALL_LIGHTNING, MONS_LURKING_HORROR, MONS_BENNU, MONS_ORC})
+    {
+        scoped_monspeak_world world;
+        monster* mon = world.place(type);
+        REQUIRE(mon);
+        const auto old_props = env.pgrid(mon->pos());
+        unwinder restore_sanctuary([&]() { env.pgrid(mon->pos()) = old_props; });
+        env.pgrid(mon->pos()) |= FPROP_SANCTUARY_1;
+        if (type == MONS_ORC)
+            mon->add_ench(mon_enchant(ENCH_INNER_FLAME, &you, 100));
+        REQUIRE(you.can_see(*mon));
+        const string name = mon->name(DESC_THE);
+        REQUIRE_FALSE(explode_monster(mon, KILL_NON_ACTOR, false));
+        const string line = get_last_messages(1);
+        const string expected = type == MONS_ORC
+            ? make_stringf(T_("By Zin's power, the %s is contained."), T_("fiery explosion"))
+            : make_stringf(T_(type == MONS_BENNU
+                ? "By Zin's power, %s's fires are quelled."
+                : type == MONS_LURKING_HORROR
+                ? "By Zin's power, %s's torment is averted."
+                : "By Zin's power, %s's explosion is contained."), name.c_str());
+        CHECK(line.find(expected) != string::npos);
+        CHECK(line.find("By Zin") == string::npos);
+        CHECK(line.find("'s") == string::npos);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Wu Jian sifu names translate only at the speaker boundary",
+                 "[zh-translation][god-gaps][sifu]")
+{
+    CHECK(god_speaker(GOD_WU_JIAN) == "无间门派");
+    {
+        const ScopedLangEn english;
+        CHECK(god_speaker(GOD_WU_JIAN) == "The Council");
+    }
+    const vector<string> canonical = {"Yunchang", "Lu Zhishen", "Xiang Ba", "Ma Yunglu",
+                                      "Hu Sanniang", "Gene Jian Bin", "Cai Fang"};
+    const vector<string> translated = {"云长", "鲁智深", "项羽", "马云騄",
+                                       "扈三娘", "张三丰", "越女"};
+    vector<int> choices;
+    uint64_t expected_count, expected_state;
+    {
+        rng::subgenerator random(0x53494655ULL, 0x54455354ULL);
+        for (int i = 0; i < 100; ++i)
+        {
+            const string name = wu_jian_random_sifu_name();
+            const auto found = find(canonical.begin(), canonical.end(), name);
+            REQUIRE(found != canonical.end());
+            choices.push_back(found - canonical.begin());
+        }
+        expected_count = rng::current_generator().get_count();
+        expected_state = rng::current_generator().get_state();
+    }
+    rng::subgenerator random(0x53494655ULL, 0x54455354ULL);
+    for (int choice : choices)
+    {
+        wu_jian_sifu_message("。");
+        CHECK(get_last_messages(1).find(translated[choice]) != string::npos);
+        CHECK(get_last_messages(1).find(canonical[choice]) == string::npos);
+    }
+    CHECK(rng::current_generator().get_count() == expected_count);
+    CHECK(rng::current_generator().get_state() == expected_state);
+    for (size_t i = 0; i < canonical.size(); ++i)
+        CHECK(string(C_("Wu Jian sifu", canonical[i].c_str())) == translated[i]);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Ru sacrifice lists use Chinese enumeration",
+                 "[zh-translation][god-gaps][god-lists]")
+{
+    init_mut_index();
+    init_sac_index();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.religion = GOD_RU;
+    auto& arcana = you.props[ARCANA_SAC_KEY].new_vector(SV_INT);
+    arcana.push_back(MUT_NO_FIRE_MAGIC);
+    arcana.push_back(MUT_NO_ICE_MAGIC);
+    arcana.push_back(MUT_NO_AIR_MAGIC);
+    const string zh = get_ability_desc(ABIL_RU_SACRIFICE_ARCANA);
+    CHECK(zh.find(T_(",")) != string::npos);
+    CHECK(zh.find(", ") == string::npos);
+    const ScopedLangEn en;
+    const string english = get_ability_desc(ABIL_RU_SACRIFICE_ARCANA);
+    CHECK(english.find(", ") != string::npos);
+    CHECK(english.find(" and ") != string::npos);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: god death causes and blame chains translate without changing xlog",
+                 "[zh-translation][god-gaps][god-deaths]")
+{
+    init_monsters();
+    init_properties();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<game_type> game(crawl_state.type, GAME_TYPE_NORMAL);
+    you = player();
+    you.your_name = "GodGaps";
+    you.birth_time = 1599999900;
+    you.last_keypress_time = chrono::system_clock::from_time_t(you.birth_time);
+    you.species = SP_HUMAN;
+    you.char_class = JOB_MONK;
+    you.chr_class_name = get_job_name(you.char_class);
+    you.where_are_you = BRANCH_DUNGEON;
+    you.depth = 1;
+    you.hp_max = 20;
+    you.base_stats.init(10);
+    you.equipment.update();
+    scoped_monspeak_world world;
+    for (const char* cause : {"Zin's holy word", "the Shining One's holy word",
+            "Kikubaaqudgha's torment", "Xom's lightning strike", "Xom's destruction",
+            "the malice of Kikubaaqudgha", "the malice of Vehumet", "the storm",
+            "electrical discharge", "unknown historical god cause"})
+        for (kill_method_type method : {KILLED_BY_BEAM, KILLED_BY_WILD_MAGIC, KILLED_BY_DIVINE_WRATH, KILLED_BY_SOMETHING})
+        {
+            CAPTURE(cause, method);
+            const string aux = cause;
+            scorefile_entry score(3, MID_NOBODY, method, aux.c_str(), true);
+            score.init(1600000000);
+            const string raw = score.raw_string();
+            CHECK(xlog_fields(raw).str_field("kaux") == aux);
+            scorefile_entry restored;
+            REQUIRE(restored.parse(raw));
+            const string display = restored.death_description(scorefile_entry::DDV_VERBOSE);
+            CHECK(display.find(T_(cause)) != string::npos);
+            {
+                const ScopedLangEn english;
+                CHECK(restored.death_description(scorefile_entry::DDV_VERBOSE).find(cause) != string::npos);
+            }
+            CHECK(restored.raw_string() == raw);
+        }
+    monster* killer = world.place(MONS_ORC);
+    REQUIRE(killer);
+    for (const char* source : {"the anger of Yredelemnul", "Lugonu's corruption",
+                              "Fedhas Madash", "the will of Dithmenos."})
+    {
+        CAPTURE(source);
+        const string expected = death_source_display_name(source);
+        REQUIRE(expected != source);
+        killer->props.erase(BLAME_KEY);
+        mons_add_blame(killer, "animated by " + string(source));
+        scorefile_entry score(3, killer->mid, KILLED_BY_MONSTER, nullptr, true);
+        score.init(1600000000);
+        const string raw = score.raw_string();
+        CHECK(xlog_fields(raw).str_field("kpath") == "animated by " + string(source));
+        CHECK(score.death_description(scorefile_entry::DDV_VERBOSE).find(expected) != string::npos);
+        CHECK(score.raw_string() == raw);
+    }
+}
+
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: all Xom note families render only at display and retain saved bytes",
+                 "[zh-translation][god-gaps][xom-note-gaps]")
+{
+    init_monsters();
+    init_spell_descs();
+    init_spell_name_cache();
+    vector<string> notes = {
+        "give mutation",
+        "give mutations",
+        "give good mutation",
+        "give good mutations",
+        "give random mutation",
+        "give random mutations",
+        "made a garden",
+        "spooky wave of despair",
+        "divination: all",
+        "banished to a bazaar",
+        "confuse monster(s)",
+        "swap monsters",
+        "snakes to sticks",
+        "fake shatter",
+        "scenery: changed the scenery",
+        "scenery: summon butterflies",
+        "destruction",
+        "fake destruction",
+        "hasted everything in sight",
+        "hasted player and everything else in sight",
+        "slowed everything in sight",
+        "slowed player and everything else",
+        "paralysed everything in sight",
+        "paralysed player and everything else",
+        "fog",
+        "silly message",
+        "chaos upgrade",
+        "confusion",
+        "confusion (+ monsters)",
+        "confusion (+ might)",
+        "confusion (+ monsters) (+ might)",
+        "repel stairs",
+        "cloud trail",
+        "inflicting Doom",
+        "revert banishment",
+        "noise",
+        "blink monster(s)",
+        "made traps",
+        "chaos reinforcements",
+        "duel",
+        "chaos cloud",
+        "floor lock",
+        "minibane",
+        "blessing of mannequins",
+        "blessing of battleshape",
+        "blessing of protean form",
+        "sneaky",
+        "butterfly on damage",
+        "smoke on damage",
+
+        "warped sight and space for 0 monster",
+        "warped sight and space for 1 monster",
+        "warped sight and space for 2 monsters",
+        "chaos laced + vexed 1 monster", "chaos laced + vexed 2 monsters",
+        "blessing of guardians: 1 orc", "blessing of guardians: 2 orc",
+        "blessing of cleaving (flaming)", "blessing of eisegesis (Magic Dart)",
+        "blessing of spellstride (Quicksilver Bolt)",
+        "knowledge: Fighting, Axes and Invocations", "knowledge: Fighting and Axes",
+        "torment (25/50 hp)", "torment all (player (25/50 hp)",
+        "draining", "reaching",
+    };
+    notes.push_back("blessing of guardians: 2 " + mons_type_name(MONS_ORC, DESC_PLAIN));
+    notes.push_back(make_stringf("blessing of cleaving (%s)", brand_type_name(SPWPN_FLAMING, false)));
+    notes.push_back(make_stringf("blessing of eisegesis (%s)", spell_title(SPELL_MAGIC_DART)));
+    notes.push_back(make_stringf("blessing of spellstride (%s)", spell_title(SPELL_QUICKSILVER_BOLT)));
+    const vector<string> skills = {skill_name(SK_FIGHTING), skill_name(SK_AXES), skill_name(SK_INVOCATIONS)};
+    notes.push_back("knowledge: " + comma_separated_line(skills.begin(), skills.end()));
+    const auto state = rng::current_generator().get_state();
+    const auto count = rng::current_generator().get_count();
+    for (const string& text : notes)
+    {
+        CAPTURE(text);
+        Note original(NOTE_XOM_EFFECT, 100, -1, text);
+        vector<unsigned char> bytes;
+        writer output(&bytes);
+        original.save(output);
+        reader input(bytes);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        Note loaded;
+        loaded.load(input);
+        const string display = loaded.describe(false, false, true);
+        CHECK(display != string(T_("XOM: ")) + text);
+        const string body = display.substr(string(T_("XOM: ")).size());
+        CHECK(body.find_first_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") == string::npos);
+        CHECK(loaded.name == text);
+        {
+            const ScopedLangEn english;
+            CHECK(loaded.describe(false, false, true) == "XOM: " + text);
+        }
+        vector<unsigned char> after;
+        writer after_output(&after);
+        loaded.save(after_output);
+        CHECK(after == bytes);
+    }
+    CHECK(rng::current_generator().get_state() == state);
+    CHECK(rng::current_generator().get_count() == count);
+    for (const char* malformed : {
+        "warped sight and space for -1 monster", "warped sight and space for 01 monster",
+        "warped sight and space for 1 monsters", "warped sight and space for 2 monster",
+        "warped sight and space for 2 monsters extra", "chaos laced + vexed 1 monsters",
+        "blessing of guardians: -1 orc", "blessing of guardians: 1 ",
+        "blessing of guardians: 1 unknown future monster", "blessing of guardians: 2 orc extra",
+        "blessing of cleaving (future unknown brand)", "blessing of cleaving ()",
+        "blessing of eisegesis (magic dart)", "blessing of eisegesis (unknown future spell)",
+        "blessing of spellstride (Magic Dart) extra", "cast spell 'magic dart'",
+        "knowledge: ", "knowledge: Fighting, Axes", "knowledge: Fighting and unknown skill",
+        "knowledge: Fighting,, Axes and Invocations", "torment (25/x hp)",
+        "torment all (player (25/50 hp))", "future Xom note",
+        "summoned 01 hostile illusion + 2 friendly illusions" })
+    {
+        const Note note(NOTE_XOM_EFFECT, 100, -1, malformed);
+        CHECK(note.describe(false, false, true) == string(T_("XOM: ")) + malformed);
+    }
+    const Note prayer(NOTE_MESSAGE, 0, 0, "Prayed at the altar of an unknown god.");
+    CHECK(prayer.describe(false, false, true) == T_("Prayed at the altar of an unknown god."));
+    CHECK(prayer.name == "Prayed at the altar of an unknown god.");
+    const Note other(NOTE_MESSAGE, 0, 0, "Prayed at the altar of an unknown god. extra");
+    CHECK(other.describe(false, false, true) == other.name);
+    const ScopedLangEn english;
+    CHECK(prayer.describe(false, false, true) == prayer.name);
 }

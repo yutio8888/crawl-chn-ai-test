@@ -1177,7 +1177,7 @@ static const string _detailed_cost_description(ability_type ability)
     if (abil.ability == ABIL_XOM_CHAOS_EISEGESIS)
     {
         have_cost = true;
-        ret << "\nMagic contamination";
+        ret << "\n" << T_("Magic contamination");
     }
 
     if (!have_cost)
@@ -1528,7 +1528,9 @@ static string _sacrifice_desc(const ability_type ability)
     const CrawlVector &sacrifice_muts = you.props[sac_vec_key].get_vector();
     return T_("\nAfter this sacrifice, you will find that ")
             + comma_separated_fn(sacrifice_muts.begin(), sacrifice_muts.end(),
-                                 _desc_sac_mut)
+                                 _desc_sac_mut,
+                                 Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                                 Options.language == lang_t::ZH ? T_(",") : ", ")
             + T_(".\n") + desc;
 }
 
@@ -1606,7 +1608,7 @@ static string _ability_damage_string(ability_type ability)
             return make_stringf(T_("%dd3 / 2 (against normal-speed enemies)"),
                                 slouch_damage_for_speed());
         case ABIL_IGNIS_FOXFIRE:
-            return "1d8/foxfire"; // constant
+            return T_("1d8/foxfire"); // constant
         case ABIL_QAZLAL_UPHEAVAL:
             dam = qazlal_upheaval_damage(false);
             break;
@@ -3549,8 +3551,8 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
     case ABIL_OKAWARU_HEROISM:
         fail_check();
         mprf(MSGCH_DURATION, you.duration[DUR_HEROISM]
-             ? "You feel more confident with your borrowed prowess."
-             : "You gain the combat prowess of a mighty hero.");
+             ? T_("You feel more confident with your borrowed prowess.")
+             : T_("You gain the combat prowess of a mighty hero."));
 
         you.increase_duration(DUR_HEROISM,
                               10 + random2avg(you.skill(SK_INVOCATIONS, 6), 2),

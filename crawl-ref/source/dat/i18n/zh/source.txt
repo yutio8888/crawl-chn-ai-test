@@ -22283,7 +22283,7 @@ Your blood armour dries and flakes away.
 你的血甲干燥并剥落了。
 %%%%
 Your cleaving frenzy subsides.
-你的劈砍狂暴消退了。
+你的顺劈狂热平息了。
 %%%%
 Your dimensional bullseye dissipates.
 你的次元靶消散了。
@@ -50454,7 +50454,7 @@ god choice list|,
 、
 %%%%
 The Council
-无间议会
+无间门派
 %%%%
 Wu Jian speaker|Sifu %1$s%2$s
 %1$s师父%2$s
@@ -53750,3 +53750,717 @@ curse abbreviation|Melee
 %%%%
 curse abbreviation|Range
 远程
+%%%%
+It was the word of Zin that there would not be @sin_noun@...
+辛之圣言昭示，世间不得有@sin_noun@……
+%%%%
+...and did the people not suffer until they had @smitten@...
+……众民岂非饱受苦难，直至他们@smitten@……
+%%%%
+...the @sinners@, after which all was well?
+……那些@sinners@，方得太平？
+%%%%
+The voice of Zin, pure and clear, did say that the @sinners@...
+辛之声纯净清明，宣告那些@sinners@……
+%%%%
+...were not @virtuous@! And hearing this, the people rose up...
+……并非@virtuous@！众民闻之，遂奋起……
+%%%%
+...and embraced @virtue@, for they feared Zin's wrath.
+……归向@virtue@，因他们畏惧辛之怒。
+%%%%
+Zin spoke of the doctrine of @virtue@, and...
+辛宣讲@virtue@之道，而后……
+%%%%
+...saw the @sinners@ filled with fear, for they were...
+……见那些@sinners@满心惶恐，因他们……
+%%%%
+...@sin_adj@ and knew Zin's wrath would come for them.
+……@sin_adj@，自知辛之怒必将临身。
+%%%%
+And so Zin bade the @sinners@ to come before...
+于是辛命那些@sinners@前来……
+%%%%
+...the altar, that judgement might be passed...
+……祭坛之前，好让审判……
+%%%%
+...upon those who were not @virtuous@.
+……临到那些不@virtuous@之人。
+%%%%
+To the devout, Zin provideth. From the rest...
+辛供养虔信者。至于其余之众……
+%%%%
+...ye @sinners@, ye guilty...
+……尔等@sinners@，尔等身负……
+%%%%
+...of @sin_noun@, Zin taketh.
+……@sin_noun@之罪者，辛必夺之。
+%%%%
+Zin saw the @sin_noun@ of the @sinners@, and...
+辛见@sinners@之@sin_noun@，便……
+%%%%
+...was displeased, for did the law not say that...
+……心生不悦，因律法岂未言明……
+%%%%
+...those who did not become @virtuous@ would be @smitten@?
+……凡不肯归于@virtue@者，必被@smitten@？
+%%%%
+Zin said that @virtue@ shall be the law of the land, and...
+辛言，@virtue@当为世间之律，而……
+%%%%
+...those who turn to @sin_noun@ will be @smitten@. This was fair...
+……转向@sin_noun@者必被@smitten@。此乃公平……
+%%%%
+...and just, and not a voice dissented.
+……正义之举，无一人出言反对。
+%%%%
+Damned, damned be the @sinners@ and...
+愿诅罚临于@sinners@，临于……
+%%%%
+...all else who abandon @virtue@! Let them...
+……一切背弃@virtue@者！愿他们……
+%%%%
+...be @smitten@ by the jurisprudence of Zin!
+……被辛之法理@smitten@！
+%%%%
+And Zin said to all in attendance, 'Which of ye...
+辛对在场众人说道：“尔等之中……
+%%%%
+...number among the @sinners@? Come before me, that...
+……谁属@sinners@之列？到吾面前来，好让……
+%%%%
+...I may @smite@ you now for your @sin_noun@!'
+……吾即刻因尔等之@sin_noun@而@smite@尔等！”
+%%%%
+Yea, I say unto thee, bring forth...
+诚然，吾告汝，当带上前来……
+%%%%
+...the @sinners@ that they may know...
+……那些@sinners@，使他们得知……
+%%%%
+...the wrath of Zin, and thus be @smitten@!
+……辛之怒，因而被@smitten@！
+%%%%
+In a great set of silver scales are weighed the...
+在巨大的白银天平上，称量着……
+%%%%
+...souls of the @sinners@, and with their @sin_adj@...
+……那些@sinners@的灵魂；因其@sin_adj@……
+%%%%
+...ways, the balance hath tipped against them!
+……之行，天平已倾，判他们有罪！
+%%%%
+It is just that the @sinners@ shall be @smitten@...
+那些@sinners@必被@smitten@，此乃公义……
+%%%%
+...in due time, for @virtue@ is what Zin has declared...
+……自当适时施行，因@virtue@已被辛宣告为……
+%%%%
+...the law of the land, and Zin's word is law!
+……世间之律，而辛之言即为律法！
+%%%%
+Thus the people made the covenant of @virtue@ with...
+于是众民与辛立下@virtue@之约……
+%%%%
+...Zin, and all was good, for they knew that the...
+……万事皆善，因他们知晓……
+%%%%
+...@sinners@ would trouble them no longer.
+……那些@sinners@再不能侵扰他们。
+%%%%
+What of the @sinners@? @Smitten@ for their...
+那些@sinners@将如何？他们必被@Smitten@，因其……
+%%%%
+...@sin_noun@ they shall be! Zin will @smite@ them again...
+……@sin_noun@！辛将@smite@他们，一次……
+%%%%
+...and again, and again!
+……又一次，又一次！
+%%%%
+And lo, the wrath of Zin did find...
+看哪，辛之怒寻到了……
+%%%%
+...them wherever they hid, and the @sinners@...
+……他们，无论藏身何处；那些@sinners@……
+%%%%
+...were @smitten@ for their @sin_noun@!
+……因其@sin_noun@而被@smitten@！
+%%%%
+Zin looked out upon the remains of the @sinners@...
+辛俯视那些@sinners@的残骸……
+%%%%
+...and declared it good that they had been...
+……宣告他们已被……
+%%%%
+...@smitten@. And thus justice was done.
+……@smitten@，此乃甚善。正义因而得以伸张。
+%%%%
+The law of Zin demands thee...
+辛之律法命汝……
+%%%%
+...be @virtuous@, and that the punishment for @sin_noun@...
+……须@virtuous@，而对@sin_noun@的惩罚……
+%%%%
+...shall be swift and harsh!
+……必当迅疾而严酷！
+%%%%
+It was then that Zin bade them...
+辛于此时训诫他们……
+%%%%
+...not to stray from @virtue@, lest...
+……莫偏离@virtue@，免得……
+%%%%
+...they become as damned as the @sinners@.
+……如那些@sinners@一般遭受诅罚。
+%%%%
+Only the @virtuous@ shall be judged worthy, and...
+唯@virtuous@者得蒙认可，而……
+%%%%
+...all the @sinners@ will be found wanting. Such is...
+……所有@sinners@皆将被判不配。此乃……
+%%%%
+...the word of Zin, and such is the law!
+……辛之圣言，此乃律法！
+%%%%
+To those who would swear an oath of @virtue@ on my altar...
+凡愿于吾坛前立誓奉行@virtue@者……
+%%%%
+...I bring ye salvation. To the rest, ye @sinners@...
+……吾赐尔等救赎。其余之众，尔等@sinners@……
+%%%%
+...and the @sin_adj@, the name of Zin shall be thy damnation.
+……及@sin_adj@之辈，辛之名必为尔等之诅罚。
+%%%%
+And Zin decreed that the people would be...
+辛颁下法旨，众民必……
+%%%%
+...protected from @sin_noun@ in all its forms, and...
+……免受一切形式的@sin_noun@侵害，并……
+%%%%
+...preserved in their @virtue@ for all the days to come.
+……于往后岁月中长守@virtue@。
+%%%%
+For those who would enter Zin's holy bosom...
+凡愿归入辛之圣怀者……
+%%%%
+...and live in @virtue@, Zin provideth. Such is...
+……若以@virtue@度日，辛必供养他们。此乃……
+%%%%
+...the covenant, and such is the way of things.
+……圣约，此乃万物之道。
+%%%%
+Zin hath not damned the @sinners@, but it is they...
+辛未曾诅罚@sinners@，是他们……
+%%%%
+...that have damned themselves for their @sin_noun@, for...
+……因其@sin_noun@自招诅罚，因……
+%%%%
+...did Zin not decree that to be @sin_adj@ was wrong?
+……辛岂未宣告，@sin_adj@乃是罪过？
+%%%%
+And Zin, furious at their @sin_noun@, held...
+辛因其@sin_noun@而震怒，将……
+%%%%
+...aloft a silver sceptre! The @sinners@...
+……白银权杖高举！那些@sinners@……
+%%%%
+...were @smitten@, and thus the way of things was maintained.
+……被@smitten@，万物之道因而得以维系。
+%%%%
+When the law of the land faltered, Zin rose...
+当世间之律动摇之时，辛起身……
+%%%%
+...from the silver throne, and the @sinners@ were...
+……离开白银王座，而那些@sinners@被……
+%%%%
+...@smitten@. And it was thus that the law was made good.
+……@smitten@。律法因而得以重振。
+%%%%
+Zin descended from on high in a silver chariot...
+辛驾白银战车自高天降临……
+%%%%
+...to @smite@ the @sinners@ for their...
+……为@smite@那些@sinners@，因其……
+%%%%
+...@sin_noun@, and thus judgement was rendered.
+……@sin_noun@，审判因而得以施行。
+%%%%
+The @sinners@ stood before Zin, and in that instant...
+那些@sinners@立于辛前，刹那之间……
+%%%%
+...they knew they would be found guilty of @sin_noun@...
+……便知自己将因@sin_noun@而被定罪……
+%%%%
+...for that is the word of Zin, and Zin's word is law.
+……因那是辛之圣言，而辛之言即为律法。
+%%%%
+Zin recitation sinner|unbelievers
+不信者
+%%%%
+Zin recitation sinner|heretics
+异端
+%%%%
+Zin recitation sinner|guilty
+罪人
+%%%%
+Zin recitation sinner|hordes of the Abyss
+深渊大军
+%%%%
+Zin recitation sinner|bastard children of Xom
+佐姆的孽子
+%%%%
+Zin recitation sinner|amorphous wretches
+无定形的贱类
+%%%%
+Zin recitation sinner|fetid masses
+恶臭之众
+%%%%
+Zin recitation sinner|agents of filth
+污秽之爪牙
+%%%%
+Zin recitation sinner|squalid dregs
+肮脏之渣滓
+%%%%
+Zin recitation sinner|legions of the damned
+受诅之军
+%%%%
+Zin recitation sinner|servants of Hell
+地狱之仆
+%%%%
+Zin recitation sinner|forces of darkness
+黑暗势力
+%%%%
+Zin recitation sin|unfaithful
+不忠信
+%%%%
+Zin recitation sin|unfaithfulness
+不忠信
+%%%%
+Zin recitation sin|disloyal
+不忠诚
+%%%%
+Zin recitation sin|disloyalty
+不忠诚
+%%%%
+Zin recitation sin|doubting
+疑惑
+%%%%
+Zin recitation sin|doubt
+疑惑
+%%%%
+Zin recitation sin|chaotic
+混乱无序
+%%%%
+Zin recitation sin|chaos
+混沌
+%%%%
+Zin recitation sin|discordant
+不谐
+%%%%
+Zin recitation sin|discord
+不谐
+%%%%
+Zin recitation sin|anarchic
+无律
+%%%%
+Zin recitation sin|anarchy
+无律
+%%%%
+Zin recitation sin|unclean
+不洁
+%%%%
+Zin recitation sin|uncleanliness
+不洁
+%%%%
+Zin recitation sin|impure
+不净
+%%%%
+Zin recitation sin|impurity
+不净
+%%%%
+Zin recitation sin|contaminated
+污浊
+%%%%
+Zin recitation sin|contamination
+污浊
+%%%%
+Zin recitation sin|profane
+亵渎
+%%%%
+Zin recitation sin|profanity
+亵渎
+%%%%
+Zin recitation sin|blasphemous
+谤神
+%%%%
+Zin recitation sin|blasphemy
+谤神
+%%%%
+Zin recitation sin|sacrilegious
+渎圣
+%%%%
+Zin recitation sin|sacrilege
+渎圣
+%%%%
+Zin recitation virtue|faithful
+忠信
+%%%%
+Zin recitation virtue|faithfulness
+忠信
+%%%%
+Zin recitation virtue|loyal
+忠诚
+%%%%
+Zin recitation virtue|loyalty
+忠诚
+%%%%
+Zin recitation virtue|believing
+笃信
+%%%%
+Zin recitation virtue|belief
+笃信
+%%%%
+Zin recitation virtue|ordered
+守序
+%%%%
+Zin recitation virtue|order
+秩序
+%%%%
+Zin recitation virtue|harmonic
+和顺
+%%%%
+Zin recitation virtue|harmony
+和谐
+%%%%
+Zin recitation virtue|lawful
+守法
+%%%%
+Zin recitation virtue|lawfulness
+守法
+%%%%
+Zin recitation virtue|clean
+洁净
+%%%%
+Zin recitation virtue|cleanliness
+洁净
+%%%%
+Zin recitation virtue|pure
+纯净
+%%%%
+Zin recitation virtue|purity
+纯净
+%%%%
+Zin recitation virtue|hygienic
+清洁
+%%%%
+Zin recitation virtue|hygiene
+清洁
+%%%%
+Zin recitation virtue|reverent
+敬虔
+%%%%
+Zin recitation virtue|reverence
+敬畏
+%%%%
+Zin recitation virtue|pious
+虔诚
+%%%%
+Zin recitation virtue|piety
+虔诚
+%%%%
+Zin recitation virtue|obedient
+顺服
+%%%%
+Zin recitation virtue|obedience
+顺服
+%%%%
+Zin recitation smite|purify
+净化
+%%%%
+Zin recitation smite|purified
+净化
+%%%%
+Zin recitation smite|censure
+谴责
+%%%%
+Zin recitation smite|censured
+谴责
+%%%%
+Zin recitation smite|condemn
+定罪
+%%%%
+Zin recitation smite|condemned
+定罪
+%%%%
+Zin recitation smite|strike down
+击倒
+%%%%
+Zin recitation smite|struck down
+击倒
+%%%%
+Zin recitation smite|expel
+驱逐
+%%%%
+Zin recitation smite|expelled
+驱逐
+%%%%
+Zin recitation smite|oust
+逐出
+%%%%
+Zin recitation smite|ousted
+逐出
+%%%%
+Zin recitation smite|smite
+击打
+%%%%
+Zin recitation smite|smitten
+击打
+%%%%
+Zin recitation smite|castigate
+责罚
+%%%%
+Zin recitation smite|castigated
+责罚
+%%%%
+Zin recitation smite|rebuke
+斥责
+%%%%
+Zin recitation smite|rebuked
+斥责
+%%%%
+You feel more confident with your borrowed prowess.
+借来的武艺让你更加自信。
+%%%%
+You gain the combat prowess of a mighty hero.
+你获得了强大英雄的战斗技艺。
+%%%%
+<lightgrey>Your body disappears without a glow.</lightgrey>
+<lightgrey>你的身体没有发出光芒便消失了。</lightgrey>
+%%%%
+Your body glows slightly and disappears.
+你的身体微微发光，随后消失了。
+%%%%
+<white>Your body glows with a rainbow of weird colours and disappears.</white>
+<white>你的身体泛起奇异的七彩光芒，随后消失了。</white>
+%%%%
+<lightgrey>Your body disappears without additional glow.</lightgrey>
+<lightgrey>你的身体没有发出更多光芒便消失了。</lightgrey>
+%%%%
+Your body glows slightly brighter and disappears.
+你的身体光芒稍亮，随后消失了。
+%%%%
+Xom cuts the strings.
+佐姆剪断了提线。
+%%%%
+Your body no longer feels quite so unstable.
+你的身体不再那么不稳定了。
+%%%%
+You feel abruptly conspicuous.
+你突然觉得自己十分显眼。
+%%%%
+Magic contamination
+魔法污染
+%%%%
+1d8/foxfire
+每团狐火1d8
+%%%%
+By Zin's power, %s's torment is averted.
+凭借辛之力，%s的折磨被化解了。
+%%%%
+By Zin's power, %s's fires are quelled.
+凭借辛之力，%s的火焰被平息了。
+%%%%
+By Zin's power, %s's explosion is contained.
+凭借辛之力，%s的爆炸被遏制了。
+%%%%
+Zin's holy word
+辛的圣言
+%%%%
+the Shining One's holy word
+光辉者的圣言
+%%%%
+Kikubaaqudgha's torment
+奇库巴库哈的折磨
+%%%%
+Xom's lightning strike
+佐姆的雷击
+%%%%
+Xom's destruction
+佐姆的毁灭
+%%%%
+the malice of Kikubaaqudgha
+奇库巴库哈的恶意
+%%%%
+the malice of Vehumet
+维胡梅特的恶意
+%%%%
+Lugonu's corruption
+卢格努的腐化
+%%%%
+Fedhas Madash
+费德哈·莽动
+%%%%
+the will of Dithmenos
+迪斯姆诺的意志
+%%%%
+electrical discharge
+放电
+%%%%
+Prayed at the altar of an unknown god.
+在未知神祇的祭坛前祈祷。
+%%%%
+Wu Jian sifu|Yunchang
+云长
+%%%%
+Wu Jian sifu|Lu Zhishen
+鲁智深
+%%%%
+Wu Jian sifu|Xiang Ba
+项羽
+%%%%
+Wu Jian sifu|Ma Yunglu
+马云騄
+%%%%
+Wu Jian sifu|Hu Sanniang
+扈三娘
+%%%%
+Wu Jian sifu|Gene Jian Bin
+张三丰
+%%%%
+Wu Jian sifu|Cai Fang
+越女
+%%%%
+divination: all
+占卜：一切
+%%%%
+banished to a bazaar
+被放逐到集市
+%%%%
+confuse monster(s)
+使怪物混乱
+%%%%
+swap monsters
+交换怪物位置
+%%%%
+snakes to sticks
+将蛇变作木棒
+%%%%
+fake shatter
+假粉碎
+%%%%
+scenery: changed the scenery
+景物：改变了周围景象
+%%%%
+scenery: summon butterflies
+景物：召唤蝴蝶
+%%%%
+fake destruction
+假毁灭
+%%%%
+hasted everything in sight
+使视野内所有其他生物加速
+%%%%
+hasted player and everything else in sight
+使玩家和视野内所有其他生物加速
+%%%%
+slowed everything in sight
+使视野内所有其他生物减速
+%%%%
+slowed player and everything else
+使玩家和所有其他生物减速
+%%%%
+paralysed everything in sight
+使视野内所有其他生物麻痹
+%%%%
+paralysed player and everything else
+使玩家和所有其他生物麻痹
+%%%%
+silly message
+滑稽消息
+%%%%
+chaos upgrade
+混沌强化
+%%%%
+confusion (+ monsters)
+混乱（含怪物）
+%%%%
+confusion (+ might)
+混乱（含强效）
+%%%%
+confusion (+ monsters) (+ might)
+混乱（含怪物）（含强效）
+%%%%
+repel stairs
+排斥楼梯
+%%%%
+cloud trail
+云雾轨迹
+%%%%
+inflicting Doom
+施加厄运
+%%%%
+revert banishment
+撤销放逐
+%%%%
+blink monster(s)
+使怪物闪现
+%%%%
+made traps
+制造陷阱
+%%%%
+chaos reinforcements
+混沌援军
+%%%%
+Xom effect note|duel
+决斗
+%%%%
+chaos cloud
+混沌云雾
+%%%%
+floor lock
+封梯
+%%%%
+minibane
+短暂灾祸
+%%%%
+Xom effect note|sneaky
+诡秘
+%%%%
+butterfly on damage
+受伤时出现蝴蝶
+%%%%
+smoke on damage
+受伤时出现烟雾
+%%%%
+warped sight and space for %d monster
+扭曲了%d只怪物的视野与空间
+%%%%
+warped sight and space for %d monsters
+扭曲了%d只怪物的视野与空间
+%%%%
+chaos laced + vexed %d monster
+以混沌缠绕并激怒了%d只怪物
+%%%%
+chaos laced + vexed %d monsters
+以混沌缠绕并激怒了%d只怪物
+%%%%
+blessing of guardians: %d %s
+守卫之祝福：%d只%s
+%%%%
+knowledge: %s
+知识：%s
+%%%%
+torment (%d/%d hp)
+折磨（%d/%d生命值）
+%%%%
+torment all (player (%d/%d hp)
+折磨所有生物（玩家%d/%d生命值）
+%%%%
+Xom effect note|draining
+衰竭
+%%%%
+Xom effect note|reaching
+延展
+%%%%
+the will of Dithmenos.
+迪斯姆诺的意志

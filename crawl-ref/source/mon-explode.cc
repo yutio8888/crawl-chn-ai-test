@@ -364,9 +364,21 @@ bool explode_monster(monster* mons, killer_type killer, bool pet_kill)
         string effect = "explosion is contained";
         if (explosion.sanct_effect != "")
             effect = explosion.sanct_effect;
-        sanct_msg = string("By Zin's power, ") +
-                    apostrophise(mons->name(DESC_THE)) + " " +
-                    effect + ".";
+        if (Options.language == lang_t::ZH)
+        {
+            const char* key = effect == "torment is averted"
+                ? N_("By Zin's power, %s's torment is averted.")
+                : effect == "fires are quelled"
+                ? N_("By Zin's power, %s's fires are quelled.")
+                : N_("By Zin's power, %s's explosion is contained.");
+            sanct_msg = make_stringf(T_(key), mons->name(DESC_THE).c_str());
+        }
+        else
+        {
+            sanct_msg = string("By Zin's power, ") +
+                        apostrophise(mons->name(DESC_THE)) + " " +
+                        effect + ".";
+        }
         if (type == MONS_BENNU)
             boom_msg = make_stringf(T_("%s blazes out!"), mons->full_name(DESC_THE).c_str());
     }
@@ -388,7 +400,7 @@ bool explode_monster(monster* mons, killer_type killer, bool pet_kill)
         else if (agent)
             mons_add_blame(mons, "hexed by " + agent->name(DESC_A, true));
         mons->flags    |= MF_EXPLODE_KILL;
-        sanct_msg       = "By Zin's power, the fiery explosion is contained.";
+        sanct_msg       = make_stringf(T_("By Zin's power, the %s is contained."), T_("fiery explosion"));
         beam.aux_source = "ignited by their inner flame";
     }
     else if (mons->props.exists(MAKHLEB_HAEMOCLASM_KEY))

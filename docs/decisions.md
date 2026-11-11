@@ -4761,3 +4761,25 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   随机书名中的 Curses / Malediction 等仍保留诅咒，不按池名整体替换。
 - **Affected files**: 中文 source、descript、randbook 资产；glossary 及生成伴随文件；
   test_zh_issue149.cc 的先祖职业预期字符串。
+
+### D-C-111 — 无间门派师父人名与说话者称呼
+
+- **Type**: C — Proper-name terminology intake
+- **Status**: active
+- **Date**: 2026-11-11
+- **Choice**: `Yunchang → 云长`、`Lu Zhishen → 鲁智深`、`Xiang Ba → 项羽`、
+  `Ma Yunglu → 马云騄`、`Hu Sanniang → 扈三娘`、
+  `Gene Jian Bin → 张三丰`、`Cai Fang → 越女`；
+  共同说话者简称 `The Council → 无间门派`，与 `the Wu Jian Council` 长名一致。
+- **Source**: 用户在本次神祇漏译修复中最终确认的师父人名；
+  上游作者 dillytin 在 [crawl/crawl PR #1953 的评论](https://github.com/crawl/crawl/pull/1953#issuecomment-841180143)
+  说明 `Xiang Ba` 是项羽（霸王）之名的改写。
+- **Rationale**: `Xiang Ba → 项羽` 对应上游作者确认的原型，不是本土化替换。
+  `Gene Jian Bin`、`Cai Fang` 的原型未能确定，用户有意将其中文显示
+  分别替换为适合门派语境的张三丰、越女；这两项是本土化替换，不是音译。
+  马云騄使用“騄”字，现有默认 Maple Mono NF CN 字体包含 U+9A04 字形，
+  不需新增字体或修改图集。
+- **Scope / boundaries**: 师父人名仅在 `Wu Jian sifu` 显示上下文翻译，
+  英文随机池及其随机数抽取保持原样；共同说话者仅调整 `The Council` 的中文译文。
+- **Affected files**: `message.cc`、`religion.cc`、中文 `source.txt`、
+  `docs/glossary.md` 及其生成伴随文件。

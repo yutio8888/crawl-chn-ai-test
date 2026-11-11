@@ -23,6 +23,7 @@
 #include "item-prop.h" // gem_adj
 #include "message.h"
 #include "mutation.h"
+#include "mon-util.h"
 #include "lang-en-guard.h"
 #include "options.h"
 #include "positional_format.h"
@@ -226,12 +227,58 @@ static string _xom_effect_note_display(const string& name)
         return T_("drained mp");
     if (name == "drained mp, created monsters")
         return T_("drained mp, created monsters");
+    if (name == NC_("Xom effect note", "draining")
+        || name == NC_("Xom effect note", "reaching")
+        || name == NC_("Xom effect note", "duel")
+        || name == NC_("Xom effect note", "sneaky"))
+    {
+        return C_("Xom effect note", name.c_str());
+    }
     const char* mutation_notes[] =
     {
         N_("give mutation"), N_("give mutations"),
         N_("give good mutation"), N_("give good mutations"),
         N_("give random mutation"), N_("give random mutations"),
         N_("made a garden"), N_("spooky wave of despair"),
+        N_("divination: all"),
+        N_("banished to a bazaar"),
+        N_("confuse monster(s)"),
+        N_("swap monsters"),
+        N_("snakes to sticks"),
+        N_("fake shatter"),
+        N_("scenery: changed the scenery"),
+        N_("scenery: summon butterflies"),
+        N_("destruction"),
+        N_("fake destruction"),
+        N_("hasted everything in sight"),
+        N_("hasted player and everything else in sight"),
+        N_("slowed everything in sight"),
+        N_("slowed player and everything else"),
+        N_("paralysed everything in sight"),
+        N_("paralysed player and everything else"),
+        N_("fog"),
+        N_("silly message"),
+        N_("chaos upgrade"),
+        N_("confusion"),
+        N_("confusion (+ monsters)"),
+        N_("confusion (+ might)"),
+        N_("confusion (+ monsters) (+ might)"),
+        N_("repel stairs"),
+        N_("cloud trail"),
+        N_("inflicting Doom"),
+        N_("revert banishment"),
+        N_("noise"),
+        N_("blink monster(s)"),
+        N_("made traps"),
+        N_("chaos reinforcements"),
+        N_("chaos cloud"),
+        N_("floor lock"),
+        N_("minibane"),
+        N_("blessing of mannequins"),
+        N_("blessing of battleshape"),
+        N_("blessing of protean form"),
+        N_("butterfly on damage"),
+        N_("smoke on damage"),
     };
     for (const char* key : mutation_notes)
         if (name == key)
@@ -244,6 +291,10 @@ static string _xom_effect_note_display(const string& name)
         const char* format;
     } count_notes[] =
     {
+        { "warped sight and space for ", " monster", N_("warped sight and space for %d monster") },
+        { "warped sight and space for ", " monsters", N_("warped sight and space for %d monsters") },
+        { "chaos laced + vexed ", " monster", N_("chaos laced + vexed %d monster") },
+        { "chaos laced + vexed ", " monsters", N_("chaos laced + vexed %d monsters") },
         { "divine lightning + ", " bolts", N_("divine lightning + %d bolts") },
         { "lit up ", " webs", N_("lit up %d webs") },
         { "summons ", " friend", N_("summons %d friend") },
@@ -273,21 +324,141 @@ static string _xom_effect_note_display(const string& name)
         }
         int count;
         if (_xom_note_count(name.substr(prefix, name.size() - prefix - suffix), count))
+        {
+            if ((starts_with(name, "warped sight and space for ")
+                 || starts_with(name, "chaos laced + vexed "))
+                && string(event.suffix) != (count > 1 ? " monsters" : " monster"))
+            {
+                return name;
+            }
             return make_stringf(T_(event.format), count);
+        }
     }
 
-    if (starts_with(name, "cast spell '") && ends_with(name, "'"))
+    for (const char* key : { N_("cast spell '%s'"),
+                            N_("blessing of eisegesis (%s)"),
+                            N_("blessing of spellstride (%s)") })
     {
-        const string prefix = "cast spell '";
-        const string title = name.substr(prefix.size(), name.size() - prefix.size() - 1);
+        const string format = key;
+        const size_t slot = format.find("%s");
+        const string prefix = format.substr(0, slot);
+        const string suffix = format.substr(slot + 2);
+        if (!starts_with(name, prefix) || !ends_with(name, suffix)
+            || name.size() <= prefix.size() + suffix.size())
+        {
+            continue;
+        }
+        const string title = name.substr(prefix.size(),
+            name.size() - prefix.size() - suffix.size());
         spell_type spell;
         {
             const ScopedLangEn english;
             spell = spell_by_name(title, false);
+            if (spell != SPELL_NO_SPELL && title != spell_title(spell))
+                spell = SPELL_NO_SPELL;
+        }
+        if (spell == SPELL_NO_SPELL)
+        {
+            for (int i = 0; i < NUM_SPELLS; ++i)
+                if (is_valid_spell(static_cast<spell_type>(i))
+                    && title == spell_title(static_cast<spell_type>(i)))
+                {
+                    spell = static_cast<spell_type>(i);
+                    break;
+                }
         }
         if (spell == SPELL_NO_SPELL)
             return name;
-        return make_stringf(T_("cast spell '%s'"), spell_title(spell));
+        return make_stringf(T_(key), spell_title(spell));
+    }
+    if (starts_with(name, "blessing of cleaving (") && ends_with(name, ")"))
+    {
+        const string title = name.substr(22, name.size() - 23);
+        if (title.empty())
+            return name;
+        for (int i = SPWPN_NORMAL; i < NUM_REAL_SPECIAL_WEAPONS; ++i)
+        {
+            const brand_type brand = static_cast<brand_type>(i);
+            if (title == brand_type_name_en(brand, false)
+                || title == brand_type_name(brand, false))
+            {
+                return make_stringf(T_("blessing of cleaving (%s)"),
+                                    brand_type_name(brand, false));
+            }
+        }
+        return name;
+    }
+    if (starts_with(name, "blessing of guardians: "))
+    {
+        const size_t start = strlen("blessing of guardians: ");
+        const size_t split = name.find(' ', start);
+        int count;
+        if (split == string::npos
+            || !_xom_note_count(name.substr(start, split - start), count))
+        {
+            return name;
+        }
+        const string title = name.substr(split + 1);
+        // This producer stores the monster type, never its generated name.
+        for (int i = 0; i < NUM_MONSTERS; ++i)
+        {
+            const monster_type type = static_cast<monster_type>(i);
+            if (invalid_monster_type(type))
+                continue;
+            string canonical;
+            { const ScopedLangEn english; canonical = mons_type_name(type, DESC_PLAIN); }
+            const string display = mons_type_name(type, DESC_PLAIN);
+            if (title == canonical || title == display)
+            {
+                return make_stringf(T_("blessing of guardians: %d %s"),
+                                    count, display.c_str());
+            }
+        }
+        return name;
+    }
+    if (starts_with(name, "knowledge: "))
+    {
+        const string body = name.substr(11);
+        // Reconstruct both producer languages exactly, rejecting stray
+        // separators, unknown skills and malformed historical strings.
+        for (bool english : { true, false })
+        {
+            vector<string> original, translated;
+            string separator = T_(" and ");
+            if (english)
+                separator = " and ";
+            const vector<string> parts = split_string(", ",
+                replace_all(body, separator, ", "));
+            for (const string& part : parts)
+            {
+                bool found = false;
+                for (skill_type sk = SK_FIRST_SKILL; sk < NUM_SKILLS; ++sk)
+                {
+                    string canonical;
+                    if (english)
+                    { const ScopedLangEn en; canonical = skill_name(sk); }
+                    else
+                        canonical = skill_name(sk);
+                    if (part == canonical)
+                    {
+                        original.push_back(canonical);
+                        translated.push_back(skill_name(sk));
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    break;
+            }
+            if (!parts.empty() && original.size() == parts.size()
+                && body == comma_separated_line(original.begin(), original.end(), separator, ", "))
+            {
+                const string display = comma_separated_line(
+                    translated.begin(), translated.end(), T_(","), T_(","));
+                return make_stringf(T_("knowledge: %s"), display.c_str());
+            }
+        }
+        return name;
     }
     if (starts_with(name, "potion effect (") && ends_with(name, ")"))
     {
@@ -414,8 +585,14 @@ static string _xom_effect_note_display(const string& name)
                             C_("flag long", effect.c_str()));
     }
 
-    for (const char* key : { N_("torment player (%d/%d hp)"),
-                            N_("torment all (%d/%d hp)") })
+    static const char* const torment_notes[] =
+    {
+        N_("torment all (player (%d/%d hp)"),
+        N_("torment player (%d/%d hp)"),
+        N_("torment all (%d/%d hp)"),
+        N_("torment (%d/%d hp)"),
+    };
+    for (const char* key : torment_notes)
     {
         const string format = key;
         const string prefix = format.substr(0, format.find('%'));
@@ -442,7 +619,9 @@ static string _xom_effect_note_display(const string& name)
             && !(input >> extra) && hostile >= 0 && friendly >= 0
             && word1 == "hostile" && plus == "+" && word2 == "friendly"
             && kind1 == (hostile == 1 ? "illusion" : "illusions")
-            && kind2 == (friendly == 1 ? "illusion" : "illusions"))
+            && kind2 == (friendly == 1 ? "illusion" : "illusions")
+            && name == make_stringf("summoned %d hostile %s + %d friendly %s",
+                                   hostile, kind1.c_str(), friendly, kind2.c_str()))
         {
             return make_stringf(T_("summoned %d hostile illusions + %d friendly illusions"),
                                 hostile, friendly);
@@ -803,6 +982,8 @@ string Note::describe(bool when, bool where, bool what) const
                 result << _abyss_entry_note_display(name);
             else if (desc == "corrupted level")
                 result << _corrupted_level_note_display(*this);
+            else if (name == "Prayed at the altar of an unknown god.")
+                result << T_("Prayed at the altar of an unknown god.");
             else
                 result << _theft_note_display(*this);
             break;

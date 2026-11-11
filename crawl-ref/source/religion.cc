@@ -1630,7 +1630,9 @@ static bool _handle_veh_gift(bool forced)
             }
             string prompt = make_stringf(
                 T_(" offers you knowledge of %s."),
-                comma_separated_line(spell_names.begin(), spell_names.end()).c_str());
+                comma_separated_line(spell_names.begin(), spell_names.end(),
+                    Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                    Options.language == lang_t::ZH ? T_(",") : ", ").c_str());
             if (gifts >= NUM_VEHUMET_GIFTS - 1)
                 prompt += T_(" These spells will remain available as long as you worship Vehumet.");
 
@@ -2260,13 +2262,13 @@ string wu_jian_random_sifu_name()
 {
     switch (random2(7))
     {
-        case 0: return "Yunchang";
-        case 1: return "Lu Zhishen";
-        case 2: return "Xiang Ba";
-        case 3: return "Ma Yunglu";
-        case 4: return "Hu Sanniang";
-        case 5: return "Gene Jian Bin";
-        case 6: return "Cai Fang";
+        case 0: return NC_("Wu Jian sifu", "Yunchang");
+        case 1: return NC_("Wu Jian sifu", "Lu Zhishen");
+        case 2: return NC_("Wu Jian sifu", "Xiang Ba");
+        case 3: return NC_("Wu Jian sifu", "Ma Yunglu");
+        case 4: return NC_("Wu Jian sifu", "Hu Sanniang");
+        case 5: return NC_("Wu Jian sifu", "Gene Jian Bin");
+        case 6: return NC_("Wu Jian sifu", "Cai Fang");
         default: return "Bug";
     }
 }
@@ -3287,19 +3289,19 @@ void nemelex_death_message()
 
     static const char *messages[NUM_PIETY_GAIN] =
     {
-        "<lightgrey>Your body disappears without a glow.</lightgrey>",
-        "Your body glows slightly and disappears.",
-        "<white>Your body glows with a rainbow of weird colours and disappears.</white>",
+        N_("<lightgrey>Your body disappears without a glow.</lightgrey>"),
+        N_("Your body glows slightly and disappears."),
+        N_("<white>Your body glows with a rainbow of weird colours and disappears.</white>"),
     };
 
     static const char *glowing_messages[NUM_PIETY_GAIN] =
     {
-        "<lightgrey>Your body disappears without additional glow.</lightgrey>",
-        "Your body glows slightly brighter and disappears.",
-        "<white>Your body glows with a rainbow of weird colours and disappears.</white>",
+        N_("<lightgrey>Your body disappears without additional glow.</lightgrey>"),
+        N_("Your body glows slightly brighter and disappears."),
+        N_("<white>Your body glows with a rainbow of weird colours and disappears.</white>"),
     };
 
-    mpr((you.backlit() ? glowing_messages : messages)[rank]);
+    mpr(T_((you.backlit() ? glowing_messages : messages)[rank]));
 }
 
 bool god_hates_attacking_friend(god_type god, const monster& fr)
@@ -3458,7 +3460,8 @@ string cannot_join_god_reason(god_type which_god, bool include_temp, bool check_
         if (!hated.empty())
         {
             const string equipment = comma_separated_line(hated.begin(), hated.end(),
-                                                         T_(" or "));
+                                                         T_(" or "),
+                                                         Options.language == lang_t::ZH ? T_(",") : ", ");
             return make_stringf(T_("%s will not accept your worship while you use %s."),
                                 god.c_str(), equipment.c_str());
         }
