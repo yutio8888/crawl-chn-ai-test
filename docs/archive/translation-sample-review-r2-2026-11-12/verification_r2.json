@@ -1,0 +1,23 @@
+{
+  "sample_count": 80,
+  "original60_unchanged": true,
+  "original_lane_prefixes_unchanged": true,
+  "unique_casefold_keys": 80,
+  "unique_english_bodies": 80,
+  "new_samples_placeholder_evidence_complete": true,
+  "reproducible": true,
+  "artifact_sha256": {
+    "samples_r2.json": "8580f27c56bcbbfaabb9af517b296857e708c1ea8fa994a99d79e3c6cf041e9a",
+    "selection_log_r2.json": "f3d352fdf169821e1f3c2041443ae9f78a4bd9a5330cc697e2993c0b4e2ca897",
+    "README_r2.md": "36609bfe8792eae5b752c56cbddafc735c3b4dab7085b0886b6467fd0c26afb5",
+    "review_input_lane1.md": "1320849dad7a9b855dac9f8b28334f70e006fbfd3263aab6cce89b4d36828053",
+    "review_input_lane2.md": "2083186dad5aac6f69352efb3106e17e0adbfeafa8d342a64a921dcf699fe0d1",
+    "pool_C7.json": "c556cb49717cac65beecbad1cc468d44c920682b951bbf83db3c8052a41db84e",
+    "pool_C8.json": "15feab2b46b89bad8218c0f5c389237f5a2d1b6e5e1c6fd397ad87de4ea30f44"
+  },
+  "differences": {
+    "相同": 63,
+    "分化": 6,
+    "stable 特有": 11
+  }
+}
