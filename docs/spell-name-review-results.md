@@ -3664,3 +3664,8 @@ inventory 减本文为 0 项，本文减 inventory 也为 0 项。因此这里�
   `mons_abjure`、`monster`，英文与中文描述均存在；当前标题已为
   “召唤高等恶魔”，准确复用 `greater demon → 高等恶魔`，历史重译裁定
   已落地，终态仍记为重译。
+
+
+## 2026-11-12 抽检修正
+
+S47：Blinkbolt spell 正文使用“闪电”并明确“闪电的终点”，避免与 Lightning Bolt 法术译名撞名；开发线保留原文 penetrating 的“可穿透目标”。Blinkbolt ability 同步将“闪电箭的终点”改为“闪电的终点”。旧冻结卡对此正文的 keep 结论由本次勘误取代。

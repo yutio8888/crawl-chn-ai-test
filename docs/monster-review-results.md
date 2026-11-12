@@ -805,3 +805,8 @@
 | `monster:MONS_NASCENT_PLASMODIUM` | current; exposure=ordinary; name=nascent plasmodium→初生原质团; genus=MONS_JELLY; species=MONS_NASCENT_PLASMODIUM; data=crawl-ref/source/dat/mons/nascent-plasmodium.yaml; desc=EN/ZH | keep |
 | `monster:MONS_STAR_JELLY` | current; exposure=ordinary; name=star jelly→星之果冻; genus=MONS_JELLY; species=MONS_STAR_JELLY; data=crawl-ref/source/dat/mons/star-jelly.yaml; desc=EN/ZH | keep |
 | `monster:MONS_BURSTSHROOM` | current; exposure=ordinary; name=burstshroom→爆裂菇; genus=MONS_FUNGUS; species=MONS_BURSTSHROOM; data=crawl-ref/source/dat/mons/burstshroom.yaml; desc=EN/ZH | keep |
+
+
+## 2026-11-12 抽检修正
+
+S45：colossal amoeba 首句改为“一堆大得难以想象、神秘而不断脉动的原生质。”；unfathomably 表示体量难以想象。旧冻结卡在此处的通过结论由本次勘误取代。
