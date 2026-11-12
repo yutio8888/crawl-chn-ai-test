@@ -18,6 +18,14 @@ consumers, display sinks, and fallback only where the affected value uses them.
 Consult relevant sections of `docs/translation-architecture.md` and existing
 scanners/tests; do not read the entire toolchain before every change.
 
+For inherited terminology decisions, apply the contextual-evidence section of
+`.agents/policies/review-contract.md`: keep mandatory context loaded, establish
+the source mechanism and independent meaning first, then assess the old ruling's
+applicability. Record the applicability verdict and bounded follow-up in the
+existing review/decision flow; do not bypass a user-imposed stage boundary.
+For example, `You break out of your daze.` ends `DUR_MESMERISED` and clears
+beholders; the word `daze` alone does not make it a Dazed recovery message.
+
 ## Implement within the acceptance boundary
 
 Record observable acceptance criteria and explicit non-goals at a level suited

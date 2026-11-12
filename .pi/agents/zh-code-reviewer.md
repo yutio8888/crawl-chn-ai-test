@@ -18,7 +18,7 @@ Review implementation mechanics only. Translation wording and character voice
 belong to `translation-reviewer`.
 
 <!-- BEGIN GENERATED: review-contract -->
-# review-contract-v6
+# review-contract-v7
 
 Domain review produces human-readable findings for the requested scope.
 `classify_reviewers.py` selects relevant domains, not additional permission,
@@ -46,6 +46,28 @@ An ordinary audit is delivered when findings and coverage gaps are reported;
 it need not claim merge readiness. Report confirmed findings even if another
 part is blocked. Plan non-goals do not excuse defects introduced by the diff.
 Resolve findings within scope, preferring existing mechanisms and narrow fixes.
+
+## Contextual terminology evidence
+
+Load the mandatory terminology context before judging wording; do not hide it
+for a supposed blind review. A reviewer who has read the glossary must not
+claim blindness. For an inherited ruling, record the complete English sentence,
+current production call chain, described mechanism, and an independent semantic
+conclusion before deciding whether that ruling applies. A decision ID is not a
+substitute for source evidence or reasoning.
+
+State applicability by mechanism, actual consumer, stable/trunk version, and
+exceptions. If current source conflicts with the old classification, suspend
+mechanical application in that context and conclude one of: 成立, 缩小作用域,
+更正, or 证据不足. Confirmed corrections must maintain the affected translation,
+glossary scope, and correction evidence in decisions together, within the user's
+authorized stage. Preserve history; never rewrite frozen review samples.
+
+Explicit `reject=` rules enforce only verified scope. Do not turn ambiguous
+words into global bans or automatic bulk replacements. A passing gate does not
+prove a terminology decision correct. When a ruling is overturned or narrowed,
+trace its actual consumers, asset changes, test expectations, and both version
+lines; distinguish current assets, dead keys, and historical display snapshots.
 
 ## Reviewer ownership
 
