@@ -1,0 +1,2046 @@
+{
+  "lines": {
+    "stable": {
+      "baseline": "b1c79709858a214df94a912f5eb14a95a0b18564",
+      "glossary_sha256": "b31f5c1e6bb71645b8ef4645dfd0e901149f938830ca2cb55efe9bd24cb356e7",
+      "input_sha256": {
+        "crawl-ref/source/art-data.txt": "2733edaaaf137a1b9a4b0614a2087ebbb57da7aaa927f3c93c3913077f0f9a3b",
+        "crawl-ref/source/art-func.h": "71f0adca211ad6e9ddcda8e7582bb8e2845d477162b47aeb324c19974ee3a446",
+        "crawl-ref/source/cloud.cc": "e831338b10111f5da65ccacb25e5afe192dbf9b170353afb198d8dced64bec9a",
+        "crawl-ref/source/command.cc": "c624b49c44d0642eb2af9e654de17b916879d4629841daa3b1d61f5e250f9aa9",
+        "crawl-ref/source/dat/descript/clouds.txt": "dd9e9b4280cee1006d624fe00c7915793984f0c5899f82671d68d8f122a3d8e0",
+        "crawl-ref/source/dat/descript/hints.txt": "2856a1bf33ae6eedc1de2a36d5b43ba6f1e97335952156454bcb743e53a33379",
+        "crawl-ref/source/dat/descript/monstatus.txt": "5e097f465a803f5de774706d973ecb43dcf889dc8d2aa1cc53dbd1cb37fbdd0c",
+        "crawl-ref/source/dat/descript/monsters.txt": "b3c25e5b055fcc0494907278c9e7c560f976ed2742a36fd35b69f348509f9206",
+        "crawl-ref/source/dat/descript/spells.txt": "82f08e484638853b2d275317c0e9d49e528b8b210c50bef25e4300a6aaa1978e",
+        "crawl-ref/source/dat/descript/status.txt": "f3272894d2972d675781f3e5199c804b4c001b4c57bf5bcd27555d142bba0fbd",
+        "crawl-ref/source/dat/descript/tutorial.txt": "0f102b0401fd64c8b34908c64aef27b42c04f170a1f92a2bcddbf2924dd7f7d6",
+        "crawl-ref/source/dat/descript/zh/clouds.txt": "817d8b28611b8212969013678785f1f2dd8caeea238c1c974aa7eb87aab4d43b",
+        "crawl-ref/source/dat/descript/zh/hints.txt": "2e1afccaf3a5bcd1fa1feab4b7b6e6170237c6e569cec87a5bb7c9e92a2f0ceb",
+        "crawl-ref/source/dat/descript/zh/monstatus.txt": "3f99e3f0b4c5c7ad5fb4d8b597c70998b380bfd573ce31a09bd8126a1514bb6f",
+        "crawl-ref/source/dat/descript/zh/monsters.txt": "9824453fbcb679c69395bf0ce3388fb52c20abe2754f0765c186673485ed6cad",
+        "crawl-ref/source/dat/descript/zh/spells.txt": "68c5227697f1a5abf98f921e29147fda845ec5ae5684df8d7017546b24520638",
+        "crawl-ref/source/dat/descript/zh/status.txt": "5b229cf0bf40f875b1521327096c615cce278962ffb3214aaccacc6fde3dd26d",
+        "crawl-ref/source/dat/descript/zh/tutorial.txt": "2ee1ba235cd7768f6ae4d9c7eb26c068fe40eec9a7fa4fc6241df2c3602f9f09",
+        "crawl-ref/source/dat/i18n/zh/source.txt": "c4f8e0898249f0198b04fa945226ad2de498e5dd5ef31e9e9384186a52174088",
+        "crawl-ref/source/describe-god.cc": "70ed3ce722cf669821492bbb83257c780321b24eff72460d245487da4699b44c",
+        "crawl-ref/source/describe.cc": "40fb5d2f3e79e56d0f8d66957bb03f2228482fbd5fc71d0dc83c5c6589855b6e",
+        "crawl-ref/source/duration-data.h": "f96995e2595a135341ff286b40c0ceaaf8b9b610085db4b3edf297ed1f926c35",
+        "crawl-ref/source/duration-type.h": "f77e9bbb16e54400657ef04978d7119cb5c186cbd5d999f8a968c37b010544a2",
+        "crawl-ref/source/exclude.cc": "d354abee7b3fc5de343e691a612458be1e01c6e5e11b570052e495a70073e1c5",
+        "crawl-ref/source/god-abil.cc": "bc175eaaddfa84c30146a429b15760e605276c93615102f8be53769a4195b0ec",
+        "crawl-ref/source/hints.cc": "e48d761961ff43a73d17d02d84e0f28d13c7734a71c29519ba39b18f610763e0",
+        "crawl-ref/source/melee-attack.cc": "0b9e1b0ffa13ef4ac6f58dbc5257bf20e8d79faba291bdaad926003c5a9fd7c5",
+        "crawl-ref/source/mon-act.cc": "5d35732a3f9fdac200e5489c65d85f02fa84ac08a6716a440b6e2512acc08675",
+        "crawl-ref/source/mon-cast.cc": "de9f7b5b9a19daa1bdb0054b2806a9f1d121603a66974e39c0d89091c31a9f36",
+        "crawl-ref/source/mon-ench.cc": "967e85907e3a1fcf3ad4b6a414f3e559c528279629b64a70d03e86e5debf7b14",
+        "crawl-ref/source/mon-info.cc": "52117efdbdb2ad46513cddd7fd3c3d3c0e57db72e228db1d63a1e14819248ef5",
+        "crawl-ref/source/mon-spell.h": "62b2c3539a3a8c238e800a270a4efbcf47868cc5f338281f790fb863f9790cbc",
+        "crawl-ref/source/movement.cc": "e49a9bb6fa719726c9d6c2b97bc697b52bd3ff7957efc900d937f5c4cfea8308",
+        "crawl-ref/source/mutation-data.h": "36e47384394e133176ed88265beb180d25b50296395c9916bfabf224ce243b62",
+        "crawl-ref/source/notes.cc": "550ea65e04a6274d002808d3bd320147ea9bc3d2bd9e268f8e810648a5c28f8f",
+        "crawl-ref/source/player-equip.cc": "229e07138aecb735d69edd8b24040fc3bef730167fecf13ef42221731bf1c4b6",
+        "crawl-ref/source/player-reacts.cc": "411b5586e6895739cf4afc05a8c329dc3281685cbc2387e5d76d90064bb8faec",
+        "crawl-ref/source/player.cc": "f651c1849bde717c841d9a286f5294d4c27f559e3896d60c25c5636a00ea4bd8",
+        "crawl-ref/source/skill-menu.cc": "756db7bed62334a37372df59d11d2ae80b213799d123bfd8dc3f94d03af33f72",
+        "crawl-ref/source/skills.cc": "46f9b41b629c205368e36ca13f046c66ef75e33defd5e66f49b83df11437bad8",
+        "crawl-ref/source/spl-clouds.cc": "71da9681757f7389ddf9c1ef44ee261af49bebbe50c4551c6196739911ae0cc2",
+        "crawl-ref/source/spl-damage.cc": "3c6e4cf16597834efec7abf9fcccb2c1ee225739769253a2c3c401eb07e14229",
+        "crawl-ref/source/spl-data.h": "efadd85f5e4f5f6d0e8ebe3727fc4a32800e09aac972aba2d00bc47d794f3f28",
+        "crawl-ref/source/spl-monench.cc": "2ef164987cee4faed87dffd8a93651f0dadc33ff01519758652dbbb883033a38",
+        "crawl-ref/source/status.cc": "a24ced04e1d0e8b91ceb4a5ad7763af4c66fd1e444ab38044a2b9c11d743318f",
+        "crawl-ref/source/transform.cc": "842eb7cea7fd08c673d06852d8f40664be1f26032d1e035bba9a7cea00473df2",
+        "crawl-ref/source/travel.cc": "7ae37eb3947dee1de4e664694dddd3f9812dad0df31d9e6957590a00cdf42c58",
+        "docs/decisions.md": "c4b887c3689a759a80d981f5aa252bf90c87dcc061e86ee2a8dec77406d1b796",
+        "docs/glossary.md": "b31f5c1e6bb71645b8ef4645dfd0e901149f938830ca2cb55efe9bd24cb356e7"
+      },
+      "records": [
+        {
+          "entries": [
+            {
+              "chinese": "\n种族资质以<white>白色</white>显示。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 12314,
+              "english": "The species aptitude is in <white>white</white>.",
+              "key": "The species aptitude is in <white>white</white>.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 12314
+            }
+          ],
+          "group": "aptitude",
+          "id": "A01",
+          "selector_keys": [
+            "The species aptitude is in <white>white</white>."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "<w>~</w>：宏帮助\\n<w>&</w>：选项帮助\\n<w>%</w>：资质表\\n<w>/</w>：查找说明\\n<w>Q</w>：常见问题\\n",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 40533,
+              "english": "<w>~</w>: Macros help\\n<w>&</w>: Options help\\n<w>%</w>: Table of aptitudes\\n<w>/</w>: Lookup description\\n<w>Q</w>: FAQ\\n",
+              "key": "<w>~</w>: Macros help\\n<w>&</w>: Options help\\n<w>%</w>: Table of aptitudes\\n<w>/</w>: Lookup description\\n<w>Q</w>: FAQ\\n",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 40533
+            }
+          ],
+          "group": "aptitude",
+          "id": "A02",
+          "selector_keys": [
+            "<w>~</w>: Macros help\\n<w>&</w>: Options help\\n<w>%</w>: Table of aptitudes\\n<w>/</w>: Lookup description\\n<w>Q</w>: FAQ\\n"
+          ]
+        },
+        {
+          "entries": [],
+          "group": "aptitude",
+          "id": "A03",
+          "selector_keys": [
+            "HINT_SKILL_COSTS"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n一个美丽但高傲的地底精灵，有着魔法天赋，但除此之外，就没什么了。\n他的技能是对他的双胞胎妹妹杜维莎的格斗技能的完美补充。\n为寻求更强大的魔法，他和他的妹妹一起前往地表。",
+              "en_file": "crawl-ref/source/dat/descript/monsters.txt",
+              "en_key_line": 146,
+              "english": "\nA beautiful but vain deep elf with an aptitude for magic and little else. His\nskills are the perfect complement of his twin sister Duvessa's fighting prowess.\nIn search of more powerful spells, he journeys to the surface with his sister.",
+              "key": "Dowan",
+              "zh_file": "crawl-ref/source/dat/descript/zh/monsters.txt",
+              "zh_key_line": 119
+            }
+          ],
+          "group": "aptitude",
+          "id": "A04",
+          "selector_keys": [
+            "Dowan"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "训练成本（以<cyan>青色</cyan>显示）表示将指定技能提升一级所需的相对经验值，以资质为零的技能从零级升到一级所需的经验值为基准。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 40728,
+              "english": "The training cost (in <cyan>cyan</cyan>) shows the experience cost to raise the given skill one level, relative to the cost of raising an aptitude zero skill from level zero to level one.",
+              "key": "The training cost (in <cyan>cyan</cyan>) shows the experience cost to raise the given skill one level, relative to the cost of raising an aptitude zero skill from level zero to level one.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 40728
+            }
+          ],
+          "group": "aptitude",
+          "id": "A05",
+          "selector_keys": [
+            "The training cost (in <cyan>cyan</cyan>) shows the experience cost to raise the given skill one level, relative to the cost of raising an aptitude zero skill from level zero to level one."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n一个由纯净的活水晶生成的多刺、长鼻啮齿动物。它免疫大多数形式的魔法，\n既能射击使目标结晶，也能投掷令人剧痛的倒刺。",
+              "en_file": "crawl-ref/source/dat/descript/monsters.txt",
+              "en_key_line": 1080,
+              "english": "\nA spiny, long snouted rodent grown out of pure living crystal. It is\nimmune to most forms of magic and hurls both crystallising shots and painful\nbarbs.",
+              "key": "crystal echidna",
+              "zh_file": "crawl-ref/source/dat/descript/zh/monsters.txt",
+              "zh_key_line": 858
+            }
+          ],
+          "group": "barbs",
+          "id": "B01",
+          "selector_keys": [
+            "crystal echidna"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n有倒刺扎入你的皮肤，移动时会受到伤害。\n在原地停留片刻，就能移除这些倒刺而不受伤害。",
+              "en_file": "crawl-ref/source/dat/descript/status.txt",
+              "en_key_line": 221,
+              "english": "\nThere are barbs embedded in your skin, and moving around will cause you to take\ndamage. Remaining in place for a short time will allow you to remove the barbs\nwithout taking damage.",
+              "key": "Barbs status",
+              "zh_file": "crawl-ref/source/dat/descript/zh/status.txt",
+              "zh_key_line": 172
+            }
+          ],
+          "group": "barbs",
+          "id": "B02",
+          "selector_keys": [
+            "Barbs status"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "尖刺",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 37767,
+              "english": "Barbs",
+              "key": "status|Barbs",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 37767
+            }
+          ],
+          "group": "barbs",
+          "id": "B03",
+          "selector_keys": [
+            "status|Barbs"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "你摆脱了迷魂。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 21337,
+              "english": "You break out of your daze.",
+              "key": "You break out of your daze.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 21337
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D01",
+          "selector_keys": [
+            "You break out of your daze."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "你从眩晕中清醒过来。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 17797,
+              "english": "You snap out of the daze.",
+              "key": "You snap out of the daze.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 17797
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D02",
+          "selector_keys": [
+            "You snap out of the daze."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "%s从%s眩晕中清醒过来。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 1789,
+              "english": "%s snaps out of %s daze.",
+              "key": "%s snaps out of %s daze.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 1789
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D03",
+          "selector_keys": [
+            "%s snaps out of %s daze."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "被你的吟诵弄得眩晕了。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 33111,
+              "english": " is dazed by your recitation.",
+              "key": " is dazed by your recitation.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 33111
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D04",
+          "selector_keys": [
+            " is dazed by your recitation."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "%s恍惚状态加深了。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 33562,
+              "english": "%s trance deepens.",
+              "key": "%s trance deepens.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 33562
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D05",
+          "selector_keys": [
+            "%s trance deepens."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "%1$s被%2$s迷住了！",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 33565,
+              "english": "%s is mesmerised by %s!",
+              "key": "%s is mesmerised by %s!",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 33565
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D06",
+          "selector_keys": [
+            "%s is mesmerised by %s!"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "%s被你的凝视短暂迷住了。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 1498,
+              "english": "%s is briefly mesmerised by your gaze.",
+              "key": "%s is briefly mesmerised by your gaze.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 1498
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D07",
+          "selector_keys": [
+            "%s is briefly mesmerised by your gaze."
+          ]
+        },
+        {
+          "entries": [],
+          "group": "daze / non-Dazed",
+          "id": "D08",
+          "selector_keys": [
+            "Your maw sometimes becomes mesmerised by tasty morsels."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "你陷入了迷魂状态。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 8467,
+              "english": "You are mesmerised.",
+              "key": "You are mesmerised.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 8467
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D09",
+          "selector_keys": [
+            "You are mesmerised."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n尝试迷住视野内所有敌人。未能抵抗的冒险者会无法远离施法者，\n其他生物则会直接陷入眩晕。\n\n离开施法者视野会结束控制移动的效果。",
+              "en_file": "crawl-ref/source/dat/descript/spells.txt",
+              "en_key_line": 1327,
+              "english": "\nAttempts to entrance all enemies in sight. Adventurers who fail to resist will\nbecome unable to move away from the caster, while other creatures will become\ndazed outright.\n\nLeaving the caster's line of sight will end the movement-controlling effect.",
+              "key": "Mesmerise spell",
+              "zh_file": "crawl-ref/source/dat/descript/zh/spells.txt",
+              "zh_key_line": 851
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D10",
+          "selector_keys": [
+            "Mesmerise spell"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n用邪恶能量压倒敌人，不可抗拒地削弱其近战攻击并降低法术威力。\n它还会使无法抵抗全部诅咒力量的敌人眩晕和失明，\n即使目标没有视觉感官也不例外。",
+              "en_file": "crawl-ref/source/dat/descript/spells.txt",
+              "en_key_line": 631,
+              "english": "\nOverwhelms an enemy with malignant energies, irresistibly weakening their melee\nattacks and reducing the power of their spells. It will additionally daze and\nblind any foe that fails to resist the full force of the curse - even those\nwithout visual senses!",
+              "key": "Enfeeble spell",
+              "zh_file": "crawl-ref/source/dat/descript/zh/spells.txt",
+              "zh_key_line": 451
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D11",
+          "selector_keys": [
+            "Enfeeble spell"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n你正驱使所有护甲喧闹地攻击。你附身的每件护甲都会自主行动；\n它们受到的任何伤害都不会影响你，你也可以自由地穿过它们射击。\n它们的攻击可能使敌人眩晕、陷入衰竭，或使其陷入混乱。",
+              "en_file": "crawl-ref/source/dat/descript/status.txt",
+              "en_key_line": 1117,
+              "english": "\nYou are noisily attacking with all of your armour. Every piece of armour you\nhaunt currently moves of its own volition; any damage it takes will not affect\nyou, you can freely fire through it, and its attacks may daze, drain, or confuse\nyour enemies.",
+              "key": "Cacophony status",
+              "zh_file": "crawl-ref/source/dat/descript/zh/status.txt",
+              "zh_key_line": 843
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D12",
+          "selector_keys": [
+            "Cacophony status"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n一种快速生长的蘑菇，其生命周期以孢子的爆发性释放为高潮。\n这些孢子具有轻微的致幻效果，有时会使吸入它们的生物眩晕。",
+              "en_file": "crawl-ref/source/dat/descript/monsters.txt",
+              "en_key_line": 932,
+              "english": "\nA rapidly-growing mushroom whose life-cycle culminates in an explosive release\nof spores. These spores have a mild psychoactive effect and can sometimes daze\ncreatures who breathe them in.",
+              "key": "burstshroom",
+              "zh_file": "crawl-ref/source/dat/descript/zh/monsters.txt",
+              "zh_key_line": 3188
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D13",
+          "selector_keys": [
+            "burstshroom"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n这个生物暂时无法行动，但任何敌对行为将使其立即恢复神智。",
+              "en_file": "crawl-ref/source/dat/descript/monstatus.txt",
+              "en_key_line": 174,
+              "english": "\nThis creature is temporarily unable to act, but any hostile action will cause it to\nimmediately regain its senses.",
+              "key": "dazed monstatus",
+              "zh_file": "crawl-ref/source/dat/descript/zh/monstatus.txt",
+              "zh_key_line": 158
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D14",
+          "selector_keys": [
+            "dazed monstatus"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "你深受迷魂影响，无法狂暴。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 42426,
+              "english": "You are too mesmerised to rage.",
+              "key": "You are too mesmerised to rage.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 42426
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D15",
+          "selector_keys": [
+            "You are too mesmerised to rage."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "眩晕",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 20371,
+              "english": "dazed",
+              "key": "dazed",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 20371
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D16",
+          "selector_keys": [
+            "dazed"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n唱出萦绕心头的歌，迷住附近听众。未能抵抗的冒险者会无法远离歌者，\n其他生物则会直接陷入眩晕。\n\n离开施法者视野会结束控制移动的效果。",
+              "en_file": "crawl-ref/source/dat/descript/spells.txt",
+              "en_key_line": 1896,
+              "english": "\nSings a haunting song that mesmerises nearby listeners. Adventurers who fail to\nresist will become unable to move away from the singer, while other creatures\nwill become dazed outright.\n\nLeaving the caster's line of sight will end the movement-controlling effect.",
+              "key": "Siren Song spell",
+              "zh_file": "crawl-ref/source/dat/descript/zh/spells.txt",
+              "zh_key_line": 1140
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D17",
+          "selector_keys": [
+            "Siren Song spell"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n唱出一首极具魔力、萦绕心头的歌。未能抵抗的冒险者会无法远离歌者\n（有时还会不由自主地被拉近），其他生物则会直接陷入眩晕。\n\n此外，它可能从附近的任何深水中召来溺魂。\n\n离开施法者视野会结束控制移动的效果。",
+              "en_file": "crawl-ref/source/dat/descript/spells.txt",
+              "en_key_line": 76,
+              "english": "\nSings a powerfully haunting song. Adventurers who fail to resist will become\nunable to move away from the singer (and will sometimes be drawn closer\ninvoluntarily), while other creatures will become dazed outright.\n\nIn addition, it may call forth drowned souls from any nearby bodies of deep\nwater.\n\nLeaving the caster's line of sight will end the movement-controlling effect.",
+              "key": "Avatar Song spell",
+              "zh_file": "crawl-ref/source/dat/descript/zh/spells.txt",
+              "zh_key_line": 71
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D18",
+          "selector_keys": [
+            "Avatar Song spell"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "毒烟",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 17995,
+              "english": "noxious fumes",
+              "key": "noxious fumes",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 17995
+            }
+          ],
+          "group": "noxious fumes",
+          "id": "F01",
+          "selector_keys": [
+            "noxious fumes"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "毒气",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 17998,
+              "english": "poison gas",
+              "key": "poison gas",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 17998
+            }
+          ],
+          "group": "noxious fumes",
+          "id": "F02",
+          "selector_keys": [
+            "poison gas"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n一团呛人又有毒的云。\n任何生物身处其中，除非具有毒抗，否则都有陷入混乱的危险。\n越坚韧、经验等级越高的生物不太会受此影响。",
+              "en_file": "crawl-ref/source/dat/descript/clouds.txt",
+              "en_key_line": 12,
+              "english": "\nA cloud of vile, choking fumes. Any creature spending time in it will be at\nrisk of becoming confused by the gases, unless resistant to poison. Tougher,\nmore experienced creatures are less likely to be affected.",
+              "key": "noxious fumes cloud",
+              "zh_file": "crawl-ref/source/dat/descript/zh/clouds.txt",
+              "zh_key_line": 11
+            }
+          ],
+          "group": "noxious fumes",
+          "id": "F03",
+          "selector_keys": [
+            "noxious fumes cloud"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n一团有着致命毒性的云。任何没有毒抗的生物，在里面就会中毒并直接受到伤害。",
+              "en_file": "crawl-ref/source/dat/descript/clouds.txt",
+              "en_key_line": 26,
+              "english": "\nA cloud of deadly poison. Any creature without resistance to poison will be\nboth poisoned and directly harmed by time spent in it.",
+              "key": "poison gas cloud",
+              "zh_file": "crawl-ref/source/dat/descript/zh/clouds.txt",
+              "zh_key_line": 23
+            }
+          ],
+          "group": "noxious fumes",
+          "id": "F04",
+          "selector_keys": [
+            "poison gas cloud"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n召出一个脆弱的瓶子，瓶子爆炸后形成短暂存在的毒烟云。\n这些云可能使任何没有毒抗的生物陷入混乱。\n越坚韧、经验越丰富的生物越不容易受影响。",
+              "en_file": "crawl-ref/source/dat/descript/spells.txt",
+              "en_key_line": 1321,
+              "english": "\nConjures a fragile flask that explodes into short-lived clouds of noxious fumes.\nThese clouds may cause confusion in any creature not resistant to poison.\nTougher, more experienced creatures are less likely to be affected.",
+              "key": "Mephitic Cloud spell",
+              "zh_file": "crawl-ref/source/dat/descript/zh/spells.txt",
+              "zh_key_line": 845
+            }
+          ],
+          "group": "noxious fumes",
+          "id": "F05",
+          "selector_keys": [
+            "Mephitic Cloud spell"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n产生一大片毒烟云，可能引起混乱。",
+              "en_file": "crawl-ref/source/dat/descript/spells.txt",
+              "en_key_line": 1423,
+              "english": "\nCreates a large cloud of noxious fumes, which may cause confusion.",
+              "key": "Noxious Cloud spell",
+              "zh_file": "crawl-ref/source/dat/descript/zh/spells.txt",
+              "zh_key_line": 916
+            }
+          ],
+          "group": "noxious fumes",
+          "id": "F06",
+          "selector_keys": [
+            "Noxious Cloud spell"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n施放迷瘴云时，毒烟会覆盖一片区域；瞄准时，你会看到它影响的范围。\n设法将多个敌人笼罩在同一片云中，以更有效地利用你的魔法。",
+              "en_file": "crawl-ref/source/dat/descript/tutorial.txt",
+              "en_key_line": 550,
+              "english": "\nMephitic Cloud covers an area in noxious fumes when cast, and you'll be able to\nsee the area it affects as you target it. Try to catch multiple enemies in a\nsingle cloud in order to be more efficient with your magic.",
+              "key": "tutorial4 aiming_clouds",
+              "zh_file": "crawl-ref/source/dat/descript/zh/tutorial.txt",
+              "zh_key_line": 499
+            }
+          ],
+          "group": "noxious fumes",
+          "id": "F07",
+          "selector_keys": [
+            "tutorial4 aiming_clouds"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "捐赠$%d相当于增加%d点虔诚值。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 2509,
+              "english": "A donation of $%d equates to an increase of piety by %d.",
+              "key": "A donation of $%d equates to an increase of piety by %d.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 2509
+            }
+          ],
+          "group": "piety",
+          "id": "P01",
+          "selector_keys": [
+            "A donation of $%d equates to an increase of piety by %d."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "你感到自己的虔诚值降低了。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 9628,
+              "english": "You feel less pious.",
+              "key": "You feel less pious.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 9628
+            }
+          ],
+          "group": "piety",
+          "id": "P02",
+          "selector_keys": [
+            "You feel less pious."
+          ]
+        },
+        {
+          "entries": [],
+          "group": "piety",
+          "id": "P03",
+          "selector_keys": [
+            "To the devout, Zin provideth. From the rest..."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "虔诚者",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 14261,
+              "english": "Pious",
+              "key": "Pious",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 14261
+            }
+          ],
+          "group": "piety",
+          "id": "P04",
+          "selector_keys": [
+            "Pious"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "达到了",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 35234,
+              "english": "Reached ",
+              "key": "Reached ",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 35234
+            },
+            {
+              "chinese": "虔诚等级，信仰",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 35276,
+              "english": " piety under ",
+              "key": " piety under ",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 35276
+            }
+          ],
+          "group": "piety",
+          "id": "P05",
+          "selector_keys": [
+            "Reached ",
+            " piety under "
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "视野内有敌对怪物时使用祈神能力，偶尔会召唤一条龙。触发几率为10% + 所使用能力的虔诚值消耗的两倍。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 29502,
+              "english": "It occasionally summons a dragon when using Invocations with hostile monsters in sight. Chance is 10% + twice the piety cost of the ability used.",
+              "key": "It occasionally summons a dragon when using Invocations with hostile monsters in sight. Chance is 10% + twice the piety cost of the ability used.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 29502
+            }
+          ],
+          "group": "piety",
+          "id": "P06",
+          "selector_keys": [
+            "It occasionally summons a dragon when using Invocations with hostile monsters in sight. Chance is 10% + twice the piety cost of the ability used."
+          ]
+        },
+        {
+          "entries": [],
+          "group": "piety",
+          "id": "P07",
+          "selector_keys": [
+            "It occasionally summons a dragon when using divine abilities with hostile monsters in sight. Chance is 10% + twice the piety cost of the ability used."
+          ]
+        },
+        {
+          "entries": [],
+          "group": "piety",
+          "id": "P08",
+          "selector_keys": []
+        },
+        {
+          "entries": [
+            {
+              "chinese": "这个传送器设有禁区标记！",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 7638,
+              "english": "This transporter is marked as excluded!",
+              "key": "This transporter is marked as excluded!",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 7638
+            }
+          ],
+          "group": "travel exclusion",
+          "id": "T01",
+          "selector_keys": [
+            "This transporter is marked as excluded!"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "这个%s%s设有禁区标记！仍要打开它吗？",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 40899,
+              "english": "This %s%s is marked as excluded! Open it anyway?",
+              "key": "This %s%s is marked as excluded! Open it anyway?",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 40899
+            }
+          ],
+          "group": "travel exclusion",
+          "id": "T02",
+          "selector_keys": [
+            "This %s%s is marked as excluded! Open it anyway?"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\\n为避免在旅行或自动探索时意外打开你希望保持关闭的门，你可以在光标位于该格时，从地图视图（<w>X</w>）中按<w>ee</w>将其标记为旅行禁区。此禁区标记会阻止自动旅行进入该格，直到你再次按<w>Xe</w>将其移除。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 40830,
+              "english": "\\nTo avoid accidentally opening a door you'd rather remain closed during travel or autoexplore, you can mark it with an exclusion from the map view (<w>X</w>) with <w>ee</w> while your cursor is on the grid in question. Such an exclusion will prevent autotravel from ever entering that grid until you remove the exclusion with another press of <w>Xe</w>.",
+              "key": "\\nTo avoid accidentally opening a door you'd rather remain closed during travel or autoexplore, you can mark it with an exclusion from the map view (<w>X</w>) with <w>ee</w> while your cursor is on the grid in question. Such an exclusion will prevent autotravel from ever entering that grid until you remove the exclusion with another press of <w>Xe</w>.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 40830
+            }
+          ],
+          "group": "travel exclusion",
+          "id": "T03",
+          "selector_keys": [
+            "\\nTo avoid accidentally opening a door you'd rather remain closed during travel or autoexplore, you can mark it with an exclusion from the map view (<w>X</w>) with <w>ee</w> while your cursor is on the grid in question. Such an exclusion will prevent autotravel from ever entering that grid until you remove the exclusion with another press of <w>Xe</w>."
+          ]
+        },
+        {
+          "entries": [],
+          "group": "travel exclusion",
+          "id": "T04",
+          "selector_keys": [
+            "HINT_DESCRIBE_CLOSED_DOOR"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "%d个%s禁区%s",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 34766,
+              "english": "%d %sexclusion%s",
+              "key": "%d %sexclusion%s",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 34766
+            }
+          ],
+          "group": "travel exclusion",
+          "id": "T05",
+          "selector_keys": [
+            "%d %sexclusion%s"
+          ]
+        }
+      ],
+      "stage_A_head": "e9227fd6d5fe45d4f597b0b54c6f885b48a3053a"
+    },
+    "trunk": {
+      "baseline": "5417df71b38aacf59adeff888d4ada88d5576391",
+      "glossary_sha256": "cdccfd9e10789d9bd17cf369e2a60180a8c7b1850e259e3786d7940ebff9726a",
+      "input_sha256": {
+        "crawl-ref/source/art-data.txt": "b8b64a8adc009682f18d41c74becc33ff0788d19df7e244e319f2035f05aaa79",
+        "crawl-ref/source/art-func.h": "c3249f04fa208b60deef50ce30990783eeb1e68b492997c95d8e90bc36fad0d4",
+        "crawl-ref/source/cloud.cc": "ae40aba64f5d400c3c8cb03ce648afbd6e6065f8f7088b0b2953ba9b581f61bd",
+        "crawl-ref/source/command.cc": "2ccc9bd7ea571c0925c8e779dc4c9b97ae642bb1d343b79b6d0ad62646b4630d",
+        "crawl-ref/source/dat/descript/clouds.txt": "c8b1ead15f5a5f7e42e6727046edf75e52366f5f3d2f85e8efb99522cfd554a2",
+        "crawl-ref/source/dat/descript/hints.txt": "49bfd3a41fd876d35c04ca5dfb86bea7576072fa88a71353cf63635446066424",
+        "crawl-ref/source/dat/descript/monstatus.txt": "4bd4fd9602ccf921d4c1092c863e1930f2736b12a2f0d4cac446e55b657b0b4c",
+        "crawl-ref/source/dat/descript/monsters.txt": "0ebe48bb0ae35b6d5731c0cbecfdb5598ea44d84c415c933a751d0fa429e723d",
+        "crawl-ref/source/dat/descript/spells.txt": "5845cd8cdf40b1e50e1896f983b94bdd4cee2f78b7da96aeeffd73df43516d00",
+        "crawl-ref/source/dat/descript/status.txt": "91aa582019a70560f2dcaa97b0a5100008efd6e20c29501da781aa44d92050e1",
+        "crawl-ref/source/dat/descript/tutorial.txt": "6be1260f19fd3bd10bebdafd75f78cd7df550924aff8794732ff374a47c7a595",
+        "crawl-ref/source/dat/descript/zh/clouds.txt": "b64de843f5140f9b97659e0808541837331755aa4f7977ea295c086a91d4f082",
+        "crawl-ref/source/dat/descript/zh/hints.txt": "2bab9ccbd7284fffa65d895112975d7da104afb45301824dd279c1275593ae6b",
+        "crawl-ref/source/dat/descript/zh/monstatus.txt": "8334011dfbd9f2a50e596f96f5c4e79e88f54adf2460631294c9e632a5ff51c8",
+        "crawl-ref/source/dat/descript/zh/monsters.txt": "fe675802596c33b2c8670d7af33d1fea08af80fd117d9ea97f53fda925627a7b",
+        "crawl-ref/source/dat/descript/zh/spells.txt": "56b64894aaef8da360c3c994eaee030599d29025ef7efa2a5c88817d1b1a5850",
+        "crawl-ref/source/dat/descript/zh/status.txt": "d08755ac519dead401b7f36d3f7457456da85c9e0fff95b4352ebd85b401455c",
+        "crawl-ref/source/dat/descript/zh/tutorial.txt": "14880c1e4750b2e7812ca91e1e608e71c791104b078a709a2990d06cc962268f",
+        "crawl-ref/source/dat/i18n/zh/source.txt": "1c0a6d1974efae09527d7010c62edc4a5685736ba10ff27c80245059d840b4ee",
+        "crawl-ref/source/describe-god.cc": "923c150056298e8d89a9a3897408f960da9c0b5f6f3739dca05e19679f229417",
+        "crawl-ref/source/describe.cc": "b796d4271e223bce269a7e938f3712a7b30d252514fcf21a0cadc31fb7f9ea8b",
+        "crawl-ref/source/duration-data.h": "97998bc7d0781711e217d4db880cbdd49e5eecf1b540c43cb0b71b52f842a91b",
+        "crawl-ref/source/duration-type.h": "88953feb776a807b80443f3ffb4d870a9bea548a2ab0165bf428e09721bc22a0",
+        "crawl-ref/source/exclude.cc": "ab1ee4a1da765b36e6749768634461d26034c6bd68462493c239a4e710f962d3",
+        "crawl-ref/source/god-abil.cc": "c5b466466d1590b5af2b077cc5d355664665a90299ead8caed4afd0fe5ff2174",
+        "crawl-ref/source/hints.cc": "bbde41f1f36bfd212beb3edc667c153e8516321c670a8be6528c642bf4ecf15c",
+        "crawl-ref/source/melee-attack.cc": "71090e90fc6b6db034c2c2578057a2e12186fb7157c9834fb44781700040edf1",
+        "crawl-ref/source/mon-act.cc": "ae59eed04a02b02ae8bba912bf0a1e37dc99270bfe8f160f1caeda8657090a65",
+        "crawl-ref/source/mon-cast.cc": "667e2cd41f8084b0ba2f1111cdaeff839d7c94fced1fe10a4c98290c537e09d7",
+        "crawl-ref/source/mon-ench.cc": "0c6989d8faf509980ca3d78514cd51302f8c6297228ebb86f43e6f6f3be5331e",
+        "crawl-ref/source/mon-info.cc": "a222e2fb55dd02eaec5be1dcacfd4918c204b3e36b599cdc8ea83d39712f6f0b",
+        "crawl-ref/source/mon-spell.h": "c3ea72cbb86ad183ba785e025c9da3e118ad73986ab1696e48ff71e3fe894b3a",
+        "crawl-ref/source/movement.cc": "211df5349c50cf60a16289911273732014865a413e86107efc322a14cb292e6d",
+        "crawl-ref/source/mutation-data.h": "6648a8f6c0a7d73fb73e24d023b240c4211d07ae19a0bed93c05b7312a99fae8",
+        "crawl-ref/source/notes.cc": "d6a8a7112115bac7aee95a3a163d172d8b21f79167b7d5901ae1a13c72cc9bd3",
+        "crawl-ref/source/player-equip.cc": "7580b6b6b74a2e28cfdbc376404f16c99372267c8d77959fe543dea10067a79b",
+        "crawl-ref/source/player-reacts.cc": "1197c13edd0ab185e961e08641a1f450d1df0d48e81c68c689327cbb39648360",
+        "crawl-ref/source/player.cc": "660a8683b79659a281d84f733bf5d84502209748b238934efc5757678222464a",
+        "crawl-ref/source/skill-menu.cc": "61507edd2436b0344c9c7ac0194d046e66066e084aaea5141f1091d9e61e77f0",
+        "crawl-ref/source/skills.cc": "d1d36984321be05a62818cadb785f31b44e25a926940daafb061585aaae48163",
+        "crawl-ref/source/spl-clouds.cc": "45200049fff79ff360dabda2217eae16de81ca60cd92eb571cc90af62583387d",
+        "crawl-ref/source/spl-damage.cc": "13b6afecd64acd1de365abba1108c08065b71f22d94928f2f79866a62b0fd792",
+        "crawl-ref/source/spl-data.h": "24d5380776b7fb4ebcff3b27e45dfff23968805276646d225659313b245f0c27",
+        "crawl-ref/source/spl-monench.cc": "079b025ccbfa981f2405a6b2974ad738e25389821b196d074ea17c035b8fe5e0",
+        "crawl-ref/source/status.cc": "68deace8ec58edd5045afacc3e1622bdbb10ed33b1613c77430efc7cf221375a",
+        "crawl-ref/source/transform.cc": "36aec334f960fb6ffb9148e9d8b28a6f89d20b50202a2767ff7c40fb9a06dcaf",
+        "crawl-ref/source/travel.cc": "f0775d8a2c170ae9d0d6dd3c01def783d165aca7ae24f225c0b733686002e919",
+        "docs/decisions.md": "1f502816a76f2d2c69d1442733bfc11485f318a10190359f0be5055b7a4f5165",
+        "docs/glossary.md": "cdccfd9e10789d9bd17cf369e2a60180a8c7b1850e259e3786d7940ebff9726a"
+      },
+      "records": [
+        {
+          "entries": [
+            {
+              "chinese": "\n种族资质以<white>白色</white>显示。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 12883,
+              "english": "The species aptitude is in <white>white</white>.",
+              "key": "The species aptitude is in <white>white</white>.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 12883
+            }
+          ],
+          "group": "aptitude",
+          "id": "A01",
+          "selector_keys": [
+            "The species aptitude is in <white>white</white>."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "<w>~</w>：宏帮助\\n<w>&</w>：选项帮助\\n<w>%</w>：资质表\\n<w>/</w>：查找说明\\n<w>Q</w>：常见问题\\n",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 43389,
+              "english": "<w>~</w>: Macros help\\n<w>&</w>: Options help\\n<w>%</w>: Table of aptitudes\\n<w>/</w>: Lookup description\\n<w>Q</w>: FAQ\\n",
+              "key": "<w>~</w>: Macros help\\n<w>&</w>: Options help\\n<w>%</w>: Table of aptitudes\\n<w>/</w>: Lookup description\\n<w>Q</w>: FAQ\\n",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 43389
+            }
+          ],
+          "group": "aptitude",
+          "id": "A02",
+          "selector_keys": [
+            "<w>~</w>: Macros help\\n<w>&</w>: Options help\\n<w>%</w>: Table of aptitudes\\n<w>/</w>: Lookup description\\n<w>Q</w>: FAQ\\n"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n训练成本（以<cyan>青色</cyan>显示）表示将指定技能提升一级所需的经验值，以资质为零的技能从零级升到一级所需的经验值为基准。",
+              "en_file": "crawl-ref/source/dat/descript/hints.txt",
+              "en_key_line": 1111,
+              "english": "\nThe training cost (in <cyan>cyan</cyan>) shows the experience cost to raise the\ngiven skill one level, relative to the cost of raising an aptitude zero skill\nfrom level zero to level one.",
+              "key": "HINT_SKILL_COSTS",
+              "zh_file": "crawl-ref/source/dat/descript/zh/hints.txt",
+              "zh_key_line": 819
+            }
+          ],
+          "group": "aptitude",
+          "id": "A03",
+          "selector_keys": [
+            "HINT_SKILL_COSTS"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n一个美丽但高傲的地底精灵，有着魔法天赋，但除此之外，就没什么了。\n他的技能是对他的双胞胎妹妹杜维莎的格斗技能的完美补充。\n为寻求更强大的魔法，他和他的妹妹一起前往地表。",
+              "en_file": "crawl-ref/source/dat/descript/monsters.txt",
+              "en_key_line": 134,
+              "english": "\nA beautiful but vain deep elf with an aptitude for magic and little else. His\nskills are the perfect complement of his twin sister Duvessa's fighting prowess.\nIn search of more powerful spells, he journeys to the surface with his sister.",
+              "key": "Dowan",
+              "zh_file": "crawl-ref/source/dat/descript/zh/monsters.txt",
+              "zh_key_line": 106
+            }
+          ],
+          "group": "aptitude",
+          "id": "A04",
+          "selector_keys": [
+            "Dowan"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "训练成本（以<cyan>青色</cyan>显示）表示将指定技能提升一级所需的经验值，相对于当前",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 43596,
+              "english": "The training cost (in <cyan>cyan</cyan>) shows the experience cost to raise the given skill one level, relative to the cost of raising an aptitude zero skill from level zero to level one.",
+              "key": "The training cost (in <cyan>cyan</cyan>) shows the experience cost to raise the given skill one level, relative to the cost of raising an aptitude zero skill from level zero to level one.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 43596
+            }
+          ],
+          "group": "aptitude",
+          "id": "A05",
+          "selector_keys": [
+            "The training cost (in <cyan>cyan</cyan>) shows the experience cost to raise the given skill one level, relative to the cost of raising an aptitude zero skill from level zero to level one."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n一个由纯净的活水晶生成的多刺、长鼻啮齿动物。它免疫大多数形式的魔法，\n既能射击使目标结晶，也能投掷令人剧痛的倒刺。",
+              "en_file": "crawl-ref/source/dat/descript/monsters.txt",
+              "en_key_line": 1098,
+              "english": "\nA spiny, long snouted rodent grown out of pure living crystal. It is\nimmune to most forms of magic and hurls both crystallising shots and painful\nbarbs.",
+              "key": "crystal echidna",
+              "zh_file": "crawl-ref/source/dat/descript/zh/monsters.txt",
+              "zh_key_line": 835
+            }
+          ],
+          "group": "barbs",
+          "id": "B01",
+          "selector_keys": [
+            "crystal echidna"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n有倒刺扎入你的皮肤，移动时会受到伤害。\n在原地停留片刻，就能移除这些倒刺而不受伤害。",
+              "en_file": "crawl-ref/source/dat/descript/status.txt",
+              "en_key_line": 222,
+              "english": "\nThere are barbs embedded in your skin, and moving around will cause you to take\ndamage. Remaining in place for a short time will allow you to remove the barbs\nwithout taking damage.",
+              "key": "Barbs status",
+              "zh_file": "crawl-ref/source/dat/descript/zh/status.txt",
+              "zh_key_line": 172
+            }
+          ],
+          "group": "barbs",
+          "id": "B02",
+          "selector_keys": [
+            "Barbs status"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "尖刺",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 40551,
+              "english": "Barbs",
+              "key": "status|Barbs",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 40551
+            }
+          ],
+          "group": "barbs",
+          "id": "B03",
+          "selector_keys": [
+            "status|Barbs"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "你摆脱了迷魂。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 22213,
+              "english": "You break out of your daze.",
+              "key": "You break out of your daze.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 22213
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D01",
+          "selector_keys": [
+            "You break out of your daze."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "你从眩晕中清醒过来。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 18538,
+              "english": "You snap out of the daze.",
+              "key": "You snap out of the daze.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 18538
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D02",
+          "selector_keys": [
+            "You snap out of the daze."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "%s从%s眩晕中清醒过来。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 1834,
+              "english": "%s snaps out of %s daze.",
+              "key": "%s snaps out of %s daze.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 1834
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D03",
+          "selector_keys": [
+            "%s snaps out of %s daze."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "被你的吟诵弄得眩晕了。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 35613,
+              "english": " is dazed by your recitation.",
+              "key": " is dazed by your recitation.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 35613
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D04",
+          "selector_keys": [
+            " is dazed by your recitation."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "%s恍惚状态加深了。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 36073,
+              "english": "%s trance deepens.",
+              "key": "%s trance deepens.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 36073
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D05",
+          "selector_keys": [
+            "%s trance deepens."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "%1$s被%2$s迷住了！",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 36076,
+              "english": "%s is mesmerised by %s!",
+              "key": "%s is mesmerised by %s!",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 36076
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D06",
+          "selector_keys": [
+            "%s is mesmerised by %s!"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "%s被你的凝视短暂迷住了。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 1519,
+              "english": "%s is briefly mesmerised by your gaze.",
+              "key": "%s is briefly mesmerised by your gaze.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 1519
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D07",
+          "selector_keys": [
+            "%s is briefly mesmerised by your gaze."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "你的巨口有时会被美味的食物迷住。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 25213,
+              "english": "Your maw sometimes becomes mesmerised by tasty morsels.",
+              "key": "Your maw sometimes becomes mesmerised by tasty morsels.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 25213
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D08",
+          "selector_keys": [
+            "Your maw sometimes becomes mesmerised by tasty morsels."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "你陷入了迷魂状态。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 8836,
+              "english": "You are mesmerised.",
+              "key": "You are mesmerised.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 8836
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D09",
+          "selector_keys": [
+            "You are mesmerised."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n尝试迷住视野内所有敌人。未能抵抗的冒险者会无法远离施法者，\n其他生物则会直接陷入眩晕。\n\n离开施法者视野会结束控制移动的效果。",
+              "en_file": "crawl-ref/source/dat/descript/spells.txt",
+              "en_key_line": 1382,
+              "english": "\nAttempts to entrance all enemies in sight. Adventurers who fail to resist will\nbecome unable to move away from the caster, while other creatures will become\ndazed outright.\n\nLeaving the caster's line of sight will end the movement-controlling effect.",
+              "key": "Mesmerise spell",
+              "zh_file": "crawl-ref/source/dat/descript/zh/spells.txt",
+              "zh_key_line": 854
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D10",
+          "selector_keys": [
+            "Mesmerise spell"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n用邪恶能量压倒敌人，不可抗拒地削弱其近战攻击并降低法术威力。\n它还会使无法抵抗全部诅咒力量的敌人眩晕和失明，\n即使目标没有视觉感官也不例外。",
+              "en_file": "crawl-ref/source/dat/descript/spells.txt",
+              "en_key_line": 671,
+              "english": "\nOverwhelms an enemy with malignant energies, irresistibly weakening their melee\nattacks and reducing the power of their spells. It will additionally daze and\nblind any foe that fails to resist the full force of the curse - even those\nwithout visual senses!",
+              "key": "Enfeeble spell",
+              "zh_file": "crawl-ref/source/dat/descript/zh/spells.txt",
+              "zh_key_line": 451
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D11",
+          "selector_keys": [
+            "Enfeeble spell"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n你正驱使所有护甲喧闹地攻击。你附身的每件护甲都会自主行动；\n它们受到的任何伤害都不会影响你，你也可以自由地穿过它们射击。\n它们的攻击可能使敌人眩晕、汲取其生命力，或使其陷入混乱。",
+              "en_file": "crawl-ref/source/dat/descript/status.txt",
+              "en_key_line": 1110,
+              "english": "\nYou are noisily attacking with all of your armour. Every piece of armour you\nhaunt currently moves of its own volition; any damage it takes will not affect\nyou, you can freely fire through it, and its attacks may daze, drain, or confuse\nyour enemies.",
+              "key": "Cacophony status",
+              "zh_file": "crawl-ref/source/dat/descript/zh/status.txt",
+              "zh_key_line": 832
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D12",
+          "selector_keys": [
+            "Cacophony status"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n一种快速生长的蘑菇，其生命周期以孢子的爆发性释放为高潮。\n这些孢子具有轻微的致幻效果，有时会使吸入它们的生物眩晕。",
+              "en_file": "crawl-ref/source/dat/descript/monsters.txt",
+              "en_key_line": 950,
+              "english": "\nA rapidly-growing mushroom whose life-cycle culminates in an explosive release\nof spores. These spores have a mild psychoactive effect and can sometimes daze\ncreatures who breathe them in.",
+              "key": "burstshroom",
+              "zh_file": "crawl-ref/source/dat/descript/zh/monsters.txt",
+              "zh_key_line": 3163
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D13",
+          "selector_keys": [
+            "burstshroom"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n这个生物暂时无法行动，但任何敌对行为将使其立即恢复神智。",
+              "en_file": "crawl-ref/source/dat/descript/monstatus.txt",
+              "en_key_line": 174,
+              "english": "\nThis creature is temporarily unable to act, but any hostile action will cause it to\nimmediately regain its senses.",
+              "key": "dazed monstatus",
+              "zh_file": "crawl-ref/source/dat/descript/zh/monstatus.txt",
+              "zh_key_line": 158
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D14",
+          "selector_keys": [
+            "dazed monstatus"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "你深受迷魂影响，无法狂暴。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 45342,
+              "english": "You are too mesmerised to rage.",
+              "key": "You are too mesmerised to rage.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 45342
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D15",
+          "selector_keys": [
+            "You are too mesmerised to rage."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "眩晕",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 21202,
+              "english": "dazed",
+              "key": "dazed",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 21202
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D16",
+          "selector_keys": [
+            "dazed"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n唱出萦绕心头的歌，迷住附近听众。未能抵抗的冒险者会无法远离歌者，\n其他生物则会直接陷入眩晕。\n\n离开施法者视野会结束控制移动的效果。",
+              "en_file": "crawl-ref/source/dat/descript/spells.txt",
+              "en_key_line": 1962,
+              "english": "\nSings a haunting song that mesmerises nearby listeners. Adventurers who fail to\nresist will become unable to move away from the singer, while other creatures\nwill become dazed outright.\n\nLeaving the caster's line of sight will end the movement-controlling effect.",
+              "key": "Siren Song spell",
+              "zh_file": "crawl-ref/source/dat/descript/zh/spells.txt",
+              "zh_key_line": 1142
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D17",
+          "selector_keys": [
+            "Siren Song spell"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n唱出一首极具魔力、萦绕心头的歌。未能抵抗的冒险者会无法远离歌者\n（有时还会不由自主地被拉近），其他生物则会直接陷入眩晕。\n\n此外，它可能从附近的任何深水中召来溺魂。\n\n离开施法者视野会结束控制移动的效果。",
+              "en_file": "crawl-ref/source/dat/descript/spells.txt",
+              "en_key_line": 75,
+              "english": "\nSings a powerfully haunting song. Adventurers who fail to resist will become\nunable to move away from the singer (and will sometimes be drawn closer\ninvoluntarily), while other creatures will become dazed outright.\n\nIn addition, it may call forth drowned souls from any nearby bodies of deep\nwater.\n\nLeaving the caster's line of sight will end the movement-controlling effect.",
+              "key": "Avatar Song spell",
+              "zh_file": "crawl-ref/source/dat/descript/zh/spells.txt",
+              "zh_key_line": 71
+            }
+          ],
+          "group": "daze / non-Dazed",
+          "id": "D18",
+          "selector_keys": [
+            "Avatar Song spell"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "毒烟",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 18754,
+              "english": "noxious fumes",
+              "key": "noxious fumes",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 18754
+            }
+          ],
+          "group": "noxious fumes",
+          "id": "F01",
+          "selector_keys": [
+            "noxious fumes"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "毒气",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 18757,
+              "english": "poison gas",
+              "key": "poison gas",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 18757
+            }
+          ],
+          "group": "noxious fumes",
+          "id": "F02",
+          "selector_keys": [
+            "poison gas"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n一团呛人又有毒的云。\n任何生物身处其中，除非具有毒抗，否则都有陷入混乱的危险。\n越坚韧、经验等级越高的生物不太会受此影响。",
+              "en_file": "crawl-ref/source/dat/descript/clouds.txt",
+              "en_key_line": 12,
+              "english": "\nA cloud of vile, choking fumes. Any creature spending time in it will be at\nrisk of becoming confused by the gases, unless resistant to poison. Tougher,\nmore experienced creatures are less likely to be affected.",
+              "key": "noxious fumes cloud",
+              "zh_file": "crawl-ref/source/dat/descript/zh/clouds.txt",
+              "zh_key_line": 11
+            }
+          ],
+          "group": "noxious fumes",
+          "id": "F03",
+          "selector_keys": [
+            "noxious fumes cloud"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n一团有着致命毒性的云。任何没有毒抗的生物，在里面就会中毒并直接受到伤害。",
+              "en_file": "crawl-ref/source/dat/descript/clouds.txt",
+              "en_key_line": 26,
+              "english": "\nA cloud of deadly poison. Any creature without resistance to poison will be\nboth poisoned and directly harmed by time spent in it.",
+              "key": "poison gas cloud",
+              "zh_file": "crawl-ref/source/dat/descript/zh/clouds.txt",
+              "zh_key_line": 23
+            }
+          ],
+          "group": "noxious fumes",
+          "id": "F04",
+          "selector_keys": [
+            "poison gas cloud"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n召出一个脆弱的瓶子，瓶子爆炸后形成一团短暂存在的毒烟。\n烟雾可能使任何没有毒抗的生物陷入混乱。\n越坚韧、经验等级越高的生物越不容易受影响。",
+              "en_file": "crawl-ref/source/dat/descript/spells.txt",
+              "en_key_line": 1376,
+              "english": "\nConjures a fragile flask that explodes into short-lived clouds of noxious fumes.\nThese clouds may cause confusion in any creature not resistant to poison.\nTougher, more experienced creatures are less likely to be affected.",
+              "key": "Mephitic Cloud spell",
+              "zh_file": "crawl-ref/source/dat/descript/zh/spells.txt",
+              "zh_key_line": 848
+            }
+          ],
+          "group": "noxious fumes",
+          "id": "F05",
+          "selector_keys": [
+            "Mephitic Cloud spell"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n产生大量毒烟，这可能会引起混乱。",
+              "en_file": "crawl-ref/source/dat/descript/spells.txt",
+              "en_key_line": 1483,
+              "english": "\nCreates a large cloud of noxious fumes, which may cause confusion.",
+              "key": "Noxious Cloud spell",
+              "zh_file": "crawl-ref/source/dat/descript/zh/spells.txt",
+              "zh_key_line": 919
+            }
+          ],
+          "group": "noxious fumes",
+          "id": "F06",
+          "selector_keys": [
+            "Noxious Cloud spell"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n施放迷瘴云时，毒烟会覆盖一片区域；瞄准时，你会看到它影响的范围。\n设法将多个敌人捕在一片云中，以更有效地利用你的魔法。",
+              "en_file": "crawl-ref/source/dat/descript/tutorial.txt",
+              "en_key_line": 551,
+              "english": "\nMephitic Cloud covers an area in noxious fumes when cast, and you'll be able to\nsee the area it affects as you target it. Try to catch multiple enemies in a\nsingle cloud in order to be more efficient with your magic.",
+              "key": "tutorial4 aiming_clouds",
+              "zh_file": "crawl-ref/source/dat/descript/zh/tutorial.txt",
+              "zh_key_line": 500
+            }
+          ],
+          "group": "noxious fumes",
+          "id": "F07",
+          "selector_keys": [
+            "tutorial4 aiming_clouds"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "捐赠$%d相当于增加%d点虔诚值。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 2599,
+              "english": "A donation of $%d equates to an increase of piety by %d.",
+              "key": "A donation of $%d equates to an increase of piety by %d.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 2599
+            }
+          ],
+          "group": "piety",
+          "id": "P01",
+          "selector_keys": [
+            "A donation of $%d equates to an increase of piety by %d."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "你感到自己的虔诚值降低了。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 10066,
+              "english": "You feel less pious.",
+              "key": "You feel less pious.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 10066
+            }
+          ],
+          "group": "piety",
+          "id": "P02",
+          "selector_keys": [
+            "You feel less pious."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "辛供养虔信者。至于其余之众……",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 53791,
+              "english": "To the devout, Zin provideth. From the rest...",
+              "key": "To the devout, Zin provideth. From the rest...",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 53791
+            }
+          ],
+          "group": "piety",
+          "id": "P03",
+          "selector_keys": [
+            "To the devout, Zin provideth. From the rest..."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "虔诚者",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 14897,
+              "english": "Pious",
+              "key": "Pious",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 14897
+            }
+          ],
+          "group": "piety",
+          "id": "P04",
+          "selector_keys": [
+            "Pious"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "对%2$s的虔诚等级达到了%1$s。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 48383,
+              "english": "Reached %1$s piety under %2$s",
+              "key": "piety note|Reached %1$s piety under %2$s",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 48383
+            }
+          ],
+          "group": "piety",
+          "id": "P05",
+          "selector_keys": [
+            "piety note|Reached %1$s piety under %2$s"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "视野内有敌对怪物时使用祈神能力，偶尔会召唤一条龙。触发几率为10% + 所使用能力的虔诚消耗的两倍。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 31758,
+              "english": "It occasionally summons a dragon when using Invocations with hostile monsters in sight. Chance is 10% + twice the piety cost of the ability used.",
+              "key": "It occasionally summons a dragon when using Invocations with hostile monsters in sight. Chance is 10% + twice the piety cost of the ability used.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 31758
+            }
+          ],
+          "group": "piety",
+          "id": "P06",
+          "selector_keys": [
+            "It occasionally summons a dragon when using Invocations with hostile monsters in sight. Chance is 10% + twice the piety cost of the ability used."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "视野内有敌对怪物时使用神祇能力，它偶尔会召唤一条龙。触发几率为10% + 所用能力消耗的虔诚值的两倍。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 31980,
+              "english": "It occasionally summons a dragon when using divine abilities with hostile monsters in sight. Chance is 10% + twice the piety cost of the ability used.",
+              "key": "It occasionally summons a dragon when using divine abilities with hostile monsters in sight. Chance is 10% + twice the piety cost of the ability used.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 31980
+            }
+          ],
+          "group": "piety",
+          "id": "P07",
+          "selector_keys": [
+            "It occasionally summons a dragon when using divine abilities with hostile monsters in sight. Chance is 10% + twice the piety cost of the ability used."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "的虔诚信徒，虔诚度",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 37859,
+              "english": " piety under ",
+              "key": " piety under ",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 37859
+            }
+          ],
+          "group": "piety",
+          "id": "P08",
+          "selector_keys": [
+            " piety under "
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "这个传送器设有禁区标记！",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 7962,
+              "english": "This transporter is marked as excluded!",
+              "key": "This transporter is marked as excluded!",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 7962
+            }
+          ],
+          "group": "travel exclusion",
+          "id": "T01",
+          "selector_keys": [
+            "This transporter is marked as excluded!"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "这个%s%s设有禁区标记！仍要打开它吗？",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 43767,
+              "english": "This %s%s is marked as excluded! Open it anyway?",
+              "key": "This %s%s is marked as excluded! Open it anyway?",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 43767
+            }
+          ],
+          "group": "travel exclusion",
+          "id": "T02",
+          "selector_keys": [
+            "This %s%s is marked as excluded! Open it anyway?"
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\\n为避免在旅行或自动探索时意外打开你希望保持关闭的门，你可以在光标位于该格时，从地图视图（<w>X</w>）中按<w>ee</w>将其标记为旅行禁区。此禁区标记会阻止自动旅行进入该格，直到你再次按<w>Xe</w>将其移除。",
+              "en_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "en_key_line": 43698,
+              "english": "\\nTo avoid accidentally opening a door you'd rather remain closed during travel or autoexplore, you can mark it with an exclusion from the map view (<w>X</w>) with <w>ee</w> while your cursor is on the grid in question. Such an exclusion will prevent autotravel from ever entering that grid until you remove the exclusion with another press of <w>Xe</w>.",
+              "key": "\\nTo avoid accidentally opening a door you'd rather remain closed during travel or autoexplore, you can mark it with an exclusion from the map view (<w>X</w>) with <w>ee</w> while your cursor is on the grid in question. Such an exclusion will prevent autotravel from ever entering that grid until you remove the exclusion with another press of <w>Xe</w>.",
+              "zh_file": "crawl-ref/source/dat/i18n/zh/source.txt",
+              "zh_key_line": 43698
+            }
+          ],
+          "group": "travel exclusion",
+          "id": "T03",
+          "selector_keys": [
+            "\\nTo avoid accidentally opening a door you'd rather remain closed during travel or autoexplore, you can mark it with an exclusion from the map view (<w>X</w>) with <w>ee</w> while your cursor is on the grid in question. Such an exclusion will prevent autotravel from ever entering that grid until you remove the exclusion with another press of <w>Xe</w>."
+          ]
+        },
+        {
+          "entries": [
+            {
+              "chinese": "\n为避免在旅行或自动探索时意外打开你希望保持关闭的门，你可以进入地图视图（<w>$cmd[CMD_DISPLAY_MAP]</w>），将光标移到该格上，按 <w>$cmd[CMD_MAP_EXCLUDE_AREA]$cmd[CMD_MAP_EXCLUDE_AREA]</w> 将其标记为禁区。此禁区会阻止自动旅行进入该格，直到你再次按 <w>$cmd[CMD_DISPLAY_MAP]$cmd[CMD_MAP_EXCLUDE_AREA]</w> 将其移除。",
+              "en_file": "crawl-ref/source/dat/descript/hints.txt",
+              "en_key_line": 1429,
+              "english": "\nTo avoid accidentally opening a door you'd rather remain closed during travel\nor autoexplore, you can mark it with an exclusion from the map view\n(<w>$cmd[CMD_DISPLAY_MAP]</w>) with\n<w>$cmd[CMD_MAP_EXCLUDE_AREA]$cmd[CMD_MAP_EXCLUDE_AREA]</w> while your cursor\nis on the square in question. Such an exclusion will prevent autotravel from\never entering that grid until you remove the exclusion with another press of\n<w>$cmd[CMD_DISPLAY_MAP]$cmd[CMD_MAP_EXCLUDE_AREA]</w>.",
+              "key": "HINT_DESCRIBE_CLOSED_DOOR",
+              "zh_file": "crawl-ref/source/dat/descript/zh/hints.txt",
+              "zh_key_line": 986
+            }
+          ],
+          "group": "travel exclusion",
+          "id": "T04",
+          "selector_keys": [
+            "HINT_DESCRIBE_CLOSED_DOOR"
+          ]
+        },
+        {
+          "entries": [],
+          "group": "travel exclusion",
+          "id": "T05",
+          "selector_keys": [
+            "%d %sexclusion%s"
+          ]
+        }
+      ],
+      "stage_A_head": "eb43a337e47ee6c4110f38fb18c1b715c5e6a6f1"
+    }
+  },
+  "scope": "D-C-096 applicability probes only; no global translation review; no Stage C edits",
+  "spec": [
+    {
+      "group": "aptitude",
+      "id": "A01",
+      "key": "The species aptitude is in <white>white</white>.",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "aptitude",
+      "id": "A02",
+      "key": "<w>~</w>: Macros help\\n<w>&</w>: Options help\\n<w>%</w>: Table of aptitudes\\n<w>/</w>: Lookup description\\n<w>Q</w>: FAQ\\n",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "aptitude",
+      "id": "A03",
+      "key": "HINT_SKILL_COSTS",
+      "path": "crawl-ref/source/dat/descript/zh/hints.txt",
+      "variants": {}
+    },
+    {
+      "group": "aptitude",
+      "id": "A04",
+      "key": "Dowan",
+      "path": "crawl-ref/source/dat/descript/zh/monsters.txt",
+      "variants": {}
+    },
+    {
+      "group": "aptitude",
+      "id": "A05",
+      "key": "The training cost (in <cyan>cyan</cyan>) shows the experience cost to raise the given skill one level, relative to the cost of raising an aptitude zero skill from level zero to level one.",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "barbs",
+      "id": "B01",
+      "key": "crystal echidna",
+      "path": "crawl-ref/source/dat/descript/zh/monsters.txt",
+      "variants": {}
+    },
+    {
+      "group": "barbs",
+      "id": "B02",
+      "key": "Barbs status",
+      "path": "crawl-ref/source/dat/descript/zh/status.txt",
+      "variants": {}
+    },
+    {
+      "group": "barbs",
+      "id": "B03",
+      "key": "status|Barbs",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D01",
+      "key": "You break out of your daze.",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D02",
+      "key": "You snap out of the daze.",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D03",
+      "key": "%s snaps out of %s daze.",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D04",
+      "key": " is dazed by your recitation.",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D05",
+      "key": "%s trance deepens.",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D06",
+      "key": "%s is mesmerised by %s!",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D07",
+      "key": "%s is briefly mesmerised by your gaze.",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D08",
+      "key": "Your maw sometimes becomes mesmerised by tasty morsels.",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D09",
+      "key": "You are mesmerised.",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D10",
+      "key": "Mesmerise spell",
+      "path": "crawl-ref/source/dat/descript/zh/spells.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D11",
+      "key": "Enfeeble spell",
+      "path": "crawl-ref/source/dat/descript/zh/spells.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D12",
+      "key": "Cacophony status",
+      "path": "crawl-ref/source/dat/descript/zh/status.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D13",
+      "key": "burstshroom",
+      "path": "crawl-ref/source/dat/descript/zh/monsters.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D14",
+      "key": "dazed monstatus",
+      "path": "crawl-ref/source/dat/descript/zh/monstatus.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D15",
+      "key": "You are too mesmerised to rage.",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D16",
+      "key": "dazed",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D17",
+      "key": "Siren Song spell",
+      "path": "crawl-ref/source/dat/descript/zh/spells.txt",
+      "variants": {}
+    },
+    {
+      "group": "daze / non-Dazed",
+      "id": "D18",
+      "key": "Avatar Song spell",
+      "path": "crawl-ref/source/dat/descript/zh/spells.txt",
+      "variants": {}
+    },
+    {
+      "group": "noxious fumes",
+      "id": "F01",
+      "key": "noxious fumes",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "noxious fumes",
+      "id": "F02",
+      "key": "poison gas",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "noxious fumes",
+      "id": "F03",
+      "key": "noxious fumes cloud",
+      "path": "crawl-ref/source/dat/descript/zh/clouds.txt",
+      "variants": {}
+    },
+    {
+      "group": "noxious fumes",
+      "id": "F04",
+      "key": "poison gas cloud",
+      "path": "crawl-ref/source/dat/descript/zh/clouds.txt",
+      "variants": {}
+    },
+    {
+      "group": "noxious fumes",
+      "id": "F05",
+      "key": "Mephitic Cloud spell",
+      "path": "crawl-ref/source/dat/descript/zh/spells.txt",
+      "variants": {}
+    },
+    {
+      "group": "noxious fumes",
+      "id": "F06",
+      "key": "Noxious Cloud spell",
+      "path": "crawl-ref/source/dat/descript/zh/spells.txt",
+      "variants": {}
+    },
+    {
+      "group": "noxious fumes",
+      "id": "F07",
+      "key": "tutorial4 aiming_clouds",
+      "path": "crawl-ref/source/dat/descript/zh/tutorial.txt",
+      "variants": {}
+    },
+    {
+      "group": "piety",
+      "id": "P01",
+      "key": "A donation of $%d equates to an increase of piety by %d.",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "piety",
+      "id": "P02",
+      "key": "You feel less pious.",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "piety",
+      "id": "P03",
+      "key": "To the devout, Zin provideth. From the rest...",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "piety",
+      "id": "P04",
+      "key": "Pious",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "piety",
+      "id": "P05",
+      "key": "piety note|Reached %1$s piety under %2$s",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {
+        "stable": [
+          "Reached ",
+          " piety under "
+        ]
+      }
+    },
+    {
+      "group": "piety",
+      "id": "P06",
+      "key": "It occasionally summons a dragon when using Invocations with hostile monsters in sight. Chance is 10% + twice the piety cost of the ability used.",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "piety",
+      "id": "P07",
+      "key": "It occasionally summons a dragon when using divine abilities with hostile monsters in sight. Chance is 10% + twice the piety cost of the ability used.",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "piety",
+      "id": "P08",
+      "key": " piety under ",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {
+        "stable": []
+      }
+    },
+    {
+      "group": "travel exclusion",
+      "id": "T01",
+      "key": "This transporter is marked as excluded!",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "travel exclusion",
+      "id": "T02",
+      "key": "This %s%s is marked as excluded! Open it anyway?",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "travel exclusion",
+      "id": "T03",
+      "key": "\\nTo avoid accidentally opening a door you'd rather remain closed during travel or autoexplore, you can mark it with an exclusion from the map view (<w>X</w>) with <w>ee</w> while your cursor is on the grid in question. Such an exclusion will prevent autotravel from ever entering that grid until you remove the exclusion with another press of <w>Xe</w>.",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    },
+    {
+      "group": "travel exclusion",
+      "id": "T04",
+      "key": "HINT_DESCRIBE_CLOSED_DOOR",
+      "path": "crawl-ref/source/dat/descript/zh/hints.txt",
+      "variants": {}
+    },
+    {
+      "group": "travel exclusion",
+      "id": "T05",
+      "key": "%d %sexclusion%s",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "variants": {}
+    }
+  ]
+}
