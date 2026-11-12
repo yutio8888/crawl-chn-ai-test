@@ -50191,3 +50191,6 @@ Hexes are much easier for you to cast and harder to resist.
 You hear a sizzling sound.
 你听到一阵滋滋声。
 %%%%
+%%%%
+fiery
+火
