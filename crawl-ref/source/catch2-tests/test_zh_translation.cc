@@ -8452,6 +8452,8 @@ TEST_CASE_METHOD(ZhTranslationFixture, "zh: player action frames compose real ar
 {
     CHECK(wall_shatter_message(true, "岩石") == "岩石碎成了小片。");
     CHECK(wall_shatter_message(false, "岩石") == "一些岩石碎成了小片。");
+    INFO("legacy floor: " << T_("There is ") << "向下的楼梯" << T_("."));
+    INFO("legacy shop: " << T_("There is an entrance to ") << "杂货铺" << T_("."));
     CHECK(floor_feature_message(false, "向下的楼梯") == "这里有向下的楼梯。");
     CHECK(floor_feature_message(true, "杂货铺") == "这里有通往杂货铺的入口。");
     CHECK(feature_action_message(true, "杂货铺", ">")
