@@ -1166,7 +1166,7 @@ static void _maybe_attune_regen_items()
                 gained_mana_regen = true;
 
             eq_list.push_back(is_artefact(arm) ? get_artefact_name(arm) :
-                entry.slot == SLOT_AMULET ? "amulet" :
+                entry.slot == SLOT_AMULET ? T_("amulet") :
                     lowercase_string(equip_slot_name(entry.slot, true)));
 
             if (entry.slot == SLOT_BOOTS || entry.slot == SLOT_GLOVES)
@@ -1192,8 +1192,12 @@ static void _maybe_attune_regen_items()
         msgs.emplace_back(T_("extract magic from the potions you drink"));
 
     plural = plural || eq_list.size() > 1;
-    string eq_str = comma_separated_line(eq_list.begin(), eq_list.end());
-    string msg_str = comma_separated_line(msgs.begin(), msgs.end());
+    string eq_str = comma_separated_line(eq_list.begin(), eq_list.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ");
+    string msg_str = comma_separated_line(msgs.begin(), msgs.end(),
+                Options.language == lang_t::ZH ? T_(",") : T_(" and "),
+                Options.language == lang_t::ZH ? T_(",") : ", ");
     const char* verb_form = plural ? "attune themselves" : "attunes itself";
     mprf_p(T_("Your %1$s attune%2$s to your body, and you begin to %3$s."),
            eq_str.c_str(), verb_form, msg_str.c_str());

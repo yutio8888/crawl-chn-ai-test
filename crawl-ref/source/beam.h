@@ -510,3 +510,5 @@ bool cancel_beam_prompt(const bolt& beam, const player_beam_tracer& tracer,
 int apply_willpower_bypass(const actor& source, int willpower);
 int apply_willpower_bypass(const monster_info& source, int willpower);
 int guile_will_reduction(bool max = false);
+
+string wall_shatter_message(bool player_agent, const string& wall);

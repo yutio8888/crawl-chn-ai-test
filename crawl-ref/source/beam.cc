@@ -841,6 +841,13 @@ void bolt::fake_flavour()
         flavour = is_tracer() ? BEAM_MMISSILE : _chaos_beam_flavour();
 }
 
+string wall_shatter_message(bool player_agent, const string& wall)
+{
+    return make_stringf(player_agent
+                       ? T_("The %s shatters into small pieces.")
+                       : T_("Some %s shatters into small pieces."), wall.c_str());
+}
+
 void bolt::digging_wall_effect()
 {
     if (env.markers.property_at(pos(), MAT_ANY, "veto_destroy") == "veto")
@@ -893,9 +900,7 @@ void bolt::digging_wall_effect()
             else
                 wall = T_("rock");
 
-            mprf(T_("%s %s shatters into small pieces."),
-                 agent() && agent()->is_player() ? T_("The") : T_("Some"),
-                 wall.c_str());
+            mprf("%s", wall_shatter_message(agent() && agent()->is_player(), wall).c_str());
         }
     }
     else if (feat_is_wall(feat))
