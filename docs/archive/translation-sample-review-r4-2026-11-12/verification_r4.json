@@ -1,0 +1,20 @@
+{
+  "integrity_passed": true,
+  "sample_count": 70,
+  "reserve_count": 35,
+  "game_rendering_tests_run": false,
+  "artifact_sha256": {
+    "samples_r4.json": "37806363b2c3b7e62832394d6cbea94a47bfbb6bc448d9955a0a8188e78e0153",
+    "coverage_r4.md": "45cb93f5febea7336ed8880c0dd5dc7ec27395495007b4c3ce6dd9502e22b13b",
+    "selection_log_r4.json": "453691f810bf51d916e4a11866e6ce555ac6a92267393840f4bdb16eb7887876",
+    "review_input_lane1.md": "abdc0dc9594fd92c35d80da65e292f317279da0b1a8f698d1f2f5b6201951289",
+    "review_input_lane2.md": "01935a441ef2de175ae1fb02829d39515f46681045fb87625b3d2f470bf7f05a",
+    "pool_R4-1.json": "b5ee239c90fc57471933c384b38f38d9c1127dc527cda4c6c1c4196f712109de",
+    "pool_R4-2.json": "6e2bbef53b68ae8e91dd76fd5a94199a4f2a734916e68626af94e41e98a866f6",
+    "pool_R4-3.json": "ff27b98c18212c356917f05399ba92f233505c29b7f6668f9bc9348837553a56",
+    "pool_R4-4.json": "6ffc20049bc43aec2b4ebf398de644e556fffafec467705a73dc776f7bb910d0",
+    "pool_R4-5.json": "faba177b102351dd62d1be807d311b2d1997529f851f88ac38e7411fdceac29a",
+    "pool_R4-6.json": "bc8c9de17d2ae349d9b37f05b3eafbaa8029405f31552c7d0ca1123ebdfedf48",
+    "pool_R4-7.json": "a712dc0ea693aca285e903d2382bc827c0e8ac9d64951022e1cbc9889ca7b241"
+  }
+}

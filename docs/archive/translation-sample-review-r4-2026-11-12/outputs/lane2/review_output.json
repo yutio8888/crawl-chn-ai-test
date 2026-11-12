@@ -1,0 +1,498 @@
+[
+  {
+    "sample_id": "R4-5-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-7-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-1-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-2-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-6-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-5-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-2-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-5-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-4-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-2-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-5-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-1-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-2-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-5-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-4-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-6-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-4-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-7-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-3-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-1-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-4-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-3-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-3-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-3-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-4-09",
+    "verdict": "readability",
+    "findings": [
+      {
+        "type": "wording",
+        "line": "both",
+        "english": "The Black Torch roars with renewed intensity!",
+        "current_full_zh": "黑火炬以新的强度咆哮着！",
+        "problem": "以新的强度咆哮着不够自然，renewed 在此是恢复并再度强烈。",
+        "suggested_zh": "黑火炬再度猛烈地咆哮起来！",
+        "evidence": "crawl-ref/source/god-abil.cc:1591; crawl-ref/source/god-abil.cc\",",
+        "defect_points": 0
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-1-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-6-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-2-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-5-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-7-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-1-02",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "terminology",
+        "line": "stable",
+        "english": "An intricate puzzlebox containing an unknowable prize. Transforms the wearer into\na riddle-loving sphinx. In this form, they are {{\n    if you.race() == \"Felid\" then\n        return \"normally capable of wearing a cloak and barding (though your\" ..\n               \" own diminutive size would prevent this)\"\n    else\n        return \"capable of wearing a cloak and barding\"\n    end\n}}, and their melee attacks cause powerful winds to strike their foe which do\nincreased damage for every open space next to them. They are also masterful\nenchanters, casting Hex spells much more easily and ignoring a portion of their\nfoe's Willpower.\n\nAlas, their love of riddles is so compulsive that even the most hardened\nadventurer will be unable to resist posing them to new foes they encounter, no\nmatter how unwise this may be.",
+        "current_full_zh": "一个内含未知奖品的精巧谜盒。将佩戴者变成一只爱好谜语的斯芬克斯。\n在此形态下，佩戴者{{\n    if you.race() == \"Felid\" then\n        return \"通常能够穿戴披风和马铠（尽管你自身的微小体型会阻止这一点）\"\n    else\n        return \"能够穿戴披风和马铠\"\n    end\n}}，其近战攻击会引起强风打击敌人，相邻每多一格空地，伤害就越高。\n佩戴者还是高超的惑控师，更容易施放诅咒系法术，\n并忽略敌人一部分的意志力。\n\n唉，佩戴者对谜语的热爱如此强烈，以至于即使是最坚毅的冒险者也无法\n抗拒向遇到的新敌人提出谜语，无论这可能多么不明智。",
+        "problem": "Hex spells 是控制附魔学派法术，stable 写成诅咒系，与当前妖术系身份不一致；trunk 已修正。",
+        "suggested_zh": "将本段诅咒系法术改为妖术系法术。",
+        "evidence": "crawl-ref/source/describe.cc:2895; crawl-ref/source/describe.cc:2907; crawl-ref/source/describe.cc:3461; crawl-ref/source/describe.cc:7279; crawl-ref/source/item-prop.cc\",",
+        "defect_points": 1
+      },
+      {
+        "type": "clarity",
+        "line": "both",
+        "english": "An intricate puzzlebox containing an unknowable prize. Transforms the wearer into\na riddle-loving sphinx. In this form, they are {{\n    if you.race() == \"Felid\" then\n        return \"normally capable of wearing a cloak and barding (though your\" ..\n               \" own diminutive size would prevent this)\"\n    else\n        return \"capable of wearing a cloak and barding\"\n    end\n}}, and their melee attacks cause powerful winds to strike their foe which do\nincreased damage for every open space next to them. They are also masterful\nenchanters, casting Hex spells much more easily and ignoring a portion of their\nfoe's Willpower.\n\nAlas, their love of riddles is so compulsive that even the most hardened\nadventurer will be unable to resist posing them to new foes they encounter, no\nmatter how unwise this may be.",
+        "current_full_zh": "一个内含未知奖品的精巧谜盒。将佩戴者变成一只爱好谜语的斯芬克斯。\n在此形态下，佩戴者{{\n    if you.race() == \"Felid\" then\n        return \"通常能够穿戴披风和马铠（尽管你自身的微小体型会阻止这一点）\"\n    else\n        return \"能够穿戴披风和马铠\"\n    end\n}}，其近战攻击会引起强风打击敌人，相邻每多一格空地，伤害就越高。\n佩戴者还是高超的惑控师，更容易施放诅咒系法术，\n并忽略敌人一部分的意志力。\n\n唉，佩戴者对谜语的热爱如此强烈，以至于即使是最坚毅的冒险者也无法\n抗拒向遇到的新敌人提出谜语，无论这可能多么不明智。",
+        "problem": "相邻每多一格空地未明确按敌人周围计算，容易读作佩戴者周围。",
+        "suggested_zh": "其近战攻击会唤起强风打击敌人；敌人周围每多一格空地，伤害就越高。",
+        "evidence": "stable melee-attack.cc:997-1000，airstrike_space_around(defender->pos(),true)。",
+        "defect_points": 0
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-1-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-7-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-3-06",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "omission",
+        "line": "both",
+        "english": "A mass of lashing vines and tentacles growing out of the husk of a dead star.\nSpace itself runs through the xylem and phloem of its branches, which appear to\nbe in many places at once.",
+        "current_full_zh": "从死星的外壳中长出的一团藤蔓和触须。\n空间贯通着它的分支的木质部和韧皮部，它们似乎同时存在于许多地方。",
+        "problem": "lashing 描述藤蔓和触须挥舞抽动的动作，现译省略这一动态形象。",
+        "suggested_zh": "从死星外壳中长出的一团挥舞不休的藤蔓和触须。\n空间本身流经其枝条的木质部和韧皮部，这些枝条似乎同时存在于多处。",
+        "evidence": "crawl-ref/source/describe.cc:7279; crawl-ref/source/describe.cc:7270; crawl-ref/source/dat/mons/starflower.yaml\",",
+        "defect_points": 1
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-3-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-5-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-3-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-7-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-3-03",
+    "verdict": "readability",
+    "findings": [
+      {
+        "type": "wording",
+        "line": "both",
+        "english": "A churning mass of flowing blood that throbs to the beat of an absent heart.\n\nDoes it wish to bury itself in your arteries because it recognises, on some\nprimordial level, that this is where it belongs? Alas, all it is capable of in\nthis fleeing moment of sentience is violence.",
+        "current_full_zh": "一团随着缺席心脏的搏动而脉动的奔流之血。\n\n它想将自己埋入你的动脉，是因为它在某个原始层面上认识到这是它\n所属的地方吗？唉，在这短暂的感知时刻，它所能做的只有暴力。",
+        "problem": "缺席心脏和感知时刻的汉语搭配生硬，可保留不存在心脏却有心跳的悖论。",
+        "suggested_zh": "一团翻涌的鲜血，随着一颗不存在的心脏的节律搏动。\n\n它想钻进你的动脉，是否因为在某种原始本能中认出了自己的归宿？可惜，在这转瞬即逝的意识中，它只懂得施暴。",
+        "evidence": "crawl-ref/source/describe.cc:7279; crawl-ref/source/describe.cc:7270; crawl-ref/source/dat/mons/erythrospite.yaml\",",
+        "defect_points": 0
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-7-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-2-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-7-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-7-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-1-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-5-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-4-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-6-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-4-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-5-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-7-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-4-04",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "scope",
+        "line": "both",
+        "english": "Disciples of the Council learn to perform three martial techniques while moving\naround in combat. They will also be taught to move at unfathomable speeds for\nshort distances, and become able to summon a storm of golden clouds to increase\ntheir precision and damage for as long as they keep using martial attacks.",
+        "current_full_zh": "门徒在战斗中走位时会学习实践三种武术。他们还将学习以不可测的速度短距离移动，\n并能召唤金色云雾风暴来提高命中和伤害；只要持续使用武术攻击，强化便能持续。",
+        "problem": "学习的是在移动中施展武术，现译在走位时学习实践改变了动作关系。",
+        "suggested_zh": "议会门徒会学会在战斗走位时施展三种武术。他们还将学会以不可思议的速度短距离移动，并能召唤金色云雾风暴来提高命中和伤害；只要持续使用武术攻击，强化便能持续。",
+        "evidence": "crawl-ref/source/describe-god.cc:729; crawl-ref/source/religion.cc\",",
+        "defect_points": 1
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-6-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-4-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-1-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-3-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-1-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-6-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-6-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-7-10",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "untranslated",
+        "line": "stable",
+        "english": "You hear a sizzling sound.\n\nYou hear a grinding noise.",
+        "current_full_zh": "You hear a sizzling sound. / You hear a grinding noise.",
+        "problem": "两条声音都缺少 T_；研磨声虽有中文条目仍未被调用，不仅是滋滋声缺catalog。",
+        "suggested_zh": "你听到一阵滋滋声。 / 你听到一阵研磨声。",
+        "evidence": "stable mon-act.cc:4031-4033；trunk :4175 两分支 T_。",
+        "defect_points": 1
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-6-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-6-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-2-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-2-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-3-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-6-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-1-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-5-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-4-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-2-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "sample_id": "R4-2-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  }
+]

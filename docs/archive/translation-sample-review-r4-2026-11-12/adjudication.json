@@ -1,0 +1,156 @@
+{
+ "round": 4,
+ "date": "2026-11-12",
+ "refs": {
+  "stable": "ae5a420e78579a9433f4ffb127b7a9062a7d948c",
+  "trunk": "59aec6256f1824d8c5cd7de92b7c25691132cce9"
+ },
+ "seed": 2026111213,
+ "samples": 70,
+ "categories": {
+  "R4-1": "item/artefact descriptions",
+  "R4-2": "spell descriptions/effects",
+  "R4-3": "monster descriptions/casting",
+  "R4-4": "god interaction",
+  "R4-5": "tutorial/help long text",
+  "R4-6": "environment events",
+  "R4-7": "other dynamic feedback"
+ },
+ "lanes": {
+  "lane1": {
+   "model": "Opus 5.5 contextual reviewer",
+   "seed": 1401,
+   "counts": {
+    "ok": 60,
+    "readability": 8,
+    "objective_error": 1,
+    "insufficient_evidence": 1
+   }
+  },
+  "lane2": {
+   "model": "GPT-6.1 Sol main reviewer",
+   "seed": 2502,
+   "counts": {
+    "ok": 64,
+    "readability": 2,
+    "objective_error": 4,
+    "insufficient_evidence": 0
+   }
+  }
+ },
+ "glossary_sha": "fb814f3252f249fc230e81fa132dce6a9bb194b014d687fc1524c66827b351d7",
+ "confirmed": [
+  {
+   "id": "R4-7-10",
+   "line": "stable",
+   "english": "You hear a sizzling sound. / You hear a grinding noise.",
+   "current": "English displayed (bare literals in mprf)",
+   "fix": "T_ wrap both branches and add the sizzling entry, as trunk (mon-act.cc:4175-4177)",
+   "evidence": "stable mon-act.cc:4031-4033",
+   "defect_points": 1,
+   "lanes": "both"
+  },
+  {
+   "id": "R4-3-06",
+   "line": "both",
+   "english": "A mass of lashing vines and tentacles growing out of the husk of a dead star. ...",
+   "current": "从死星的外壳中长出的一团藤蔓和触须。",
+   "problem": "'lashing' omitted (descriptive content, no mechanics)",
+   "fix": "add the lashing image, e.g. 一团挥舞不休的藤蔓和触须; keep the rest unless needed",
+   "evidence": "dat/descript monsters.txt starflower",
+   "defect_points": 1,
+   "lanes": "lane2 only; host verified omission against English"
+  },
+  {
+   "id": "R4-4-04",
+   "line": "both",
+   "english": "Disciples of the Council learn to perform three martial techniques while moving around in combat. ...",
+   "current": "门徒在战斗中走位时会学习实践三种武术。",
+   "problem": "action relation inverted: they learn to perform the techniques while moving (movement triggers them), not learn while moving",
+   "fix": "action-relation correction with the entity named per each line's glossary (Wu Jian→无间, the Wu Jian Council/The Council→无间门派), e.g. 无间门派的门徒学会在战斗走位时施展三种武术…; final wording by independent review",
+   "evidence": "Wu Jian powers long description via describe-god.cc _detailed_god_description",
+   "defect_points": 1,
+   "lanes": "lane2 only; host verified against mechanics",
+   "final_zh": "无间门派的门徒学会在战斗中走位时施展三种武术。…（rest unchanged）",
+   "of_the_council": "writer: acceptable known-subject ellipsis in the Wu Jian powers page, not an independent omission; final text names 无间门派 explicitly. Reported as action-relation correction / explicit sect attribution."
+  }
+ ],
+ "rejected": [
+  {
+   "id": "R4-1-02",
+   "finding": "stable 诅咒系 for Hexes",
+   "reason": "stable glossary line 70 defines Hexes=诅咒系 (trunk 妖术系); consistent with each line's own terminology, same as round-2 C3-01 rejection"
+  }
+ ],
+ "pending": [
+  {
+   "id": "R4-4-05",
+   "line": "stable",
+   "problem": "deprecated hydra/porcupine form altar actions (TAG_MAJOR_VERSION 34) fall back to English fragment in 你%s了%s的祭坛",
+   "need": "evidence a stable player can still be in these forms (old saves); not fixed this round"
+  }
+ ],
+ "advisory_not_fixed": [
+  "R4-4-09",
+  "R4-4-10",
+  "R4-6-02",
+  "R4-6-03",
+  "R4-7-01",
+  "R4-1-06",
+  "R4-3-02 (盔甲 vs 护甲 common noun)",
+  "R4-5-10 (逃生舱口 vs 逃生口)",
+  "R4-1-02 clarity: 敌人周围 for airstrike space"
+ ],
+ "runtime_needed": "22 samples need runtime/layout output; listed as player check points, not verified",
+ "counts": {
+  "samples": 70,
+  "samples_with_confirmed": 3,
+  "confirmed_findings": 3,
+  "defect_points": 3,
+  "rejected": 1,
+  "pending": 1,
+  "advisory": 9
+ },
+ "host_corrections": [
+  {
+   "id": "R4-4-04",
+   "date": "2026-11-12",
+   "by": "host, after maintainer query",
+   "correction": "The draft fix '议会门徒…' is withdrawn. Both lines' glossaries define the Wu Jian Council as 无间门派 (trunk D-C-111: The Council→无间门派); gods.txt describes a congregation of martial monks, not a deliberative council. Whether dropping 'of the Council' is an independent omission or an acceptable known-subject ellipsis is re-examined in the fix; it is not a requirement to add 议会. The confirmed defect is the inverted action relation.",
+   "context": "<work>/, glossary SHA256 fb814f3252f249fc230e81fa132dce6a9bb194b014d687fc1524c66827b351d7"
+  }
+ ],
+ "delivery": {
+  "trunk": {
+   "pr": 318,
+   "head": "ddf79a9546c90fbc01c482a1fc7ff2e3da2a12c9",
+   "merge": "31133f31425113293d8c928d095b7f46cbed1f19",
+   "merged_at": "2026-11-12T17:50:32Z"
+  },
+  "stable": {
+   "pr": 319,
+   "head": "193517f83392fb4c83a4f4dca05a5c539cf609d0",
+   "merge": "51e9e56d55718684d35b5c4e38039f9a82222467",
+   "merged_at": "2026-11-12T17:50:38Z"
+  },
+  "review": "independent Opus 5.5 Ready (fix/review-fix.md section A)",
+  "ci": "all applicable pass; release/macOS/full runtime skipped by rule",
+  "release": "none"
+ },
+ "post_disposition": [
+  {
+   "ids": [
+    "R4-1-02",
+    "round-2 C3-01"
+   ],
+   "date": "2026-11-12",
+   "note": "Both were rejected at their frozen baselines because stable's glossary then defined Hexes=诅咒系. Afterwards, by explicit maintainer decision ('请将trunk版的翻译进行回迁'), stable adopted trunk D-C-110 (Hexes=妖术系). This is a later terminology-policy change; it does not make the earlier rejections confirmed errors at the time. Frozen samples and original reviews are unchanged.",
+   "pr": 320,
+   "head": "2ec6f1e4702158307e27e14fa5f3e78ac8aa7875",
+   "merge": "27dd279443c4e01df9ab8a56f55b5f65b908f73d",
+   "merged_at": "2026-11-12T18:22:34Z",
+   "scope": "43 consumer entries (35 changed / 8 kept); random book names 4 changed / 97 kept; ordinary curse, Maledictor, Maledictions, curses, kept; jobs.cc get_job_by_name also accepts old display name 诅咒射手 for old saves/scores; derived ledger cards re-rendered without glossary-SHA rebinding on notice-only ledgers; hard-freshness ledgers rebound",
+   "evidence": "fix/hexes-delivery.txt; fix/review-fix.md sections B and C"
+  }
+ ]
+}
