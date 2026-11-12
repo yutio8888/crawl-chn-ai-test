@@ -1,0 +1,1721 @@
+stable Hexes 术语回迁交付
+
+维护者明确决定：将 stable Hexes 及派生显示词根回迁为开发线 D-C-110 的用法。第四轮已先交付：trunk ddf79a9546 / stable 193517f833；本分支随后独立建立，不含第四轮修复。
+actual stable base: ae5a420e78579a9433f4ffb127b7a9062a7d948c
+actual trunk reference: 59aec6256f1824d8c5cd7de92b7c25691132cce9
+head: f6b597512edb5cc583d64d3f2e902a9367fbb18a
+branch: codex/hexes-backport-stable
+initial glossary SHA-256: dcbfb16ac457e9506a5e634d171211d460652f42e2ba651ad950d15e719753ae
+final glossary SHA-256: 7bf944531289d3e0904ce26d50f3cfa62f43e30e2b5938d57e2646c25f29b8fe
+最终术语上下文：hexes-context-final.txt；独立复审者请使用这份实际 worktree 上下文。
+
+改动文件：
+- .claude/scripts/cjk_inventory.json
+- .claude/scripts/tests/test_audit_item_name_inventory.py
+- crawl-ref/source/catch2-tests/test_zh_translation.cc
+- crawl-ref/source/dat/database/zh/randbook.txt
+- crawl-ref/source/dat/descript/zh/ability.txt
+- crawl-ref/source/dat/descript/zh/backgrounds.txt
+- crawl-ref/source/dat/descript/zh/egos.txt
+- crawl-ref/source/dat/descript/zh/hints.txt
+- crawl-ref/source/dat/descript/zh/items.txt
+- crawl-ref/source/dat/descript/zh/monsters.txt
+- crawl-ref/source/dat/descript/zh/mutations.txt
+- crawl-ref/source/dat/descript/zh/skills.txt
+- crawl-ref/source/dat/descript/zh/species.txt
+- crawl-ref/source/dat/descript/zh/spells.txt
+- crawl-ref/source/dat/descript/zh/unrand.txt
+- crawl-ref/source/dat/i18n/zh/source.txt
+- crawl-ref/source/jobs.cc
+- docs/character-mechanics-review-results.md
+- docs/decisions.md
+- docs/glossary.md
+- docs/glossary.utf8
+- docs/graffiti-review-results.md
+- docs/item-extended-review-results.md
+- docs/miscast-review-results.md
+- docs/miscname-review-results.md
+- docs/monflee-review-results.md
+- docs/monspell-review-results.md
+- docs/monster-review-results.md
+- docs/species-background-review-results.md
+
+=== 完整消费者处置（43条目；35改/8保留） ===
+
+1. 保留 | crawl-ref/source/dat/database/zh/miscast.txt | hexes miscast player
+English: Multicoloured lights dance before your eyes
+
+You feel a bit tired
+
+The light around you dims momentarily
+
+You hear an indistinct dissonance whispering inside your mind
+
+You feel a strange surge of energy
+
+Waves of @any_colour@ light ripple over your body
+
+You feel enfeebled
+
+Magic surges out from your body
+旧译: 五彩光芒在你眼前舞动
+
+你感到有些疲惫
+
+你周围的光线短暂地暗淡下去
+
+你听见一阵模糊而不和谐的低语在脑海中响起
+
+你感到一股诡异的能量涌动
+
+@any_colour@的光波在你身上荡漾
+
+你感到虚弱无力
+
+魔法能量从你体内喷涌而出
+新译: 五彩光芒在你眼前舞动
+
+你感到有些疲惫
+
+你周围的光线短暂地暗淡下去
+
+你听见一阵模糊而不和谐的低语在脑海中响起
+
+你感到一股诡异的能量涌动
+
+@any_colour@的光波在你身上荡漾
+
+你感到虚弱无力
+
+魔法能量从你体内喷涌而出
+trunk 对照: 五彩光芒在你眼前舞动
+
+你感到有些疲惫
+
+你周围的光线短暂地暗淡下去
+
+你听见一阵模糊而不和谐的低语在脑海中响起
+
+你感到一股诡异的能量涌动
+
+@any_colour@的光波在你身上荡漾
+
+你感到虚弱无力
+
+魔法能量从你体内喷涌而出
+消费者/资产位置: crawl-ref/source/spl-miscast.cc:39；crawl-ref/source/dat/database/zh/miscast.txt:44
+理由: 当前译文与开发线一致；键或机制不变
+
+2. 保留 | crawl-ref/source/dat/database/zh/miscast.txt | hexes miscast monster
+English: Multicoloured lights dance around @the_monster@
+
+@The_monster@ looks sleepy for a second
+
+The light around @the_monster@ dims momentarily
+
+@The_monster@ twitches
+
+@The_monster_possessive@ body glows momentarily
+
+Waves of @any_colour@ light ripple over @the_monster_possessive@ body
+
+Magic surges out from @the_monster@
+旧译: 五彩光芒在@the_monster@周围舞动
+
+@The_monster@一时显得昏昏欲睡
+
+@the_monster@周围的光线短暂地暗淡下去
+
+@The_monster@抽动了一下
+
+@The_monster_possessive@周身短暂地泛起光芒
+
+@any_colour@的光波在@the_monster_possessive@周身荡漾
+
+魔法能量从@the_monster@身上涌出
+新译: 五彩光芒在@the_monster@周围舞动
+
+@The_monster@一时显得昏昏欲睡
+
+@the_monster@周围的光线短暂地暗淡下去
+
+@The_monster@抽动了一下
+
+@The_monster_possessive@周身短暂地泛起光芒
+
+@any_colour@的光波在@the_monster_possessive@周身荡漾
+
+魔法能量从@the_monster@身上涌出
+trunk 对照: 五彩光芒在@the_monster@周围舞动
+
+@The_monster@一时显得昏昏欲睡
+
+@the_monster@周围的光线短暂地暗淡下去
+
+@The_monster@抽动了一下
+
+@The_monster_possessive@周身短暂地泛起光芒
+
+@any_colour@的光波在@the_monster_possessive@周身荡漾
+
+魔法能量从@the_monster@身上涌出
+消费者/资产位置: crawl-ref/source/spl-miscast.cc:39；crawl-ref/source/dat/database/zh/miscast.txt:62
+理由: 当前译文与开发线一致；键或机制不变
+
+3. 保留 | crawl-ref/source/dat/database/zh/miscast.txt | hexes miscast unseen
+English: Multicoloured lights dance in the air
+
+A patch of light dims momentarily
+
+Magic surges out from thin air
+旧译: 五彩斑斓的光芒在空气中舞动
+
+一片光线短暂地暗淡了
+
+魔法从虚空中涌出
+新译: 五彩斑斓的光芒在空气中舞动
+
+一片光线短暂地暗淡了
+
+魔法从虚空中涌出
+trunk 对照: 五彩斑斓的光芒在空气中舞动
+
+一片光线短暂地暗淡了
+
+魔法从虚空中涌出
+消费者/资产位置: crawl-ref/source/spl-miscast.cc:39；crawl-ref/source/dat/database/zh/miscast.txt:78
+理由: 当前译文与开发线一致；键或机制不变
+
+4. 保留 | crawl-ref/source/dat/database/zh/monspeak.txt | Hexes player ghost
+English: @The_monster@ says @to_foe@, "You will soon be helpless to avoid my power."
+
+@The_monster@ says @to_foe@, "When I snap my fingers, you will think you are a chicken."
+旧译: @The_monster@ 对 @foe@ 说："很快你就会无力抵抗我的力量。"
+
+
+@The_monster@ 对 @foe@ 说："等我打个响指，你就会以为自己是一只鸡。"
+新译: @The_monster@ 对 @foe@ 说："很快你就会无力抵抗我的力量。"
+
+
+@The_monster@ 对 @foe@ 说："等我打个响指，你就会以为自己是一只鸡。"
+trunk 对照: @The_monster@ 对 @foe@ 说："很快你就会无力抵抗我的力量。"
+
+
+@The_monster@ 对 @foe@ 说："等我打个响指，你就会以为自己是一只鸡。"
+消费者/资产位置: crawl-ref/source/mon-speak.cc:636；crawl-ref/source/dat/database/zh/monspeak.txt:8638
+理由: 当前译文与开发线一致；键或机制不变
+
+5. 改 | crawl-ref/source/dat/database/zh/randbook.txt | Hexes
+English: Ambsace
+
+Anathema
+
+Bad Luck
+
+Beguiling
+
+Bewitchment
+
+Charms
+
+Curses
+
+Destiny
+
+Doom
+
+Enchantment
+
+Ensorcelling
+
+Execration
+
+Fascination
+
+Fate
+
+Glamour
+
+Guile
+
+Hexes
+
+Hexing
+
+Ill Luck
+
+Imprecation
+
+Interference
+
+Jinxing
+
+Malediction
+
+Maleficia
+
+Malisons
+
+Mischance
+
+Misfortune
+
+Obstruction
+
+Omens
+
+Portents
+
+Signs
+
+Spellbinding
+
+the Curse
+
+the Evil Eye
+
+the Faeries
+
+the Fairies
+
+the Fair Folk
+
+the Jinx
+
+the Maleficium
+
+the Oath
+
+the Sphinx
+
+w:2
+the Whammy
+
+the Wyrd
+旧译: 厄运
+
+诅咒
+
+厄运
+
+迷惑
+
+妖术
+
+魅力
+
+诅咒
+
+命运
+
+毁灭
+
+附魔
+
+施咒
+
+诅咒
+
+着迷
+
+命运
+
+魅惑
+
+诡计
+
+诅咒
+
+咒术
+
+厄运
+
+咒骂
+
+干扰
+
+诅咒
+
+恶咒
+
+毒咒
+
+诅咒
+
+灾祸
+
+不幸
+
+妨碍
+
+预兆
+
+征兆
+
+征兆
+
+咒缚
+
+诅咒
+
+邪眼
+
+仙灵
+
+仙女
+
+仙族
+
+灾星
+
+恶业
+
+誓言
+
+斯芬克斯
+
+w:2
+霉运
+
+命运
+新译: 厄运
+
+诅咒
+
+厄运
+
+迷惑
+
+妖术
+
+魅力
+
+诅咒
+
+命运
+
+毁灭
+
+附魔
+
+施咒
+
+诅咒
+
+着迷
+
+命运
+
+魅惑
+
+诡计
+
+妖术
+
+施展妖术
+
+厄运
+
+咒骂
+
+干扰
+
+诅咒
+
+恶咒
+
+毒咒
+
+诅咒
+
+灾祸
+
+不幸
+
+妨碍
+
+预兆
+
+征兆
+
+征兆
+
+咒缚
+
+诅咒
+
+邪眼
+
+仙灵
+
+仙女
+
+仙族
+
+灾星
+
+恶业
+
+誓言
+
+斯芬克斯
+
+w:2
+霉运
+
+命运
+trunk 对照: 厄运
+
+诅咒
+
+厄运
+
+迷惑
+
+妖术
+
+魅力
+
+诅咒
+
+命运
+
+毁灭
+
+附魔
+
+施咒
+
+诅咒
+
+着迷
+
+命运
+
+魅惑
+
+诡计
+
+妖术
+
+施展妖术
+
+厄运
+
+咒骂
+
+干扰
+
+诅咒
+
+恶咒
+
+毒咒
+
+诅咒
+
+灾祸
+
+不幸
+
+妨碍
+
+预兆
+
+征兆
+
+征兆
+
+咒缚
+
+诅咒
+
+邪眼
+
+仙灵
+
+仙女
+
+仙族
+
+灾星
+
+恶业
+
+誓言
+
+斯芬克斯
+
+w:2
+霉运
+
+命运
+消费者/资产位置: crawl-ref/source/skills.cc:105；crawl-ref/source/item-name.cc:1320；crawl-ref/source/skills.cc:1941, crawl-ref/source/skills.cc:2270；crawl-ref/source/dat/database/zh/randbook.txt:1168
+理由: 仅同位 English Hexes/Hexing/Hexed/Hexing 四词项迁移；Curses/Malediction 等及权重保留
+
+6. 改 | crawl-ref/source/dat/database/zh/randbook.txt | Hexes adj
+English: Alluring
+
+Baleful
+
+Becharmed
+
+Becharming
+
+Beguiled
+
+Beguiling
+
+Bewitched
+
+Bewitching
+
+Bound
+
+Captivating
+
+Charmed
+
+Charming
+
+Cunning
+
+Cursed
+
+Destined
+
+Dire
+
+Doomed
+
+Enchanted
+
+Enchanting
+
+Ensnaring
+
+Enthralled
+
+Enthralling
+
+Entranced
+
+Entrancing
+
+Fascinating
+
+Fateful
+
+Fetching
+
+Fettered
+
+Fey
+
+Glamourous
+
+Hapless
+
+Hexed
+
+Hexing
+
+Hindering
+
+Hopeless
+
+Ill-boding
+
+Ill-fated
+
+Ill-omened
+
+Ill-starred
+
+Inauspicious
+
+Jinxed
+
+Lost
+
+Maledictive
+
+Portentous
+
+Predestined
+
+Spellbinding
+
+Star-crossed
+
+Tragic
+
+Twinkling
+
+Unfortunate
+
+Unlucky
+
+Vexatious
+
+Vexing
+
+Weird
+旧译: 诱惑的
+
+凶恶的
+
+被蛊惑的
+
+蛊惑的
+
+被欺骗的
+
+欺骗的
+
+被迷惑的
+
+迷惑的
+
+束缚的
+
+迷人的
+
+着魔的
+
+施展魅力的
+
+狡猾的
+
+被诅咒的
+
+命中注定的
+
+可怕的
+
+劫数难逃的
+
+被附魔的
+
+附魔的
+
+诱捕的
+
+被迷住的
+
+迷住人的
+
+入迷的
+
+令人入迷的
+
+迷人的
+
+宿命的
+
+迷人的
+
+被束缚的
+
+仙灵的
+
+富有魅力的
+
+不幸的
+
+被诅咒的
+
+施咒的
+
+阻碍的
+
+绝望的
+
+不祥之兆的
+
+厄运的
+
+凶兆的
+
+灾星的
+
+不吉的
+
+被煞到的
+
+失落的
+
+诅咒的
+
+预兆的
+
+宿命注定的
+
+咒缚的
+
+命运多舛的
+
+悲剧的
+
+闪烁的
+
+不幸的
+
+倒霉的
+
+令人烦恼的
+
+烦恼的
+
+怪异的
+新译: 诱惑的
+
+凶恶的
+
+被蛊惑的
+
+蛊惑的
+
+被欺骗的
+
+欺骗的
+
+被迷惑的
+
+迷惑的
+
+束缚的
+
+迷人的
+
+着魔的
+
+施展魅力的
+
+狡猾的
+
+被诅咒的
+
+命中注定的
+
+可怕的
+
+劫数难逃的
+
+被附魔的
+
+附魔的
+
+诱捕的
+
+被迷住的
+
+迷住人的
+
+入迷的
+
+令人入迷的
+
+迷人的
+
+宿命的
+
+迷人的
+
+被束缚的
+
+仙灵的
+
+富有魅力的
+
+不幸的
+
+被施以妖术的
+
+施展妖术的
+
+阻碍的
+
+绝望的
+
+不祥之兆的
+
+厄运的
+
+凶兆的
+
+灾星的
+
+不吉的
+
+被煞到的
+
+失落的
+
+诅咒的
+
+预兆的
+
+宿命注定的
+
+咒缚的
+
+命运多舛的
+
+悲剧的
+
+闪烁的
+
+不幸的
+
+倒霉的
+
+令人烦恼的
+
+烦恼的
+
+怪异的
+trunk 对照: 诱惑的
+
+凶恶的
+
+被蛊惑的
+
+蛊惑的
+
+被欺骗的
+
+欺骗的
+
+被迷惑的
+
+迷惑的
+
+束缚的
+
+迷人的
+
+着魔的
+
+施展魅力的
+
+狡猾的
+
+被诅咒的
+
+命中注定的
+
+可怕的
+
+劫数难逃的
+
+被附魔的
+
+附魔的
+
+诱捕的
+
+被迷住的
+
+迷住人的
+
+入迷的
+
+令人入迷的
+
+迷人的
+
+宿命的
+
+迷人的
+
+被束缚的
+
+仙灵的
+
+富有魅力的
+
+不幸的
+
+被施以妖术的
+
+施展妖术的
+
+阻碍的
+
+绝望的
+
+不祥之兆的
+
+厄运的
+
+凶兆的
+
+灾星的
+
+不吉的
+
+被煞到的
+
+失落的
+
+诅咒的
+
+预兆的
+
+宿命注定的
+
+咒缚的
+
+命运多舛的
+
+悲剧的
+
+闪烁的
+
+不幸的
+
+倒霉的
+
+令人烦恼的
+
+烦恼的
+
+怪异的
+消费者/资产位置: crawl-ref/source/randbook.cc:769, crawl-ref/source/randbook.cc:791；crawl-ref/source/dat/database/zh/randbook.txt:2416
+理由: 仅同位 English Hexes/Hexing/Hexed/Hexing 四词项迁移；Curses/Malediction 等及权重保留
+
+7. 保留 | crawl-ref/source/dat/database/zh/randbook.txt | Hexes owner
+English: Yara
+
+w:5
+Terpsichore
+
+Tukima
+
+__NONE
+旧译: 亚拉
+
+w:5
+忒耳普西科瑞
+
+图基玛
+
+__NONE
+新译: 亚拉
+
+w:5
+忒耳普西科瑞
+
+图基玛
+
+__NONE
+trunk 对照: 亚拉
+
+w:5
+忒耳普西科瑞
+
+图基玛
+
+__NONE
+消费者/资产位置: crawl-ref/source/randbook.cc:769, crawl-ref/source/randbook.cc:791；crawl-ref/source/dat/database/zh/randbook.txt:3357
+理由: 当前译文与开发线一致；键或机制不变
+
+8. 改 | crawl-ref/source/dat/descript/zh/ability.txt | Ancestor Life: Hexer ability
+English: Remembers your ancestor as a hexer, a cunning rogue capable of swift
+knifework and debilitating spellcasting. This choice is permanent and cannot be
+undone.
+旧译: 回想起你的先祖是个诅咒师，一个刀法迅捷、擅长施展削弱性法术的狡猾贼人。
+此选择是永久的，不能撤消。
+新译: 回想起你的先祖是个妖术师，一个刀法迅捷、擅长施展削弱性法术的狡猾贼人。
+此选择是永久的，不能撤消。
+trunk 对照: 回想起你的先祖是个妖术师，一个刀法迅捷、擅长施展削弱性法术的狡猾贼人。
+此选择是永久的，不能撤消。
+消费者/资产位置: crawl-ref/source/ability.cc:1616；crawl-ref/source/dat/descript/zh/ability.txt:571
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+9. 改 | crawl-ref/source/dat/descript/zh/backgrounds.txt | Enchanter
+English: Enchanters know a variety of Hexes that can incapacitate their foes, and are
+equipped with an enchanted dagger and potions of invisibility.
+旧译: 惑控师掌握多种能令敌人失去行动能力的诅咒系法术，
+并配有一把附魔匕首和两瓶隐形药水。
+新译: 惑控师掌握多种能令敌人失去行动能力的妖术系法术，
+并配有一把附魔匕首和两瓶隐形药水。
+trunk 对照: 惑控师掌握多种能令敌人失去行动能力的妖术系法术，
+并配有一把附魔匕首和两瓶隐形药水。
+消费者/资产位置: crawl-ref/source/newgame.cc:1361；crawl-ref/source/dat/descript/zh/backgrounds.txt:45
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+10. 改 | crawl-ref/source/dat/descript/zh/backgrounds.txt | Hexslinger
+English: Hexslingers carry a sling, and use hex magic to make their foes more vulnerable
+to attacks from afar.
+旧译: 诅咒射手携带投石索，并以诅咒魔法使敌人更容易受到远程攻击。
+新译: 妖术射手携带投石索，并以妖术使敌人更容易受到远程攻击。
+trunk 对照: 妖术射手携带投石索，并以妖术使敌人更容易受到远程攻击。
+消费者/资产位置: crawl-ref/source/jobs.cc:88；crawl-ref/source/dat/descript/zh/backgrounds.txt:71
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+11. 改 | crawl-ref/source/dat/descript/zh/egos.txt | guile (Guile) armour ego
+English: It weakens both your willpower and the willpower of everyone you hex, the latter
+of which is increased by your Evocations skill.
+旧译: 它同时削弱你的意志力以及你所施放诅咒的每个目标的意志力，
+后者的削弱幅度随你的魔力释放技能提高。
+新译: 它同时削弱你的意志力以及你所施放妖术的每个目标的意志力，
+后者的削弱幅度随你的魔力释放技能提高。
+trunk 对照: 它同时削弱你的意志力以及你所施放妖术的每个目标的意志力，
+后者的削弱幅度随你的魔力释放技能提高。
+消费者/资产位置: crawl-ref/source/describe.cc:2358；crawl-ref/source/dat/descript/zh/egos.txt:193
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+12. 改 | crawl-ref/source/dat/descript/zh/hints.txt | HINT_YOU_RESIST
+English: Most attacks in Crawl are defended against by your AC. Some, like fire or
+draining attacks, can be further reduced by specific resistances. Other magical
+effects, such as Slow or Confusion hexes, are resisted by your willpower.
+You'll find items that increase both kinds of resistances.
+
+To view your current set of resistances, <localtiles><w>right-click</w> on the
+player avatar, or </localtiles>press <w>$cmd[CMD_RESISTS_SCREEN]</w>.
+旧译: 游戏中的大多数攻击由你的 AC 防御。火焰、汲取等攻击还可由对应抗性进一步减轻；减速、混乱等诅咒系效果则由意志力抵抗。你会找到能提升这两类抗性的物品。
+
+要查看当前全部抗性，<localtiles><w>右键点击</w>角色人偶，或</localtiles>按 <w>$cmd[CMD_RESISTS_SCREEN]</w>。
+新译: 游戏中的大多数攻击由你的 AC 防御。火焰、汲取等攻击还可由对应抗性进一步减轻；减速、混乱等妖术系效果则由意志力抵抗。你会找到能提升这两类抗性的物品。
+
+要查看当前全部抗性，<localtiles><w>右键点击</w>角色人偶，或</localtiles>按 <w>$cmd[CMD_RESISTS_SCREEN]</w>。
+trunk 对照: 游戏中的大多数攻击由你的 AC 防御。火焰、汲取等攻击还可由对应抗性进一步减轻；减速、混乱等妖术系效果则由意志力抵抗。你会找到能提升这两类抗性的物品。
+
+要查看当前全部抗性，<localtiles><w>右键点击</w>角色人偶，或</localtiles>按 <w>$cmd[CMD_RESISTS_SCREEN]</w>。
+消费者/资产位置: crawl-ref/source/hints.cc:1725, crawl-ref/source/hints.cc:1726；crawl-ref/source/dat/descript/zh/hints.txt:643
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+13. 改 | crawl-ref/source/dat/descript/zh/items.txt | book of hexes
+English: A spellbook containing an assortment of powerful Hexes, which sparkles and
+shimmers as the pages are flipped.
+旧译: 一本收录了各种强大诅咒系法术的魔法书，翻页时会闪闪发光。
+新译: 一本收录了各种强大妖术系法术的魔法书，翻页时会闪闪发光。
+trunk 对照: 一本收录了各种强大妖术系法术的魔法书，翻页时会闪闪发光。
+消费者/资产位置: crawl-ref/source/describe.cc:2907；crawl-ref/source/dat/descript/zh/items.txt:195
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+14. 改 | crawl-ref/source/dat/descript/zh/items.txt | riddle talisman
+English: An intricate puzzlebox containing an unknowable prize. Transforms the wearer into
+a riddle-loving sphinx. In this form, they are {{
+    if you.race() == "Felid" then
+        return "normally capable of wearing a cloak and barding (though your" ..
+               " own diminutive size would prevent this)"
+    else
+        return "capable of wearing a cloak and barding"
+    end
+}}, and their melee attacks cause powerful winds to strike their foe which do
+increased damage for every open space next to them. They are also masterful
+enchanters, casting Hex spells much more easily and ignoring a portion of their
+foe's Willpower.
+
+Alas, their love of riddles is so compulsive that even the most hardened
+adventurer will be unable to resist posing them to new foes they encounter, no
+matter how unwise this may be.
+旧译: 一个内含未知奖品的精巧谜盒。将佩戴者变成一只爱好谜语的斯芬克斯。
+在此形态下，佩戴者{{
+    if you.race() == "Felid" then
+        return "通常能够穿戴披风和马铠（尽管你自身的微小体型会阻止这一点）"
+    else
+        return "能够穿戴披风和马铠"
+    end
+}}，其近战攻击会引起强风打击敌人，相邻每多一格空地，伤害就越高。
+佩戴者还是高超的惑控师，更容易施放诅咒系法术，
+并忽略敌人一部分的意志力。
+
+唉，佩戴者对谜语的热爱如此强烈，以至于即使是最坚毅的冒险者也无法
+抗拒向遇到的新敌人提出谜语，无论这可能多么不明智。
+新译: 一个内含未知奖品的精巧谜盒。将佩戴者变成一只爱好谜语的斯芬克斯。
+在此形态下，佩戴者{{
+    if you.race() == "Felid" then
+        return "通常能够穿戴披风和马铠（尽管你自身的微小体型会阻止这一点）"
+    else
+        return "能够穿戴披风和马铠"
+    end
+}}，其近战攻击会引起强风打击敌人，相邻每多一格空地，伤害就越高。
+佩戴者还是高超的惑控师，更容易施放妖术系法术，
+并忽略敌人一部分的意志力。
+
+唉，佩戴者对谜语的热爱如此强烈，以至于即使是最坚毅的冒险者也无法
+抗拒向遇到的新敌人提出谜语，无论这可能多么不明智。
+trunk 对照: 一个内含未知奖品的精巧谜盒。将佩戴者变成一只爱好谜语的斯芬克斯。
+在此形态下，佩戴者{{
+    if you.race() == "Felid" then
+        return "通常能够穿戴披风和马铠（尽管你自身的微小体型会阻止这一点）"
+    else
+        return "能够穿戴披风和马铠"
+    end
+}}，其近战攻击会引起强风打击敌人，相邻每多一格空地，伤害就越高。
+佩戴者还是高超的惑控师，更容易施放妖术系法术，
+并忽略敌人一部分的意志力。
+
+唉，佩戴者对谜语的热爱如此强烈，以至于即使是最坚毅的冒险者也无法
+抗拒向遇到的新敌人提出谜语，无论这可能多么不明智。
+消费者/资产位置: crawl-ref/source/describe.cc:2907；crawl-ref/source/dat/descript/zh/items.txt:1588
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+15. 保留 | crawl-ref/source/dat/descript/zh/monsters.txt | hexer
+English: A humanoid construct of insubstantial memory, floating through the air. Though
+perhaps somewhat changed in shape and bearing few discernable features, still
+it seems somehow to resemble a warrior from the distantly remembered past,
+ready with debilitating spells and deadly knifework.
+旧译: 一个由虚幻记忆构成的人形造物，浮在空中。
+尽管形貌或许与记忆中略有不同，也没什么明显可辨的特征，
+但它仍像一位来自记忆深处、遥远往昔的战士，准备着衰弱法术和致命的刀法。
+新译: 一个由虚幻记忆构成的人形造物，浮在空中。
+尽管形貌或许与记忆中略有不同，也没什么明显可辨的特征，
+但它仍像一位来自记忆深处、遥远往昔的战士，准备着衰弱法术和致命的刀法。
+trunk 对照: 一个由虚幻记忆构成的人形造物，浮在空中。
+尽管形貌或许与记忆中略有不同，也没什么明显可辨的特征，
+但它仍像一位来自记忆深处、遥远往昔的战士，准备着衰弱法术和致命的刀法。
+消费者/资产位置: crawl-ref/source/dat/mons/ancestor-hexer.yaml:1 → crawl-ref/source/mon-util.cc:6085；crawl-ref/source/dat/descript/zh/monsters.txt:1393
+理由: 当前译文与开发线一致；键或机制不变
+
+16. 改 | crawl-ref/source/dat/descript/zh/monsters.txt | imperial myrmidon
+English: A warrior initiated in the mysteries of a dying cult, dedicated to serve
+thrones long-fallen. Its blows strip away magical defences, leaving its foes
+vulnerable to even the simplest hexes.
+旧译: 一名受教于衰亡教派奥秘的战士，矢志侍奉早已倾覆的王座。
+其攻击会剥去魔法防御，使敌人连最简单的诅咒系法术都难以抵御。
+新译: 一名受教于衰亡教派奥秘的战士，矢志侍奉早已倾覆的王座。
+其攻击会剥去魔法防御，使敌人连最简单的妖术系法术都难以抵御。
+trunk 对照: 一名受教于衰亡教派奥秘的战士，矢志侍奉早已倾覆的王座。
+其攻击会剥去魔法防御，使敌人连最简单的妖术系法术都难以抵御。
+消费者/资产位置: crawl-ref/source/describe.cc:7279；crawl-ref/source/dat/descript/zh/monsters.txt:1473
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+17. 改 | crawl-ref/source/dat/descript/zh/mutations.txt | bedevilling mutation
+English: You cast Hex spells with increased power.
+旧译: 你施放的诅咒系法术威力增强。
+新译: 你施放的妖术系法术威力增强。
+trunk 对照: 你施放的妖术系法术威力增强。
+消费者/资产位置: crawl-ref/source/mutation.cc:1048, crawl-ref/source/mutation.cc:1223, crawl-ref/source/mutation.cc:2481；crawl-ref/source/dat/descript/zh/mutations.txt:453
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+18. 改 | crawl-ref/source/dat/descript/zh/mutations.txt | demonic willpower mutation
+English: Your willpower has a will of its own, sometimes injuring those who attempt to
+hex you. This mutation also bolsters your willpower.
+旧译: 你的意志力有了自己的意图，有时它会伤害那些试图给你下咒的人。
+这个变异还会增强你的意志力。
+新译: 你的意志力有了自己的意图，有时它会伤害那些试图对你施放妖术的人。
+这个变异还会增强你的意志力。
+trunk 对照: 你的意志力有了自己的意图，有时它会伤害那些试图对你施放妖术的人。
+这个变异还会增强你的意志力。
+消费者/资产位置: crawl-ref/source/mutation.cc:1048, crawl-ref/source/mutation.cc:1223, crawl-ref/source/mutation.cc:2481；crawl-ref/source/dat/descript/zh/mutations.txt:457
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+19. 改 | crawl-ref/source/dat/descript/zh/mutations.txt | no hexes magic mutation
+English: Your Hexes skill is 0 and you cannot train the skill.
+旧译: 你的诅咒系技能等级为 0，你也无法训练它。
+新译: 你的妖术系技能等级为 0，你也无法训练它。
+trunk 对照: 你的妖术系技能等级为 0，你也无法训练它。
+消费者/资产位置: crawl-ref/source/mutation.cc:1048, crawl-ref/source/mutation.cc:1223, crawl-ref/source/mutation.cc:2481；crawl-ref/source/dat/descript/zh/mutations.txt:759
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+20. 改 | crawl-ref/source/dat/descript/zh/mutations.txt | hex mastery mutation
+English: Your Hexes spells are much easier to cast (reduced miscast chance and severity)
+and enemies have reduced willpower against all your effects.
+旧译: 你的诅咒系法术更易施放，施法失误的概率及后果严重程度都会降低，
+且敌人在抵抗你的所有效果时，意志力都会降低。
+新译: 你的妖术系法术更易施放，施法失误的概率及后果严重程度都会降低，
+且敌人在抵抗你的所有效果时，意志力都会降低。
+trunk 对照: 你的妖术系法术更易施放，施法失误的概率及后果严重程度都会降低，
+且敌人在抵抗你的所有效果时，意志力都会降低。
+消费者/资产位置: crawl-ref/source/mutation.cc:1048, crawl-ref/source/mutation.cc:1223, crawl-ref/source/mutation.cc:2481；crawl-ref/source/dat/descript/zh/mutations.txt:1036
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+21. 改 | crawl-ref/source/dat/descript/zh/skills.txt | Hexes
+English: Hexes try to bestow various enchantments on nearby things. While none do direct
+damage, being ensorcelled can effectively take an opponent out of combat,
+although they often require overcoming an opponent's willpower to have an effect.
+Skill in Hexes can help overcome this.
+
+Being skilled in Hexes increases the success rate and spell power of spells in
+this school. Many spells belong to a combination of several schools, in which
+case spellcasting success and power will depend on the average skill in these
+schools.
+旧译: 诅咒系法术会对周围的事物施加各种魔法效果。
+虽然不会直接造成伤害，但足以让中招的敌人失去战斗力；
+不过，这些法术通常需要击垮敌人的意志力才能生效。
+提升诅咒系技能有助于做到这一点。
+
+提升诅咒系技能会提升诅咒系法术的成功率和法术威力。许多法术属于多个魔法流派，
+对于这类法术，法术的成功率和法术威力由这些流派的技能平均值决定。
+新译: 妖术系法术会对周围的事物施加各种魔法效果。
+虽然不会直接造成伤害，但足以让中招的敌人失去战斗力；
+不过，这些法术通常需要击垮敌人的意志力才能生效。
+提升妖术系技能有助于做到这一点。
+
+提升妖术系技能会提升妖术系法术的成功率和法术威力。许多法术属于多个魔法流派，
+对于这类法术，法术的成功率和法术威力由这些流派的技能平均值决定。
+trunk 对照: 妖术系法术会对周围的事物施加各种魔法效果。
+虽然不会直接造成伤害，但足以让中招的敌人失去战斗力；
+不过，这些法术通常需要击垮敌人的意志力才能生效。
+提升妖术系技能有助于做到这一点。
+
+提升妖术系技能会提升妖术系法术的成功率和法术威力。许多法术属于多个魔法流派，
+对于这类法术，法术的成功率和法术威力由这些流派的技能平均值决定。
+消费者/资产位置: crawl-ref/source/skills.cc:105；crawl-ref/source/item-name.cc:1320；crawl-ref/source/skills.cc:1941, crawl-ref/source/skills.cc:2270；crawl-ref/source/dat/descript/zh/skills.txt:111
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+22. 改 | crawl-ref/source/dat/descript/zh/skills.txt | Air Magic
+English: Air Magic provides spells to deal damage directly with the wind, as well as
+noisy but powerful lightning Conjurations. It also provides some utility
+spells, such as a call to the wind to assist your movement or a Hex to prevent
+most use of magic in the area surrounding you.
+
+Being skilled in Air Magic increases the success rate and spell power of spells
+in this school. Many spells belong to a combination of several schools, in
+which case spellcasting success and power will depend on the average skill in
+these schools.
+旧译: 空气系包含直接用风造成伤害的法术，也包含轰鸣而强大的闪电咒法。
+其中也有一些实用法术，例如呼唤风来辅助移动，或用诅咒系法术阻止周围区域的大多数魔法。
+
+提升空气系技能会提升空气系法术的成功率和法术威力。许多法术属于多个魔法流派，
+对于这类法术，法术的成功率和法术威力由这些流派的技能平均值决定。
+新译: 空气系包含直接用风造成伤害的法术，也包含轰鸣而强大的闪电咒法。
+其中也有一些实用法术，例如呼唤风来辅助移动，或用妖术系法术阻止周围区域的大多数魔法。
+
+提升空气系技能会提升空气系法术的成功率和法术威力。许多法术属于多个魔法流派，
+对于这类法术，法术的成功率和法术威力由这些流派的技能平均值决定。
+trunk 对照: 空气系包含直接用风造成伤害的法术，也包含轰鸣而强大的闪电咒法。
+其中也有一些实用法术，例如呼唤风来辅助移动，或用妖术系法术阻止周围区域的大多数魔法。
+
+提升空气系技能会提升空气系法术的成功率和法术威力。许多法术属于多个魔法流派，
+对于这类法术，法术的成功率和法术威力由这些流派的技能平均值决定。
+消费者/资产位置: crawl-ref/source/describe.cc:4649；crawl-ref/source/dat/descript/zh/skills.txt:169
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+23. 改 | crawl-ref/source/dat/descript/zh/species.txt | Poltergeist
+English: Formless ghosts who delight in hexing their enemies. They can equip many
+different hats, gloves, boots, or cloaks at once, but cannot wear body armour.
+旧译: 骚灵是无形的幽灵，以诅咒敌人为乐。他们可以同时装备多顶帽子、
+多副手套、多双靴子或多件披风，但不能穿戴身体护甲。
+新译: 骚灵是无形的幽灵，以对敌人施放妖术为乐。他们可以同时装备多顶帽子、
+多副手套、多双靴子或多件披风，但不能穿戴身体护甲。
+trunk 对照: 骚灵是无形的幽灵，以对敌人施放妖术为乐。他们可以同时装备多顶帽子、
+多副手套、多双靴子或多件披风，但不能穿戴身体护甲。
+消费者/资产位置: crawl-ref/source/newgame.cc:1361；crawl-ref/source/dat/descript/zh/species.txt:120
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+24. 改 | crawl-ref/source/dat/descript/zh/spells.txt | Sphinx Sisters spell
+English: Summons a pair of riddling sphinxes - one guardian and one marauder - to
+debilitate the caster's enemies with hexes and batter them with violent winds.
+
+Spell power increases the sphinxes' durability and the power of their spells.
+旧译: 召唤一对善出谜题的斯芬克斯——一只守卫、一只劫掠者——
+以诅咒系法术削弱敌人并用狂风猛击。法术威力会提高其耐久与法术威力。
+新译: 召唤一对善出谜题的斯芬克斯——一只守卫、一只劫掠者——
+以妖术系法术削弱敌人并用狂风猛击。法术威力会提高其耐久与法术威力。
+trunk 对照: 召唤一对善出谜题的斯芬克斯——一只守卫、一只劫掠者——
+以妖术系法术削弱敌人并用狂风猛击。法术威力会提高其耐久与法术威力。
+消费者/资产位置: crawl-ref/source/describe.cc:4934, crawl-ref/source/describe.cc:5043；crawl-ref/source/dat/descript/zh/spells.txt:2035
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+25. 改 | crawl-ref/source/dat/descript/zh/unrand.txt | spear of the Botono
+English: A dark and malign artefact. It increases the potency of hexes cast by anyone
+unwise enough to risk wielding it.
+旧译: 一把黑暗、邪恶的神器。任何不智到甘愿冒险持握它的人，
+施放的诅咒系法术都会变得更强。
+新译: 一把黑暗、邪恶的神器。任何不智到甘愿冒险持握它的人，
+施放的妖术系法术都会变得更强。
+trunk 对照: 一把黑暗、邪恶的神器。任何不智到甘愿冒险持握它的人，
+施放的妖术系法术都会变得更强。
+消费者/资产位置: crawl-ref/source/describe.cc:2869；crawl-ref/source/dat/descript/zh/unrand.txt:181
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+26. 改 | crawl-ref/source/dat/descript/zh/unrand.txt | hat of the High Council
+English: A relic of some ancient wizarding war. Centuries later, it still crackles with
+effects from the residual hexes and magical energies it was once subjected to
+on a daily basis; spellcasters able to get a handle on its power, however, will
+find it enhances the power of their spells.
+旧译: 一件古代巫师战争的遗物。几个世纪后，它仍因昔日每天承受的残余诅咒与魔法能量
+而噼啪作响；不过，能够驾驭其力量的施法者会发现它能增强法术威力。
+新译: 一件古代巫师战争的遗物。几个世纪后，它仍因昔日每天承受的残余妖术与魔法能量
+而噼啪作响；不过，能够驾驭其力量的施法者会发现它能增强法术威力。
+trunk 对照: 一件古代巫师战争的遗物。几个世纪后，它仍因昔日每天承受的残余妖术与魔法能量
+而噼啪作响；不过，能够驾驭其力量的施法者会发现它能增强法术威力。
+消费者/资产位置: crawl-ref/source/describe.cc:2869；crawl-ref/source/dat/descript/zh/unrand.txt:513
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+27. 改 | crawl-ref/source/dat/i18n/zh/source.txt | Hexes
+English: Hexes
+旧译: 诅咒系
+新译: 妖术系
+trunk 对照: 妖术系
+消费者/资产位置: crawl-ref/source/skills.cc:105；crawl-ref/source/item-name.cc:1320；crawl-ref/source/skills.cc:1941, crawl-ref/source/skills.cc:2270；crawl-ref/source/dat/i18n/zh/source.txt:4360
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+28. 保留 | crawl-ref/source/dat/i18n/zh/source.txt | Maledictor
+English: Maledictor
+旧译: 诅咒师
+新译: 诅咒师
+trunk 对照: 诅咒师
+消费者/资产位置: crawl-ref/source/skills.cc:105；crawl-ref/source/dat/i18n/zh/source.txt:13355
+理由: 当前译文与开发线一致；键或机制不变
+
+29. 改 | crawl-ref/source/dat/i18n/zh/source.txt | Hexslinger
+English: Hexslinger
+旧译: 诅咒射手
+新译: 妖术射手
+trunk 对照: 妖术射手
+消费者/资产位置: crawl-ref/source/jobs.cc:88；crawl-ref/source/dat/i18n/zh/source.txt:13403
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+30. 保留 | crawl-ref/source/dat/i18n/zh/source.txt |  is no longer hexed.
+English:  is no longer hexed.
+旧译: 不再被支配。
+新译: 不再被支配。
+trunk 对照: 不再被支配。
+消费者/资产位置: crawl-ref/source/mon-ench.cc:665；crawl-ref/source/dat/i18n/zh/source.txt:15695
+理由: 当前译文与开发线一致；键或机制不变
+
+31. 改 | crawl-ref/source/dat/i18n/zh/source.txt | no hexes magic
+English: no hexes magic
+旧译: 无法使用诅咒系法术
+新译: 无法使用妖术系法术
+trunk 对照: 无法使用妖术系法术
+消费者/资产位置: crawl-ref/source/mutation-data.h:1930；crawl-ref/source/dat/i18n/zh/source.txt:18616
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+32. 改 | crawl-ref/source/dat/i18n/zh/source.txt | You cannot study or cast Hexes magic.
+English: You cannot study or cast Hexes magic.
+旧译: 你无法学习或施放诅咒系法术。
+新译: 你无法学习或施放妖术系法术。
+trunk 对照: 你无法学习或施放妖术系法术。
+消费者/资产位置: crawl-ref/source/mutation-data.h:1932；crawl-ref/source/dat/i18n/zh/source.txt:19411
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+33. 改 | crawl-ref/source/dat/i18n/zh/source.txt | Your hexes are more powerful.
+English: Your hexes are more powerful.
+旧译: 你的诅咒更加强大。
+新译: 你的妖术更加强大。
+trunk 对照: 你的妖术更加强大。
+消费者/资产位置: crawl-ref/source/mutation-data.h:1708；crawl-ref/source/dat/i18n/zh/source.txt:19858
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+34. 改 | crawl-ref/source/dat/i18n/zh/source.txt | hexed
+English: hexed
+旧译: 被控制
+新译: 被支配
+trunk 对照: 被支配
+消费者/资产位置: crawl-ref/source/mon-info-flag-name.h:27；crawl-ref/source/dat/i18n/zh/source.txt:20191
+理由: ENCH_HEXED 支配状态与学派区别，沿用 trunk 被支配；不改变附魔身份/机制
+
+35. 改 | crawl-ref/source/dat/i18n/zh/source.txt | hexer
+English: hexer
+旧译: 诅咒师
+新译: 妖术师
+trunk 对照: 妖术师
+消费者/资产位置: crawl-ref/source/dat/mons/ancestor-hexer.yaml:1 → crawl-ref/source/mon-util.cc:6085；crawl-ref/source/dat/i18n/zh/source.txt:21622
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+36. 改 | crawl-ref/source/dat/i18n/zh/source.txt | You can no longer study or cast Hexes magic.
+English: You can no longer study or cast Hexes magic.
+旧译: 你无法再学习或施放诅咒系法术。
+新译: 你无法再学习或施放妖术系法术。
+trunk 对照: 你无法再学习或施放妖术系法术。
+消费者/资产位置: crawl-ref/source/mutation-data.h:1933；crawl-ref/source/dat/i18n/zh/source.txt:24986
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+37. 改 | crawl-ref/source/dat/i18n/zh/source.txt | You can once more study and cast Hexes magic.
+English: You can once more study and cast Hexes magic.
+旧译: 你可以重新学习和施放诅咒系法术。
+新译: 你可以重新学习和施放妖术系法术。
+trunk 对照: 你可以重新学习和施放妖术系法术。
+消费者/资产位置: crawl-ref/source/mutation-data.h:1934；crawl-ref/source/dat/i18n/zh/source.txt:25055
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+38. 改 | crawl-ref/source/dat/i18n/zh/source.txt | It increases the power of your Hexes spells.
+English: It increases the power of your Hexes spells.
+旧译: 增强你诅咒系法术的威力。
+新译: 增强你妖术系法术的威力。
+trunk 对照: 增强你妖术系法术的威力。
+消费者/资产位置: crawl-ref/source/describe.cc:452；crawl-ref/source/dat/i18n/zh/source.txt:26345
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+39. 改 | crawl-ref/source/dat/i18n/zh/source.txt | Hex
+English: Hex
+旧译: 诅咒
+新译: 妖术
+trunk 对照: 妖术
+消费者/资产位置: crawl-ref/source/spl-util.cc:1381；crawl-ref/source/dat/i18n/zh/source.txt:28278
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+40. 改 | crawl-ref/source/dat/i18n/zh/source.txt | Ancestor Life: Hexer
+English: Ancestor Life: Hexer
+旧译: 先祖生涯：诅咒师
+新译: 先祖生涯：妖术师
+trunk 对照: 先祖生涯：妖术师
+消费者/资产位置: crawl-ref/source/ability.cc:726；crawl-ref/source/dat/i18n/zh/source.txt:31263
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+41. 改 | crawl-ref/source/dat/i18n/zh/source.txt | spell school|Hexes
+English: spell school|Hexes
+旧译: 诅咒系
+新译: 妖术系
+trunk 对照: 妖术系
+消费者/资产位置: crawl-ref/source/spl-util.cc:1442；crawl-ref/source/dat/i18n/zh/source.txt:48878
+理由: D-C-110：经相同英文键及正文核对，迁移该词根的开发线现译；其它命题与结构不变
+
+42. 改 | crawl-ref/source/dat/i18n/zh/source.txt | hex mastery
+English: hex mastery
+旧译: (无词条，显示回退到英文)
+新译: 妖术精通
+trunk 对照: 妖术精通
+消费者/资产位置: crawl-ref/source/dat/forms/sphinx.yaml:24 → crawl-ref/source/mutation.cc:950；crawl-ref/source/dat/i18n/zh/source.txt:50185
+理由: 稳定现有 sphinx form 的动态 T_ 消费者缺少词条；补相同英文键对应的 trunk 译文，不改 form 身份
+
+43. 改 | crawl-ref/source/dat/i18n/zh/source.txt | Hexes are much easier for you to cast and harder to resist.
+English: Hexes are much easier for you to cast and harder to resist.
+旧译: (无词条，显示回退到英文)
+新译: 你施放妖术系法术要容易得多，敌人也更难抵抗。
+trunk 对照: 你施放妖术系法术要容易得多，敌人也更难抵抗。
+消费者/资产位置: crawl-ref/source/dat/forms/sphinx.yaml:24 → crawl-ref/source/mutation.cc:655；crawl-ref/source/dat/i18n/zh/source.txt:50188
+理由: 稳定现有 sphinx form 的动态 T_ 消费者缺少词条；补相同英文键对应的 trunk 译文，不改 form 身份
+
+=== 随机书名逐变体（101个位置，4改/97保留） ===
+
+以下同时证明按英文同位词项修改，而非整池替换；显式 w: 权重、顺序和 __NONE sentinel 逐字保留。
+保留 | Hexes #1 | EN=Ambsace | 厄运 → 厄运
+保留 | Hexes #2 | EN=Anathema | 诅咒 → 诅咒
+保留 | Hexes #3 | EN=Bad Luck | 厄运 → 厄运
+保留 | Hexes #4 | EN=Beguiling | 迷惑 → 迷惑
+保留 | Hexes #5 | EN=Bewitchment | 妖术 → 妖术
+保留 | Hexes #6 | EN=Charms | 魅力 → 魅力
+保留 | Hexes #7 | EN=Curses | 诅咒 → 诅咒
+保留 | Hexes #8 | EN=Destiny | 命运 → 命运
+保留 | Hexes #9 | EN=Doom | 毁灭 → 毁灭
+保留 | Hexes #10 | EN=Enchantment | 附魔 → 附魔
+保留 | Hexes #11 | EN=Ensorcelling | 施咒 → 施咒
+保留 | Hexes #12 | EN=Execration | 诅咒 → 诅咒
+保留 | Hexes #13 | EN=Fascination | 着迷 → 着迷
+保留 | Hexes #14 | EN=Fate | 命运 → 命运
+保留 | Hexes #15 | EN=Glamour | 魅惑 → 魅惑
+保留 | Hexes #16 | EN=Guile | 诡计 → 诡计
+改 | Hexes #17 | EN=Hexes | 诅咒 → 妖术
+改 | Hexes #18 | EN=Hexing | 咒术 → 施展妖术
+保留 | Hexes #19 | EN=Ill Luck | 厄运 → 厄运
+保留 | Hexes #20 | EN=Imprecation | 咒骂 → 咒骂
+保留 | Hexes #21 | EN=Interference | 干扰 → 干扰
+保留 | Hexes #22 | EN=Jinxing | 诅咒 → 诅咒
+保留 | Hexes #23 | EN=Malediction | 恶咒 → 恶咒
+保留 | Hexes #24 | EN=Maleficia | 毒咒 → 毒咒
+保留 | Hexes #25 | EN=Malisons | 诅咒 → 诅咒
+保留 | Hexes #26 | EN=Mischance | 灾祸 → 灾祸
+保留 | Hexes #27 | EN=Misfortune | 不幸 → 不幸
+保留 | Hexes #28 | EN=Obstruction | 妨碍 → 妨碍
+保留 | Hexes #29 | EN=Omens | 预兆 → 预兆
+保留 | Hexes #30 | EN=Portents | 征兆 → 征兆
+保留 | Hexes #31 | EN=Signs | 征兆 → 征兆
+保留 | Hexes #32 | EN=Spellbinding | 咒缚 → 咒缚
+保留 | Hexes #33 | EN=the Curse | 诅咒 → 诅咒
+保留 | Hexes #34 | EN=the Evil Eye | 邪眼 → 邪眼
+保留 | Hexes #35 | EN=the Faeries | 仙灵 → 仙灵
+保留 | Hexes #36 | EN=the Fairies | 仙女 → 仙女
+保留 | Hexes #37 | EN=the Fair Folk | 仙族 → 仙族
+保留 | Hexes #38 | EN=the Jinx | 灾星 → 灾星
+保留 | Hexes #39 | EN=the Maleficium | 恶业 → 恶业
+保留 | Hexes #40 | EN=the Oath | 誓言 → 誓言
+保留 | Hexes #41 | EN=the Sphinx | 斯芬克斯 → 斯芬克斯
+保留 | Hexes #42 | EN=w:2\nthe Whammy | w:2\n霉运 → w:2\n霉运
+保留 | Hexes #43 | EN=the Wyrd | 命运 → 命运
+保留 | Hexes adj #1 | EN=Alluring | 诱惑的 → 诱惑的
+保留 | Hexes adj #2 | EN=Baleful | 凶恶的 → 凶恶的
+保留 | Hexes adj #3 | EN=Becharmed | 被蛊惑的 → 被蛊惑的
+保留 | Hexes adj #4 | EN=Becharming | 蛊惑的 → 蛊惑的
+保留 | Hexes adj #5 | EN=Beguiled | 被欺骗的 → 被欺骗的
+保留 | Hexes adj #6 | EN=Beguiling | 欺骗的 → 欺骗的
+保留 | Hexes adj #7 | EN=Bewitched | 被迷惑的 → 被迷惑的
+保留 | Hexes adj #8 | EN=Bewitching | 迷惑的 → 迷惑的
+保留 | Hexes adj #9 | EN=Bound | 束缚的 → 束缚的
+保留 | Hexes adj #10 | EN=Captivating | 迷人的 → 迷人的
+保留 | Hexes adj #11 | EN=Charmed | 着魔的 → 着魔的
+保留 | Hexes adj #12 | EN=Charming | 施展魅力的 → 施展魅力的
+保留 | Hexes adj #13 | EN=Cunning | 狡猾的 → 狡猾的
+保留 | Hexes adj #14 | EN=Cursed | 被诅咒的 → 被诅咒的
+保留 | Hexes adj #15 | EN=Destined | 命中注定的 → 命中注定的
+保留 | Hexes adj #16 | EN=Dire | 可怕的 → 可怕的
+保留 | Hexes adj #17 | EN=Doomed | 劫数难逃的 → 劫数难逃的
+保留 | Hexes adj #18 | EN=Enchanted | 被附魔的 → 被附魔的
+保留 | Hexes adj #19 | EN=Enchanting | 附魔的 → 附魔的
+保留 | Hexes adj #20 | EN=Ensnaring | 诱捕的 → 诱捕的
+保留 | Hexes adj #21 | EN=Enthralled | 被迷住的 → 被迷住的
+保留 | Hexes adj #22 | EN=Enthralling | 迷住人的 → 迷住人的
+保留 | Hexes adj #23 | EN=Entranced | 入迷的 → 入迷的
+保留 | Hexes adj #24 | EN=Entrancing | 令人入迷的 → 令人入迷的
+保留 | Hexes adj #25 | EN=Fascinating | 迷人的 → 迷人的
+保留 | Hexes adj #26 | EN=Fateful | 宿命的 → 宿命的
+保留 | Hexes adj #27 | EN=Fetching | 迷人的 → 迷人的
+保留 | Hexes adj #28 | EN=Fettered | 被束缚的 → 被束缚的
+保留 | Hexes adj #29 | EN=Fey | 仙灵的 → 仙灵的
+保留 | Hexes adj #30 | EN=Glamourous | 富有魅力的 → 富有魅力的
+保留 | Hexes adj #31 | EN=Hapless | 不幸的 → 不幸的
+改 | Hexes adj #32 | EN=Hexed | 被诅咒的 → 被施以妖术的
+改 | Hexes adj #33 | EN=Hexing | 施咒的 → 施展妖术的
+保留 | Hexes adj #34 | EN=Hindering | 阻碍的 → 阻碍的
+保留 | Hexes adj #35 | EN=Hopeless | 绝望的 → 绝望的
+保留 | Hexes adj #36 | EN=Ill-boding | 不祥之兆的 → 不祥之兆的
+保留 | Hexes adj #37 | EN=Ill-fated | 厄运的 → 厄运的
+保留 | Hexes adj #38 | EN=Ill-omened | 凶兆的 → 凶兆的
+保留 | Hexes adj #39 | EN=Ill-starred | 灾星的 → 灾星的
+保留 | Hexes adj #40 | EN=Inauspicious | 不吉的 → 不吉的
+保留 | Hexes adj #41 | EN=Jinxed | 被煞到的 → 被煞到的
+保留 | Hexes adj #42 | EN=Lost | 失落的 → 失落的
+保留 | Hexes adj #43 | EN=Maledictive | 诅咒的 → 诅咒的
+保留 | Hexes adj #44 | EN=Portentous | 预兆的 → 预兆的
+保留 | Hexes adj #45 | EN=Predestined | 宿命注定的 → 宿命注定的
+保留 | Hexes adj #46 | EN=Spellbinding | 咒缚的 → 咒缚的
+保留 | Hexes adj #47 | EN=Star-crossed | 命运多舛的 → 命运多舛的
+保留 | Hexes adj #48 | EN=Tragic | 悲剧的 → 悲剧的
+保留 | Hexes adj #49 | EN=Twinkling | 闪烁的 → 闪烁的
+保留 | Hexes adj #50 | EN=Unfortunate | 不幸的 → 不幸的
+保留 | Hexes adj #51 | EN=Unlucky | 倒霉的 → 倒霉的
+保留 | Hexes adj #52 | EN=Vexatious | 令人烦恼的 → 令人烦恼的
+保留 | Hexes adj #53 | EN=Vexing | 烦恼的 → 烦恼的
+保留 | Hexes adj #54 | EN=Weird | 怪异的 → 怪异的
+保留 | Hexes owner #1 | EN=Yara | 亚拉 → 亚拉
+保留 | Hexes owner #2 | EN=w:5\nTerpsichore | w:5\n忒耳普西科瑞 → w:5\n忒耳普西科瑞
+保留 | Hexes owner #3 | EN=Tukima | 图基玛 → 图基玛
+保留 | Hexes owner #4 | EN=__NONE | __NONE → __NONE
+
+=== curse 边界不变清单（61个SourceDB键，非全量curse语义审查） ===
+
+这些完整英文键在基线和候选中逐条比较，中文值完全不变；Maledictor、Maledictions、curses,、物品诅咒和curse动词均不因学派改名而替换。
+保留 | Kikubaaqudgha is now protecting you from necromantic miscasts and death curses. | 奇库巴库哈现在保护你免受死灵法术失误和死亡诅咒的伤害。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:464
+保留 | Kikubaaqudgha will no longer protect you from necromantic miscasts or death curses. | 奇库巴库哈不再保护你免受死灵法术失误或死亡诅咒的伤害。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:467
+保留 | Kikubaaqudgha protects you from necromantic miscasts and death curses. | 奇库巴库哈保护你免受死灵法术失误和死亡诅咒的伤害。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:470
+保留 |  (curse) | （诅咒） → 同前；crawl-ref/source/dat/i18n/zh/source.txt:1987
+保留 | , Cursed item | ，诅咒物品 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:2110
+保留 | , shattering the curse! | ，诅咒被粉碎了！ → 同前；crawl-ref/source/dat/i18n/zh/source.txt:2149
+保留 | A cursed item is preventing you from removing %s. | 一个被诅咒的物品阻止你卸下%s。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:2500
+保留 | Ashenzari supports the following skill groups because of your curses: | 由于你的诅咒，艾申扎利支持以下技能组： → 同前；crawl-ref/source/dat/i18n/zh/source.txt:2979
+保留 |  averts the curse. | 化解了诅咒。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:3033
+保留 | curse armour | 诅咒护甲 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:3607
+保留 | Curse bonuses | 诅咒加成 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:3610
+保留 | curse jewellery | 诅咒珠宝 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:3613
+保留 | curse weapon | 诅咒武器 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:3616
+保留 | Curse which item? (Esc to abort) | 诅咒哪件物品？（Esc取消） → 同前；crawl-ref/source/dat/i18n/zh/source.txt:3619
+保留 |  is cursed with the promise of agony. | 被施加了预示剧痛的诅咒。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:4528
+保留 | Maledictions | 诅咒 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:5086
+保留 | None of your equipped items are cursed. | 你装备的物品都没有被诅咒。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:5326
+保留 |  partially averts the curse. | 部分化解了诅咒。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:5446
+保留 | Skeletons, inanimate yet cursed, drop down from the ceiling. | 一些被诅咒的无生命骷髅从天花板上掉落下来。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:6221
+保留 |  withdraws the vision and curse. | 收回了幻象和诅咒。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:8207
+保留 | you bind yourself with curses | 你以诅咒束缚自己 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:8719
+保留 | You cannot curse that! | 你无法诅咒那个！ → 同前；crawl-ref/source/dat/i18n/zh/source.txt:9097
+保留 | You cannot shatter the curse on %s while it is | 你无法在%s与你的身体融合时粉碎其诅咒！ → 同前；crawl-ref/source/dat/i18n/zh/source.txt:9166
+保留 | You cannot shatter the curse on %s while it is melded with your body! | 你无法在%s与你的身体融合时粉碎其诅咒！ → 同前；crawl-ref/source/dat/i18n/zh/source.txt:9169
+保留 | Your curses shatter. | 你的诅咒破碎了。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:10962
+保留 | cursed | 诅咒的 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:12203
+保留 | Ashenzari invites you to share a vision and a curse%s. | 艾申扎利邀请你共享一个幻象与诅咒%s。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:12708
+保留 | Maledictor | 诅咒师 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:13355
+保留 | You struggle to resist the curse of the Prune... | 你努力抵抗梅干阔头枪的诅咒…… → 同前；crawl-ref/source/dat/i18n/zh/source.txt:13727
+保留 | The curse of the Prune has no hold on the dead. | 梅干阔头枪的诅咒对亡者无效。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:13730
+保留 | The curse of the Prune lifts from you. | 梅干阔头枪的诅咒从你身上解除了。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:13733
+保留 | god title|Cursed | 受诅咒者 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:14639
+保留 | %1$s is freed from %2$s curse. | %1$s从其诅咒中解脱了。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:15707
+保留 | Curse of Agony | 痛苦诅咒 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:16001
+保留 | The curse of the Prune grips you. | 梅干长柄刀的诅咒攫住了你。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:17551
+保留 | cursed with agony | 受难诅咒 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:20482
+保留 | cursed with the promise of agony | 被痛苦诅咒所诅咒 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:20767
+保留 | curse toe | 诅咒趾 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:21562
+保留 | You shatter the curse binding %1$s! | 你粉碎了束缚着%1$s的诅咒！ → 同前；crawl-ref/source/dat/i18n/zh/source.txt:24371
+保留 | cursed  | 诅咒的 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:27450
+保留 | *Curse | *诅咒 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:28158
+保留 | curses, | 诅咒， → 同前；crawl-ref/source/dat/i18n/zh/source.txt:28380
+保留 | scythe of Curses | 诅咒之镰 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:28863
+保留 | curses | 诅咒 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:28968
+保留 | It inflicts powerful necromantic curses on any living foe it strikes. | 对击中的任何活着的敌人施加强大的亡灵诅咒。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:29409
+保留 |  will inflict a necromantic curse on %s foe when destroyed.\n | 被摧毁时会对%s敌人施加死灵诅咒。\n → 同前；crawl-ref/source/dat/i18n/zh/source.txt:30360
+保留 |  will inflict a powerful necromantic curse on %s foe when destroyed.\n | 被摧毁时会对%s敌人施加强大的死灵诅咒。\n → 同前；crawl-ref/source/dat/i18n/zh/source.txt:30363
+保留 | \nIt has a curse placed upon it. | \n它被施加了诅咒。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:30549
+保留 | \nIt has a curse which improves the following skills:\n | \n它有一个诅咒，可以提升以下技能：\n → 同前；crawl-ref/source/dat/i18n/zh/source.txt:30552
+保留 | Curse Item | 诅咒物品 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:31128
+保留 | curse skull | 诅咒颅骨 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:31866
+保留 | One cursed item | 一件诅咒装备 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:35645
+保留 |  Ashenzari will withdraw the offered vision and curse! | 阿申扎里将收回赐予的视野并施加诅咒！ → 同前；crawl-ref/source/dat/i18n/zh/source.txt:37164
+保留 | a death curse | 死亡诅咒 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:39645
+保留 | %s death curse | %s的死亡诅咒 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:39648
+保留 | Slain by %s's death curse | 被%s的死亡诅咒杀死 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:39651
+保留 | \nIf you bind an item with this curse Ashenzari will enhance the following skills:\n | \n如果你用此诅咒绑定一件物品，阿莎扎丽将强化以下技能：\n → 同前；crawl-ref/source/dat/i18n/zh/source.txt:40641
+保留 | Ashenzari invites you to share a vision and a curse of %s. | 艾申扎利邀你共享一段幻象与%s的诅咒。 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:43660
+保留 | The portal is guarded from trespassers with a powerful curse. All who enter will suffer the %s for %s XL. Enter anyway? | 强大的诅咒守护着这座传送门，阻止外人闯入。所有进入者都将遭受%s，需再获得相当于%s级的经验值才能解除。仍要进入吗？ → 同前；crawl-ref/source/dat/i18n/zh/source.txt:43989
+保留 | The portal is guarded from trespassers with a powerful curse. All who enter will suffer the %s:\n\n%s | 强大的诅咒守护着这座传送门，阻止外人闯入。所有进入者都将遭受%s：\n\n%s → 同前；crawl-ref/source/dat/i18n/zh/source.txt:43993
+保留 | flag long|cursed with the promise of agony | 受到痛苦诅咒 → 同前；crawl-ref/source/dat/i18n/zh/source.txt:44922
+
+=== 非适用/特殊保留与实现边界 ===
+
+保留 jobs.cc::_job_zh_names 的 JOB_HEXSLINGER→诅咒枪手。该表仅供旧存档中文名兼容读取（get_job_by_name）；get_job_name 当前显示使用 SourceDB，故新显示为妖术射手，旧存档别名不迁移。另在 get_job_by_name 显式接受旧 SourceDB 显示名“诅咒射手”，防止改名后旧存档浏览（files.cc:757）、分数读取（hiscores.cc:948）及配置输入（initfile.cc:1343）失去原匹配；不改写保存内容。双语回归同时覆盖当前名与两种旧名。
+保留 skills.cc::skill_abbr(SK_HEXES) 返回英文 Hex；Ru 的缩略后缀直接消费这个canonical接口，未新增中文逻辑。实际 spelltype_short_name 的显示则随 SourceDB 更新为妖术。
+不迁移 trunk 的 curse abbreviation|Hex、ancestor class|a hexer、test_zh_issue149.cc 或 mutation:pseudo 专用bot案例：stable 当前没有相应上下文调用/测试文件/该bot分支。由实际存在的 plain Hex、mons_type_name、ability_name 和现有 TranslationFixture 承担本轮迁移与验证。
+miscast_inventory.py:98 的 dependency group“诅咒系：感官扰动、颜色与减速”保留。它是冻结 miscast 基线审查卡的分组文本，不是玩家学派名称；两线当前 trunk/stable 均保留该历史分组，且 validate_results 严格校验它。没有把历史证据改称当时的错误。
+mutation.cc::MutationMenu 的 fakemut popup 标题仍使用原始英文（既有共同实现）；本轮未扩大为所有 form 伪变异标题的代码本地化。sphinx 的实际 terse_mutation_list 与长说明已通过动态 T_ 验证；不冒称弹窗标题也已本地化。
+glossary 的 Mesmerise 作用域说明只将“5级怪物诅咒法术”改述为“5级怪物妖术”；依据 spl-data.h 的 SPELL_MESMERISE→spschool::hexes，不改法术名迷魂或玩法说明。
+英文协议/枚举/YAML/数据库查询key/权重和保存实现不变；生产 C++ 仅在 jobs.cc 添加旧显示名“诅咒射手”的读取别名；现代显示/English getters/存档写入保持原样。其余 C++ diff 为回归用例及 include。旧 NOTE_ANCESTOR_TYPE.name 等快照不重写。
+
+=== 文档与规则 ===
+
+stable 新增 D-C-110，记录维护者来源、当前 trunk 参照、适用范围与 curse/Maledictor/书名/随机词池边界；D-C-101 保留原裁决，仅标注 Hexes/Hex 已由 D-C-110 取代。
+沿用已有 reject=，对 Hexes/Hex/Hexslinger/hexer/Ancestor Life: Hexer/hex mastery 的旧形显式约束；hexed 的 ENCH_HEXED 用语仅做精确键校验，避免全树规则误伤随机词池的同形普通形容词；不全局禁用诅咒。未改 validator 逻辑或测试来放宽门禁。
+C3-01（第二轮）与 R4-1-02（第四轮）是在当时固定基线下依据旧 stable glossary 驳回；冻结样本、原裁决和归档均保持不动。此后根据维护者决定回迁；请主持在第四轮 post-disposition 记录此后处置，本人未倒改历史。依据 <work>/：C3-01 固定 stable=83af93c8bdbbaf1b66aeac0af3eaa6ff58cebc57 / trunk=302ecba316bee8be19b73d06c3697cf82bd5bc3e，明确命名策略分歧而非当时翻译缺陷；第四轮 adjudication_r4.json 的 R4-1-02 固定 stable=ae5a420e78 / trunk=59aec6256f，同样按旧术语驳回。后续可注明“此后已按维护者要求回迁”，不追改原判。
+
+=== 台账处理 ===
+
+硬性新鲜度：graffiti、miscast、miscname、monflee、monspell 使用现有生成/验证 API 更新 glossary/inventory 摘要；去除64位SHA后，与基线文本差异均为0。
+实际资产内容变化的直接派生证据：角色11卡、种族/职业3卡、物品4卡、怪物 hexer 行及相应聚合摘要由现有 renderer 更新。保留原 glossary SHA、人工理由和终态结论；怪物 renderer 自动把 hexer 分类细化为 name and description corrected。详情见 hexes-ledger-changes.json。
+world、god 台账全文未改。未将只打印 notice 的历史 glossary/decisions 摘要强行重绑，未手写勘误小节。
+
+=== 检查结果 ===
+
+最终 code profile：exit0，base/head绑定；run 20261112T171824200203568+0000-3622814-f6b597512edb
+四份直接派生证据审计（monster/character/species/item）均绑定最终head、exit0；hexes-audit-exits.json / hexes-final-audits.log。
+最终完整工具套件：74脚本通过、0失败，exit0；run_isolated.sh env PYTHONSAFEPATH=1 ZH_TOOLING_TEST_JOBS=2；与profile错峰执行。
+初始构建以及追加兼容提交后的增量构建（hexes-build.log / hexes-build-compat.log，均exit0）：make -C crawl-ref/source STDFLAG=-std=c++14 catch2-tests-executable crawl -j4，COVERAGE=YesPlease，exit0；hexes-build.log。profile 依任务设置 ZH_VERIFY_BUILD_COMMAND=make -C crawl-ref/source catch2-tests-executable -j4。
+[hexes-backport]：50断言/1用例，exit0；hexes-runtime-focused.log。覆盖双语技能/学派/职业/先祖菜单及说明、help canonical键、sphinx伪变异，守住English getters/Note.name/form原键。
+[zh-help]：2724断言/19用例，exit0；hexes-runtime-help.log。其被动/状态库扫描以warning通道输出 issues=0 统计，并非失败。
+code profile 运行时：[zh-translation] 141957 assertions in 246 test cases、[message-overlay] 34654 assertions in 40 test cases，exit0；原始记录 .claude/metrics/verify/zh-runtime-20261112T172302Z-3715100。未使用跳过运行时的覆盖参数。
+普通物品工具测试35项、scanner completeness40项、check_glossary_terms工具测试12项、默认检查、export --check、checkwhite/unbrace（jobs.cc和改动test文件）与 git diff --check 均exit0，原始日志 hexes-item-tests-final.log / hexes-scanner-tests-final.log / hexes-term-tests-final.log / hexes-terms-final.log / hexes-checkwhite.log / hexes-unbrace.log。
+完整工具套件首轮73通过/1失败，exit1：test_audit_item_name_inventory 的固定签名尚是旧 BOOK_HEXES 名称。复算390个身份后只有 book:BOOK_HEXES 的 current_chinese_name 从诅咒系之书变为妖术系之书；English源名、lookup key和其余389身份完全相同，见 hexes-ordinary-item-delta.json。仅将签名8777c641…改为190afab2…及对应说明，不改断言逻辑；随后聚焦35项全过、最终全套重跑。旧套件日志 hexes-tools-before-compat.log。
+追加兼容代码后的 profile 曾由 CJK inventory 阻断一处未分类生产字面量（jobs.cc:123）。现有 scanner 生成精确行/列/literal SHA 后，仅增加一条 protocol_parse 记录，理由限定旧名读取；未修改扫描器、未整文件放行。最终 CJK inventory 1519处、0违规，现有scanner completeness 40项全过，验证仍对未知/移动/损坏记录 fail closed。
+首轮 profile 因将后续处置文字写入 Status 值而阻断（D-C-101 invalid Status，exit2子项）；已改为固定 active + 独立后续处置字段并提交，最终重新绑定通过。首轮失败日志 hexes-profile.log 保留。
+追加兼容代码后的首轮50断言全部通过，但旧 jobs.gcda / test_zh_translation.gcda 存在 checksum 警告；保留 hexes-runtime-focused-compat-first.log，只移除本任务 worktree 的这两份覆盖率输出后重跑，最终日志无 profiling error。
+直接证据生成探索曾因预期怪物变化行数和 AuditInput API/根内路径要求报错，均停止后修正；最终脚本退出0、仅写入断言确认的直接卡，不放宽生成器。正式结论依最终审计与全套测试，不以探索命令返回cat的状态计作验证。
+
+=== 玩家检查点与剩余风险 ===
+
+在技能界面和法术列表查看妖术系/妖术；职业选择、查找与职业说明应显示妖术射手；先祖职业菜单/确认/名称和能力详情应显示妖术师。
+检查献祭禁用学派和变异/形态说明、斯芬克斯的妖术精通；BOOK_HEXES 和相关神器说明使用妖术词根。Maledictions、Maledictor、普通诅咒属性及保留的随机书名仍应为诅咒。
+随机书名仅4个位置改变，实际随机抽取/字体布局尚待玩家验收；未进行额外实玩或截图。启动smoke和Catch2是规定门禁，不冒称完整玩家验收。
+已知 stable 的 raw fakemut popup 标题与 Ru raw school abbreviation 仍按原实现显示英文，不扩展本次策略迁移为全局显示代码修复。
+本候选待独立复审和CI；按 brief 交付节仅提交/推送，未开PR、未合并，供主持建立独立小PR。
+
+=== 交付状态 ===
+
+已推送 f6b597512edb5cc583d64d3f2e902a9367fbb18a 到 origin/codex/hexes-backport-stable；HEAD与upstream一致，工作树干净。所有本轮提交均带 Agent: Codex。
+交付前最新 origin/chn-0.34.1-base 仍为 ae5a420e78，未发生第四轮先行合并，无额外base合并需求。
+未开PR、未合并。
+
+=== 2026-11-12 18:06 UTC 追加：#319 合并同步（最新交付状态） ===
+
+上文初次交付记录保留为历史；本节更新当时“第四轮尚未合入”的状态。现已只做 merge，将 #319 并入 #320 的主题分支；未 rebase，原有 Hexes 提交原样保留。
+new head: 2ec6f1e4702158307e27e14fa5f3e78ac8aa7875
+first parent（原 Hexes）: f6b597512edb5cc583d64d3f2e902a9367fbb18a
+second parent（#319 stable）: 51e9e56d55718684d35b5c4e38039f9a82222467
+验证 base: 51e9e56d55718684d35b5c4e38039f9a82222467
+
+冲突解决：
+- source.txt：保留 hex mastery→妖术精通、Hexes are much easier for you to cast and harder to resist.→你施放妖术系法术要容易得多，敌人也更难抵抗。，并保留 You hear a sizzling sound.→你听到一阵滋滋声。每条均有正确 %%%% 分隔。逐键核对原 Hexes 全部旧 key/value 完全保留，集合仅新增 #319 的句号版 sizzling 键。
+- docs/monster-review-results.md：调用现有 monster_name_ssot.build_inventory + render_review_results，按合并后的实际资产生成清单 SHA d58b4c585765de83ef1fd1605c4afd3e951ed999ab00744af76a3830d5ccecb2；没有手工选择任一冲突侧哈希。保留历史 glossary SHA dcbfb16ac457e9506a5e634d171211d460652f42e2ba651ad950d15e719753ae；starflower 自动分类为 retranslate: description corrected，Hexer 的新名与 name and description corrected 分类同时保留。
+- monsters.txt 自动合并已核实：starflower 首句仍为“从死星的外壳中长出的一团挥舞不休的藤蔓和触须。”；与原 Hexes head 的描述字典相比只有 starflower 一项变化，其余 Hexes 派生译文未丢失。
+- 相对 first parent 只有 gods.txt、monsters.txt、source.txt、mon-act.cc 和怪物台账这五个文件的同步增量；没有其它手工修复或重写历史。
+
+验证结果：
+- code profile：exit0，绑定上述 base/head，run 20261112T175555048254128+0000-3861051-2ec6f1e47021；日志 merge-319/profile.log。构建命令按要求为 make -C crawl-ref/source catch2-tests-executable -j4；先以相同 COVERAGE=YesPlease / C++14 配置构建候选 Catch2 与 crawl，build.log exit0。
+- 完整工具套件：74脚本通过、0失败、exit0；run_isolated.sh + PYTHONSAFEPATH=1 + ZH_TOOLING_TEST_JOBS=2；日志 merge-319/tools.log。
+- 受影响审计：god、monster、character、species、item 五项均绑定 merge head、exit0；merge-319/hexes-audit-exits.json、audits.log 及对应原始报告。
+- profile、独立审计与完整工具套件串行错峰；均经 run_isolated。git diff --check exit0；工作树干净。只清理了本任务 worktree 因 mon-act.cc 重编译而失效的 mon-act.gcda 覆盖率输出。
+- glossary 未变，SHA-256 仍为 7bf944531289d3e0904ce26d50f3cfa62f43e30e2b5938d57e2646c25f29b8fe；当前术语上下文 merge-319/context.txt。
+
+已推送到 origin/codex/hexes-backport-stable，远端跟踪 head 一致；更新现有 #320。没有创建新 PR，没有将 #320 合并到目标分支。

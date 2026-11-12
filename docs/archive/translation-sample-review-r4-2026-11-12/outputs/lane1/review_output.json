@@ -1,0 +1,576 @@
+[
+  {
+    "sample_id": "R4-4-03",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-2-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-1-09",
+    "verdict": "ok",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "note",
+        "line": "both",
+        "english": "",
+        "current_full_zh": "",
+        "problem": "译文补了“有敌对怪物可见时”，与 item-use.cc:2065-2067、3317 中“附近有可见敌对怪物时使用药水/卷轴才重置 Victory”的机制一致，属于准确的明确化，不判为增译。",
+        "suggested_zh": null,
+        "evidence": "见 problem",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "R4-4-05",
+    "verdict": "insufficient_evidence",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "fallback_untranslated",
+        "line": "stable",
+        "english": "You %s the altar of %s.（只走未进整句表的动作）",
+        "current_full_zh": "你bow your heads before了奥卡瓦鲁的祭坛。（stable，静态推断）",
+        "problem": "常见动作都走 N_ 整句键，没有问题。只有不在表里的 \"bow your heads before\"（deprecated-hydra）和 \"curl into a sanctuary of spikes before\"（deprecated-porcupine）会落到片段模板；stable 的 catalog 没有这两条，会显示英文，而且“你%s了%s的祭坛”语序也不自然。trunk 有译文：“你低下所有头颅拜向了X的祭坛。”。这两种形态都标了 TAG_MAJOR_VERSION 34，可能只有旧存档能触发；需要确认 stable 实际能否进入这两种形态。",
+        "suggested_zh": "把两条动作加入整句表，例如“你低下所有头颅，拜向%s的祭坛。”“你蜷成刺球，面向%s的祭坛。”",
+        "evidence": "stable ae5a420e78:religion.cc:3994-4047、dat/forms/deprecated-hydra.yaml:19、deprecated-porcupine.yaml:22；trunk 59aec6256f:religion.cc:4086-4129",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "R4-1-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-2-10",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-5-01",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-1-01",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-5-03",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-7-02",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-2-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-4-09",
+    "verdict": "readability",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "literal",
+        "line": "both",
+        "english": "The Black Torch roars with renewed intensity!",
+        "current_full_zh": "黑火炬以新的强度咆哮着！",
+        "problem": "“以新的强度”是直译，不自然。",
+        "suggested_zh": "黑火炬再度熊熊咆哮！",
+        "evidence": "stable ae5a420e78:god-abil.cc:1591",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "R4-2-02",
+    "verdict": "ok",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "note",
+        "line": "both",
+        "english": "",
+        "current_full_zh": "",
+        "problem": "make_soul_wisp 的 SOUL_SPLINTERED_KEY 分支（spl-summoning.cc:3501-3505）说的是灵魂碎片，“灵魂碎片”有源码支持。",
+        "suggested_zh": null,
+        "evidence": "见 problem",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "R4-4-01",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-5-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-7-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-6-10",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-2-01",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-4-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-7-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-4-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-4-10",
+    "verdict": "readability",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "grammar_minor",
+        "line": "both",
+        "english": "Trog is an ancient god of anger and violence.",
+        "current_full_zh": "特洛格是愤怒和暴力古神。",
+        "problem": "并列名词直接修饰“古神”缺“的”，读着别扭。",
+        "suggested_zh": "特洛格是愤怒与暴力的古神。",
+        "evidence": "stable ae5a420e78:describe-god.cc:1103 Trog 说明",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "R4-6-06",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-1-02",
+    "verdict": "ok",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "note",
+        "line": "both",
+        "english": "",
+        "current_full_zh": "",
+        "problem": "stable 用“诅咒系”、trunk 用“妖术系”，都和各自分支的 Hexes 技能名一致。",
+        "suggested_zh": null,
+        "evidence": "见 problem",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "R4-1-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-3-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-2-06",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-2-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-1-03",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-2-03",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-3-06",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-6-02",
+    "verdict": "readability",
+    "confidence": "low",
+    "findings": [
+      {
+        "type": "scope",
+        "line": "both",
+        "english": "A %s emerges from the mists of... memory?....",
+        "current_full_zh": "兽人从……记忆的迷雾中浮现？……",
+        "problem": "英文的问号针对“memory”（迟疑是不是记忆），译文把问号放到了“浮现”后面，迟疑的对象变了。",
+        "suggested_zh": "兽人从……记忆？……的迷雾中浮现……",
+        "evidence": "stable ae5a420e78:dat/des/altar/overflow.des:216",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "R4-5-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-3-03",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-5-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-5-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-7-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-5-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-1-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-3-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-6-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-6-01",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-1-10",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-7-01",
+    "verdict": "readability",
+    "confidence": "low",
+    "findings": [
+      {
+        "type": "punctuation",
+        "line": "both",
+        "english": "The solar flare engulfs %s%s.（+ \" but does no damage\"）",
+        "current_full_zh": "太阳耀斑吞没了兽人但没有造成伤害。",
+        "problem": "转折片段前缺逗号，读起来是一口气。",
+        "suggested_zh": "片段改为“，但没有造成伤害” → 太阳耀斑吞没了兽人，但没有造成伤害。",
+        "evidence": "stable ae5a420e78:mon-abil.cc:1577-1578",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "R4-3-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-5-06",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-7-06",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-6-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-3-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-2-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-7-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-1-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-4-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-6-04",
+    "verdict": "ok",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "note",
+        "line": "both",
+        "english": "",
+        "current_full_zh": "",
+        "problem": "消失后接“，又重新出现了”，还原句“…消失了，又重新出现了。”通顺。",
+        "suggested_zh": null,
+        "evidence": "见 problem",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "R4-5-02",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-2-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-5-10",
+    "verdict": "readability",
+    "confidence": "low",
+    "findings": [
+      {
+        "type": "terminology",
+        "line": "both",
+        "english": "escape hatch",
+        "current_full_zh": "如果有物品盖在楼梯或逃生舱口上",
+        "problem": "catalog 中 Escape hatch 主要译“逃生口”，这里写“逃生舱口”。",
+        "suggested_zh": "楼梯或逃生口",
+        "evidence": "stable ae5a420e78:hints.cc:1227；catalog \"Escape hatch\"→逃生口",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "R4-3-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-6-03",
+    "verdict": "readability",
+    "confidence": "low",
+    "findings": [
+      {
+        "type": "subject",
+        "line": "both",
+        "english": "They guard the %s rune of Zot.",
+        "current_full_zh": "其守护着佐特%s符文。",
+        "problem": "句首用“其”作独立主语不自然。",
+        "suggested_zh": "它们守护着佐特%s符文。",
+        "evidence": "stable ae5a420e78:dat/des/branches/pan.des:41",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "R4-7-10",
+    "verdict": "objective_error",
+    "confidence": "high",
+    "findings": [
+      {
+        "type": "untranslated",
+        "line": "stable",
+        "english": "You hear a sizzling sound. / You hear a grinding noise.",
+        "current_full_zh": "You hear a sizzling sound.（或 You hear a grinding noise.，stable 实际显示英文）",
+        "problem": "stable 中这两条消息是裸字面量，没有 T_()，mprf 不做 catalog 查找，因此两个分支都显示英文；“研磨声”的 catalog 条目在这条调用路径上没被用到。trunk 已加 T_ 并补了“滋滋声”。",
+        "suggested_zh": "你听到一阵滋滋声。 / 你听到一阵研磨声。（stable 加 T_() 并补 sizzling 条目，同 trunk）",
+        "evidence": "stable ae5a420e78:crawl-ref/source/mon-act.cc:4031-4033；trunk 59aec6256f:mon-act.cc:4175-4177",
+        "defect_points": 1
+      }
+    ]
+  },
+  {
+    "sample_id": "R4-3-10",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-4-02",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-7-03",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-4-06",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-3-02",
+    "verdict": "readability",
+    "confidence": "low",
+    "findings": [
+      {
+        "type": "terminology",
+        "line": "both",
+        "english": "can corrupt weapons, armour and even the very flesh",
+        "current_full_zh": "可以腐蚀武器、盔甲甚至对方的血肉",
+        "problem": "术语表 armour=护甲，这里写成“盔甲”；只是普通名词，不是机制名，所以只作建议。",
+        "suggested_zh": "可以腐蚀武器、护甲，甚至对手的血肉",
+        "evidence": "stable ae5a420e78:describe.cc:7279；docs/glossary.md armour|护甲",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "R4-6-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-7-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-3-01",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "R4-1-06",
+    "verdict": "readability",
+    "confidence": "low",
+    "findings": [
+      {
+        "type": "syntax",
+        "line": "both",
+        "english": "A small piece of wood and metal, to be strapped on one arm for defence.",
+        "current_full_zh": "一小块木头和金属，通过绑在一只手臂上进行防御。",
+        "problem": "“通过……进行防御”缺主语，句子不顺。",
+        "suggested_zh": "一小块木头和金属制成的盾，绑在一只手臂上用于防御。",
+        "evidence": "stable ae5a420e78:describe.cc:2895 物品说明",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "R4-6-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  }
+]

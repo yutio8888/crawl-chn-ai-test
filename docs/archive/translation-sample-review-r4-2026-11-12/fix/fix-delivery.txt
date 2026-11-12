@@ -1,0 +1,133 @@
+第四轮抽检确认问题修复交付
+
+范围：R4-7-10（stable）、R4-3-06（两线）、R4-4-04（两线）。唯一写入者，C++ 后资产；不处理驳回、待补证或可读性建议。未更改 glossary、decisions；monster-review-results.md 仅同步硬性 exact-artifact 检查要求的两处直接派生字段，其他台账保留。
+
+trunk head: ddf79a9546c90fbc01c482a1fc7ff2e3da2a12c9
+branch: codex/r4-fixes-trunk
+base: 59aec6256f1824d8c5cd7de92b7c25691132cce9
+glossary SHA-256: fb814f3252f249fc230e81fa132dce6a9bb194b014d687fc1524c66827b351d7
+改动文件：
+- crawl-ref/source/dat/descript/zh/gods.txt
+- crawl-ref/source/dat/descript/zh/monsters.txt
+- docs/monster-review-results.md
+
+stable head: 193517f83392fb4c83a4f4dca05a5c539cf609d0
+branch: codex/r4-fixes-stable
+base: ae5a420e78579a9433f4ffb127b7a9062a7d948c
+glossary SHA-256: dcbfb16ac457e9506a5e634d171211d460652f42e2ba651ad950d15e719753ae
+改动文件：
+- crawl-ref/source/dat/descript/zh/gods.txt
+- crawl-ref/source/dat/descript/zh/monsters.txt
+- crawl-ref/source/dat/i18n/zh/source.txt
+- crawl-ref/source/mon-act.cc
+- docs/monster-review-results.md
+
+=== R4-7-10 墙体声音 ===
+
+English 完整句：You hear a sizzling sound. / You hear a grinding noise.
+stable 旧实际输出：You hear a sizzling sound. / You hear a grinding noise.（裸字面量，无中文）。
+stable 新中文：你听到一阵滋滋声。 / 你听到一阵研磨声。
+trunk：原已 T_ 且两条中文均完整，本轮保留。
+trunk 消费者：crawl-ref/source/mon-act.cc:4176, crawl-ref/source/mon-act.cc:4177
+stable 消费者：crawl-ref/source/mon-act.cc:4032, crawl-ref/source/mon-act.cc:4033
+stable 只给 MSGCH_SOUND 条件表达式的两个分支添加 T_，保留 player_can_hear(target)、MONS_DISSOLUTION 选择和破墙/行动机制。中文新增 sizzling 的句号键，精确复用 trunk；grinding 的现有条目保持。感叹号版 sizzling 是另一键，保持不动。
+英文不变证据：将 stable 当前 mon-act.cc 两个指定 T_ 恢复为原字面量后，整份文件与基线逐字节相同；英文模式 T_ 返回原键，mprf 的格式与通道不变。证据脚本 evidence.py 退出码0。
+
+=== R4-3-06 starflower ===
+
+trunk English 完整原文：
+A mass of lashing vines and tentacles growing out of the husk of a dead star.
+Space itself runs through the xylem and phloem of its branches, which appear to
+be in many places at once.
+旧译全文：
+从死星的外壳中长出的一团藤蔓和触须。
+空间贯通着它的分支的木质部和韧皮部，它们似乎同时存在于许多地方。
+新译全文：
+从死星的外壳中长出的一团挥舞不休的藤蔓和触须。
+空间贯通着它的分支的木质部和韧皮部，它们似乎同时存在于许多地方。
+资产键及位置：starflower；crawl-ref/source/dat/descript/zh/monsters.txt:2274
+显示消费者：crawl-ref/source/describe.cc:7967
+
+stable English 完整原文：
+A mass of lashing vines and tentacles growing out of the husk of a dead star.
+Space itself runs through the xylem and phloem of its branches, which appear to
+be in many places at once.
+旧译全文：
+从死星的外壳中长出的一团藤蔓和触须。
+空间贯通着它的分支的木质部和韧皮部，它们似乎同时存在于许多地方。
+新译全文：
+从死星的外壳中长出的一团挥舞不休的藤蔓和触须。
+空间贯通着它的分支的木质部和韧皮部，它们似乎同时存在于许多地方。
+资产键及位置：starflower；crawl-ref/source/dat/descript/zh/monsters.txt:2297
+显示消费者：crawl-ref/source/describe.cc:7279
+
+适用性：两线均有 lashing 漏译；仅增加“挥舞不休的”，空间/木质部/韧皮部等后续句逐字保留。monster_info 的英文 db_name 经 get_monster_db_desc → getLongDescription 查询，无身份键改动。
+
+=== R4-4-04 无间门派长说明 ===
+
+trunk English 完整原文：
+Disciples of the Council learn to perform three martial techniques while moving
+around in combat. They will also be taught to move at unfathomable speeds for
+short distances, and become able to summon a storm of golden clouds to increase
+their precision and damage for as long as they keep using martial attacks.
+旧译全文：
+门徒在战斗中走位时会学习实践三种武术。他们还将学习以不可测的速度短距离移动，
+并能召唤金色云雾风暴来提高命中和伤害；只要持续使用武术攻击，强化便能持续。
+新译全文：
+无间门派的门徒学会在战斗中走位时施展三种武术。他们还将学习以不可测的速度短距离移动，
+并能召唤金色云雾风暴来提高命中和伤害；只要持续使用武术攻击，强化便能持续。
+资产键及位置：Wu Jian powers；crawl-ref/source/dat/descript/zh/gods.txt:382
+显示消费者：crawl-ref/source/describe-god.cc:737
+
+stable English 完整原文：
+Disciples of the Council learn to perform three martial techniques while moving
+around in combat. They will also be taught to move at unfathomable speeds for
+short distances, and become able to summon a storm of golden clouds to increase
+their precision and damage for as long as they keep using martial attacks.
+旧译全文：
+门徒在战斗中走位时会学习实践三种武术。他们还将学习以不可测的速度短距离移动，
+并能召唤金色云雾风暴来提高命中和伤害；只要持续使用武术攻击，强化便能持续。
+新译全文：
+无间门派的门徒学会在战斗中走位时施展三种武术。他们还将学习以不可测的速度短距离移动，
+并能召唤金色云雾风暴来提高命中和伤害；只要持续使用武术攻击，强化便能持续。
+资产键及位置：Wu Jian powers；crawl-ref/source/dat/descript/zh/gods.txt:382
+显示消费者：crawl-ref/source/describe-god.cc:729
+
+适用性：两线均误置“学习”与“走位时施展”的动作关系；本次为“动作关系修正/明确门派归属”。两线现行 glossary 的 the Wu Jian Council = 无间门派（stable 第38行 / trunk 第39行），按这一实体名称写“无间门派的门徒”，不采用字面“议会”。已在实际修复树刷新 context-wu-jian-trunk.txt / context-wu-jian-stable.txt，并保留 council-*.txt 查询及各线实际 glossary SHA。
+of the Council 单独判断：该段由神祇能力页的无间标题引入，且“门徒”与连续的他们指代同一主体，因此原译在此省略门派归属可接受为已知主体省略，不单列为独立客观漏译。本次明确写出“无间门派的门徒”以完整对应英文、避免脱离标题阅读时的歧义。gods.txt 将该实体描述为一群武僧（congregation of martial monks），采用现行派别名称，不引入“议会”，不做全库命名变更；已按 host_corrections 撤回记录理解裁决。
+机制依据：god-passive.cc::wu_jian_post_move_effects 调用 _wu_jian_trigger_martial_arts(old_pos,you.pos())，走位触发武术。长说明后续移动速度/金色云雾/持续条件全部保留。describe-god.cc::_detailed_god_description 仍用英文神名 + powers 查询。
+
+=== 检查与测试 ===
+
+trunk translation profile：exit0，绑定 base/head；run 20261112T162044758762338+0000-2635587-ddf79a9546c9
+完整工具套件：78脚本通过、0失败、exit0；原始日志 tools-trunk.log。
+stable code profile：exit0，绑定 base/head；run 20261112T162049978226495+0000-2635725-193517f83392
+完整工具套件：74脚本通过、0失败、exit0；原始日志 tools-stable.log。
+stable 构建（初始完整构建；台账追加提交后另以同配置 make crawl 更新 version.o/链接，build-stable-final.log、exit0）：run_isolated.sh env COVERAGE=YesPlease make -C crawl-ref/source STDFLAG=-std=c++14 catch2-tests-executable crawl -j4；exit0，日志 build-stable.log。code profile 中按要求设置 ZH_VERIFY_BUILD_COMMAND=make -C crawl-ref/source catch2-tests-executable -j4；exit0。
+stable 既有 Catch2 [zh-translation]：141907 assertions in 245 test cases，exit0；日志 runtime-stable.log。执行于初始修复提交 b7a2984aac，后续仅追加怪物台账两行；C++ 与语言资产均逐字节相同，复用该验证。
+C++ 仅给既有显示字面量加 T_，没有新模板或占位符。实际分支在私有 _monster_move 中，现有轻量翻译 fixture 没有直接调用该行动分支的入口；未为两层包装抽取新接口或新增镜像断言。回归依据为绑定 code profile、既有 Catch2 翻译用例、严格源码归一化比较；未宣称触发了真实溶墙行动。
+stable util/checkwhite -n mon-act.cc 与 util/unbrace -n mon-act.cc 均exit0（format-results.json及原始日志）；两线 git diff --check 均exit0。
+完整工具套件首轮：trunk 77通过/1失败、stable 73通过/1失败，均exit1；唯一失败为 test_audit_god_inventory.py::test_monster_ledger_ignores_unrelated_glossary_edit，其 coverage_equal/artifact_exact 因 starflower 实际描述变更而不匹配。glossary 摘要漂移本身仍仅 notice。按 generator 最小结果更新怪物清单摘要和 MONS_STARFLOWER 的 keep→retranslate: description corrected，共两行；没有手工勘误或其他裁决变化。随后聚焦该脚本 trunk15 / stable13 项全过，exit0（god-test-*-final.log），完整套件在最终提交重跑。首轮日志 tools-*-before-ledger.log。
+首轮 trunk translation profile exit1：现有 decorlines 工具测试创建悬空 Git fixture 时 hash-object -w exit128，受限环境缺少 .git 写权限。以该测试所需仓库写权限重跑，同一 head 完整通过，未改测试/跳过门禁。首轮日志 profile-trunk.log 与 .claude/metrics/verify 中保留，重跑日志 profile-trunk-retry.log。
+stable 首轮 code profile exit1：mon-act.cc 原始 tree-sitter 解析失败，varargs/concat 两扫描阻断（post-coder 两子项失败）。按 TOOLCHAIN 显式预处理路由导出 <r4-work>/mon-act-compile-commands.json（make i18n-compile-commands FORCE_CXX=clang++ STDFLAG=-std=c++14 I18N_BUILD_GOAL=crawl I18N_SCAN_FILES=mon-act.cc），配置 ZH_VERIFY_CPP_PREPROCESS_FILES 与 ZH_VERIFY_CPP_COMPILE_COMMANDS 后重跑同一 head；最终通过。显式目标的三个 AST 扫描均通过，新增 concat advisory 为0；比较器显示 resolved baseline 593 是缩小到当前目标的统计，不表示本轮修复了593项。仅声明本次实际普通构建配置，不宣称其它平台/任意宏组合。
+Catch2 首次独立调用误用了不存在的目录内二进制路径（exit127）；已更正为 source/catch2-tests-executable，真实执行得到下列通过计数，原错误保留 runtime-stable-invocation-error.log。
+所有 profile 和工具套件通过 run_isolated.sh；各编译命令最多-j4。工具套件仅在两线 profile 完成后运行；首轮 ZH_TOOLING_TEST_JOBS=1，最终重跑 ZH_TOOLING_TEST_JOBS=2；两轮均 PYTHONSAFEPATH=1。编译警告保留在 build-stable.log。除项目多处既有格式/额外分号告警外，mon-act.cc:4031 的翻译后动态格式也触发 -Wformat-security（与 trunk 同形）；两条固定原键及中文均不含格式占位符，消息格式校验通过，手工核对无可变格式参数或外部输入。本轮保持 trunk 的调用形式，不扩修其他告警。
+
+=== 玩家检查点 ===
+
+stable：可听见 Dissolution 溶墙时应见“你听到一阵滋滋声。”；其他碾墙怪物应见“你听到一阵研磨声。”。不可听见时不新增消息；英文模式仍逐字显示原句。trunk 两分支原已翻译。
+两线：查看 starflower 怪物描述，首句有“挥舞不休”的藤蔓和触须，后续说明不变。
+两线：查看无间门派能力长说明，首句明确门徒学会在战斗走位时施展三种武术，保留后续速度与金色云雾风暴条件。
+
+=== 剩余风险与边界 ===
+
+未做额外实玩、截图或两条实际破墙路径的行动测试；自动 smoke 为 code profile 原有检查。翻译与机制的适用性以当前调用链/冻结确认项为依据，未扩审其它动作家族。R4-4-05 的旧形态缺证项、驳回的 stable Hexes 以及全部可读性建议均未修改。
+未修改 glossary 或英文正文/lookup key；描述条目只改确认的首句；只打印 notice 的历史摘要不重绑。怪物台账对实际描述内容实行 artifact_exact，故由现有生成器只更新清单摘要和 starflower 自动分类，glossary 摘要不变，人工附录与无关行均不变。
+
+已收到另行 stable Hexes 回迁的排队任务；本报告分支不含该回迁，完成本交付后再开独立分支处理。
+
+=== 交付状态 ===
+
+trunk: ddf79a9546c90fbc01c482a1fc7ff2e3da2a12c9；已推送，upstream一致，工作树干净，所有本轮提交均带 Agent: Codex。
+stable: 193517f83392fb4c83a4f4dca05a5c539cf609d0；已推送，upstream一致，工作树干净，所有本轮提交均带 Agent: Codex。
+第四轮未开 PR、未合并。

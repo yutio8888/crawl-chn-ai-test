@@ -1,0 +1,63 @@
+{
+  "ae5a420e78": {
+    "active_actions": [
+      "bow your head before",
+      "coil in front of",
+      "crawl onto",
+      "curl up before",
+      "curl up in front of",
+      "hover solemnly before",
+      "kneel at",
+      "perch on",
+      "place yourself before",
+      "release spores on",
+      "scuttle before",
+      "sit before",
+      "squish down before",
+      "sway towards",
+      "swirl around",
+      "unroll yourself before"
+    ],
+    "unmatched_active": [],
+    "historical_actions": {
+      "bow your heads before": [
+        "crawl-ref/source/dat/forms/deprecated-hydra.yaml"
+      ],
+      "curl into a sanctuary of spikes before": [
+        "crawl-ref/source/dat/forms/deprecated-porcupine.yaml"
+      ]
+    }
+  },
+  "59aec6256f": {
+    "active_actions": [
+      "bow your head before",
+      "coil in front of",
+      "crawl onto",
+      "curl up before",
+      "curl up in front of",
+      "hover solemnly before",
+      "kneel at",
+      "perch on",
+      "place yourself before",
+      "release spores on",
+      "scuttle before",
+      "sit before",
+      "squish down before",
+      "sway towards",
+      "swirl around",
+      "unroll yourself before"
+    ],
+    "unmatched_active": [],
+    "historical_actions": {
+      "bow your heads before": [
+        "crawl-ref/source/dat/forms/deprecated-hydra.yaml"
+      ],
+      "curl into a sanctuary of spikes before": [
+        "crawl-ref/source/dat/forms/deprecated-porcupine.yaml"
+      ],
+      "curl up in front of": [
+        "crawl-ref/source/dat/species/deprecated-armataur.yaml"
+      ]
+    }
+  }
+}
