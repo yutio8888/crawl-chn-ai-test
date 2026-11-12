@@ -54642,3 +54642,25 @@ Select layers to display:\n<%s>(m)onsters</%s>|<%s>(p)layer</%s>|<%s>(i)tems</%s
 %%%%
 Select layers to display:\n<%s>(m)onsters</%s>|<%s>(p)layer</%s>|<%s>(i)tems</%s>|<%s>(c)louds</%s>|<%s>monster (w)eapons</%s>|<%s>monster (h)ealth</%s>
 选择要显示的图层：\n<%s>怪物(m)</%s>|<%s>玩家(p)</%s>|<%s>物品(i)</%s>|<%s>云雾(c)</%s>|<%s>怪物武器(w)</%s>|<%s>怪物生命值(h)</%s>
+%%%%
+klown pie flavour|plum
+李子
+%%%%
+klown pie flavour|lemon
+柠檬
+%%%%
+klown pie flavour|blueberry
+蓝莓
+%%%%
+klown pie flavour|cherry
+樱桃
+%%%%
+klown pie flavour|peanut brittle
+花生脆糖
+%%%%
+klown pie flavour|glitter
+闪粉
+%%%%
+klown pie flavour|%s!
+%s！
+%%%%
