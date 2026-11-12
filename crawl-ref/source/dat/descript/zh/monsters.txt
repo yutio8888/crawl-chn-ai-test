@@ -1009,7 +1009,7 @@ demonspawn blood saint
 demonspawn corrupter
 
 一个半人半魔的生物，散发着黑暗能量。
-他扭曲了自身周围的空间，可以腐蚀武器、盔甲甚至对方的血肉。
+他扭曲了自身周围的空间，可以腐蚀武器、护甲甚至对方的血肉。
 %%%%
 demonspawn soul scholar
 

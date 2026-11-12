@@ -6886,7 +6886,7 @@ The black torch is unlit!
 黑色火炬尚未点燃！
 %%%%
 The Black Torch roars with renewed intensity!
-黑火炬以新的强度咆哮着！
+黑火炬再度猛烈地咆哮起来！
 %%%%
 The bloodstain on %s disappears!
 %s上的血迹消失了！
@@ -15642,7 +15642,7 @@ beam hit monster|The %1$s %2$s %3$s%4$s%5$s%6$s
 （%s）
 %%%%
  but does no damage
-但没有造成伤害
+，但没有造成伤害
 %%%%
 The %1$s repels the %2$s!
 %1$s弹开了%2$s！
@@ -42289,7 +42289,7 @@ Nemelex Xobeh says: %s
 尼姆雷斯·索布说道：“%s”
 %%%%
 A %s emerges from the mists of... memory?....
-%s从……记忆的迷雾中浮现？……
+%s从迷雾中浮现……那是记忆的迷雾吗？……
 %%%%
 Flames erupt from the wizard's %scell! Trog roars with frustration!
 烈焰从法师的%s牢房中喷涌而出！特洛格沮丧地咆哮！
@@ -42298,7 +42298,7 @@ The mighty Pandemonium lord %s resides here.
 强大的万魔殿领主%s盘踞于此。
 %%%%
 They guard the %s rune of Zot.
-其守护着佐特%s符文。
+这位领主守护着佐特%s符文。
 %%%%
 You now have %s arena points (gained %s).
 你现在有%s点竞技场点数（获得了%s点）。
@@ -46169,7 +46169,7 @@ permanent stasis
 %%%%
  but do no damage
 
- 但没有造成伤害
+，但没有造成伤害
 %%%%
 Applied top HUD normal state.
 
@@ -50191,3 +50191,6 @@ Hexes are much easier for you to cast and harder to resist.
 You hear a sizzling sound.
 你听到一阵滋滋声。
 %%%%
+%%%%
+fiery
+火
