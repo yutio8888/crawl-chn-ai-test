@@ -21335,7 +21335,7 @@ You are ready to speak a word of chaos again.
 你准备好再次说出混沌之言了。
 %%%%
 You break out of your daze.
-你从眩晕中清醒过来。
+你摆脱了迷魂。
 %%%%
 You can once more reach out to the dragon horde.
 你可以再次召唤龙群了。
