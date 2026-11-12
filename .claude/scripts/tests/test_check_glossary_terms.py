@@ -7,6 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from check_glossary_terms import load_terms, validate
+from test_check_glossary_terms import CheckGlossaryTermsTest
 
 
 class GlossaryQualifierTests(unittest.TestCase):
