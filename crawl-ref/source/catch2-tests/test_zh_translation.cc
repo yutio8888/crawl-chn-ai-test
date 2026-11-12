@@ -28,6 +28,7 @@
 #include "god-conduct.h"
 #include "god-abil.h"
 #include "hiscores.h"
+#include "hints.h"
 #include "item-status-flag-type.h"
 #include "item-name.h"
 #include "item-use.h"
@@ -8390,4 +8391,39 @@ TEST_CASE_METHOD(EnTranslationFixture, "en: mutation potion prompt",
                 original += " Zin will disapprove.";
             CHECK(mutation_potion_prompt(resistant, zin) == original);
         }
+}
+
+TEST_CASE("reconversion hints preserve English and identify the altar in Chinese",
+          "[zh-translation][hints-reconversion]")
+{
+    SECTION("English retains the original concatenation byte for byte")
+    {
+        EnTranslationFixture fixture;
+        const string name = god_name(GOD_ZIN);
+        const string suffix = " you can re-convert, and all will be well.";
+        const string excommunicated = "Uh-oh, " + name
+            + " just excommunicated you for running out of piety (your divine "
+              "favour went to nothing). Maybe you repeatedly violated the "
+              "religious rules, or maybe you failed to please your deity often "
+              "enough, or some combination of the two. If you can find an "
+              "altar dedicated to " + name;
+        const string abandoned = "Should you decide that abandoning " + name
+            + "wasn't such a smart move after all, and you'd like to return to "
+              "your old faith, you'll have to find an altar dedicated to "
+            + name + " where";
+        CHECK(hints_reconversion_message(true, name) == excommunicated + suffix);
+        CHECK(hints_reconversion_message(false, name) == abandoned + suffix);
+    }
+
+    SECTION("Chinese identifies an altar dedicated to the old god")
+    {
+        ZhTranslationFixture fixture;
+        const string name = god_name(GOD_ZIN);
+        for (bool excommunicated : {false, true})
+        {
+            const string text = hints_reconversion_message(excommunicated, name);
+            CHECK(text.find("供奉" + name + "的祭坛") != string::npos);
+            CHECK(text.find("重新皈依") != string::npos);
+        }
+    }
 }

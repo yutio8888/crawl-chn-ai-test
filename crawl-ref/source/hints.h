@@ -162,6 +162,7 @@ void taken_new_item(object_class_type item_type);
 void hints_gained_new_skill(skill_type skill);
 void hints_monster_seen(const monster& mon);
 void hints_first_item(const item_def& item);
+string hints_reconversion_message(bool excommunicated, const string& old_god_name);
 void learned_something_new(hints_event_type seen_what,
                            coord_def gc = coord_def());
 formatted_string hints_abilities_info();

@@ -1062,6 +1062,29 @@ void tutorial_init_hints()
             Hints.hints_events[i] = true;
 }
 
+// Translate whole hints so Chinese can reorder the altar and god.
+string hints_reconversion_message(bool excommunicated, const string& old_god_name)
+{
+    if (excommunicated)
+    {
+        return make_stringf(T_("Uh-oh, %s just excommunicated you "
+                              "for running out of piety (your divine favour went "
+                              "to nothing). Maybe you repeatedly violated the "
+                              "religious rules, or maybe you failed to please your "
+                              "deity often enough, or some combination of the two. "
+                              "If you can find an altar dedicated to %s "
+                              "you can re-convert, and all will be well."),
+                            old_god_name.c_str(), old_god_name.c_str());
+    }
+
+    return make_stringf(T_("Should you decide that abandoning %s"
+                          "wasn't such a smart move after all, and you'd like to "
+                          "return to your old faith, you'll have to find an "
+                          "altar dedicated to %s where "
+                          "you can re-convert, and all will be well."),
+                        old_god_name.c_str(), old_god_name.c_str());
+}
+
 // Here most of the hints mode messages for various triggers are handled.
 void learned_something_new(hints_event_type seen_what, coord_def gc)
 {
@@ -1499,24 +1522,7 @@ void learned_something_new(hints_event_type seen_what, coord_def gc)
 
         if (new_god == GOD_NO_GOD)
         {
-            if (old_piety < 1)
-            {
-                text << T_("Uh-oh, ") << old_god_name << T_(" just excommunicated you "
-                        "for running out of piety (your divine favour went "
-                        "to nothing). Maybe you repeatedly violated the "
-                        "religious rules, or maybe you failed to please your "
-                        "deity often enough, or some combination of the two. "
-                        "If you can find an altar dedicated to ")
-                     << old_god_name;
-            }
-            else
-            {
-                text << T_("Should you decide that abandoning ") << old_god_name
-                     << T_("wasn't such a smart move after all, and you'd like to "
-                        "return to your old faith, you'll have to find an "
-                        "altar dedicated to ") << old_god_name << T_(" where");
-            }
-            text << T_(" you can re-convert, and all will be well.");
+            text << hints_reconversion_message(old_piety < 1, old_god_name);
 
             if (god_hates_your_god(old_god, new_god))
             {
