@@ -1,8 +1,8 @@
 # Issue #24 怪物翻译全量复审结果
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
-- 术语表 SHA-256：`6e991a3f48cfe5dbaa5c89eed2b572fa43ca25366a4a0a2a21c385b6e2ee7b53`
-- 清单 SHA-256：`b89009c3fb8bc1d48bf799e00ba877f29709e7563d085371da78fed200a05e6f`
+- 术语表 SHA-256：`019bfb7f1ae6248b228f878108971c2791fcd6b7ce1e6b1e0b2c4f6cc3f453d8`
+- 清单 SHA-256：`71f1d7aea53816a90ad95b6521b8c57b7d5071f6467503f7574fac6cae8d567d`
 - 身份总数：815（现行 691；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -804,7 +804,7 @@
 | `monster:MONS_CAUSTIC_SPORANGIUM` | current; exposure=ordinary; name=caustic sporangium→腐蚀孢子囊; genus=MONS_CAUSTIC_SPORANGIUM; species=MONS_CAUSTIC_SPORANGIUM; data=crawl-ref/source/dat/mons/caustic-sporangium.yaml; desc=EN/ZH | keep |
 | `monster:MONS_NASCENT_PLASMODIUM` | current; exposure=ordinary; name=nascent plasmodium→初生原质团; genus=MONS_JELLY; species=MONS_NASCENT_PLASMODIUM; data=crawl-ref/source/dat/mons/nascent-plasmodium.yaml; desc=EN/ZH | keep |
 | `monster:MONS_STAR_JELLY` | current; exposure=ordinary; name=star jelly→星之果冻; genus=MONS_JELLY; species=MONS_STAR_JELLY; data=crawl-ref/source/dat/mons/star-jelly.yaml; desc=EN/ZH | keep |
-| `monster:MONS_BURSTSHROOM` | current; exposure=ordinary; name=burstshroom→爆裂菇; genus=MONS_FUNGUS; species=MONS_BURSTSHROOM; data=crawl-ref/source/dat/mons/burstshroom.yaml; desc=EN/ZH | keep |
+| `monster:MONS_BURSTSHROOM` | current; exposure=ordinary; name=burstshroom→爆裂菇; genus=MONS_FUNGUS; species=MONS_BURSTSHROOM; data=crawl-ref/source/dat/mons/burstshroom.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_STACK_OF_SCRAP` | current; exposure=ordinary; name=stack of scrap→废铁堆; genus=MONS_STACK_OF_SCRAP; species=MONS_STACK_OF_SCRAP; data=crawl-ref/source/dat/mons/stack-of-scrap.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_MONGREL_WURM` | current; exposure=ordinary; name=mongrel wurm→杂种蠕龙; genus=MONS_DRAKE; species=MONS_MONGREL_WURM; data=crawl-ref/source/dat/mons/mongrel-wurm.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_RUSTED_INSPECTOR` | current; exposure=ordinary; name=rusted inspector→锈蚀监察者; genus=MONS_RUSTED_INSPECTOR; species=MONS_RUSTED_INSPECTOR; data=crawl-ref/source/dat/mons/rusted-inspector.yaml; desc=EN/ZH | retranslate: name and description corrected |
