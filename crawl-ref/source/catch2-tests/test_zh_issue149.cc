@@ -1469,7 +1469,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         {
             const Note note(NOTE_PIETY_RANK, god, rank);
             const string stars(rank, '*');
-            const string chinese = "对" + god_name(god) + "的虔诚值达到了"
+            const string chinese = "对" + god_name(god) + "的虔诚等级达到了"
                                    + stars + "。";
             CHECK(note.describe(false, false) == chinese);
             {

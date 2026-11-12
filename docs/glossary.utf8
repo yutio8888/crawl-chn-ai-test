@@ -958,9 +958,9 @@ mutagenic	诱变	domain=status; source=EN/ZH; 依据 / 作用域=描述使生物
 mutagenic drain	诱变排水口	domain=core; source=EN/ZH; 依据 / 作用域=feature-data.h；Gulch 入口，mutagenic 与诱变辐射共用词根；decision=D-C-095；词根统一见 D-C-096
 mutagenic energies	诱变能量	domain=status; source=EN/ZH; 依据 / 作用域=普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096；reject=变异能量／突变能量
 mutagenic energy	诱变能量	domain=status; source=EN/ZH; 依据 / 作用域=普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096；reject=变异能量／突变能量
-mutagenic fog	诱变雾气	domain=status; source=EN/ZH; 依据 / 作用域=云类型及鬃毛药水云、怪物状态描述；弃用“致变雾气／变异雾气”；decision=D-C-096
+mutagenic fog	诱变雾气	domain=status; source=EN/ZH; 依据 / 作用域=云类型及鬃毛药水云、怪物状态描述；弃用“致变雾气／变异雾气”；decision=D-C-096；reject=致变雾气／变异雾气
 Mutagenic Gaze	变异凝视	domain=spells; source=EN/ZH; 备注=✅；已定稿的固定法术名例外；正文 mutagenic energy 使用“诱变能量”；decision=D-C-096
-mutagenic glow	诱变光芒	domain=status; source=EN/ZH; 依据 / 作用域=魔法污染的发光描述；与 mutagenic radiation 同词根；decision=D-C-096
+mutagenic glow	诱变光芒	domain=status; source=EN/ZH; 依据 / 作用域=魔法污染的发光描述；与 mutagenic radiation 同词根；decision=D-C-096；reject=变异光芒
 mutagenic power	诱变力量	domain=status; source=EN/ZH; 依据 / 作用域=四肢增强效果的力量；区别发生的变异（mutation）；decision=D-C-096；reject=突变能量
 mutagenic radiation	诱变辐射	domain=status; source=EN/ZH; 依据 / 作用域=仅用于英文明确写出 mutagenic radiation 的字面辐射；不作 Contamination 的机制名；保留 D-C-096 的诱变词根；裁决 [D-C-112]
 mutagenic serum	诱变血清	domain=status; source=EN/ZH; 依据 / 作用域=净化诱变催化器正文；沿用 features 既有译法；decision=D-C-096
