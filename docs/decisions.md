@@ -5,7 +5,9 @@ Before translating any entity name, check this file for existing rulings.
 
 **Maintenance rule**: Decision execution status is updated by the commit that fixes
 the affected file. Each commit body annotates `Updates: DECISION-XXX` when it
-resolves an outstanding ❌.
+resolves an outstanding ❌. Decisions with deferred asset changes must also
+record line landing by terminology group: cite the actual asset commit/merged PR
+for each line, or give the remaining location or a reason it is not applicable.
 
 **Status values**:
 - `active` — Currently in effect
@@ -3884,6 +3886,42 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   独立候选审阅、匹配验证 profile 与 CI 由主负责人组织。
 - **Applied**: 2026-10-10，限定共享集合提案及必要 glossary／既有导出同步；
   不代表合并 readiness。
+
+
+#### 逐线落实（Line landing）
+
+以下按 trunk D-C-096 的 Deferred asset changes 术语组逐线核销，位置按 stable `3408cc097a` 与
+trunk `fc8be76fe3` 重新定位；路径均以 `crawl-ref/source/dat/` 为前缀。
+“已落地”引用实际资产提交，不把术语登记或当前状态当成已落实的证明。
+共享修复 `cad4bcba74` 经 PR #164（merge `0d110783c5`）进入 stable；
+trunk 未自动继承该提交，须分别核对。此表只记落实情况，不改原裁决及例外。
+
+| 原清单术语组 | stable | trunk |
+|---|---|---|
+| Spider Nest | 已落地：`cad4bcba74`，features 与 Forceful Invitation 正文 | 已落地：features `25bc143246`、spells `8635fc61df`，均为“蜘蛛巢穴” |
+| piety（数值、消耗参数、标签） | 已落地：`cad4bcba74`；Notes 星级拼接按 D-C-097 为“虔诚等级” | 未完全落地：`i18n/zh/source.txt:2635` 捐赠数额仍为“虔诚增长”、`:31759` 仍为“虔诚消耗”、`:37860` Notes 星级句架仍为“虔诚度”（应按 D-C-097 区分等级）；不把普通“虔诚的信徒”计作残留 |
+| mutagenic energy/energies | 已落地：`cad4bcba74`，含 neqoxec 与 Mutagenic Gaze 正文 | 已落地：`cb70b86b73`，PR #301（merge `fc8be76fe3`）；包含 source 与 neqoxec 的残留修复，既有 Gaze 正文保持“诱变能量” |
+| mutagenic power | 已落地：`cad4bcba74` | 已落地：`38a8e1e4ec`，PR #301，两条四肢消息为“诱变力量” |
+| mutagenic glow | 已落地：`cad4bcba74` | 未落地：`i18n/zh/source.txt:3933`、`:4877` 仍为“变异光芒” |
+| mutagenic fog（普通正文与云名） | 已落地：共享 monstatus/source 由 `cad4bcba74` 修复；trunk 新增 potion clouds 条目不存在于本线，不适用 | 未完全落地：potion clouds 的“诱变雾气”已由 `821c66c9ed` 落地；`descript/zh/monstatus.txt:559` 仍为“变异雾气” |
+| contamination susceptible（双倍诱变能量分句） | 已落地：`cad4bcba74`，保留来源与倍量 | 已落地：正文 `d20758170b`；当前 mutations 与 source 均保留来源与倍量 |
+| encumbrance rating | 已落地：`cad4bcba74` | 已落地：mutations `df0d11a8b9`、spells `8635fc61df`、source `4486e1fadd`，为“负重等级” |
+| barbs 普通正文 | 未完全落实：`cad4bcba74` 曾改为“倒刺”；`ed26247a5c` 后当前 crystal echidna 在 `descript/zh/monsters.txt:861` 又作“尖刺”，与普通正文裁决不一致；其余原清单正文已落地 | 未落地：crystal echidna `descript/zh/monsters.txt:838` 的“尖刺”及 Barbs `descript/zh/status.txt:176-177` 的“刺”仍未依原清单统一 |
+| status\|Barbs 短标签 | 不适用原清单替换：D-C-098 明确保留“尖刺” | 不适用原清单替换：D-C-098 明确保留“尖刺” |
+| noxious fumes | 已落地：`cad4bcba74`，两处法术与教程为“毒烟” | 未落地：`descript/zh/spells.txt:850` 的“有害烟雾”、`:921` 的“有毒烟雾”、`descript/zh/tutorial.txt:502` 的“有毒气体”仍指同一 noxious 云 |
+| dazed/daze | 已落地：`cad4bcba74` 的共享消息为“眩晕” | 未完全落地：`source.txt:4712` 孢子仍为“晕头转向”、`:18539` 与 `:22214` 仍为“恍惚”（均位于 i18n/zh）；已统一项如 `6a3a393828` 的 snaps out 消息、`cb70b86b73` 的诱变能量消息不能代表整组完成 |
+| travel exclusion | 已落地：`cad4bcba74` | 未完全落地：部分“禁区”已由 `4486e1fadd` 落地；`i18n/zh/source.txt:7963`、`:43768` 仍作“被标记为排除／已排除”。原 `%d %sexclusion%s` 键已不在当前 catalog，不再按旧身份替换 |
+| ambrosia 及状态 | 已落地：普通效果 `cad4bcba74`；短标签按后续 D-C-107 由 `6c55448ad1` 落为“神食酣醉” | 已落地：`85be0be893`，原清单普通效果与状态均已更新；不改一般传说中的 ambrosial nectar |
+| aptitude 及训练成本完整分句 | 已落地：`cad4bcba74`，含完整零资质、零级到一级的基准 | 未完全落地：技能参数 `d323624b33` 已为“资质”；`i18n/zh/source.txt:43390` 仍为“能力倾向表”，`:43597` 仍以“相对于当前”截断基准分句 |
+| 歌曲题名 A Whiter Shade of Pale | 不适用：本线没有 `A hide-covered altar of Uskayaw` 引文条目 | 已落地：`fe475db827`，采用《更淡的苍白》；One of Us Cannot Be Wrong 按原决定无需修改 |
+| ley line（Dragon Veins 正文） | 不适用：本线没有 Dragon Veins 条目 | 已落地：`fe475db827`，使用“元素能量地脉” |
+
+另外，针对 daze 词根的有限核对发现 trunk 的
+`descript/zh/status.txt:836`（Cacophony）与 `descript/zh/monsters.txt:3166`
+（burstshroom）仍把英文 daze 写成“晕眩”，一并留给维护者决定。
+`status.txt:183` 的“晕头转向”对应 Vertigo，不计作 dazed 残留；其他恐惧、
+普通恍惚或威慑语境也不按中文近似词自动归类。本轮不修复以上资产。
+
 
 ---
 
