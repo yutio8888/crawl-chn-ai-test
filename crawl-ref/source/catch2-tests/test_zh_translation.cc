@@ -8519,6 +8519,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(string(skill_abbr(SK_HEXES)) == "Hex");
         CHECK(string(get_job_name(JOB_HEXSLINGER)) == (zh ? "妖术射手" : "Hexslinger"));
         CHECK(string(get_job_name_en(JOB_HEXSLINGER)) == "Hexslinger");
+        CHECK(get_job_by_name("Hexslinger") == JOB_HEXSLINGER);
+        CHECK(get_job_by_name("妖术射手") == (zh ? JOB_HEXSLINGER : JOB_UNKNOWN));
+        CHECK(get_job_by_name("诅咒射手") == JOB_HEXSLINGER);
+        CHECK(get_job_by_name("诅咒枪手") == JOB_HEXSLINGER);
         CHECK(ability_name(ABIL_HEPLIAKLQANA_TYPE_HEXER) ==
               (zh ? "先祖生涯：妖术师" : "Ancestor Life: Hexer"));
         CHECK(ability_name(ABIL_HEPLIAKLQANA_TYPE_HEXER, true) == "Ancestor Life: Hexer");
