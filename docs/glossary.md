@@ -263,6 +263,7 @@
 | Zonguldrok | 宗古德洛克 | 巫师实验室与相关物品传说专名；裁决 [D-A-049] |
 | Orb of Zot | 佐特宝珠 / 力量宝珠 | 两种译法均可 |
 | player ghost | 玩家鬼魂 | — |
+| ghost | 鬼魂 | player ghost 括注后缀，以及共用同一 SourceDB 键的 MONS_GHOST 旧版占位怪名；D-C-113 |
 | GENDER_NEUTRAL | 他 / 他的 / 他自己 / 他 | 单数中性人物的主格／所有格／反身／宾格；仅 pronoun subject\|they、pronoun possessive\|their、pronoun reflexive\|themself、pronoun object\|them 四个上下文键；不是复数；EN singular they 与存档身份不变；decision=D-C-100 |
 | skill | 技能 | — |
 | experience / XP | 经验值 | — |
@@ -879,7 +880,7 @@
 
 | EN | ZH | 依据 / 作用域 |
 |----|----|---------------|
-| dazed | 眩晕 | catalog 状态与催眠相关描述；该状态叙述的 daze／dazing 同根；不全局替换其他机制的“震慑”或一般“恍惚”；decision=D-C-096 |
+| dazed | 眩晕 | Dazed 状态及其机制描述；该状态叙述的 daze／dazing 同根；DUR_MESMERISED 的结束消息按 Mesmerise“迷魂”处理，不按英文字面 daze 归入眩晕；不全局替换其他机制的“震慑”或一般“恍惚”；decision=D-C-096 |
 | barbs | 倒刺 | 造成移动伤害的刺及状态词根；复用 Throw Barbs，不混作普通尖刺；decision=D-C-096 |
 | `status\|Barbs` | 尖刺 | 玩家状态的稳定版共享上下文键；普通 barbs 仍用倒刺；decision=D-C-098（取代 D-C-096 的此状态标签译法） |
 | `status\|ambrosia-drunk` | 神食酣醉 | 药水作用状态的短标签（取消药水说明、@ 行与标记）；与 ambrosia 药水、状态灯同用神食词根；弃用仙酒醉；decision=D-C-107（取代 D-C-098 的仙酒醉及本行的兼容保留） |
@@ -887,12 +888,13 @@
 | `status\|confused` | 混乱 | 玩家困惑状态的短标签（@ 行、标记、取消药水说明）；与灯标 `status\|Conf`、长描述及怪物状态说明同根；不重命名固定法术名“困惑之触／困惑凝视”与感受消息；decision=D-C-108 |
 | noxious fumes | 毒烟 | 造成混乱、可被毒抗抵御的云类型；不同于 poison gas 毒气；命名及明确指称该云的正文同根；decision=D-C-096 |
 | mutagenic | 诱变 | 描述使生物发生变异的作用；固定法术名 Mutagenic Gaze → 变异凝视为保留例外，不扩展到其正文；decision=D-C-096 |
-| mutagenic energy / mutagenic energies | 诱变能量 | 普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096 |
-| mutagenic power | 诱变力量 | 四肢增强效果的力量；区别发生的变异（mutation）；decision=D-C-096 |
-| mutagenic glow | 诱变光芒 | 魔法污染的发光描述；与 mutagenic radiation 同词根；decision=D-C-096 |
+| mutagenic energy / mutagenic energies | 诱变能量 | 普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096；reject=变异能量／突变能量 |
+| mutagenic power | 诱变力量 | 四肢增强效果的力量；区别发生的变异（mutation）；decision=D-C-096；reject=突变能量 |
+| mutagenic glow | 诱变光芒 | 魔法污染的发光描述；与 mutagenic radiation 同词根；decision=D-C-096；reject=变异光芒 |
 | mutagenic radiation | 诱变辐射 | 仅用于英文明确写出 mutagenic radiation 的字面辐射；不作 Contamination 的机制名；保留 D-C-096 的诱变词根；裁决 [D-C-112] |
-| mutagenic fog | 诱变雾气 | 云类型及鬃毛药水云、怪物状态描述；弃用“致变雾气／变异雾气”；decision=D-C-096 |
+| mutagenic fog | 诱变雾气 | 云类型及鬃毛药水云、怪物状态描述；弃用“致变雾气／变异雾气”；decision=D-C-096；reject=致变雾气／变异雾气 |
 | mutagenic serum | 诱变血清 | 净化诱变催化器正文；沿用 features 既有译法；decision=D-C-096 |
+| mutation | 变异 | 游戏机制名词；药水、变异列表及记录；生物学引文保留突变；decision=D-C-114 |
 | `Cleave+` | 顺劈+ | 佐姆顺劈祝福状态灯；沿用 Cleave status 的“顺劈”词根；decision=D-C-109 |
 | `Reach+` | 延展+ | 佐姆延展祝福状态；近战攻击距离 +3；decision=D-C-109 |
 | `Lock (%d)` | 封梯(%d) | 佐姆封锁楼层楼梯状态；括号内为剩余解锁所需击杀数；decision=D-C-109 |
