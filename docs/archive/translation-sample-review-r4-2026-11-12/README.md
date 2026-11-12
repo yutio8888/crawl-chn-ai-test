@@ -22,7 +22,7 @@
   | R4-6 | environment events | 103 |
   | R4-7 | other dynamic feedback | 107 |
 
-  The categories were chosen from the coverage matrix of the earlier rounds (`coverage_r4.md`).
+  The categories were chosen from the coverage matrix of the earlier rounds (`coverage_r4.txt`).
 - **Exclusions.** Keys from rounds 1–3, the D-C-096 probes, and keys fixed in #299–#316 are excluded. The frozen exclusion inputs are listed in `inputs/*.provenance.json`; each one points to a file in an existing archive at a fixed commit.
 - **Line applicability.** 63 samples are the same on both lines, 6 have diverged, and 1 exists only on stable.
 - **Reconstruction.** 41 samples are static, 7 are parameter reconstructions, and 22 need runtime or layout output. Those 22 are player check points and are not counted as verified.
@@ -65,7 +65,7 @@ The result does not extrapolate to an error rate for the whole catalogue.
 ## Files
 
 - `adjudication.json`: final verdicts, host corrections, the delivery record and the post-disposition.
-- `samples_r4.json`, `selection_log_r4.json`, `coverage_r4.md`: the frozen sample and the selection record. `verification_r4.json` records their SHA-256 values. Pools and lane inputs (about 18 MB) are not committed.
+- `samples_r4.json`, `selection_log_r4.json`, `coverage_r4.txt`: the frozen sample and the selection record. `verification_r4.json` records their SHA-256 values. Pools and lane inputs (about 18 MB) are not committed.
 - `inputs/`: provenance records of the exclusion sets.
 - `outputs/lane{1,2}/`: the raw reviewer outputs.
 - `fix/`: the delivery reports for both PRs and the independent review (sections A, B and C).
@@ -77,12 +77,14 @@ The result does not extrapolate to an error rate for the whole catalogue.
 
 ## Normalisation
 
+`coverage_r4.txt` is the frozen `coverage_r4.md` stored under a `.txt` name. Its bytes are unchanged and match the hash in `verification_r4.json`. The repository path-portability check scans `docs/**/*.md`, and it flags the format fragment `%s:\n` on line 147 as a Windows drive path. That is a false positive. Renaming the file keeps the frozen bytes intact, where adding an allow marker would have changed them.
+
 Some archived files differ from the working copies:
 
 - In `outputs/*/review_notes.md` and `fix/`, absolute working paths were replaced with `<r4-work>/` or `<work>/`.
 - Trailing whitespace was stripped to satisfy the repository whitespace check.
 
-`samples_r4.json`, `selection_log_r4.json`, `coverage_r4.md` and lane 2's `review_output.json` are byte-identical to the working copies. Lane 1's `review_output.json` differs only by a trailing newline added at end of file.
+`samples_r4.json`, `selection_log_r4.json`, `coverage_r4.txt` and lane 2's `review_output.json` are byte-identical to the working copies. Lane 1's `review_output.json` differs only by a trailing newline added at end of file.
 
 ## Not performed
 
