@@ -43,6 +43,7 @@ amulet	项链	domain=items; source=EN/ZH
 amulet of the Air	空气项链	domain=items; source=EN/ZH; Scope / comment=unrand; decision=D-B-021
 anaconda	水蟒	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 ancestor	先祖	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Ancestor Life: Hexer	先祖生涯：妖术师	domain=abilities; source=EN/ZH; Scope / comment=先祖生前职业，非生命值；decision=D-C-110; reject=诅咒师
 ancient champion	远古冠军	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 ancient lich	远古巫妖	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 ancient zyme	古酶	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -512,9 +513,12 @@ Held	受困	domain=status; source=EN/ZH; Scope / comment=status; source=status.t
 Hellfire Court	地狱火法庭	domain=spells; source=EN/ZH; 备注=✅
 Hellfire Mortar	地狱火迫击炮	domain=spells; source=EN/ZH; 备注=✅
 Hepliaklqana	惠普利亚卡纳	domain=gods; source=EN/ZH; 类型=音译
-Hex	诅咒	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
-Hexes	诅咒系	domain=magic; source=EN/ZH
-Hexslinger	诅咒射手	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Hex	妖术	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101，由 D-C-110 更新; reject=诅咒
+hex mastery	妖术精通	domain=mutations; source=EN/ZH; Scope / comment=sphinx form 伪变异／特征，非遗传变异；decision=D-C-110; reject=诅咒精通
+hexed	被支配	domain=status; source=EN/ZH; Scope / comment=ENCH_HEXED 支配状态，非学派名；decision=D-C-110; reject=被控制
+hexer	妖术师	domain=monsters; source=EN/ZH; Scope / comment=先祖职业；decision=D-C-110; reject=诅咒师
+Hexes	妖术系	domain=magic; source=EN/ZH; 作用域=学派与技能全称；decision=D-C-110; reject=诅咒系
+Hexslinger	妖术射手	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt; decision=D-C-110; reject=诅咒射手
 high mp	高魔力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 hit	击中	domain=combat; source=EN/ZH
 Hoarfrost Bullet	白霜弹	domain=spells; source=EN/ZH; 备注=✅；火炮发射的冰霜碎片，命中后施加脆霜减速
@@ -664,7 +668,7 @@ Mennas title	门纳斯，辛的代言人	domain=monster-titles; source=EN/ZH; Sc
 Mephitic Cloud	迷瘴云	domain=spells; source=EN/ZH; 备注=✅ 现行
 Mercury Arrow	汞矢	domain=spells; source=EN/ZH; 备注=✅；与 `Quicksilver Bolt → 水银箭` 区分的辨识性例外 | domain=spells; source=EN/ZH; 备注=✅；为避免与 `Quicksilver Bolt → 水银箭` 重名，不套用常规“箭”词尾
 merfolk	人鱼	domain=species; source=EN/ZH; 复合格式=人鱼 + 职业（人鱼水法师）
-Mesmerise	迷魂	domain=spells; source=EN/ZH; 备注=✅；5 级怪物诅咒法术，使冒险者无法主动远离施法者、使其他生物眩晕；与 Sleep「沉睡」及 Charm「魅惑」区分；裁决=[D-A-043]
+Mesmerise	迷魂	domain=spells; source=EN/ZH; 备注=✅；5 级怪物妖术，使冒险者无法主动远离施法者、使其他生物眩晕；与 Sleep「沉睡」及 Charm「魅惑」区分；裁决=[D-A-043]
 Metabolic Englaciation	代谢冻结	domain=spells; source=EN/ZH; 备注=🆕；降低周围生物代谢并减速
 Metal Splinters	金属碎刺	domain=spells; source=EN/ZH; 备注=✅
 Miasma Breath	瘴气吐息	domain=spells; source=EN/ZH; 备注=✅

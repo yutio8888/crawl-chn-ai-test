@@ -4054,7 +4054,7 @@ glossary 仅补明此 trance 消息的机制作用域，仍保留一般恍惚、
 
 ### D-C-101 — 学派全称与法术列表简称统一（2026-11-01，回补 trunk 已审裁决）
 
-- **Status**: active
+- **Status**: active；Hexes 全称／Hex 简称部分已由本线 D-C-110（2026-11-12）取代，以下原裁决保留为历史记录。
 - **Source**: 复用 trunk 已审定的 D-C-101（用户确认全称统一为“××系”、法术列表使用两字简称），按稳定实际存在的实体迁移。
 - **裁决**：现行学派及对应技能统一为咒法系、诅咒系、召唤系、死灵系、传送系、锻造系、火焰系、寒冰系、空气系、大地系、炼金系。法术列表复用既有两字简称（咒法／诅咒／召唤／死灵／传送／锻造／火焰／寒冰／空气／大地／炼金）；法术详情仍用全称。此项更新 D-C-001 对相关技能的旧译法。
 - **实现边界**：只改稳定实际存在的学派显示键——`source.txt` 的学派名与相关消息、`dat/descript/zh/{skills,mutations,items}.txt` 中的同类表述。稳定没有 `spell school` 或法术详情防御／抗性的独立上下文键，故不迁移 trunk 的上下键、不新增无消费者条目。
@@ -4323,6 +4323,29 @@ glossary 仅补明此 trance 消息的机制作用域，仍保留一般恍惚、
 | `status\|confused` | 混乱 | DUR_CONF 短标签；与灯标 Conf、长描述同根 |
 | `You are enlightened. (Will+)` | 你处于启迪状态。（意志+） | DUR_ENLIGHTENED 长描述；与短标签、结束消息、药水名同根 |
 
+
+### D-C-110 — Hexes 与 curse 词根分离（稳定线回迁）
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-12
+- **Source**: 维护者明确要求将开发线的 Hexes 译名回迁稳定线；参照当前开发线
+  `59aec6256f1824d8c5cd7de92b7c25691132cce9` 的 D-C-110，按稳定线实际消费者迁移。
+- **Choice**: `Hexes → 妖术系`、学派简称 `Hex → 妖术`；
+  `Hexslinger → 妖术射手`、`hexer → 妖术师`、
+  `Ancestor Life: Hexer → 先祖生涯：妖术师`、`hex mastery → 妖术精通`。
+  `hexed → 被支配` 表示 ENCH_HEXED 支配状态，不是学派名。
+- **Rationale**: 统一维护线的学派、技能和派生显示词根，与真正的 curse 诅咒区分。
+  此项是此后由维护者决定的术语策略调整，不将旧基线下遵守“诅咒系”的历史译文
+  追认为当时的错误；前轮冻结样本与原评审保持不变。
+- **Scope / boundaries**: 取代本线 D-C-101 的 Hexes／Hex 部分；仅迁移稳定实际
+  存在的显示消费者、相关长说明和随机书名池中的 Hexes／Hexing 词项。
+  `curse → 诅咒`、`Maledictor → 诅咒师`、物品诅咒、动词 curse、
+  Maledictions 书名、神器属性 `curses,` 与随机书名 Curses／Malediction 保留。
+  不按中文“诅咒”或池名整体替换。英文键、内部学派身份、协议和存档不变；
+  旧笔记显示快照不迁移。现有 reject= 机制只约束对应英文术语条目，不全局禁用诅咒。
+- **Affected files**: 中文 source、descript 与 randbook 的有界消费者；
+  glossary 及生成伴随文件；实际受影响的测试／工具期望。
 
 ### D-C-113 — 玩家鬼魂括注后缀 ghost
 

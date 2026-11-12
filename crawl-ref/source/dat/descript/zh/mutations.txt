@@ -452,11 +452,11 @@ aura of silence mutation
 %%%%
 bedevilling mutation
 
-你施放的诅咒系法术威力增强。
+你施放的妖术系法术威力增强。
 %%%%
 demonic willpower mutation
 
-你的意志力有了自己的意图，有时它会伤害那些试图给你下咒的人。
+你的意志力有了自己的意图，有时它会伤害那些试图对你施放妖术的人。
 这个变异还会增强你的意志力。
 %%%%
 hurl damnation mutation
@@ -758,7 +758,7 @@ no fire magic mutation
 %%%%
 no hexes magic mutation
 
-你的诅咒系技能等级为 0，你也无法训练它。
+你的妖术系技能等级为 0，你也无法训练它。
 %%%%
 no ice magic mutation
 
@@ -1035,7 +1035,7 @@ heatstroke bane
 %%%%
 hex mastery mutation
 
-你的诅咒系法术更易施放，施法失误的概率及后果严重程度都会降低，
+你的妖术系法术更易施放，施法失误的概率及后果严重程度都会降低，
 且敌人在抵抗你的所有效果时，意志力都会降低。
 %%%%
 hive swarm mutation
