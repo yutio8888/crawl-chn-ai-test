@@ -3899,7 +3899,7 @@ trunk 未自动继承该提交，须分别核对。此表只记落实情况，�
 | 原清单术语组 | stable | trunk |
 |---|---|---|
 | Spider Nest | 已落地：`cad4bcba74`，features 与 Forceful Invitation 正文 | 已落地：features `25bc143246`、spells `8635fc61df`，均为“蜘蛛巢穴” |
-| piety（数值、消耗参数、标签） | 已落地：`cad4bcba74`；Notes 星级拼接按 D-C-097 为“虔诚等级” | 已落地：PR #305（merge `5417df71b3`，目标 `chn-trunk`；原候选 `codex/dc096-assets-trunk @ ec08132481`）。历史核对：未完全落地：`i18n/zh/source.txt:2600` 捐赠数额仍为“虔诚增长”、`:31759` 仍为“虔诚消耗”、`:37860` Notes 星级句架仍为“虔诚度”（应按 D-C-097 区分等级）；不把普通“虔诚的信徒”计作残留 |
+| piety（数值、消耗参数、标签） | 已落地：`cad4bcba74`；Notes 星级拼接按 D-C-097 为“虔诚等级” | 已落地（部分旧归因已撤回，见下文“本轮落地、保留与撤回”）：PR #305（merge `5417df71b3`，目标 `chn-trunk`；原候选 `codex/dc096-assets-trunk @ ec08132481`）。历史核对：未完全落地：`i18n/zh/source.txt:2600` 捐赠数额仍为“虔诚增长”、`:31759` 仍为“虔诚消耗”、`:37860` Notes 星级句架仍为“虔诚度”（应按 D-C-097 区分等级）；不把普通“虔诚的信徒”计作残留 |
 | mutagenic energy/energies | 已落地：`cad4bcba74`，含 neqoxec 与 Mutagenic Gaze 正文 | 已落地：`cb70b86b73`，PR #301（merge `fc8be76fe3`）；包含 source 与 neqoxec 的残留修复，既有 Gaze 正文保持“诱变能量” |
 | mutagenic power | 已落地：`cad4bcba74` | 已落地：`38a8e1e4ec`，PR #301，两条四肢消息为“诱变力量” |
 | mutagenic glow | 已落地：`cad4bcba74` | 已落地：PR #305（merge `5417df71b3`，目标 `chn-trunk`；原候选 `codex/dc096-assets-trunk @ ec08132481`）。历史核对：未落地：`i18n/zh/source.txt:3933`、`:4877` 仍为“变异光芒” |
@@ -3912,7 +3912,7 @@ trunk 未自动继承该提交，须分别核对。此表只记落实情况，�
 | dazed/daze | S1 已更正，已落地：PR #306（merge `b1c7970985`，目标 `chn-0.34.1-base`；原候选 `codex/dc096-assets-stable @ fd8510c7b0`）。`You break out of your daze.` 原属本组的归类已撤回，实际按 DUR_MESMERISED 译为迷魂结束；原核销记录保留：已落地：PR #306（merge `b1c7970985`，目标 `chn-0.34.1-base`；原候选 `codex/dc096-assets-stable @ 7dd24f4788`）。本轮补齐 Cacophony、burstshroom 正文；历史核对：已落地：`cad4bcba74` 的共享消息为“眩晕” | S1 已更正，已落地：PR #305（merge `5417df71b3`，目标 `chn-trunk`；原候选 `codex/dc096-assets-trunk @ 39adbcc247`）。`You break out of your daze.` 原属本组的归类已撤回，实际按 DUR_MESMERISED 译为迷魂结束；原核销记录保留：已落地：PR #305（merge `5417df71b3`，目标 `chn-trunk`；原候选 `codex/dc096-assets-trunk @ ec08132481`）。历史核对：未完全落地：`source.txt:4712` 孢子仍为“晕头转向”、`:18539` 与 `:22214` 仍为“恍惚”（均位于 i18n/zh）；已统一项如 `6a3a393828` 的 snaps out 消息、`cb70b86b73` 的诱变能量消息不能代表整组完成 |
 | travel exclusion | 已落地：`cad4bcba74` | 已落地：PR #305（merge `5417df71b3`，目标 `chn-trunk`；原候选 `codex/dc096-assets-trunk @ ec08132481`）。历史核对：未完全落地：部分“禁区”已由 `4486e1fadd` 落地；`i18n/zh/source.txt:7963`、`:43768` 仍作“被标记为排除／已排除”。原 `%d %sexclusion%s` 键已不在当前 catalog，不再按旧身份替换 |
 | ambrosia 及状态 | 已落地：普通效果 `cad4bcba74`；短标签按后续 D-C-107 由 `6c55448ad1` 落为“神食酣醉” | 已落地：`85be0be893`，原清单普通效果与状态均已更新；不改一般传说中的 ambrosial nectar |
-| aptitude 及训练成本完整分句 | 已落地：`cad4bcba74`，含完整零资质、零级到一级的基准 | 已落地：PR #305（merge `5417df71b3`，目标 `chn-trunk`；原候选 `codex/dc096-assets-trunk @ ec08132481`）。历史核对：未完全落地：技能参数 `d323624b33` 已为“资质”；`i18n/zh/source.txt:43390` 仍为“能力倾向表”，`:43597` 仍以“相对于当前”截断基准分句 |
+| aptitude 及训练成本完整分句 | 已落地：`cad4bcba74`，含完整零资质、零级到一级的基准 | 已落地（部分旧归因已撤回，见下文“本轮落地、保留与撤回”）：PR #305（merge `5417df71b3`，目标 `chn-trunk`；原候选 `codex/dc096-assets-trunk @ ec08132481`）。历史核对：未完全落地：技能参数 `d323624b33` 已为“资质”；`i18n/zh/source.txt:43390` 仍为“能力倾向表”，`:43597` 仍以“相对于当前”截断基准分句 |
 | 歌曲题名 A Whiter Shade of Pale | 不适用：本线没有 `A hide-covered altar of Uskayaw` 引文条目 | 已落地：`fe475db827`，采用《更淡的苍白》；One of Us Cannot Be Wrong 按原决定无需修改 |
 | ley line（Dragon Veins 正文） | 不适用：本线没有 Dragon Veins 条目 | 已落地：`fe475db827`，使用“元素能量地脉” |
 
