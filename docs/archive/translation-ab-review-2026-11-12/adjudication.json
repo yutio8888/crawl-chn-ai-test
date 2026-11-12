@@ -1,0 +1,44 @@
+{
+ "moderator": "Claude Opus 5.5 (main session)",
+ "date": "2026-11-12",
+ "invalid_samples": [
+  {"sample_id": "S29", "english": "cursed", "reason": "Pool tool picked the upstream Lua binding key l-item.cc:1779 as usage; the reviewer-visible context was not the display site (theirs displays it in item-name.cc:396; our display consumer was not located). Excluded from tallies; reported by lane1."}
+ ],
+ "confirmed": [
+  {"id": "C1", "sample_id": "S03", "side": "ours", "type": "objective_error", "category": "format",
+   "summary": "Ally-order menu misalignment: first line prefix width 14 (对盟友的命令：) but continuation lines have 0 leading columns.",
+   "evidence": "Both sides print three catalogue lines verbatim (ours shout.cc:504-506, theirs shout.cc:572-574). Display width before the first command letter: theirs 10/10/10, ours 14/0/0.",
+   "lanes": "lane1 and lane2 both flagged ours"},
+  {"id": "C2", "sample_id": "S04", "side": "ours", "type": "objective_error", "category": "grammar",
+   "summary": "'你发光更亮了' is an unidiomatic collocation for 'You glow brighter.'", "lanes": "both preferred theirs"},
+  {"id": "C3", "sample_id": "S25", "side": "ours", "type": "internal_consistency", "category": "terminology",
+   "summary": "MONS_PLAYER_GHOST suffix 'ghost' → 幽灵, while full name 'player ghost' → 玩家鬼魂 and kill modifier 'spectre' → 幽灵.",
+   "evidence": "directn.cc:3482 (upstream) appends 'ghost' for MONS_PLAYER_GHOST; kills.cc:753 'spectre'.", "lanes": "lane1"},
+  {"id": "C4", "sample_id": "S25", "side": "theirs", "type": "internal_consistency", "category": "terminology",
+   "summary": "'ghost' → 鬼魂 but 'player ghost' → 玩家幽灵, and 幽灵 is also 'spectre'.",
+   "evidence": "Moderator lookup in frozen ui.po (display.monster entries).", "lanes": "moderator only"},
+  {"id": "C5", "sample_id": "S41", "side": "ours", "type": "objective_error", "category": "mistranslation",
+   "summary": "'Those who invite Qazlal's gaze' rendered 请求卡兹拉尔注视 (asking for) instead of attracting/courting; repeated 风暴 wording.", "lanes": "lane1"},
+  {"id": "C6", "sample_id": "S45", "side": "ours", "type": "objective_error", "category": "mistranslation",
+   "summary": "'unfathomably massive' rendered 令人难以理解地巨大 (incomprehensibly) rather than immeasurably.", "lanes": "both preferred theirs"},
+  {"id": "C7", "sample_id": "S47", "side": "ours", "type": "objective_error", "category": "terminology/omission",
+   "summary": "Blinkbolt description says caster becomes 闪电箭, which is our name for the Lightning Bolt spell; 'the bolt's destination' reduced to 目的地.", "lanes": "both preferred theirs"},
+  {"id": "C8", "sample_id": "S44", "side": "theirs", "type": "objective_error", "category": "mistranslation",
+   "summary": "'It seizes upon the passage of other souls' rendered 它夺取他人灵魂的旅程.", "lanes": "both preferred ours"},
+  {"id": "C9", "sample_id": "S14", "side": "theirs", "type": "objective_error", "category": "omission",
+   "summary": "'%s is now too close for your liking.' rendered %s离你太近了。 dropping 'now' and the subjective nuance (minor).", "lanes": "both preferred ours"}
+ ],
+ "advisory": [
+  {"sample_id": "S42", "side": "theirs", "summary": "吸取活物最大生命值的一小部分 can be read as max-HP reduction; mechanic is damage = max HP / 10 (cloud.cc:1213). Ambiguity, not a confirmed error."},
+  {"sample_id": "S43", "side": "both", "summary": "'frangible' not rendered by either side; ours limits the target to 生物, which matches the actor-only mechanic, so not counted as an error."},
+  {"sample_id": "S26", "side": "theirs", "summary": "同族史莱姆 adds a kinship sense to 'fellow slime' (allied slime). Dropping the leading space before full-width parentheses is not an error."},
+  {"sample_id": "S22", "side": "ours", "summary": "'You have hooves in place of feet.' is a state description; 你的脚变成了蹄子 reads as an event. Lane1 preferred theirs; lane2 tie."}
+ ],
+ "rejected": [
+  {"sample_id": "S03", "side": "theirs", "summary": "Lane2 flagged missing 19 leading spaces; the spaces exist to align with the English first line. Theirs aligns all three lines at width 10, which is correct."}
+ ],
+ "pending_validation_gap": [
+  {"sample_id": "S09", "summary": "Possessive DESC_ITS argument fill differs by implementation; needs runtime output."},
+  {"sample_id": "S11", "summary": "Same as S09."}
+ ]
+}

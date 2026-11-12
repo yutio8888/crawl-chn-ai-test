@@ -1,0 +1,3114 @@
+{
+ "L1": [
+  {
+   "candidate": "You feel perceptive.",
+   "result": "ok"
+  },
+  {
+   "candidate": "NOTE: Shaft traps aren't valid on this level.",
+   "result": "ok"
+  },
+  {
+   "candidate": "<w>%</w>/<w>%</w> to cast spells (<w>%?/%</w> lists spells)",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Huh?",
+   "result": "ok"
+  },
+  {
+   "candidate": "mighty",
+   "result": "literal used at 3 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "<brown>(</brown> : missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "                   g - Guard the area.      f - Follow me.",
+   "result": "ok"
+  },
+  {
+   "candidate": "You glow brighter.",
+   "result": "ok"
+  },
+  {
+   "candidate": "It gets dark.",
+   "result": "ok"
+  },
+  {
+   "candidate": "Casting spells may cause you to lose access to your magic.",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Set Abyss speed to what? (now %d, higher value = higher speed) ",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "You are no longer berserk.",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Your blood rage is quickly leaving you.",
+   "result": "ok"
+  },
+  {
+   "candidate": "Running Jiyva off-level sacrifice.",
+   "result": "ok"
+  }
+ ],
+ "L2": [
+  {
+   "candidate": "You lose your grip on %s soul.",
+   "result": "ok"
+  },
+  {
+   "candidate": "%s floods into %s %s!",
+   "result": "ok"
+  },
+  {
+   "candidate": "%s is briefly surrounded by a scintillating aura of random colours.",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "%s arms its allies with %s.",
+   "result": "ok"
+  },
+  {
+   "candidate": "%s willpower is stripped away!",
+   "result": "ok"
+  },
+  {
+   "candidate": "You sink your fangs into %s and drink %s %s.",
+   "result": "ok"
+  },
+  {
+   "candidate": "Items here: %s.",
+   "result": "ok"
+  },
+  {
+   "candidate": "%s is now too close for your liking.",
+   "result": "ok"
+  },
+  {
+   "candidate": "%s is forced to slowly start %s a word of recall!",
+   "result": "ok"
+  }
+ ],
+ "L3": [
+  {
+   "candidate": "You cover ground very slowly.",
+   "result": "ok"
+  },
+  {
+   "candidate": "You are significantly more attuned to the shadows.",
+   "result": "ok"
+  },
+  {
+   "candidate": "Corrupt Body",
+   "result": "ok"
+  },
+  {
+   "candidate": "Virulence",
+   "result": "ok"
+  },
+  {
+   "candidate": "Aphotic Marionette",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Sacrifice an Eye",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Ignition",
+   "result": "ok"
+  },
+  {
+   "candidate": "You feel meek as a lamb.",
+   "result": "ok"
+  },
+  {
+   "candidate": "You have hooves in place of feet.",
+   "result": "ok"
+  },
+  {
+   "candidate": "Your blood calms down again.",
+   "result": "ok"
+  }
+ ],
+ "L4": [
+  {
+   "candidate": "hell hound",
+   "result": "literal used at 6 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "orange crystal statue",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Handbook of Applied Construction",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "slimy stone staircase leading up",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "dire elephant",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "repulsion",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "electric eel",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "burning altar of Makhleb",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "bullfrog",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ghost",
+   "result": "ok"
+  },
+  {
+   "candidate": "removed lantern of shadows",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Blorkula the orcula",
+   "result": "literal used at 5 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "Necronomicon",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "naga sharpshooter",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Treatise on Traps",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ballistomycete spore",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "rakshasa",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "zykzyl",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "test spawner",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "crawl-hole back to the Lair",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Ereshkigal",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "roughly hewn altar of Beogh",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "efreet",
+   "result": "literal used at 3 sites (ambiguous usage)"
+  },
+  {
+   "candidate": " (fellow slime)",
+   "result": "ok"
+  },
+  {
+   "candidate": "staircase back to the Dungeon",
+   "result": "literal used at 4 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "entropy weaver",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ready to howl",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Ijyb",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "mummy priest",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ufetubus",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "mutant beast",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "antique champion",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Frances",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "a binding sigil",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "eldritch tentacle segment",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "blazeheart golem",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "winding a clockwork bee",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "dancing weapon",
+   "result": "literal used at 7 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "Roxanne",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "crawling flesh cage",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "replica",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "dimensional conduit",
+   "result": "literal used at 10 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "inspiring fear",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "naga ritualist",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Nessos",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "redback",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "pile of debris",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "crocodile",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "more vulnerable to fire",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "metal staircase leading up",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Saint Roka",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "octopode",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "green draconian",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "apis",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "feeble figment",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "splinterfrost barricade",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Everburning Encyclopedia",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "searing wretch",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "bound in place",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Lom Lobon",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "pandemonium lord",
+   "result": "literal used at 10 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "black bear",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Dowan",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "ironbound frostheart",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "oblivion hound",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "black mamba",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Fannar",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Khufu",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "sun moth",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "fiery conduit",
+   "result": "literal used at 14 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "Grinder",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "withered plant",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "pile of flesh",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "covered in magnetic dust",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "gateway leading out of Gehenna",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "glowing orange brain",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Chuck",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "frilled lizard",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "peacekeeper",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "river rat",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "meliai",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "starspawn tentacle",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "oni incarcerator",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "interlaced with chaos",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "spriggan berserker",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "ice statue",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "stormy altar of Qazlal",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ball lightning",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "orb spider",
+   "result": "literal used at 5 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "staircase to the Swamp",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "saltling",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "gateway leading deeper into the Abyss",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "dream sheep",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "golden statue",
+   "result": "literal used at 17 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "Mara",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Head Instructor",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "rime drake",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "fellow slime",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "tengu",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "silver statue",
+   "result": "literal used at 30 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "deflecting missiles",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "spark wasp",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "gate leading to the Crucible of Flesh",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "cache of fruit",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "colossal amoeba",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "sleepcap",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "collapsed entrance",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Rupert",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "azure jelly",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Disturbance",
+   "result": "ok"
+  },
+  {
+   "candidate": "ironbound beastmaster",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "gateway to a bazaar",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Lernaean hydra",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Murray",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "friendly sensed monster",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "ragged hierophant",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "hasn't noticed you",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "crystal guardian",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Jorgrun",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "naga mage",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "corrupted altar of Lugonu",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Margery",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "surrounded by negative energy",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "mop and bucket",
+   "result": "literal used at 17 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "drake",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Sprozz",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "death cob",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "chaos spawn",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "basalt altar of Yredelemnul",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "harm",
+   "result": "literal used at 4 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "toenail golem",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "giant lizard",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "radiant altar of Vehumet",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "merfolk",
+   "result": "literal used at 4 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "portal to a secret trove of treasure",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "vampire bloodprince",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ponderousness",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "monarch bomb",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "red devil",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "juggernaut",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "surrounded by mutagenic energy",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "crystal echidna",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "battlesphere",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "walking crystal tome",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "scorpion",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "queen bee",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "dragonskin cloak",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "creeping plasmodium",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "box of beasts",
+   "result": "literal used at 4 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "floral vase",
+   "result": "literal used at 15 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "molten gargoyle",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "flower patch",
+   "result": "literal used at 38 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "radiating silence",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "arcane conduit",
+   "result": "literal used at 11 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "thrashing horror",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "kobold",
+   "result": "literal used at 13 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "wolf",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "hound",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "emperor scorpion",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Grand Grimoire",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "electric golem",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "two-headed ogre",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "cerulean imp",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Pargi",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "morphogenic ooze",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "merfolk siren",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "fire bat",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "spellbooks",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Dispater",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "reaping",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "gate leading to a distant place",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "spatial vortex",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "spectral %s",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "neqoxec",
+   "result": "literal used at 5 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "one-way gateway to a ziggurat",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Enchantress",
+   "result": "literal used at 8 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "deep troll",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "obsidian bat",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "elemental",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "fully charged",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "scrub nettle",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "malarious merfolk avatar",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "swamp drake",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "common",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "erythrospite",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "test statue",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "naga",
+   "result": "literal used at 3 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "open translucent door",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "death drake",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "vampire mage",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "revenant soulmonger",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "water nymph",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "shimmering altar of Xom",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Grunn",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "drude",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "candlelit altar of Ignis",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "touched by paradox",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "cyclops",
+   "result": "literal used at 3 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "starspawn tentacle segment",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "rare",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "heavily contaminated",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "some deep water",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "staircase to the Enchanted Forest",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "orc warrior",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Polyphemus",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "dwarf",
+   "result": "literal used at 3 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "kobold fleshcrafter",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "orc apostle",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "bloated husk",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "ready to sunder",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "sickly merfolk siren",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "diamond obelisk",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "snaplasher vine",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "broken door",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "fountain of clear blue water",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "orange demon",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "doubled in vigour",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ice devil",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "covered in liquid flames",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "hoarfrost cannon",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "deep elf annihilator",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Young Poisoner's Handbook",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "nascent plasmodium",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "frost giant",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "staircase to the Dwarven Hall",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "adder",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "shadow imp",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "yak",
+   "result": "literal used at 5 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "sand-covered staircase",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "one-way gate leading to the halls of Pandemonium",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "hornet",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Brimstone Fiend",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "hippogriff",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "nekomata",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "wyrmhole",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "jorogumo",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "staircase back to the Mines",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "hobgoblin",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "a toxic bog",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "iron statue",
+   "result": "literal used at 41 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "friendly",
+   "result": "literal used at 9 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "Dissolution",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "clockroach",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "shambling mangrove",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Antaeus",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "cache of meat",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "skyshark",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "torpor snail",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "condenser vane",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "escape hatch in the floor",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ruby sceptre",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "hellephant",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "demonic plant",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "halfling",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "penetration",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "reaper",
+   "result": "literal used at 3 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "fenstrider witch",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "seismosaurus",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "surrounded by fog",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Natasha",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Amaemon",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "earth elemental",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "orc wizard",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "jumping spider",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "iron giant",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Xak'krixis",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "hellwing",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "bloodstained altar of Trog",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "cache of baked goods",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "oklob plant",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "titan",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "sceptre of Asmodeus",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "white draconian",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "war gargoyle",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Lodul",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "centaur warrior",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "quicksilver elemental",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "deathcap",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "shining eye",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "constricted by roots",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "demonspawn corrupter",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "frenzied and wild",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "removed lamp of fire",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "nagaraja",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "moth of wrath",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "deep elf elementalist",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "player",
+   "result": "literal used at 9 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "apocalypse crab",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "sheltered from injuries",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "covered in terrible wounds",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "concussion",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Xtahua",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "player ghost",
+   "result": "literal used at 6 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "sack of spiders",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "wolf spider",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "rune of Zot",
+   "result": "literal used at 10 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "kobold demonologist",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "deep elf zephyrmancer",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "vine stalker",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "removed deck",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "salamander mystic",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Cassandra",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "death scarab",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "broken pillar",
+   "result": "literal used at 28 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "Nergalle",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "glowing golden altar of the Shining One",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "merfolk avatar",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "deep elf pyromancer",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "sundering",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Maxwell's Memoranda",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Great Wizards, Vol. VII",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "moon troll",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "sacrificial altar of Ru",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "lich",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "great serpentine sword",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "decorative floor",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "staircase to the Depths",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "lurking horror",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Gell's gravitambourine",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Grum",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Unnamed gizmo",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "petrified flower",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "staircase to the Crypt",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "snail-covered altar of Cheibriados",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "tentacle segment",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Menkaure",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "one-way staircase leading up",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Ignacio",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "wraith",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "freezing wraith",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "seraph",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "umbra",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "martyred shade",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "haloed",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Eustachio",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ribbon worm",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "great orb of eyes",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "swamp worm",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "entangled in a net",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "water moccasin",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "gateway to the ashen valley of Gehenna",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Cerebov",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "skewered by barbs",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "transporter landing site",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "lemure",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "incited by Gozag",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "phantasmal warrior",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "dark tunnel",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "control wrested from you",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "glowing shapeshifter",
+   "result": "literal used at 4 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "horn of Geryon",
+   "result": "literal used at 4 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "flagged portal",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "called by a tesseract",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "steelbarb worm",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "sea snake",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "gold piece",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "blazeheart core",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "ancient bone altar of Kikubaaqudgha",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "caustic sporangium",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "alchemical conduit",
+   "result": "literal used at 6 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "Hell Sentinel",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Sojobo",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "goblin rider",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "fragile as glass",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "burstshroom",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "shadowy altar of Dithmenos",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Nikola",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "walking divine tome",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "deep elf high priest",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "snake",
+   "result": "literal used at 18 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "servant of whispers",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "encased in ice",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "living banishment spell",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "skeleton",
+   "result": "literal used at 4 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "rock fish",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "mummy",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "soul wisp",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "orb of entropy",
+   "result": "literal used at 9 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "Nobody",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "faded altar of an unknown god",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Crazy Yiuf",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Gloorx Vloq",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "jackal",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "cherub",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "draconian knight",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Compendium of Siegecraft",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "spectral thing",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Jeremiah",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "tough sensed monster",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "gateway leading out of the Abyss",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "bound soul",
+   "result": "ok"
+  },
+  {
+   "candidate": "softly glowing",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "sniping",
+   "result": "literal used at 3 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "Prince Ribbit",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "staircase to the Shoals",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Ilsuiw",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "dormant clockwork bee",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "staircase to the Slime Pits",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "removed fan of gales",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "misshapen and mutated",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ancient champion",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "surrounded by acidic fog",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "gateway leading out of Dis",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "unable to translocate",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Asmodeus",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "alligator",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "kobold geomancer",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "gateway to the decaying netherworld of Tartarus",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "tormentor",
+   "result": "literal used at 5 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "surrounded by freezing clouds",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "sensed monster",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "hazy altar of Hepliaklqana",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "quicksilver dragon",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "demonspawn",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "grey draconian",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "death yak",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "deep elf sorcerer",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "creeping inferno",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "the Unrestrained Analects",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "golden dragon",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "eye of draining",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "naga warrior",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "marrowcuda",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "staircase to the Ecumenical Temple",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Louise",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "orb of fire",
+   "result": "literal used at 9 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "target of orcish vengeance",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "metal staircase leading down",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "weapon-inlaid floor",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "orcish standard",
+   "result": "literal used at 9 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "spectre",
+   "result": "ok"
+  },
+  {
+   "candidate": "uninterested",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "profane servitor",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "ballistomycete",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "staircase back to the Lair",
+   "result": "literal used at 4 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "acid blob",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "fountain of eyes",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "travel trail",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "staircase to the Elven Halls",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "moth",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Ice Fiend",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "felid",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "sixfirhy",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "staircase leading out of the dungeon",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "tengu conjurer",
+   "result": "literal used at 3 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "mountainshell",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "easy sensed monster",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Vashnia",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "chonchon",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ready to become your apostle",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "staircase to the Hall of Blades",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "missing a shadow",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "broken floral vase",
+   "result": "literal used at 11 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "walking frostbound tome",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "mana viper",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "occultist",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "ophan",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "sleepwalking",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "elemental wellspring",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "haunted armour",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "surrounded by chaotic energy",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "removed ebony casket",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Parghit",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "iron altar of Okawaru",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "deep elf demonologist",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "bes kemwar",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "withering away",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "sun demon",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "draconian scorcher",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "vampire mosquito",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "afflicted by rimeblight",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "balrug",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "staircase to the Snake Pit",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "figurine of a ziggurat",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "staircase back to the Crypt",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ironbound preserver",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "exit through the horrors of the Abyss",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "frozen archway",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "abandoned shop",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "hole to the Spider Nest",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "one-way gate to the infinite horrors of the Abyss",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "short-range portal",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Mnoleg",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "tin of tremorstones",
+   "result": "literal used at 3 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "covering ground slowly",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "sword of Cerebov",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "revenant",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "daeva",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "My Sojourn through Swampland",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Killer Klown",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "guardian sphinx",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "spectralising",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "golden eye",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "draconian annihilator",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "starcursed mass",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "deep troll earth mage",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "fire crab",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "anaconda",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "dart slug",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "oni",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "walking alembic",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "oklob sapling",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "gate to the Realm of Zot",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "unusually resistant",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "atropa-tipped",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "removed stone of tremors",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "cognitogaunt",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "deep elf death mage",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "gateway to the freezing wastes of Cocytus",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "formicid",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "wandering mushroom",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "tarantella",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "unrewarding",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "drifting",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "polterguardian",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "yaktaur",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "sparkling altar of Nemelex Xobeh",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "infernal standard",
+   "result": "literal used at 11 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "walking tome",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "one-way staircase leading down",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "crab",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "weirdly glowing ball",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "gate to the Vaults",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ablaze with memories",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "wind drake",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "stone staircase leading down",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "basilisk",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "earthen conduit",
+   "result": "literal used at 5 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "uncommon",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "fountain of blood",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "spells empowered",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "test blob",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "shadow wraith",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "oddly glowing altar of Pakellas",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Great Wizards, Vol. II",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "culicivora",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "alderking",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "eldritch tentacle",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "shadowghast",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "meteoran",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "void ooze",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "removed crystal ball",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ancient zyme",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "removed chess piece",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "nascence circuit",
+   "result": "literal used at 7 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "staircase to the Orcish Mines",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "dryad",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "alligator snapping turtle",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "crimson imp",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "staircase to the Tomb",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "drowned soul",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "hexer",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "shadow demon",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "phantasmal passage",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "burial acolyte",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "storm conduit",
+   "result": "literal used at 8 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "halazid warlock",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "tentacled monstrosity",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "lashing out in frustration",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "yaktaur captain",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "vampire bat",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Trismegistus Codex",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "strange machine",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "vault warden",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "seismosaurus egg",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "spriggan rider",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "lindwurm",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Azrael",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "caliginous standard",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "tentacled starspawn",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "boggart",
+   "result": "literal used at 3 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "shadow dragon",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "armour echo",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "necrophage",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "slimy stone staircase leading down",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "gateway leading out of Cocytus",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "marked with the sign of ruin",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "surrounded by thunder",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "silent spectre",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "phial of floods",
+   "result": "literal used at 3 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "djembe set",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "more vulnerable to poison",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "demonspawn blood saint",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "deep elf blademaster",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "glowing drain",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "spriggan air mage",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Fen Folio",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "needle",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "reflecting blocked projectiles",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "imperial myrmidon",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "the orb dais",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "soul conduit",
+   "result": "literal used at 9 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "Geryon",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "guardian serpent",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "shard shrike",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "cursed",
+   "result": "ok"
+  },
+  {
+   "candidate": "animated tree",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "pillar of rime",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "demonspawn warmonger",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "untethered in space",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ironbound convoker",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Tiamat",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "very ugly thing",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "petrifying slowly",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ice covered gate leading back out of this place",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "cursed with the promise of agony",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "demonspawn soul scholar",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "djinni",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "gateway back to the Dungeon",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "surrounded by foul miasma",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "hellion",
+   "result": "literal used at 3 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "wyvern",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "stoker",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "unknown amulets",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "targeted by your dimensional bullseye",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "living crystal spell",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "iron imp",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "protean progenitor",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "fravashi",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "radiating toxic energy",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "komodo dragon",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "boulder beetle",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "some lava",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "rampaging",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "hide-covered altar of Uskayaw",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "not watching you",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "deep elf knight",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "snaplasher vine segment",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "rocky tunnel leading out of this place",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "armataur",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "lost soul",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "datura-tipped",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "opalescent scaly cloak",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Erica",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "walking earthen tome",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "gateway leading out of Tartarus",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "surrounded by flames",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "program bug",
+   "result": "literal used at 6 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "Tzitzimitl",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "starflower",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "obsolete rune of zot",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "sin beast",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "glowing silver altar of Zin",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Maggie",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "small abomination",
+   "result": "literal used at 4 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "very common",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "partially charged",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "floating eye",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "surrounded by a freezing vortex",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "entangled in a web",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "spriggan defender",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "hydra",
+   "result": "literal used at 3 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "gate leading to a gauntlet",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "empty arch of ancient stone",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "faun",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "ironbound thunderhulk",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "bog body",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "stone staircase leading up",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "broken altar of Ashenzari",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "curse toe",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "deep elf master archer",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "harpy",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "decaying skeleton",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "deep elf archer",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "ynoxinul",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "sealed passage leading up",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "opulent altar of Gozag",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "bennu",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "enigmatic dynamo",
+   "result": "literal used at 6 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "removed rod",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "ornate altar of the Wu Jian Council",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "blossoming altar of Fedhas",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "living smiting commandment",
+   "result": "ok"
+  },
+  {
+   "candidate": "hurling",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "viscous altar of Jiyva",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Codex of Conductivity",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "skull pike",
+   "result": "literal used at 4 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "gate leading out of Pandemonium",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "curse skull",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "surrounded by restless winds",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "aspiring flesh",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "bombardier beetle",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "sealed passage leading down",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "flickering gateway to a bazaar",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "endoplasm",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "elephant slug",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "nasty sensed monster",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "flayed ghost",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "dispersal trap (recharging)",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "deep troll shaman",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "gate leading to Okawaru's Arena",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "putrid mouth",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "staircase to the Lair",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "guardian mummy",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "crumbling gateway",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "detected altar",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "damage-immune at range",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "runelight",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "cacodemon",
+   "result": "literal used at 3 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "Agnes",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "spirit shield",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "scintillating statue",
+   "result": "literal used at 26 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "clockwork bee",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "gate leading to another region of Pandemonium",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "slymdra",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "crumbling away",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "icy conduit",
+   "result": "literal used at 7 sites (ambiguous usage)"
+  },
+  {
+   "candidate": "living paralysis spell",
+   "result": "ok"
+  }
+ ],
+ "L5": [
+  {
+   "candidate": "Pacifist",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "donate money to Zin",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "You focus your inner power and drain %s's magic in retribution!",
+   "result": "no upstream literal site"
+  },
+  {
+   "candidate": "Blasphemer",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Photosynthesist",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Unflinching",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Fortune-Teller",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "You hear Kikubaaqudgha cackling.",
+   "result": "ok"
+  },
+  {
+   "candidate": "Furnace",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Purifying @Genus@",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "The world leaves you behind!",
+   "result": "ok"
+  },
+  {
+   "candidate": "Trog will no longer gift you weapons.",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "greatly pleased with you",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Kikubaaqudgha's malice focuses upon you.",
+   "result": "ok"
+  },
+  {
+   "candidate": "The monsters",
+   "result": "ok"
+  },
+  {
+   "candidate": "You are too terrified to leap around!",
+   "result": "ok"
+  },
+  {
+   "candidate": "You now drain nearby creatures when transferring your ancestor.",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "give life to nearby clouds",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Nature churns violently around you!",
+   "result": "ok"
+  },
+  {
+   "candidate": "Cheibriados will no longer slow the effects of poison on you.",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "You carve a gateway into yourself and beckon forth the legions of chaos!",
+   "result": "ok"
+  },
+  {
+   "candidate": "Red Sash",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "you kill unclean or chaotic beings",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "End of an Era",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Rapturous",
+   "result": "their msgctxt not found at a call site"
+  },
+  {
+   "candidate": "Your skin crawls.",
+   "result": "ok"
+  }
+ ],
+ "L6": [
+  {
+   "candidate": "gods.txt::Qazlal::Qazlal Stormbringer is a violent god of tempests, who delights in unleashing\nthe forces of nature against the unsuspecting. Those who invite Qazlal's gaze\nwill find themselves the eye in a storm of elemental destruction, from which\nonly their God can protect them. Pious worshippers of Qazlal will gain the\nability to direct and control the destructive might of the storm.",
+   "result": "ok"
+  },
+  {
+   "candidate": "monsters.txt::vampire mosquito::A mosquito that has fed upon tainted blood and been transformed into a\nrevolting and pestilent undead insect, seeking to drain its victims to the last\ndrop.",
+   "result": "ok"
+  },
+  {
+   "candidate": "spells.txt::March of Sorrows spell::Conjures a stream of stolen suffering, leaving clouds of excruciating misery in\nits wake and around its targets. These clouds of negative energy will rapidly\ndrain the living of small fractions of their maximum health.",
+   "result": "ok"
+  },
+  {
+   "candidate": "spells.txt::Splinterfrost Shell spell::Constructs a frangible shell of reinforced ice in a half-circle around the\ncaster, pushing creatures out of the way to make space for it, if possible.\n\nThis barricade is durable, and whenever a segment of it is destroyed, will\nfracture into a salvo of icy projectiles launched at whatever destroyed it.\n\nIf the caster strays too far away from their barrier, it will melt rapidly.",
+   "result": "ok"
+  },
+  {
+   "candidate": "monsters.txt::lost soul::The echo of an unmourned soul. Though the memories of its living self are\nlong-faded, it is drawn to the moment of death by some lingering instinct. It\nseizes upon the passage of other souls, losing the last vestiges of its being\nin the memories of another's life.",
+   "result": "ok"
+  },
+  {
+   "candidate": "monsters.txt::colossal amoeba::An unfathomably massive pile of mystic pulsating protoplasm. The slightest\nthreat will cause it to undergo rapid weaponised mitosis, rapidly overwhelming\npotential meals in a cytoplasmic tidal wave.",
+   "result": "ok"
+  },
+  {
+   "candidate": "spells.txt::Cleansing Flame spell::Invokes a huge blast of divine fury centered on the user, severely damaging\nundead and demons and dealing damage to all other hostile creatures.",
+   "result": "ok"
+  },
+  {
+   "candidate": "spells.txt::Blinkbolt spell::Transforms the caster into a lightning bolt, and translocates the caster to\nthe bolt's destination.",
+   "result": "ok"
+  }
+ ]
+}
