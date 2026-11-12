@@ -5444,7 +5444,7 @@ Mutagenic energy flows through %s!
 变异能量流经%s！
 %%%%
 mutation
-突变
+变异
 %%%%
 nameless
 无名
@@ -26559,7 +26559,7 @@ Murder takes root in your soul.
 杀戮在你灵魂中扎下了根。
 %%%%
 Mutagenic power surges through your limbs.
-突变能量在你四肢中涌动。
+诱变力量在你四肢中涌动。
 %%%%
 One of your hands has vanished, leaving only a stump!
 你的一只手消失了，只剩下一个残桩！
@@ -26688,7 +26688,7 @@ The malignance inside you grows.
 你体内的恶念增长了。
 %%%%
 The mutagenic power surging through your limbs dissipates.
-在你四肢中涌动的突变能量消散了。
+在你四肢中涌动的诱变力量消散了。
 %%%%
 The shadows grow bolder once more.
 阴影再次变得大胆。
@@ -30271,7 +30271,7 @@ nupgr
 不可升级
 %%%%
 rMut
-防突变
+抗变异
 %%%%
 +Twstr
 +扭曲
@@ -31714,7 +31714,7 @@ It is more effective when stabbing unaware enemies, sometimes treating them as t
 在偷袭未察觉的敌人时效果更佳，有时会将其视为完全无助。
 %%%%
 It occasionally inflicts wild transmutation effects on those it strikes, inflicting malmutation or extra damage, or polymorphing them into a new form.
-偶尔对被击中的目标施加狂野的变形效果，造成恶性突变或额外伤害，或将其变形成新形态。
+偶尔对被击中的目标施加狂野的变形效果，造成恶性变异或额外伤害，或将其变形成新形态。
 %%%%
 It inflicts significantly more damage against the undead.
 对亡灵造成大量额外伤害。
@@ -31813,7 +31813,7 @@ It unleashes wild and unpredictable magical effects upon striking a wizard or a 
 攻击巫师或有魔法能力的生物时释放狂野而不可预测的魔法效果。
 %%%%
 It inflicts extra damage upon those it strikes, and deals substantially increased damage to chaotic, mutated and magically transformed beings.
-对被击中的目标造成额外伤害，并对混沌、突变和魔法变形生物造成大幅增加的伤害。
+对被击中的目标造成额外伤害，并对混沌、变异和魔法变形生物造成大幅增加的伤害。
 %%%%
 It fills those it strikes with an explosive inner flame.
 在被击中的目标体内注入爆裂内在火焰。
@@ -32929,7 +32929,7 @@ Zin's power protects your fellow warrior from evil magic!
 \n菜单/着色前缀：
 %%%%
 \nMutations Suppressed: 
-\n突变被抑制：
+\n变异被抑制：
 %%%%
 \nNoise: 
 \n噪音：
@@ -36780,7 +36780,7 @@ Stack %s
  被痛苦折磨%s
 %%%%
  prevents a mutation which would have shattered %s.
- 阻止了一次本会将%s击碎的突变。
+ 阻止了一次本会将%s击碎的变异。
 %%%%
 %d %s left
 剩余%d %s
@@ -37860,13 +37860,13 @@ Encountered
 的虔诚信徒，虔诚度
 %%%%
 Gained mutation: 
-获得突变：
+获得变异：
 %%%%
 Lost mutation: 
-失去突变：
+失去变异：
 %%%%
 Mutation became permanent: 
-突变变为永久：
+变异变为永久：
 %%%%
 Gained bane: 
 获得灾祸：
@@ -40004,9 +40004,6 @@ Serpent of Hell (%s)
 %%%%
 This entry is an exact match for '%s'. To see non-exact matches, press space.
 此条目与'%s'完全匹配。按空格查看非精确匹配。
-%%%%
- while resistant to mutation?
-，你对抗突变吗？
 %%%%
  Zin will disapprove.
  辛不会认可的。
@@ -45430,7 +45427,7 @@ lookup type|status
 状态
 %%%%
 lookup type|mutation
-突变
+变异
 %%%%
 lookup type|bane
 灾祸
@@ -50646,22 +50643,22 @@ something unseen
 某个看不见的东西
 %%%%
 give mutation
-赋予了突变
+赋予了变异
 %%%%
 give mutations
-赋予了多种突变
+赋予了多种变异
 %%%%
 give good mutation
-赋予了有益突变
+赋予了有益变异
 %%%%
 give good mutations
-赋予了多种有益突变
+赋予了多种有益变异
 %%%%
 give random mutation
-赋予了随机突变
+赋予了随机变异
 %%%%
 give random mutations
-赋予了多种随机突变
+赋予了多种随机变异
 %%%%
 charmed %d monster
 魅惑了%d个怪物

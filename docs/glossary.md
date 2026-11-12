@@ -889,6 +889,7 @@
 | noxious fumes | 毒烟 | 造成混乱、可被毒抗抵御的云类型；不同于 poison gas 毒气；命名及明确指称该云的正文同根；decision=D-C-096 |
 | mutagenic | 诱变 | 描述使生物发生变异的作用；固定法术名 Mutagenic Gaze → 变异凝视为保留例外，不扩展到其正文；decision=D-C-096 |
 | mutagenic energy / mutagenic energies | 诱变能量 | 普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096 |
+| mutation | 变异 | 游戏机制名词；药水、变异列表及记录；生物学引文保留突变；decision=D-C-114 |
 | mutagenic power | 诱变力量 | 四肢增强效果的力量；区别发生的变异（mutation）；decision=D-C-096 |
 | mutagenic glow | 诱变光芒 | 魔法污染的发光描述；与 mutagenic radiation 同词根；decision=D-C-096 |
 | mutagenic radiation | 诱变辐射 | 仅用于英文明确写出 mutagenic radiation 的字面辐射；不作 Contamination 的机制名；保留 D-C-096 的诱变词根；裁决 [D-C-112] |
