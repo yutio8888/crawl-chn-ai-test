@@ -118,6 +118,11 @@ job_type get_job_by_name(const char *name)
             return entry.first;
     }
 
+    // Preserve the previous SourceDB display name in legacy save/score and
+    // option lookups; the older "诅咒枪手" alias remains in _job_zh_names().
+    if (low_name == "诅咒射手")
+        return JOB_HEXSLINGER;
+
     for (auto& entry : job_data)
     {
         string low_job = lowercase_string(entry.second.name);

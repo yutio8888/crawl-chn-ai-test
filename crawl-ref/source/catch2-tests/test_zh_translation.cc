@@ -38,6 +38,7 @@
 #include "item-prop-enum.h"
 #include "jobs.h"
 #include "losglobal.h"
+#include "lookup-help.h"
 #include "macro.h"
 #include "melee-attack.h"
 #include "mon-info.h"
@@ -8492,4 +8493,57 @@ TEST_CASE_METHOD(ZhTranslationFixture, "zh: player action frames compose real ar
     const string fragment = string(T_("You see here ")) + name + T_(".");
     CHECK(fragment == "这里有" + name + "。");
     CHECK(fragment == make_stringf(T_("You see here %s."), name.c_str()));
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Hexes backport preserves lookup and saved identities",
+                 "[zh-translation][hexes-backport]")
+{
+    init_monsters();
+    init_properties();
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        you = player();
+        you.species = SP_HUMAN;
+        you.experience_level = 10;
+        you.hp = you.hp_max = 100;
+        CHECK(string(skill_name(SK_HEXES)) == (zh ? "妖术系" : "Hexes"));
+        CHECK(string(skill_name_en(SK_HEXES)) == "Hexes");
+        CHECK(string(spelltype_long_name(spschool::hexes)) == (zh ? "妖术系" : "Hexes"));
+        CHECK(string(spelltype_long_name_en(spschool::hexes)) == "Hexes");
+        CHECK(string(spelltype_short_name(spschool::hexes)) == (zh ? "妖术" : "Hex"));
+        CHECK(string(skill_abbr(SK_HEXES)) == "Hex");
+        CHECK(string(get_job_name(JOB_HEXSLINGER)) == (zh ? "妖术射手" : "Hexslinger"));
+        CHECK(string(get_job_name_en(JOB_HEXSLINGER)) == "Hexslinger");
+        CHECK(get_job_by_name("Hexslinger") == JOB_HEXSLINGER);
+        CHECK(get_job_by_name("妖术射手") == (zh ? JOB_HEXSLINGER : JOB_UNKNOWN));
+        CHECK(get_job_by_name("诅咒射手") == JOB_HEXSLINGER);
+        CHECK(get_job_by_name("诅咒枪手") == JOB_HEXSLINGER);
+        CHECK(ability_name(ABIL_HEPLIAKLQANA_TYPE_HEXER) ==
+              (zh ? "先祖生涯：妖术师" : "Ancestor Life: Hexer"));
+        CHECK(ability_name(ABIL_HEPLIAKLQANA_TYPE_HEXER, true) == "Ancestor Life: Hexer");
+        CHECK(get_ability_desc(ABIL_HEPLIAKLQANA_TYPE_HEXER, false).find(
+              zh ? "回想起你的先祖是个妖术师" : "Remembers your ancestor as a hexer") != string::npos);
+        const string identity = mons_type_name_en(MONS_ANCESTOR_HEXER, DESC_A);
+        CHECK(identity == "a hexer");
+        CHECK(mons_type_name(MONS_ANCESTOR_HEXER, DESC_PLAIN) == (zh ? "妖术师" : "hexer"));
+        const Note saved(NOTE_ANCESTOR_TYPE, 0, 0, identity);
+        CHECK(saved.name == "a hexer");
+        const auto keys = lookup_help_matching_keys(LOOKUP_HELP_SKILL, "hexes");
+        CHECK(find(keys.begin(), keys.end(), "hexes") != keys.end());
+        CHECK(getLongDescription("hexes").find(zh ? "妖术系法术" : "Hexes") != string::npos);
+
+        you.form = transformation::sphinx;
+        const Form *form = get_form();
+        REQUIRE(form->get_fakemuts().size() > 1);
+        CHECK(form->get_fakemuts()[1].first == "hex mastery");
+        CHECK(form->get_fakemuts()[1].second == "Hexes are much easier for you to cast and harder to resist.");
+        CHECK(terse_mutation_list().find(zh ? "妖术精通" : "hex mastery") != string::npos);
+        CHECK(describe_mutations(true).find(zh ? "你施放妖术系法术要容易得多，敌人也更难抵抗。"
+                                               : form->get_fakemuts()[1].second) != string::npos);
+    }
 }

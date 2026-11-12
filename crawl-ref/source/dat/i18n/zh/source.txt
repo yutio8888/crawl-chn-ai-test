@@ -4358,7 +4358,7 @@ Hepliaklqana
 惠普利亚卡纳
 %%%%
 Hexes
-诅咒系
+妖术系
 %%%%
 High
 高
@@ -13401,7 +13401,7 @@ Artificer
 技师
 %%%%
 Hexslinger
-诅咒射手
+妖术射手
 %%%%
 Convoker
 召集者
@@ -18614,7 +18614,7 @@ no forms
 无法变形
 %%%%
 no hexes magic
-无法使用诅咒系法术
+无法使用妖术系法术
 %%%%
 no ice magic
 无法使用寒冰系法术
@@ -19409,7 +19409,7 @@ You cannot study or cast Forgecraft magic.
 你无法学习或施放锻造系法术。
 %%%%
 You cannot study or cast Hexes magic.
-你无法学习或施放诅咒系法术。
+你无法学习或施放妖术系法术。
 %%%%
 You cannot study or cast Ice magic.
 你无法学习或施放寒冰系法术。
@@ -19856,7 +19856,7 @@ Your health recovers twice as slowly from being drained.
 你的生命值上限从衰竭中恢复的速度减半。
 %%%%
 Your hexes are more powerful.
-你的诅咒更加强大。
+你的妖术更加强大。
 %%%%
 Your large and strong wings let you fly.
 你大而强壮的翅膀让你能够飞行。
@@ -20189,7 +20189,7 @@ Human
 人类
 %%%%
 hexed
-被控制
+被支配
 %%%%
 summoned
 被召唤
@@ -21620,7 +21620,7 @@ hellephant
 地狱象
 %%%%
 hexer
-诅咒师
+妖术师
 %%%%
 hoarfrost cannon
 霜冻炮
@@ -24984,7 +24984,7 @@ You can no longer study or cast Forgecraft magic.
 你无法再学习或施放锻造系法术。
 %%%%
 You can no longer study or cast Hexes magic.
-你无法再学习或施放诅咒系法术。
+你无法再学习或施放妖术系法术。
 %%%%
 You can no longer study or cast Ice magic.
 你无法再学习或施放寒冰系法术。
@@ -25053,7 +25053,7 @@ You can once more study and cast Forgecraft magic.
 你可以重新学习和施放锻造系法术。
 %%%%
 You can once more study and cast Hexes magic.
-你可以重新学习和施放诅咒系法术。
+你可以重新学习和施放妖术系法术。
 %%%%
 You can once more study and cast Ice magic.
 你可以重新学习和施放寒冰系法术。
@@ -26343,7 +26343,7 @@ It increases the power of your Conjurations spells.
 增强你咒法系法术的威力。
 %%%%
 It increases the power of your Hexes spells.
-增强你诅咒系法术的威力。
+增强你妖术系法术的威力。
 %%%%
 It increases the power of your Summonings spells.
 增强你召唤系法术的威力。
@@ -28276,7 +28276,7 @@ Halo
 光环
 %%%%
 Hex
-诅咒
+妖术
 %%%%
 ID++
 鉴定++
@@ -31261,7 +31261,7 @@ Ancestor Life: Battlemage
 先祖生命：战斗法师
 %%%%
 Ancestor Life: Hexer
-先祖生涯：诅咒师
+先祖生涯：妖术师
 %%%%
 Ancestor Life: Knight
 先祖生涯：骑士
@@ -48877,7 +48877,7 @@ spell school|Conjuration
 %%%%
 spell school|Hexes
 
-诅咒系
+妖术系
 %%%%
 spell school|Fire
 
@@ -50181,6 +50181,12 @@ klown pie flavour|glitter
 %%%%
 klown pie flavour|%s!
 %s！
+%%%%
+hex mastery
+妖术精通
+%%%%
+Hexes are much easier for you to cast and harder to resist.
+你施放妖术系法术要容易得多，敌人也更难抵抗。
 %%%%
 You hear a sizzling sound.
 你听到一阵滋滋声。

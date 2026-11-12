@@ -192,7 +192,7 @@ glass (Glass) armour ego
 %%%%
 guile (Guile) armour ego
 
-它同时削弱你的意志力以及你所施放诅咒的每个目标的意志力，
+它同时削弱你的意志力以及你所施放妖术的每个目标的意志力，
 后者的削弱幅度随你的魔力释放技能提高。
 %%%%
 harm (Harm) armour ego

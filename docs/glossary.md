@@ -64,10 +64,10 @@
 <!-- domain:magic -->
 ## 三、魔法学派
 
-| EN | ZH |
-|----|----|
+| EN | ZH | 作用域 |
+|----|----|--------|
 | Conjuration / Conjurations | 咒法系 |
-| Hexes | 诅咒系 |
+| Hexes | 妖术系 | 学派与技能全称；decision=D-C-110; reject=诅咒系 |
 | Summoning / Summonings | 召唤系 |
 | Necromancy | 死灵系 |
 | Translocation | 传送系 |
@@ -80,13 +80,13 @@
 | Alchemy | 炼金系 |
 | Shapeshifting | 变形术 |
 
-学派全称统一为“××系”（D-C-101）：现行学派及对应技能为咒法系、诅咒系、召唤系、死灵系、传送系、
+学派全称统一为“××系”（D-C-101）：现行学派及对应技能为咒法系、妖术系、召唤系、死灵系、传送系、
 锻造系、火焰系、寒冰系、空气系、大地系、炼金系。法术列表复用既有两字简称，法术详情仍用全称。
 
 | EN | ZH | 作用域 |
 |----|----|--------|
 | Conj | 咒法 | 学派简称；法术列表；D-C-101 |
-| Hex | 诅咒 | 学派简称；法术列表；D-C-101 |
+| Hex | 妖术 | 学派简称；法术列表；D-C-101，由 D-C-110 更新; reject=诅咒 |
 | Summ | 召唤 | 学派简称；法术列表；D-C-101 |
 | Necr | 死灵 | 学派简称；法术列表；D-C-101 |
 | Tloc | 传送 | 学派简称；法术列表；D-C-101 |
@@ -532,6 +532,7 @@
 | Berserk | 狂暴 | status; source=status.txt |
 | Poison | 中毒 | status; source=status.txt |
 | Confusion | 混乱 | status; source=status.txt |
+| hexed | 被支配 | ENCH_HEXED 支配状态，非学派名；仅精确键校验，随机书名 Hexed 按普通形容词处理；decision=D-C-110 |
 | Contamination | 诱变辐射 | status; source=status.txt |
 | Drain | 衰竭 | status; source=status.txt |
 | Slow | 减速 | status; source=status.txt |
@@ -584,7 +585,7 @@
 | Fire Elementalist | 火元素使 | background; source=backgrounds.txt |
 | Gladiator | 角斗士 | background; source=backgrounds.txt |
 | Hedge Wizard | 杂学巫师 | background; source=backgrounds.txt |
-| Hexslinger | 诅咒射手 | background; source=backgrounds.txt |
+| Hexslinger | 妖术射手 | background; source=backgrounds.txt; decision=D-C-110; reject=诅咒射手 |
 | Hunter | 猎手 | background; source=backgrounds.txt |
 | Ice Elementalist | 冰元素使 | background; source=backgrounds.txt |
 | Monk | 武僧 | background; source=backgrounds.txt |
@@ -617,12 +618,14 @@
 | Vitalisation | 活力再生 | ability; source=ability.txt |
 | Imprison | 监禁 | ability; source=ability.txt |
 | Sanctuary | 庇护所 | ability; source=ability.txt |
+| Ancestor Life: Hexer | 先祖生涯：妖术师 | 先祖生前职业，非生命值；decision=D-C-110; reject=诅咒师 |
 
 <!-- domain:mutations -->
 ## 十七、变异名
 
 | EN | ZH | Scope / comment |
 |----|----|----------------|
+| hex mastery | 妖术精通 | sphinx form 伪变异／特征，非遗传变异；decision=D-C-110; reject=诅咒精通 |
 | tough skin | 硬化表皮 | mutation; source=mutations.txt |
 | shaggy fur | 浓密皮毛 | mutation; source=mutations.txt |
 | repulsion field | 排斥力场 | mutation; source=mutations.txt |
@@ -735,6 +738,7 @@
 | curse toe | 诅咒趾 | monster; source=source.txt |
 | cyclops | 独眼巨人 | monster; source=source.txt |
 | daeva | 德瓦 | monster; source=source.txt |
+| hexer | 妖术师 | 先祖职业；decision=D-C-110; reject=诅咒师 |
 | Jiangshi | 僵尸 | monster; source=source.txt; Chinese hopping-vampire name, distinguished from zombie → 丧尸 |
 | orc sorcerer | 兽人术士 | monster; source=source.txt; distinguished from orc wizard → 兽人巫师 |
 | orc wizard | 兽人巫师 | monster; source=source.txt |
@@ -1436,7 +1440,7 @@
 | Mass Confusion | 群体混乱 | ✅ |
 | Mass Regeneration | 群体再生 | ✅；附近所有友方怪物按各自最大生命值快速恢复 |
 | Melee | 近战 | ✅ |
-| Mesmerise | 迷魂 | ✅；5 级怪物诅咒法术，使冒险者无法主动远离施法者、使其他生物眩晕；与 Sleep「沉睡」及 Charm「魅惑」区分；裁决=[D-A-043] |
+| Mesmerise | 迷魂 | ✅；5 级怪物妖术，使冒险者无法主动远离施法者、使其他生物眩晕；与 Sleep「沉睡」及 Charm「魅惑」区分；裁决=[D-A-043] |
 | Metabolic Englaciation | 代谢冻结 | 🆕；降低周围生物代谢并减速 |
 | Metal Splinters | 金属碎刺 | ✅ |
 | Might | 强壮 | ✅；法术显示标题，区别于状态/机制域 `Might → 强效` |

@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`dcbfb16ac457e9506a5e634d171211d460652f42e2ba651ad950d15e719753ae`
-- 清单 SHA-256：`525d687cb37ed9e93dccfb76a400b2278b928c7238f295aa0593f09526299a7a`
+- 清单 SHA-256：`d58b4c585765de83ef1fd1605c4afd3e951ed999ab00744af76a3830d5ccecb2`
 - 身份总数：795（现行 671；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -638,7 +638,7 @@
 | `monster:MONS_ANCESTOR` | current; exposure=ordinary; name=ancestor→先祖; genus=MONS_ANCESTOR; species=MONS_ANCESTOR; data=crawl-ref/source/dat/mons/ancestor.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ANCESTOR_KNIGHT` | current; exposure=ordinary; name=knight→骑士; genus=MONS_ANCESTOR; species=MONS_ANCESTOR_KNIGHT; data=crawl-ref/source/dat/mons/ancestor-knight.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ANCESTOR_BATTLEMAGE` | current; exposure=ordinary; name=battlemage→战斗法师; genus=MONS_ANCESTOR; species=MONS_ANCESTOR_BATTLEMAGE; data=crawl-ref/source/dat/mons/ancestor-battlemage.yaml; desc=EN/ZH | retranslate: description corrected |
-| `monster:MONS_ANCESTOR_HEXER` | current; exposure=ordinary; name=hexer→诅咒师; genus=MONS_ANCESTOR; species=MONS_ANCESTOR_HEXER; data=crawl-ref/source/dat/mons/ancestor-hexer.yaml; desc=EN/ZH | retranslate: description corrected |
+| `monster:MONS_ANCESTOR_HEXER` | current; exposure=ordinary; name=hexer→妖术师; genus=MONS_ANCESTOR; species=MONS_ANCESTOR_HEXER; data=crawl-ref/source/dat/mons/ancestor-hexer.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_MELIAI` | current; exposure=ordinary; name=meliai→墨利埃; genus=MONS_KILLER_BEE; species=MONS_MELIAI; data=crawl-ref/source/dat/mons/meliai.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_BAI_SUZHEN` | current; exposure=unique; name=Bai Suzhen→白素贞; genus=MONS_DRAGON; species=MONS_STORM_DRAGON; data=crawl-ref/source/dat/mons/bai-suzhen.yaml; desc=EN/ZH | keep |
 | `monster:MONS_BAI_SUZHEN_DRAGON` | current; exposure=unique; name=Bai Suzhen→白素贞; genus=MONS_DRAGON; species=MONS_STORM_DRAGON; data=crawl-ref/source/dat/mons/bai-suzhen-dragon.yaml; desc=EN/ZH | keep |
