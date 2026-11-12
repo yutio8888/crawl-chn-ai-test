@@ -43675,7 +43675,7 @@ These nasty constructions can cause a range of unpleasant effects. You won't be 
 这些讨厌的构造会造成一系列令人不快的效果。你无法通过从陷阱上方飞过来避免触发；它们的魔法构造仍会使其生效。
 %%%%
 The dungeon contains a number of natural obstacles such as shafts, which lead one to three levels down. Once you know the shaft is there, you can safely step over it.\nIf you want to jump down there, use <w>></w> to do so. Be warned that getting back here might be difficult.
-地牢中有许多天然障碍，比如陷坑，会让你掉下一到三层。一旦你知道陷坑在那里，就可以安全地从上面走过。\n如果想跳下去，请按<w>></w>。但要注意，返回这里可能会很困难。
+地牢中有许多天然障碍，比如竖井，会让你掉下一到三层。一旦你知道竖井在那里，就可以安全地从上面走过。\n如果想跳下去，请按<w>></w>。但要注意，返回这里可能会很困难。
 %%%%
 Some areas of the dungeon, such as the Spider Nest, may be strewn with giant webs that may ensnare you for a short time. Insects, oozes and incorporeal entities can navigate the webs safely.
 地牢的某些区域，比如蜘蛛巢穴，可能布满巨大的蛛网，会让你短暂被困。昆虫、软泥和无实体生物可以安全穿过蛛网。
