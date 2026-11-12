@@ -1,0 +1,200 @@
+{
+  "selection": {
+    "A": {
+      "subseed": 2026111204,
+      "pool_count": 62,
+      "strata_counts": {
+        "high_risk": 24,
+        "common_static": 38
+      },
+      "selected_high_risk": 6,
+      "selected_common_static": 6
+    },
+    "B": {
+      "subseed": 2026111205,
+      "pool_count": 157,
+      "strata_counts": {
+        "high_risk": 124,
+        "common_static": 33
+      },
+      "selected_high_risk": 6,
+      "selected_common_static": 6
+    },
+    "C": {
+      "subseed": 2026111206,
+      "pool_count": 71,
+      "strata_counts": {
+        "high_risk": 39,
+        "common_static": 32
+      },
+      "selected_high_risk": 6,
+      "selected_common_static": 6
+    },
+    "D": {
+      "subseed": 2026111207,
+      "pool_count": 41,
+      "strata_counts": {
+        "high_risk": 8,
+        "common_static": 33
+      },
+      "selected_high_risk": 6,
+      "selected_common_static": 6
+    },
+    "E": {
+      "subseed": 2026111208,
+      "pool_count": 47,
+      "strata_counts": {
+        "high_risk": 11,
+        "common_static": 36
+      },
+      "selected_high_risk": 6,
+      "selected_common_static": 6
+    },
+    "F": {
+      "subseed": 2026111209,
+      "pool_count": 50,
+      "strata_counts": {
+        "high_risk": 14,
+        "common_static": 36
+      },
+      "selected_high_risk": 6,
+      "selected_common_static": 6
+    }
+  },
+  "regression_controls": [
+    {
+      "category": "A",
+      "path": "crawl-ref/source/stairs.cc",
+      "function": "climb_message",
+      "line": 225,
+      "excluded_keys": [
+        "fly down"
+      ],
+      "reason": "previous sample overlap; whole family excluded"
+    },
+    {
+      "category": "A",
+      "path": "crawl-ref/source/stairs.cc",
+      "function": "_check_stairs",
+      "line": 394,
+      "excluded_keys": [
+        "This shop has been abandoned, nothing of value remains."
+      ],
+      "reason": "previous sample overlap; whole family excluded"
+    },
+    {
+      "category": "A",
+      "path": "crawl-ref/source/stairs.cc",
+      "function": "_rune_effect",
+      "line": 472,
+      "excluded_keys": [
+        "With a soft hiss, the gate opens fully!"
+      ],
+      "reason": "previous sample overlap; whole family excluded"
+    },
+    {
+      "category": "A",
+      "path": "crawl-ref/source/stairs.cc",
+      "function": "_travel_destination",
+      "line": 639,
+      "excluded_keys": [
+        "The shaft vanishes in a puff of logic!"
+      ],
+      "reason": "previous sample overlap; whole family excluded"
+    },
+    {
+      "category": "A",
+      "path": "crawl-ref/source/stairs.cc",
+      "function": "floor_transition",
+      "line": 969,
+      "excluded_keys": [
+        "The abyssal rune of Zot can be found at this depth."
+      ],
+      "reason": "previous sample overlap; whole family excluded"
+    },
+    {
+      "category": "B",
+      "path": "crawl-ref/source/melee-attack.cc",
+      "function": "melee_attack::do_vampire_lifesteal",
+      "line": 634,
+      "excluded_keys": [
+        "You sink your fangs into %s and drink %s %s."
+      ],
+      "reason": "previous sample overlap; whole family excluded"
+    },
+    {
+      "category": "C",
+      "path": "crawl-ref/source/items.cc",
+      "function": "item_check",
+      "line": 945,
+      "excluded_keys": [
+        "Items here: %s."
+      ],
+      "reason": "previous sample overlap; whole family excluded"
+    },
+    {
+      "category": "C",
+      "path": "crawl-ref/source/item-use.cc",
+      "function": "_can_generically_use",
+      "line": 1018,
+      "excluded_keys": [
+        "You can't remove jewellery."
+      ],
+      "reason": "previous sample overlap; whole family excluded"
+    },
+    {
+      "category": "C",
+      "path": "crawl-ref/source/item-use.cc",
+      "function": "_brand_weapon",
+      "line": 2173,
+      "excluded_keys": [
+        "%s becomes incredibly heavy!",
+        "%s projects an invisible shield of force!"
+      ],
+      "reason": "previous sample overlap; whole family excluded"
+    },
+    {
+      "category": "C",
+      "path": "crawl-ref/source/player-equip.cc",
+      "function": "_equip_weapon_effect",
+      "line": 1875,
+      "excluded_keys": [
+        "%s softly glows with a divine radiance!"
+      ],
+      "reason": "previous sample overlap; whole family excluded"
+    },
+    {
+      "category": "C",
+      "path": "crawl-ref/source/player-equip.cc",
+      "function": "_equip_weapon_effect",
+      "line": 1976,
+      "excluded_keys": [
+        "You feel a baleful cunning.",
+        "Your %s briefly %s through it before you manage to get a firm grip on it."
+      ],
+      "reason": "previous sample overlap; whole family excluded"
+    },
+    {
+      "category": "C",
+      "path": "crawl-ref/source/player-equip.cc",
+      "function": "_equip_armour_effect",
+      "line": 2233,
+      "excluded_keys": [
+        "You feel perceptive."
+      ],
+      "reason": "previous sample overlap; whole family excluded"
+    },
+    {
+      "category": "C",
+      "path": "crawl-ref/source/player-equip.cc",
+      "function": "_equip_armour_effect",
+      "line": 2268,
+      "excluded_keys": [
+        "It gets dark."
+      ],
+      "reason": "previous sample overlap; whole family excluded"
+    }
+  ],
+  "invalidated": [],
+  "replacements": []
+}

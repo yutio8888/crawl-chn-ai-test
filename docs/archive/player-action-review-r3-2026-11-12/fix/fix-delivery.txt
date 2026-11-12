@@ -1,0 +1,247 @@
+第三轮玩家动作语句修复交付
+
+范围限于 brief-fix.md 的确认项、同场景 HERE 定向项和追加第10项 klown pie。两线从最新 origin 建指定分支，初始化 submodule、复制 luac 并按工作树实际文件获取术语上下文。未修改 glossary、decisions、任何审查台账；只打印 notice 的历史输入摘要原样保留。未开 PR、未合并，未做额外本地游戏或截图验收；自动启动 smoke 仅为规定 code profile 的既有门禁。
+
+trunk head: e88dc9a326c6a0ccd5ef118c13ed7590a8657ddf
+branch: codex/r3-fixes-trunk
+base: 40a7b9976ad10aade1a703e510c68ed0667d3ca5
+glossary SHA-256: fb814f3252f249fc230e81fa132dce6a9bb194b014d687fc1524c66827b351d7
+改动文件：
+- crawl-ref/source/Makefile.obj
+- crawl-ref/source/beam.cc
+- crawl-ref/source/catch2-tests/test_zh_issue149.cc
+- crawl-ref/source/catch2-tests/test_zh_klown_pie.cc
+- crawl-ref/source/dat/i18n/zh/source.txt
+
+stable head: 580ad4741fa104b32d54835a9264c9c6cfcf11fb
+branch: codex/r3-fixes-stable
+base: 4af734c175cee41cfaf75142e04bf1a9aea9ee1c
+glossary SHA-256: dcbfb16ac457e9506a5e634d171211d460652f42e2ba651ad950d15e719753ae
+改动文件：
+- crawl-ref/source/Makefile.obj
+- crawl-ref/source/ability.cc
+- crawl-ref/source/beam.cc
+- crawl-ref/source/beam.h
+- crawl-ref/source/catch2-tests/test_zh_klown_pie.cc
+- crawl-ref/source/catch2-tests/test_zh_stable_backport_core.cc
+- crawl-ref/source/catch2-tests/test_zh_translation.cc
+- crawl-ref/source/dat/i18n/zh/source.txt
+- crawl-ref/source/describe.cc
+- crawl-ref/source/describe.h
+- crawl-ref/source/directn.cc
+- crawl-ref/source/directn.h
+- crawl-ref/source/player-reacts.cc
+
+=== B-03 冠词整句（stable 修复；trunk 已正确） ===
+
+原键: %s %s shatters into small pieces.；原参数 The/Some + rock/slime/weird stuff。
+旧中文完整示例: The岩石碎成了小片。
+English 完整示例: The rock shatters into small pieces. / Some rock shatters into small pieces.
+新中文完整示例: 岩石碎成了小片。 / 一些岩石碎成了小片。
+stable 调用: crawl-ref/source/beam.cc:844, crawl-ref/source/beam.cc:903
+trunk 保留: crawl-ref/source/beam.cc:982
+保持 agent() && agent()->is_player() 分支及可见性、地形材质判断。全句与材料仍在显示位置翻译，未修改全局 The/Some 词条。
+
+=== C-07 六种物品（两线修复） ===
+
+English key: You really shouldn't be using a chaotic item like this.
+English 完整示例: You really shouldn't be using a chaotic item like this.
+旧译完整示例: 你真的不应该这样使用混乱物品。
+新译完整示例: 你真的不应该使用这样的混乱物品。
+
+English key: You really shouldn't be using a hasty item like this.
+English 完整示例: You really shouldn't be using a hasty item like this.
+旧译完整示例: 你真的不应该这样使用急躁物品。
+新译完整示例: 你真的不应该使用这样的急躁物品。
+
+English key: You really shouldn't be using a holy item like this.
+English 完整示例: You really shouldn't be using a holy item like this.
+旧译完整示例: 你真的不应该这样使用神圣物品。
+新译完整示例: 你真的不应该使用这样的神圣物品。
+
+English key: You really shouldn't be using a wizardly item like this.
+English 完整示例: You really shouldn't be using a wizardly item like this.
+旧译完整示例: 你真的不应该这样使用巫师物品。
+新译完整示例: 你真的不应该使用这样的巫师物品。
+
+English key: You really shouldn't be using an evil item like this.
+English 完整示例: You really shouldn't be using an evil item like this.
+旧译完整示例: 你真的不应该这样使用邪恶物品。
+新译完整示例: 你真的不应该使用这样的邪恶物品。
+
+English key: You really shouldn't be using an unclean item like this.
+English 完整示例: You really shouldn't be using an unclean item like this.
+旧译完整示例: 你真的不应该这样使用不洁物品。
+新译完整示例: 你真的不应该使用这样的不洁物品。
+
+stable 消费者: crawl-ref/source/player-equip.cc:1848, crawl-ref/source/player-equip.cc:1850, crawl-ref/source/player-equip.cc:1852, crawl-ref/source/player-equip.cc:1854
+trunk 适用性更正：同一六句 SourceDB 键仍存在，本轮按明确的两线共享键要求一并修订；但在当前 C++/Lua/数据库文本中未找到生产调用，不能声称修正了 trunk 现行输出。trunk 已无 stable 的 _equip_use_warning 分支。
+只调整 like this 的修饰范围，六种物品名和各神祇条件不变。
+
+=== E-03 英雄消息（stable 修复；trunk 已正确） ===
+
+English/旧显示: You feel more confident with your borrowed prowess.
+新中文: 借来的武艺让你更加自信。
+English/旧显示: You gain the combat prowess of a mighty hero.
+新中文: 你获得了强大英雄的战斗技艺。
+stable 消费者: crawl-ref/source/ability.cc:3412
+trunk 消费者: crawl-ref/source/ability.cc:3554
+只补 T_，保留 duration[DUR_HEROISM] 选择与持续时间机制。
+
+=== F-02 装备调谐（stable 修复；trunk 已正确） ===
+
+English 模板: Your %1$s attune%2$s to your body, and you begin to %3$s.
+原 amulet 参数为裸英文；新参数 T_("amulet") = 项链。
+原中文示例: 你的amulet适应了你的身体，你开始更快地再生。
+新中文示例: 你的项链适应了你的身体，你开始更快地再生。
+英文完整示例（保留原既有 verb_form）: Your amulet attuneattunes itself to your body, and you begin to regenerate more quickly.
+eq_list 与 msgs 的中文连接统一用 T_(",") = 、；英文显式 andc/comma 与 stringutil.h 原默认 T_(" and ") / ", " 相同，不改既有动词参数或其他语句。
+stable 消费者: crawl-ref/source/player-reacts.cc:1195
+trunk 消费者: crawl-ref/source/player-reacts.cc:1308
+
+=== F-03 束缚（stable 修复；trunk 另一键已正确） ===
+
+English key: %s's hold on you weakens, but your attempt to escape fails.
+English 完整示例: the orc's's hold on you weakens, but your attempt to escape fails.
+旧译完整示例: 兽人的对你的掌控减弱了，但你逃脱的尝试失败了。
+新译完整示例: 兽人的束缚减弱了，但你逃脱的尝试失败了。
+
+真实参数来自 monster::name(DESC_ITS,true) 或 C_("constrictor possessive",...)。输入前提更正：当前上下文并非空值，实际返回树根的／尸手的／藤蔓的（source.txt 中空白行后的正文仍是值）。Catch2 已覆盖这些真实值与怪物所有格。普通键树根／尸手／藤蔓也分别静态还原为“树根束缚减弱了，但你逃脱的尝试失败了。”等；详见 constrictor-compositions.json。
+旧英文键及其原既有所有格拼接不变。trunk 的 %s hold on you weakens... → %s束缚减弱了... 已正确，旧镜像不改。
+stable 消费者: crawl-ref/source/player.cc:8644
+trunk 消费者: crawl-ref/source/player.cc:8924
+
+=== D-HERE-07/12 编号占位符（stable 修复；trunk 已正确） ===
+
+原 English key: \nWhile standing here, you can enter <w>%s</w> with the <w>%s</w> key.
+新 English key: \nWhile standing here, you can enter <w>%1$s</w> with the <w>%2$s</w> key.
+英文完整示例（前后相同）: \nWhile standing here, you can enter <w>the shop</w> with the <w>></w> key.
+旧中文完整示例:
+站在这里时，你可以按<w>杂货铺</w>键进入<w>></w>。
+新中文完整示例:
+站在这里时，你可以按<w>></w>键进入<w>杂货铺</w>。
+原 English key: \nWhile standing here, you can traverse %s with the <w>%s</w> key.
+新 English key: \nWhile standing here, you can traverse %1$s with the <w>%2$s</w> key.
+英文完整示例（前后相同）: \nWhile standing here, you can traverse the stairs with the <w><</w> key.
+旧中文完整示例:
+站在这里时，你可以按<w>向下的楼梯</w>键穿越<。
+新中文完整示例:
+站在这里时，你可以按<w><</w>键通过向下的楼梯。
+stable 消费者: crawl-ref/source/describe.cc:3427, crawl-ref/source/describe.cc:3506, crawl-ref/source/describe.cc:3579
+生产路径使用 make_stringf_p，仍传 feature 在前、key 在后；中文通过 %2$s/%1$s 排序，不交换业务参数。
+
+=== D-HERE-16 脚下地形（stable 修复；trunk 已正确） ===
+
+旧键: There is / There is an entrance to / %s%s here.；输入前提更正：当前前缀并非空译文，分别含“这里有 ”与“有一个通往”。
+English 原完整示例: There is a staircase leading down here. / There is an entrance to a shop here.
+旧中文完整示例（实际 Catch2 诊断）: 这里有向下的楼梯。 / 有一个通往杂货铺。；后者缺少“的入口”。旧前缀实际输出另见回归诊断。
+新键: There is %s here. / There is an entrance to %s here.
+新中文完整示例: 这里有向下的楼梯。 / 这里有通往杂货铺的入口。
+stable 消费者: crawl-ref/source/directn.cc:3017, crawl-ref/source/directn.cc:3049
+trunk 保留: crawl-ref/source/directn.cc:3067
+旧前缀当前没有其他生产显示调用者（回归诊断仍读取以核实历史输出）；旧 SourceDB 前缀及旧复合键保留，不做孤立键清理。地板/泥地、空描述、水/岩浆返回及后续装饰提示保持。
+
+=== D-HERE-42 竖井 ===
+
+English key: The dungeon contains a number of natural obstacles such as shafts, which lead one to three levels down. Once you know the shaft is there, you can safely step over it.\nIf you want to jump down there, use <w>></w> to do so. Be warned that getting back here might be difficult.
+English 完整示例: The dungeon contains a number of natural obstacles such as shafts, which lead one to three levels down. Once you know the shaft is there, you can safely step over it.\nIf you want to jump down there, use <w>></w> to do so. Be warned that getting back here might be difficult.
+旧译完整示例: 地牢中有许多天然障碍，比如陷坑，会让你掉下一到三层。一旦你知道陷坑在那里，就可以安全地从上面走过。
+如果想跳下去，请按<w>></w>。但要注意，返回这里可能会很困难。
+新译完整示例: 地牢中有许多天然障碍，比如竖井，会让你掉下一到三层。一旦你知道竖井在那里，就可以安全地从上面走过。
+如果想跳下去，请按<w>></w>。但要注意，返回这里可能会很困难。
+
+stable 消费者: crawl-ref/source/hints.cc:2504
+trunk 当前 HINT_DESCRIBE_TRAP_SHAFT 已为竖井，使用 $cmd 整句，保持不变；旧 SourceDB 镜像按明确的两线同源键要求同步为竖井，但没有当前生产消费者，不算 trunk 运行时缺陷。trunk 证据: crawl-ref/source/dat/descript/zh/hints.txt:972
+
+=== HERE 定向一致性（两线） ===
+
+English key: Things that are here:
+English 完整示例: Things that are here:
+旧译完整示例: 此处有：
+新译完整示例: 这里有：
+
+English key: <cyan>Item%1$s here:</cyan> %2$s.
+English 完整示例: <cyan>Items here:</cyan> 3 stones.
+旧译完整示例: <cyan>此处物品：</cyan> 3块石头。
+新译完整示例: <cyan>这里的物品：</cyan> 3块石头。
+
+English key: Items here: %s.
+English 完整示例: Items here: 3 stones.
+旧译完整示例: 此处物品：3块石头。
+新译完整示例: 这里的物品：3块石头。
+
+片段 English 完整还原: You see here 3 stones.
+旧中文: 你在这里看到了3块石头。
+新中文: 这里有3块石头。；name 为真实 quantity=3 的 item.name(DESC_A)，再拼 T_(".")。已由 Catch2 实际运行验证。
+English key: You see here %s.
+English 完整示例: You see here 3 stones.
+旧译完整示例: 你在这里看到3块石头。
+新译完整示例: 这里有3块石头。
+
+English key: <cyan>Here:</cyan> %s
+English 完整示例: <cyan>Here:</cyan> Orc
+旧译完整示例: <cyan>此处：</cyan> 兽人
+新译完整示例: <cyan>这里：</cyan> 兽人
+
+stable 消费者: crawl-ref/source/items.cc:937, crawl-ref/source/items.cc:2725
+crawl-ref/source/items.cc:948
+crawl-ref/source/directn.cc:1908
+trunk 消费者: crawl-ref/source/items.cc:937, crawl-ref/source/items.cc:2678
+crawl-ref/source/items.cc:948
+crawl-ref/source/directn.cc:1933
+真实列表保留冒号；括注、标签和其他叙述里的“此处”未全局替换。<cyan>Here:</cyan> %s 仅 trunk 需要改，stable 已正确。
+分隔符 ; 不是专用键，describe.cc（两处）、dgn-overview.cc、items.cc 共享 T_("; ")；原条目值含“； ”，按边界保留，不全局去半角空格。
+
+=== 第10项 klown pie 口味（维护者定向追加；两线均修复，不计随机样本） ===
+
+原文标签 plum / 旧命中提示 plum! → 新命中提示 李子！；实际可选目标：仅玩家，DUR_VERTIGO。
+原文标签 lemon / 旧命中提示 lemon! → 新命中提示 柠檬！；实际可选目标：仅玩家，can_drink 或已有 DUR_NO_POTIONS。
+原文标签 blueberry / 旧命中提示 blueberry! → 新命中提示 蓝莓！；实际可选目标：玩家/怪物，沉默。
+原文标签 cherry / 旧命中提示 cherry! → 新命中提示 樱桃！；实际可选目标：玩家或 res_fire()<3 的怪物，火焰易伤。
+原文标签 peanut brittle / 旧命中提示 peanut brittle! → 新命中提示 花生脆糖！；实际可选目标：玩家/怪物，脆化。
+原文标签 glitter / 旧命中提示 glitter! → 新命中提示 闪粉！；实际可选目标：玩家/怪物且不抗盲，失明。
+trunk 六标签和两显示调用点共同提交: afa6784a34bb9e899f57a0fca31b4a5eabc8008b；测试登记修正见本报告最终 head。
+trunk 两条实际显示调用: crawl-ref/source/beam.cc:4615, crawl-ref/source/beam.cc:5406
+stable 六标签和两显示调用点共同提交: 0c7b2a90ccbde75f6f948d19330b334c9035dd8c；测试登记修正见本报告最终 head。
+stable 两条实际显示调用: crawl-ref/source/beam.cc:4584, crawl-ref/source/beam.cc:5358
+玩家分支保持 origin_spell==SPELL_THROW_PIE 且 final_dam>0；怪物分支保持 dmg>0，显示条件仍是 you.see_cell(mon->pos())，不扩大为强制可见性或所有口味对怪物有效。
+pie_effect.desc 仍是英文身份，静态表用 NC_("klown pie flavour", literal) 标记；随机选择、权重、valid 和 effect 函数体移除标记后与基线逐字相同，见 pie-proof.json。两路径只在同一个显示函数里用 C_ 翻译。
+新增六个专用语境名词键及同语境 %s! → %s！ 显示框架；未新增普通水果/颜色共用键。plum 是李子口味，并未解释为拟声词。glitter 的 ETC_GLITTER 内部颜色身份不变。
+后续16个直接/委托消息键两线均已有 T_ 和非空中文，详见 pie-followups.json：眩晕感/不能饮用/沉默/火焰易伤/脆化/失明均未发现同源裸消息。blueberry 委托 silence_monster 的失声消息也已 T_；glitter 玩家失明消息已 T_，怪物分支只加附魔，无新增裸 glitter 后续句。两线失明延长消息字面不同，均保留既有译文。
+实际测试：两线各 [klown-pie] 2用例/36断言通过，覆盖全部六标签的中文语境解析，并将旧 mprf("%s!",desc) 与新显示输出按实际 msg::tee 字节比较；原始日志 pie-regression-trunk.log / pie-regression-stable.log。
+新增文件须在 Makefile.obj 的显式对象清单登记；初次过滤器未匹配用例的 exit 2 不作通过证据。登记后已确认36断言真实运行。重编译后的旧 beam.gcda 校验和提示通过仅清理本任务该覆盖率文件并重跑消除，首轮日志另存 *-first.log。
+未验证项：未启动额外游戏验证实际随机抽取、权重频率或完整战斗；玩家/怪物路径覆盖依据代码接入与共同显示合同，plum/lemon 不宣称命中过怪物；未截图。
+
+=== 验证结果 ===
+
+trunk code profile: exit 0；base/head 绑定；run 20261112T133701463034395+0000-1455052-e88dc9a326c6
+日志（相对工作树）: .claude/metrics/verify/20261112T133701463034395+0000-1455052-e88dc9a326c6/verify.log
+完整工具套件: 78 脚本通过、0 失败、exit 0（run_isolated.sh，PYTHONSAFEPATH=1，ZH_TOOLING_TEST_JOBS=1）。
+stable code profile: exit 0；base/head 绑定；run 20261112T133704909416745+0000-1455151-580ad4741fa1
+日志（相对工作树）: .claude/metrics/verify/20261112T133704909416745+0000-1455151-580ad4741fa1/verify.log
+完整工具套件: 74 脚本通过、0 失败、exit 0（run_isolated.sh，PYTHONSAFEPATH=1，ZH_TOOLING_TEST_JOBS=1）。
+stable: make -C crawl-ref/source catch2-tests-executable -j4；预先用同一 COVERAGE=YesPlease / C++14 构建 Catch2 与 profile 需要的 crawl，避免配置切换。各构建命令最多 -j4。
+追加项首次 trunk code profile 缺少本候选 crawl，启动门禁 exit 2；已同配置构建并重链接真实候选 crawl 后完整重跑。较早一次 profile 与工具套件并行时遇到测试临时目录造成 clean-tree 断言失败；最终按同一工作树先 profile 后工具套件错峰运行，并以单 worker 完整复测。
+新增 [r3-action-frames]：2 个用例、23 个断言通过。英文覆盖两种冠词、普通/商店地形、楼梯/商店操作原输出；中文验证顺序、真实所有格参数、物品数量全名。原始完整输出见 action-regression.log。
+首次 stable code profile：runtime 发现旧数量测试的两条断言失败（5块石头/巨石）。两线同源测试各只同步一句期望，不改测试逻辑；因此 trunk 最终也跑 code profile。旧 translation profile 已通过，作为早期证据保留。
+post-coder 的15条 concat advisory 逐处验证为基线相同片段，属于其他描述或 monstatus 查询键，保留并单列 advisory-triage.json；不在本轮扩修。另有既有 move.bare leap manifest 警告。
+两线 checkwhite -n / unbrace -n（全部改动 C++/头文件，final-checkwhite-*.log / final-unbrace-*.log）exit 0；两线 diff --check exit 0。world 与 character-mechanics 审计 exit 0，未更新台账。
+
+=== 玩家检查点（交给后续验收，不冒称已实玩） ===
+
+挖墙：玩家/其他来源分别无 The 泄露且保留冠词差异；六种神忌物品提示修饰“这样的物品”；英雄首次/续用均中文；普通项链调谐无 amulet/英文逗号；怪物与树根/尸手/藤蔓的挣脱失败提示自然。
+看商店/楼梯：快捷键在“按…键”处、名称在进入/通过处；脚下地形和商店入口均是完整“这里有…”句式。
+教程 shaft 显示竖井；这里列表仍有冒号；脚下3块石头两条消息都为“这里有3块石头。”；真实列表的共享“； ”未调整。
+
+klown pie：命中玩家时核对六口味中文提示；命中可见怪物时核对四种有效口味（蓝莓、樱桃、花生脆糖、闪粉），并核对后续状态消息。李子/柠檬仅玩家有效；英文模式与原提示完全相同。
+
+=== 剩余风险与边界 ===
+
+没有人工本地游戏/截图证据，仅运行指定 profile 及自动测试；其他待实机动作家族不扩审。F-03 的“空上下文”输入前提和 trunk shaft 适用性已按当前树纠正，修复仍有实际消费者依据。
+旧孤立 SourceDB 条目保留（仅明确指定的 C-07/shaft 镜像修订译文），共享分号空格保留；不以全树此处/Here/冠词禁词替代逐消费者判断。旧英文已有的所有格或调谐动词拼接现状按字节不变要求保持。
+
+=== 交付状态 ===
+
+trunk: e88dc9a326c6a0ccd5ef118c13ed7590a8657ddf；已推送，HEAD 与 upstream 一致，工作树干净；所有本轮提交均含 Agent: Codex。
+stable: 580ad4741fa104b32d54835a9264c9c6cfcf11fb；已推送，HEAD 与 upstream 一致，工作树干净；所有本轮提交均含 Agent: Codex。
+未开 PR，未合并。

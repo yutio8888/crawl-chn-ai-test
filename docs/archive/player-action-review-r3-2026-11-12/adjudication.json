@@ -1,0 +1,205 @@
+{
+ "round": 3,
+ "date": "2026-11-12",
+ "refs": {
+  "stable": "4af734c175cee41cfaf75142e04bf1a9aea9ee1c",
+  "trunk": "40a7b9976ad10aade1a703e510c68ed0667d3ca5"
+ },
+ "seed": 2026111203,
+ "lanes": {
+  "lane1": "Opus 5.5 (contextual reviewer), seed 1301",
+  "lane2": "GPT-6.1 Sol, seed 2402"
+ },
+ "units": {
+  "random_families": 72,
+  "directed_HERE_entries": 76,
+  "note": "directed HERE not counted in random sample; families/samples/findings counted separately"
+ },
+ "confirmed_random": [
+  {
+   "id": "B-03",
+   "line": "stable",
+   "english": "%s %s shatters into small pieces. (arg1=T_(\"The\")/T_(\"Some\"))",
+   "current": "The岩石碎成了小片。",
+   "problem": "'the' catalog value empty -> English fallback mixed into zh",
+   "fix": "full-sentence templates per article branch (trunk already split)",
+   "evidence": "beam.cc:896-898; source.txt 'the' empty (17444)",
+   "defect_points": 1
+  },
+  {
+   "id": "C-07",
+   "line": "both",
+   "english": "You really shouldn't be using a <holy|evil|unclean|chaotic|hasty|wizardly> item like this.",
+   "current": "你真的不应该这样使用神圣物品。",
+   "problem": "'like this' modifies item (such an item), translation scopes it to manner of use",
+   "fix": "你真的不应该使用这样的神圣物品。 and 5 siblings",
+   "evidence": "player-equip.cc:1848-1858 both lines",
+   "defect_points": 1,
+   "same_template_siblings": 6
+  },
+  {
+   "id": "E-03",
+   "line": "stable",
+   "english": "You feel more confident with your borrowed prowess. / You gain the combat prowess of a mighty hero.",
+   "current": "English (bare literal in mprf)",
+   "problem": "not wrapped in T_, displays English",
+   "fix": "T_ wrap, reuse trunk zh 借来的武艺让你更加自信。/你获得了强大英雄的战斗技艺。",
+   "evidence": "stable ability.cc:3411-3413; trunk 3553-3555",
+   "defect_points": 1
+  },
+  {
+   "id": "F-02",
+   "line": "stable",
+   "english": "Your %1$s attune%2$s to your body... (eq_list item 'amulet')",
+   "current": "你的amulet…",
+   "problem": "literal \"amulet\" not translated; English comma separator",
+   "fix": "T_(\"amulet\") (catalog 项链) and zh list separator as trunk",
+   "evidence": "player-reacts.cc:1167-1169,1195-1198",
+   "defect_points": 1
+  },
+  {
+   "id": "F-03",
+   "line": "stable",
+   "english": "%s's hold on you weakens, but your attempt to escape fails. (arg=name(DESC_ITS) or constrictor possessive)",
+   "current": "兽人的对你的掌控减弱了…",
+   "problem": "DESC_ITS returns '…的' + template '对你的' -> doubled possessive; template expects non-possessive",
+   "fix": "template 兽人的束缚减弱了… for all argument sources",
+   "evidence": "player.cc:8615-8622; trunk uses different key '%s hold on you weakens' -> '%s束缚减弱了' (ok)",
+   "defect_points": 1
+  }
+ ],
+ "confirmed_directed": [
+  {
+   "id": "D-HERE-07",
+   "line": "stable",
+   "problem": "unnumbered %s swapped in zh: key name and shop name reversed",
+   "fix": "numbered %1$s/%2$s via existing make_stringf_p pattern, as trunk",
+   "evidence": "describe.cc:3574-3578",
+   "defect_points": 1
+  },
+  {
+   "id": "D-HERE-12",
+   "line": "stable",
+   "problem": "same swap for stair traverse sentence",
+   "evidence": "describe.cc:3497-3502",
+   "defect_points": 1
+  },
+  {
+   "id": "D-HERE-16",
+   "line": "stable",
+   "problem": "prefix concatenation gives 这里有向下的楼梯。 but 有一个通往杂货铺。 (missing 这里/的入口); fixed as full templates",
+   "fix": "full sentence templates as trunk (这里有%s。 / 这里有通往%s的入口。)",
+   "evidence": "directn.cc:3021-3047 describe_floor; source.txt 27258/12664",
+   "defect_points": 2
+  },
+  {
+   "id": "D-HERE-42",
+   "line": "both",
+   "problem": "tutorial hint uses 陷坑 for shaft; glossary/catalog use 竖井",
+   "evidence": "hints.cc:2503; source.txt stable 40810 / trunk 43678",
+   "defect_points": 1
+  }
+ ],
+ "HERE_consistency_group": {
+  "basis": "maintainer directed check; same-scene plain prompts prefer 这里有…, real list headings keep colon, no global ban of 此处",
+  "unify": [
+   {
+    "id": "D-HERE-58",
+    "english": "Things that are here:",
+    "from": "此处有：",
+    "to": "这里有：",
+    "note": "list heading, keep colon; check list separator '； ' half-width space if dedicated key"
+   },
+   {
+    "id": "D-HERE-20",
+    "english": "<cyan>Item%1$s here:</cyan> %2$s.",
+    "from": "此处物品：",
+    "to": "这里的物品："
+   },
+   {
+    "id": "D-HERE-32",
+    "english": "Items here: %s.",
+    "from": "此处物品：",
+    "to": "这里的物品："
+   },
+   {
+    "id": "D-HERE-18",
+    "line": "trunk",
+    "english": "<cyan>Here:</cyan> %s",
+    "from": "此处：",
+    "to": "这里：",
+    "note": "stable already 这里："
+   },
+   {
+    "id": "D-HERE-69/70",
+    "english": "You see here  / You see here %s.",
+    "problem": "single-item underfoot inconsistent 了",
+    "to": "one consistent form; prefer 这里有%s。 if the fragment consumer reconstruction stays natural; independent review decides"
+   }
+  ],
+  "keep": "此处 in labels/parentheticals (（此处）, 【就在此处】) and descriptive prose"
+ },
+ "advisory_not_fixed": [
+  "D-05 half-width space after ？",
+  "D-04 ... vs ……",
+  "C-02 spaces around 以及",
+  "C-06 你卸下了你的 duplicate",
+  "D-01 It was/It is both 那是",
+  "other lane readability items"
+ ],
+ "rejected_or_corrected": [
+  "A-01: input example parameter wrong; with real params reads fine",
+  "D-HERE-16 lane1 reconstruction corrected: empty prefix falls back to English, not zh"
+ ],
+ "insufficient_evidence": [
+  "39 runtime-needed reconstructions remain player check points; B-02/A-03/E-05 static inference only"
+ ],
+ "counts": {
+  "random_families_with_confirmed": 5,
+  "random_confirmed_findings": 5,
+  "random_defect_points": 5,
+  "C-07_sibling_sentences": 6,
+  "directed_confirmed_entries": 4,
+  "directed_defect_points": 5,
+  "HERE_consistency_entries": 6
+ },
+ "glossary_sha_review": "fb814f32 (lane runs)",
+ "premise_corrections": [
+  "F-03: constrictor possessive context values are non-empty (树根的/尸手的/藤蔓的/某物的; SourceDB trims leading blank lines). The defect stands: DESC_ITS/context value + template 对你的 doubles the possessive.",
+  "D-HERE-16: prefixes 'There is '/'There is an entrance to ' are non-empty (这里有/有一个通往), not English fallback. The defect stands: the entrance sentence rendered 有一个通往杂货铺。 without 的入口.",
+  "Trunk C-07 and shaft keys have no current production consumer; trunk changes are shared-key sync only, not runtime fixes."
+ ],
+ "maintainer_directed_klown_pie": {
+  "report": "Plum! shown untranslated",
+  "lines": "both",
+  "sites": "player hit and visible-monster hit display in beam.cc",
+  "fix": "NC_/C_('klown pie flavour') at display only; desc identity/weights/valid/effects unchanged",
+  "mapping": {
+   "plum": "李子",
+   "lemon": "柠檬",
+   "blueberry": "蓝莓",
+   "cherry": "樱桃",
+   "peanut brittle": "花生脆糖",
+   "glitter": "闪粉"
+  },
+  "followups": "16 follow-up message keys already T_ (writer report; reviewer checked diff only)",
+  "counted_in_random_sample": false
+ },
+ "delivery": {
+  "trunk": {
+   "pr": 315,
+   "head": "e88dc9a326c6a0ccd5ef118c13ed7590a8657ddf",
+   "merge": "b42709fcbad8850157873264d6acb165aa37940c",
+   "merged_at": "2026-11-12T14:16:01Z"
+  },
+  "stable": {
+   "pr": 316,
+   "head": "580ad4741fa104b32d54835a9264c9c6cfcf11fb",
+   "merge": "ae5a420e78579a9433f4ffb127b7a9062a7d948c",
+   "merged_at": "2026-11-12T14:16:07Z"
+  },
+  "review": "independent Opus 5.5 review Ready, no blocking (fix/review-fix.md)",
+  "ci": "all applicable checks pass; release/macOS/full runtime skipped by rule",
+  "release": "none"
+ }
+}

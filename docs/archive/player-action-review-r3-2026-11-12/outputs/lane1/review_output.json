@@ -1,0 +1,1142 @@
+[
+  {
+    "family_id": "E-03",
+    "verdict": "objective_error",
+    "confidence": "high",
+    "findings": [
+      {
+        "type": "untranslated",
+        "line": "stable",
+        "english": "You feel more confident with your borrowed prowess. / You gain the combat prowess of a mighty hero.",
+        "current_full_zh": "You feel more confident with your borrowed prowess.（stable 实际显示英文）",
+        "problem": "stable 中 Okawaru 英雄气概两条消息是 mprf 的裸字面量，没有 T_()；mprf/do_message_print/_mpr 不做 catalog 查找，因此中文界面显示英文。trunk 已包 T_ 并显示“借来的武艺让你更加自信。”/“你获得了强大英雄的战斗技艺。”。“包裹灵魂”句两线还原通顺。",
+        "suggested_zh": "借来的武艺让你更加自信。 / 你获得了强大英雄的战斗技艺。（在 stable 加 T_()，可直接复用 trunk 已有 catalog 条目）",
+        "evidence": "stable 4af734c175:crawl-ref/source/ability.cc:3411-3413 mprf(MSGCH_DURATION, you.duration[DUR_HEROISM] ? \"You feel more...\" : \"You gain...\"); message.cc:1388-1456 do_message_print 只做 vsnprintf；trunk 40a7b9976a:ability.cc:3553-3555 已用 T_()",
+        "defect_points": 1
+      }
+    ]
+  },
+  {
+    "family_id": "C-11",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "A-11",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-03",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "C-01",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "B-06",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "E-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "F-10",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-05",
+    "verdict": "readability",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "spacing",
+        "line": "both",
+        "english": "Really %s?%s + \" You can't even see any enemies this would affect.\"",
+        "current_full_zh": "确定要阅读恐惧卷轴吗？ 你甚至看不到会被此影响的敌人。",
+        "problem": "第二段沿用英文前导空格，接在全角“？”后多出半角空格（yesno 不去 CJK 空格）。语义完整。",
+        "suggested_zh": "确定要阅读恐惧卷轴吗？你甚至看不到会受此影响的敌人。",
+        "evidence": "stable 4af734c175:item-use.cc:2905-2941 verb_object=T_(\"read the %s\")",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "C-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "A-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "F-06",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "A-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "B-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "E-02",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-10",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "A-10",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "A-01",
+    "verdict": "ok",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "note",
+        "line": "both",
+        "english": "You nearly stumble into %s!",
+        "current_full_zh": "你差点跌进熔岩！",
+        "problem": "输入里的示例参数“关闭的门”不对：这个分支是 is_feat_dangerous，真实参数是熔岩/深水等，按真实参数还原后通顺。",
+        "suggested_zh": null,
+        "evidence": "见 review_notes.md",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "A-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "A-06",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "A-12",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "A-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "B-02",
+    "verdict": "ok",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "note",
+        "line": "both",
+        "english": "%s %s held in place! / %s %s %s ground!",
+        "current_full_zh": "你被紧紧束缚在原地！ / 兽人死死守住了它的阵地！",
+        "problem": "verb_for_display 用 NC_(\"verb\",\"are\"/\"hold\") 查到 verb|are→被、verb|hold→死死守住，还原后通顺；依赖 conjugate_verb_for_display，未运行验证。",
+        "suggested_zh": null,
+        "evidence": "见 review_notes.md",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "D-12",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "C-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-11",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "C-06",
+    "verdict": "readability",
+    "confidence": "low",
+    "findings": [
+      {
+        "type": "redundancy",
+        "line": "both",
+        "english": "You %s %s.（unequip verb + DESC_YOUR）",
+        "current_full_zh": "你卸下了你的+1 长剑。",
+        "problem": "主语“你”和所有格“你的”重复，可读但累赘。",
+        "suggested_zh": "你卸下了+1 长剑。（需另行确认 DESC_YOUR 在别处的语义）",
+        "evidence": "stable 4af734c175:item-use.cc:1634-1636",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "F-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "E-01",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "B-11",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "B-12",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "F-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "C-02",
+    "verdict": "readability",
+    "confidence": "low",
+    "findings": [
+      {
+        "type": "spacing",
+        "line": "both",
+        "english": "Your %1$s meld%2$s into your body.（and=\" 以及 \"）",
+        "current_full_zh": "你的长袍 以及 头盔融入了你的身体。",
+        "problem": "分隔符“ 以及 ”两侧有半角空格，中文列表一般用“和/、”，不加空格。",
+        "suggested_zh": "你的长袍和头盔融入了你的身体。",
+        "evidence": "stable 4af734c175:player-equip.cc:1196-1200；catalog \" and \"→“ 以及 ”",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "B-03",
+    "verdict": "objective_error",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "untranslated_fragment",
+        "line": "stable",
+        "english": "%s %s shatters into small pieces.（The/Some + rock）",
+        "current_full_zh": "The岩石碎成了小片。（玩家施放时）；其他施放者：一些岩石碎成了小片。",
+        "problem": "玩家施放的分支传入 T_(\"The\")。查找时会把 key 转成小写（database.cc:2745-2747），catalog 中 \"the\" 条目的译文为空：_parse_text_db 存的是空值，fetch_translation 得到空串后返回 false（database.cc:2751），于是退回英文 \"The\"，拼成中英混排。trunk 已改成两条完整句模板，不受影响。",
+        "suggested_zh": "岩石碎成了小片。（照 trunk 拆成 \"The %s…\"→“%s碎成了小片。”与 \"Some %s…\"→“一些%s碎成了小片。”两条完整模板）",
+        "evidence": "stable 4af734c175:crawl-ref/source/beam.cc:896-898；database.cc:2723-2765 i18n_source_lookup、650-692 _parse_text_db；source.txt 中 \"the\" 键译文为空、\"some\"→一些；trunk 40a7b9976a:beam.cc:981-984",
+        "defect_points": 1
+      }
+    ]
+  },
+  {
+    "family_id": "E-05",
+    "verdict": "ok",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "note",
+        "line": "both",
+        "english": "hands_act(\"get\",\"new energy.\")",
+        "current_full_zh": "你的双手焕发出新的活力。",
+        "problem": "由 catalog 中 hands action|Your %s get new energy. 整句键承载。",
+        "suggested_zh": null,
+        "evidence": "见 review_notes.md",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "D-04",
+    "verdict": "readability",
+    "confidence": "low",
+    "findings": [
+      {
+        "type": "punctuation",
+        "line": "both",
+        "english": "...and %s %s out!",
+        "current_full_zh": "...一只突变野兽跳了出来！",
+        "problem": "同一事件的前一句用全角“……但什么也没发生。”，这一句用半角“...”。",
+        "suggested_zh": "……一只突变野兽跳了出来！",
+        "evidence": "stable 4af734c175:evoke.cc:292-299",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "E-12",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "C-03",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "B-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "E-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-02",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "B-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "E-10",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "E-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "C-07",
+    "verdict": "readability",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "scope",
+        "line": "both",
+        "english": "You really shouldn't be using a holy item like this.",
+        "current_full_zh": "你真的不应该这样使用神圣物品。",
+        "problem": "\"like this\" 修饰的是物品（像这样的神圣物品），中文“这样使用”变成了指使用方式，限定偏移；hasty→“急躁物品”也偏生硬。",
+        "suggested_zh": "你真的不该使用这类神圣物品。",
+        "evidence": "stable 4af734c175:player-equip.cc:1848-1858 宗教 conduct 警告",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "E-11",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "F-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "A-02",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "F-12",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "C-05",
+    "verdict": "ok",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "note",
+        "line": "both",
+        "english": "%s glows green for a %s.",
+        "current_full_zh": "你的+1 皮甲泛起绿光，持续了一瞬。",
+        "problem": "dur 取 T_(\"moment\")→一瞬 或 T_(\"while\")→一段时间，还原后通顺。",
+        "suggested_zh": null,
+        "evidence": "见 review_notes.md",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "B-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "C-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "B-01",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-01",
+    "verdict": "readability",
+    "confidence": "low",
+    "findings": [
+      {
+        "type": "tense",
+        "line": "both",
+        "english": "It was %s. / It is %s.",
+        "current_full_zh": "那是遗忘卷轴。（两分支相同）",
+        "problem": "\"It was\"（卷轴已消耗）与 \"It is\"（仍在）的区别被抹平；D-10 同类句用的是“这是一张…”。",
+        "suggested_zh": "已消耗：那是%s。 / 仍在：这是%s。",
+        "evidence": "stable 4af734c175:item-use.cc:3296 quantity < prev_quantity 分支",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "C-12",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "A-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "E-06",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "F-11",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "F-02",
+    "verdict": "objective_error",
+    "confidence": "high",
+    "findings": [
+      {
+        "type": "untranslated_fragment",
+        "line": "stable",
+        "english": "Your %1$s attune%2$s to your body, and you begin to %3$s.",
+        "current_full_zh": "你的amulet适应了你的身体，你开始更快地再生。",
+        "problem": "stable 中护身符槽位名直接压入字面量 \"amulet\"，没有 T_()，中文句里出现英文；trunk 已改为 T_(\"amulet\")→项链。另外 stable 的 comma_separated_line 用默认分隔符（\", \" 为英文逗号），多件装备时会出现半角逗号；trunk 中文模式已改用“、”。",
+        "suggested_zh": "你的项链适应了你的身体，你开始更快地再生。",
+        "evidence": "stable 4af734c175:crawl-ref/source/player-reacts.cc:1167-1169 entry.slot == SLOT_AMULET ? \"amulet\"；1193-1197；trunk 40a7b9976a:player-reacts.cc:1286-1296 T_(\"amulet\") 与中文分隔符",
+        "defect_points": 1
+      }
+    ]
+  },
+  {
+    "family_id": "B-10",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "F-01",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "F-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "F-03",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "C-10",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "A-03",
+    "verdict": "ok",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "note",
+        "line": "both",
+        "english": "You %s towards %s!",
+        "current_full_zh": "你冲向兽人！（trunk 带顺风时：你冲向兽人，速度快得惊人！）",
+        "problem": "动词经 translated_move_phrase(toward_target) 生成，已有中文测试覆盖；按静态推断通顺。",
+        "suggested_zh": null,
+        "evidence": "见 review_notes.md",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "B-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-06",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "F-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "E-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-01",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-02",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-03",
+    "verdict": "ok",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "note",
+        "line": "both",
+        "english": "\\nWhile standing here, you can %1$s through %2$s with the <w>%3$s</w> key%4$s.",
+        "current_full_zh": "站在这里时，如果你有足够的符文，你可以按<w>></w>键通过通往佐特领域的大门进入。",
+        "problem": "condition→“如果你有足够的符文，”、action→进入/离开，还原后通顺。",
+        "suggested_zh": null,
+        "evidence": "见 review_notes.md",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "D-HERE-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-06",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-10",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-11",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-12",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-13",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-14",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-15",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-16",
+    "verdict": "objective_error",
+    "confidence": "high",
+    "findings": [
+      {
+        "type": "dynamic_sentence_omission",
+        "line": "stable",
+        "english": "%s%s here.（prefix=T_(\"There is an entrance to \")）",
+        "current_full_zh": "有一个通往一家武器店。",
+        "problem": "商店分支把前缀“有一个通往”、DESC_A 地形名和模板“%s%s。”直接拼接，缺少“的入口”，整句不成立；和同场景的“这里有…”句式也不一致。trunk 已改成整句模板“这里有通往%s的入口。”。",
+        "suggested_zh": "这里有通往一家武器店的入口。",
+        "evidence": "stable 4af734c175:crawl-ref/source/directn.cc:3021-3047 describe_floor；catalog \"There is an entrance to \"→“有一个通往”、\"%s%s here.\"→“%s%s。”；trunk 40a7b9976a:directn.cc:3066-3068",
+        "defect_points": 1
+      },
+      {
+        "type": "spacing",
+        "line": "stable",
+        "english": "%s%s here.（prefix=T_(\"There is \")）",
+        "current_full_zh": "这里有 一道石质下行楼梯。",
+        "problem": "默认前缀译文“这里有 ”带尾空格，mprf 路径不经过 strip_cjk_spaces，“有”后会留一个半角空格。",
+        "suggested_zh": "这里有一道石质下行楼梯。",
+        "evidence": "stable 4af734c175 catalog \"There is \"→“这里有 ”",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "D-HERE-17",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-18",
+    "verdict": "readability",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "here_consistency",
+        "line": "trunk",
+        "english": "<cyan>Here:</cyan> %s",
+        "current_full_zh": "<cyan>此处：</cyan> 兽人",
+        "problem": "同一个英文标签在 directn.cc 译“这里：”，在 viewmap.cc 的地图查看中译“此处：”。",
+        "suggested_zh": "<cyan>这里：</cyan> %s",
+        "evidence": "trunk 40a7b9976a:viewmap.cc:459；directn.cc:1980/1990",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "D-HERE-19",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-20",
+    "verdict": "readability",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "here_consistency",
+        "line": "both",
+        "english": "<cyan>Item%1$s here:</cyan> %2$s.",
+        "current_full_zh": "<cyan>此处物品：</cyan> 一把短剑。",
+        "problem": "get_square_desc 在同一面板里依次输出“这里：<怪物>”“此处物品：…”“这里：<地形>”，标签前缀不统一；列表冒号合理。",
+        "suggested_zh": "<cyan>这里的物品：</cyan> %2$s。",
+        "evidence": "stable 4af734c175:directn.cc:1908、1955-1966",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "D-HERE-21",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-22",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-23",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-24",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-25",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-26",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-27",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-28",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-29",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-30",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-31",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-32",
+    "verdict": "readability",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "here_consistency",
+        "line": "both",
+        "english": "Items here: %s.",
+        "current_full_zh": "此处物品：)!?。",
+        "problem": "同属 item_check，是堆叠摘要（字形列表），冒号合理；“此处物品”和同场景的“这里有…”混用。",
+        "suggested_zh": "这里的物品：%s。",
+        "evidence": "stable 4af734c175:items.cc:944-945",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "D-HERE-33",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-34",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-35",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-36",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-37",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-38",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-39",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-40",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-41",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-42",
+    "verdict": "objective_error",
+    "confidence": "high",
+    "findings": [
+      {
+        "type": "terminology_inconsistency",
+        "line": "stable",
+        "english": "The dungeon contains a number of natural obstacles such as shafts, ... Be warned that getting back here might be difficult.",
+        "current_full_zh": "地牢中有许多天然障碍，比如陷坑，会让你掉下一到三层。一旦你知道陷坑在那里，就可以安全地从上面走过。……返回这里可能会很困难。",
+        "problem": "shaft 在 catalog 中统一译“竖井”（29 处，含掉落消息、Shaft Self=自掘竖井），只有这条教程用“陷坑”，玩家对照掉落消息时会对不上。“返回这里”的用法没有问题。",
+        "suggested_zh": "地牢中有许多天然障碍，比如竖井，会让你掉下一到三层。一旦你知道竖井在那里，就可以安全地从上面走过。\\n如果想跳下去，请按<w>></w>。但要注意，返回这里可能会很困难。",
+        "evidence": "stable 4af734c175:crawl-ref/source/hints.cc:2503；catalog 中“竖井”29处、“陷坑”1处；docs/glossary.md Shaft Self | 自掘竖井",
+        "defect_points": 1
+      }
+    ]
+  },
+  {
+    "family_id": "D-HERE-43",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-44",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-45",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-46",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-47",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-48",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-49",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-50",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-51",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-52",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-53",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-54",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-55",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-56",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-57",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-58",
+    "verdict": "readability",
+    "confidence": "high",
+    "findings": [
+      {
+        "type": "here_consistency",
+        "line": "both",
+        "english": "Things that are here:",
+        "current_full_zh": "此处有：\\n一把短剑； 两瓶治疗药水",
+        "problem": "同一场景（item_check：走到格子上）中，单件用“你在这里看到了…”，太多时用“这里有很多物品。”，没有物品时用“这里没有任何物品。”，只有 2~N 件时的列表标题用“此处有：”。冒号属于真实的列表用途，应当保留，只需把“此处”统一为“这里”。另外列表分隔“； ”在全角分号后带半角空格。",
+        "suggested_zh": "这里有：（列表项分隔建议用“；”且不加空格）",
+        "evidence": "stable 4af734c175:items.cc:920-952 item_check；catalog \"; \"→“； ”",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "D-HERE-59",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-60",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-61",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-62",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-63",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-64",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-65",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-66",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-67",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-68",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-69",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-70",
+    "verdict": "readability",
+    "confidence": "low",
+    "findings": [
+      {
+        "type": "consistency",
+        "line": "both",
+        "english": "You see here %s.",
+        "current_full_zh": "你在这里看到一把短剑。",
+        "problem": "同义键 \"You see here \"→“你在这里看到了”，两条单件提示有没有“了”不一致。",
+        "suggested_zh": "你在这里看到了%s。",
+        "evidence": "stable 4af734c175:items.cc:937 与 2725",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "family_id": "D-HERE-71",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-72",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-73",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-74",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-75",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "family_id": "D-HERE-76",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  }
+]
