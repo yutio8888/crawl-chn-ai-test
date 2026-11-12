@@ -990,7 +990,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     };
     static const char *const chinese[] = {
         "怪物", "法术", "技能", "能力", "卡牌", "物品", "地形",
-        "神祇", "分支", "云雾", "被动能力", "状态", "突变", "灾祸"
+        "神祇", "分支", "云雾", "被动能力", "状态", "变异", "灾祸"
     };
     REQUIRE(NUM_LOOKUP_HELP_TYPES == sizeof(english) / sizeof(*english));
     REQUIRE(NUM_LOOKUP_HELP_TYPES == sizeof(chinese) / sizeof(*chinese));
