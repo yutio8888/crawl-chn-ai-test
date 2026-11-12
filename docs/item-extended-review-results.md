@@ -1,12 +1,12 @@
 # Item translation review decisions
 
 <!-- BEGIN ITEM REVIEW ARTIFACT v3 -->
-{"baseline":"01dc9911ec9948aff661f6ec0b9b0a798fcf909d","decision_inventory_sha256":"7d297ee1173d742b4689b9eb6154dd0568e91e8ed8df3f12cd86fdb0182fef2f","glossary_sha256":"019bfb7f1ae6248b228f878108971c2791fcd6b7ce1e6b1e0b2c4f6cc3f453d8","review_schema":"dcss-item-review-decisions-v3","row_count":3796,"terminal_conclusion_counts":{"adjust":408,"keep":3299,"retranslate":89}}
+{"baseline":"01dc9911ec9948aff661f6ec0b9b0a798fcf909d","decision_inventory_sha256":"7d297ee1173d742b4689b9eb6154dd0568e91e8ed8df3f12cd86fdb0182fef2f","glossary_sha256":"cdccfd9e10789d9bd17cf369e2a60180a8c7b1850e259e3786d7940ebff9726a","review_schema":"dcss-item-review-decisions-v3","row_count":3796,"terminal_conclusion_counts":{"adjust":408,"keep":3299,"retranslate":89}}
 <!-- END ITEM REVIEW ARTIFACT v3 -->
 
 - Review schema: `dcss-item-review-decisions-v3`
 - Decision inventory SHA-256: `7d297ee1173d742b4689b9eb6154dd0568e91e8ed8df3f12cd86fdb0182fef2f`
-- Glossary SHA-256: `019bfb7f1ae6248b228f878108971c2791fcd6b7ce1e6b1e0b2c4f6cc3f453d8`
+- Glossary SHA-256: `cdccfd9e10789d9bd17cf369e2a60180a8c7b1850e259e3786d7940ebff9726a`
 - Review base: `01dc9911ec9948aff661f6ec0b9b0a798fcf909d`
 - Decision rows: `3796`
 
