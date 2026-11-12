@@ -53,7 +53,7 @@ run_check() {
     # and monster-SSOT checks that used to run in the reviewer phase.
     run_check "Translation consistency (all modes)" \
         bash "$SCRIPT_DIR/check_consistency.sh" --all --strict
-    run_check "Changed exact-key terminology (current glossary)" \
+    run_check "Exact-key and rejected-form terminology (current glossary)" \
         python3 "$SCRIPT_DIR/check_glossary_terms.py" \
         --base "${GLOSSARY_DIFF_BASE:-HEAD}"
     echo "Summary: ${FAILURES} blocking failure(s)"
