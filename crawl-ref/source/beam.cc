@@ -4113,6 +4113,9 @@ void bolt::affect_actor(actor *act)
         affect_player();
 }
 
+// Shared with the focused regression without exposing the effect table.
+string klown_pie_flavour_message(const char* flavour);
+
 // Both hit paths use the same display-only translation boundary.
 string klown_pie_flavour_message(const char* flavour)
 {
