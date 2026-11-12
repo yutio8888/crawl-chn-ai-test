@@ -2597,7 +2597,7 @@ A divine shield appears in front of you!
 一个神圣护盾在你面前显现！
 %%%%
 A donation of $%d equates to an increase of piety by %d.
-一笔$%d的捐赠相当于%d的虔诚增长。
+捐赠$%d相当于增加%d点虔诚值。
 %%%%
 A door shatters!
 一扇门碎裂了！
@@ -3930,7 +3930,7 @@ Do you want to play with this combination? [Y/n/q]
 不喜欢背叛%s！
 %%%%
  does not appreciate the extra mutagenic glow surrounding you!
- 对你周围额外的变异光芒感到不满！
+ 对你周围额外的诱变光芒感到不满！
 %%%%
  does not welcome meddling.
  不容他人干涉。
@@ -4709,7 +4709,7 @@ is covered in magical glow
 被诱变能量弄得眩晕。
 %%%%
  is dazed by the spores.
- 被孢子弄得晕头转向。
+ 被孢子弄得眩晕。
 %%%%
 You are dazed by the spores!
 孢子令你眩晕！
@@ -4874,7 +4874,7 @@ is no longer touched by paradox.
 不再虚弱。
 %%%%
  is not enthusiastic about the mutagenic glow surrounding you.
- 对你周围的变异光芒不太感兴趣。
+ 对你周围的诱变光芒不太感兴趣。
 %%%%
  is on fire!
 着火了！
@@ -7960,7 +7960,7 @@ This spell isn't strong enough to banish yourself.
 这个法术不够强，无法放逐你自己。
 %%%%
 This transporter is marked as excluded!
-这个传送器被标记为排除！
+这个传送器设有禁区标记！
 %%%%
 This wall is too hard to dig through.
 这面墙太硬了，无法挖穿。
@@ -18536,7 +18536,7 @@ You wake up.
 你醒来了。
 %%%%
 You snap out of the daze.
-你从恍惚中清醒过来。
+你从眩晕中清醒过来。
 %%%%
 Your digger instincts prevent you from falling into the shaft!
 你挖掘者的本能阻止你掉入竖井！
@@ -22211,7 +22211,7 @@ You are ready to speak a word of chaos again.
 你准备好再次说出混沌之言了。
 %%%%
 You break out of your daze.
-你从恍惚中清醒过来。
+你摆脱了迷魂。
 %%%%
 You can once more reach out to the dragon horde.
 你可以再次召唤龙群了。
@@ -43387,7 +43387,7 @@ Travel to: %s\nYou cannot afford this item; travel there anyway? (y/N)
 <w>:</w>：浏览角色笔记\n<w>#</w>：浏览角色存档信息
 %%%%
 <w>~</w>: Macros help\n<w>&</w>: Options help\n<w>%</w>: Table of aptitudes\n<w>/</w>: Lookup description\n<w>Q</w>: FAQ\n
-<w>~</w>：宏帮助\n<w>&</w>：选项帮助\n<w>%</w>：能力倾向表\n<w>/</w>：查找说明\n<w>Q</w>：常见问题\n
+<w>~</w>：宏帮助\n<w>&</w>：选项帮助\n<w>%</w>：资质表\n<w>/</w>：查找说明\n<w>Q</w>：常见问题\n
 %%%%
 <w>T</w>: Tiles key help\n
 <w>T</w>：图形界面按键帮助\n
@@ -43765,7 +43765,7 @@ A magic seal in the Gauntlet prevents long-range teleports.
 试炼场中的魔法封印阻止了远距离传送。
 %%%%
 This %s%s is marked as excluded! Open it anyway?
-这个%s%s被标记为已排除！要打开它吗？
+这个%s%s设有禁区标记！仍要打开它吗？
 %%%%
 \nTrigger chance:  %d%%\nBase damage:     %d\n\n
 \n触发几率：%d%%\n基础伤害：%d\n\n
@@ -48381,7 +48381,7 @@ You bought it in a shop %s
 
 %%%%
 piety note|Reached %1$s piety under %2$s
-对%2$s的虔诚值达到了%1$s。
+对%2$s的虔诚等级达到了%1$s。
 
 %%%%
 item action|(q)uiver

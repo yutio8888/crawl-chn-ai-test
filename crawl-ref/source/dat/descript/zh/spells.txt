@@ -847,7 +847,7 @@ Maxwell's Capacitive Coupling spell
 %%%%
 Mephitic Cloud spell
 
-召出一个脆弱的瓶子，瓶子爆炸后形成一团短暂存在的有害烟雾。
+召出一个脆弱的瓶子，瓶子爆炸后形成一团短暂存在的毒烟。
 烟雾可能使任何没有毒抗的生物陷入混乱。
 越坚韧、经验等级越高的生物越不容易受影响。
 %%%%
@@ -918,7 +918,7 @@ Cigotuvi's Putrefaction spell
 %%%%
 Noxious Cloud spell
 
-产生大量有毒烟雾，这可能会引起混乱。
+产生大量毒烟，这可能会引起混乱。
 %%%%
 Olgreb's Toxic Radiance spell
 

@@ -218,8 +218,9 @@ descript/database 按英文 lookup key 配对正文（键本身不是英文正�
 缺少必需目录或英文配对文件会报输入错误；没有英文正文的旧 lookup key 不推断
 语义。固定 Mutagenic Gaze 名称与单独的生物学“突变”不触发能量规则。
 
-当前仅启用 mutagenic energy/energies（变异能量、突变能量）与 mutagenic power
-（突变能量）。fog 尚有已登记的 trunk 残留，不在本轮门禁中启用。
+当前启用 mutagenic energy/energies（变异能量、突变能量）、mutagenic power
+（突变能量）、mutagenic fog（致变雾气、变异雾气）与 mutagenic glow（变异光芒）。
+规则只来自已批准的显式标记，不从其他组的自由文本说明推导。
 检查复用 `i18n_shared.parse_entries`，每次读取全树配对正文；运行时间见对应
 候选的验证日志。`tests/test_check_glossary_terms.py` 将同名工具回归测试接入
 现有 `tests/run_all.sh`，不另设 runner。
