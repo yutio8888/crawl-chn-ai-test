@@ -1062,7 +1062,7 @@ void tutorial_init_hints()
             Hints.hints_events[i] = true;
 }
 
-// Keep each reconversion hint whole so the altar can precede the god in ZH.
+// Translate whole hints so Chinese can reorder the altar and god.
 string hints_reconversion_message(bool excommunicated, const string& old_god_name)
 {
     if (excommunicated)
