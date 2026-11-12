@@ -3960,7 +3960,8 @@ trunk 未自动继承该提交，须分别核对。此表只记落实情况，�
 ##### S1：迷魂结束消息的语境误分类（已更正）
 
 原 Deferred asset changes 将 `You break out of your daze.` 归入 daze、建议改成
-“眩晕”，属于语境误分类；上述原条目及核销记录已标“已更正”并保留。
+“眩晕”，属于语境误分类。原条目见 trunk D-C-096；
+本线核销表 dazed/daze 一栏已标“已更正”并保留原记录。
 实际两线都只有 `duration-data.h` 的 `DUR_MESMERISED` 使用此 SourceDB 键：
 stable 的结束定义带 `you.clear_beholders()` 回调，经 `player-reacts.cc` 的
 通用结束消息显示路径翻译；trunk 在清除 beholders 后直接输出同一键。
