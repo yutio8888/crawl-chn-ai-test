@@ -563,6 +563,7 @@
 | mutagenic power | 诱变力量 | 四肢增强效果的力量；区别发生的变异（mutation）；decision=D-C-096 |
 | mutagenic glow | 诱变光芒 | 魔法污染的发光描述；与 mutagenic radiation 同词根；decision=D-C-096 |
 | mutagenic fog | 诱变雾气 | 云类型及鬃毛药水云、怪物状态描述；弃用“致变雾气／变异雾气”；decision=D-C-096 |
+| mutation | 变异 | 游戏机制名词；药水、变异列表及记录；生物学引文保留突变；decision=D-C-114 |
 
 <!-- domain:backgrounds -->
 ## 十五、角色背景

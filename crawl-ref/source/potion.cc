@@ -799,6 +799,16 @@ const int MAX_REMOVED = 3;
 const int MIN_ADDED = 1;
 const int MAX_ADDED = 3;
 
+string mutation_potion_prompt(bool resistant, bool zin_check)
+{
+    string msg = resistant
+        ? T_("Really drink that potion of mutation while resistant to mutation?")
+        : T_("Really drink that potion of mutation?");
+    if (zin_check)
+        msg += T_(" Zin will disapprove.");
+    return msg;
+}
+
 class PotionMutation : public PotionEffect
 {
 private:
@@ -850,12 +860,9 @@ public:
         if (was_known && !check_known_quaff())
             return false;
 
-        string msg = "Really drink that potion of mutation";
-        msg += you.rmut_from_item() ? T_(" while resistant to mutation?") : "?";
         const bool zin_check = you_worship(GOD_ZIN)
                             && !have_passive(passive_t::cleanse_mut_potions);
-        if (zin_check)
-            msg += T_(" Zin will disapprove.");
+        const string msg = mutation_potion_prompt(you.rmut_from_item(), zin_check);
         if (was_known && (zin_check || you.rmut_from_item())
                       && !yesno(msg.c_str(), false, 'n'))
         {

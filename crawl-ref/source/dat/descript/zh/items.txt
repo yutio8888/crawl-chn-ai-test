@@ -868,7 +868,7 @@ potion of might
 %%%%
 potion of mutation
 
-这瓶药水会使饮用者发生突变：先移除数个突变，再赋予数个随机突变；
+这瓶药水会使饮用者发生变异：先移除数个变异，再赋予数个随机变异；
 后者很可能有益，但并无保证。
 %%%%
 potion of resistance
