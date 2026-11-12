@@ -1,0 +1,1043 @@
+[
+  {
+    "family_id": "E-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "B-03",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "untranslated_parameter",
+        "line": "stable",
+        "english": "%s %s shatters into small pieces.",
+        "current_full_zh": "The岩石碎成了小片。 / Some黏液碎成了小片。",
+        "problem": "The/Some 没有对应单词中文键，T_ 回退英文，与中文材料名混排。",
+        "suggested_zh": "岩石碎成了小片。 / 一些黏液碎成了小片。",
+        "evidence": "stable beam.cc:896-898；source.txt 无 The、Some 独立键；trunk 已改成完整句。",
+        "defect_points": 1
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "family_id": "C-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "C-07",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "scope",
+        "line": "stable",
+        "english": "You really shouldn't be using a holy item like this.",
+        "current_full_zh": "你真的不应该这样使用神圣物品。",
+        "problem": "like this 修饰物品种类，现译却指使用方式；同族 evil/unclean/chaotic/hasty/wizardly 六句均有此歧义，玩家被禁止的是使用这类物品。",
+        "suggested_zh": "你真的不应该使用这样的神圣物品。",
+        "evidence": "stable {'path': 'crawl-ref/source/player-equip.cc', 'line': 1848}; stable {'path': 'crawl-ref/source/player-equip.cc', 'line': 1850}; stable {'path': 'crawl-ref/source/player-equip.cc', 'line': 1852}; stable {'path': 'crawl-ref/source/player-equip.cc', 'line': 1854}; stable {'path': 'crawl-ref/source/player-equip.cc', 'line': 1856}; stable {'path': 'crawl-ref/source/player-equip.cc', 'line': 1858}",
+        "defect_points": 1
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "E-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "F-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "C-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "B-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "B-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "B-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "C-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "F-12",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "A-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "A-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "A-12",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "A-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "E-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "E-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "C-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "F-03",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "composition",
+        "line": "stable",
+        "english": "%s's hold on you weakens, but your attempt to escape fails.",
+        "current_full_zh": "兽人的对你的掌控减弱了，但你逃脱的尝试失败了。",
+        "problem": "object 已是 DESC_ITS 所有格，直接接“对你的掌控”产生“兽人的对你的”语病。",
+        "suggested_zh": "兽人对你的束缚减弱了，但你逃脱的尝试失败了。",
+        "evidence": "stable player.cc:8622,8644；apostrophise 经 %s's→%s的。",
+        "defect_points": 1
+      },
+      {
+        "type": "untranslated_parameter",
+        "line": "stable",
+        "english": "%s's hold on you weakens, but your attempt to escape fails.",
+        "current_full_zh": "the roots'对你的掌控减弱了，但你逃脱的尝试失败了。",
+        "problem": "树根、尸手、藤蔓所有格上下文键的值为空，回退英文；独立于中文所有格语序问题。",
+        "suggested_zh": "树根对你的束缚减弱了，但你逃脱的尝试失败了。",
+        "evidence": "stable player.cc:8619-8622；source.txt:48970,48974,48978 空译文；trunk 对应键已译。",
+        "defect_points": 1
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "family_id": "E-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-06",
+    "verdict": "readability",
+    "findings": [
+      {
+        "type": "wording",
+        "line": "both",
+        "english": "You reflect %s with the mirror!",
+        "current_full_zh": "你用镜子反射了兽人！",
+        "problem": "反射兽人的搭配较生硬，可用映像表达镜像克隆。",
+        "suggested_zh": "你用镜子映出了兽人的镜像！",
+        "evidence": "stable {'path': 'crawl-ref/source/evoke.cc', 'line': 711}; trunk {'path': 'crawl-ref/source/evoke.cc', 'line': 685}",
+        "defect_points": 0
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "family_id": "E-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "A-11",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "C-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "E-03",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "untranslated",
+        "line": "stable",
+        "english": "You feel more confident with your borrowed prowess. / You gain the combat prowess of a mighty hero.",
+        "current_full_zh": "You feel more confident with your borrowed prowess. / You gain the combat prowess of a mighty hero.",
+        "problem": "Heroism 两分支直接传英文，未调用 T_，会显示英文。",
+        "suggested_zh": "借来的武艺让你更加自信。 / 你获得了强大英雄的战斗技艺。",
+        "evidence": "stable ability.cc:3411-3413；trunk :3553-3555 已加 T_。",
+        "defect_points": 1
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "C-11",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "A-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "E-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "A-09",
+    "verdict": "readability",
+    "findings": [
+      {
+        "type": "wording",
+        "line": "both",
+        "english": "You announce your regal presence to all who look upon you.",
+        "current_full_zh": "你向所有仰望你的人宣告了你的王者存在。",
+        "problem": "王者存在不够自然，仰望也比普通看见稍强；属措辞建议，不改变机制。",
+        "suggested_zh": "你向所有注视你的人彰显了王者威仪。",
+        "evidence": "stable {'path': 'crawl-ref/source/stairs.cc', 'line': 569}; trunk {'path': 'crawl-ref/source/stairs.cc', 'line': 581}",
+        "defect_points": 0
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "B-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "A-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "E-12",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "B-11",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "F-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "A-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "C-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "B-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "C-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "B-12",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-12",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "F-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "C-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-11",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "C-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "E-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "F-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "F-11",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "E-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "E-11",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "B-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "A-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "B-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "B-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "A-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "F-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "B-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "F-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "F-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "F-02",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "untranslated_parameter",
+        "line": "stable",
+        "english": "Your %1$s attune%2$s to your body, and you begin to %3$s.",
+        "current_full_zh": "你的amulet适应了你的身体，你开始更快地再生。",
+        "problem": "非神器项链名由裸英文 amulet 提供，多件装备及效果还使用默认英语列表连接词，产生中英混排。",
+        "suggested_zh": "你的项链适应了你的身体，你开始更快地再生。",
+        "evidence": "stable player-reacts.cc:1169-1171,1195-1196；trunk :1285,1308-1313 已本地化。",
+        "defect_points": 1
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "F-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "C-12",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "A-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-07",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "parameter_order",
+        "line": "stable",
+        "english": "\nWhile standing here, you can enter <w>%s</w> with the <w>%s</w> key.",
+        "current_full_zh": "\n站在这里时，你可以按<w>商店名称</w>键进入<w>></w>。",
+        "problem": "实参先商店名后按键，译文交换两个未编号占位符，实际把商店名当按键。",
+        "suggested_zh": "\n站在这里时，你可以按<w>></w>键进入<w>商店名称</w>。",
+        "evidence": "stable describe.cc:3575-3578；trunk :3852-3855 改为编号占位符。",
+        "defect_points": 1
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-11",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-12",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "parameter_order",
+        "line": "stable",
+        "english": "\nWhile standing here, you can traverse %s with the <w>%s</w> key.",
+        "current_full_zh": "\n站在这里时，你可以按<w>向下的楼梯</w>键穿越>。",
+        "problem": "实参先楼梯描述后按键，中文却先输出按键，未编号导致互换。",
+        "suggested_zh": "\n站在这里时，你可以按<w>></w>键通过向下的楼梯。",
+        "evidence": "stable describe.cc:3499-3502；trunk 使用编号参数。",
+        "defect_points": 1
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-13",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-14",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-15",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-16",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "untranslated_parameter",
+        "line": "stable",
+        "english": "%s%s here.",
+        "current_full_zh": "There is 向下的楼梯。 / There is an entrance to 商店名称。",
+        "problem": "prefix 的精确键带尾空格且中文为空；另一个不带尾空格的已译键不能匹配，生产会混入英文。",
+        "suggested_zh": "这里有向下的楼梯。 / 这里有通往商店名称的入口。",
+        "evidence": "stable directn.cc:3021,3031,3048；source.txt:27258、12664 的带空格键为空。",
+        "defect_points": 1
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-17",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-18",
+    "verdict": "readability",
+    "findings": [
+      {
+        "type": "consistency",
+        "line": "trunk",
+        "english": "<cyan>Here:</cyan> %s",
+        "current_full_zh": "<cyan>此处：</cyan> 兽人",
+        "problem": "与同类地图标题的“这里：”不一致，可统一；仍是标题，不应强改成散文。",
+        "suggested_zh": "<cyan>这里：</cyan> 兽人",
+        "evidence": "trunk {'path': 'crawl-ref/source/viewmap.cc', 'line': 459}",
+        "defect_points": 0
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-19",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-20",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-21",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-22",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-23",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-24",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-25",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-26",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-27",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-28",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-29",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-30",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-31",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-32",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-33",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-34",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-35",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-36",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-37",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-38",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-39",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-40",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-41",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-42",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-43",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-44",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-45",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-46",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-47",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-48",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-49",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-50",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-51",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-52",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-53",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-54",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-55",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-56",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-57",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-58",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-59",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-60",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-61",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-62",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-63",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-64",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-65",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-66",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-67",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-68",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-69",
+    "verdict": "readability",
+    "findings": [
+      {
+        "type": "consistency",
+        "line": "both",
+        "english": "You see here ",
+        "current_full_zh": "你在这里看到了3支标枪。",
+        "problem": "与同场景普通物品提示可统一为自然的这里有，数量短语本身可成句。",
+        "suggested_zh": "这里有3支标枪。",
+        "evidence": "items.cc:937-938 为单项物品整栈提示，物品名可自带数量；并非多项列表标题。",
+        "defect_points": 0
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-70",
+    "verdict": "readability",
+    "findings": [
+      {
+        "type": "consistency",
+        "line": "both",
+        "english": "You see here %s.",
+        "current_full_zh": "你在这里看到3支标枪。",
+        "problem": "与单栈物品提示句式不一致，可统一；当前并无搭配错误。",
+        "suggested_zh": "这里有3支标枪。",
+        "evidence": "stable {'path': 'crawl-ref/source/items.cc', 'line': 2725}; trunk {'path': 'crawl-ref/source/items.cc', 'line': 2678}",
+        "defect_points": 0
+      }
+    ],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-71",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-72",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-73",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-74",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-75",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  },
+  {
+    "family_id": "D-HERE-76",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high"
+  }
+]
