@@ -4210,4 +4210,9 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ### D-C-114 — mutation 机制名词
 
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-12
+- **Source**: 维护者批准统一为变异；POT_MUTATION、notes.cc、describe.cc 与 artefact.cc 显示消费者。
+
 mutation 作为游戏机制名词统一为“变异”，包括变异药水、变异记录与抑制标题。rMut 短标签采用“抗变异”（6 列），完整名称为“变异抗性”。生物学／古生物学引文保留“突变”；动词、调试文本与查询身份不机械替换。mutagenic 及 mutagenic power 继续遵循 D-C-096 的“诱变／诱变力量”。旧存档显示快照不迁移。
