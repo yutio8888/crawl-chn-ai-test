@@ -50182,3 +50182,6 @@ klown pie flavour|glitter
 klown pie flavour|%s!
 %s！
 %%%%
+You hear a sizzling sound.
+你听到一阵滋滋声。
+%%%%
