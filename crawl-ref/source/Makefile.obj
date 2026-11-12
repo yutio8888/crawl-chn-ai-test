@@ -361,6 +361,7 @@ catch2-tests/test_zh_acceptance_families.o \
 catch2-tests/test_zh_issue6_descriptions.o \
 catch2-tests/test_zh_issue6_messages.o \
 catch2-tests/test_zh_translation.o \
+catch2-tests/test_zh_klown_pie.o \
 catch2-tests/test_zh_enumerators.o \
 catch2-tests/test_zh_help.o
 

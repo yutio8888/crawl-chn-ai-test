@@ -1926,7 +1926,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                 CHECK(make_stringf(T_("Found %s."), displayed.c_str())
                       == "发现了5块" + basename + "。");
                 CHECK(make_stringf(T_("You see here %s."), displayed.c_str())
-                      == "你在这里看到5块" + basename + "。");
+                      == "这里有5块" + basename + "。");
                 CHECK(item.name(DESC_A, false, false, false, true)
                       == "五块" + basename);
             }
