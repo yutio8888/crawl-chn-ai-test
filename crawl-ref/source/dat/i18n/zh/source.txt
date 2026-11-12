@@ -7760,7 +7760,7 @@ you cannot issue another dragon's call so soon.
 你无法这么快再次发出龙之召唤。
 %%%%
 you cannot sustain more frozen ramparts right now.
-你现在无法维持更多的冰霜壁垒。
+你现在无法维持更多的冰冻壁垒。
 %%%%
 you cannot sustain more bogs right now.
 你现在无法维持更多的毒沼泽。
@@ -36127,7 +36127,7 @@ your <w>%</w>bilities
 你的<w>%</w>能力
 %%%%
 your religious standing (<w>%</w>)
-你的宗教立场（<w>%</w>）
+你的信仰状态（<w>%</w>）
 %%%%
 your set of mutations (<w>%</w>)
 你的变异集（<w>%</w>）
@@ -40525,10 +40525,10 @@ Travel to: %s\nYou cannot afford this item; travel there anyway? (y/N)
 <h>地牢爬行帮助\n\n按以下键之一以获取\n关于地牢爬行某个方面的\n更多信息。\n<w>?</w>：命令列表\n<w>^</w>：快速入门指南
 %%%%
 <darkgrey>:: Browse character notes</darkgrey>\n<darkgrey>#: Browse character dump</darkgrey>
-<darkgrey>:: 浏览角色笔记</darkgrey>\n<darkgrey>#: 浏览角色存档信息</darkgrey>
+<darkgrey>:: 浏览角色笔记</darkgrey>\n<darkgrey>#: 浏览角色报告</darkgrey>
 %%%%
 <w>:</w>: Browse character notes\n<w>#</w>: Browse character dump
-<w>:</w>：浏览角色笔记\n<w>#</w>：浏览角色存档信息
+<w>:</w>：浏览角色笔记\n<w>#</w>：浏览角色报告
 %%%%
 <w>~</w>: Macros help\n<w>&</w>: Options help\n<w>%</w>: Table of aptitudes\n<w>/</w>: Lookup description\n<w>Q</w>: FAQ\n
 <w>~</w>：宏帮助\n<w>&</w>：选项帮助\n<w>%</w>：资质表\n<w>/</w>：查找说明\n<w>Q</w>：常见问题\n
@@ -50130,3 +50130,10 @@ Really drink that potion of mutation while resistant to mutation?
 %%%%
 Really drink that potion of mutation?
 真的要喝下那瓶变异药水吗？
+%%%%
+Uh-oh, %s just excommunicated you for running out of piety (your divine favour went to nothing). Maybe you repeatedly violated the religious rules, or maybe you failed to please your deity often enough, or some combination of the two. If you can find an altar dedicated to %s you can re-convert, and all will be well.
+糟了，%s刚刚因你的虔诚值耗尽而将你逐出教门（你的神恩已化为乌有）。也许你一再违反教规，也许你未能经常取悦你的神祇，抑或两者皆有。如果你能找到一座供奉%s的祭坛，就可以重新皈依，一切都会好起来。
+%%%%
+Should you decide that abandoning %swasn't such a smart move after all, and you'd like to return to your old faith, you'll have to find an altar dedicated to %s where you can re-convert, and all will be well.
+如果你觉得抛弃%s毕竟不是明智之举，想回到原来的信仰，就得找到一座供奉%s的祭坛，在那里重新皈依，一切都会好起来。
+%%%%
