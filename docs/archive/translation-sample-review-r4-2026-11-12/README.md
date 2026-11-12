@@ -62,6 +62,20 @@ The result does not extrapolate to an error rate for the whole catalogue.
   - `get_job_by_name` also accepts the old display name 诅咒射手, so old saves and score files still match.
 - **How it is recorded.** This is a later change of terminology policy. The earlier rejections were not errors at the time. The frozen samples and the original reviews are unchanged. See `adjudication.json` → `post_disposition`.
 
+## Advisory follow-up
+
+The maintainer later instructed that the nine advisories be fixed ("请修复建议项"). All nine were fixed on both lines, and no advisory was overturned by the evidence:
+
+| Line | PR | Merge commit |
+|---|---|---|
+| trunk | #322 | `5fe794801b` |
+| stable | #323 | `eae9c90da2` |
+
+- **What changed:** only Chinese assets and directly derived ledger fields. English is unchanged, and glossary SHAs on notice-only ledgers are not rebound.
+- **Per-item record:** `adjudication.json` → `advisory_followup` maps each item to its new text, and the PR records live in the same place.
+- **Delivery and review:** `fix/advisory-delivery.txt` and `fix/review-advisory.md`.
+- **Unchanged:** the frozen samples and the original reviews. R4-4-05 stays pending, and the 22 runtime check points stay unverified.
+
 ## Files
 
 - `adjudication.json`: final verdicts, host corrections, the delivery record and the post-disposition.

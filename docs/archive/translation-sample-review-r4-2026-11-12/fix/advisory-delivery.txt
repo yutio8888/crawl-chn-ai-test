@@ -1,0 +1,526 @@
+第四轮 9 项建议修复交付
+
+范围：两线同源资产修复；无 C++/Lua/测试逻辑/glossary 改动；原有英文输出与查询身份保持不变，stable 只补齐直接缺失的 fiery 中文短键。仅提交并推送，未开 PR、未合并。
+
+=== trunk ===
+实际基线：e469790144e5abd39effa10db8b1e78be4a30880
+分支：codex/r4-advisory-trunk
+head：e7407964ca2bdb890e49ee02a7573bac61ca4522
+提交：
+e7407964ca2bdb890e49ee02a7573bac61ca4522 Refresh directly affected world display evidence
+Agent: Codex
+
+cb24c27a951093fe77c843991d11109596e197f3 Refine fourth-round advisory translations
+Agent: Codex
+改动文件：
+crawl-ref/source/dat/descript/zh/gods.txt
+crawl-ref/source/dat/descript/zh/hints.txt
+crawl-ref/source/dat/descript/zh/items.txt
+crawl-ref/source/dat/descript/zh/monsters.txt
+crawl-ref/source/dat/i18n/zh/source.txt
+docs/item-extended-review-results.md
+docs/monster-review-results.md
+docs/world-review-results.md
+glossary SHA-256：fb814f3252f249fc230e81fa132dce6a9bb194b014d687fc1524c66827b351d7
+术语上下文：<r4-work>/advisory-context-trunk.txt（在实际 worktree 以 translate 解析）。
+
+R4-4-09（适用，已修改）
+资产：crawl-ref/source/dat/i18n/zh/source.txt:7167
+英文完整正文／消息：
+The Black Torch roars with renewed intensity!
+旧中文完整正文／消息：
+黑火炬以新的强度咆哮着！
+新中文完整正文／消息：
+黑火炬再度猛烈地咆哮起来！
+消费者：
+god-abil.cc:1682: mprf(MSGCH_GOD, T_("The Black Torch roars with renewed intensity!"));
+理由：恢复燃料强度后的再度猛烈；避免“新的强度”的直译。
+
+R4-4-10（适用，已修改）
+资产：crawl-ref/source/dat/descript/zh/gods.txt:144
+英文完整正文／消息：
+Trog is an ancient god of anger and violence. Followers are expected to kill in
+Trog's name, and especially to slay wizards. In return, worshippers of Trog
+gain the ability to go berserk at will in combat, and will be granted
+assistance in the form of powerful weapons and mighty allies. Followers are
+absolutely forbidden the use of spell magic.
+旧中文完整正文／消息：
+特洛格是愤怒和暴力古神。特洛格的信徒要以祂之名杀死敌人，特别是要杀死巫师。
+作为回报，信徒们会获得在战斗中自行狂暴的能力，
+并会被赐予强大的武器和强力的盟友作为援助。特洛格绝对禁止祂的信徒施放法术。
+新中文完整正文／消息：
+特洛格是愤怒和暴力的古神。特洛格的信徒要以祂之名杀死敌人，特别是要杀死巫师。
+作为回报，信徒们会获得在战斗中自行狂暴的能力，
+并会被赐予强大的武器和强力的盟友作为援助。特洛格绝对禁止祂的信徒施放法术。
+消费者：
+describe-god.cc:1111: const string god_desc = getLongDescription(_god_name_en(which_god));
+理由：仅首句补“的”，其余正文逐字不动。
+
+R4-6-02（适用，已修改）
+资产：crawl-ref/source/dat/i18n/zh/source.txt:45204
+英文完整正文／消息：
+A %s emerges from the mists of... memory?....
+旧中文完整正文／消息：
+%s从……记忆的迷雾中浮现？……
+新中文完整正文／消息：
+%s从迷雾中浮现……那是记忆的迷雾吗？……
+消费者：
+dat/des/altar/overflow.des:219: crawl.t_("A %s emerges from the mists of... memory?...."),
+理由：把迟疑和疑问放在对迷雾为“记忆”的辨认上；怪物浮现本身不再被问号否定。
+
+R4-6-03（适用，已修改）
+资产：crawl-ref/source/dat/i18n/zh/source.txt:45213
+英文完整正文／消息：
+They guard the %s rune of Zot.
+旧中文完整正文／消息：
+其守护着佐特%s符文。
+新中文完整正文／消息：
+这位领主守护着佐特%s符文。
+消费者：
+dat/des/branches/pan.des:41: crawl.mpr(string.format(crawl.t_("They guard the %s rune of Zot."),
+理由：pan_lord_epilogue(name) 逐个报告单个唯一领主，they 为单数中性指代，改成明确单数的“这位领主”。
+
+R4-7-01（适用，已修改）
+资产：crawl-ref/source/dat/i18n/zh/source.txt:16307
+英文完整正文／消息：
+The solar flare engulfs %s%s. + " but does no damage"
+旧中文完整正文／消息：
+但没有造成伤害
+新中文完整正文／消息：
+，但没有造成伤害
+消费者：
+mon-abil.cc:1538: mprf(T_("The solar flare engulfs %s%s."), mon->name(DESC_THE).c_str(),
+理由：共享无伤害后缀补转折逗号；同组 plural 后缀移除前导半角空格并补逗号。终止标点由原调用者负责。
+
+R4-1-06（适用，已修改）
+资产：crawl-ref/source/dat/descript/zh/items.txt:381
+英文完整正文／消息：
+A small piece of wood and metal, to be strapped on one arm for defence.
+旧中文完整正文／消息：
+一小块木头和金属，通过绑在一只手臂上进行防御。
+新中文完整正文／消息：
+一面由木材和金属制成的小盾，绑在一只手臂上用于防御。
+消费者：
+describe.cc:3167: string db_desc = getLongDescription(db_name);
+理由：明确木材与金属为制盾材料，小盾绑在一只手臂上用于防御；不新增数值或机制。
+
+R4-3-02（适用，已修改）
+资产：crawl-ref/source/dat/descript/zh/monsters.txt:986
+英文完整正文／消息：
+A half-mortal, half-demonic creature, oozing with dark energies. It twists
+space around itself, and can corrupt weapons, armour and even the very flesh of
+its opponents.
+旧中文完整正文／消息：
+一个半人半魔的生物，散发着黑暗能量。
+他扭曲了自身周围的空间，可以腐蚀武器、盔甲甚至对方的血肉。
+新中文完整正文／消息：
+一个半人半魔的生物，散发着黑暗能量。
+他扭曲了自身周围的空间，可以腐蚀武器、护甲甚至对方的血肉。
+消费者：
+describe.cc:7967: inf.body << getLongDescription(db_name);
+理由：armour 为与 weapons、flesh 并列的普通名词，依本线 glossary 使用护甲；仅此处盔甲→护甲。
+
+R4-5-10（适用，已修改）
+资产：crawl-ref/source/dat/descript/zh/hints.txt:597
+英文完整正文／消息：
+<tiles>A small symbol on a stair tile signifies that there are items in that
+position that you may want to check out.</tiles>
+<console>If any items are covering stairs or an escape hatch, then that will
+be indicated by highlighting the <w><<</w> or <w>></w> symbol, instead of hiding
+the stair symbol with an item glyph.</console>
+旧中文完整正文／消息：
+<tiles>楼梯地块上的小符号表示该位置还有物品，你可能会想查看。</tiles>
+<console>如果有物品盖在楼梯或逃生舱口上，系统会把 <w><<</w> 或 <w>></w> 符号高亮显示，而不会用物品图符遮住楼梯符号。</console>
+新中文完整正文／消息：
+<tiles>楼梯地块上的小符号表示该位置还有物品，你可能会想查看。</tiles>
+<console>如果有物品盖在楼梯或逃生口上，系统会把 <w><<</w> 或 <w>></w> 符号高亮显示，而不会用物品图符遮住楼梯符号。</console>
+消费者：
+hints.cc:1150: print_hint("HINT_STAIR_BRAND");
+理由：依据 hatch→逃生口及当前 escape hatch 显示统一教程；console/Tiles 标签和 <w><<</w>、<w>></w> 全部保留。
+
+R4-1-02（适用，已修改）
+资产：crawl-ref/source/dat/descript/zh/items.txt:1595
+英文完整正文／消息：
+An intricate puzzlebox containing an unknowable prize. Transforms the wearer into
+a riddle-loving sphinx. In this form, they are {{
+    if you.race() == "Felid" then
+        return "normally capable of wearing a cloak and barding (though your" ..
+               " own diminutive size would prevent this)"
+    else
+        return "capable of wearing a cloak and barding"
+    end
+}}, and their melee attacks cause powerful winds to strike their foe which do
+increased damage for every open space next to them. They are also masterful
+enchanters, casting Hex spells much more easily and ignoring a portion of their
+foe's Willpower.
+
+Alas, their love of riddles is so compulsive that even the most hardened
+adventurer will be unable to resist posing them to new foes they encounter, no
+matter how unwise this may be.
+旧中文完整正文／消息：
+一个内含未知奖品的精巧谜盒。将佩戴者变成一只爱好谜语的斯芬克斯。
+在此形态下，佩戴者{{
+    if you.race() == "Felid" then
+        return "通常能够穿戴披风和马铠（尽管你自身的微小体型会阻止这一点）"
+    else
+        return "能够穿戴披风和马铠"
+    end
+}}，其近战攻击会引起强风打击敌人，相邻每多一格空地，伤害就越高。
+佩戴者还是高超的惑控师，更容易施放妖术系法术，
+并忽略敌人一部分的意志力。
+
+唉，佩戴者对谜语的热爱如此强烈，以至于即使是最坚毅的冒险者也无法
+抗拒向遇到的新敌人提出谜语，无论这可能多么不明智。
+新中文完整正文／消息：
+一个内含未知奖品的精巧谜盒。将佩戴者变成一只爱好谜语的斯芬克斯。
+在此形态下，佩戴者{{
+    if you.race() == "Felid" then
+        return "通常能够穿戴披风和马铠（尽管你自身的微小体型会阻止这一点）"
+    else
+        return "能够穿戴披风和马铠"
+    end
+}}，其近战攻击会引起强风打击敌人，敌人周围每多一格空地，伤害就越高。
+佩戴者还是高超的惑控师，更容易施放妖术系法术，
+并忽略敌人一部分的意志力。
+
+唉，佩戴者对谜语的热爱如此强烈，以至于即使是最坚毅的冒险者也无法
+抗拒向遇到的新敌人提出谜语，无论这可能多么不明智。
+消费者：
+melee-attack.cc:1042: const int spaces = min(7, airstrike_space_around(defender->pos(), true));
+melee-attack.cc:4818: const int spaces = airstrike_space_around(defender->pos(), true);
+理由：以 defender->pos() 为中心计空地；明确是敌人周围。Felid Lua 条件、衣物限制、妖术系及其余正文保持原样。
+
+实际参数还原：
+地精从迷雾中浮现……那是记忆的迷雾吗？……
+Xom overflow 的 species_mock() 实际能返回 goblin（Mountain Dwarf 等分支），格式化参数为 crawl.t_(sp)，不是抽象占位。
+符文完整输出：
+Mnoleg：这位领主守护着佐特发光符文。
+Lom Lobon：这位领主守护着佐特魔法符文。
+Cerebov：这位领主守护着佐特火符文。
+Gloorx Vloq：这位领主守护着佐特黑暗符文。
+pan.des:30-33 对四位领主逐个映射 glowing / magical / fiery / dark；Dark 的 SourceDB 查询不区分大小写。
+现有 generic 修饰词发光／魔法／火／黑暗保持原用法；未扩大为 rune_name 上下文的辉光／烈焰／暗黑命名迁移。
+太阳耀斑旧完整句：太阳耀斑吞没了兽人但没有造成伤害。
+太阳耀斑新无伤害句：太阳耀斑吞没了兽人，但没有造成伤害。
+太阳耀斑新有伤害句：太阳耀斑吞没了兽人。
+共享后缀全消费者（上下文及条件见 <r4-work>/advisory/r4-adv-trunk-proof.json）：
+crawl-ref/source/actor.cc:799
+crawl-ref/source/beam.cc:4463
+crawl-ref/source/beam.cc:5856
+crawl-ref/source/mon-abil.cc:1539
+crawl-ref/source/spl-damage.cc:916
+crawl-ref/source/spl-damage.cc:1019
+crawl-ref/source/spl-damage.cc:2004
+crawl-ref/source/terrain.cc:2671
+crawl-ref/source/terrain.cc:2718
+有句号的另一独立后缀 " but does no damage."（mon-cast.cc）保持“，却未造成伤害。”；完整 melee/ranged 模板不是本键消费者，未改。
+文本还原（非游戏验收）：
+{"key": "The solar flare engulfs %s%s.", "damage": false, "output": "太阳耀斑吞没了兽人，但没有造成伤害。"}
+{"key": "The solar flare engulfs %s%s.", "damage": true, "output": "太阳耀斑吞没了兽人。"}
+{"key": "The wall freezes %s%s%s", "damage": false, "output": "墙壁冻结了兽人，但没有造成伤害。"}
+{"key": "The wall freezes %s%s%s", "damage": true, "output": "墙壁冻结了兽人！"}
+{"key": "The frigid air chills %s%s%s", "damage": false, "output": "寒冷的空气侵袭了兽人，但没有造成伤害。"}
+{"key": "The frigid air chills %s%s%s", "damage": true, "output": "寒冷的空气侵袭了兽人！"}
+{"key": "%s and strikes %s%s%s", "damage": false, "output": "狂风呼啸，并击中了兽人，但没有造成伤害。"}
+{"key": "%s and strikes %s%s%s", "damage": true, "output": "狂风呼啸，并击中了兽人！"}
+{"key": "You freeze %s%s%s", "damage": false, "output": "你冻结了兽人，但没有造成伤害。"}
+{"key": "You freeze %s%s%s", "damage": true, "output": "你冻结了兽人！"}
+{"key": "Flames lash %s%s.", "damage": false, "output": "火焰舔舐兽人，但没有造成伤害。"}
+{"key": "Flames lash %s%s.", "damage": true, "output": "火焰舔舐兽人。"}
+{"key": "beam hit player|The %1$s %2$s %3$s%4$s%5$s%6$s", "plural": false, "damage": false, "output": "火焰击中了你，但没有造成伤害。"}
+{"key": "beam hit player|The %1$s %2$s %3$s%4$s%5$s%6$s", "plural": false, "damage": true, "output": "火焰击中了你。"}
+{"key": "beam hit player|The %1$s %2$s %3$s%4$s%5$s%6$s", "plural": true, "damage": false, "output": "火焰击中了你，但没有造成伤害。"}
+{"key": "beam hit player|The %1$s %2$s %3$s%4$s%5$s%6$s", "plural": true, "damage": true, "output": "火焰击中了你。"}
+{"key": "beam hit monster|The %1$s %2$s %3$s%4$s%5$s%6$s", "plural": false, "damage": false, "output": "火焰击中了兽人，但没有造成伤害。"}
+{"key": "beam hit monster|The %1$s %2$s %3$s%4$s%5$s%6$s", "plural": false, "damage": true, "output": "火焰击中了兽人。"}
+{"key": "beam hit monster|The %1$s %2$s %3$s%4$s%5$s%6$s", "plural": true, "damage": false, "output": "火焰击中了兽人，但没有造成伤害。"}
+{"key": "beam hit monster|The %1$s %2$s %3$s%4$s%5$s%6$s", "plural": true, "damage": true, "output": "火焰击中了兽人。"}
+{"key": "constriction %s %s %s%s%s", "damage": false, "output": "你束缚了兽人，但没有造成伤害。"}
+{"key": "constriction %s %s %s%s%s", "damage": true, "output": "你束缚了兽人！"}
+英文不变证据：与实际基线相比只改 ZH catalogue/DescriptionDB 和生成台账；全部 C++、Lua/.des 和英文资产字节不变。新增 stable fiery 键也只影响 ZH lookup，EN 模式 i18n_source_lookup 先返回 en。
+
+直接派生台账：item-extended 只涉及 buckler/riddle talisman 两卡和聚合摘要；monster 只涉及 corrupter 自动“description corrected”分类和摘要；world 只涉及 memory/pan 两卡 zh/adopted_translation 和摘要。各生成器原人工理由、终态（除自动分类）及附录保留，历史 glossary/decisions SHA 不重绑。
+受影响审计退出码：{"god": 0, "monster": 0, "item": 0, "world": 0}
+
+=== stable ===
+实际基线：27dd279443c4e01df9ab8a56f55b5f65b908f73d
+分支：codex/r4-advisory-stable
+head：6c866d0eb95d2c90e19ab564d2f55a0fd8ed1f03
+提交：
+6c866d0eb95d2c90e19ab564d2f55a0fd8ed1f03 Refresh directly affected world display evidence
+Agent: Codex
+
+6ed486c9d7f4779a35ce72039869ab749c81e84b Fill the direct fiery rune fragment
+Agent: Codex
+
+a5275a3c93e98ea15fbf1cf52142b54a48c9cb49 Refine fourth-round advisory translations
+Agent: Codex
+改动文件：
+crawl-ref/source/dat/descript/zh/gods.txt
+crawl-ref/source/dat/descript/zh/hints.txt
+crawl-ref/source/dat/descript/zh/items.txt
+crawl-ref/source/dat/descript/zh/monsters.txt
+crawl-ref/source/dat/i18n/zh/source.txt
+docs/item-extended-review-results.md
+docs/monster-review-results.md
+docs/world-review-results.md
+glossary SHA-256：7bf944531289d3e0904ce26d50f3cfa62f43e30e2b5938d57e2646c25f29b8fe
+术语上下文：<r4-work>/advisory-context-stable.txt（在实际 worktree 以 translate 解析）。
+
+R4-4-09（适用，已修改）
+资产：crawl-ref/source/dat/i18n/zh/source.txt:6888
+英文完整正文／消息：
+The Black Torch roars with renewed intensity!
+旧中文完整正文／消息：
+黑火炬以新的强度咆哮着！
+新中文完整正文／消息：
+黑火炬再度猛烈地咆哮起来！
+消费者：
+god-abil.cc:1591: mprf(MSGCH_GOD, T_("The Black Torch roars with renewed intensity!"));
+理由：恢复燃料强度后的再度猛烈；避免“新的强度”的直译。
+
+R4-4-10（适用，已修改）
+资产：crawl-ref/source/dat/descript/zh/gods.txt:144
+英文完整正文／消息：
+Trog is an ancient god of anger and violence. Followers are expected to kill in
+Trog's name, and especially to slay wizards. In return, worshippers of Trog
+gain the ability to go berserk at will in combat, and will be granted
+assistance in the form of powerful weapons and mighty allies. Followers are
+absolutely forbidden the use of spell magic.
+旧中文完整正文／消息：
+特洛格是愤怒和暴力古神。特洛格的信徒要以祂之名杀死敌人，特别是要杀死巫师。
+作为回报，信徒们会获得在战斗中自行狂暴的能力，
+并会被赐予强大的武器和强力的盟友作为援助。特洛格绝对禁止祂的信徒施放法术。
+新中文完整正文／消息：
+特洛格是愤怒和暴力的古神。特洛格的信徒要以祂之名杀死敌人，特别是要杀死巫师。
+作为回报，信徒们会获得在战斗中自行狂暴的能力，
+并会被赐予强大的武器和强力的盟友作为援助。特洛格绝对禁止祂的信徒施放法术。
+消费者：
+describe-god.cc:1103: const string god_desc = getLongDescription(_god_name_en(which_god));
+理由：仅首句补“的”，其余正文逐字不动。
+
+R4-6-02（适用，已修改）
+资产：crawl-ref/source/dat/i18n/zh/source.txt:42291
+英文完整正文／消息：
+A %s emerges from the mists of... memory?....
+旧中文完整正文／消息：
+%s从……记忆的迷雾中浮现？……
+新中文完整正文／消息：
+%s从迷雾中浮现……那是记忆的迷雾吗？……
+消费者：
+dat/des/altar/overflow.des:217: crawl.t_("A %s emerges from the mists of... memory?...."),
+理由：把迟疑和疑问放在对迷雾为“记忆”的辨认上；怪物浮现本身不再被问号否定。
+
+R4-6-03（适用，已修改）
+资产：crawl-ref/source/dat/i18n/zh/source.txt:42300
+英文完整正文／消息：
+They guard the %s rune of Zot.
+旧中文完整正文／消息：
+其守护着佐特%s符文。
+新中文完整正文／消息：
+这位领主守护着佐特%s符文。
+消费者：
+dat/des/branches/pan.des:41: crawl.mpr(string.format(crawl.t_("They guard the %s rune of Zot."),
+理由：pan_lord_epilogue(name) 逐个报告单个唯一领主，they 为单数中性指代，改成明确单数的“这位领主”。
+
+R4-7-01（适用，已修改）
+资产：crawl-ref/source/dat/i18n/zh/source.txt:15644
+英文完整正文／消息：
+The solar flare engulfs %s%s. + " but does no damage"
+旧中文完整正文／消息：
+但没有造成伤害
+新中文完整正文／消息：
+，但没有造成伤害
+消费者：
+mon-abil.cc:1577: mprf(T_("The solar flare engulfs %s%s."), mon->name(DESC_THE).c_str(),
+理由：共享无伤害后缀补转折逗号；同组 plural 后缀移除前导半角空格并补逗号。终止标点由原调用者负责。
+
+R4-1-06（适用，已修改）
+资产：crawl-ref/source/dat/descript/zh/items.txt:381
+英文完整正文／消息：
+A small piece of wood and metal, to be strapped on one arm for defence.
+旧中文完整正文／消息：
+一小块木头和金属，通过绑在一只手臂上进行防御。
+新中文完整正文／消息：
+一面由木材和金属制成的小盾，绑在一只手臂上用于防御。
+消费者：
+describe.cc:2895: string db_desc = getLongDescription(db_name);
+理由：明确木材与金属为制盾材料，小盾绑在一只手臂上用于防御；不新增数值或机制。
+
+R4-3-02（适用，已修改）
+资产：crawl-ref/source/dat/descript/zh/monsters.txt:1009
+英文完整正文／消息：
+A half-mortal, half-demonic creature, oozing with dark energies. It twists
+space around itself, and can corrupt weapons, armour and even the very flesh of
+its opponents.
+旧中文完整正文／消息：
+一个半人半魔的生物，散发着黑暗能量。
+他扭曲了自身周围的空间，可以腐蚀武器、盔甲甚至对方的血肉。
+新中文完整正文／消息：
+一个半人半魔的生物，散发着黑暗能量。
+他扭曲了自身周围的空间，可以腐蚀武器、护甲甚至对方的血肉。
+消费者：
+describe.cc:7279: inf.body << getLongDescription(db_name);
+理由：armour 为与 weapons、flesh 并列的普通名词，依本线 glossary 使用护甲；仅此处盔甲→护甲。
+
+R4-5-10（适用，已修改）
+资产：crawl-ref/source/dat/descript/zh/hints.txt:610
+英文完整正文／消息：
+<tiles>A small symbol on a stair tile signifies that there are items in that
+position that you may want to check out.</tiles>
+<console>If any items are covering stairs or an escape hatch, then that will
+be indicated by highlighting the <w><<</w> or <w>></w> symbol, instead of hiding
+the stair symbol with an item glyph.</console>
+旧中文完整正文／消息：
+<tiles>楼梯地块上的小符号表示该位置还有物品，你可能会想查看。</tiles>
+<console>如果有物品盖在楼梯或逃生舱口上，系统会把 <w><<</w> 或 <w>></w> 符号高亮显示，而不会用物品图符遮住楼梯符号。</console>
+新中文完整正文／消息：
+<tiles>楼梯地块上的小符号表示该位置还有物品，你可能会想查看。</tiles>
+<console>如果有物品盖在楼梯或逃生口上，系统会把 <w><<</w> 或 <w>></w> 符号高亮显示，而不会用物品图符遮住楼梯符号。</console>
+消费者：
+hints.cc:1227: print_hint("HINT_STAIR_BRAND");
+理由：依据 hatch→逃生口及当前 escape hatch 显示统一教程；console/Tiles 标签和 <w><<</w>、<w>></w> 全部保留。
+
+R4-1-02（适用，已修改）
+资产：crawl-ref/source/dat/descript/zh/items.txt:1588
+英文完整正文／消息：
+An intricate puzzlebox containing an unknowable prize. Transforms the wearer into
+a riddle-loving sphinx. In this form, they are {{
+    if you.race() == "Felid" then
+        return "normally capable of wearing a cloak and barding (though your" ..
+               " own diminutive size would prevent this)"
+    else
+        return "capable of wearing a cloak and barding"
+    end
+}}, and their melee attacks cause powerful winds to strike their foe which do
+increased damage for every open space next to them. They are also masterful
+enchanters, casting Hex spells much more easily and ignoring a portion of their
+foe's Willpower.
+
+Alas, their love of riddles is so compulsive that even the most hardened
+adventurer will be unable to resist posing them to new foes they encounter, no
+matter how unwise this may be.
+旧中文完整正文／消息：
+一个内含未知奖品的精巧谜盒。将佩戴者变成一只爱好谜语的斯芬克斯。
+在此形态下，佩戴者{{
+    if you.race() == "Felid" then
+        return "通常能够穿戴披风和马铠（尽管你自身的微小体型会阻止这一点）"
+    else
+        return "能够穿戴披风和马铠"
+    end
+}}，其近战攻击会引起强风打击敌人，相邻每多一格空地，伤害就越高。
+佩戴者还是高超的惑控师，更容易施放妖术系法术，
+并忽略敌人一部分的意志力。
+
+唉，佩戴者对谜语的热爱如此强烈，以至于即使是最坚毅的冒险者也无法
+抗拒向遇到的新敌人提出谜语，无论这可能多么不明智。
+新中文完整正文／消息：
+一个内含未知奖品的精巧谜盒。将佩戴者变成一只爱好谜语的斯芬克斯。
+在此形态下，佩戴者{{
+    if you.race() == "Felid" then
+        return "通常能够穿戴披风和马铠（尽管你自身的微小体型会阻止这一点）"
+    else
+        return "能够穿戴披风和马铠"
+    end
+}}，其近战攻击会引起强风打击敌人，敌人周围每多一格空地，伤害就越高。
+佩戴者还是高超的惑控师，更容易施放妖术系法术，
+并忽略敌人一部分的意志力。
+
+唉，佩戴者对谜语的热爱如此强烈，以至于即使是最坚毅的冒险者也无法
+抗拒向遇到的新敌人提出谜语，无论这可能多么不明智。
+消费者：
+melee-attack.cc:999: const int spaces = min(7, airstrike_space_around(defender->pos(), true));
+melee-attack.cc:4624: const int spaces = airstrike_space_around(defender->pos(), true);
+理由：以 defender->pos() 为中心计空地；明确是敌人周围。Felid Lua 条件、衣物限制、妖术系及其余正文保持原样。
+
+实际参数还原：
+地精从迷雾中浮现……那是记忆的迷雾吗？……
+Xom overflow 的 species_mock() 实际能返回 goblin（Mountain Dwarf 等分支），格式化参数为 crawl.t_(sp)，不是抽象占位。
+符文完整输出：
+Mnoleg：这位领主守护着佐特发光符文。
+Lom Lobon：这位领主守护着佐特魔法符文。
+Cerebov：这位领主守护着佐特火符文。
+Gloorx Vloq：这位领主守护着佐特黑暗符文。
+pan.des:30-33 对四位领主逐个映射 glowing / magical / fiery / dark；Dark 的 SourceDB 查询不区分大小写。
+现有 generic 修饰词发光／魔法／火／黑暗保持原用法；未扩大为 rune_name 上下文的辉光／烈焰／暗黑命名迁移。
+直接相关补齐：新增无语境 SourceDB fiery→火，沿用 trunk 当前译文；此前稳定线此消息会回退 fiery。现有 rune_name|fiery→烈焰 的上下文键不能被 crawl.t_("fiery") 命中，因此不能冒称已有覆盖。未改现存上下文键。
+太阳耀斑旧完整句：太阳耀斑吞没了兽人但没有造成伤害。
+太阳耀斑新无伤害句：太阳耀斑吞没了兽人，但没有造成伤害。
+太阳耀斑新有伤害句：太阳耀斑吞没了兽人。
+共享后缀全消费者（上下文及条件见 <r4-work>/advisory/r4-adv-stable-proof.json）：
+crawl-ref/source/beam.cc:4433
+crawl-ref/source/beam.cc:5819
+crawl-ref/source/mon-abil.cc:1578
+crawl-ref/source/spl-damage.cc:903
+crawl-ref/source/spl-damage.cc:1006
+crawl-ref/source/spl-damage.cc:1975
+crawl-ref/source/terrain.cc:2695
+crawl-ref/source/terrain.cc:2738
+有句号的另一独立后缀 " but does no damage."（mon-cast.cc）保持“，却未造成伤害。”；完整 melee/ranged 模板不是本键消费者，未改。
+文本还原（非游戏验收）：
+{"key": "The solar flare engulfs %s%s.", "damage": false, "output": "太阳耀斑吞没了兽人，但没有造成伤害。"}
+{"key": "The solar flare engulfs %s%s.", "damage": true, "output": "太阳耀斑吞没了兽人。"}
+{"key": "The wall freezes %s%s%s", "damage": false, "output": "墙壁冻结了兽人，但没有造成伤害。"}
+{"key": "The wall freezes %s%s%s", "damage": true, "output": "墙壁冻结了兽人！"}
+{"key": "The frigid air chills %s%s%s", "damage": false, "output": "寒冷的空气侵袭了兽人，但没有造成伤害。"}
+{"key": "The frigid air chills %s%s%s", "damage": true, "output": "寒冷的空气侵袭了兽人！"}
+{"key": "%s and strikes %s%s%s", "damage": false, "output": "\n狂风呼啸，并击中了兽人，但没有造成伤害。"}
+{"key": "%s and strikes %s%s%s", "damage": true, "output": "\n狂风呼啸，并击中了兽人！"}
+{"key": "You freeze %s%s%s", "damage": false, "output": "你冻结了兽人\n，但没有造成伤害。"}
+{"key": "You freeze %s%s%s", "damage": true, "output": "你冻结了兽人！"}
+{"key": "Flames lash %s%s.", "damage": false, "output": "火焰舔舐兽人\n，但没有造成伤害。"}
+{"key": "Flames lash %s%s.", "damage": true, "output": "火焰舔舐兽人。"}
+{"key": "beam hit player|The %1$s %2$s %3$s%4$s%5$s%6$s", "plural": false, "damage": false, "output": "火焰击中了你，但没有造成伤害。"}
+{"key": "beam hit player|The %1$s %2$s %3$s%4$s%5$s%6$s", "plural": false, "damage": true, "output": "火焰击中了你。"}
+{"key": "beam hit player|The %1$s %2$s %3$s%4$s%5$s%6$s", "plural": true, "damage": false, "output": "火焰击中了你，但没有造成伤害。"}
+{"key": "beam hit player|The %1$s %2$s %3$s%4$s%5$s%6$s", "plural": true, "damage": true, "output": "火焰击中了你。"}
+{"key": "beam hit monster|The %1$s %2$s %3$s%4$s%5$s%6$s", "plural": false, "damage": false, "output": "火焰击中了兽人，但没有造成伤害。"}
+{"key": "beam hit monster|The %1$s %2$s %3$s%4$s%5$s%6$s", "plural": false, "damage": true, "output": "火焰击中了兽人。"}
+{"key": "beam hit monster|The %1$s %2$s %3$s%4$s%5$s%6$s", "plural": true, "damage": false, "output": "火焰击中了兽人，但没有造成伤害。"}
+{"key": "beam hit monster|The %1$s %2$s %3$s%4$s%5$s%6$s", "plural": true, "damage": true, "output": "火焰击中了兽人。"}
+英文不变证据：与实际基线相比只改 ZH catalogue/DescriptionDB 和生成台账；全部 C++、Lua/.des 和英文资产字节不变。新增 stable fiery 键也只影响 ZH lookup，EN 模式 i18n_source_lookup 先返回 en。
+
+直接派生台账：item-extended 只涉及 buckler/riddle talisman 两卡和聚合摘要；monster 只涉及 corrupter 自动“description corrected”分类和摘要；world 只涉及 memory/pan 两卡 zh/adopted_translation 和摘要。各生成器原人工理由、终态（除自动分类）及附录保留，历史 glossary/decisions SHA 不重绑。
+受影响审计退出码：{"god": 0, "monster": 0, "item": 0, "world": 0}
+
+=== 检查 ===
+最终 translation profile：两线 exit 0，Failures=0。
+trunk：--base e469790144e5abd39effa10db8b1e78be4a30880 --head e7407964ca2bdb890e49ee02a7573bac61ca4522；Run ID 20261112T233003364211228+0000-197245-e7407964ca2b。
+stable：--base 27dd279443c4e01df9ab8a56f55b5f65b908f73d --head 6c866d0eb95d2c90e19ab564d2f55a0fd8ed1f03；Run ID 20261112T233102812367310+0000-254731-6c866d0eb95d。
+各 profile 的 policy-sync、source-db-static、translation-static、message-overlay-static 均 exit 0。元数据位于相应 worktree 的 .claude/metrics/verify/<Run ID>/metadata.json。
+完整工具套件：trunk 78 passed / 0 failed；stable 74 passed / 0 failed；两线实际退出码均为0。
+命令（在各 worktree，profile 完成后错峰执行）：bash .claude/scripts/run_isolated.sh env PYTHONSAFEPATH=1 ZH_TOOLING_TEST_JOBS=2 bash .claude/scripts/tests/run_all.sh
+日志：<r4-work>/advisory/trunk-tools.log、stable-tools.log。日志中的缺少 protocol／错误 manifest 等 ERROR 来自预期负向用例，均标 PASS，不是候选失败。
+共享文本还原脚本 proof.py 在两线均 exit 0；trunk 22 个、stable 20 个有伤害／无伤害及 singular/plural frame 输出已保存，不含实玩。
+最终 git diff --check、工作树洁净检查：两线 exit0。
+
+=== 玩家检查点 ===
+1. 杀死符合条件的唯一怪物补充黑火炬燃料时看再度猛烈提示；打开特洛格介绍核对首句。
+2. Xom 祖先 overflow 事件带真实生物名观察疑问落点；四位 Pan 领主入场提示确认单数主体和符文。
+3. 太阳耀斑以及射线、风击、冻结、冰墙、灼烧（trunk 另含束缚）分别检查有伤害／无伤害及最终标点。
+4. 查看小圆盾、恶魔裔腐蚀者说明和 console/Tiles 楼梯高亮教程；确认标签无泄露。
+5. 谜题护符的普通种族/Felid 说明及战斗中敌人周围空地影响；妖术系保持现行名。
+
+=== 局限和风险 ===
+按 brief 未做本地游戏验收；完整句为静态 SourceDB 文本还原，不声称运行时实玩通过。真实界面布局、随机事件和角色状态仍由独立复审/CI/玩家验收覆盖。
+沿用 generic 符文修饰词，未借修单数指代引入全库命名迁移；所有选定调用点和词根证据已列出。
+初次 stable profile 静态阶段通过，但因期间追加候选提交而在结束时退出1，作废；仅最终冻结候选重跑结果用于交付。生成器探索中发现并保留 trunk 人工附录；未将失败探索误报为通过。
+
+补充版本边界：trunk actor.cc 的束缚追加消息确实消费 plural 后缀，已纳入还原；stable actor.cc 同处仍为原始英文硬编码，未假称消费本次 SourceDB 键，也未扩大修复。
+英文/语法保真复核：对比实际 base，四类英文 DescriptionDB、pan/overflow .des 和 glossary 逐字节相同；最终 diff 仅8个既定资产/台账文件。
+
+推送完成并核对 upstream=head，两线工作树洁净：
+{
+  "trunk": {
+    "head": "e7407964ca2bdb890e49ee02a7573bac61ca4522",
+    "upstream": "origin/codex/r4-advisory-trunk",
+    "clean": true,
+    "diff_check_exit": 0
+  },
+  "stable": {
+    "head": "6c866d0eb95d2c90e19ab564d2f55a0fd8ed1f03",
+    "upstream": "origin/codex/r4-advisory-stable",
+    "clean": true,
+    "diff_check_exit": 0
+  }
+}
