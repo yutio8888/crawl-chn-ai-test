@@ -4706,7 +4706,7 @@ is covered in magical glow
 被施加了预示剧痛的诅咒。
 %%%%
  is dazed by the mutagenic energy.
-被变异能量弄得眩晕。
+被诱变能量弄得眩晕。
 %%%%
  is dazed by the spores.
  被孢子弄得晕头转向。
@@ -5432,16 +5432,16 @@ A bog forms beneath %s!
 %s下方形成了一片沼泽！
 %%%%
 Mutagenic energies flood into your body!
-变异能量涌入你的身体！
+诱变能量涌入你的身体！
 %%%%
 Mutagenic energy floods into your body!
-变异能量涌入你的身体！
+诱变能量涌入你的身体！
 %%%%
 Mutagenic energy flows into you.
-变异能量流入了你的身体。
+诱变能量流入了你的身体。
 %%%%
 Mutagenic energy flows through %s!
-变异能量流经%s！
+诱变能量流经%s！
 %%%%
 mutation
 变异
@@ -9932,7 +9932,7 @@ You feel a bond with %s.
 你感到与%s的连接。
 %%%%
 You feel a build-up of mutagenic energy.
-你感到变异能量的积聚。
+你感到诱变能量的积聚。
 %%%%
 You feel a dangerous fate closing in on you...
 你感到危险命运正向你逼近……
@@ -21482,7 +21482,7 @@ surrounded by chaotic energy
 被混沌能量环绕
 %%%%
 surrounded by mutagenic energy
-被变异能量环绕
+被诱变能量环绕
 %%%%
 surrounded by fog
 被雾气环绕
@@ -41683,13 +41683,13 @@ spell title|Sting
 毒刺
 %%%%
  basks in your mutagenic energy and changes!
- 沐浴在你的变异能量中并发生了变化！
+ 沐浴在你的诱变能量中并发生了变化！
 %%%%
  basks in the mutagenic energy from its kin and changes!
- 沐浴在同族的变异能量中并发生了变化！
+ 沐浴在同族的诱变能量中并发生了变化！
 %%%%
  basks in the mutagenic energy and changes!
- 沐浴在变异能量中并发生了变化！
+ 沐浴在诱变能量中并发生了变化！
 %%%%
  your recitation
  并吟诵
