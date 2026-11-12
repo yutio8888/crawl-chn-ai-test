@@ -1,8 +1,8 @@
 # Issue #24 怪物翻译全量复审结果
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
-- 术语表 SHA-256：`66f83c839bf57371ef768a5ec3cb6bcd790409e2fbed0c4a5b0f0a68856ddbb5`
-- 清单 SHA-256：`553a48fabcb2ee469176ff58a88e73e5df3c3c50df8945b810a6c7cce0641115`
+- 术语表 SHA-256：`ce3997c7d228236f5d70239aece31c9ccec501961aebf137d411ecd07e93cf6b`
+- 清单 SHA-256：`25e3f11d7e7b9ced7e4f0efe7188efed612e5e6e4be652b3f52d92f36f63df6c`
 - 身份总数：815（现行 691；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -88,7 +88,7 @@
 | `monster:MONS_ENDOPLASM` | current; exposure=ordinary; name=endoplasm→内质怪; genus=MONS_JELLY; species=MONS_ENDOPLASM; data=crawl-ref/source/dat/mons/endoplasm.yaml; desc=EN/ZH | keep |
 | `monster:MONS_JELLY` | current; exposure=ordinary; name=jelly→果冻怪; genus=MONS_JELLY; species=MONS_JELLY; data=crawl-ref/source/dat/mons/jelly.yaml; desc=EN/ZH | adjust: display name corrected |
 | `monster:MONS_BROWN_OOZE` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
-| `monster:MONS_COLOSSAL_AMOEBA` | current; exposure=ordinary; name=colossal amoeba→巨型变形虫; genus=MONS_JELLY; species=MONS_COLOSSAL_AMOEBA; data=crawl-ref/source/dat/mons/colossal-amoeba.yaml; desc=EN/ZH | keep |
+| `monster:MONS_COLOSSAL_AMOEBA` | current; exposure=ordinary; name=colossal amoeba→巨型变形虫; genus=MONS_JELLY; species=MONS_COLOSSAL_AMOEBA; data=crawl-ref/source/dat/mons/colossal-amoeba.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_AZURE_JELLY` | current; exposure=ordinary; name=azure jelly→天蓝果冻怪; genus=MONS_JELLY; species=MONS_AZURE_JELLY; data=crawl-ref/source/dat/mons/azure-jelly.yaml; desc=EN/ZH | keep |
 | `monster:MONS_DEATH_OOZE` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_ACID_BLOB` | current; exposure=ordinary; name=acid blob→酸液团; genus=MONS_JELLY; species=MONS_ACID_BLOB; data=crawl-ref/source/dat/mons/acid-blob.yaml; desc=EN/ZH | retranslate: description corrected |
@@ -384,7 +384,7 @@
 | `monster:MONS_VAMPIRE` | current; exposure=ordinary; name=vampire→吸血鬼; genus=MONS_VAMPIRE; species=MONS_VAMPIRE; data=crawl-ref/source/dat/mons/vampire.yaml; desc=EN/ZH | keep |
 | `monster:MONS_VAMPIRE_KNIGHT` | current; exposure=ordinary; name=vampire knight→吸血鬼骑士; genus=MONS_VAMPIRE; species=MONS_VAMPIRE; data=crawl-ref/source/dat/mons/vampire-knight.yaml; desc=EN/ZH | keep |
 | `monster:MONS_VAMPIRE_MAGE` | current; exposure=ordinary; name=vampire mage→吸血鬼法师; genus=MONS_VAMPIRE; species=MONS_VAMPIRE; data=crawl-ref/source/dat/mons/vampire-mage.yaml; desc=EN/ZH | keep |
-| `monster:MONS_GHOST` | current; exposure=ordinary; name=ghost→幽灵; genus=MONS_GHOST; species=MONS_GHOST; data=crawl-ref/source/dat/mons/ghost.yaml; desc=EN/ZH | keep |
+| `monster:MONS_GHOST` | current; exposure=ordinary; name=ghost→鬼魂; genus=MONS_GHOST; species=MONS_GHOST; data=crawl-ref/source/dat/mons/ghost.yaml; desc=EN/ZH | adjust: display name corrected |
 | `monster:MONS_PHANTOM` | current; exposure=ordinary; name=phantom→幻影; genus=MONS_PHANTOM; species=MONS_PHANTOM; data=crawl-ref/source/dat/mons/phantom.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SHADOWGHAST` | current; exposure=ordinary; name=shadowghast→暗影食尸鬼; genus=MONS_WRAITH; species=MONS_SHADOWGHAST; data=crawl-ref/source/dat/mons/shadowghast.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_HUNGRY_GHOST` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
@@ -1604,3 +1604,8 @@ EN与ZH同步：Donald改静态完整叙述，避免不完整物种条件误称�
 
 - `MONS_ANCESTOR_HEXER`：hexer 从诅咒师改为妖术师；沿用既有 retranslate 终态（生成器细化为 name and description corrected），名称遵循 D-C-110，描述和机制不变。
 - `MONS_IMPERIAL_MYRMIDON`：描述中的 hexes 从诅咒系法术改为妖术系法术；沿用既有 retranslate 结论，其他命题与机制不变（D-C-110）。
+
+
+## 2026-11-12 抽检修正
+
+S45：colossal amoeba 首句改为“一堆大得难以想象、神秘而不断脉动的原生质。”；unfathomably 表示体量难以想象。旧冻结卡在此处的通过结论由本次勘误取代。
