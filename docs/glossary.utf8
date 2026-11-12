@@ -382,7 +382,7 @@ damage	伤害	domain=combat; source=EN/ZH
 damage resistance	伤害抗性	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；slaughter:fakemuts；不声称是可遗传突变；decision=D-C-098
 Darkness	黑暗术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Dart	飞镖	domain=magic; source=EN/ZH; 状态=✅ 已确认（`Magic Dart → 魔法飞弹` 为固定词形例外）
-dazed	眩晕	domain=status; source=EN/ZH; 依据 / 作用域=Dazed 状态及其机制描述；该状态叙述的 daze／dazing 同根；DUR_MESMERISED 的结束消息按 Mesmerise“迷魂”处理，不按英文字面 daze 归入眩晕；不全局替换其他机制的“震慑”或一般“恍惚”；decision=D-C-096
+dazed	眩晕	domain=status; source=EN/ZH; 依据 / 作用域=Dazed 状态及其机制描述；该状态叙述的 daze／dazing 同根；怪物 trance 加深消息（_mesmerise_los）延长 ENCH_DAZED，同按“眩晕”处理；DUR_MESMERISED 的结束消息按 Mesmerise“迷魂”处理，不按英文字面 daze 归入眩晕；不全局替换其他机制的“震慑”或一般“恍惚”；decision=D-C-096
 Death Channel	死亡通道	domain=spells; source=EN/ZH; 备注=✅；引导期间令被杀的活物、恶魔和神圣生物留下幽魂作战
 Death Rattle	死亡之响	domain=spells; source=EN/ZH; 备注=✅；呼出垂死精粹并生成瘴气云
 Death's Door	死亡之门	domain=spells; source=EN/ZH; 备注=✅；近乎免疫伤害但将生命降至濒死状态

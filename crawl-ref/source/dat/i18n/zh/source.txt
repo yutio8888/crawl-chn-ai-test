@@ -36071,7 +36071,7 @@ Zot clock should be between 0 and %d
 猛烈地
 %%%%
 %s trance deepens.
-%s恍惚状态加深了。
+%s眩晕加深了。
 %%%%
 %s is mesmerised by %s!
 %1$s被%2$s迷住了！
