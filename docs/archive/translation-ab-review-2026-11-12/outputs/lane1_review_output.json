@@ -1,0 +1,542 @@
+[
+ {
+  "sample_id": "1-01",
+  "verdict": "B",
+  "reason": "B「抛在了身后」自然；A「抛弃在身后」搭配生硬，混合了'抛弃'与'抛在身后'两种说法。",
+  "findings": [
+   {
+    "side": "A",
+    "type": "preference",
+    "category": "grammar",
+    "quote": "世界将你抛弃在身后",
+    "evidence": "'抛弃'与'在身后'搭配不顺",
+    "impact": "轻微可读性问题"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-02",
+  "verdict": "tie",
+  "reason": "两者均完整传达三段含义；A「射向摧毁它的目标」与B「向摧毁它的生物齐射」各有取舍。",
+  "findings": [
+   {
+    "side": "B",
+    "type": "preference",
+    "category": "mistranslation",
+    "quote": "向摧毁它的生物齐射",
+    "evidence": "原文 whatever destroyed it 不限于生物",
+    "impact": "影响极小"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-03",
+  "verdict": "insufficient_evidence",
+  "reason": "第二个%s为 DESC_ITS（英文含所有格），A 不加'的'、B 加'的'，正误取决于参数填充形式。",
+  "findings": [
+   {
+    "side": "A",
+    "type": "validation_gap",
+    "category": "placeholder",
+    "quote": "%s涌入了%s%s",
+    "evidence": "name(DESC_ITS) 在英文中为 'the goblin's'",
+    "impact": "若参数不含'的'则A缺所有格"
+   },
+   {
+    "side": "B",
+    "type": "validation_gap",
+    "category": "placeholder",
+    "quote": "%s涌入了%s的%s",
+    "evidence": "同上",
+    "impact": "若参数已含'的'则B出现'的的'"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-04",
+  "verdict": "tie",
+  "reason": "两者均正确，'麻痹法术'与'麻痹术'属偏好。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-05",
+  "verdict": "tie",
+  "reason": "嗜血狂怒/血怒均可指代 berserk，属术语偏好。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-06",
+  "verdict": "A",
+  "reason": "该句为变异第3级状态描述；B「变成了蹄子」读作变化过程，更像获得变异时的消息（第760行 'Your feet have mutated into hooves'）。",
+  "findings": [
+   {
+    "side": "B",
+    "type": "preference",
+    "category": "mistranslation",
+    "quote": "你的脚变成了蹄子",
+    "evidence": "原文为状态描述 'You have hooves in place of feet'，与获得消息语义重叠",
+    "impact": "变异列表中状态与过程混淆"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-07",
+  "verdict": "tie",
+  "reason": "译文完全相同。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-08",
+  "verdict": "B",
+  "reason": "原文行首有19个空格用于与上一行'Orders for allies: '对齐；A 删除全部行首空格，破坏对齐；B 保留缩进。",
+  "findings": [
+   {
+    "side": "A",
+    "type": "objective_error",
+    "category": "format",
+    "quote": "g - 守卫此区域。",
+    "evidence": "原文行首19空格，与第483-484行对齐",
+    "impact": "命令菜单列不对齐"
+   },
+   {
+    "side": "B",
+    "type": "validation_gap",
+    "category": "format",
+    "quote": "          g - 守卫此地。",
+    "evidence": "B缩进10格，是否与其译文首行宽度一致无法从本文件验证",
+    "impact": "可能仍有轻微错位"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-09",
+  "verdict": "tie",
+  "reason": "译文相同；%s为DESC_ITS，'的'由参数决定。",
+  "findings": [
+   {
+    "side": "A",
+    "type": "validation_gap",
+    "category": "placeholder",
+    "quote": "对%s灵魂",
+    "evidence": "DESC_ITS",
+    "impact": "依赖参数是否含'的'"
+   },
+   {
+    "side": "B",
+    "type": "validation_gap",
+    "category": "placeholder",
+    "quote": "对%s灵魂",
+    "evidence": "DESC_ITS",
+    "impact": "同上"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-10",
+  "verdict": "tie",
+  "reason": "两者均自然准确。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-11",
+  "verdict": "tie",
+  "reason": "两者均准确。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-12",
+  "verdict": "tie",
+  "reason": "译文相同。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-13",
+  "verdict": "tie",
+  "reason": "两者均准确，差异仅为措辞。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-14",
+  "verdict": "B",
+  "reason": "A「你发光更亮了」语法别扭；B 通顺。",
+  "findings": [
+   {
+    "side": "A",
+    "type": "objective_error",
+    "category": "grammar",
+    "quote": "你发光更亮了",
+    "evidence": "'发光'后接'更亮'不合汉语搭配",
+    "impact": "可读性下降"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-15",
+  "verdict": "tie",
+  "reason": "两者均准确；'聚焦'/'集中'属偏好。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-16",
+  "verdict": "A",
+  "reason": "B 将 player ghost 的'ghost'译为'幽灵'，与 spectre（1-12，B 亦为'幽灵'）撞名；A 用'鬼魂'可区分。",
+  "findings": [
+   {
+    "side": "B",
+    "type": "internal_consistency",
+    "category": "terminology",
+    "quote": "幽灵",
+    "evidence": "1-12 spectre 在 B 中同为'幽灵'",
+    "impact": "玩家无法区分 spectre 修饰与玩家幽灵"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-17",
+  "verdict": "B",
+  "reason": "A「令人难以理解地巨大」把 unfathomably 误作'难以理解'且语序生硬；B「大得难以想象」准确流畅。",
+  "findings": [
+   {
+    "side": "A",
+    "type": "objective_error",
+    "category": "mistranslation",
+    "quote": "令人难以理解地巨大",
+    "evidence": "unfathomably massive = 大得深不可测/难以想象",
+    "impact": "语义偏差、读感差"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-18",
+  "verdict": "tie",
+  "reason": "两者均可。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-19",
+  "verdict": "A",
+  "reason": "'seizes upon the passage of other souls' A 译为'攫住其他灵魂离去的时刻'较贴切；B「夺取他人灵魂的旅程」语义怪异。",
+  "findings": [
+   {
+    "side": "B",
+    "type": "preference",
+    "category": "mistranslation",
+    "quote": "夺取他人灵魂的旅程",
+    "evidence": "passage 指灵魂的经过/逝去",
+    "impact": "意象模糊"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-20",
+  "verdict": "tie",
+  "reason": "该字符串是 Lua 绑定表中的函数名键（l_item_cursed），本不应作为显示文本翻译；两者均翻译，无法从本文件判断是否会被使用。",
+  "findings": [
+   {
+    "side": "A",
+    "type": "validation_gap",
+    "category": "format",
+    "quote": "诅咒",
+    "evidence": "第1779行为 luaL_Reg 方法名",
+    "impact": "若被实际替换会破坏 Lua API"
+   },
+   {
+    "side": "B",
+    "type": "validation_gap",
+    "category": "format",
+    "quote": "诅咒的",
+    "evidence": "同上",
+    "impact": "同上"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-21",
+  "verdict": "tie",
+  "reason": "缚魂/受缚灵魂均可；B 更清晰，A 更简洁，属偏好。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-22",
+  "verdict": "B",
+  "reason": "B 简洁流畅；A「激起……巨大的神怒爆炸」略生硬。",
+  "findings": [
+   {
+    "side": "A",
+    "type": "preference",
+    "category": "grammar",
+    "quote": "激起以使用者为中心的巨大的神怒爆炸",
+    "evidence": "多重'的'堆叠",
+    "impact": "可读性略差"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-23",
+  "verdict": "tie",
+  "reason": "调试信息，两者均准确。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-24",
+  "verdict": "tie",
+  "reason": "两者均准确。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-25",
+  "verdict": "A",
+  "reason": "B 将 lightning bolt 译为'闪电箭'（易与法术 Lightning Bolt 混淆），且省略 'the bolt's'，变成泛指'目的地'。",
+  "findings": [
+   {
+    "side": "B",
+    "type": "objective_error",
+    "category": "omission",
+    "quote": "转移到目的地",
+    "evidence": "原文 'to the bolt's destination'",
+    "impact": "丢失'闪电终点'的限定"
+   },
+   {
+    "side": "B",
+    "type": "preference",
+    "category": "terminology",
+    "quote": "闪电箭",
+    "evidence": "此处指施法者化为闪电本身",
+    "impact": "可能误以为施放闪电箭法术"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-26",
+  "verdict": "tie",
+  "reason": "向导模式调试信息；A 生硬、B 较顺，但均可理解。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-27",
+  "verdict": "tie",
+  "reason": "'咯咯地笑'更贴近 cackling，'狂笑声'亦可传达恶意语气。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-28",
+  "verdict": "tie",
+  "reason": "译文相同。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-29",
+  "verdict": "tie",
+  "reason": "两者均准确。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-30",
+  "verdict": "tie",
+  "reason": "神罚律令/惩击诫命均可，属术语偏好。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-31",
+  "verdict": "tie",
+  "reason": "引燃术/点火均为可接受法术名，属偏好。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-32",
+  "verdict": "tie",
+  "reason": "联系/同调均可。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-33",
+  "verdict": "tie",
+  "reason": "两者几乎相同。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-34",
+  "verdict": "tie",
+  "reason": "译文相同。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-35",
+  "verdict": "tie",
+  "reason": "毒性激增更像法术名，'毒性'过于泛化但不算错误，属偏好。",
+  "findings": [
+   {
+    "side": "B",
+    "type": "preference",
+    "category": "terminology",
+    "quote": "毒性",
+    "evidence": "Virulence 为法术名",
+    "impact": "作为法术名辨识度低"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-36",
+  "verdict": "tie",
+  "reason": "第二个%s为 phrasing（如 'dramatically intoning'），两者结构等价；召回术/召回真言属术语偏好。",
+  "findings": [
+   {
+    "side": "A",
+    "type": "validation_gap",
+    "category": "placeholder",
+    "quote": "缓慢地开始%s召回术",
+    "evidence": "phrasing 参数填充形式未知",
+    "impact": "语序是否通顺依赖参数"
+   },
+   {
+    "side": "B",
+    "type": "validation_gap",
+    "category": "placeholder",
+    "quote": "开始缓缓%s召回真言",
+    "evidence": "同上",
+    "impact": "同上"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-37",
+  "verdict": "tie",
+  "reason": "两者均准确传达语气。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-38",
+  "verdict": "tie",
+  "reason": "两者均去掉了原文行首空格（改用全角括号）；'同族史莱姆'/'史莱姆同伴'均可。",
+  "findings": [
+   {
+    "side": "A",
+    "type": "validation_gap",
+    "category": "format",
+    "quote": "（同族史莱姆）",
+    "evidence": "原文 ' (fellow slime)' 有前导空格，拼接在名字后",
+    "impact": "全角括号可能足以分隔，需实机验证"
+   },
+   {
+    "side": "B",
+    "type": "validation_gap",
+    "category": "format",
+    "quote": "（史莱姆同伴）",
+    "evidence": "同上",
+    "impact": "同上；'同伴'可能被误解为盟友"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-39",
+  "verdict": "tie",
+  "reason": "A 保留 excruciating misery 云的强度；B 弱化为'郁积愁云'但机制句更清晰，互有得失。",
+  "findings": [
+   {
+    "side": "B",
+    "type": "preference",
+    "category": "mistranslation",
+    "quote": "郁积愁云",
+    "evidence": "excruciating misery",
+    "impact": "丢失'剧痛'强度"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-40",
+  "verdict": "B",
+  "reason": "'The monsters' 作主语指上文特定怪物，B「这些怪物」更贴切。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-41",
+  "verdict": "A",
+  "reason": "B 把 'invite Qazlal's gaze' 译为'请求……注视'偏离原意（招致而非请求），且'风暴之神……风暴的风暴眼'重复；A 简洁准确。",
+  "findings": [
+   {
+    "side": "B",
+    "type": "objective_error",
+    "category": "mistranslation",
+    "quote": "那些请求卡兹拉尔注视的人",
+    "evidence": "invite 此处为'招致'",
+    "impact": "语义偏差"
+   },
+   {
+    "side": "A",
+    "type": "preference",
+    "category": "omission",
+    "quote": "风暴的中心",
+    "evidence": "'eye in a storm' 风暴眼意象弱化",
+    "impact": "轻微"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-42",
+  "verdict": "tie",
+  "reason": "两者均准确，'它的'可省。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-43",
+  "verdict": "insufficient_evidence",
+  "reason": "%s 为 DESC_ITS；A 加'的'、B 不加。另外两份译文对 DESC_ITS 的处理在 1-03/1-09/1-43 间各自不一致，需结合参数填充验证。",
+  "findings": [
+   {
+    "side": "A",
+    "type": "validation_gap",
+    "category": "placeholder",
+    "quote": "%s的意志被剥除了",
+    "evidence": "A 在1-03、1-09不加'的'，此处加",
+    "impact": "若参数含'的'将出现'的的'"
+   },
+   {
+    "side": "B",
+    "type": "validation_gap",
+    "category": "placeholder",
+    "quote": "%s意志力被剥夺了",
+    "evidence": "B 在1-03加'的'，此处不加",
+    "impact": "若参数不含'的'则缺所有格"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-44",
+  "verdict": "tie",
+  "reason": "两者均准确。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-45",
+  "verdict": "A",
+  "reason": "A 保留 'for your liking' 的主观不安；B 省略该层含义。",
+  "findings": [
+   {
+    "side": "B",
+    "type": "objective_error",
+    "category": "omission",
+    "quote": "%s离你太近了。",
+    "evidence": "原文 'too close for your liking'",
+    "impact": "丢失语气层次，影响轻微"
+   }
+  ]
+ },
+ {
+  "sample_id": "1-46",
+  "verdict": "tie",
+  "reason": "译文相同。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-47",
+  "verdict": "tie",
+  "reason": "扰动/异动均可。",
+  "findings": []
+ },
+ {
+  "sample_id": "1-48",
+  "verdict": "tie",
+  "reason": "两者均准确。",
+  "findings": []
+ }
+]
