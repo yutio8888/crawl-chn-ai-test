@@ -532,7 +532,7 @@
 | Berserk | 狂暴 | status; source=status.txt |
 | Poison | 中毒 | status; source=status.txt |
 | Confusion | 混乱 | status; source=status.txt |
-| hexed | 被支配 | ENCH_HEXED 支配状态，非学派名；decision=D-C-110; reject=被控制 |
+| hexed | 被支配 | ENCH_HEXED 支配状态，非学派名；仅精确键校验，随机书名 Hexed 按普通形容词处理；decision=D-C-110 |
 | Contamination | 诱变辐射 | status; source=status.txt |
 | Drain | 衰竭 | status; source=status.txt |
 | Slow | 减速 | status; source=status.txt |
