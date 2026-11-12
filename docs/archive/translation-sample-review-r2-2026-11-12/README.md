@@ -19,7 +19,11 @@
 - 排除：上一轮的 48 项、D-C-096 的探针清单、#299–#311 修改过的键、调试和内部键，并按共享键去重。规则和记录见 `sampling.md`、`selection_log_r2.json`。
 - 有效 80 项，作废 0，补抽 0。
 - 输入更正：抽样时 C1-02、C1-09 被标成“只在 stable”，评审发现 trunk 也有正常条目。两线统计已更正，这两项不算漏译。
-- 候选总体文件约 17MB，固定快照约 245MB，都没有入库。在上面的固定提交上运行 `scripts/build_pool_r2.py` 和 `scripts/extend_pool_r2.py`，就能复现候选总体（`verification_r2.json` 记录了复跑时的哈希）。
+- 候选总体文件约 17MB，固定快照约 245MB，都没有入库。复现步骤：
+  - 只需要运行 `python3 scripts/build_pool_r2.py --repo <仓库路径> --out <仓库外的空目录>`，它结束时会自动调用 `extend_pool_r2.py` 补齐 C7/C8。`extend_pool_r2.py` 只用于在已有 `frozen60/` 的目录里续跑。
+  - **必须指定 `--out`，而且要指向仓库外的空目录。**两个脚本的 `--out` 默认值是归档目录本身，不带这个参数直接运行，会覆盖已入库的 `samples_r2.json` 和 `selection_log_r2.json`，还会把快照和候选总体写进 `docs/archive`。脚本本身是冻结证据，没有修改。
+  - `verification_r2.json` 中记录的 `README_r2.md`、`review_input_lane*.md`、`pool_C7.json`、`pool_C8.json` 等的哈希，只用来对照复跑产物，不对应归档里的文件；其中 `README_r2.md` 已经归档为 `sampling.md`。
+- 样本和评审输出里的中文保留的是修复前的原文，不回写。现行译文以 #312、#313 合并后的资产为准。
 - **这是有界的分层抽样，不能用来推算全库错误率，也不能用来比较改进前后的质量比例。**
 
 ## 评审设置
@@ -67,6 +71,6 @@
 ## 文件
 - `samples_r2.json`：冻结样本（英文全文、两条线的中文、调用点、动态参数）。
 - `inputs/lane{1,2}_order.json`：两条 lane 的样本顺序（评审输入的正文可以由样本重建）。
-- `outputs/lane{1,2}/`：两条 lane 的原始输出，原样保留。只有 lane1 说明中的一处本机路径改成了可移植的描述。
+- `outputs/lane{1,2}/`：两条 lane 的原始输出，原样保留。只有 lane1 说明中的两处本机路径（第 4、6 行）改成了可移植的描述。
 - `adjudication.json`：主持人的裁决。
 - `sampling.md`、`selection_log_r2.json`、`verification_r2.json`、`scripts/`：抽样规则、排除记录、复跑验证和脚本。
