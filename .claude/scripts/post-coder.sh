@@ -338,7 +338,7 @@ run_cpp_ast_scanners() {
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "OmegaT glossary export freshness" blocking \
         python3 "$SCRIPT_DIR/export_omegat_glossary.py" --check
-    run_check "Changed exact-key terminology (current glossary)" blocking \
+    run_check "Exact-key and rejected-form terminology (current glossary)" blocking \
         python3 "$SCRIPT_DIR/check_glossary_terms.py" \
         --base "${GLOSSARY_DIFF_BASE:-HEAD}"
     run_cpp_ast_scanners
