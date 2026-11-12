@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`fb814f3252f249fc230e81fa132dce6a9bb194b014d687fc1524c66827b351d7`
-- 清单 SHA-256：`01bb7c34e11525d79e999a0ed190a3422fff705c47a522bd23ea28e09169cf6a`
+- 清单 SHA-256：`4539a8fc108e347dbd1d6d1b2716b092470aabe8607f09486d34179690eb9a13`
 - 身份总数：815（现行 691；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -590,7 +590,7 @@
 | `monster:MONS_DEMONSPAWN_BLOOD_SAINT` | current; exposure=ordinary; name=demonspawn blood saint→恶魔裔血圣; genus=MONS_DEMONSPAWN; species=MONS_DEMONSPAWN; data=crawl-ref/source/dat/mons/demonspawn-blood-saint.yaml; desc=EN/ZH | keep |
 | `monster:MONS_CHAOS_CHAMPION` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_DEMONSPAWN_WARMONGER` | current; exposure=ordinary; name=demonspawn warmonger→恶魔裔战争贩子; genus=MONS_DEMONSPAWN; species=MONS_DEMONSPAWN; data=crawl-ref/source/dat/mons/demonspawn-warmonger.yaml; desc=EN/ZH | retranslate: description corrected |
-| `monster:MONS_DEMONSPAWN_CORRUPTER` | current; exposure=ordinary; name=demonspawn corrupter→恶魔裔腐蚀者; genus=MONS_DEMONSPAWN; species=MONS_DEMONSPAWN; data=crawl-ref/source/dat/mons/demonspawn-corrupter.yaml; desc=EN/ZH | keep |
+| `monster:MONS_DEMONSPAWN_CORRUPTER` | current; exposure=ordinary; name=demonspawn corrupter→恶魔裔腐蚀者; genus=MONS_DEMONSPAWN; species=MONS_DEMONSPAWN; data=crawl-ref/source/dat/mons/demonspawn-corrupter.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_DEMONSPAWN_SOUL_SCHOLAR` | current; exposure=ordinary; name=demonspawn soul scholar→恶魔裔灵魂学者; genus=MONS_DEMONSPAWN; species=MONS_DEMONSPAWN; data=crawl-ref/source/dat/mons/demonspawn-soul-scholar.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_WORLDBINDER` | current; exposure=ordinary; name=worldbinder→缚界者; genus=MONS_WORLDBINDER; species=MONS_WORLDBINDER; data=crawl-ref/source/dat/mons/worldbinder.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_GRAND_AVATAR` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
