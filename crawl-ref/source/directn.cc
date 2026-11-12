@@ -3014,11 +3014,16 @@ vector<dungeon_feature_type> features_by_desc(const base_pattern &pattern)
     return features;
 }
 
+string floor_feature_message(bool shop, const string& feature)
+{
+    return make_stringf(shop ? T_("There is an entrance to %s here.")
+                            : T_("There is %s here."), feature.c_str());
+}
+
 void describe_floor()
 {
     dungeon_feature_type grid = env.map_knowledge(you.pos()).feat();
 
-    const char* prefix = T_("There is ");
     string feat;
 
     switch (grid)
@@ -3026,10 +3031,6 @@ void describe_floor()
     case DNGN_FLOOR:
     case DNGN_MUD:
         return;
-
-    case DNGN_ENTER_SHOP:
-        prefix = T_("There is an entrance to ");
-        break;
 
     default:
         break;
@@ -3045,7 +3046,7 @@ void describe_floor()
     if (feat_is_water(grid) || feat_is_lava(grid))
         return;
 
-    mprf(channel, T_("%s%s here."), prefix, feat.c_str());
+    mprf(channel, "%s", floor_feature_message(grid == DNGN_ENTER_SHOP, feat).c_str());
     if (grid == DNGN_ENTER_GAUNTLET)
         mprf(MSGCH_EXAMINE, T_("Beware, the minotaur awaits!"));
     else if (feat_is_fountain(grid) || feat_is_food(grid))

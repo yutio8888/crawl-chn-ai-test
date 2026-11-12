@@ -143,3 +143,5 @@ string player_species_name();
 
 /* Public for testing purposes only: do not use elsewhere. */
 string _monster_habitat_description(const monster_info& mi);
+
+string feature_action_message(bool shop, const string& feature, const string& key);

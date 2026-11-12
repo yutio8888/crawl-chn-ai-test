@@ -4850,7 +4850,7 @@ items
 物品
 %%%%
 Items here: %s.
-此处物品：%s。
+这里的物品：%s。
 %%%%
 its
 它的
@@ -7585,7 +7585,7 @@ Thick smoke pours from the lock!
 浓烟从锁中喷出！
 %%%%
 Things that are here:
-此处有：
+这里有：
 %%%%
 This ability has a chance of reducing your maximum magic capacity when used.
 此能力在使用时有一定几率降低你的法力上限。
@@ -10391,22 +10391,22 @@ You reach to attack!
 你伸臂攻击！
 %%%%
 You really shouldn't be using a chaotic item like this.
-你真的不应该这样使用混乱物品。
+你真的不应该使用这样的混乱物品。
 %%%%
 You really shouldn't be using a hasty item like this.
-你真的不应该这样使用急躁物品。
+你真的不应该使用这样的急躁物品。
 %%%%
 You really shouldn't be using a holy item like this.
-你真的不应该这样使用神圣物品。
+你真的不应该使用这样的神圣物品。
 %%%%
 You really shouldn't be using a wizardly item like this.
-你真的不应该这样使用巫师物品。
+你真的不应该使用这样的巫师物品。
 %%%%
 You really shouldn't be using an evil item like this.
-你真的不应该这样使用邪恶物品。
+你真的不应该使用这样的邪恶物品。
 %%%%
 You really shouldn't be using an unclean item like this.
-你真的不应该这样使用不洁物品。
+你真的不应该使用这样的不洁物品。
 %%%%
 You recall your battlesphere and imbue it with extra charge.
 你召回了你的战斗法球，并为它注入了额外的充能。
@@ -10472,7 +10472,7 @@ You see a puff of smoke.
 你看到一阵烟雾。
 %%%%
 You see here %s.
-你在这里看到%s。
+这里有%s。
 %%%%
 You see nothing there to target!
 你在那里看不到任何目标！
@@ -12533,7 +12533,7 @@ Identified
 鉴定
 %%%%
 You see here 
-你在这里看到了
+这里有
 %%%%
 You bought 
 你购买了
@@ -23543,7 +23543,7 @@ Yredelemnul refuses to have your conquest cut short by the earth!
 伊莱德莱姆努尔拒绝让你的征服被大地中断！
 %%%%
 %s's hold on you weakens, but your attempt to escape fails.
-%s对你的掌控减弱了，但你逃脱的尝试失败了。
+%s束缚减弱了，但你逃脱的尝试失败了。
 %%%%
 You have %d usable tentacles for constriction.
 你有%d条可用的触须进行缠绕。
@@ -39064,7 +39064,7 @@ Your %s simulacrum begins to move.
 你的%s拟像开始活动。
 %%%%
 <cyan>Item%1$s here:</cyan> %2$s.
-<cyan>此处物品：</cyan> %2$s。
+<cyan>这里的物品：</cyan> %2$s。
 %%%%
 Disturbance
 扰动
@@ -40807,7 +40807,7 @@ These nasty constructions can cause a range of unpleasant effects. You won't be 
 这些讨厌的构造会造成一系列令人不快的效果。你无法通过从陷阱上方飞过来避免触发；它们的魔法构造仍会使其生效。
 %%%%
 The dungeon contains a number of natural obstacles such as shafts, which lead one to three levels down. Once you know the shaft is there, you can safely step over it.\nIf you want to jump down there, use <w>></w> to do so. Be warned that getting back here might be difficult.
-地牢中有许多天然障碍，比如陷坑，会让你掉下一到三层。一旦你知道陷坑在那里，就可以安全地从上面走过。\n如果想跳下去，请按<w>></w>。但要注意，返回这里可能会很困难。
+地牢中有许多天然障碍，比如竖井，会让你掉下一到三层。一旦你知道竖井在那里，就可以安全地从上面走过。\n如果想跳下去，请按<w>></w>。但要注意，返回这里可能会很困难。
 %%%%
 Some areas of the dungeon, such as the Spider Nest, may be strewn with giant webs that may ensnare you for a short time. Insects, oozes and incorporeal entities can navigate the webs safely.
 地牢的某些区域，比如蜘蛛巢穴，可能布满巨大的蛛网，会让你短暂被困。昆虫、软泥和无实体生物可以安全穿过蛛网。
@@ -50136,4 +50136,49 @@ Uh-oh, %s just excommunicated you for running out of piety (your divine favour w
 %%%%
 Should you decide that abandoning %swasn't such a smart move after all, and you'd like to return to your old faith, you'll have to find an altar dedicated to %s where you can re-convert, and all will be well.
 如果你觉得抛弃%s毕竟不是明智之举，想回到原来的信仰，就得找到一座供奉%s的祭坛，在那里重新皈依，一切都会好起来。
+%%%%
+The %s shatters into small pieces.
+%s碎成了小片。
+%%%%
+Some %s shatters into small pieces.
+一些%s碎成了小片。
+%%%%
+You feel more confident with your borrowed prowess.
+借来的武艺让你更加自信。
+%%%%
+You gain the combat prowess of a mighty hero.
+你获得了强大英雄的战斗技艺。
+%%%%
+\nWhile standing here, you can traverse %1$s with the <w>%2$s</w> key.
+\n站在这里时，你可以按<w>%2$s</w>键通过%1$s。
+%%%%
+\nWhile standing here, you can enter <w>%1$s</w> with the <w>%2$s</w> key.
+\n站在这里时，你可以按<w>%2$s</w>键进入<w>%1$s</w>。
+%%%%
+There is %s here.
+这里有%s。
+%%%%
+There is an entrance to %s here.
+这里有通往%s的入口。
+%%%%
+klown pie flavour|plum
+李子
+%%%%
+klown pie flavour|lemon
+柠檬
+%%%%
+klown pie flavour|blueberry
+蓝莓
+%%%%
+klown pie flavour|cherry
+樱桃
+%%%%
+klown pie flavour|peanut brittle
+花生脆糖
+%%%%
+klown pie flavour|glitter
+闪粉
+%%%%
+klown pie flavour|%s!
+%s！
 %%%%

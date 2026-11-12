@@ -3424,6 +3424,14 @@ string feature_description_en(dungeon_feature_type feat)
     return feature_description(feat, NUM_TRAPS, "", DESC_A, NUM_BRANCHES);
 }
 
+string feature_action_message(bool shop, const string& feature, const string& key)
+{
+    return make_stringf_p(shop
+        ? T_("\nWhile standing here, you can enter <w>%1$s</w> with the <w>%2$s</w> key.")
+        : T_("\nWhile standing here, you can traverse %1$s with the <w>%2$s</w> key."),
+        feature.c_str(), key.c_str());
+}
+
 void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_extra)
 {
     dungeon_feature_type feat = env.map_knowledge(pos).feat();
@@ -3495,11 +3503,8 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
         }
         else if (feat_is_staircase(feat) || feat_is_escape_hatch(feat))
         {
-            long_desc += make_stringf(
-                    T_("\nWhile standing here, you can traverse %s "
-                    "with the <w>%s</w> key."),
-                    desc_the.c_str(),
-                    _esc_cmd_to_str(stair_dir).c_str());
+            long_desc += feature_action_message(false, desc_the,
+                                                _esc_cmd_to_str(stair_dir));
 
             if (is_unknown_stair(pos))
             {
@@ -3571,11 +3576,8 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
     }
     else if (feat == DNGN_ENTER_SHOP)
     {
-        long_desc += make_stringf(
-                T_("\nWhile standing here, you can enter <w>%s</w> with "
-                "the <w>%s</w> key."),
-                desc.c_str(),
-                command_to_string(CMD_GO_DOWNSTAIRS).c_str());
+        long_desc += feature_action_message(true, desc,
+                                command_to_string(CMD_GO_DOWNSTAIRS));
     }
     else if (feat == DNGN_TRANSPORTER)
     {

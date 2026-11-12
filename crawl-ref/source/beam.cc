@@ -841,6 +841,13 @@ void bolt::fake_flavour()
         flavour = is_tracer() ? BEAM_MMISSILE : _chaos_beam_flavour();
 }
 
+string wall_shatter_message(bool player_agent, const string& wall)
+{
+    return make_stringf(player_agent
+                       ? T_("The %s shatters into small pieces.")
+                       : T_("Some %s shatters into small pieces."), wall.c_str());
+}
+
 void bolt::digging_wall_effect()
 {
     if (env.markers.property_at(pos(), MAT_ANY, "veto_destroy") == "veto")
@@ -893,9 +900,7 @@ void bolt::digging_wall_effect()
             else
                 wall = T_("rock");
 
-            mprf(T_("%s %s shatters into small pieces."),
-                 agent() && agent()->is_player() ? T_("The") : T_("Some"),
-                 wall.c_str());
+            mprf("%s", wall_shatter_message(agent() && agent()->is_player(), wall).c_str());
         }
     }
     else if (feat_is_wall(feat))
@@ -4108,6 +4113,16 @@ void bolt::affect_actor(actor *act)
         affect_player();
 }
 
+// Shared with the focused regression without exposing the effect table.
+string klown_pie_flavour_message(const char* flavour);
+
+// Both hit paths use the same display-only translation boundary.
+string klown_pie_flavour_message(const char* flavour)
+{
+    return make_stringf(C_("klown pie flavour", "%s!"),
+                        C_("klown pie flavour", flavour));
+}
+
 struct pie_effect
 {
     const char* desc;
@@ -4118,7 +4133,7 @@ struct pie_effect
 
 static const vector<pie_effect> pie_effects = {
     {
-        "plum",
+        NC_("klown pie flavour", "plum"),
         [](const actor &defender) {
             return defender.is_player();
         },
@@ -4133,7 +4148,7 @@ static const vector<pie_effect> pie_effects = {
         10
     },
     {
-        "lemon",
+        NC_("klown pie flavour", "lemon"),
         [](const actor &defender) {
             return defender.is_player() && (you.can_drink()
                                             || you.duration[DUR_NO_POTIONS]); // allow stacking
@@ -4149,7 +4164,7 @@ static const vector<pie_effect> pie_effects = {
         10
     },
     {
-        "blueberry",
+        NC_("klown pie flavour", "blueberry"),
         nullptr,
         [](actor &defender, const bolt &beam) {
             if (defender.is_monster())
@@ -4171,7 +4186,7 @@ static const vector<pie_effect> pie_effects = {
         10
     },
     {
-        "cherry",
+        NC_("klown pie flavour", "cherry"),
         [](const actor &defender) {
             return defender.is_player() || defender.res_fire() < 3;
         },
@@ -4200,7 +4215,7 @@ static const vector<pie_effect> pie_effects = {
         6
     },
     {
-        "peanut brittle",
+        NC_("klown pie flavour", "peanut brittle"),
         nullptr,
         [](actor &defender, const bolt &beam) {
             defender.vitrify(beam.agent(), random_range(16, 36));
@@ -4208,7 +4223,7 @@ static const vector<pie_effect> pie_effects = {
         4
     },
     {
-        "glitter",
+        NC_("klown pie flavour", "glitter"),
         [](const actor &defender) {
             return !defender.res_blind();
         },
@@ -4566,7 +4581,7 @@ void bolt::affect_player()
     if (origin_spell == SPELL_THROW_PIE && final_dam > 0)
     {
         const pie_effect effect = _random_pie_effect(you);
-        mprf("%s!", effect.desc);
+        mprf("%s", klown_pie_flavour_message(effect.desc).c_str());
         effect.effect(you, *this);
     }
 
@@ -5340,7 +5355,7 @@ void bolt::monster_post_hit(monster* mon, int dmg)
     {
         const pie_effect effect = _random_pie_effect(*mon);
         if (you.see_cell(mon->pos()))
-            mprf("%s!", effect.desc);
+            mprf("%s", klown_pie_flavour_message(effect.desc).c_str());
         effect.effect(*mon, *this);
     }
 

@@ -8427,3 +8427,69 @@ TEST_CASE("reconversion hints preserve English and identify the altar in Chinese
         }
     }
 }
+
+TEST_CASE_METHOD(EnTranslationFixture, "en: player action frames retain original output",
+                 "[zh-translation][r3-action-frames]")
+{
+    for (bool player_agent : {false, true})
+    {
+        CHECK(wall_shatter_message(player_agent, "rock")
+              == string(player_agent ? "The" : "Some") + " rock shatters into small pieces.");
+    }
+    for (bool shop : {false, true})
+    {
+        CHECK(floor_feature_message(shop, "a shop")
+              == string("There is ") + (shop ? "an entrance to " : "") + "a shop here.");
+    }
+    CHECK(feature_action_message(true, "the shop", ">")
+          == "\nWhile standing here, you can enter <w>the shop</w> with the <w>></w> key.");
+    CHECK(feature_action_message(false, "the stairs", "<")
+          == "\nWhile standing here, you can traverse the stairs with the <w><</w> key.");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture, "zh: player action frames compose real arguments",
+                 "[zh-translation][r3-action-frames]")
+{
+    CHECK(wall_shatter_message(true, "岩石") == "岩石碎成了小片。");
+    CHECK(wall_shatter_message(false, "岩石") == "一些岩石碎成了小片。");
+    INFO("legacy floor: " << T_("There is ") << "向下的楼梯" << T_("."));
+    INFO("legacy shop: " << T_("There is an entrance to ") << "杂货铺" << T_("."));
+    CHECK(floor_feature_message(false, "向下的楼梯") == "这里有向下的楼梯。");
+    CHECK(floor_feature_message(true, "杂货铺") == "这里有通往杂货铺的入口。");
+    CHECK(feature_action_message(true, "杂货铺", ">")
+          == "\n站在这里时，你可以按<w>></w>键进入<w>杂货铺</w>。");
+    CHECK(feature_action_message(false, "向下的楼梯", "<")
+          == "\n站在这里时，你可以按<w><</w>键通过向下的楼梯。");
+
+    init_monsters();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 100;
+    scoped_monspeak_world world;
+    monster *mons = world.place(MONS_ORC);
+    REQUIRE(mons != nullptr);
+    const vector<string> possessives = {
+        mons->name(DESC_ITS, true),
+        C_("constrictor possessive", "the roots'"),
+        C_("constrictor possessive", "the zombie hands'"),
+        C_("constrictor possessive", "the vines'")
+    };
+    for (const string& object : possessives)
+    {
+        const string text = make_stringf(
+            T_("%s's hold on you weakens, but your attempt to escape fails."), object.c_str());
+        CHECK(text == object + "束缚减弱了，但你逃脱的尝试失败了。");
+        CHECK(text.find("的的") == string::npos);
+    }
+
+    item_def stones;
+    stones.base_type = OBJ_MISSILES;
+    stones.sub_type = MI_STONE;
+    stones.quantity = 3;
+    const string name = stones.name(DESC_A);
+    const string fragment = string(T_("You see here ")) + name + T_(".");
+    CHECK(fragment == "这里有" + name + "。");
+    CHECK(fragment == make_stringf(T_("You see here %s."), name.c_str()));
+}
