@@ -8084,7 +8084,7 @@ you cannot issue another dragon's call so soon.
 你无法这么快再次发出龙之召唤。
 %%%%
 you cannot sustain more frozen ramparts right now.
-你现在无法维持更多的冰霜壁垒。
+你现在无法维持更多的冰冻壁垒。
 %%%%
 you cannot sustain more bogs right now.
 你现在无法维持更多的毒沼泽。
@@ -43381,10 +43381,10 @@ Travel to: %s\nYou cannot afford this item; travel there anyway? (y/N)
 <h>地牢爬行帮助\n\n按以下键之一以获取\n关于地牢爬行某个方面的\n更多信息。\n<w>?</w>：命令列表\n<w>^</w>：快速入门指南
 %%%%
 <darkgrey>:: Browse character notes</darkgrey>\n<darkgrey>#: Browse character dump</darkgrey>
-<darkgrey>:: 浏览角色笔记</darkgrey>\n<darkgrey>#: 浏览角色存档信息</darkgrey>
+<darkgrey>:: 浏览角色笔记</darkgrey>\n<darkgrey>#: 浏览角色报告</darkgrey>
 %%%%
 <w>:</w>: Browse character notes\n<w>#</w>: Browse character dump
-<w>:</w>：浏览角色笔记\n<w>#</w>：浏览角色存档信息
+<w>:</w>：浏览角色笔记\n<w>#</w>：浏览角色报告
 %%%%
 <w>~</w>: Macros help\n<w>&</w>: Options help\n<w>%</w>: Table of aptitudes\n<w>/</w>: Lookup description\n<w>Q</w>: FAQ\n
 <w>~</w>：宏帮助\n<w>&</w>：选项帮助\n<w>%</w>：资质表\n<w>/</w>：查找说明\n<w>Q</w>：常见问题\n

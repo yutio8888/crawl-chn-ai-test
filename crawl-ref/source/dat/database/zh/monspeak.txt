@@ -106,7 +106,7 @@ VISUAL:@The_monster@ 用 @possessive@链枷朝 @foe@ 比划了一下。
 
 @The_monster@ 说："我还挺擅长算数的。"
 
-@The_monster@ 说："居然有人诬陷我是扒手！"
+@The_monster@ 说："居然有人指控我是扒手！"
 %%%%
 _Edmund_rare_
 VISUAL:@The_monster@ 磨了磨@possessive@牙，然后叹了口气。
