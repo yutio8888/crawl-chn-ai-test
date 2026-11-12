@@ -33,6 +33,19 @@ implement in dependency order, and let the translator update owned assets when
 keys, placeholders, or contexts settle. Validate the combined result with
 focused checks and one matching development profile from `docs/zh-testing.md`.
 
+## Terminology consumer checklist
+
+When adding or changing a glossary term, list these bounded consumers in the PR
+and give a change/keep reason for each: full names and shared short keys; actual
+display consumers; descript and database bodies; dynamic arguments and templates;
+test expectations; applicability to each maintained line. Use
+`context_resolve.sh`, `glossary_query.py`, and `git grep` to trace the affected
+term and its consumers; this does not require a repository-wide review.
+
+For example, D-C-113's `ghost` also reaches `MONS_GHOST`, missed in the first
+draft, as well as the player-ghost suffix. D-C-114's `mutation` reaches the
+`test_zh_help.cc` expected lookup label, whose stale value surfaced only in CI.
+
 ## Review and deliver
 
 Follow `.agents/policies/review-contract.md` and `docs/agent-routing.md`.

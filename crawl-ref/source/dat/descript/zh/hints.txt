@@ -441,7 +441,7 @@ HINT_SEEN_ARMOUR
 {{
     if you.get_base_mutation_level("horns") > 0 then
         return "注意：由于你长着角，因此无法穿戴头盔。"
-               .. "（按 <w>$cmd[CMD_DISPLAY_MUTATIONS]</w> 查看你的突变"
+               .. "（按 <w>$cmd[CMD_DISPLAY_MUTATIONS]</w> 查看你的变异"
                .. "和先天能力列表。）"
     end
 }}

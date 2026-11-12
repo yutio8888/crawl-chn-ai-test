@@ -5,7 +5,9 @@ Before translating any entity name, check this file for existing rulings.
 
 **Maintenance rule**: Decision execution status is updated by the commit that fixes
 the affected file. Each commit body annotates `Updates: DECISION-XXX` when it
-resolves an outstanding ❌.
+resolves an outstanding ❌. Decisions with deferred asset changes must also
+record line landing by terminology group: cite the actual asset commit/merged PR
+for each line, or give the remaining location or a reason it is not applicable.
 
 **Status values**:
 - `active` — Currently in effect
@@ -4107,7 +4109,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | `crawl-ref/source/dat/i18n/zh/source.txt:18971` | 变异能量 | 诱变能量 | mutagenic |
 | `crawl-ref/source/dat/i18n/zh/source.txt:20144` | 晕眩 | 眩晕 | dazed／daze |
 | `crawl-ref/source/dat/i18n/zh/source.txt:20654` | 变异能量 | 诱变能量 | mutagenic |
-| `crawl-ref/source/dat/i18n/zh/source.txt:21338` | 恍惚 | 眩晕 | dazed／daze |
+| `crawl-ref/source/dat/i18n/zh/source.txt:21338` | 恍惚 | 眩晕（原建议，已更正：按迷魂处理） | dazed／daze（原误分类，已更正：DUR_MESMERISED） |
 | `crawl-ref/source/dat/i18n/zh/source.txt:24060` | 虔诚度 | 虔诚值 | piety |
 | `crawl-ref/source/dat/i18n/zh/source.txt:24066` | 虔诚度 | 虔诚值 | piety |
 | `crawl-ref/source/dat/i18n/zh/source.txt:24537` | 突变能量 | 诱变力量 | mutagenic |
@@ -4161,6 +4163,97 @@ The glossary and context_resolve.sh use these tables for disambiguation.
   - 在共享修复前向合并之前，trunk 上新写的内容一律使用本次定稿的新术语，
     已有共享条目暂时保持旧用词。这是已知的暂时不一致；本段限定上表的
     执行范围与顺序，不撤回已采纳的术语、mutagenic 裁决或歌曲题名。
+
+
+#### 逐线落实（Line landing）
+
+以下按 trunk D-C-096 的 Deferred asset changes 术语组逐线核销，位置按 stable `3408cc097a` 与
+trunk `fc8be76fe3` 重新定位；路径均以 `crawl-ref/source/dat/` 为前缀。
+“已落地”引用实际资产提交，不把术语登记或当前状态当成已落实的证明。
+共享修复 `cad4bcba74` 经 PR #164（merge `0d110783c5`）进入 stable；
+trunk 未自动继承该提交，须分别核对。此表只记落实情况，不改原裁决及例外。
+
+| 原清单术语组 | stable | trunk |
+|---|---|---|
+| Spider Nest | 已落地：`cad4bcba74`，features 与 Forceful Invitation 正文 | 已落地：features `25bc143246`、spells `8635fc61df`，均为“蜘蛛巢穴” |
+| piety（数值、消耗参数、标签） | 已落地：`cad4bcba74`；Notes 星级拼接按 D-C-097 为“虔诚等级” | 候选：`codex/dc096-assets-trunk @ ec08132481`，PR 待合并。历史核对：未完全落地：`i18n/zh/source.txt:2600` 捐赠数额仍为“虔诚增长”、`:31759` 仍为“虔诚消耗”、`:37860` Notes 星级句架仍为“虔诚度”（应按 D-C-097 区分等级）；不把普通“虔诚的信徒”计作残留 |
+| mutagenic energy/energies | 已落地：`cad4bcba74`，含 neqoxec 与 Mutagenic Gaze 正文 | 已落地：`cb70b86b73`，PR #301（merge `fc8be76fe3`）；包含 source 与 neqoxec 的残留修复，既有 Gaze 正文保持“诱变能量” |
+| mutagenic power | 已落地：`cad4bcba74` | 已落地：`38a8e1e4ec`，PR #301，两条四肢消息为“诱变力量” |
+| mutagenic glow | 已落地：`cad4bcba74` | 候选：`codex/dc096-assets-trunk @ ec08132481`，PR 待合并。历史核对：未落地：`i18n/zh/source.txt:3933`、`:4877` 仍为“变异光芒” |
+| mutagenic fog（普通正文与云名） | 已落地：共享 monstatus/source 由 `cad4bcba74` 修复；trunk 新增 potion clouds 条目不存在于本线，不适用 | 候选：`codex/dc096-assets-trunk @ ec08132481`，PR 待合并。历史核对：未完全落地：potion clouds 的“诱变雾气”已由 `821c66c9ed` 落地；`descript/zh/monstatus.txt:559` 仍为“变异雾气” |
+| contamination susceptible（双倍诱变能量分句） | 已落地：`cad4bcba74`，保留来源与倍量 | 已落地：正文 `d20758170b`；当前 mutations 与 source 均保留来源与倍量 |
+| encumbrance rating | 已落地：`cad4bcba74` | 已落地：mutations `df0d11a8b9`、spells `8635fc61df`、source `4486e1fadd`，为“负重等级” |
+| barbs 普通正文 | 候选：`codex/dc096-assets-stable @ 7dd24f4788`，PR 待合并。历史核对：未完全落实：`cad4bcba74` 曾改为“倒刺”；`ed26247a5c` 后当前 crystal echidna 在 `descript/zh/monsters.txt:861` 又作“尖刺”，与普通正文裁决不一致；其余原清单正文已落地 | 候选：`codex/dc096-assets-trunk @ ec08132481`，PR 待合并。历史核对：未落地：crystal echidna `descript/zh/monsters.txt:838` 的“尖刺”及 Barbs `descript/zh/status.txt:174-175` 的“刺”仍未依原清单统一 |
+| status\|Barbs 短标签 | 不适用原清单替换：D-C-098 明确保留“尖刺” | 不适用原清单替换：D-C-098 明确保留“尖刺” |
+| noxious fumes | 已落地：`cad4bcba74`，两处法术与教程为“毒烟” | 候选：`codex/dc096-assets-trunk @ ec08132481`，PR 待合并。历史核对：未落地：`descript/zh/spells.txt:850` 的“有害烟雾”、`:921` 的“有毒烟雾”、`descript/zh/tutorial.txt:502` 的“有毒气体”仍指同一 noxious 云 |
+| dazed/daze | S1 已更正，候选：`codex/dc096-assets-stable @ fd8510c7b0`，PR 待合并。`You break out of your daze.` 原属本组的归类已撤回，实际按 DUR_MESMERISED 译为迷魂结束；原核销记录保留：候选：`codex/dc096-assets-stable @ 7dd24f4788`，PR 待合并。本轮补齐 Cacophony、burstshroom 正文；历史核对：已落地：`cad4bcba74` 的共享消息为“眩晕” | S1 已更正，候选：`codex/dc096-assets-trunk @ 39adbcc247`，PR 待合并。`You break out of your daze.` 原属本组的归类已撤回，实际按 DUR_MESMERISED 译为迷魂结束；原核销记录保留：候选：`codex/dc096-assets-trunk @ ec08132481`，PR 待合并。历史核对：未完全落地：`source.txt:4712` 孢子仍为“晕头转向”、`:18539` 与 `:22214` 仍为“恍惚”（均位于 i18n/zh）；已统一项如 `6a3a393828` 的 snaps out 消息、`cb70b86b73` 的诱变能量消息不能代表整组完成 |
+| travel exclusion | 已落地：`cad4bcba74` | 候选：`codex/dc096-assets-trunk @ ec08132481`，PR 待合并。历史核对：未完全落地：部分“禁区”已由 `4486e1fadd` 落地；`i18n/zh/source.txt:7963`、`:43768` 仍作“被标记为排除／已排除”。原 `%d %sexclusion%s` 键已不在当前 catalog，不再按旧身份替换 |
+| ambrosia 及状态 | 已落地：普通效果 `cad4bcba74`；短标签按后续 D-C-107 由 `6c55448ad1` 落为“神食酣醉” | 已落地：`85be0be893`，原清单普通效果与状态均已更新；不改一般传说中的 ambrosial nectar |
+| aptitude 及训练成本完整分句 | 已落地：`cad4bcba74`，含完整零资质、零级到一级的基准 | 候选：`codex/dc096-assets-trunk @ ec08132481`，PR 待合并。历史核对：未完全落地：技能参数 `d323624b33` 已为“资质”；`i18n/zh/source.txt:43390` 仍为“能力倾向表”，`:43597` 仍以“相对于当前”截断基准分句 |
+| 歌曲题名 A Whiter Shade of Pale | 不适用：本线没有 `A hide-covered altar of Uskayaw` 引文条目 | 已落地：`fe475db827`，采用《更淡的苍白》；One of Us Cannot Be Wrong 按原决定无需修改 |
+| ley line（Dragon Veins 正文） | 不适用：本线没有 Dragon Veins 条目 | 已落地：`fe475db827`，使用“元素能量地脉” |
+
+前轮核销备注（保留为历史，不代表本轮候选状态）：
+
+> 另外，针对 daze 词根的有限核对发现 trunk 的
+> `descript/zh/status.txt:836`（Cacophony）与 `descript/zh/monsters.txt:3166`
+> （burstshroom）仍把英文 daze 写成“晕眩”，一并留给维护者决定。
+> `status.txt:183` 的“晕头转向”对应 Vertigo，不计作 dazed 残留；其他恐惧、
+> 普通恍惚或威慑语境也不按中文近似词自动归类。本轮不修复以上资产。
+
+
+
+##### 本轮候选、保留与撤回
+
+本轮基线为 trunk `3a96644ecd`、stable `51f8033c96`。表内“历史核对”
+保留前轮证据；候选仅表示已提交修复，未合并前不记为“已落地”。
+
+- piety 的捐赠数值修为“虔诚值”；实际 `NOTE_PIETY_RANK` 在 trunk 通过
+  `notes.cc` 的 `C_("piety note", "Reached %1$s piety under %2$s")` 完整模板
+  显示，星号表示等级，本轮将该模板修为“虔诚等级”。stable 的旧拼接已正确，保留。
+- 撤回把旧 `" piety under "` 片段当作 trunk 当前 Notes 显示的归因：该片段已被
+  完整上下文模板替代，旧 catalog 内容不改。也撤回把旧 `Invocations` 神器描述
+  当作当前消耗参数显示的归因：`art-data.txt` 现用 `divine abilities` 完整键，
+  其现译已含“虔诚值”；旧键及只验证旧键的测试保留，不重写历史数据。
+- 撤回对 trunk 技能训练成本现行提示“截断”的归因：`hints_skill_costs_info()`
+  已查询 `HINT_SKILL_COSTS`，`descript/zh/hints.txt` 在 `d9ad868a30` 已完整写出
+  “以资质为零的技能从零级升到一级所需的经验值为基准”。旧 SourceDB 镜像保留；
+  本轮只把仍由 `command.cc` 消费的完整帮助模板中的“能力倾向表”改为“资质表”。
+- crystal echidna 的英文体表 `spiny` 保留“多刺”，只修投掷的 `barbs` 为“倒刺”；
+  Barbs 正文的移动伤害和短暂停留移除条件均保留。`status|Barbs → 尖刺` 的
+  D-C-098 短标签例外不变。
+- Cacophony 与 burstshroom 的英文均明确使用 daze；stable 也有同一条目及同样的
+  “晕眩”残留，因此按同裁决范围一并修为“眩晕”。不改其他分句，不将 Vertigo、
+  其他机制的威慑或普通恍惚并入 dazed。固定“变异凝视”、一般人物魔法天赋、
+  一般“虔诚的信徒”、ambrosial nectar 与毒气的语境边界保持。
+- 资产清零后，两线一致启用 fog 的 `reject=致变雾气／变异雾气` 与 glow 的
+  `reject=变异光芒`。其余组不新增标记：piety 有资源／星级／一般叙述之分，barbs
+  有短标签例外；travel exclusion 与 excluded 的英文形式不等价于单一 glossary
+  词组，aptitude 与 daze 也不以本轮未逐项批准的中文近似词推导全局拒绝规则。
+  旧 catalog 镜像保留不等于现行译文缺口，零命中也不代表全库术语完整。
+
+
+
+##### S1：迷魂结束消息的语境误分类（已更正）
+
+原 Deferred asset changes 将 `You break out of your daze.` 归入 daze、建议改成
+“眩晕”，属于语境误分类；上述原条目及核销记录已标“已更正”并保留。
+实际两线都只有 `duration-data.h` 的 `DUR_MESMERISED` 使用此 SourceDB 键：
+stable 的结束定义带 `you.clear_beholders()` 回调，经 `player-reacts.cc` 的
+通用结束消息显示路径翻译；trunk 在清除 beholders 后直接输出同一键。
+没有其他机制共享该键，因此不新增 `C_()`，不改英文键、C++ 行为或状态身份。
+
+两线均将“你从眩晕中清醒过来。”改为“你摆脱了迷魂。”，按现行
+`Mesmerise → 迷魂` 处理。stable 的同源误归类在 `cad4bcba74` 前即已存在，
+一并更正。`You snap out of the daze.` 则在 `player.cc` 的 `DUR_DAZED`
+恢复分支使用，继续为“你从眩晕中清醒过来。”，不受本次改动影响。
+glossary 的 dazed 备注将含混的“催眠相关描述”最小澄清为 Dazed 机制描述，
+显式排除 `DUR_MESMERISED`；不改变 Mesmerise 法术对其他生物造成 daze 的说明。
+
+本次资产候选：trunk `codex/dc096-assets-trunk @ 39adbcc247`，stable
+`codex/dc096-assets-stable @ fd8510c7b0`；两者均为 PR 待合并，未记为已落地。
+S2、S3 不在本次增量范围。
+
 
 ---
 
@@ -4810,3 +4903,24 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 - **Affected files**: `crawl-ref/source/dat/i18n/zh/source.txt`、
   `crawl-ref/source/dat/descript/zh/{status,items,spells,clouds,features,gods,unrand}.txt`、
   `docs/glossary.md`、`docs/glossary.utf8`、`docs/decisions.md`。
+
+
+### D-C-113 — 玩家鬼魂括注后缀 ghost
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-12
+- **Choice**: `ghost → 鬼魂`，用于 player ghost 括注后缀，以及共用同一 SourceDB 键的 MONS_GHOST 旧版占位怪名。
+- **Source**: S25；`directn.cc` 的 `MONS_PLAYER_GHOST` 描述分支及 `mon-util.cc` 的 `zh_monster_name`；既有 `player ghost → 玩家鬼魂`。
+- **Rationale**: 与玩家鬼魂全称一致，并与 `MONS_SPECTRAL_THING` 的 `spectre → 幽灵` 后缀区分。
+- **Scope / boundaries**: SourceDB 的独立 `ghost` 键用于 player ghost 括注后缀，以及共用同一 SourceDB 键的 MONS_GHOST 旧版占位怪名（`dat/mons/ghost.yaml` → `zh_monster_name` → `T_(en.c_str())`）；`spectre`、其他复合名称及英文协议键不变。
+- **Affected files**: 中文 `source.txt`、`docs/glossary.md`、`docs/glossary.utf8`。
+
+### D-C-114 — mutation 机制名词
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-12
+- **Source**: 维护者批准统一为变异；POT_MUTATION、notes.cc、describe.cc 与 artefact.cc 显示消费者。
+
+mutation 作为游戏机制名词统一为“变异”，包括变异药水、变异记录与抑制标题。rMut 短标签采用“抗变异”（6 列），完整名称为“变异抗性”。生物学／古生物学引文保留“突变”；动词、调试文本与查询身份不机械替换。mutagenic 及 mutagenic power 继续遵循 D-C-096 的“诱变／诱变力量”。旧存档显示快照不迁移。
