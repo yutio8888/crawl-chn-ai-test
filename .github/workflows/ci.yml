@@ -826,7 +826,7 @@ jobs:
             echo
             echo "请使用 \`SHA256SUMS\` 校验 Windows ZIP、macOS DMG 与 Android APK；\`RELEASE-MANIFEST.txt\` 记录标签、准确提交和资产摘要。"
             echo
-            echo "本 Release 由自动流程创建为草稿；完成 Windows、macOS 与 Android 真机的启动、中文显示、新游戏、帮助和存读档验收后方可公开。"
+            echo "本 Release 由自动流程创建为草稿；公开前须完成 CI、清单与校验和、资产及 APK 身份等技术核验，构建或模拟器结果不代表真机验收。Windows、macOS 与 Android 的启动、中文显示、新游戏、帮助和存读档由测试玩家在发布后验收，反馈见对应 release issue。"
           } > "$RUNNER_TEMP/release-notes.md"
       - name: Create draft release once
         shell: bash
