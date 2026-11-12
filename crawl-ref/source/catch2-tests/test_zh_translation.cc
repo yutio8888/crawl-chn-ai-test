@@ -8374,7 +8374,7 @@ TEST_CASE_METHOD(ZhTranslationFixture, "zh: mutation potion prompt",
                 ? "你拥有变异抗性，真的要喝下那瓶变异药水吗？"
                 : "真的要喝下那瓶变异药水吗？";
             CHECK(mutation_potion_prompt(resistant, zin)
-                  == expected + (zin ? " 辛不会认可的。" : ""));
+                  == expected + (zin ? "辛不会认可的。" : ""));
         }
 }
 

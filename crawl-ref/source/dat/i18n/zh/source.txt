@@ -37270,7 +37270,7 @@ This entry is an exact match for '%s'. To see non-exact matches, press space.
 此条目与'%s'完全匹配。按空格查看非精确匹配。
 %%%%
  Zin will disapprove.
- 辛不会认可的。
+辛不会认可的。
 %%%%
 You cannot currently memorise any of the available spells because you cannot use those schools of magic.
 你目前无法记忆任何可用法术，因为你无法使用这些魔法学派。
