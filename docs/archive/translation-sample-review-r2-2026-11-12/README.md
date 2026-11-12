@@ -22,7 +22,7 @@
 - 候选总体文件约 17MB，固定快照约 245MB，都没有入库。复现步骤：
   - 只需要运行 `python3 scripts/build_pool_r2.py --repo <仓库路径> --out <仓库外的空目录>`，它结束时会自动调用 `extend_pool_r2.py` 补齐 C7/C8。`extend_pool_r2.py` 只用于在已有 `frozen60/` 的目录里续跑。
   - **必须指定 `--out`，而且要指向仓库外的空目录。**两个脚本的 `--out` 默认值是归档目录本身，不带这个参数直接运行，会覆盖已入库的 `samples_r2.json` 和 `selection_log_r2.json`，还会把快照和候选总体写进 `docs/archive`。脚本本身是冻结证据，没有修改。
-  - `verification_r2.json` 中记录的 `README_r2.md`、`review_input_lane*.md`、`pool_C7.json`、`pool_C8.json` 等的哈希，只用来对照复跑产物，不对应归档里的文件；其中 `README_r2.md` 已经归档为 `sampling.md`。
+  - `verification_r2.json` 记录的 `README_r2.md` 哈希可以直接用 `sampling.md` 校验，两者逐字节相同。`review_input_lane*.md`、`pool_C7.json`、`pool_C8.json` 等的哈希没有对应的入库文件，只用来对照复跑产物。
 - 样本和评审输出里的中文保留的是修复前的原文，不回写。现行译文以 #312、#313 合并后的资产为准。
 - **这是有界的分层抽样，不能用来推算全库错误率，也不能用来比较改进前后的质量比例。**
 
