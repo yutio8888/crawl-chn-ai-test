@@ -50161,3 +50161,24 @@ There is %s here.
 There is an entrance to %s here.
 这里有通往%s的入口。
 %%%%
+klown pie flavour|plum
+李子
+%%%%
+klown pie flavour|lemon
+柠檬
+%%%%
+klown pie flavour|blueberry
+蓝莓
+%%%%
+klown pie flavour|cherry
+樱桃
+%%%%
+klown pie flavour|peanut brittle
+花生脆糖
+%%%%
+klown pie flavour|glitter
+闪粉
+%%%%
+klown pie flavour|%s!
+%s！
+%%%%
