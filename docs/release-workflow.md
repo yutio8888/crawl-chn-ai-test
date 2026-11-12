@@ -3,7 +3,8 @@
 本文定义首个多平台正式版及同一上游基线后续修订版的最小发布边界。它不替代
 代码/翻译审查，也不授权自动公开 Release。
 
-每个候选的实施与人工验收状态记录在该候选对应的 release issue 中；首个正式版的
+每个候选的实施、发布前门禁与发布后测试玩家验收反馈记录在该候选对应的
+release issue 中；首个正式版的
 历史记录见已关闭的
 [GitHub Issue #20](https://github.com/yutio8888/crawl-chn-ai-test/issues/20)。
 
@@ -81,26 +82,30 @@ APK 的 `res/` 普通资源文件按 Android 的精确路径查找语义区分�
 
 ## 草稿验收与公开
 
-所有正式发布门禁 job 成功后，发布负责人在草稿 Release 中完成以下人工验收：
+按维护者 2026-11-11 的指示，本地只负责发布前门禁和公开发布；真实设备运行与
+游玩验收改由测试玩家在发布后进行。本地设备不足、未覆盖自然游玩或升级安装，
+不再是公开的前置条件，也不另开本地模拟器或真机验收任务。此规定替代此前
+“草稿阶段完成多平台人工验收后才能公开”的门槛。
 
-- 用 `sha256sum -c SHA256SUMS`（或平台等价工具）复核 Windows、macOS 与 Android
-  下载文件；
-- 在全新 Windows 环境解压并启动 Tiles，确认中文默认语言、中文字体和主菜单；
-- 完成新游戏、帮助、存档和读档 smoke，并记录 Windows 版本与 CPU 架构；
-- 在 macOS 环境校验 DMG 的 SHA-256、打开磁盘映像并启动 Tiles，确认中文默认语言、
-  中文字体和主菜单；由于没有 Apple Developer 签名/公证，按发布说明完成一次
-  Gatekeeper 的“打开/仍要打开”确认，并记录 macOS 版本与 CPU 架构；
-- 完成新游戏、帮助、存档和读档 smoke，并记录 macOS 版本与 CPU 架构；
-- 在至少一台 Android 真机安装下载后的签名 APK，记录 Android 版本、设备与 CPU ABI；
-  确认安装/升级、启动、中文默认语言、中文字体与主菜单，并完成新游戏、帮助、存档和
-  读档 smoke；
-- 核对发布说明中的玩家可见变化、支持平台、已知问题、延期项目和准确提交 SHA；
-- 核对 Release 仍为 draft，且资产只有 Windows ZIP、macOS DMG、Android APK、
-  `SHA256SUMS` 和 `RELEASE-MANIFEST.txt`，共五项。
+发布前本地门禁（全部满足后方可公开）：
 
-自动流程到草稿为止。只有上述人工验收全部有记录，且发布负责人明确批准后，才能在
-GitHub 界面公开 Release。若任一项失败，保留草稿和 CI 原始证据，修复后用新的
-`0.34.1-zhA-B-CCC` 标签发布；不得移动或复用已经对外分发的标签。
+- 标签触发的全部正式发布门禁 job 成功；因 runner 未接单而取消的 job 按现有机制
+  重跑通过，不跳过、不绕过；
+- 候选身份正确：标签、准确提交 SHA 与 `RELEASE-MANIFEST.txt` 一致；
+- 用 `sha256sum -c SHA256SUMS` 复核三个下载文件，资产只有 Windows ZIP、macOS DMG、
+  Android APK、`SHA256SUMS` 和 `RELEASE-MANIFEST.txt`，共五项；
+- Android APK 的包名、应用名、`versionName` 与签名可验证，签名证书与此前同线
+  已发布版本一致；
+- 发布说明列明玩家可见变化、支持平台、已知问题、延期项目、准确提交 SHA、已做的
+  包核验与任何补充证据，以及待测试玩家验证的项目和反馈方式；不得把构建成功、
+  包核验或模拟器结果写成真机验收通过。
+
+公开须有维护者授权；授权可在打标签前或草稿生成后给出。公开后，测试玩家用最终
+下载包验证：Windows 与 macOS（含 Gatekeeper“打开/仍要打开”）解压或挂载、启动、
+中文默认语言、字体与主菜单；Android 真机安装或升级、启动与中文显示；新游戏、
+帮助、存档和读档；trunk 与稳定版并存安装及存档隔离。反馈与覆盖状态记录在对应
+release issue。若发现阻塞问题，保留 Release 与 CI 原始证据，修复后用新的标签发布；
+不得移动或复用已经对外分发的标签。
 
 ## trunk 预发布
 
@@ -126,8 +131,9 @@ trunk 标签触发与正式版相同的完整发布依赖链，包括完整 L1+L
 Windows/macOS/Android 构建及 `verify_release_artifacts.py` 的封闭集合校验。
 校验器接受 trunk 标签，生成绑定裸标签和准确提交的 `SHA256SUMS` 与
 `RELEASE-MANIFEST.txt`。自动流程仅创建草稿，设置 GitHub prerelease 和
-`latest=false`；发布负责人完成前述多平台人工验收后，方可公开，公开时也必须保留
-prerelease 且不得标为 latest。失败时使用新序号重新发布。
+`latest=false`；满足前述发布前本地门禁并有维护者授权后即可公开，公开时必须保留
+prerelease 且不得标为 latest，平台验收由测试玩家在发布后进行。失败时使用新序号
+重新发布。
 
 发布说明须明确：**trunk 存档不能回到稳定版，两条线可并存安装**。只用稳定版存档副本
 测试迁移，并记录 trunk 存读档结果与稳定版原件未变化的证据。
@@ -135,8 +141,9 @@ prerelease 且不得标为 latest。失败时使用新序号重新发布。
 Android 使用固定的 `org.develz.crawl.trunk` 包名与 `Dungeon Crawl Stone Soup Trunk`
 应用名，首次发布后保持身份不变。构建时通过 `ANDROID_APPLICATION_ID` 和
 `ANDROID_APP_NAME` 传入，`versionName` 必须与 `build.h` 的长版本一致。
-设备验收遵循 [Android 手动验收流程](android-architecture.md)，确认稳定版包仍在、
-存档在验收前后未变化。**不得使用固定包名的 `test-android-topbar.sh` 冒烟脚本**，
+发布后测试玩家的设备验收可参考 [Android 手动验收流程](android-architecture.md)，
+确认稳定版包仍在、存档在验收前后未变化。**不得使用固定包名的
+`test-android-topbar.sh` 冒烟脚本**，
 尤其不得在装有稳定版的设备上运行其 `--fresh-install`。
 
 各平台 trunk 的默认存档隔离已在构建参数中实施：
@@ -157,13 +164,13 @@ macOS trunk 的应用包为 `Dungeon Crawl Stone Soup Trunk - Tiles.app`，
 bundle identifier 为 `net.sourceforge.crawl-ref.trunk`，可与稳定版同时放入
 `/Applications`。通过 `APP_NAME` 和 `BUNDLE_IDENTIFIER` 构建参数生成名称和同一份 plist；
 两项默认值保持稳定版原样。CI 仅在非 `0.34.1-zh*` 标签构建中传入 macOS/Windows
-隔离参数。首个公开 trunk 预发布仍须完成人工存读档及并存安装验收。
+隔离参数。存读档及并存安装由测试玩家在发布后验证，并在发布说明中列为待验证项。
 
 ## 验收组织与故障处理建议
 
-本节同时适用于稳定版与 trunk 预发布候选，供按风险安排验收与排障；不修改上文
-默认门禁，也不新增审批、验证 profile 或跟踪系统。可在对应 release issue 使用
-下表，按实际平台范围裁剪；状态按证据填写“通过／未通过／未测／受阻”。构建成功、
+本节同时适用于稳定版与 trunk 预发布，供汇总发布后测试玩家的验收反馈与排障；
+不修改上文门禁，也不新增审批、验证 profile 或跟踪系统。可在对应 release issue
+使用下表，按实际平台范围裁剪；状态按证据填写“通过／未通过／未测／受阻”。构建成功、
 发布授权和其他平台的结果，都不证明该平台人工验收通过。
 
 | 平台／前端 | 包名与 SHA-256 | 系统、CPU／ABI、测试人 | 启动／中文 | 新游戏／帮助 | 保存／重载 | 结果与问题链接 |
