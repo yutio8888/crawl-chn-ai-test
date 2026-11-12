@@ -75,16 +75,19 @@ On trunk, the C-07 and shaft keys have no current production consumer. The trunk
 
 ## Files
 
+Some archived files differ from the working copies in trailing whitespace only. It was stripped to satisfy the repository whitespace check. The affected files are `outputs/`, `fix/fix-delivery.txt` and `scripts/enrich_r3.py`.
+
+`adjudication.json` is the revised final version. The F-03 `fix` and the D-HERE-16 `problem` texts were updated in place to the corrected statements, and the original premises are kept in `premise_corrections`.
+
+
 - `adjudication.json`: final verdicts, corrections, the klown pie mapping and the delivery record.
 - `families_r3_index.json`: slim index of the frozen inventory. The full inventory (about 3.9 MB, with calls, branch evidence and reconstructions) is not committed. Its SHA-256 is recorded in the index.
 - `coverage_r3.md` and `selection_log_r3.json`: inclusion and exclusion rules, pool sizes, gaps left unchecked, and regression controls.
-- `outputs/lane{1,2}/`: the raw reviewer outputs. Only trailing whitespace has been stripped, to satisfy the repository whitespace check.
-- `fix/`: the writer's delivery report and the independent fix review. Absolute working paths are shown as `<r3-work>/`.
-- `scripts/`: the generators, run in this order:
-  1. `build_inventory_r3.py --repo <repo> --out <dir> --previous <prior-round-keys>`
-  2. `enrich_r3.py --out <dir>`
-  3. `render_r3.py --out <dir>`
-  4. `validate_r3.py --out <dir>`
+- `outputs/lane{1,2}/`: the raw reviewer outputs.
+- `fix/`: the writer's delivery report and the independent fix review.
+- `scripts/`: the generators.
+  1. Run `build_inventory_r3.py --repo <repo> --out <dir> --previous <round-2 samples_r2.json>`. Use `../translation-sample-review-r2-2026-11-12/samples_r2.json` as the round-2 file. This script also runs `enrich_r3.py` and `render_r3.py`.
+  2. Run `validate_r3.py --out <dir>`.
 
   Always pass `--out` a directory outside this archive. Otherwise the scripts overwrite the frozen files here.
 
