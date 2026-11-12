@@ -1604,3 +1604,8 @@ EN与ZH同步：Donald改静态完整叙述，避免不完整物种条件误称�
 
 - `MONS_ANCESTOR_HEXER`：hexer 从诅咒师改为妖术师；沿用既有 retranslate 终态（生成器细化为 name and description corrected），名称遵循 D-C-110，描述和机制不变。
 - `MONS_IMPERIAL_MYRMIDON`：描述中的 hexes 从诅咒系法术改为妖术系法术；沿用既有 retranslate 结论，其他命题与机制不变（D-C-110）。
+
+
+## 2026-11-12 抽检修正
+
+S45：colossal amoeba 首句改为“一堆大得难以想象、神秘而不断脉动的原生质。”；unfathomably 表示体量难以想象。旧冻结卡在此处的通过结论由本次勘误取代。

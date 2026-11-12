@@ -263,6 +263,7 @@
 | Zonguldrok | 宗古德洛克 | 巫师实验室与相关物品传说专名；裁决 [D-A-049] |
 | Orb of Zot | 佐特宝珠 / 力量宝珠 | 两种译法均可 |
 | player ghost | 玩家鬼魂 | — |
+| ghost | 鬼魂 | 仅 player ghost 括注后缀语境；directn.cc；D-C-113 |
 | GENDER_NEUTRAL | 他 / 他的 / 他自己 / 他 | 单数中性人物的主格／所有格／反身／宾格；仅 pronoun subject\|they、pronoun possessive\|their、pronoun reflexive\|themself、pronoun object\|them 四个上下文键；不是复数；EN singular they 与存档身份不变；decision=D-C-100 |
 | skill | 技能 | — |
 | experience / XP | 经验值 | — |

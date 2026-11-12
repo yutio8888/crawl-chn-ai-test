@@ -641,6 +641,7 @@ GENDER_NEUTRAL	他 / 他的 / 他自己 / 他	domain=core; source=EN/ZH; 注意�
 Gene Jian Bin	张三丰	domain=gods; source=EN/ZH; 类型=无间师父人名；有意本土化替换，非音译; 裁决=[D-C-111]
 Geryon	格律翁	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Geryon title	格律翁，地狱的守门人	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+ghost	鬼魂	domain=core; source=EN/ZH; 注意事项=仅 player ghost 括注后缀语境；directn.cc；D-C-113
 ghost crab	幽灵螃蟹	domain=monsters; source=EN/ZH; 依据 / 作用域=新增神器命名所依赖的现行怪物基词；沿用现行资产措辞并登记于 SSOT；decision=D-C-095
 ghost crab claws	幽灵螃蟹爪	domain=items; source=EN/ZH; 依据 / 作用域=art-data.txt / unrand.txt；复用 ghost crab 实体，保留 claws 意象；decision=D-C-095
 Ghostly Fireball	幽灵火球	domain=spells; source=EN/ZH; 备注=✅；负能量爆炸使范围内活物衰竭

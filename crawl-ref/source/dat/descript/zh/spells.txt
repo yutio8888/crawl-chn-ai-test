@@ -145,7 +145,7 @@ Blink spell
 %%%%
 Blinkbolt spell
 
-将施法者变为一道可穿透目标的闪电箭，并将其转移到箭的目的地。
+将施法者变为一道可穿透目标的闪电，并将其转移到闪电的终点。
 %%%%
 Bolt of Cold spell
 

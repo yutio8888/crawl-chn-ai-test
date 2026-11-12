@@ -4810,3 +4810,15 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 - **Affected files**: `crawl-ref/source/dat/i18n/zh/source.txt`、
   `crawl-ref/source/dat/descript/zh/{status,items,spells,clouds,features,gods,unrand}.txt`、
   `docs/glossary.md`、`docs/glossary.utf8`、`docs/decisions.md`。
+
+
+### D-C-113 — 玩家鬼魂括注后缀 ghost
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-12
+- **Choice**: `ghost → 鬼魂`，仅用于 player ghost 的括注后缀。
+- **Source**: S25；`directn.cc` 的 `MONS_PLAYER_GHOST` 描述分支；既有 `player ghost → 玩家鬼魂`。
+- **Rationale**: 与玩家鬼魂全称一致，并与 `MONS_SPECTRAL_THING` 的 `spectre → 幽灵` 后缀区分。
+- **Scope / boundaries**: 只改 SourceDB 的独立 `ghost` 键译值；`spectre`、其他复合名称及英文协议键不变。
+- **Affected files**: 中文 `source.txt`、`docs/glossary.md`、`docs/glossary.utf8`。
