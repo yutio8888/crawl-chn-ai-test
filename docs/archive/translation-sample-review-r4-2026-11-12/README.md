@@ -77,7 +77,7 @@ The result does not extrapolate to an error rate for the whole catalogue.
 
 ## Normalisation
 
-`coverage_r4.txt` is the frozen `coverage_r4.md` stored under a `.txt` name. Its bytes are unchanged and match the hash in `verification_r4.json`. The repository path-portability check scans `docs/**/*.md`, and it flags the format fragment `%s:\n` on line 147 as a Windows drive path. That is a false positive. Renaming the file keeps the frozen bytes intact, where adding an allow marker would have changed them.
+`coverage_r4.txt` is the frozen `coverage_r4.md` stored under a `.txt` name. Its bytes are unchanged and match the hash in `verification_r4.json`. The repository path-portability check scans `docs/**/*.md`, and it flags a printf format fragment on line 147 (a placeholder followed by a colon and an escaped newline) as a Windows drive path. That is a false positive. Renaming the file keeps the frozen bytes intact, where adding an allow marker would have changed them.
 
 Some archived files differ from the working copies:
 
