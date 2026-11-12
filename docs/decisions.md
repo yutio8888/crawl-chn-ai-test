@@ -4193,11 +4193,13 @@ trunk 未自动继承该提交，须分别核对。此表只记落实情况，�
 | 歌曲题名 A Whiter Shade of Pale | 不适用：本线没有 `A hide-covered altar of Uskayaw` 引文条目 | 已落地：`fe475db827`，采用《更淡的苍白》；One of Us Cannot Be Wrong 按原决定无需修改 |
 | ley line（Dragon Veins 正文） | 不适用：本线没有 Dragon Veins 条目 | 已落地：`fe475db827`，使用“元素能量地脉” |
 
-另外，针对 daze 词根的有限核对发现 trunk 的
-`descript/zh/status.txt:836`（Cacophony）与 `descript/zh/monsters.txt:3166`
-（burstshroom）仍把英文 daze 写成“晕眩”，一并留给维护者决定。
-`status.txt:183` 的“晕头转向”对应 Vertigo，不计作 dazed 残留；其他恐惧、
-普通恍惚或威慑语境也不按中文近似词自动归类。本轮不修复以上资产。
+前轮核销备注（保留为历史，不代表本轮候选状态）：
+
+> 另外，针对 daze 词根的有限核对发现 trunk 的
+> `descript/zh/status.txt:836`（Cacophony）与 `descript/zh/monsters.txt:3166`
+> （burstshroom）仍把英文 daze 写成“晕眩”，一并留给维护者决定。
+> `status.txt:183` 的“晕头转向”对应 Vertigo，不计作 dazed 残留；其他恐惧、
+> 普通恍惚或威慑语境也不按中文近似词自动归类。本轮不修复以上资产。
 
 
 
