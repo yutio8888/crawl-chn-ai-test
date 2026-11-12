@@ -467,6 +467,7 @@ Gell's Gravitas	盖尔之重力	domain=spells; source=EN/ZH; 备注=✅；重力
 GENDER_NEUTRAL	他 / 他的 / 他自己 / 他	domain=core; source=EN/ZH; 注意事项=单数中性人物的主格／所有格／反身／宾格；仅 pronoun subject|they、pronoun possessive|their、pronoun reflexive|themself、pronoun object|them 四个上下文键；不是复数；EN singular they 与存档身份不变；decision=D-C-100
 Geryon	格律翁	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Geryon title	格律翁，地狱的守门人	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+ghost	鬼魂	domain=core; source=EN/ZH; 注意事项=player ghost 括注后缀，以及共用同一 SourceDB 键的 MONS_GHOST 旧版占位怪名；D-C-113
 Ghostly Fireball	幽灵火球	domain=spells; source=EN/ZH; 备注=✅；负能量爆炸使范围内活物衰竭
 Ghostly Sacrifice	幽灵献祭	domain=spells; source=EN/ZH; 备注=✅；吞噬友方并产生使活物衰竭的负能量爆发
 ghoul	食尸鬼	domain=species; source=EN/ZH; 复合格式=食尸鬼 + 职业

@@ -4209,7 +4209,7 @@ Geomancy
 地卜
 %%%%
 ghost
-幽灵
+鬼魂
 %%%%
 ghostly
 鬼魅
@@ -5658,7 +5658,7 @@ quivering %s
  短暂地颤动了一下。
 %%%%
                    r - Retreat!             s - Stop attacking.
-                   r - 撤退！             s - 停止攻击。
+              r - 撤退！              s - 停止攻击。
 %%%%
  rains destruction down upon you!
  向你降下毁灭之雨！
@@ -12396,7 +12396,7 @@ stealthily
 %%%%
                    g - Guard the area.      f - Follow me.
 
- g - 守卫此区域。      f - 跟我来。
+              g - 守卫此区域。        f - 跟我来。
 %%%%
 <yellow>%s</yellow>
 
@@ -17774,7 +17774,7 @@ You feel sick.
 你感到不适。
 %%%%
 You glow brighter.
-你发光更亮了。
+你身上的光芒更亮了。
 %%%%
 You are outlined in light.
 你被光芒勾勒出轮廓。

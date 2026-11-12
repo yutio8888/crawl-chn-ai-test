@@ -4195,3 +4195,15 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 |---|---|---|
 | `status\|confused` | 混乱 | DUR_CONF 短标签；与灯标 Conf、长描述同根 |
 | `You are enlightened. (Will+)` | 你处于启迪状态。（意志+） | DUR_ENLIGHTENED 长描述；与短标签、结束消息、药水名同根 |
+
+
+### D-C-113 — 玩家鬼魂括注后缀 ghost
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-12
+- **Choice**: `ghost → 鬼魂`，用于 player ghost 括注后缀，以及共用同一 SourceDB 键的 MONS_GHOST 旧版占位怪名。
+- **Source**: S25；`directn.cc` 的 `MONS_PLAYER_GHOST` 描述分支及 `mon-util.cc` 的 `zh_monster_name`；既有 `player ghost → 玩家鬼魂`。
+- **Rationale**: 与玩家鬼魂全称一致，并与 `MONS_SPECTRAL_THING` 的 `spectre → 幽灵` 后缀区分。
+- **Scope / boundaries**: SourceDB 的独立 `ghost` 键用于 player ghost 括注后缀，以及共用同一 SourceDB 键的 MONS_GHOST 旧版占位怪名（`dat/mons/ghost.yaml` → `zh_monster_name` → `T_(en.c_str())`）；`spectre`、其他复合名称及英文协议键不变。
+- **Affected files**: 中文 `source.txt`、`docs/glossary.md`、`docs/glossary.utf8`。
