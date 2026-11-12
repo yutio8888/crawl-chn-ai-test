@@ -1,0 +1,1602 @@
+{
+ "invalid_samples": [
+  "S29"
+ ],
+ "valid": 47,
+ "tally": {
+  "lane1": {
+   "tie": 33,
+   "theirs": 10,
+   "insufficient_evidence": 2,
+   "ours": 2
+  },
+  "lane2": {
+   "tie": 38,
+   "theirs": 5,
+   "ours": 4
+  }
+ },
+ "agreement": {
+  "same": 36,
+  "one_decisive_other_tie_or_gap": 11
+ },
+ "by_layer_consensus": {
+  "L1": {
+   "tie": 6,
+   "split": 1,
+   "theirs": 1
+  },
+  "L2": {
+   "split": 2,
+   "tie": 5,
+   "ours": 1
+  },
+  "L3": {
+   "tie": 7,
+   "split": 1
+  },
+  "L4": {
+   "split": 2,
+   "tie": 5
+  },
+  "L5": {
+   "tie": 6,
+   "theirs": 1,
+   "split": 1
+  },
+  "L6": {
+   "split": 4,
+   "ours": 1,
+   "theirs": 2,
+   "tie": 1
+  }
+ },
+ "rows": [
+  {
+   "sample_id": "S01",
+   "layer": "L1",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "You feel perceptive."
+  },
+  {
+   "sample_id": "S02",
+   "layer": "L1",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "NOTE: Shaft traps aren't valid on this level."
+  },
+  {
+   "sample_id": "S03",
+   "layer": "L1",
+   "identical": false,
+   "lane1": "theirs",
+   "lane2": "tie",
+   "english": "                   g - Guard the area.      f - Follow me."
+  },
+  {
+   "sample_id": "S04",
+   "layer": "L1",
+   "identical": false,
+   "lane1": "theirs",
+   "lane2": "theirs",
+   "english": "You glow brighter."
+  },
+  {
+   "sample_id": "S05",
+   "layer": "L1",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "It gets dark."
+  },
+  {
+   "sample_id": "S06",
+   "layer": "L1",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "Your blood rage is quickly leaving you."
+  },
+  {
+   "sample_id": "S07",
+   "layer": "L1",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "Running Jiyva off-level sacrifice."
+  },
+  {
+   "sample_id": "S08",
+   "layer": "L1",
+   "identical": true,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "Huh?"
+  },
+  {
+   "sample_id": "S09",
+   "layer": "L2",
+   "identical": false,
+   "lane1": "insufficient_evidence",
+   "lane2": "tie",
+   "english": "%s floods into %s %s!"
+  },
+  {
+   "sample_id": "S10",
+   "layer": "L2",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "%s arms its allies with %s."
+  },
+  {
+   "sample_id": "S11",
+   "layer": "L2",
+   "identical": false,
+   "lane1": "insufficient_evidence",
+   "lane2": "tie",
+   "english": "%s willpower is stripped away!"
+  },
+  {
+   "sample_id": "S12",
+   "layer": "L2",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "You sink your fangs into %s and drink %s %s."
+  },
+  {
+   "sample_id": "S13",
+   "layer": "L2",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "Items here: %s."
+  },
+  {
+   "sample_id": "S14",
+   "layer": "L2",
+   "identical": false,
+   "lane1": "ours",
+   "lane2": "ours",
+   "english": "%s is now too close for your liking."
+  },
+  {
+   "sample_id": "S15",
+   "layer": "L2",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "%s is forced to slowly start %s a word of recall!"
+  },
+  {
+   "sample_id": "S16",
+   "layer": "L2",
+   "identical": true,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "You lose your grip on %s soul."
+  },
+  {
+   "sample_id": "S17",
+   "layer": "L3",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "You cover ground very slowly."
+  },
+  {
+   "sample_id": "S18",
+   "layer": "L3",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "You are significantly more attuned to the shadows."
+  },
+  {
+   "sample_id": "S19",
+   "layer": "L3",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "Virulence"
+  },
+  {
+   "sample_id": "S20",
+   "layer": "L3",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "Ignition"
+  },
+  {
+   "sample_id": "S21",
+   "layer": "L3",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "You feel meek as a lamb."
+  },
+  {
+   "sample_id": "S22",
+   "layer": "L3",
+   "identical": false,
+   "lane1": "theirs",
+   "lane2": "tie",
+   "english": "You have hooves in place of feet."
+  },
+  {
+   "sample_id": "S23",
+   "layer": "L3",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "Your blood calms down again."
+  },
+  {
+   "sample_id": "S24",
+   "layer": "L3",
+   "identical": true,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "Corrupt Body"
+  },
+  {
+   "sample_id": "S25",
+   "layer": "L4",
+   "identical": false,
+   "lane1": "theirs",
+   "lane2": "tie",
+   "english": "ghost"
+  },
+  {
+   "sample_id": "S26",
+   "layer": "L4",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "ours",
+   "english": " (fellow slime)"
+  },
+  {
+   "sample_id": "S27",
+   "layer": "L4",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "Disturbance"
+  },
+  {
+   "sample_id": "S28",
+   "layer": "L4",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "bound soul"
+  },
+  {
+   "sample_id": "S30",
+   "layer": "L4",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "living smiting commandment"
+  },
+  {
+   "sample_id": "S31",
+   "layer": "L4",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "living paralysis spell"
+  },
+  {
+   "sample_id": "S32",
+   "layer": "L4",
+   "identical": true,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "spectre"
+  },
+  {
+   "sample_id": "S33",
+   "layer": "L5",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "You hear Kikubaaqudgha cackling."
+  },
+  {
+   "sample_id": "S34",
+   "layer": "L5",
+   "identical": false,
+   "lane1": "theirs",
+   "lane2": "theirs",
+   "english": "The world leaves you behind!"
+  },
+  {
+   "sample_id": "S35",
+   "layer": "L5",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "Kikubaaqudgha's malice focuses upon you."
+  },
+  {
+   "sample_id": "S36",
+   "layer": "L5",
+   "identical": false,
+   "lane1": "theirs",
+   "lane2": "tie",
+   "english": "The monsters"
+  },
+  {
+   "sample_id": "S37",
+   "layer": "L5",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "You are too terrified to leap around!"
+  },
+  {
+   "sample_id": "S38",
+   "layer": "L5",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "Nature churns violently around you!"
+  },
+  {
+   "sample_id": "S39",
+   "layer": "L5",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "You carve a gateway into yourself and beckon forth the legions of chaos!"
+  },
+  {
+   "sample_id": "S40",
+   "layer": "L5",
+   "identical": true,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "Your skin crawls."
+  },
+  {
+   "sample_id": "S41",
+   "layer": "L6",
+   "identical": false,
+   "lane1": "theirs",
+   "lane2": "tie",
+   "english": "Qazlal Stormbringer is a violent god of tempests, who delights in unleashing\nthe"
+  },
+  {
+   "sample_id": "S42",
+   "layer": "L6",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "ours",
+   "english": "Conjures a stream of stolen suffering, leaving clouds of excruciating misery in\n"
+  },
+  {
+   "sample_id": "S43",
+   "layer": "L6",
+   "identical": false,
+   "lane1": "tie",
+   "lane2": "theirs",
+   "english": "Constructs a frangible shell of reinforced ice in a half-circle around the\ncaste"
+  },
+  {
+   "sample_id": "S44",
+   "layer": "L6",
+   "identical": false,
+   "lane1": "ours",
+   "lane2": "ours",
+   "english": "The echo of an unmourned soul. Though the memories of its living self are\nlong-f"
+  },
+  {
+   "sample_id": "S45",
+   "layer": "L6",
+   "identical": false,
+   "lane1": "theirs",
+   "lane2": "theirs",
+   "english": "An unfathomably massive pile of mystic pulsating protoplasm. The slightest\nthrea"
+  },
+  {
+   "sample_id": "S46",
+   "layer": "L6",
+   "identical": false,
+   "lane1": "theirs",
+   "lane2": "tie",
+   "english": "Invokes a huge blast of divine fury centered on the user, severely damaging\nunde"
+  },
+  {
+   "sample_id": "S47",
+   "layer": "L6",
+   "identical": false,
+   "lane1": "theirs",
+   "lane2": "theirs",
+   "english": "Transforms the caster into a lightning bolt, and translocates the caster to\nthe "
+  },
+  {
+   "sample_id": "S48",
+   "layer": "L6",
+   "identical": true,
+   "lane1": "tie",
+   "lane2": "tie",
+   "english": "A mosquito that has fed upon tainted blood and been transformed into a\nrevolting"
+  }
+ ],
+ "findings": [
+  {
+   "sample_id": "S34",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "preference",
+   "category": "grammar",
+   "quote": "世界将你抛弃在身后",
+   "evidence": "'抛弃'与'在身后'搭配不顺",
+   "impact": "轻微可读性问题"
+  },
+  {
+   "sample_id": "S43",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "preference",
+   "category": "mistranslation",
+   "quote": "向摧毁它的生物齐射",
+   "evidence": "原文 whatever destroyed it 不限于生物",
+   "impact": "影响极小"
+  },
+  {
+   "sample_id": "S09",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "%s涌入了%s%s",
+   "evidence": "name(DESC_ITS) 在英文中为 'the goblin's'",
+   "impact": "若参数不含'的'则A缺所有格"
+  },
+  {
+   "sample_id": "S09",
+   "lane": "lane1",
+   "side": "theirs",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "%s涌入了%s的%s",
+   "evidence": "同上",
+   "impact": "若参数已含'的'则B出现'的的'"
+  },
+  {
+   "sample_id": "S22",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "preference",
+   "category": "mistranslation",
+   "quote": "你的脚变成了蹄子",
+   "evidence": "原文为状态描述 'You have hooves in place of feet'，与获得消息语义重叠",
+   "impact": "变异列表中状态与过程混淆"
+  },
+  {
+   "sample_id": "S03",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "objective_error",
+   "category": "format",
+   "quote": "g - 守卫此区域。",
+   "evidence": "原文行首19空格，与第483-484行对齐",
+   "impact": "命令菜单列不对齐"
+  },
+  {
+   "sample_id": "S03",
+   "lane": "lane1",
+   "side": "theirs",
+   "type": "validation_gap",
+   "category": "format",
+   "quote": "          g - 守卫此地。",
+   "evidence": "B缩进10格，是否与其译文首行宽度一致无法从本文件验证",
+   "impact": "可能仍有轻微错位"
+  },
+  {
+   "sample_id": "S16",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "对%s灵魂",
+   "evidence": "DESC_ITS",
+   "impact": "依赖参数是否含'的'"
+  },
+  {
+   "sample_id": "S16",
+   "lane": "lane1",
+   "side": "theirs",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "对%s灵魂",
+   "evidence": "DESC_ITS",
+   "impact": "同上"
+  },
+  {
+   "sample_id": "S04",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "objective_error",
+   "category": "grammar",
+   "quote": "你发光更亮了",
+   "evidence": "'发光'后接'更亮'不合汉语搭配",
+   "impact": "可读性下降"
+  },
+  {
+   "sample_id": "S25",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "internal_consistency",
+   "category": "terminology",
+   "quote": "幽灵",
+   "evidence": "1-12 spectre 在 B 中同为'幽灵'",
+   "impact": "玩家无法区分 spectre 修饰与玩家幽灵"
+  },
+  {
+   "sample_id": "S45",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "objective_error",
+   "category": "mistranslation",
+   "quote": "令人难以理解地巨大",
+   "evidence": "unfathomably massive = 大得深不可测/难以想象",
+   "impact": "语义偏差、读感差"
+  },
+  {
+   "sample_id": "S44",
+   "lane": "lane1",
+   "side": "theirs",
+   "type": "preference",
+   "category": "mistranslation",
+   "quote": "夺取他人灵魂的旅程",
+   "evidence": "passage 指灵魂的经过/逝去",
+   "impact": "意象模糊"
+  },
+  {
+   "sample_id": "S29",
+   "lane": "lane1",
+   "side": "theirs",
+   "type": "validation_gap",
+   "category": "format",
+   "quote": "诅咒",
+   "evidence": "第1779行为 luaL_Reg 方法名",
+   "impact": "若被实际替换会破坏 Lua API"
+  },
+  {
+   "sample_id": "S29",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "validation_gap",
+   "category": "format",
+   "quote": "诅咒的",
+   "evidence": "同上",
+   "impact": "同上"
+  },
+  {
+   "sample_id": "S46",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "preference",
+   "category": "grammar",
+   "quote": "激起以使用者为中心的巨大的神怒爆炸",
+   "evidence": "多重'的'堆叠",
+   "impact": "可读性略差"
+  },
+  {
+   "sample_id": "S47",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "objective_error",
+   "category": "omission",
+   "quote": "转移到目的地",
+   "evidence": "原文 'to the bolt's destination'",
+   "impact": "丢失'闪电终点'的限定"
+  },
+  {
+   "sample_id": "S47",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "preference",
+   "category": "terminology",
+   "quote": "闪电箭",
+   "evidence": "此处指施法者化为闪电本身",
+   "impact": "可能误以为施放闪电箭法术"
+  },
+  {
+   "sample_id": "S19",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "preference",
+   "category": "terminology",
+   "quote": "毒性",
+   "evidence": "Virulence 为法术名",
+   "impact": "作为法术名辨识度低"
+  },
+  {
+   "sample_id": "S15",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "缓慢地开始%s召回术",
+   "evidence": "phrasing 参数填充形式未知",
+   "impact": "语序是否通顺依赖参数"
+  },
+  {
+   "sample_id": "S15",
+   "lane": "lane1",
+   "side": "theirs",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "开始缓缓%s召回真言",
+   "evidence": "同上",
+   "impact": "同上"
+  },
+  {
+   "sample_id": "S26",
+   "lane": "lane1",
+   "side": "theirs",
+   "type": "validation_gap",
+   "category": "format",
+   "quote": "（同族史莱姆）",
+   "evidence": "原文 ' (fellow slime)' 有前导空格，拼接在名字后",
+   "impact": "全角括号可能足以分隔，需实机验证"
+  },
+  {
+   "sample_id": "S26",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "validation_gap",
+   "category": "format",
+   "quote": "（史莱姆同伴）",
+   "evidence": "同上",
+   "impact": "同上；'同伴'可能被误解为盟友"
+  },
+  {
+   "sample_id": "S42",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "preference",
+   "category": "mistranslation",
+   "quote": "郁积愁云",
+   "evidence": "excruciating misery",
+   "impact": "丢失'剧痛'强度"
+  },
+  {
+   "sample_id": "S41",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "objective_error",
+   "category": "mistranslation",
+   "quote": "那些请求卡兹拉尔注视的人",
+   "evidence": "invite 此处为'招致'",
+   "impact": "语义偏差"
+  },
+  {
+   "sample_id": "S41",
+   "lane": "lane1",
+   "side": "theirs",
+   "type": "preference",
+   "category": "omission",
+   "quote": "风暴的中心",
+   "evidence": "'eye in a storm' 风暴眼意象弱化",
+   "impact": "轻微"
+  },
+  {
+   "sample_id": "S11",
+   "lane": "lane1",
+   "side": "theirs",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "%s的意志被剥除了",
+   "evidence": "A 在1-03、1-09不加'的'，此处加",
+   "impact": "若参数含'的'将出现'的的'"
+  },
+  {
+   "sample_id": "S11",
+   "lane": "lane1",
+   "side": "ours",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "%s意志力被剥夺了",
+   "evidence": "B 在1-03加'的'，此处不加",
+   "impact": "若参数不含'的'则缺所有格"
+  },
+  {
+   "sample_id": "S14",
+   "lane": "lane1",
+   "side": "theirs",
+   "type": "objective_error",
+   "category": "omission",
+   "quote": "%s离你太近了。",
+   "evidence": "原文 'too close for your liking'",
+   "impact": "丢失语气层次，影响轻微"
+  },
+  {
+   "sample_id": "S44",
+   "lane": "lane2",
+   "side": "theirs",
+   "type": "objective_error",
+   "category": "mistranslation",
+   "quote": "它夺取他人灵魂的旅程",
+   "evidence": "原文为 It seizes upon the passage of other souls，结合 drawn to the moment of death，指抓住灵魂离去的时机。",
+   "impact": "削弱亡魂依附其他灵魂死亡过程的描述。"
+  },
+  {
+   "sample_id": "S12",
+   "lane": "lane2",
+   "side": "theirs",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "饮下了%s%s",
+   "evidence": "后两个参数在英文中分别为所有格代词及血液名称；中文是否带“的”须看实际填充值。",
+   "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+  },
+  {
+   "sample_id": "S12",
+   "lane": "lane2",
+   "side": "ours",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "畅饮了%s%s",
+   "evidence": "后两个参数在英文中分别为所有格代词及血液名称；中文是否带“的”须看实际填充值。",
+   "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+  },
+  {
+   "sample_id": "S11",
+   "lane": "lane2",
+   "side": "theirs",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "%s的意志",
+   "evidence": "英文参数是 name(DESC_ITS)，中文参数是否已含“的”未给出。",
+   "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+  },
+  {
+   "sample_id": "S11",
+   "lane": "lane2",
+   "side": "ours",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "%s意志力",
+   "evidence": "英文参数是 name(DESC_ITS)，中文参数是否已含“的”未给出。",
+   "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+  },
+  {
+   "sample_id": "S09",
+   "lane": "lane2",
+   "side": "ours",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "%s涌入了%s%s！",
+   "evidence": "第二参数为 name(DESC_ITS)，第三参数为 lungs 或 airways；未提供中文参数的所有格处理。",
+   "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+  },
+  {
+   "sample_id": "S09",
+   "lane": "lane2",
+   "side": "theirs",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "%s涌入了%s的%s！",
+   "evidence": "第二参数为 name(DESC_ITS)，第三参数为 lungs 或 airways；未提供中文参数的所有格处理。",
+   "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+  },
+  {
+   "sample_id": "S29",
+   "lane": "lane2",
+   "side": "theirs",
+   "type": "validation_gap",
+   "category": "terminology",
+   "quote": "诅咒",
+   "evidence": "摘录为 { \"cursed\", l_item_cursed }，未提供最终显示或字段使用方式。",
+   "impact": "无法判断译文是作为状态标签、修饰语还是接口键使用；不能据此确认词性或接口错误。"
+  },
+  {
+   "sample_id": "S29",
+   "lane": "lane2",
+   "side": "ours",
+   "type": "validation_gap",
+   "category": "terminology",
+   "quote": "诅咒的",
+   "evidence": "摘录为 { \"cursed\", l_item_cursed }，未提供最终显示或字段使用方式。",
+   "impact": "无法判断译文是作为状态标签、修饰语还是接口键使用；不能据此确认词性或接口错误。"
+  },
+  {
+   "sample_id": "S45",
+   "lane": "lane2",
+   "side": "ours",
+   "type": "preference",
+   "category": "grammar",
+   "quote": "令人难以理解地巨大的",
+   "evidence": "unfathomably massive 描写难以想象的体量，B的中文搭配更自然。",
+   "impact": "仅影响表达偏好，不构成客观错误。"
+  },
+  {
+   "sample_id": "S16",
+   "lane": "lane2",
+   "side": "theirs",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "对%s灵魂的掌控",
+   "evidence": "参数是 name(DESC_ITS, true)，中文填充值是否自带“的”未给出。",
+   "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+  },
+  {
+   "sample_id": "S16",
+   "lane": "lane2",
+   "side": "ours",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "对%s灵魂的掌控",
+   "evidence": "参数是 name(DESC_ITS, true)，中文填充值是否自带“的”未给出。",
+   "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+  },
+  {
+   "sample_id": "S41",
+   "lane": "lane2",
+   "side": "theirs",
+   "type": "preference",
+   "category": "terminology",
+   "quote": "风暴的中心",
+   "evidence": "原文为 the eye in a storm；“风暴眼”比“中心”更具体。",
+   "impact": "仅影响表达偏好，不构成客观错误。"
+  },
+  {
+   "sample_id": "S43",
+   "lane": "lane2",
+   "side": "ours",
+   "type": "objective_error",
+   "category": "mistranslation",
+   "quote": "向摧毁它的生物齐射",
+   "evidence": "原文为 launched at whatever destroyed it，并未限定为生物。",
+   "impact": "把反击对象范围描述得更窄；具体非生物触发情况仍需实现证据。"
+  },
+  {
+   "sample_id": "S43",
+   "lane": "lane2",
+   "side": "theirs",
+   "type": "objective_error",
+   "category": "omission",
+   "quote": "强化冰壳",
+   "evidence": "原文首句为 a frangible shell of reinforced ice；两译首句均未明确表达可碎裂这一修饰。",
+   "impact": "特性首次介绍略有缺失，但后文说明碎裂，影响较小。"
+  },
+  {
+   "sample_id": "S43",
+   "lane": "lane2",
+   "side": "ours",
+   "type": "objective_error",
+   "category": "omission",
+   "quote": "强化冰壳",
+   "evidence": "原文首句为 a frangible shell of reinforced ice；两译首句均未明确表达可碎裂这一修饰。",
+   "impact": "特性首次介绍略有缺失，但后文说明碎裂，影响较小。"
+  },
+  {
+   "sample_id": "S42",
+   "lane": "lane2",
+   "side": "theirs",
+   "type": "objective_error",
+   "category": "mechanics",
+   "quote": "吸取活物最大生命值的一小部分",
+   "evidence": "原文 drain the living of small fractions of their maximum health，以最大生命值作扣血比例基数，并非说明降低上限。",
+   "impact": "可能误导玩家判断云雾造成的生命损失类型。"
+  },
+  {
+   "sample_id": "S47",
+   "lane": "lane2",
+   "side": "ours",
+   "type": "preference",
+   "category": "terminology",
+   "quote": "转移到目的地",
+   "evidence": "原文特别指明 the bolt's destination，B“闪电的终点”更明确。",
+   "impact": "仅影响表达偏好，不构成客观错误。"
+  },
+  {
+   "sample_id": "S19",
+   "lane": "lane2",
+   "side": "theirs",
+   "type": "validation_gap",
+   "category": "mechanics",
+   "quote": "毒性激增",
+   "evidence": "源码仅提供名称、学派和标志，没有提供效果；不能据此确认毒性如何变化。",
+   "impact": "需要效果信息才能判断名称的机制贴切程度。"
+  },
+  {
+   "sample_id": "S14",
+   "lane": "lane2",
+   "side": "theirs",
+   "type": "objective_error",
+   "category": "omission",
+   "quote": "%s离你太近了。",
+   "evidence": "原文为 is now too close for your liking，B省去“现在”及明确的主观感受。",
+   "impact": "仍能理解警告，但靠近的时点与叙述语气较弱。"
+  },
+  {
+   "sample_id": "S07",
+   "lane": "lane2",
+   "side": "ours",
+   "type": "preference",
+   "category": "grammar",
+   "quote": "离层祭品处理",
+   "evidence": "off-level 指非当前楼层，“离层”作为中文缩略语不够直观。",
+   "impact": "仅影响表达偏好，不构成客观错误。"
+  },
+  {
+   "sample_id": "S03",
+   "lane": "lane2",
+   "side": "ours",
+   "type": "objective_error",
+   "category": "format",
+   "quote": "g - 守卫此区域。",
+   "evidence": "原文 g 前有19个空格；A为0个，B为10个。规则明确要求检查行首空格，且短界面行不在长段说明的格式豁免内。",
+   "impact": "可能破坏与上下相邻命令行的对齐；实际视觉效果取决于界面显示。"
+  },
+  {
+   "sample_id": "S03",
+   "lane": "lane2",
+   "side": "theirs",
+   "type": "objective_error",
+   "category": "format",
+   "quote": "          g - 守卫此地。",
+   "evidence": "原文 g 前有19个空格；A为0个，B为10个。规则明确要求检查行首空格，且短界面行不在长段说明的格式豁免内。",
+   "impact": "可能破坏与上下相邻命令行的对齐；实际视觉效果取决于界面显示。"
+  },
+  {
+   "sample_id": "S04",
+   "lane": "lane2",
+   "side": "ours",
+   "type": "preference",
+   "category": "grammar",
+   "quote": "你发光更亮了",
+   "evidence": "原文表达光亮程度增强，B“身上的光芒更亮了”语法更顺。",
+   "impact": "仅影响表达偏好，不构成客观错误。"
+  },
+  {
+   "sample_id": "S26",
+   "lane": "lane2",
+   "side": "theirs",
+   "type": "objective_error",
+   "category": "addition",
+   "quote": "同族史莱姆",
+   "evidence": "fellow slime 及 MLC_GOOD_NEUTRAL 表明同伴关系，现有文本未声明与玩家同族。",
+   "impact": "可能把宗教或阵营关联误读为种族关系。"
+  },
+  {
+   "sample_id": "S26",
+   "lane": "lane2",
+   "side": "theirs",
+   "type": "objective_error",
+   "category": "format",
+   "quote": "（同族史莱姆）",
+   "evidence": "原文为 \" (fellow slime)\"，括号前有一个空格；两译均无前导空格。",
+   "impact": "附加到对象说明时可能缺少与前文的分隔；全角括号可部分减轻影响。"
+  },
+  {
+   "sample_id": "S26",
+   "lane": "lane2",
+   "side": "ours",
+   "type": "objective_error",
+   "category": "format",
+   "quote": "（史莱姆同伴）",
+   "evidence": "原文为 \" (fellow slime)\"，括号前有一个空格；两译均无前导空格。",
+   "impact": "附加到对象说明时可能缺少与前文的分隔；全角括号可部分减轻影响。"
+  },
+  {
+   "sample_id": "S15",
+   "lane": "lane2",
+   "side": "ours",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "%s被迫缓慢地开始%s召回术！",
+   "evidence": "phrasing 至少可能为 dramatically intoning，但中文运行时短语未知，不能确定与“开始/缓缓”的组合是否自然。",
+   "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+  },
+  {
+   "sample_id": "S15",
+   "lane": "lane2",
+   "side": "theirs",
+   "type": "validation_gap",
+   "category": "placeholder",
+   "quote": "%s被迫开始缓缓%s召回真言！",
+   "evidence": "phrasing 至少可能为 dramatically intoning，但中文运行时短语未知，不能确定与“开始/缓缓”的组合是否自然。",
+   "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+  },
+  {
+   "sample_id": "S34",
+   "lane": "lane2",
+   "side": "ours",
+   "type": "preference",
+   "category": "tone",
+   "quote": "抛弃在身后",
+   "evidence": "leaves you behind 在减速语境中强调落后，A“抛在身后”贴切。",
+   "impact": "仅影响表达偏好，不构成客观错误。"
+  }
+ ],
+ "per_sample": {
+  "S34": {
+   "lane1": {
+    "verdict": "theirs",
+    "reason": "B「抛在了身后」自然；A「抛弃在身后」搭配生硬，混合了'抛弃'与'抛在身后'两种说法。",
+    "lane_id": "1-01"
+   },
+   "lane2": {
+    "verdict": "theirs",
+    "reason": "A“抛在身后”更准确自然地表现被世界甩开；B“抛弃在身后”增加遗弃色彩且搭配稍硬。",
+    "lane_id": "2-45"
+   }
+  },
+  "S43": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "两者均完整传达三段含义；A「射向摧毁它的目标」与B「向摧毁它的生物齐射」各有取舍。",
+    "lane_id": "1-02"
+   },
+   "lane2": {
+    "verdict": "theirs",
+    "reason": "A保留“摧毁它的目标”的开放指向；B将 whatever 限定为生物。两者均未明确译出 frangible 的可碎裂性质，但后文碎裂描述作了补充。",
+    "lane_id": "2-22"
+   }
+  },
+  "S09": {
+   "lane1": {
+    "verdict": "insufficient_evidence",
+    "reason": "第二个%s为 DESC_ITS（英文含所有格），A 不加'的'、B 加'的'，正误取决于参数填充形式。",
+    "lane_id": "1-03"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "涌入呼吸器官的事件和三个占位符均保留；“的”的有无不能脱离实际参数判定。",
+    "lane_id": "2-08"
+   }
+  },
+  "S31": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "两者均正确，'麻痹法术'与'麻痹术'属偏好。",
+    "lane_id": "1-04"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "“麻痹术”和“麻痹法术”均准确，活体性质也保留。",
+    "lane_id": "2-28"
+   }
+  },
+  "S06": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "嗜血狂怒/血怒均可指代 berserk，属术语偏好。",
+    "lane_id": "1-05"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者均保留狂怒迅速消退的状态；“血怒/嗜血狂怒”属于术语风格差异。",
+    "lane_id": "2-36"
+   }
+  },
+  "S22": {
+   "lane1": {
+    "verdict": "theirs",
+    "reason": "该句为变异第3级状态描述；B「变成了蹄子」读作变化过程，更像获得变异时的消息（第760行 'Your feet have mutated into hooves'）。",
+    "lane_id": "1-06"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者均清楚表达脚已成为蹄子的状态；A使用完成性“变成了”不与静态变异描述冲突。",
+    "lane_id": "2-46"
+   }
+  },
+  "S40": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "译文完全相同。",
+    "lane_id": "1-07"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两份相同，“皮肤一阵发麻”可接受地传达 skin crawls 的异样体感。",
+    "lane_id": "2-32"
+   }
+  },
+  "S03": {
+   "lane1": {
+    "verdict": "theirs",
+    "reason": "原文行首有19个空格用于与上一行'Orders for allies: '对齐；A 删除全部行首空格，破坏对齐；B 保留缩进。",
+    "lane_id": "1-08"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者均保留 g/f 键与命令含义，但均未保持原文19个行首空格；B保留部分缩进仍不满足原样保持。",
+    "lane_id": "2-31"
+   }
+  },
+  "S16": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "译文相同；%s为DESC_ITS，'的'由参数决定。",
+    "lane_id": "1-09"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两份相同，准确表达失去灵魂掌控；所有格拼接须核对实际参数。",
+    "lane_id": "2-18"
+   }
+  },
+  "S05": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "两者均自然准确。",
+    "lane_id": "1-10"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者含义和语气一致，均准确表达周围变暗。",
+    "lane_id": "2-40"
+   }
+  },
+  "S13": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "两者均准确。",
+    "lane_id": "1-11"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者均为物品列表引导语，保留占位符，表达清楚。",
+    "lane_id": "2-12"
+   }
+  },
+  "S32": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "译文相同。",
+    "lane_id": "1-12"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两份相同，“幽灵”可表达 spectre；不能仅因B也用此词译 ghost 就认定矛盾。",
+    "lane_id": "2-24"
+   }
+  },
+  "S21": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "两者均准确，差异仅为措辞。",
+    "lane_id": "1-13"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "均准确保留羔羊般温顺的比喻及感觉语气。",
+    "lane_id": "2-19"
+   }
+  },
+  "S04": {
+   "lane1": {
+    "verdict": "theirs",
+    "reason": "A「你发光更亮了」语法别扭；B 通顺。",
+    "lane_id": "1-14"
+   },
+   "lane2": {
+    "verdict": "theirs",
+    "reason": "两者意思相同；B主语搭配自然，A“你发光更亮了”较生硬。",
+    "lane_id": "2-33"
+   }
+  },
+  "S35": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "两者均准确；'聚焦'/'集中'属偏好。",
+    "lane_id": "1-15"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "“集中”与“聚焦”均准确传达神明恶意指向玩家，神名也与各自2-21一致。",
+    "lane_id": "2-43"
+   }
+  },
+  "S25": {
+   "lane1": {
+    "verdict": "theirs",
+    "reason": "B 将 player ghost 的'ghost'译为'幽灵'，与 spectre（1-12，B 亦为'幽灵'）撞名；A 用'鬼魂'可区分。",
+    "lane_id": "1-16"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "“鬼魂”和“幽灵”均符合 ghost；缺少术语表约束，不能凭不同称呼判优劣。",
+    "lane_id": "2-09"
+   }
+  },
+  "S45": {
+   "lane1": {
+    "verdict": "theirs",
+    "reason": "A「令人难以理解地巨大」把 unfathomably 误作'难以理解'且语序生硬；B「大得难以想象」准确流畅。",
+    "lane_id": "1-17"
+   },
+   "lane2": {
+    "verdict": "theirs",
+    "reason": "两者保留分裂和细胞质浪潮的描写；B“大得难以想象”自然准确，A“令人难以理解地巨大”有明显翻译腔。",
+    "lane_id": "2-15"
+   }
+  },
+  "S01": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "两者均可。",
+    "lane_id": "1-18"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者均传达获得敏锐感知，符合装备显隐能力的消息；比较表达可由获得效果的语境支持。",
+    "lane_id": "2-39"
+   }
+  },
+  "S44": {
+   "lane1": {
+    "verdict": "ours",
+    "reason": "'seizes upon the passage of other souls' A 译为'攫住其他灵魂离去的时刻'较贴切；B「夺取他人灵魂的旅程」语义怪异。",
+    "lane_id": "1-19"
+   },
+   "lane2": {
+    "verdict": "ours",
+    "reason": "B准确表达攫住其他灵魂离去之际；A把 passage 处理成“旅程”，并将 seizes upon 译作“夺取”，偏离句意。",
+    "lane_id": "2-01"
+   }
+  },
+  "S29": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "该字符串是 Lua 绑定表中的函数名键（l_item_cursed），本不应作为显示文本翻译；两者均翻译，无法从本文件判断是否会被使用。",
+    "lane_id": "1-20"
+   },
+   "lane2": {
+    "verdict": "insufficient_evidence",
+    "reason": "作为形容词，“诅咒的”更直接，但摘录中 cursed 实际是 Lua 接口键；缺少本地化展示或接口约定，无法可靠判定两种译法的适用性。",
+    "lane_id": "2-13"
+   }
+  },
+  "S28": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "缚魂/受缚灵魂均可；B 更清晰，A 更简洁，属偏好。",
+    "lane_id": "1-21"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "“受缚灵魂”更展开，“缚魂”更简洁，均可作为 bound soul 的名称。",
+    "lane_id": "2-37"
+   }
+  },
+  "S46": {
+   "lane1": {
+    "verdict": "theirs",
+    "reason": "B 简洁流畅；A「激起……巨大的神怒爆炸」略生硬。",
+    "lane_id": "1-22"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者完整保留以使用者为中心、重创亡灵恶魔及伤害其他敌对生物的效果；A更凝练，B也清楚准确。",
+    "lane_id": "2-48"
+   }
+  },
+  "S02": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "调试信息，两者均准确。",
+    "lane_id": "1-23"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者均传达本层不适用竖井陷阱；B“不能设置”偏向操作说明，但现有上下文不足以据此认定实际放置行为被误述。",
+    "lane_id": "2-16"
+   }
+  },
+  "S37": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "两者均准确。",
+    "lane_id": "1-24"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者均准确表达恐惧导致无法跳跃，语气一致。",
+    "lane_id": "2-34"
+   }
+  },
+  "S47": {
+   "lane1": {
+    "verdict": "theirs",
+    "reason": "B 将 lightning bolt 译为'闪电箭'（易与法术 Lightning Bolt 混淆），且省略 'the bolt's'，变成泛指'目的地'。",
+    "lane_id": "1-25"
+   },
+   "lane2": {
+    "verdict": "theirs",
+    "reason": "B清楚保留移动到闪电终点这一对应关系；A仅称“目的地”，关联表达较弱，但不构成明确机制错误。",
+    "lane_id": "2-25"
+   }
+  },
+  "S07": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "向导模式调试信息；A 生硬、B 较顺，但均可理解。",
+    "lane_id": "1-26"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者都表达启动吉瓦对非当前楼层物品的献祭处理；A较易读，B较贴近处理含义，“离层”略生硬。",
+    "lane_id": "2-29"
+   }
+  },
+  "S33": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "'咯咯地笑'更贴近 cackling，'狂笑声'亦可传达恶意语气。",
+    "lane_id": "1-27"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "“狂笑声”与“咯咯地笑”分别强调恶意笑声的气势与声音，均可承载神罚语境。",
+    "lane_id": "2-21"
+   }
+  },
+  "S48": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "译文相同。",
+    "lane_id": "1-28"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两份完全相同，完整传达污血、亡灵昆虫及吸干猎物的描述。",
+    "lane_id": "2-06"
+   }
+  },
+  "S17": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "两者均准确。",
+    "lane_id": "1-29"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者均准确表达移动非常缓慢；B加“得”更舒展，A也符合简短状态文本用法。",
+    "lane_id": "2-11"
+   }
+  },
+  "S30": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "神罚律令/惩击诫命均可，属术语偏好。",
+    "lane_id": "1-30"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者均保留活体、神圣惩击及诫命含义；“惩击/神罚”“诫命/律令”属于可接受的术语选择。",
+    "lane_id": "2-10"
+   }
+  },
+  "S20": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "引燃术/点火均为可接受法术名，属偏好。",
+    "lane_id": "1-31"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "“点火”和“引燃术”均符合 Ignition；不能因法术等级高而认定A用词错误。",
+    "lane_id": "2-35"
+   }
+  },
+  "S18": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "联系/同调均可。",
+    "lane_id": "1-32"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "A“同调”较贴近 attuned，B“联系”较通俗；两者均保留显著增强且未混淆三级强度。",
+    "lane_id": "2-47"
+   }
+  },
+  "S38": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "两者几乎相同。",
+    "lane_id": "1-33"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "“猛烈”与“剧烈”均准确表达 violently，内容和神力发动的语气一致。",
+    "lane_id": "2-03"
+   }
+  },
+  "S08": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "译文相同。",
+    "lane_id": "1-34"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两份相同，“嗯？”符合疑问反馈。",
+    "lane_id": "2-14"
+   }
+  },
+  "S19": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "毒性激增更像法术名，'毒性'过于泛化但不算错误，属偏好。",
+    "lane_id": "1-35"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "A贴近词义，B作为法术名增加动态感；给定摘录没有效果说明，不能确认“激增”是否误述机制。",
+    "lane_id": "2-26"
+   }
+  },
+  "S15": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "第二个%s为 phrasing（如 'dramatically intoning'），两者结构等价；召回术/召回真言属术语偏好。",
+    "lane_id": "1-36"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者均保留两个占位符、被迫开始和缓慢吟诵的含义；术/真言不能脱离术语表判错，动态短语拼接仍需验证。",
+    "lane_id": "2-44"
+   }
+  },
+  "S39": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "两者均准确传达语气。",
+    "lane_id": "1-37"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者均保留在自身刻开通道并召来混沌军团的内容；“门”与“通道”均可接受。",
+    "lane_id": "2-05"
+   }
+  },
+  "S26": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "两者均去掉了原文行首空格（改用全角括号）；'同族史莱姆'/'史莱姆同伴'均可。",
+    "lane_id": "1-38"
+   },
+   "lane2": {
+    "verdict": "ours",
+    "reason": "B“史莱姆同伴”较贴近 fellow；A“同族”增加族属判断。两份均漏掉原文作为后缀的行首空格。",
+    "lane_id": "2-42"
+   }
+  },
+  "S42": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "A 保留 excruciating misery 云的强度；B 弱化为'郁积愁云'但机制句更清晰，互有得失。",
+    "lane_id": "1-39"
+   },
+   "lane2": {
+    "verdict": "ours",
+    "reason": "B明确是每次损失最大生命值的一小部分，中文也较顺；A“吸取活物最大生命值”容易被理解为降低生命上限。",
+    "lane_id": "2-23"
+   }
+  },
+  "S36": {
+   "lane1": {
+    "verdict": "theirs",
+    "reason": "'The monsters' 作主语指上文特定怪物，B「这些怪物」更贴切。",
+    "lane_id": "1-40"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者均适合作为复数怪物主语片段，不应要求此片段独立具备整句信息。",
+    "lane_id": "2-38"
+   }
+  },
+  "S41": {
+   "lane1": {
+    "verdict": "theirs",
+    "reason": "B 把 'invite Qazlal's gaze' 译为'请求……注视'偏离原意（招致而非请求），且'风暴之神……风暴的风暴眼'重复；A 简洁准确。",
+    "lane_id": "1-41"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者完整传达风暴神性格、信徒身处风暴及控制风暴的能力；A较凝练，B明确保留“风暴眼”，综合相当。",
+    "lane_id": "2-20"
+   }
+  },
+  "S10": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "两者均准确，'它的'可省。",
+    "lane_id": "1-42"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者均完整保留两个占位符和武装盟友的动作；A省略显式所有格不妨碍中文理解。",
+    "lane_id": "2-41"
+   }
+  },
+  "S11": {
+   "lane1": {
+    "verdict": "insufficient_evidence",
+    "reason": "%s 为 DESC_ITS；A 加'的'、B 不加。另外两份译文对 DESC_ITS 的处理在 1-03/1-09/1-43 间各自不一致，需结合参数填充验证。",
+    "lane_id": "1-43"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者均表达意志被剥夺且保留占位符；是否应显式加“的”取决于中文参数，不能由英文源码判错。",
+    "lane_id": "2-04"
+   }
+  },
+  "S12": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "两者均准确。",
+    "lane_id": "1-44"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者完整保留三个占位符，獠牙吸血的动作一致；“畅饮”略加强语气，但不足以形成质量差距。",
+    "lane_id": "2-02"
+   }
+  },
+  "S14": {
+   "lane1": {
+    "verdict": "ours",
+    "reason": "A 保留 'for your liking' 的主观不安；B 省略该层含义。",
+    "lane_id": "1-45"
+   },
+   "lane2": {
+    "verdict": "ours",
+    "reason": "A保留 now 及 for your liking 的主观不安意味；B仍能传达接近警告，但语气信息较少。",
+    "lane_id": "2-27"
+   }
+  },
+  "S24": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "译文相同。",
+    "lane_id": "1-46"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两份相同，准确对应法术名称。",
+    "lane_id": "2-07"
+   }
+  },
+  "S27": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "扰动/异动均可。",
+    "lane_id": "1-47"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "“异动”与“扰动”均可描述未直接显现的动静；现有摘录没有足以排除任一译法的细节。",
+    "lane_id": "2-17"
+   }
+  },
+  "S23": {
+   "lane1": {
+    "verdict": "tie",
+    "reason": "两者均准确。",
+    "lane_id": "1-48"
+   },
+   "lane2": {
+    "verdict": "tie",
+    "reason": "两者均保留血液再次平静的拟人化信息；鲜血与血液的区别不影响机制。",
+    "lane_id": "2-30"
+   }
+  }
+ }
+}

@@ -1,0 +1,854 @@
+{
+ "seed": 20261112,
+ "refs": {
+  "theirs": "f34d100d027d25d0024023cc4a7c420c6c335647",
+  "ours": "d8aef52fb44e939139b3c1fa3b94e8edfc993f62",
+  "upstream_context": "1eebc1a289"
+ },
+ "counts": {
+  "L1": [
+   7,
+   1
+  ],
+  "L2": [
+   7,
+   1
+  ],
+  "L3": [
+   7,
+   1
+  ],
+  "L4": [
+   7,
+   1
+  ],
+  "L5": [
+   7,
+   1
+  ],
+  "L6": [
+   7,
+   1
+  ]
+ },
+ "samples": [
+  {
+   "sample_id": "S01",
+   "layer": "L1",
+   "layer_name": "界面/状态",
+   "key": "You feel perceptive.",
+   "english": "You feel perceptive.",
+   "theirs": "你感觉感知更加敏锐。",
+   "ours": "你感到感知力增强了。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/player-equip.cc:2241"
+   ],
+   "context_snippet": " 2237                  mpr(\"You feel resistant to poison.\");\n 2238              break;\n 2239  \n 2240          case SPARM_SEE_INVISIBLE:\n 2241              mpr(\"You feel perceptive.\");\n 2242              autotoggle_autopickup(false);\n 2243              break;\n 2244  \n 2245          case SPARM_INVISIBILITY:",
+   "theirs_site": "crawl-ref/source/player-equip.cc:2250",
+   "ours_site": "crawl-ref/source/player-equip.cc:2246",
+   "their_msgctxt": "p.ui"
+  },
+  {
+   "sample_id": "S02",
+   "layer": "L1",
+   "layer_name": "界面/状态",
+   "key": "NOTE: Shaft traps aren't valid on this level.",
+   "english": "NOTE: Shaft traps aren't valid on this level.",
+   "theirs": "注意：本层不允许竖井陷阱。",
+   "ours": "注意：此楼层不能设置竖井陷阱。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/wiz-dgn.cc:504"
+   ],
+   "context_snippet": "  500              ? \"a random trap\"\n  501              : trap_at(pos)->name(DESC_A).c_str());\n  502  \n  503      if (trap == TRAP_SHAFT && !is_valid_shaft_level())\n  504          mpr(\"NOTE: Shaft traps aren't valid on this level.\");\n  505  \n  506      return true;\n  507  }\n  508  ",
+   "theirs_site": "crawl-ref/source/wiz-dgn.cc:504",
+   "ours_site": "crawl-ref/source/wiz-dgn.cc:505",
+   "their_msgctxt": "w.ui"
+  },
+  {
+   "sample_id": "S03",
+   "layer": "L1",
+   "layer_name": "界面/状态",
+   "key": "                   g - Guard the area.      f - Follow me.",
+   "english": "                   g - Guard the area.      f - Follow me.",
+   "theirs": "          g - 守卫此地。    f - 跟随我。",
+   "ours": "g - 守卫此区域。      f - 跟我来。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/shout.cc:485"
+   ],
+   "context_snippet": "  481      if (!you.berserk() && !you.confused())\n  482      {\n  483          mpr(\"Orders for allies: a - Attack new target.\");\n  484          mpr(\"                   r - Retreat!             s - Stop attacking.\");\n  485          mpr(\"                   g - Guard the area.      f - Follow me.\");\n  486      }\n  487      mpr(\" Anything else - Cancel.\");\n  488  \n  489      flush_prev_message(); // buffer doesn't get flushed otherwise",
+   "theirs_site": "crawl-ref/source/shout.cc:574",
+   "ours_site": "crawl-ref/source/shout.cc:506",
+   "their_msgctxt": "s.ui"
+  },
+  {
+   "sample_id": "S04",
+   "layer": "L1",
+   "layer_name": "界面/状态",
+   "key": "You glow brighter.",
+   "english": "You glow brighter.",
+   "theirs": "你身上的光芒更亮了。",
+   "ours": "你发光更亮了。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/player.cc:7875"
+   ],
+   "context_snippet": " 7871  {\n 7872      if (!duration[DUR_INVIS])\n 7873      {\n 7874          if (duration[DUR_CORONA])\n 7875              mpr(\"You glow brighter.\");\n 7876          else\n 7877              mpr(\"You are outlined in light.\");\n 7878      }\n 7879      else",
+   "theirs_site": "crawl-ref/source/player.cc:7902",
+   "ours_site": "crawl-ref/source/player.cc:8101",
+   "their_msgctxt": "p.ui"
+  },
+  {
+   "sample_id": "S05",
+   "layer": "L1",
+   "layer_name": "界面/状态",
+   "key": "It gets dark.",
+   "english": "It gets dark.",
+   "theirs": "周围暗了下来。",
+   "ours": "周围变暗了。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/player-equip.cc:2311"
+   ],
+   "context_snippet": " 2307              mpr(\"You are surrounded by a repulsion field.\");\n 2308              break;\n 2309  \n 2310          case SPARM_SHADOWS:\n 2311              mpr(\"It gets dark.\");\n 2312              update_vision_range();\n 2313              break;\n 2314  \n 2315          case SPARM_RAMPAGING:",
+   "theirs_site": "crawl-ref/source/player-equip.cc:2320",
+   "ours_site": "crawl-ref/source/player-equip.cc:2316",
+   "their_msgctxt": "p.ui"
+  },
+  {
+   "sample_id": "S06",
+   "layer": "L1",
+   "layer_name": "界面/状态",
+   "key": "Your blood rage is quickly leaving you.",
+   "english": "Your blood rage is quickly leaving you.",
+   "theirs": "你的嗜血狂怒正在迅速消退。",
+   "ours": "你的血怒正在迅速消退。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/main.cc:2868"
+   ],
+   "context_snippet": " 2864          case 4:\n 2865              mprf(MSGCH_DURATION, \"You feel your anger nearly subside.\");\n 2866              break;\n 2867          case 6:\n 2868              mprf(MSGCH_DURATION, \"Your blood rage is quickly leaving you.\");\n 2869              break;\n 2870          }\n 2871  \n 2872          const int berserk_base_delay = BASELINE_DELAY;",
+   "theirs_site": "crawl-ref/source/main.cc:2982",
+   "ours_site": "crawl-ref/source/main.cc:2913",
+   "their_msgctxt": "m.ui"
+  },
+  {
+   "sample_id": "S07",
+   "layer": "L1",
+   "layer_name": "界面/状态",
+   "key": "Running Jiyva off-level sacrifice.",
+   "english": "Running Jiyva off-level sacrifice.",
+   "theirs": "正在执行吉瓦的跨楼层献祭。",
+   "ours": "正在执行吉瓦离层祭品处理。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/wizard.cc:109"
+   ],
+   "context_snippet": "  105      case CONTROL('I'): debug_item_statistics(); break;\n  106  \n  107      // case 'j': break;\n  108      case 'J':\n  109          mpr(\"Running Jiyva off-level sacrifice.\");\n  110          jiyva_eat_offlevel_items();\n  111          break;\n  112      // case CONTROL('J'): break;\n  113  ",
+   "theirs_site": "crawl-ref/source/wizard.cc:111",
+   "ours_site": "crawl-ref/source/wizard.cc:110",
+   "their_msgctxt": "w.ui"
+  },
+  {
+   "sample_id": "S08",
+   "layer": "L1",
+   "layer_name": "界面/状态",
+   "key": "Huh?",
+   "english": "Huh?",
+   "theirs": "嗯？",
+   "ours": "嗯？",
+   "identical": true,
+   "usage_sites": [
+    "crawl-ref/source/message.cc:2011"
+   ],
+   "context_snippet": " 2007          case MSG_SPELL_FIZZLES:\n 2008              mpr(\"The spell fizzles.\");\n 2009              break;\n 2010          case MSG_HUH:\n 2011              mprf(MSGCH_EXAMINE_FILTER, \"Huh?\");\n 2012              crawl_state.cancel_cmd_repeat();\n 2013              break;\n 2014          case MSG_EMPTY_HANDED_ALREADY:\n 2015          case MSG_EMPTY_HANDED_NOW:",
+   "theirs_site": "crawl-ref/source/message.cc:2086",
+   "ours_site": "crawl-ref/source/message.cc:2180",
+   "their_msgctxt": "m.ui"
+  },
+  {
+   "sample_id": "S09",
+   "layer": "L2",
+   "layer_name": "战斗及动态消息",
+   "key": "%s floods into %s %s!",
+   "english": "%s floods into %s %s!",
+   "theirs": "%s涌入了%s的%s！",
+   "ours": "%s涌入了%s%s！",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/monster.cc:5842"
+   ],
+   "context_snippet": " 5838      {\n 5839          // Assume any vertebrate bodyplan (and is alive and isn't aquatic) has\n 5840          // something that can be called lungs.\n 5841          const bool has_lungs = get_mon_shape(*this) < MON_SHAPE_INSECT;\n 5842          mprf(\"%s floods into %s %s!\",\n 5843                  substance, name(DESC_ITS).c_str(),\n 5844                  has_lungs ? \"lungs\" : \"airways\");\n 5845      }\n 5846  ",
+   "theirs_site": "crawl-ref/source/monster.cc:5951",
+   "ours_site": "crawl-ref/source/monster.cc:5862",
+   "their_msgctxt": "m.log.255"
+  },
+  {
+   "sample_id": "S10",
+   "layer": "L2",
+   "layer_name": "战斗及动态消息",
+   "key": "%s arms its allies with %s.",
+   "english": "%s arms its allies with %s.",
+   "theirs": "%s用%s武装了盟友。",
+   "ours": "%s用%s武装了它的盟友。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/mon-cast.cc:7211"
+   ],
+   "context_snippet": " 7207      wpn.quantity = 1;\n 7208  \n 7209      if (you.can_see(caster))\n 7210      {\n 7211          mprf(MSGCH_MONSTER_SPELL, \"%s arms its allies with %s.\", caster.name(DESC_THE).c_str(),\n 7212                                      pluralise(wpn.name(DESC_PLAIN, false, true)).c_str());\n 7213      }\n 7214  \n 7215      int dur = random_range(20, 37) * BASELINE_DELAY;",
+   "theirs_site": "crawl-ref/source/mon-cast.cc:7410",
+   "ours_site": "crawl-ref/source/mon-cast.cc:7223",
+   "their_msgctxt": "m.log.153"
+  },
+  {
+   "sample_id": "S11",
+   "layer": "L2",
+   "layer_name": "战斗及动态消息",
+   "key": "%s willpower is stripped away!",
+   "english": "%s willpower is stripped away!",
+   "theirs": "%s的意志被剥除了！",
+   "ours": "%s意志力被剥夺了！",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/monster.cc:5773"
+   ],
+   "context_snippet": " 5769      if (willpower() == WILL_INVULN)\n 5770          return false;\n 5771  \n 5772      if (!quiet && !has_ench(ENCH_LOWERED_WL) && you.can_see(*this))\n 5773          mprf(\"%s willpower is stripped away!\", name(DESC_ITS).c_str());\n 5774  \n 5775      mon_enchant lowered_wl(ENCH_LOWERED_WL, attacker, dur * BASELINE_DELAY);\n 5776      return add_ench(lowered_wl);\n 5777  }",
+   "theirs_site": "crawl-ref/source/monster.cc:5860",
+   "ours_site": "crawl-ref/source/monster.cc:5793",
+   "their_msgctxt": "m.log.251"
+  },
+  {
+   "sample_id": "S12",
+   "layer": "L2",
+   "layer_name": "战斗及动态消息",
+   "key": "You sink your fangs into %s and drink %s %s.",
+   "english": "You sink your fangs into %s and drink %s %s.",
+   "theirs": "你将獠牙刺入%s，饮下了%s%s。",
+   "ours": "你把獠牙插入%s，畅饮了%s%s。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/melee-attack.cc:622"
+   ],
+   "context_snippet": "  618                                    && mon->holiness() & (MH_NATURAL | MH_PLANT | MH_DEMONIC);\n  619  \n  620          if (can_heal && !can_enthrall)\n  621          {\n  622              mprf(\"You sink your fangs into %s and drink %s %s.\",\n  623                      mon->name(DESC_THE, true).c_str(),\n  624                      mon->pronoun(PRONOUN_POSSESSIVE).c_str(),\n  625                      mon->blood_name().c_str());\n  626          }",
+   "theirs_site": "crawl-ref/source/melee-attack.cc:656",
+   "ours_site": "crawl-ref/source/melee-attack.cc:634",
+   "their_msgctxt": "m.log.018"
+  },
+  {
+   "sample_id": "S13",
+   "layer": "L2",
+   "layer_name": "战斗及动态消息",
+   "key": "Items here: %s.",
+   "english": "Items here: %s.",
+   "theirs": "这里的物品：%s。",
+   "ours": "此处物品：%s。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/items.cc:933"
+   ],
+   "context_snippet": "  929  \n  930      string desc_string = item_message(items);\n  931      // Stack summary case\n  932      if (static_cast<int>(items.size()) >= Options.item_stack_summary_minimum)\n  933          mprf_nojoin(MSGCH_FLOOR_ITEMS, \"Items here: %s.\", desc_string.c_str());\n  934      else if (items.size() <= msgwin_lines() - 1)\n  935      {\n  936          mpr_nojoin(MSGCH_FLOOR_ITEMS, \"Things that are here:\");\n  937          mprf_nocap(\"%s\", desc_string.c_str());",
+   "theirs_site": "crawl-ref/source/items.cc:965",
+   "ours_site": "crawl-ref/source/items.cc:945",
+   "their_msgctxt": "log.discovery.items"
+  },
+  {
+   "sample_id": "S14",
+   "layer": "L2",
+   "layer_name": "战斗及动态消息",
+   "key": "%s is now too close for your liking.",
+   "english": "%s is now too close for your liking.",
+   "theirs": "%s离你太近了。",
+   "ours": "%s现在离你太近了，让你不安。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/delay.cc:1079"
+   ],
+   "context_snippet": " 1075      monster* mon = at.mons_data;\n 1076      ASSERT(mon);\n 1077  \n 1078      if (at.context == SC_ALREADY_IN_VIEW)\n 1079          mprf(MSGCH_MONSTER_WARNING, \"%s is now too close for your liking.\", mon->name(DESC_THE).c_str());\n 1080      else\n 1081          mprf(MSGCH_MONSTER_WARNING, \"%s comes into view.\", mon->name(DESC_A).c_str());\n 1082  }\n 1083  ",
+   "theirs_site": "crawl-ref/source/delay.cc:1166",
+   "ours_site": "crawl-ref/source/delay.cc:1097",
+   "their_msgctxt": "log.encounter"
+  },
+  {
+   "sample_id": "S15",
+   "layer": "L2",
+   "layer_name": "战斗及动态消息",
+   "key": "%s is forced to slowly start %s a word of recall!",
+   "english": "%s is forced to slowly start %s a word of recall!",
+   "theirs": "%s被迫开始缓缓%s召回真言！",
+   "ours": "%s被迫缓慢地开始%s召回术！",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/xom.cc:4210"
+   ],
+   "context_snippet": " 4206      if (phrasing == \"dramatically intoning\")\n 4207          xom_speech = \"grant voiceless word of recall\";\n 4208  \n 4209      god_speaks(GOD_XOM, _get_xom_speech(xom_speech).c_str());\n 4210      mprf(MSGCH_WARN, \"%s is forced to slowly start %s a word of recall!\",\n 4211                       targetable[0]->name(DESC_A, true, false).c_str(),\n 4212                       phrasing.c_str());\n 4213      mon_enchant chant_timer = mon_enchant(ENCH_WORD_OF_RECALL, targetable[0], duration);\n 4214      targetable[0]->add_ench(chant_timer);",
+   "theirs_site": "crawl-ref/source/xom.cc:4275",
+   "ours_site": "crawl-ref/source/xom.cc:4268",
+   "their_msgctxt": "x.log"
+  },
+  {
+   "sample_id": "S16",
+   "layer": "L2",
+   "layer_name": "战斗及动态消息",
+   "key": "You lose your grip on %s soul.",
+   "english": "You lose your grip on %s soul.",
+   "theirs": "你失去了对%s灵魂的掌控。",
+   "ours": "你失去了对%s灵魂的掌控。",
+   "identical": true,
+   "usage_sites": [
+    "crawl-ref/source/mon-ench.cc:680"
+   ],
+   "context_snippet": "  676  \n  677      case ENCH_SOUL_RIPE:\n  678          // Print message notifying the player, even if they cannot see us\n  679          if (!quiet)\n  680              mprf(\"You lose your grip on %s soul.\", name(DESC_ITS, true).c_str());\n  681          break;\n  682  \n  683      case ENCH_AWAKEN_FOREST:\n  684          env.forest_awoken_until = 0;",
+   "theirs_site": "crawl-ref/source/mon-ench.cc:711",
+   "ours_site": "crawl-ref/source/mon-ench.cc:744",
+   "their_msgctxt": "m.log.194"
+  },
+  {
+   "sample_id": "S17",
+   "layer": "L3",
+   "layer_name": "法术/技能/变异",
+   "key": "You cover ground very slowly.",
+   "english": "You cover ground very slowly.",
+   "theirs": "你移动得非常缓慢。",
+   "ours": "你移动非常缓慢。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/mutation-data.h:380"
+   ],
+   "context_snippet": "  376  { MUT_SLOW, 0, 3, mutflag::bad,\n  377    \"slowness\",\n  378  \n  379    {\"You cover ground slowly.\",\n  380     \"You cover ground very slowly.\",\n  381     \"You cover ground extremely slowly.\"},\n  382  \n  383    {\"You feel sluggish.\",\n  384     \"You feel sluggish.\",",
+   "theirs_site": "generic-lookup:m.mutation:0",
+   "ours_site": "crawl-ref/source/mutation-data.h:380",
+   "their_msgctxt": "m.mutation"
+  },
+  {
+   "sample_id": "S18",
+   "layer": "L3",
+   "layer_name": "法术/技能/变异",
+   "key": "You are significantly more attuned to the shadows.",
+   "english": "You are significantly more attuned to the shadows.",
+   "theirs": "你与阴影的联系显著增强。",
+   "ours": "你与暗影的同调显著增强。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/mutation-data.h:1101"
+   ],
+   "context_snippet": " 1097  { MUT_NIGHTSTALKER, 0, 3, mutflag::good,\n 1098    \"nightstalker\",\n 1099  \n 1100    {\"You are slightly more attuned to the shadows.\",\n 1101     \"You are significantly more attuned to the shadows.\",\n 1102     \"You are completely attuned to the shadows.\"},\n 1103  \n 1104    {\"You slip into the darkness of the dungeon.\",\n 1105     \"You slip further into the darkness.\",",
+   "theirs_site": "generic-lookup:m.mutation:0",
+   "ours_site": "crawl-ref/source/mutation-data.h:1101",
+   "their_msgctxt": "m.mutation"
+  },
+  {
+   "sample_id": "S19",
+   "layer": "L3",
+   "layer_name": "法术/技能/变异",
+   "key": "Virulence",
+   "english": "Virulence",
+   "theirs": "毒性激增",
+   "ours": "毒性",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/spl-data.h:2365"
+   ],
+   "context_snippet": " 2361      TILEG_INVISIBILITY,\n 2362  },\n 2363  \n 2364  {\n 2365      SPELL_VIRULENCE, \"Virulence\",\n 2366      spschool::alchemy | spschool::hexes,\n 2367      spflag::dir_or_target | spflag::needs_tracer | spflag::WL_check\n 2368                            | spflag::monster,\n 2369      4,",
+   "theirs_site": "generic-lookup:display.spell:0",
+   "ours_site": "crawl-ref/source/spl-data.h:2365",
+   "their_msgctxt": "display.spell"
+  },
+  {
+   "sample_id": "S20",
+   "layer": "L3",
+   "layer_name": "法术/技能/变异",
+   "key": "Ignition",
+   "english": "Ignition",
+   "theirs": "引燃术",
+   "ours": "点火",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/spl-data.h:3248"
+   ],
+   "context_snippet": " 3244      TILEG_POISONOUS_CLOUD,\n 3245  },\n 3246  \n 3247  {\n 3248      SPELL_IGNITION, \"Ignition\",\n 3249      spschool::fire,\n 3250      spflag::destructive,\n 3251      8,\n 3252      200,",
+   "theirs_site": "generic-lookup:display.spell:0",
+   "ours_site": "crawl-ref/source/spl-data.h:3248",
+   "their_msgctxt": "display.spell"
+  },
+  {
+   "sample_id": "S21",
+   "layer": "L3",
+   "layer_name": "法术/技能/变异",
+   "key": "You feel meek as a lamb.",
+   "english": "You feel meek as a lamb.",
+   "theirs": "你感到自己像羔羊般温顺。",
+   "ours": "你感到如羔羊般温顺。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/mutation-data.h:299"
+   ],
+   "context_snippet": "  295     \"Your attacks are less effective. (Slay -5)\",\n  296     \"Your attacks are much less effective. (Slay -7)\"},\n  297    {\"You feel meek.\",\n  298     \"You feel even more meek.\",\n  299     \"You feel meek as a lamb.\"},\n  300    {\"You feel aggression return to you.\",\n  301     \"You feel a little less meek.\",\n  302     \"You feel a little less meek.\"},\n  303    TILEG_MUT_MEEK,",
+   "theirs_site": "generic-lookup:m.mutation:0",
+   "ours_site": "crawl-ref/source/mutation-data.h:299",
+   "their_msgctxt": "m.mutation"
+  },
+  {
+   "sample_id": "S22",
+   "layer": "L3",
+   "layer_name": "法术/技能/变异",
+   "key": "You have hooves in place of feet.",
+   "english": "You have hooves in place of feet.",
+   "theirs": "你的双脚是蹄子。",
+   "ours": "你的脚变成了蹄子。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/mutation-data.h:756"
+   ],
+   "context_snippet": "  752    \"hooves\",\n  753  \n  754    {\"You have large cloven feet.\",\n  755     \"You have hoof-like feet.\",\n  756     \"You have hooves in place of feet.\"},\n  757  \n  758    {\"Your feet thicken and deform.\",\n  759     \"Your feet thicken and deform.\",\n  760     \"Your feet have mutated into hooves.\"},",
+   "theirs_site": "generic-lookup:m.mutation:0",
+   "ours_site": "crawl-ref/source/mutation-data.h:756",
+   "their_msgctxt": "m.mutation"
+  },
+  {
+   "sample_id": "S23",
+   "layer": "L3",
+   "layer_name": "法术/技能/变异",
+   "key": "Your blood calms down again.",
+   "english": "Your blood calms down again.",
+   "theirs": "你的鲜血再次平静了下来。",
+   "ours": "你的血液再次平静下来。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/mutation-data.h:2449"
+   ],
+   "context_snippet": " 2445    {\"Your shed blood may rise up to attack you.\",\n 2446     \"Your shed blood may rise up to attack you as a group.\", \"\"},\n 2447    {\"You feel a willful anger gathering in your blood.\",\n 2448     \"You feel your blood grow even more spiteful.\", \"\"},\n 2449    {\"Your blood calms down again.\",\n 2450     \"Your blood feels a little less spiteful.\", \"\"},\n 2451    TILEG_MUT_SPITEFUL_BLOOD,\n 2452  },\n 2453  ",
+   "theirs_site": "generic-lookup:m.mutation:0",
+   "ours_site": "crawl-ref/source/mutation-data.h:2449",
+   "their_msgctxt": "m.mutation"
+  },
+  {
+   "sample_id": "S24",
+   "layer": "L3",
+   "layer_name": "法术/技能/变异",
+   "key": "Corrupt Body",
+   "english": "Corrupt Body",
+   "theirs": "腐化躯体",
+   "ours": "腐化躯体",
+   "identical": true,
+   "usage_sites": [
+    "crawl-ref/source/spl-data.h:4655"
+   ],
+   "context_snippet": " 4651  AXED_SPELL(SPELL_CONTROLLED_BLINK, \"Controlled Blink\")\n 4652  AXED_SPELL(SPELL_CONTROL_TELEPORT, \"Control Teleport\")\n 4653  AXED_SPELL(SPELL_CONTROL_UNDEAD, \"Control Undead\")\n 4654  AXED_SPELL(SPELL_CONTROL_WINDS, \"Control Winds\")\n 4655  AXED_SPELL(SPELL_CORRUPT_BODY, \"Corrupt Body\")\n 4656  AXED_SPELL(SPELL_CURE_POISON, \"Cure Poison\")\n 4657  AXED_SPELL(SPELL_DARKNESS, \"Darkness\")\n 4658  AXED_SPELL(SPELL_OLD_DEFLECT_MISSILES, \"Old Deflect Missiles\")\n 4659  AXED_SPELL(SPELL_DELAYED_FIREBALL, \"Delayed Fireball\")",
+   "theirs_site": "generic-lookup:display.spell:0",
+   "ours_site": "crawl-ref/source/spl-data.h:4655",
+   "their_msgctxt": "display.spell"
+  },
+  {
+   "sample_id": "S25",
+   "layer": "L4",
+   "layer_name": "物品/怪物名称及短说明",
+   "key": "ghost",
+   "english": "ghost",
+   "theirs": "鬼魂",
+   "ours": "幽灵",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/directn.cc:3482",
+    "crawl-ref/source/mon-death.cc:612"
+   ],
+   "context_snippet": " 3478                      str += \"dancing weapon\";\n 3479                  else if (mi.type == MONS_PANDEMONIUM_LORD)\n 3480                      str += \"pandemonium lord\";\n 3481                  else if (mi.type == MONS_PLAYER_GHOST)\n 3482                      str += \"ghost\";\n 3483              }\n 3484              if (!str.empty())\n 3485                  desc += \" (\" + str + \")\";\n 3486          }",
+   "theirs_site": "crawl-ref/source/directn.cc:4029",
+   "ours_site": "crawl-ref/source/directn.cc:3602",
+   "their_msgctxt": "display.monster"
+  },
+  {
+   "sample_id": "S26",
+   "layer": "L4",
+   "layer_name": "物品/怪物名称及短说明",
+   "key": " (fellow slime)",
+   "english": " (fellow slime)",
+   "theirs": "（同族史莱姆）",
+   "ours": "（史莱姆同伴）",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/mon-info.cc:1460"
+   ],
+   "context_snippet": " 1456  #if TAG_MAJOR_VERSION == 34\n 1457      case ATT_OLD_STRICT_NEUTRAL:\n 1458  #endif\n 1459          if (fellow_slime())\n 1460              out << \" (fellow slime)\";\n 1461          colour_type = MLC_GOOD_NEUTRAL;\n 1462          break;\n 1463      case ATT_NEUTRAL:\n 1464          colour_type = MLC_NEUTRAL;",
+   "theirs_site": "crawl-ref/source/mon-info.cc:1761",
+   "ours_site": "crawl-ref/source/mon-info.cc:1630",
+   "their_msgctxt": "display.monster.state"
+  },
+  {
+   "sample_id": "S27",
+   "layer": "L4",
+   "layer_name": "物品/怪物名称及短说明",
+   "key": "Disturbance",
+   "english": "Disturbance",
+   "theirs": "异动",
+   "ours": "扰动",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/directn.cc:1869"
+   ],
+   "context_snippet": " 1865          _append_container(suffixes, _monster_description_suffixes(mi, behavior));\n 1866          text = get_monster_equipment_desc(mi);\n 1867      }\n 1868      else\n 1869          text = \"Disturbance\";\n 1870  \n 1871      // Build the final description string.\n 1872      if (!suffixes.empty())\n 1873      {",
+   "theirs_site": "crawl-ref/source/directn.cc:2068",
+   "ours_site": "crawl-ref/source/directn.cc:1871",
+   "their_msgctxt": "d.monster.state"
+  },
+  {
+   "sample_id": "S28",
+   "layer": "L4",
+   "layer_name": "物品/怪物名称及短说明",
+   "key": "bound soul",
+   "english": "bound soul",
+   "theirs": "受缚灵魂",
+   "ours": "缚魂",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/mon-info.cc:1215"
+   ],
+   "context_snippet": " 1211              ss << \"spectre\";\n 1212          break;\n 1213      case MONS_BOUND_SOUL:\n 1214          if (nocore)\n 1215              ss << \"bound soul\";\n 1216          break;\n 1217      case MONS_PILLAR_OF_SALT:\n 1218          if (base_type != type)\n 1219              ss << (nocore ? \"\" : \" \") << \"shaped pillar of salt\";",
+   "theirs_site": "crawl-ref/source/mon-info.cc:1464",
+   "ours_site": "crawl-ref/source/mon-info.cc:1370",
+   "their_msgctxt": "display.monster"
+  },
+  {
+   "sample_id": "S29",
+   "layer": "L4",
+   "layer_name": "物品/怪物名称及短说明",
+   "key": "cursed",
+   "english": "cursed",
+   "theirs": "诅咒",
+   "ours": "诅咒的",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/l-item.cc:1779"
+   ],
+   "context_snippet": " 1775      { \"plus2\",             l_item_plus2 },\n 1776      { \"class\",             l_item_class },\n 1777      { \"subtype\",           l_item_subtype },\n 1778      { \"ego\",               l_item_ego },\n 1779      { \"cursed\",            l_item_cursed },\n 1780      { \"name\",              l_item_name },\n 1781      { \"name_coloured\",     l_item_name_coloured },\n 1782      { \"stacks\",            l_item_stacks },\n 1783      { \"quantity\",          l_item_quantity },",
+   "theirs_site": "crawl-ref/source/item-name.cc:396",
+   "ours_site": "crawl-ref/source/l-item.cc:2036",
+   "their_msgctxt": "display.item.state"
+  },
+  {
+   "sample_id": "S30",
+   "layer": "L4",
+   "layer_name": "物品/怪物名称及短说明",
+   "key": "living smiting commandment",
+   "english": "living smiting commandment",
+   "theirs": "活体惩击诫命",
+   "ours": "活体神罚律令",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/mon-info.cc:1096"
+   ],
+   "context_snippet": " 1092                  case SPELL_LEHUDIBS_CRYSTAL_SPEAR:\n 1093                      s = \"living crystal spell\";\n 1094                      break;\n 1095                  case SPELL_SMITING:\n 1096                      s = \"living smiting commandment\";\n 1097                      break;\n 1098                  case SPELL_PARALYSE:\n 1099                      s = \"living paralysis spell\";\n 1100                      break;",
+   "theirs_site": "crawl-ref/source/mon-info.cc:1422",
+   "ours_site": "crawl-ref/source/mon-info.cc:1224",
+   "their_msgctxt": "display.monster"
+  },
+  {
+   "sample_id": "S31",
+   "layer": "L4",
+   "layer_name": "物品/怪物名称及短说明",
+   "key": "living paralysis spell",
+   "english": "living paralysis spell",
+   "theirs": "活体麻痹法术",
+   "ours": "活体麻痹术",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/mon-info.cc:1099"
+   ],
+   "context_snippet": " 1095                  case SPELL_SMITING:\n 1096                      s = \"living smiting commandment\";\n 1097                      break;\n 1098                  case SPELL_PARALYSE:\n 1099                      s = \"living paralysis spell\";\n 1100                      break;\n 1101                  default:\n 1102                      break;\n 1103                  }",
+   "theirs_site": "crawl-ref/source/mon-info.cc:1423",
+   "ours_site": "crawl-ref/source/mon-info.cc:1227",
+   "their_msgctxt": "display.monster"
+  },
+  {
+   "sample_id": "S32",
+   "layer": "L4",
+   "layer_name": "物品/怪物名称及短说明",
+   "key": "spectre",
+   "english": "spectre",
+   "theirs": "幽灵",
+   "ours": "幽灵",
+   "identical": true,
+   "usage_sites": [
+    "crawl-ref/source/kills.cc:753",
+    "crawl-ref/source/mon-info.cc:1211"
+   ],
+   "context_snippet": "  749          case kill_monster_desc::M_SIMULACRUM:\n  750              modifier = \"simulacrum\";\n  751              break;\n  752          case kill_monster_desc::M_SPECTRE:\n  753              modifier = \"spectre\";\n  754              break;\n  755          case kill_monster_desc::M_SHAPESHIFTER:\n  756              modifier = \"shapeshifter\";\n  757              break;",
+   "theirs_site": "crawl-ref/source/mon-info.cc:1462",
+   "ours_site": "crawl-ref/source/kills.cc:760",
+   "their_msgctxt": "display.monster"
+  },
+  {
+   "sample_id": "S33",
+   "layer": "L5",
+   "layer_name": "神明/角色语气",
+   "key": "You hear Kikubaaqudgha cackling.",
+   "english": "You hear Kikubaaqudgha cackling.",
+   "theirs": "你听到奇库巴库哈的狂笑声。",
+   "ours": "你听到奇库巴库哈咯咯地笑。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/god-wrath.cc:655"
+   ],
+   "context_snippet": "  651  static bool _kikubaaqudgha_retribution()\n  652  {\n  653      // death/necromancy theme\n  654      const god_type god = GOD_KIKUBAAQUDGHA;\n  655      god_speaks(god, coinflip() ? \"You hear Kikubaaqudgha cackling.\"\n  656                                 : \"Kikubaaqudgha's malice focuses upon you.\");\n  657  \n  658      if (wrath_tension_check(true))\n  659      {",
+   "theirs_site": "crawl-ref/source/god-wrath.cc:656",
+   "ours_site": "crawl-ref/source/god-wrath.cc:716",
+   "their_msgctxt": "g.message"
+  },
+  {
+   "sample_id": "S34",
+   "layer": "L5",
+   "layer_name": "神明/角色语气",
+   "key": "The world leaves you behind!",
+   "english": "The world leaves you behind!",
+   "theirs": "世界将你抛在了身后！",
+   "ours": "世界将你抛弃在身后！",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/god-wrath.cc:389"
+   ],
+   "context_snippet": "  385              dec_penance(god, 1);\n  386          }\n  387          else\n  388          {\n  389              mprf(MSGCH_DANGER, \"The world leaves you behind!\");\n  390              dec_haste_player(10000);\n  391              slow_player(81 + random2(10));\n  392          }\n  393      }",
+   "theirs_site": "crawl-ref/source/god-wrath.cc:390",
+   "ours_site": "crawl-ref/source/god-wrath.cc:450",
+   "their_msgctxt": "g.message"
+  },
+  {
+   "sample_id": "S35",
+   "layer": "L5",
+   "layer_name": "神明/角色语气",
+   "key": "Kikubaaqudgha's malice focuses upon you.",
+   "english": "Kikubaaqudgha's malice focuses upon you.",
+   "theirs": "奇库巴库哈的恶意集中到了你身上。",
+   "ours": "奇库巴库哈的恶意聚焦在你身上。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/god-wrath.cc:656"
+   ],
+   "context_snippet": "  652  {\n  653      // death/necromancy theme\n  654      const god_type god = GOD_KIKUBAAQUDGHA;\n  655      god_speaks(god, coinflip() ? \"You hear Kikubaaqudgha cackling.\"\n  656                                 : \"Kikubaaqudgha's malice focuses upon you.\");\n  657  \n  658      if (wrath_tension_check(true))\n  659      {\n  660          int xl = you.experience_level;",
+   "theirs_site": "crawl-ref/source/god-wrath.cc:657",
+   "ours_site": "crawl-ref/source/god-wrath.cc:717",
+   "their_msgctxt": "g.message"
+  },
+  {
+   "sample_id": "S36",
+   "layer": "L5",
+   "layer_name": "神明/角色语气",
+   "key": "The monsters",
+   "english": "The monsters",
+   "theirs": "这些怪物",
+   "ours": "怪物们",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/god-wrath.cc:1680"
+   ],
+   "context_snippet": " 1676                                      false, GOD_IGNIS);\n 1677  \n 1678      // Describe the effect on the monsters.\n 1679      mprf(\"%s %s shrouded in protective flame, covering ground quickly, and attacking fiercely!\",\n 1680           mons.size() == 1 ? mons[0]->name(DESC_THE).c_str() : \"The monsters\",\n 1681           mons.size() == 1 ? \"is\" : \"are\");\n 1682  \n 1683      for (monster* mon : mons)\n 1684      {",
+   "theirs_site": "crawl-ref/source/god-wrath.cc:1699",
+   "ours_site": "crawl-ref/source/god-wrath.cc:1740",
+   "their_msgctxt": "g.common"
+  },
+  {
+   "sample_id": "S37",
+   "layer": "L5",
+   "layer_name": "神明/角色语气",
+   "key": "You are too terrified to leap around!",
+   "english": "You are too terrified to leap around!",
+   "theirs": "你太恐惧了，无法跳跃！",
+   "ours": "你太惊恐了，无法跳跃！",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/god-abil.cc:5407"
+   ],
+   "context_snippet": " 5403          return false;\n 5404      }\n 5405      if (you.is_nervous())\n 5406      {\n 5407          mpr(\"You are too terrified to leap around!\");\n 5408          return false;\n 5409      }\n 5410  \n 5411      // query for location:",
+   "theirs_site": "crawl-ref/source/god-abil.cc:5567",
+   "ours_site": "crawl-ref/source/god-abil.cc:5480",
+   "their_msgctxt": "g.message"
+  },
+  {
+   "sample_id": "S38",
+   "layer": "L5",
+   "layer_name": "神明/角色语气",
+   "key": "Nature churns violently around you!",
+   "english": "Nature churns violently around you!",
+   "theirs": "大自然在你周围剧烈翻腾！",
+   "ours": "大自然在你周围猛烈翻腾！",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/god-abil.cc:4210"
+   ],
+   "context_snippet": " 4206      }\n 4207  \n 4208      fail_check();\n 4209  \n 4210      mprf(MSGCH_GOD, \"Nature churns violently around you!\");\n 4211  \n 4212      // TODO: should count get a cap proportional to targets.size()?\n 4213      int count = max(1, min((int)targets.size(),\n 4214                              max(you.skill_rdiv(SK_INVOCATIONS, 1, 2),",
+   "theirs_site": "crawl-ref/source/god-abil.cc:4334",
+   "ours_site": "crawl-ref/source/god-abil.cc:4262",
+   "their_msgctxt": "g.message"
+  },
+  {
+   "sample_id": "S39",
+   "layer": "L5",
+   "layer_name": "神明/角色语气",
+   "key": "You carve a gateway into yourself and beckon forth the legions of chaos!",
+   "english": "You carve a gateway into yourself and beckon forth the legions of chaos!",
+   "theirs": "你在自己身上刻出一道门，召来混沌军团！",
+   "ours": "你在自己身上刻出一个通道，召唤混沌军团前来！",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/god-abil.cc:7119"
+   ],
+   "context_snippet": " 7115      if (stop_summoning_prompt())\n 7116          return spret::abort;\n 7117  \n 7118      fail_check();\n 7119      mpr(\"You carve a gateway into yourself and beckon forth the legions of chaos!\");\n 7120      bleed_for_makhleb(you);\n 7121      you.duration[DUR_INFERNAL_LEGION] = (you.skill_rdiv(SK_INVOCATIONS, 5, 4)\n 7122                                              + random_range(10, 20)) * BASELINE_DELAY;\n 7123  ",
+   "theirs_site": "crawl-ref/source/god-abil.cc:7281",
+   "ours_site": "crawl-ref/source/god-abil.cc:7177",
+   "their_msgctxt": "g.message"
+  },
+  {
+   "sample_id": "S40",
+   "layer": "L5",
+   "layer_name": "神明/角色语气",
+   "key": "Your skin crawls.",
+   "english": "Your skin crawls.",
+   "theirs": "你的皮肤一阵发麻。",
+   "ours": "你的皮肤一阵发麻。",
+   "identical": true,
+   "usage_sites": [
+    "crawl-ref/source/god-abil.cc:1408"
+   ],
+   "context_snippet": " 1404  void trog_do_trogs_hand(int pow)\n 1405  {\n 1406      you.increase_duration(DUR_TROGS_HAND,\n 1407                            5 + roll_dice(2, pow / 3 + 1), 100,\n 1408                            \"Your skin crawls.\");\n 1409      mprf(MSGCH_DURATION, \"You feel strong-willed.\");\n 1410  }\n 1411  \n 1412  void trog_remove_trogs_hand()",
+   "theirs_site": "crawl-ref/source/god-abil.cc:1464",
+   "ours_site": "crawl-ref/source/catch2-tests/test_zh_translation.cc:7176",
+   "their_msgctxt": "g.message"
+  },
+  {
+   "sample_id": "S41",
+   "layer": "L6",
+   "layer_name": "对话/长篇说明",
+   "key": "gods.txt::Qazlal",
+   "english": "Qazlal Stormbringer is a violent god of tempests, who delights in unleashing\nthe forces of nature against the unsuspecting. Those who invite Qazlal's gaze\nwill find themselves the eye in a storm of elemental destruction, from which\nonly their God can protect them. Pious worshippers of Qazlal will gain the\nability to direct and control the destructive might of the storm.",
+   "theirs": "风暴使者 卡兹拉尔 是狂暴的风暴之神，乐于向毫无防备者释放自然之力。招来祂注视的人，会置身于元素毁灭风暴的中心，唯有这位神祇能够保护他们。虔诚的信徒将获得指引和控制风暴破坏力的能力。",
+   "ours": "兴风者卡兹拉尔是一个狂暴的风暴之神，喜欢释放自然的力量来对付没有戒心的人。\n那些请求卡兹拉尔注视的人会发现自己处于毁灭性元素风暴的风暴眼中，\n只有他们的神才能保护他们。\n虔诚的卡兹拉尔信徒将获得指挥和控制风暴破坏性力量的能力。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/dat/descript/gods.txt [Qazlal]"
+   ],
+   "context_snippet": "(数据文件 gods.txt，条目键 \"Qazlal\"；在游戏内查看对应对象说明时整段显示)",
+   "theirs_site": "dat/descript/zh/gods.txt",
+   "ours_site": "dat/descript/zh/gods.txt",
+   "their_msgctxt": null
+  },
+  {
+   "sample_id": "S42",
+   "layer": "L6",
+   "layer_name": "对话/长篇说明",
+   "key": "spells.txt::March of Sorrows spell",
+   "english": "Conjures a stream of stolen suffering, leaving clouds of excruciating misery in\nits wake and around its targets. These clouds of negative energy will rapidly\ndrain the living of small fractions of their maximum health.",
+   "theirs": "造出一道窃取而来的苦难之流，沿途及目标周围留下极度苦难云。这些负能量云雾会迅速吸取活物最大生命值的一小部分。",
+   "ours": "生成一股窃取的痛苦之流，它的尾迹和目标周围会留下郁积愁云。\n这些负能量云会迅速夺去活物的生命值，每次数额相当于其最大生命值的一小部分。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/dat/descript/spells.txt [March of Sorrows spell]"
+   ],
+   "context_snippet": "(数据文件 spells.txt，条目键 \"March of Sorrows spell\"；在游戏内查看对应对象说明时整段显示)",
+   "theirs_site": "dat/descript/zh/spells.txt",
+   "ours_site": "dat/descript/zh/spells.txt",
+   "their_msgctxt": null
+  },
+  {
+   "sample_id": "S43",
+   "layer": "L6",
+   "layer_name": "对话/长篇说明",
+   "key": "spells.txt::Splinterfrost Shell spell",
+   "english": "Constructs a frangible shell of reinforced ice in a half-circle around the\ncaster, pushing creatures out of the way to make space for it, if possible.\n\nThis barricade is durable, and whenever a segment of it is destroyed, will\nfracture into a salvo of icy projectiles launched at whatever destroyed it.\n\nIf the caster strays too far away from their barrier, it will melt rapidly.",
+   "theirs": "在施法者周围构造半圆形的强化冰壳，若条件允许，会将生物推开以腾出空间。\n\n这道屏障相当坚固，每当一段被摧毁，就会碎裂成一轮寒冰投射物，射向摧毁它的目标。\n\n如果施法者离屏障太远，冰壳便会迅速融化。",
+   "ours": "在施法者周围构筑一道半圆形的强化冰壳；如有可能，\n它会将生物推开，为自身腾出位置。\n\n这道屏障十分坚固；每当一段冰壳被摧毁时，都会碎裂成一阵冰片，\n向摧毁它的生物齐射。\n\n如果施法者离屏障太远，冰壳会迅速融化。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/dat/descript/spells.txt [Splinterfrost Shell spell]"
+   ],
+   "context_snippet": "(数据文件 spells.txt，条目键 \"Splinterfrost Shell spell\"；在游戏内查看对应对象说明时整段显示)",
+   "theirs_site": "dat/descript/zh/spells.txt",
+   "ours_site": "dat/descript/zh/spells.txt",
+   "their_msgctxt": null
+  },
+  {
+   "sample_id": "S44",
+   "layer": "L6",
+   "layer_name": "对话/长篇说明",
+   "key": "monsters.txt::lost soul",
+   "english": "The echo of an unmourned soul. Though the memories of its living self are\nlong-faded, it is drawn to the moment of death by some lingering instinct. It\nseizes upon the passage of other souls, losing the last vestiges of its being\nin the memories of another's life.",
+   "theirs": "一个无人哀悼的灵魂的回音。尽管它自己生前的记忆已经褪去很久了，\n但还是被某种弥留的本能拉到了死亡的那一刻。\n它夺取他人灵魂的旅程，在别人生命的记忆中失去了自己存在的最后一丝痕迹。",
+   "ours": "一个无人哀悼的灵魂的回音。尽管它自己生前的记忆已经褪去很久了，\n但还是被某种弥留的本能拉到了死亡的那一刻。\n它攫住其他灵魂离去的时刻，并在另一段人生的记忆中耗尽自身最后的残痕。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/dat/descript/monsters.txt [lost soul]"
+   ],
+   "context_snippet": "(数据文件 monsters.txt，条目键 \"lost soul\"；在游戏内查看对应对象说明时整段显示)",
+   "theirs_site": "dat/descript/zh/monsters.txt",
+   "ours_site": "dat/descript/zh/monsters.txt",
+   "their_msgctxt": null
+  },
+  {
+   "sample_id": "S45",
+   "layer": "L6",
+   "layer_name": "对话/长篇说明",
+   "key": "monsters.txt::colossal amoeba",
+   "english": "An unfathomably massive pile of mystic pulsating protoplasm. The slightest\nthreat will cause it to undergo rapid weaponised mitosis, rapidly overwhelming\npotential meals in a cytoplasmic tidal wave.",
+   "theirs": "一团大得难以想象、神秘搏动的原生质。最轻微的威胁都会使它迅速进行武器化有丝分裂，以细胞质浪潮淹没潜在的食物。",
+   "ours": "一堆令人难以理解地巨大的神秘脉动原生质。最轻微的威胁都会导致它\n进行快速武器化有丝分裂，在细胞质海啸中迅速淹没潜在的猎物。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/dat/descript/monsters.txt [colossal amoeba]"
+   ],
+   "context_snippet": "(数据文件 monsters.txt，条目键 \"colossal amoeba\"；在游戏内查看对应对象说明时整段显示)",
+   "theirs_site": "dat/descript/zh/monsters.txt",
+   "ours_site": "dat/descript/zh/monsters.txt",
+   "their_msgctxt": null
+  },
+  {
+   "sample_id": "S46",
+   "layer": "L6",
+   "layer_name": "对话/长篇说明",
+   "key": "spells.txt::Cleansing Flame spell",
+   "english": "Invokes a huge blast of divine fury centered on the user, severely damaging\nundead and demons and dealing damage to all other hostile creatures.",
+   "theirs": "以使用者为中心引发巨大的神怒爆发，重创亡灵和恶魔，并伤害其他所有敌对生物。",
+   "ours": "激起以使用者为中心的巨大的神怒爆炸，会对亡灵和恶魔造成严重伤害，\n并对所有其他敌对生物造成伤害。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/dat/descript/spells.txt [Cleansing Flame spell]"
+   ],
+   "context_snippet": "(数据文件 spells.txt，条目键 \"Cleansing Flame spell\"；在游戏内查看对应对象说明时整段显示)",
+   "theirs_site": "dat/descript/zh/spells.txt",
+   "ours_site": "dat/descript/zh/spells.txt",
+   "their_msgctxt": null
+  },
+  {
+   "sample_id": "S47",
+   "layer": "L6",
+   "layer_name": "对话/长篇说明",
+   "key": "spells.txt::Blinkbolt spell",
+   "english": "Transforms the caster into a lightning bolt, and translocates the caster to\nthe bolt's destination.",
+   "theirs": "使施法者化为一道闪电，并易位到闪电的终点。",
+   "ours": "将施法者变为闪电箭，并将施法者转移到目的地。",
+   "identical": false,
+   "usage_sites": [
+    "crawl-ref/source/dat/descript/spells.txt [Blinkbolt spell]"
+   ],
+   "context_snippet": "(数据文件 spells.txt，条目键 \"Blinkbolt spell\"；在游戏内查看对应对象说明时整段显示)",
+   "theirs_site": "dat/descript/zh/spells.txt",
+   "ours_site": "dat/descript/zh/spells.txt",
+   "their_msgctxt": null
+  },
+  {
+   "sample_id": "S48",
+   "layer": "L6",
+   "layer_name": "对话/长篇说明",
+   "key": "monsters.txt::vampire mosquito",
+   "english": "A mosquito that has fed upon tainted blood and been transformed into a\nrevolting and pestilent undead insect, seeking to drain its victims to the last\ndrop.",
+   "theirs": "这只蚊子以受污染的血液为食，变成了一只令人作呕、散播疾病的亡灵昆虫。\n它的目的是将它的猎物吸干——一滴不留。",
+   "ours": "这只蚊子以受污染的血液为食，变成了一只令人作呕、散播疾病的亡灵昆虫。\n它的目的是将它的猎物吸干——一滴不留。",
+   "identical": true,
+   "usage_sites": [
+    "crawl-ref/source/dat/descript/monsters.txt [vampire mosquito]"
+   ],
+   "context_snippet": "(数据文件 monsters.txt，条目键 \"vampire mosquito\"；在游戏内查看对应对象说明时整段显示)",
+   "theirs_site": "dat/descript/zh/monsters.txt",
+   "ours_site": "dat/descript/zh/monsters.txt",
+   "their_msgctxt": null
+  }
+ ]
+}

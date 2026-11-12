@@ -1,0 +1,1413 @@
+[
+  {
+    "sample_id": "2-01",
+    "verdict": "B",
+    "reason": "B准确表达攫住其他灵魂离去之际；A把 passage 处理成“旅程”，并将 seizes upon 译作“夺取”，偏离句意。",
+    "scores": {
+      "A": {
+        "faithfulness": 3,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 4,
+        "tone": 4
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": [
+      {
+        "side": "A",
+        "type": "objective_error",
+        "category": "mistranslation",
+        "quote": "它夺取他人灵魂的旅程",
+        "evidence": "原文为 It seizes upon the passage of other souls，结合 drawn to the moment of death，指抓住灵魂离去的时机。",
+        "impact": "削弱亡魂依附其他灵魂死亡过程的描述。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-02",
+    "verdict": "tie",
+    "reason": "两者完整保留三个占位符，獠牙吸血的动作一致；“畅饮”略加强语气，但不足以形成质量差距。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": [
+      {
+        "side": "A",
+        "type": "validation_gap",
+        "category": "placeholder",
+        "quote": "饮下了%s%s",
+        "evidence": "后两个参数在英文中分别为所有格代词及血液名称；中文是否带“的”须看实际填充值。",
+        "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+      },
+      {
+        "side": "B",
+        "type": "validation_gap",
+        "category": "placeholder",
+        "quote": "畅饮了%s%s",
+        "evidence": "后两个参数在英文中分别为所有格代词及血液名称；中文是否带“的”须看实际填充值。",
+        "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-03",
+    "verdict": "tie",
+    "reason": "“猛烈”与“剧烈”均准确表达 violently，内容和神力发动的语气一致。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-04",
+    "verdict": "tie",
+    "reason": "两者均表达意志被剥夺且保留占位符；是否应显式加“的”取决于中文参数，不能由英文源码判错。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": [
+      {
+        "side": "A",
+        "type": "validation_gap",
+        "category": "placeholder",
+        "quote": "%s的意志",
+        "evidence": "英文参数是 name(DESC_ITS)，中文参数是否已含“的”未给出。",
+        "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+      },
+      {
+        "side": "B",
+        "type": "validation_gap",
+        "category": "placeholder",
+        "quote": "%s意志力",
+        "evidence": "英文参数是 name(DESC_ITS)，中文参数是否已含“的”未给出。",
+        "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-05",
+    "verdict": "tie",
+    "reason": "两者均保留在自身刻开通道并召来混沌军团的内容；“门”与“通道”均可接受。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-06",
+    "verdict": "tie",
+    "reason": "两份完全相同，完整传达污血、亡灵昆虫及吸干猎物的描述。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-07",
+    "verdict": "tie",
+    "reason": "两份相同，准确对应法术名称。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-08",
+    "verdict": "tie",
+    "reason": "涌入呼吸器官的事件和三个占位符均保留；“的”的有无不能脱离实际参数判定。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": [
+      {
+        "side": "A",
+        "type": "validation_gap",
+        "category": "placeholder",
+        "quote": "%s涌入了%s%s！",
+        "evidence": "第二参数为 name(DESC_ITS)，第三参数为 lungs 或 airways；未提供中文参数的所有格处理。",
+        "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+      },
+      {
+        "side": "B",
+        "type": "validation_gap",
+        "category": "placeholder",
+        "quote": "%s涌入了%s的%s！",
+        "evidence": "第二参数为 name(DESC_ITS)，第三参数为 lungs 或 airways；未提供中文参数的所有格处理。",
+        "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-09",
+    "verdict": "tie",
+    "reason": "“鬼魂”和“幽灵”均符合 ghost；缺少术语表约束，不能凭不同称呼判优劣。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-10",
+    "verdict": "tie",
+    "reason": "两者均保留活体、神圣惩击及诫命含义；“惩击/神罚”“诫命/律令”属于可接受的术语选择。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-11",
+    "verdict": "tie",
+    "reason": "两者均准确表达移动非常缓慢；B加“得”更舒展，A也符合简短状态文本用法。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-12",
+    "verdict": "tie",
+    "reason": "两者均为物品列表引导语，保留占位符，表达清楚。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-13",
+    "verdict": "insufficient_evidence",
+    "reason": "作为形容词，“诅咒的”更直接，但摘录中 cursed 实际是 Lua 接口键；缺少本地化展示或接口约定，无法可靠判定两种译法的适用性。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": [
+      {
+        "side": "A",
+        "type": "validation_gap",
+        "category": "terminology",
+        "quote": "诅咒",
+        "evidence": "摘录为 { \"cursed\", l_item_cursed }，未提供最终显示或字段使用方式。",
+        "impact": "无法判断译文是作为状态标签、修饰语还是接口键使用；不能据此确认词性或接口错误。"
+      },
+      {
+        "side": "B",
+        "type": "validation_gap",
+        "category": "terminology",
+        "quote": "诅咒的",
+        "evidence": "摘录为 { \"cursed\", l_item_cursed }，未提供最终显示或字段使用方式。",
+        "impact": "无法判断译文是作为状态标签、修饰语还是接口键使用；不能据此确认词性或接口错误。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-14",
+    "verdict": "tie",
+    "reason": "两份相同，“嗯？”符合疑问反馈。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-15",
+    "verdict": "B",
+    "reason": "两者保留分裂和细胞质浪潮的描写；B“大得难以想象”自然准确，A“令人难以理解地巨大”有明显翻译腔。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 3,
+        "tone": 4
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": [
+      {
+        "side": "A",
+        "type": "preference",
+        "category": "grammar",
+        "quote": "令人难以理解地巨大的",
+        "evidence": "unfathomably massive 描写难以想象的体量，B的中文搭配更自然。",
+        "impact": "仅影响表达偏好，不构成客观错误。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-16",
+    "verdict": "tie",
+    "reason": "两者均传达本层不适用竖井陷阱；B“不能设置”偏向操作说明，但现有上下文不足以据此认定实际放置行为被误述。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-17",
+    "verdict": "tie",
+    "reason": "“异动”与“扰动”均可描述未直接显现的动静；现有摘录没有足以排除任一译法的细节。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-18",
+    "verdict": "tie",
+    "reason": "两份相同，准确表达失去灵魂掌控；所有格拼接须核对实际参数。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": [
+      {
+        "side": "A",
+        "type": "validation_gap",
+        "category": "placeholder",
+        "quote": "对%s灵魂的掌控",
+        "evidence": "参数是 name(DESC_ITS, true)，中文填充值是否自带“的”未给出。",
+        "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+      },
+      {
+        "side": "B",
+        "type": "validation_gap",
+        "category": "placeholder",
+        "quote": "对%s灵魂的掌控",
+        "evidence": "参数是 name(DESC_ITS, true)，中文填充值是否自带“的”未给出。",
+        "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-19",
+    "verdict": "tie",
+    "reason": "均准确保留羔羊般温顺的比喻及感觉语气。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-20",
+    "verdict": "tie",
+    "reason": "两者完整传达风暴神性格、信徒身处风暴及控制风暴的能力；A较凝练，B明确保留“风暴眼”，综合相当。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": [
+      {
+        "side": "A",
+        "type": "preference",
+        "category": "terminology",
+        "quote": "风暴的中心",
+        "evidence": "原文为 the eye in a storm；“风暴眼”比“中心”更具体。",
+        "impact": "仅影响表达偏好，不构成客观错误。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-21",
+    "verdict": "tie",
+    "reason": "“狂笑声”与“咯咯地笑”分别强调恶意笑声的气势与声音，均可承载神罚语境。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-22",
+    "verdict": "A",
+    "reason": "A保留“摧毁它的目标”的开放指向；B将 whatever 限定为生物。两者均未明确译出 frangible 的可碎裂性质，但后文碎裂描述作了补充。",
+    "scores": {
+      "A": {
+        "faithfulness": 4,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 4,
+        "mechanics": 4,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": [
+      {
+        "side": "B",
+        "type": "objective_error",
+        "category": "mistranslation",
+        "quote": "向摧毁它的生物齐射",
+        "evidence": "原文为 launched at whatever destroyed it，并未限定为生物。",
+        "impact": "把反击对象范围描述得更窄；具体非生物触发情况仍需实现证据。"
+      },
+      {
+        "side": "A",
+        "type": "objective_error",
+        "category": "omission",
+        "quote": "强化冰壳",
+        "evidence": "原文首句为 a frangible shell of reinforced ice；两译首句均未明确表达可碎裂这一修饰。",
+        "impact": "特性首次介绍略有缺失，但后文说明碎裂，影响较小。"
+      },
+      {
+        "side": "B",
+        "type": "objective_error",
+        "category": "omission",
+        "quote": "强化冰壳",
+        "evidence": "原文首句为 a frangible shell of reinforced ice；两译首句均未明确表达可碎裂这一修饰。",
+        "impact": "特性首次介绍略有缺失，但后文说明碎裂，影响较小。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-23",
+    "verdict": "B",
+    "reason": "B明确是每次损失最大生命值的一小部分，中文也较顺；A“吸取活物最大生命值”容易被理解为降低生命上限。",
+    "scores": {
+      "A": {
+        "faithfulness": 4,
+        "mechanics": 3,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 4,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 4
+      }
+    },
+    "findings": [
+      {
+        "side": "A",
+        "type": "objective_error",
+        "category": "mechanics",
+        "quote": "吸取活物最大生命值的一小部分",
+        "evidence": "原文 drain the living of small fractions of their maximum health，以最大生命值作扣血比例基数，并非说明降低上限。",
+        "impact": "可能误导玩家判断云雾造成的生命损失类型。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-24",
+    "verdict": "tie",
+    "reason": "两份相同，“幽灵”可表达 spectre；不能仅因B也用此词译 ghost 就认定矛盾。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-25",
+    "verdict": "B",
+    "reason": "B清楚保留移动到闪电终点这一对应关系；A仅称“目的地”，关联表达较弱，但不构成明确机制错误。",
+    "scores": {
+      "A": {
+        "faithfulness": 4,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": [
+      {
+        "side": "A",
+        "type": "preference",
+        "category": "terminology",
+        "quote": "转移到目的地",
+        "evidence": "原文特别指明 the bolt's destination，B“闪电的终点”更明确。",
+        "impact": "仅影响表达偏好，不构成客观错误。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-26",
+    "verdict": "tie",
+    "reason": "A贴近词义，B作为法术名增加动态感；给定摘录没有效果说明，不能确认“激增”是否误述机制。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": [
+      {
+        "side": "B",
+        "type": "validation_gap",
+        "category": "mechanics",
+        "quote": "毒性激增",
+        "evidence": "源码仅提供名称、学派和标志，没有提供效果；不能据此确认毒性如何变化。",
+        "impact": "需要效果信息才能判断名称的机制贴切程度。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-27",
+    "verdict": "A",
+    "reason": "A保留 now 及 for your liking 的主观不安意味；B仍能传达接近警告，但语气信息较少。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 4,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 4
+      }
+    },
+    "findings": [
+      {
+        "side": "B",
+        "type": "objective_error",
+        "category": "omission",
+        "quote": "%s离你太近了。",
+        "evidence": "原文为 is now too close for your liking，B省去“现在”及明确的主观感受。",
+        "impact": "仍能理解警告，但靠近的时点与叙述语气较弱。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-28",
+    "verdict": "tie",
+    "reason": "“麻痹术”和“麻痹法术”均准确，活体性质也保留。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-29",
+    "verdict": "tie",
+    "reason": "两者都表达启动吉瓦对非当前楼层物品的献祭处理；A较易读，B较贴近处理含义，“离层”略生硬。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": [
+      {
+        "side": "B",
+        "type": "preference",
+        "category": "grammar",
+        "quote": "离层祭品处理",
+        "evidence": "off-level 指非当前楼层，“离层”作为中文缩略语不够直观。",
+        "impact": "仅影响表达偏好，不构成客观错误。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-30",
+    "verdict": "tie",
+    "reason": "两者均保留血液再次平静的拟人化信息；鲜血与血液的区别不影响机制。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-31",
+    "verdict": "tie",
+    "reason": "两者均保留 g/f 键与命令含义，但均未保持原文19个行首空格；B保留部分缩进仍不满足原样保持。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 2,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 2,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": [
+      {
+        "side": "A",
+        "type": "objective_error",
+        "category": "format",
+        "quote": "g - 守卫此区域。",
+        "evidence": "原文 g 前有19个空格；A为0个，B为10个。规则明确要求检查行首空格，且短界面行不在长段说明的格式豁免内。",
+        "impact": "可能破坏与上下相邻命令行的对齐；实际视觉效果取决于界面显示。"
+      },
+      {
+        "side": "B",
+        "type": "objective_error",
+        "category": "format",
+        "quote": "          g - 守卫此地。",
+        "evidence": "原文 g 前有19个空格；A为0个，B为10个。规则明确要求检查行首空格，且短界面行不在长段说明的格式豁免内。",
+        "impact": "可能破坏与上下相邻命令行的对齐；实际视觉效果取决于界面显示。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-32",
+    "verdict": "tie",
+    "reason": "两份相同，“皮肤一阵发麻”可接受地传达 skin crawls 的异样体感。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-33",
+    "verdict": "B",
+    "reason": "两者意思相同；B主语搭配自然，A“你发光更亮了”较生硬。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 3,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": [
+      {
+        "side": "A",
+        "type": "preference",
+        "category": "grammar",
+        "quote": "你发光更亮了",
+        "evidence": "原文表达光亮程度增强，B“身上的光芒更亮了”语法更顺。",
+        "impact": "仅影响表达偏好，不构成客观错误。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-34",
+    "verdict": "tie",
+    "reason": "两者均准确表达恐惧导致无法跳跃，语气一致。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-35",
+    "verdict": "tie",
+    "reason": "“点火”和“引燃术”均符合 Ignition；不能因法术等级高而认定A用词错误。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-36",
+    "verdict": "tie",
+    "reason": "两者均保留狂怒迅速消退的状态；“血怒/嗜血狂怒”属于术语风格差异。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-37",
+    "verdict": "tie",
+    "reason": "“受缚灵魂”更展开，“缚魂”更简洁，均可作为 bound soul 的名称。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-38",
+    "verdict": "tie",
+    "reason": "两者均适合作为复数怪物主语片段，不应要求此片段独立具备整句信息。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-39",
+    "verdict": "tie",
+    "reason": "两者均传达获得敏锐感知，符合装备显隐能力的消息；比较表达可由获得效果的语境支持。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-40",
+    "verdict": "tie",
+    "reason": "两者含义和语气一致，均准确表达周围变暗。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-41",
+    "verdict": "tie",
+    "reason": "两者均完整保留两个占位符和武装盟友的动作；A省略显式所有格不妨碍中文理解。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-42",
+    "verdict": "B",
+    "reason": "B“史莱姆同伴”较贴近 fellow；A“同族”增加族属判断。两份均漏掉原文作为后缀的行首空格。",
+    "scores": {
+      "A": {
+        "faithfulness": 4,
+        "mechanics": 4,
+        "terminology": 4,
+        "invariants": 3,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 3,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": [
+      {
+        "side": "A",
+        "type": "objective_error",
+        "category": "addition",
+        "quote": "同族史莱姆",
+        "evidence": "fellow slime 及 MLC_GOOD_NEUTRAL 表明同伴关系，现有文本未声明与玩家同族。",
+        "impact": "可能把宗教或阵营关联误读为种族关系。"
+      },
+      {
+        "side": "A",
+        "type": "objective_error",
+        "category": "format",
+        "quote": "（同族史莱姆）",
+        "evidence": "原文为 \" (fellow slime)\"，括号前有一个空格；两译均无前导空格。",
+        "impact": "附加到对象说明时可能缺少与前文的分隔；全角括号可部分减轻影响。"
+      },
+      {
+        "side": "B",
+        "type": "objective_error",
+        "category": "format",
+        "quote": "（史莱姆同伴）",
+        "evidence": "原文为 \" (fellow slime)\"，括号前有一个空格；两译均无前导空格。",
+        "impact": "附加到对象说明时可能缺少与前文的分隔；全角括号可部分减轻影响。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-43",
+    "verdict": "tie",
+    "reason": "“集中”与“聚焦”均准确传达神明恶意指向玩家，神名也与各自2-21一致。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-44",
+    "verdict": "tie",
+    "reason": "两者均保留两个占位符、被迫开始和缓慢吟诵的含义；术/真言不能脱离术语表判错，动态短语拼接仍需验证。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": [
+      {
+        "side": "A",
+        "type": "validation_gap",
+        "category": "placeholder",
+        "quote": "%s被迫缓慢地开始%s召回术！",
+        "evidence": "phrasing 至少可能为 dramatically intoning，但中文运行时短语未知，不能确定与“开始/缓缓”的组合是否自然。",
+        "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+      },
+      {
+        "side": "B",
+        "type": "validation_gap",
+        "category": "placeholder",
+        "quote": "%s被迫开始缓缓%s召回真言！",
+        "evidence": "phrasing 至少可能为 dramatically intoning，但中文运行时短语未知，不能确定与“开始/缓缓”的组合是否自然。",
+        "impact": "需核对本地化程序实际填充值才能判断拼接是否正确。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-45",
+    "verdict": "A",
+    "reason": "A“抛在身后”更准确自然地表现被世界甩开；B“抛弃在身后”增加遗弃色彩且搭配稍硬。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 4,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 4,
+        "tone": 4
+      }
+    },
+    "findings": [
+      {
+        "side": "B",
+        "type": "preference",
+        "category": "tone",
+        "quote": "抛弃在身后",
+        "evidence": "leaves you behind 在减速语境中强调落后，A“抛在身后”贴切。",
+        "impact": "仅影响表达偏好，不构成客观错误。"
+      }
+    ]
+  },
+  {
+    "sample_id": "2-46",
+    "verdict": "tie",
+    "reason": "两者均清楚表达脚已成为蹄子的状态；A使用完成性“变成了”不与静态变异描述冲突。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-47",
+    "verdict": "tie",
+    "reason": "A“同调”较贴近 attuned，B“联系”较通俗；两者均保留显著增强且未混淆三级强度。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "sample_id": "2-48",
+    "verdict": "tie",
+    "reason": "两者完整保留以使用者为中心、重创亡灵恶魔及伤害其他敌对生物的效果；A更凝练，B也清楚准确。",
+    "scores": {
+      "A": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      },
+      "B": {
+        "faithfulness": 5,
+        "mechanics": 5,
+        "terminology": 5,
+        "invariants": 5,
+        "readability": 5,
+        "tone": 5
+      }
+    },
+    "findings": []
+  }
+]
