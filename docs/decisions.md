@@ -4109,7 +4109,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | `crawl-ref/source/dat/i18n/zh/source.txt:18971` | 变异能量 | 诱变能量 | mutagenic |
 | `crawl-ref/source/dat/i18n/zh/source.txt:20144` | 晕眩 | 眩晕 | dazed／daze |
 | `crawl-ref/source/dat/i18n/zh/source.txt:20654` | 变异能量 | 诱变能量 | mutagenic |
-| `crawl-ref/source/dat/i18n/zh/source.txt:21338` | 恍惚 | 眩晕 | dazed／daze |
+| `crawl-ref/source/dat/i18n/zh/source.txt:21338` | 恍惚 | 眩晕（原建议，已更正：按迷魂处理） | dazed／daze（原误分类，已更正：DUR_MESMERISED） |
 | `crawl-ref/source/dat/i18n/zh/source.txt:24060` | 虔诚度 | 虔诚值 | piety |
 | `crawl-ref/source/dat/i18n/zh/source.txt:24066` | 虔诚度 | 虔诚值 | piety |
 | `crawl-ref/source/dat/i18n/zh/source.txt:24537` | 突变能量 | 诱变力量 | mutagenic |
@@ -4186,7 +4186,7 @@ trunk 未自动继承该提交，须分别核对。此表只记落实情况，�
 | barbs 普通正文 | 候选：`codex/dc096-assets-stable @ 7dd24f4788`，PR 待合并。历史核对：未完全落实：`cad4bcba74` 曾改为“倒刺”；`ed26247a5c` 后当前 crystal echidna 在 `descript/zh/monsters.txt:861` 又作“尖刺”，与普通正文裁决不一致；其余原清单正文已落地 | 候选：`codex/dc096-assets-trunk @ ec08132481`，PR 待合并。历史核对：未落地：crystal echidna `descript/zh/monsters.txt:838` 的“尖刺”及 Barbs `descript/zh/status.txt:174-175` 的“刺”仍未依原清单统一 |
 | status\|Barbs 短标签 | 不适用原清单替换：D-C-098 明确保留“尖刺” | 不适用原清单替换：D-C-098 明确保留“尖刺” |
 | noxious fumes | 已落地：`cad4bcba74`，两处法术与教程为“毒烟” | 候选：`codex/dc096-assets-trunk @ ec08132481`，PR 待合并。历史核对：未落地：`descript/zh/spells.txt:850` 的“有害烟雾”、`:921` 的“有毒烟雾”、`descript/zh/tutorial.txt:502` 的“有毒气体”仍指同一 noxious 云 |
-| dazed/daze | 候选：`codex/dc096-assets-stable @ 7dd24f4788`，PR 待合并。本轮补齐 Cacophony、burstshroom 正文；历史核对：已落地：`cad4bcba74` 的共享消息为“眩晕” | 候选：`codex/dc096-assets-trunk @ ec08132481`，PR 待合并。历史核对：未完全落地：`source.txt:4712` 孢子仍为“晕头转向”、`:18539` 与 `:22214` 仍为“恍惚”（均位于 i18n/zh）；已统一项如 `6a3a393828` 的 snaps out 消息、`cb70b86b73` 的诱变能量消息不能代表整组完成 |
+| dazed/daze | S1 已更正，候选：`codex/dc096-assets-stable @ fd8510c7b0`，PR 待合并。`You break out of your daze.` 原属本组的归类已撤回，实际按 DUR_MESMERISED 译为迷魂结束；原核销记录保留：候选：`codex/dc096-assets-stable @ 7dd24f4788`，PR 待合并。本轮补齐 Cacophony、burstshroom 正文；历史核对：已落地：`cad4bcba74` 的共享消息为“眩晕” | S1 已更正，候选：`codex/dc096-assets-trunk @ 39adbcc247`，PR 待合并。`You break out of your daze.` 原属本组的归类已撤回，实际按 DUR_MESMERISED 译为迷魂结束；原核销记录保留：候选：`codex/dc096-assets-trunk @ ec08132481`，PR 待合并。历史核对：未完全落地：`source.txt:4712` 孢子仍为“晕头转向”、`:18539` 与 `:22214` 仍为“恍惚”（均位于 i18n/zh）；已统一项如 `6a3a393828` 的 snaps out 消息、`cb70b86b73` 的诱变能量消息不能代表整组完成 |
 | travel exclusion | 已落地：`cad4bcba74` | 候选：`codex/dc096-assets-trunk @ ec08132481`，PR 待合并。历史核对：未完全落地：部分“禁区”已由 `4486e1fadd` 落地；`i18n/zh/source.txt:7963`、`:43768` 仍作“被标记为排除／已排除”。原 `%d %sexclusion%s` 键已不在当前 catalog，不再按旧身份替换 |
 | ambrosia 及状态 | 已落地：普通效果 `cad4bcba74`；短标签按后续 D-C-107 由 `6c55448ad1` 落为“神食酣醉” | 已落地：`85be0be893`，原清单普通效果与状态均已更新；不改一般传说中的 ambrosial nectar |
 | aptitude 及训练成本完整分句 | 已落地：`cad4bcba74`，含完整零资质、零级到一级的基准 | 候选：`codex/dc096-assets-trunk @ ec08132481`，PR 待合并。历史核对：未完全落地：技能参数 `d323624b33` 已为“资质”；`i18n/zh/source.txt:43390` 仍为“能力倾向表”，`:43597` 仍以“相对于当前”截断基准分句 |
@@ -4231,6 +4231,28 @@ trunk 未自动继承该提交，须分别核对。此表只记落实情况，�
   有短标签例外；travel exclusion 与 excluded 的英文形式不等价于单一 glossary
   词组，aptitude 与 daze 也不以本轮未逐项批准的中文近似词推导全局拒绝规则。
   旧 catalog 镜像保留不等于现行译文缺口，零命中也不代表全库术语完整。
+
+
+
+##### S1：迷魂结束消息的语境误分类（已更正）
+
+原 Deferred asset changes 将 `You break out of your daze.` 归入 daze、建议改成
+“眩晕”，属于语境误分类；上述原条目及核销记录已标“已更正”并保留。
+实际两线都只有 `duration-data.h` 的 `DUR_MESMERISED` 使用此 SourceDB 键：
+stable 的结束定义带 `you.clear_beholders()` 回调，经 `player-reacts.cc` 的
+通用结束消息显示路径翻译；trunk 在清除 beholders 后直接输出同一键。
+没有其他机制共享该键，因此不新增 `C_()`，不改英文键、C++ 行为或状态身份。
+
+两线均将“你从眩晕中清醒过来。”改为“你摆脱了迷魂。”，按现行
+`Mesmerise → 迷魂` 处理。stable 的同源误归类在 `cad4bcba74` 前即已存在，
+一并更正。`You snap out of the daze.` 则在 `player.cc` 的 `DUR_DAZED`
+恢复分支使用，继续为“你从眩晕中清醒过来。”，不受本次改动影响。
+glossary 的 dazed 备注将含混的“催眠相关描述”最小澄清为 Dazed 机制描述，
+显式排除 `DUR_MESMERISED`；不改变 Mesmerise 法术对其他生物造成 daze 的说明。
+
+本次资产候选：trunk `codex/dc096-assets-trunk @ 39adbcc247`，stable
+`codex/dc096-assets-stable @ fd8510c7b0`；两者均为 PR 待合并，未记为已落地。
+S2、S3 不在本次增量范围。
 
 
 ---
