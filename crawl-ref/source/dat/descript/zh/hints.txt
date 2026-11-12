@@ -597,7 +597,7 @@ HINT_SPELL_MISCAST_EFFECTS
 HINT_STAIR_BRAND
 
 <tiles>楼梯地块上的小符号表示该位置还有物品，你可能会想查看。</tiles>
-<console>如果有物品盖在楼梯或逃生舱口上，系统会把 <w><<</w> 或 <w>></w> 符号高亮显示，而不会用物品图符遮住楼梯符号。</console>
+<console>如果有物品盖在楼梯或逃生口上，系统会把 <w><<</w> 或 <w>></w> 符号高亮显示，而不会用物品图符遮住楼梯符号。</console>
 %%%%
 HINT_TRAP_BRAND
 
