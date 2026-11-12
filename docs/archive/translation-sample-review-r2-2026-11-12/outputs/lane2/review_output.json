@@ -1,0 +1,1881 @@
+[
+  {
+    "sample_id": "C4-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "With a soft hiss, the gate opens fully!",
+      "production_consumers": [
+        "stable crawl-ref/source/stairs.cc:488",
+        "trunk crawl-ref/source/stairs.cc:500"
+      ],
+      "mechanism_and_parameters": [
+        "else\n        mpr(T_(\"With a soft hiss, the gate opens fully!\"));\n",
+        "else\n        mpr(T_(\"With a soft hiss, the gate opens fully!\"));\n"
+      ],
+      "independent_semantic_judgment": "非沉默分支的轻微嘶声和开门完成均完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C2-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "This helmet is too small for your head.",
+      "production_consumers": [
+        "stable crawl-ref/source/player-equip.cc:530",
+        "trunk crawl-ref/source/player-equip.cc:549"
+      ],
+      "mechanism_and_parameters": [
+        "if (player_size >= SIZE_LARGE)\n                NO_EQUIP(T_(\"This helmet is too small for your head.\"))\n            else if (player_size <= SIZE_LITTLE)\n                NO_EQUIP(T_(\"This helmet is too large for your head.\"))\n            else if (species::is_draconian(you.species))\n                NO_EQUIP(T_(\"You can't wear that with your reptilian head.\"))\n            else if (you.species == SP_OCTOPODE)\n                NO_EQUIP(T_(\"Your can't wear that!\"))\n            else if (you.has_mutation(MUT_HORNS, include_form))\n                NO_EQUIP(T_(\"You can't fit that over your horns.\"))\n            else if (you.has_mutation(MUT_ANTENNAE, include_form))\n                NO_EQUIP(T_(\"You can't fit that over your antennae.\"))\n            else if (you.has_mutation(MUT_BEAK, include_form))\n                NO_EQUIP(T_(\"You can't fit that over your beak.\"))\n        }\n    }\n    else if (item.base_type == OBJ_WEAPONS)\n    {\n        const size_type bsize = you.body_size(PSIZE_TORSO, !include_form);\n",
+        "if (player_size >= SIZE_LARGE)\n                NO_EQUIP(T_(\"This helmet is too small for your head.\"))\n            else if (player_size <= SIZE_LITTLE)\n                NO_EQUIP(T_(\"This helmet is too large for your head.\"))\n            else if (species::is_draconian(you.species))\n                NO_EQUIP(T_(\"You can't wear that with your reptilian head.\"))\n            else if (you.species == SP_OCTOPODE)\n                NO_EQUIP(T_(\"Your can't wear that!\"))\n            else if (you.has_mutation(MUT_HORNS, temp))\n                NO_EQUIP(T_(\"You can't fit that over your horns.\"))\n            else if (you.has_mutation(MUT_ANTENNAE, temp))\n                NO_EQUIP(T_(\"You can't fit that over your antennae.\"))\n            else if (you.has_mutation(MUT_BEAK, temp))\n                NO_EQUIP(T_(\"You can't fit that over your beak.\"))\n        }\n    }\n    else if (item.base_type == OBJ_WEAPONS)\n    {\n        const size_type bsize = you.body_size(PSIZE_TORSO, !temp);\n"
+      ],
+      "independent_semantic_judgment": "体型过大导致头盔太小，条件和对象正确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C2-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "%s becomes incredibly heavy!",
+      "production_consumers": [
+        "stable crawl-ref/source/item-use.cc:2173",
+        "trunk crawl-ref/source/item-use.cc:2243"
+      ],
+      "mechanism_and_parameters": [
+        "mprf(T_(\"%s becomes incredibly heavy!\"),itname.c_str());\n",
+        "mprf(T_(\"%s becomes incredibly heavy!\"),itname.c_str());\n"
+      ],
+      "independent_semantic_judgment": "沉重铭印变化与物品名参数准确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C6-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "You are too depleted to draw on your %s recklessly!",
+      "production_consumers": [
+        "stable crawl-ref/source/quiver.cc:138",
+        "trunk crawl-ref/source/quiver.cc:146"
+      ],
+      "mechanism_and_parameters": [
+        "mprf(T_(\"You are too depleted to draw on your %s recklessly!\"), resource);\n",
+        "mprf(T_(\"You are too depleted to draw on your %s recklessly!\"), resource);\n"
+      ],
+      "independent_semantic_judgment": "资源实际为生命或魔法，两分支都能成句；魔法用于 MP 可改为法力以更明确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C4-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "%s emits a blaring wail!",
+      "production_consumers": [
+        "stable crawl-ref/source/traps.cc:597"
+      ],
+      "mechanism_and_parameters": [
+        "string msg = make_stringf(T_(\"%s emits a blaring wail!\"),\n                               name(DESC_THE).c_str());\n"
+      ],
+      "independent_semantic_judgment": "陷阱名填入主语，警报哀嚎准确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。",
+      "trunk_english_full": "%s emits a blaring wail!"
+    }
+  },
+  {
+    "sample_id": "C1-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "mute/unmute sound effects",
+      "production_consumers": [
+        "stable crawl-ref/source/command.cc:1197",
+        "trunk crawl-ref/source/command.cc:1176"
+      ],
+      "mechanism_and_parameters": [
+        "#ifdef USE_SOUND\n    _add_command(cols, 1, CMD_TOGGLE_SOUND, T_(\"mute/unmute sound effects\"));\n",
+        "#ifdef USE_SOUND\n    _add_command(cols, 1, CMD_TOGGLE_SOUND, T_(\"mute/unmute sound effects\"));\n"
+      ],
+      "independent_semantic_judgment": "音效静音开关含义准确；源码复核发现 trunk 也有中文条目，输入缺失标注不成立。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。",
+      "trunk_english_full": "mute/unmute sound effects"
+    }
+  },
+  {
+    "sample_id": "C5-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "You can easily mark its square as dangerous to avoid accidentally entering into its field of view when using auto-explore or auto-travel. To do so, enter targeting mode with <w>%</w> and then press <w>%</w> when your cursor is hovering over the monster's grid. Doing so will mark this grid and all surrounding ones within a radius of 8 as \"excluded\" ones that explore or travel modes won't enter.",
+      "production_consumers": [
+        "stable crawl-ref/source/hints.cc:2787"
+      ],
+      "mechanism_and_parameters": [
+        "string exclude_tip = T_(\"You can easily mark its square as dangerous \"\n                    \"to avoid accidentally entering into its field of view when \"\n                    \"using auto-explore or auto-travel. To do so, enter targeting \"\n                    \"mode with <w>%</w> and then press <w>%</w> when your cursor \"\n                    \"is hovering over the monster's grid. Doing so will mark this \"\n                    \"grid and all surrounding ones within a radius of 8 as \"\n                    \"\\\"excluded\\\" ones that explore or travel modes won't enter.\");\n"
+      ],
+      "independent_semantic_judgment": "排除操作的两键、光标位置、半径8和探索旅行禁入都完整；未见 trunk 调用不能据其缺键判漏译。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。",
+      "trunk_english_full": "You can easily mark its square as dangerous to avoid accidentally entering into its field of view when using auto-explore or auto-travel. To do so, enter targeting mode with <w>%</w> and then press <w>%</w> when your cursor is hovering over the monster's grid. Doing so will mark this grid and all surrounding ones within a radius of 8 as \"excluded\" ones that explore or travel modes won't enter."
+    }
+  },
+  {
+    "sample_id": "C4-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "You enter a Zot trap.",
+      "production_consumers": [
+        "stable crawl-ref/source/traps.cc:705",
+        "trunk crawl-ref/source/traps.cc:621"
+      ],
+      "mechanism_and_parameters": [
+        "mpr(T_(\"You enter a Zot trap.\"));\n",
+        "mpr(T_(\"You enter a Zot trap.\"));\n"
+      ],
+      "independent_semantic_judgment": "进入佐特陷阱，准确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C6-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "you cannot see anything nearby that you can launch.",
+      "production_consumers": [
+        "stable crawl-ref/source/spl-util.cc:1989",
+        "trunk crawl-ref/source/spl-util.cc:2007"
+      ],
+      "mechanism_and_parameters": [
+        "if (!piledriver_target_exists())\n                return T_(\"you cannot see anything nearby that you can launch.\");\n",
+        "if (!piledriver_target_exists())\n                return T_(\"you cannot see anything nearby that you can launch.\");\n"
+      ],
+      "independent_semantic_judgment": "piledriver 无可发射目标，否定及附近可见范围完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C5-01",
+    "verdict": "readability",
+    "findings": [
+      {
+        "type": "wording",
+        "description": "either direction 由前文确定为上下楼两向，任意方向不够明确。",
+        "evidence": "stable crawl-ref/source/hints.cc:2520。前文楼梯上下两向均可点击，任意方向略显过宽但上下文可消解。",
+        "suggested_translation": "在图形界面下，上下楼都可以点击<w>鼠标左键</w>来完成。",
+        "defect_points": 0
+      }
+    ],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "In Tiles, you can achieve the same, in either direction, by clicking the <w>left mouse button</w>.",
+      "production_consumers": [
+        "stable crawl-ref/source/hints.cc:2520"
+      ],
+      "mechanism_and_parameters": [
+        "#ifdef USE_TILE\n        ostr << T_(\" In Tiles, you can achieve the same, in either direction, \"\n                \"by clicking the <w>left mouse button</w>.\");\n"
+      ],
+      "independent_semantic_judgment": "前文楼梯上下两向均可点击，任意方向略显过宽但上下文可消解。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；本条存在上述术语或语义问题。",
+      "trunk_english_full": "In Tiles, you can achieve the same, in either direction, by clicking the <w>left mouse button</w>."
+    }
+  },
+  {
+    "sample_id": "C4-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "fly down",
+      "production_consumers": [
+        "stable crawl-ref/source/stairs.cc:241",
+        "trunk crawl-ref/source/stairs.cc:234"
+      ],
+      "mechanism_and_parameters": [
+        "mprf(T_(\"You %s through the gate.\"),\n             you.airborne() ? (going_up ? T_(\"fly up\") : T_(\"fly down\"))\n                            : (going_up ? T_(\"go up\") : T_(\"go down\")));\n",
+        "mprf(T_(\"You %s through the gate.\"),\n             you.airborne() ? (going_up ? T_(\"fly up\") : T_(\"fly down\"))\n                            : (going_up ? T_(\"go up\") : T_(\"go down\")));\n"
+      ],
+      "independent_semantic_judgment": "向下飞填入你%s穿过了大门，成句成立。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C5-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Escape hatch",
+      "production_consumers": [
+        "stable crawl-ref/source/hints.cc:1162",
+        "trunk crawl-ref/source/hints.cc:1108"
+      ],
+      "mechanism_and_parameters": [
+        "tiles.add_text_tag(TAG_TUTORIAL, T_(\"Escape hatch\"), gc);\n",
+        "tiles.add_text_tag(TAG_TUTORIAL, T_(\"Escape hatch\"), gc);\n"
+      ],
+      "independent_semantic_judgment": "逃生口标签准确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C1-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "<yellow>$</yellow> : gold (<w>%</w> counts gold)",
+      "production_consumers": [
+        "stable crawl-ref/source/command.cc:1072",
+        "trunk crawl-ref/source/command.cc:1070"
+      ],
+      "mechanism_and_parameters": [
+        "_add_insert_commands(cols, 0, T_(\"<yellow>$</yellow> : gold (<w>%</w> counts gold)\"),\n                         { CMD_LIST_GOLD });\n",
+        "_add_insert_commands(cols, 0, T_(\"<yellow>$</yellow> : gold (<w>%</w> counts gold)\"),\n                         { CMD_LIST_GOLD });\n"
+      ],
+      "independent_semantic_judgment": "金币图例与计数键完整，百分号是命令插入槽。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C6-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "You cannot fit into any form of body armour or wear helmets.",
+      "production_consumers": [
+        "stable crawl-ref/source/mutation.cc:882",
+        "trunk crawl-ref/source/mutation.cc:884"
+      ],
+      "mechanism_and_parameters": [
+        "\"unfitting armour\",\n                      _innatemut(T_(\"You cannot fit into any form of body armour or wear helmets.\"))};\n",
+        "\"unfitting armour\",\n                      _innatemut(T_(\"You cannot fit into any form of body armour or wear helmets.\"))};\n"
+      ],
+      "independent_semantic_judgment": "身体护甲与头盔全部禁用，完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C3-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "{{\n    if you.race() == \"Djinni\" then\n        return \"Being skilled in Spellcasting increases the success rate and spell \"..\n               \"power of all spells.\"\n    else\n        return \"Being skilled in Spellcasting slightly increases the success \" ..\n                \"rate and spell power of all spells, along with increasing your \" ..\n                \"magical reserves. Training Spellcasting also gives you more spell \" ..\n                \"slots to spend on new spells.\"\n    end\n}}",
+      "production_consumers": [
+        "stable crawl-ref/source/describe.cc:4647",
+        "stable crawl-ref/source/describe.cc:8012",
+        "stable crawl-ref/source/hints.cc:759",
+        "stable crawl-ref/source/tilereg-skl.cc:140",
+        "trunk crawl-ref/source/describe.cc:5047",
+        "trunk crawl-ref/source/describe.cc:8746",
+        "trunk crawl-ref/source/hints.cc:748",
+        "trunk crawl-ref/source/tilereg-skl.cc:140"
+      ],
+      "mechanism_and_parameters": [
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n",
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false, &spell_fail_details);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n"
+      ],
+      "independent_semantic_judgment": "Lua 灯神分支不谈法力和法术槽，其他种族分支保留略微加成与储备，协议比较值未译。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C6-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "You can't rise from this level!",
+      "production_consumers": [
+        "stable crawl-ref/source/ability.cc:1838",
+        "trunk crawl-ref/source/ability.cc:1930"
+      ],
+      "mechanism_and_parameters": [
+        "if (!level_above().is_valid())\n        return _ability_failure(T_(\"You can't rise from this level!\"), quiet, reason);\n",
+        "if (!level_above().is_valid())\n        return _ability_failure(T_(\"You can't rise from this level!\"), quiet, reason);\n"
+      ],
+      "independent_semantic_judgment": "楼层上方无有效位置导致不能上升，完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C4-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "door",
+      "production_consumers": [
+        "stable crawl-ref/source/terrain.cc:907",
+        "stable crawl-ref/source/terrain.cc:908",
+        "trunk crawl-ref/source/terrain.cc:944",
+        "trunk crawl-ref/source/terrain.cc:945"
+      ],
+      "mechanism_and_parameters": [
+        "T_(\"miniscule \") , T_(\"buggy door\"),\n        \"\"               , T_(\"door\"),\n        T_(\"large \")     , T_(\"door\"),\n        \"\"               , T_(\"gate\"),\n        T_(\"huge \")      , T_(\"gate\"),\n    };\n",
+        "T_(\"miniscule \") , T_(\"buggy door\"),\n        \"\"               , T_(\"door\"),\n        T_(\"large \")     , T_(\"door\"),\n        \"\"               , T_(\"gate\"),\n        T_(\"huge \")      , T_(\"gate\"),\n    };\n",
+        "T_(\"miniscule \") , T_(\"buggy door\"),\n        \"\"               , T_(\"door\"),\n        T_(\"large \")     , T_(\"door\"),\n        \"\"               , T_(\"gate\"),\n        T_(\"huge \")      , T_(\"gate\"),\n    };\n",
+        "T_(\"miniscule \") , T_(\"buggy door\"),\n        \"\"               , T_(\"door\"),\n        T_(\"large \")     , T_(\"door\"),\n        \"\"               , T_(\"gate\"),\n        T_(\"huge \")      , T_(\"gate\"),\n    };\n"
+      ],
+      "independent_semantic_judgment": "门与 large 等前缀组合成立。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C1-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "annotate the dungeon level",
+      "production_consumers": [
+        "stable crawl-ref/source/command.cc:1115",
+        "trunk crawl-ref/source/command.cc:1105"
+      ],
+      "mechanism_and_parameters": [
+        "_add_command(cols, 0, CMD_ANNOTATE_LEVEL,\n        T_(\"annotate the dungeon level\"), 2);\n",
+        "_add_command(cols, 0, CMD_ANNOTATE_LEVEL, T_(\"annotate the dungeon level\"), 2);\n"
+      ],
+      "independent_semantic_judgment": "楼层注释动作准确；trunk 源码实际也有中文条目。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。",
+      "trunk_english_full": "annotate the dungeon level"
+    }
+  },
+  {
+    "sample_id": "C1-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "For full 16-colour-mode, try setting a better TERM value than `xterm`, e.g. `xterm-256color` (most terminals) or `putty-256color` (for PuTTY).",
+      "production_consumers": [
+        "stable crawl-ref/source/command.cc:832",
+        "trunk crawl-ref/source/command.cc:832"
+      ],
+      "mechanism_and_parameters": [
+        "// hint for the putty users:\n        if (info.term == \"xterm\")\n            s += T_(\"For full 16-colour-mode, try setting a better TERM value than `xterm`, e.g. `xterm-256color` (most terminals) or `putty-256color` (for PuTTY).\\n\");\n",
+        "// hint for the putty users:\n        if (info.term == \"xterm\")\n            s += T_(\"For full 16-colour-mode, try setting a better TERM value than `xterm`, e.g. `xterm-256color` (most terminals) or `putty-256color` (for PuTTY).\\n\");\n"
+      ],
+      "independent_semantic_judgment": "TERM 建议、16 色及终端示例完整；结尾换行是序列化形式。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C2-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Aiming: <white>Phantom Mirror</white>",
+      "production_consumers": [
+        "stable crawl-ref/source/evoke.cc:646",
+        "trunk crawl-ref/source/evoke.cc:637"
+      ],
+      "mechanism_and_parameters": [
+        "args.top_prompt = T_(\"Aiming: <white>Phantom Mirror</white>\");\n",
+        "args.top_prompt = T_(\"Aiming: <white>Phantom Mirror</white>\");\n"
+      ],
+      "independent_semantic_judgment": "幻影镜瞄准提示与白色标签完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C2-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "appreciates the memories.",
+      "production_consumers": [
+        "stable crawl-ref/source/potion.cc:555",
+        "trunk crawl-ref/source/potion.cc:550"
+      ],
+      "mechanism_and_parameters": [
+        "simple_god_message(T_(\" appreciates the memories.\"), false,\n                               GOD_HEPLIAKLQANA);\n",
+        "simple_god_message(T_(\" appreciates the memories.\"), false,\n                               GOD_HEPLIAKLQANA);\n"
+      ],
+      "independent_semantic_judgment": "神名由 simple_god_message 补在前，记忆作为宾语正确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C2-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "%s projects an invisible shield of force!",
+      "production_consumers": [
+        "stable crawl-ref/source/item-use.cc:2178",
+        "trunk crawl-ref/source/item-use.cc:2248"
+      ],
+      "mechanism_and_parameters": [
+        "mprf(T_(\"%s projects an invisible shield of force!\"),itname.c_str());\n",
+        "mprf(T_(\"%s projects an invisible shield of force!\"),itname.c_str());\n"
+      ],
+      "independent_semantic_judgment": "防护铭印的无形力场护盾准确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C3-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Summonings deals with summoning creatures from another plane of reality to\ntemporarily aid you. Increasing Summonings skill may grant a number of effects\ndepending on the spell, such as longer duration or more powerful allies. Note\nthat summoned beings do not leave corpses and give no experience when killed,\nand their equipment is as ephemeral as they are.\n\nBeing skilled in Summonings increases the success rate and spell power of\nspells in this school. Many spells belong to a combination of several schools,\nin which case spellcasting success and power will depend on the average skill\nin these schools.",
+      "production_consumers": [
+        "stable crawl-ref/source/describe.cc:4647",
+        "stable crawl-ref/source/describe.cc:8012",
+        "stable crawl-ref/source/hints.cc:759",
+        "stable crawl-ref/source/tilereg-skl.cc:140",
+        "trunk crawl-ref/source/describe.cc:5047",
+        "trunk crawl-ref/source/describe.cc:8746",
+        "trunk crawl-ref/source/hints.cc:748",
+        "trunk crawl-ref/source/tilereg-skl.cc:140"
+      ],
+      "mechanism_and_parameters": [
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n",
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false, &spell_fail_details);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n"
+      ],
+      "independent_semantic_judgment": "召唤时限、无尸体经验、临时装备及多学派平均完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C5-09",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "semantic",
+        "description": "宗教立场把 religious standing 的信仰状态误成宗教观点；消费者是 CMD_DISPLAY_RELIGION。",
+        "evidence": "stable crawl-ref/source/hints.cc:1757。religious standing 是在神祇面前的信仰状态、虔诚与惩戒情况，并非宗教主张或立场。",
+        "suggested_translation": "你的信仰状态（<w>%</w>）",
+        "defect_points": 1
+      }
+    ],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "your religious standing (<w>%</w>)",
+      "production_consumers": [
+        "stable crawl-ref/source/hints.cc:1757"
+      ],
+      "mechanism_and_parameters": [
+        "listed.push_back(T_(\"your religious standing (<w>%</w>)\"));\n"
+      ],
+      "independent_semantic_judgment": "religious standing 是在神祇面前的信仰状态、虔诚与惩戒情况，并非宗教主张或立场。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；本条存在上述术语或语义问题。",
+      "trunk_english_full": "your religious standing (<w>%</w>)"
+    }
+  },
+  {
+    "sample_id": "C6-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "You cannot wall jump away from %s!",
+      "production_consumers": [
+        "stable crawl-ref/source/god-abil.cc:6391",
+        "trunk crawl-ref/source/god-abil.cc:6450"
+      ],
+      "mechanism_and_parameters": [
+        "error_ret = make_stringf(T_(\"You cannot wall jump away from %s!\"),\n             beholder->name(DESC_THE, true).c_str());\n",
+        "error_ret = make_stringf(T_(\"You cannot wall jump away from %s!\"),\n             beholder->name(DESC_THE, true).c_str());\n"
+      ],
+      "independent_semantic_judgment": "凝视者名称填入禁止远离对象，蹬墙跳限制准确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C3-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Your Invocations skill affects the likelihood that an attempt to use divine\nabilities with certain gods will be successful, and often the power of such\nabilities.\n\n{{\n    if you.race() ~= \"Djinni\" then\n        return \"The Invocations skill also affects your magical reserves, \" ..\n               \"but to a lesser degree than the Spellcasting skill. Only the \" ..\n               \"higher contribution is used.\"\n    end\n}}",
+      "production_consumers": [
+        "stable crawl-ref/source/describe.cc:4647",
+        "stable crawl-ref/source/describe.cc:8012",
+        "stable crawl-ref/source/hints.cc:759",
+        "stable crawl-ref/source/tilereg-skl.cc:140",
+        "trunk crawl-ref/source/describe.cc:5047",
+        "trunk crawl-ref/source/describe.cc:8746",
+        "trunk crawl-ref/source/hints.cc:748",
+        "trunk crawl-ref/source/tilereg-skl.cc:140"
+      ],
+      "mechanism_and_parameters": [
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n",
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false, &spell_fail_details);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n"
+      ],
+      "independent_semantic_judgment": "神能成功率威力与法力储备、非灯神条件及只取较高贡献完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C2-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Your %s briefly %s through it before you manage to get a firm grip on it.",
+      "production_consumers": [
+        "stable crawl-ref/source/player-equip.cc:1976",
+        "trunk crawl-ref/source/player-equip.cc:2030"
+      ],
+      "mechanism_and_parameters": [
+        "mprf_p(T_(\"Your %s briefly %s through it before you manage \"\n                    \"to get a firm grip on it.\"),\n                    hand.c_str(), conjugate_verb(\"pass\", plural).c_str());\n",
+        "mprf_p(T_(\"Your %s briefly %s through it before you manage \"\n                    \"to get a firm grip on it.\"),\n                    hand.c_str(), conjugate_verb(\"pass\", plural).c_str());\n"
+      ],
+      "independent_semantic_judgment": "第一参数为手部名称；第二参数只是 pass/passes 的英语屈折，用零精度隐藏而将动词固化为穿过，未漏实义。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C4-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "The abyssal rune of Zot can be found at this depth.",
+      "production_consumers": [
+        "stable crawl-ref/source/stairs.cc:971",
+        "trunk crawl-ref/source/stairs.cc:998"
+      ],
+      "mechanism_and_parameters": [
+        "if (!you.runes[RUNE_ABYSSAL] && you.depth >= ABYSSAL_RUNE_MIN_LEVEL)\n                mpr(T_(\"The abyssal rune of Zot can be found at this depth.\"));\n",
+        "if (!you.runes[RUNE_ABYSSAL] && you.depth >= ABYSSAL_RUNE_MIN_LEVEL)\n                mpr(T_(\"The abyssal rune of Zot can be found at this depth.\"));\n"
+      ],
+      "independent_semantic_judgment": "深渊符文可在此深度取得，可能找到的表达保留可能性。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C2-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "You feel a baleful cunning.",
+      "production_consumers": [
+        "stable crawl-ref/source/player-equip.cc:2033",
+        "trunk crawl-ref/source/player-equip.cc:2087"
+      ],
+      "mechanism_and_parameters": [
+        "case SPWPN_DEVIOUS:\n            mpr(T_(\"You feel a baleful cunning.\"));\n",
+        "case SPWPN_DEVIOUS:\n            mpr(T_(\"You feel a baleful cunning.\"));\n"
+      ],
+      "independent_semantic_judgment": "武器铭印带来的邪恶狡黠感觉准确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C3-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Forgecraft is the art of shaping tangible objects out of magic. Forgecraft\nspells can construct a wide array of mechanical creatures that will fight\nalongside the caster, as well as create traps and barricades and even turn the\nphysical resilience of one's armour into a weapon.\n\nBeing skilled in Forgecraft increases the success rate and spell power of\nspells in this school. Many spells belong to a combination of several schools,\nin which case spellcasting success and power will depend on the average skill\nin these schools.",
+      "production_consumers": [
+        "stable crawl-ref/source/describe.cc:4647",
+        "stable crawl-ref/source/describe.cc:8012",
+        "stable crawl-ref/source/hints.cc:759",
+        "stable crawl-ref/source/tilereg-skl.cc:140",
+        "trunk crawl-ref/source/describe.cc:5047",
+        "trunk crawl-ref/source/describe.cc:8746",
+        "trunk crawl-ref/source/hints.cc:748",
+        "trunk crawl-ref/source/tilereg-skl.cc:140"
+      ],
+      "mechanism_and_parameters": [
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n",
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false, &spell_fail_details);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n"
+      ],
+      "independent_semantic_judgment": "魔法造实体、机械盟友、陷阱路障、护甲韧性及多学派公式完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C6-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "You can't rise from this level without the Orb!",
+      "production_consumers": [
+        "stable crawl-ref/source/ability.cc:1833",
+        "trunk crawl-ref/source/ability.cc:1925"
+      ],
+      "mechanism_and_parameters": [
+        "return _ability_failure(T_(\"You can't rise from this level without the Orb!\"),\n                                    quiet, reason);\n",
+        "return _ability_failure(T_(\"You can't rise from this level without the Orb!\"),\n                                    quiet, reason);\n"
+      ],
+      "independent_semantic_judgment": "离开需要宝珠的条件保留。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C3-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Fire Magic focuses mainly on dealing fire damage over long distances, with many\neffective Conjurations.\n\nBeing skilled in Fire Magic increases the success rate and spell power of\nspells in this school. Many spells belong to a combination of several schools,\nin which case spellcasting success and power will depend on the average skill\nin these schools.",
+      "production_consumers": [
+        "stable crawl-ref/source/describe.cc:4647",
+        "stable crawl-ref/source/describe.cc:8012",
+        "stable crawl-ref/source/hints.cc:759",
+        "stable crawl-ref/source/tilereg-skl.cc:140",
+        "trunk crawl-ref/source/describe.cc:5047",
+        "trunk crawl-ref/source/describe.cc:8746",
+        "trunk crawl-ref/source/hints.cc:748",
+        "trunk crawl-ref/source/tilereg-skl.cc:140"
+      ],
+      "mechanism_and_parameters": [
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n",
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false, &spell_fail_details);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n"
+      ],
+      "independent_semantic_judgment": "远程火焰伤害、咒法及多学派平均技能完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C5-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "%s can be thrown without the use of a launcher.",
+      "production_consumers": [
+        "stable crawl-ref/source/hints.cc:2164"
+      ],
+      "mechanism_and_parameters": [
+        "ostr << make_stringf(T_(\"%s can be thrown without the use of a \"\n                                       \"launcher.\"), item.name(DESC_YOUR).c_str());\n"
+      ],
+      "independent_semantic_judgment": "可投掷弹药不需发射器，物品名参数位置正确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。",
+      "trunk_english_full": "%s can be thrown without the use of a launcher."
+    }
+  },
+  {
+    "sample_id": "C6-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "You can't remove jewellery.",
+      "production_consumers": [
+        "stable crawl-ref/source/item-use.cc:1020",
+        "trunk crawl-ref/source/item-use.cc:1023"
+      ],
+      "mechanism_and_parameters": [
+        "mprf(MSGCH_PROMPT, \"%s\",\n                     oper == OPER_PUTON ? T_(\"You can't wear jewellery.\")\n                                        : T_(\"You can't remove jewellery.\"));\n",
+        "mprf(MSGCH_PROMPT, \"%s\",\n                     oper == OPER_PUTON ? T_(\"You can't wear jewellery.\")\n                                        : T_(\"You can't remove jewellery.\"));\n"
+      ],
+      "independent_semantic_judgment": "无法卸下饰物限制准确，珠宝可统一为饰品但未造成机制误解。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C2-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "That isn't an equippable item.",
+      "production_consumers": [
+        "stable crawl-ref/source/player-equip.cc:470",
+        "trunk crawl-ref/source/player-equip.cc:478"
+      ],
+      "mechanism_and_parameters": [
+        "if (!item_type_is_equipment(item.base_type))\n        NO_EQUIP(T_(\"That isn't an equippable item.\"))\n\n    vector<equipment_slot> slots = get_all_item_slots(item);\n",
+        "if (!item_type_is_equipment(item.base_type))\n        NO_EQUIP(T_(\"That isn't an equippable item.\"))\n\n    // Your god won't let you make use of gear they abhor.\n    if (god_forbids_item(item, temp))\n    {\n        if (god_forbids)\n            *god_forbids = true;\n"
+      ],
+      "independent_semantic_judgment": "装备类别检查失败，译文准确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C5-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "To do this, press <w>%%</w>, then <w>%s</w> to select %s.",
+      "production_consumers": [
+        "stable crawl-ref/source/hints.cc:2030"
+      ],
+      "mechanism_and_parameters": [
+        "result = make_stringf(T_(\"To do this, press <w>%%</w>, then \"\n                                 \"<w>%s</w> to select %s.\"),\n                              string(1, (char)item.slot).c_str(),\n                              name.c_str());\n"
+      ],
+      "independent_semantic_judgment": "先命令后物品字母与名称顺序正确，%%先由 printf 成为命令插槽。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。",
+      "trunk_english_full": "To do this, press <w>%%</w>, then <w>%s</w> to select %s."
+    }
+  },
+  {
+    "sample_id": "C3-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Being skilled in Unarmed Combat increases your accuracy, damage and attack\nspeed in melee combat when barehanded.",
+      "production_consumers": [
+        "stable crawl-ref/source/describe.cc:4647",
+        "stable crawl-ref/source/describe.cc:8012",
+        "stable crawl-ref/source/hints.cc:759",
+        "stable crawl-ref/source/tilereg-skl.cc:140",
+        "trunk crawl-ref/source/describe.cc:5047",
+        "trunk crawl-ref/source/describe.cc:8746",
+        "trunk crawl-ref/source/hints.cc:748",
+        "trunk crawl-ref/source/tilereg-skl.cc:140"
+      ],
+      "mechanism_and_parameters": [
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n",
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false, &spell_fail_details);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n"
+      ],
+      "independent_semantic_judgment": "徒手近战命中、伤害、速度三项完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C5-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "didn't mind your converting to",
+      "production_consumers": [
+        "stable crawl-ref/source/hints.cc:1536",
+        "stable crawl-ref/source/hints.cc:1549"
+      ],
+      "mechanism_and_parameters": [
+        "text << T_(\"Fortunately, it seems that \") << old_god_name <<\n                        T_(\" didn't mind your converting to \") << new_god_name\n                     << T_(\". \");\n",
+        "text << T_(\"Fortunately, it seems that \") << old_god_name <<\n                        T_(\" didn't mind your converting to \") << new_god_name\n                     << T_(\". That's because \") << old_god_name << T_(\" is one of \"\n                        \"the good gods who generally are rather forgiving \"\n                        \"about change of faith - unless you switch over to \"\n                        \"the path of evil, in which case their retribution \"\n                        \"can be nasty indeed!\");\n"
+      ],
+      "independent_semantic_judgment": "两条善神改信分支均接旧神名和新神名，成句准确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。",
+      "trunk_english_full": "didn't mind your converting to"
+    }
+  },
+  {
+    "sample_id": "C6-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "you cannot sustain more frozen ramparts right now.",
+      "production_consumers": [
+        "stable crawl-ref/source/spl-util.cc:1959",
+        "trunk crawl-ref/source/spl-util.cc:1977"
+      ],
+      "mechanism_and_parameters": [
+        "case SPELL_FROZEN_RAMPARTS:\n        if (temp && you.duration[DUR_FROZEN_RAMPARTS])\n            return T_(\"you cannot sustain more frozen ramparts right now.\");\n",
+        "case SPELL_FROZEN_RAMPARTS:\n        if (temp && you.duration[DUR_FROZEN_RAMPARTS])\n            return T_(\"you cannot sustain more frozen ramparts right now.\");\n"
+      ],
+      "independent_semantic_judgment": "已有冰霜壁垒持续时不能再维持，完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C4-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "This shop has been abandoned, nothing of value remains.",
+      "production_consumers": [
+        "stable crawl-ref/source/stairs.cc:396",
+        "trunk crawl-ref/source/stairs.cc:408"
+      ],
+      "mechanism_and_parameters": [
+        "else if (ftype == DNGN_ABANDONED_SHOP)\n                mpr(T_(\"This shop has been abandoned, nothing of value remains.\"));\n",
+        "else if (ftype == DNGN_ABANDONED_SHOP)\n                mpr(T_(\"This shop has been abandoned, nothing of value remains.\"));\n"
+      ],
+      "independent_semantic_judgment": "废弃店铺没有有价物的描述准确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C5-08",
+    "verdict": "readability",
+    "findings": [
+      {
+        "type": "wording",
+        "description": "Tiles 可统一为面向玩家的图形界面。",
+        "evidence": "stable crawl-ref/source/hints.cc:2306。饰品穿戴取下及图形模式点击完整，Tiles 英文可读性可改进。",
+        "suggested_translation": "在图形界面中",
+        "defect_points": 0
+      }
+    ],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Jewellery can be <w>%</w>ut on or <w>%</w>emoved again, though in Tiles, either can be done by clicking on the item in your inventory.",
+      "production_consumers": [
+        "stable crawl-ref/source/hints.cc:2306"
+      ],
+      "mechanism_and_parameters": [
+        "#ifdef USE_TILE\n            ostr << T_(\"Jewellery can be <w>%</w>ut on or <w>%</w>emoved again, \"\n                    \"though in Tiles, either can be done by clicking on the item \"\n                    \"in your inventory.\");\n"
+      ],
+      "independent_semantic_judgment": "饰品穿戴取下及图形模式点击完整，Tiles 英文可读性可改进。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；本条存在上述术语或语义问题。",
+      "trunk_english_full": "Jewellery can be <w>%</w>ut on or <w>%</w>emoved again, though in Tiles, either can be done by clicking on the item in your inventory."
+    }
+  },
+  {
+    "sample_id": "C6-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "You can't evoke this right now",
+      "production_consumers": [
+        "stable crawl-ref/source/describe.cc:2795",
+        "trunk crawl-ref/source/describe.cc:3065"
+      ],
+      "mechanism_and_parameters": [
+        "case OBJ_MISCELLANY:\n            case OBJ_WANDS:\n                description << (T_(\"You can't evoke this right now\"));\n",
+        "case OBJ_MISCELLANY:\n            case OBJ_WANDS:\n                description << (T_(\"You can't evoke this right now\"));\n"
+      ],
+      "independent_semantic_judgment": "杂项和魔杖当前不能激活，译文完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C1-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "wield a weapon (<w>-</w> to unwield)",
+      "production_consumers": [
+        "stable crawl-ref/source/command.cc:1239",
+        "trunk crawl-ref/source/command.cc:1213"
+      ],
+      "mechanism_and_parameters": [
+        "_add_command(cols, 1, CMD_WIELD_WEAPON,\n        T_(\"wield a weapon (<w>-</w> to unwield)\"), 2);\n",
+        "_add_command(cols, 1, CMD_WIELD_WEAPON,\n        T_(\"wield a weapon (<w>-</w> to unwield)\"), 2);\n"
+      ],
+      "independent_semantic_judgment": "持握与卸下的动作及快捷键完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C3-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Evocations skill affects your ability to use magical items like wands and other\nuncommon objects, increasing the power or success rate of such items.",
+      "production_consumers": [
+        "stable crawl-ref/source/describe.cc:4647",
+        "stable crawl-ref/source/describe.cc:8012",
+        "stable crawl-ref/source/hints.cc:759",
+        "stable crawl-ref/source/tilereg-skl.cc:140",
+        "trunk crawl-ref/source/describe.cc:5047",
+        "trunk crawl-ref/source/describe.cc:8746",
+        "trunk crawl-ref/source/hints.cc:748",
+        "trunk crawl-ref/source/tilereg-skl.cc:140"
+      ],
+      "mechanism_and_parameters": [
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n",
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false, &spell_fail_details);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n"
+      ],
+      "independent_semantic_judgment": "技能提升魔杖等物品威力或成功率，中文准确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C4-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "You are entangled in a web!",
+      "production_consumers": [
+        "stable crawl-ref/source/traps.cc:1244",
+        "trunk crawl-ref/source/traps.cc:1033"
+      ],
+      "mechanism_and_parameters": [
+        "mpr(T_(\"You are entangled in a web!\"));\n",
+        "mpr(T_(\"You are entangled in a web!\"));\n"
+      ],
+      "independent_semantic_judgment": "蛛网缠绕对象为玩家，准确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C1-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Full palette:",
+      "production_consumers": [
+        "stable crawl-ref/source/command.cc:886",
+        "trunk crawl-ref/source/command.cc:886"
+      ],
+      "mechanism_and_parameters": [
+        "#endif\n\n    s += T_(\"\\nFull palette:\\n\");\n",
+        "#endif\n\n    s += T_(\"\\nFull palette:\\n\");\n"
+      ],
+      "independent_semantic_judgment": "完整色板标签正确，换行有加载器支持。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C4-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "You carefully make your way through the web.",
+      "production_consumers": [
+        "stable crawl-ref/source/traps.cc:674",
+        "trunk crawl-ref/source/traps.cc:590"
+      ],
+      "mechanism_and_parameters": [
+        "if (one_chance_in(3))\n                mpr(T_(\"You carefully make your way through the web.\"));\n",
+        "if (one_chance_in(3))\n                mpr(T_(\"You carefully make your way through the web.\"));\n"
+      ],
+      "independent_semantic_judgment": "谨慎通过蛛网，完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C1-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "<w>:</w>: Browse character notes\n<w>#</w>: Browse character dump",
+      "production_consumers": [
+        "stable crawl-ref/source/command.cc:918",
+        "trunk crawl-ref/source/command.cc:918"
+      ],
+      "mechanism_and_parameters": [
+        "cols.add_formatted(0,\n            T_(\"<w>:</w>: Browse character notes\\n\"\n               \"<w>#</w>: Browse character dump\"), false);\n",
+        "cols.add_formatted(0,\n            T_(\"<w>:</w>: Browse character notes\\n\"\n               \"<w>#</w>: Browse character dump\"), false);\n"
+      ],
+      "independent_semantic_judgment": "角色笔记与 dump 信息区分成立，换行转义不是显示损坏。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C3-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Polearms can be evoked with ‘v’ to attack enemies from two spaces away.\n\nBeing skilled with Polearms will allow you to attack more quickly with all\nweapons of this type, as well as increasing your accuracy and damage with them.\n\nBeing skilled with Polearms increases your effectiveness with Axes and Staves,\nand vice versa.",
+      "production_consumers": [
+        "stable crawl-ref/source/describe.cc:4647",
+        "stable crawl-ref/source/describe.cc:8012",
+        "stable crawl-ref/source/hints.cc:759",
+        "stable crawl-ref/source/tilereg-skl.cc:140",
+        "trunk crawl-ref/source/describe.cc:5047",
+        "trunk crawl-ref/source/describe.cc:8746",
+        "trunk crawl-ref/source/hints.cc:748",
+        "trunk crawl-ref/source/tilereg-skl.cc:140"
+      ],
+      "mechanism_and_parameters": [
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n",
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false, &spell_fail_details);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n"
+      ],
+      "independent_semantic_judgment": "两格攻击、速度命中伤害和斧杖交叉训练都保留。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C4-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "The shaft vanishes in a puff of logic!",
+      "production_consumers": [
+        "stable crawl-ref/source/stairs.cc:639"
+      ],
+      "mechanism_and_parameters": [
+        "if (known_shaft)\n                mpr(T_(\"The shaft vanishes in a puff of logic!\"));\n"
+      ],
+      "independent_semantic_judgment": "逻辑之雾是原文幽默，中文保留荒诞意象。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。",
+      "trunk_english_full": "The shaft vanishes in a puff of logic!"
+    }
+  },
+  {
+    "sample_id": "C1-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "<h>Targeting\n<w>Enter</w> or <w>f</w> : confirm current target\n<w>.</w> : confirm and stop at target\n<w>+</w> and <w>-</w> : cycle between targets",
+      "production_consumers": [
+        "stable crawl-ref/source/command.cc:1430",
+        "trunk crawl-ref/source/command.cc:1401"
+      ],
+      "mechanism_and_parameters": [
+        "cols.add_formatted(\n            1,\n            T_(\"\\n<h>Targeting\\n\"\n               \"<w>Enter</w> or <w>f</w> : confirm current target\\n\"\n               \"<w>.</w> : confirm and stop at target\\n\"\n               \"<w>+</w> and <w>-</w> : cycle between targets\\n\"),\n            false);\n",
+        "cols.add_formatted(\n            1,\n            T_(\"\\n<h>Targeting\\n\"\n               \"<w>Enter</w> or <w>f</w> : confirm current target\\n\"\n               \"<w>.</w> : confirm and stop at target\\n\"\n               \"<w>+</w> and <w>-</w> : cycle between targets\\n\"),\n            false);\n"
+      ],
+      "independent_semantic_judgment": "确认目标、停在目标和循环目标三种操作区分正确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C2-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "You feel nauseous.",
+      "production_consumers": [
+        "stable crawl-ref/source/potion.cc:139",
+        "stable crawl-ref/source/potion.cc:209",
+        "trunk crawl-ref/source/potion.cc:136",
+        "trunk crawl-ref/source/potion.cc:202"
+      ],
+      "mechanism_and_parameters": [
+        "if (ddoor)\n            mpr(T_(\"You feel nauseous.\"));\n",
+        "mpr(T_(\"You feel nauseous.\"));\n",
+        "if (ddoor)\n            mpr(T_(\"You feel nauseous.\"));\n",
+        "mpr(T_(\"You feel nauseous.\"));\n"
+      ],
+      "independent_semantic_judgment": "死亡之门相关恶心感准确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C3-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Training Throwing will make thrown weapons (such as javelins) more accurate\nand damaging. It also makes certain magical darts more likely to have an\neffect.",
+      "production_consumers": [
+        "stable crawl-ref/source/describe.cc:4647",
+        "stable crawl-ref/source/describe.cc:8012",
+        "stable crawl-ref/source/hints.cc:759",
+        "stable crawl-ref/source/tilereg-skl.cc:140",
+        "trunk crawl-ref/source/describe.cc:5047",
+        "trunk crawl-ref/source/describe.cc:8746",
+        "trunk crawl-ref/source/hints.cc:748",
+        "trunk crawl-ref/source/tilereg-skl.cc:140"
+      ],
+      "mechanism_and_parameters": [
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n",
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false, &spell_fail_details);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n"
+      ],
+      "independent_semantic_judgment": "投掷命中伤害及特定飞镖效果概率准确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C5-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "where",
+      "production_consumers": [
+        "stable crawl-ref/source/hints.cc:1517"
+      ],
+      "mechanism_and_parameters": [
+        "text << T_(\"Should you decide that abandoning \") << old_god_name\n                     << T_(\"wasn't such a smart move after all, and you'd like to \"\n                        \"return to your old faith, you'll have to find an \"\n                        \"altar dedicated to \") << old_god_name << T_(\" where\");\n"
+      ],
+      "independent_semantic_judgment": "接在神名祭坛后并引出重新改信，中文关系衔接成立。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。",
+      "trunk_english_full": "where"
+    }
+  },
+  {
+    "sample_id": "C2-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "%s softly glows with a divine radiance!",
+      "production_consumers": [
+        "stable crawl-ref/source/player-equip.cc:1893",
+        "stable crawl-ref/source/transform.cc:1962",
+        "trunk crawl-ref/source/player-equip.cc:1947",
+        "trunk crawl-ref/source/transform.cc:2156"
+      ],
+      "mechanism_and_parameters": [
+        "mprf(T_(\"%s softly glows with a divine radiance!\"),\n                        item_name.c_str());\n",
+        "mprf(T_(\"%s softly glows with a divine radiance!\"),\n             uppercase_first(weapon->name(DESC_YOUR)).c_str());\n",
+        "mprf(T_(\"%s softly glows with a divine radiance!\"),\n                        item_name.c_str());\n",
+        "mprf(T_(\"%s softly glows with a divine radiance!\"),\n             uppercase_first(weapon->name(DESC_YOUR)).c_str());\n"
+      ],
+      "independent_semantic_judgment": "神圣光辉与柔和程度完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C3-01",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "terminology",
+        "description": "stable 将控制附魔学派 Hexes 写成诅咒系，与真正 curse 混淆；trunk 妖术系正确。",
+        "evidence": "stable crawl-ref/source/describe.cc:4647; stable crawl-ref/source/describe.cc:8012; stable crawl-ref/source/hints.cc:759; stable crawl-ref/source/tilereg-skl.cc:140; trunk crawl-ref/source/describe.cc:5047; trunk crawl-ref/source/describe.cc:8746; trunk crawl-ref/source/hints.cc:748; trunk crawl-ref/source/tilereg-skl.cc:140。本条描述控制、附魔及意志抵抗的 Hexes 学派，非装备或神祇诅咒；stable 学派名与当前术语不一致，trunk 已修正。",
+        "suggested_translation": "将 stable 的诅咒系统一为妖术系。",
+        "defect_points": 1
+      }
+    ],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Hexes try to bestow various enchantments on nearby things. While none do direct\ndamage, being ensorcelled can effectively take an opponent out of combat,\nalthough they often require overcoming an opponent's willpower to have an effect.\nSkill in Hexes can help overcome this.\n\nBeing skilled in Hexes increases the success rate and spell power of spells in\nthis school. Many spells belong to a combination of several schools, in which\ncase spellcasting success and power will depend on the average skill in these\nschools.",
+      "production_consumers": [
+        "stable crawl-ref/source/describe.cc:4647",
+        "stable crawl-ref/source/describe.cc:8012",
+        "stable crawl-ref/source/hints.cc:759",
+        "stable crawl-ref/source/tilereg-skl.cc:140",
+        "trunk crawl-ref/source/describe.cc:5047",
+        "trunk crawl-ref/source/describe.cc:8746",
+        "trunk crawl-ref/source/hints.cc:748",
+        "trunk crawl-ref/source/tilereg-skl.cc:140"
+      ],
+      "mechanism_and_parameters": [
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n",
+        "result += getLongDescription(skill_name_en(skill));\n",
+        "inf.body << get_skill_description(skill, false, &spell_fail_details);\n",
+        "mprf(MSGCH_TUTORIAL, \"%s\", get_skill_description(skill).c_str());\n",
+        "inf.body << get_skill_description(skill, true);\n"
+      ],
+      "independent_semantic_judgment": "本条描述控制、附魔及意志抵抗的 Hexes 学派，非装备或神祇诅咒；stable 学派名与当前术语不一致，trunk 已修正。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；本条存在上述术语或语义问题。",
+      "trunk_english_full": "Hexes try to bestow various enchantments on nearby things. While none do direct\ndamage, being ensorcelled can effectively take an opponent out of combat,\nalthough they often require overcoming an opponent's willpower to have an effect.\nSkill in Hexes can help overcome this.\n\nBeing skilled in Hexes increases the success rate and spell power of spells in\nthis school. Many spells belong to a combination of several schools, in which\ncase spellcasting success and power will depend on the average skill in these\nschools."
+    }
+  },
+  {
+    "sample_id": "C1-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "No variable named '%s' to make constant",
+      "production_consumers": [
+        "stable crawl-ref/source/initfile.cc:3910",
+        "trunk crawl-ref/source/initfile.cc:3960"
+      ],
+      "mechanism_and_parameters": [
+        "// should this really be case insensitive?\n        if (!variables.count(state.field))\n            report_error(T_(\"No variable named '%s' to make constant\"), state.field.c_str());\n",
+        "// should this really be case insensitive?\n        if (!variables.count(state.field))\n            report_error(T_(\"No variable named '%s' to make constant\"), state.field.c_str());\n"
+      ],
+      "independent_semantic_judgment": "不存在变量时无法设常量，名称参数保留。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C5-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "That",
+      "production_consumers": [
+        "stable crawl-ref/source/hints.cc:860"
+      ],
+      "mechanism_and_parameters": [
+        "#endif\n\n    string text = T_(\"That \");\n"
+      ],
+      "independent_semantic_judgment": "图形模式拼出那个怪物是某怪物；控制台模式接怪物字形，都成立。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。",
+      "trunk_english_full": "That"
+    }
+  },
+  {
+    "sample_id": "C1-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "<h>Android Controls\n\n<w>Back key</w>: Alias for escape\n<w>Volume keys</w>: Zoom dungeon & map\nLong press for right click.\nTouch with two fingers for scrolling.\nToggle keyboard icon controls the\nvirtual keyboard visibility.",
+      "production_consumers": [
+        "stable crawl-ref/source/command.cc:938",
+        "trunk crawl-ref/source/command.cc:938"
+      ],
+      "mechanism_and_parameters": [
+        "#ifdef __ANDROID__\n    cols.add_formatted(0,\n        T_(\"\\n<h>Android Controls\\n\"\n           \"\\n\"\n           \"<w>Back key</w>: Alias for escape\\n\"\n           \"<w>Volume keys</w>: Zoom dungeon & map\\n\"\n           \"Long press for right click.\\n\"\n           \"Touch with two fingers for scrolling.\\n\"\n           \"Toggle keyboard icon controls the\\n\"\n           \"virtual keyboard visibility.\\n\"),\n        false);\n",
+        "#ifdef __ANDROID__\n    cols.add_formatted(0,\n        T_(\"\\n<h>Android Controls\\n\"\n           \"\\n\"\n           \"<w>Back key</w>: Alias for escape\\n\"\n           \"<w>Volume keys</w>: Zoom dungeon & map\\n\"\n           \"Long press for right click.\\n\"\n           \"Touch with two fingers for scrolling.\\n\"\n           \"Toggle keyboard icon controls the\\n\"\n           \"virtual keyboard visibility.\\n\"),\n        false);\n"
+      ],
+      "independent_semantic_judgment": "Android 操作、缩放、长按、双指和键盘可见性完整；转义换行由加载器还原。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C6-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Jiyva prevents you from harming jellies.",
+      "production_consumers": [
+        "stable crawl-ref/source/describe-god.cc:926",
+        "trunk crawl-ref/source/describe-god.cc:934"
+      ],
+      "mechanism_and_parameters": [
+        "desc.cprintf(T_(\"Jiyva prevents you from harming jellies.\\n\"));\n",
+        "desc.cprintf(T_(\"Jiyva prevents you from harming jellies.\\n\"));\n"
+      ],
+      "independent_semantic_judgment": "吉瓦禁止伤害果冻类怪物，主体宾语准确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C7-07",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "scope",
+        "description": "those who would not otherwise be able to regenerate 指所有无法正常再生者，中文限定为物种，遗漏其他再生受限情形。",
+        "evidence": "stable crawl-ref/source/ability.cc:529; stable crawl-ref/source/ability.cc:1609; stable crawl-ref/source/ability.cc:1616; stable crawl-ref/source/describe.cc:5149; stable crawl-ref/source/describe.cc:5153; trunk crawl-ref/source/ability.cc:536; trunk crawl-ref/source/ability.cc:1670; trunk crawl-ref/source/ability.cc:1677; trunk crawl-ref/source/ability.cc:1723; trunk crawl-ref/source/describe.cc:5699; trunk crawl-ref/source/describe.cc:5703。再生叠加与意志强化保留，但 those 不限物种，译为物种缩窄了适用对象。 补查 stable 83af93c8bd:crawl-ref/source/player.cc:1442-1444 明确 Trog 手绕过 sickness 或 inhibited regeneration，并额外 rr +=100；:7328-7329 增加意志抗性。这些限制不全由物种造成。",
+        "suggested_translation": "即使对那些原本无法再生的人也有效。",
+        "defect_points": 1
+      }
+    ],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Invokes a powerful regeneration ability which stacks with all other sources and\nis effective even on those who would not otherwise be able to regenerate. It\nalso fortifies the user's willpower, protecting against many magical effects.",
+      "production_consumers": [
+        "stable crawl-ref/source/ability.cc:529",
+        "stable crawl-ref/source/ability.cc:1609",
+        "stable crawl-ref/source/ability.cc:1616",
+        "stable crawl-ref/source/describe.cc:5149",
+        "stable crawl-ref/source/describe.cc:5153",
+        "trunk crawl-ref/source/ability.cc:536",
+        "trunk crawl-ref/source/ability.cc:1670",
+        "trunk crawl-ref/source/ability.cc:1677",
+        "trunk crawl-ref/source/ability.cc:1723",
+        "trunk crawl-ref/source/describe.cc:5699",
+        "trunk crawl-ref/source/describe.cc:5703"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：ability 枚举 → ability_name(ability, true)（英文能力名，含动态能力的 canonical 分支） + \" ability\" → getLongDescription；get_ability_desc 返回基础正文，可能再附加状态相关文字；本样本单位仅为 TextDB 正文。",
+        "补查 stable 83af93c8bd:crawl-ref/source/player.cc:1442-1444 明确 Trog 手绕过 sickness 或 inhibited regeneration，并额外 rr +=100；:7328-7329 增加意志抗性。这些限制不全由物种造成。"
+      ],
+      "independent_semantic_judgment": "再生叠加与意志强化保留，但 those 不限物种，译为物种缩窄了适用对象。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；本条存在上述术语或语义问题。"
+    }
+  },
+  {
+    "sample_id": "C8-06",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "addition",
+        "description": "accused me of being a cutpurse 只说被指控为扒手，诬陷新增指控虚假的判断。",
+        "evidence": "stable crawl-ref/source/mon-speak.cc:89; stable crawl-ref/source/mon-speak.cc:271; stable crawl-ref/source/mon-speak.cc:692; stable crawl-ref/source/mon-speak.cc:863; stable crawl-ref/source/database.cc:1515; stable crawl-ref/source/database.cc:2353; stable crawl-ref/source/database.cc:2360; trunk crawl-ref/source/mon-speak.cc:90; trunk crawl-ref/source/mon-speak.cc:272; trunk crawl-ref/source/mon-speak.cc:693; trunk crawl-ref/source/mon-speak.cc:864; trunk crawl-ref/source/database.cc:1516; trunk crawl-ref/source/database.cc:2356; trunk crawl-ref/source/database.cc:2363。兄弟嫉妒、算数、爵位等完整；accused 只说明遭指控，诬陷额外断言指控为假。",
+        "suggested_translation": "居然有人指控我是扒手！",
+        "defect_points": 1
+      }
+    ],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "@_Edmund_common_@\n\nw:5\n@_Edmund_rare_@\n\n%%%%\n_Edmund_common_\n\nVISUAL:@The_monster@ gestures @at_foe@ with @possessive@ flail.\n\n@The_monster@ clears @possessive@ throat.\n\n@The_monster@ says, \"You wouldn't believe how much I paid for this flail.\"\n\n@The_monster@ asks @foe,@ \"Have you met my wondrous brother?\"\n\n@The_monster@ says @to_foe@, \"I might not be good at magic, but I can still kill you!\"\n\n@The_monster@ says, \"People think my brother is the best. I think he's crazy.\"\n\n@The_monster@ says, \"I'm quite good with sums, too.\"\n\n@The_monster@ says, \"People accused me of being a cutpurse!\"\n\n%%%%\n_Edmund_rare_\n\nVISUAL:@The_monster@ grinds @possessive@ teeth, and then sighs.\n\nw:1\nVISUAL:@The_monster@ looks rather jealous.\n\n@The_monster@ says, \"A flail is better than a scythe, any day of the week!\"\n\nw:5\n@The_monster@ says, \"What use are spells, anyway?\"\n\nw:5\n@The_monster@ mutters, \"Who needs spells, anyway?\"\n\n@The_monster@ says, \"Everyone always remembers my brother. 'Who's Edmund?' they ask!\"\n\n@The_monster@ says, \"People will remember me! They'll remember me and die!\"\n\nw:1\n@The_monster@ says, \"Maybe I'll buy a title. How does Count Edmund sound?\"\n\nw:1\n@The_monster@ whines, \"My parents never had time for me!\"",
+      "production_consumers": [
+        "stable crawl-ref/source/mon-speak.cc:89",
+        "stable crawl-ref/source/mon-speak.cc:271",
+        "stable crawl-ref/source/mon-speak.cc:692",
+        "stable crawl-ref/source/mon-speak.cc:863",
+        "stable crawl-ref/source/database.cc:1515",
+        "stable crawl-ref/source/database.cc:2353",
+        "stable crawl-ref/source/database.cc:2360",
+        "trunk crawl-ref/source/mon-speak.cc:90",
+        "trunk crawl-ref/source/mon-speak.cc:272",
+        "trunk crawl-ref/source/mon-speak.cc:693",
+        "trunk crawl-ref/source/mon-speak.cc:864",
+        "trunk crawl-ref/source/database.cc:1516",
+        "trunk crawl-ref/source/database.cc:2356",
+        "trunk crawl-ref/source/database.cc:2363"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：单位为一个根 key 的完整变体组，附递归引用的全部组（含 w: 权重；不抽单条变体）。怪物 dat/mons/*.yaml name → mons->base_name(DESC_DBNAME)；mon-speak.cc 从态度/逃跑/沉默/混乱/信仰/分支等生成 prefixes，先查 prefix + key，逐级退回裸 key / default key。database.cc _getRandomisedStr 在组内按权重取变体并递归展开 @子键@；剩余运行时占位符交给 do_mon_str_replacements(msg,*mons)。"
+      ],
+      "independent_semantic_judgment": "兄弟嫉妒、算数、爵位等完整；accused 只说明遭指控，诬陷额外断言指控为假。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；本条存在上述术语或语义问题。"
+    }
+  },
+  {
+    "sample_id": "C7-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Artificers start with a few magic wands and a club. They'll need to find better\nweapons and armour before their wands run out.",
+      "production_consumers": [
+        "stable crawl-ref/source/newgame.cc:1357",
+        "stable crawl-ref/source/newgame.cc:1361",
+        "stable crawl-ref/source/database.cc:2337",
+        "trunk crawl-ref/source/newgame.cc:1336",
+        "trunk crawl-ref/source/newgame.cc:1340",
+        "trunk crawl-ref/source/database.cc:2340"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：职业枚举 id → get_job_name_en(id)，英文 name 来自 dat/jobs/*.yaml → getGameStartDescription(db_key)。"
+      ],
+      "independent_semantic_judgment": "魔杖与棍棒开局、耗尽前换更好装备完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C8-05",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "@_Eustachio_common_@\n\nw:5\n@_Eustachio_rare_@\n\n%%%%\n_Eustachio_common_\n\n@The_monster@ screams @at_foe@, \"At last I'll have my revenge!\"\n\n@The_monster@ screams @at_foe@, \"Hey, you killed my favourite bat!\"\n\n@The_monster@ says @to_foe@, \"Summoning is fun!\"\n\n@The_monster@ says @to_foe@, \"My allies will avenge me.\"\n\n@The_monster@ screams, \"This atrocity can only be purified with blood!\"\n\n@The_monster@ utters an oath, \"I will die for my friends!\"\n\n@The_monster@ growls, \"To hell with you, honourless miscreant!\"\n\n@The_monster@ asks, \"How can you live without manners, virtues and honour?\"\n\n%%%%\n_Eustachio_rare_\n\n@The_monster@ yells @at_foe@, \"Perjured traitor, DIE!\"\n\nVISUAL:@The_monster@ twirls @possessive@ moustache.\n\n@The_monster@ calls on the powers of shadow!\n\n@The_monster@ brags, \"I can call spirits from the vasty deep.\"",
+      "production_consumers": [
+        "stable crawl-ref/source/mon-speak.cc:89",
+        "stable crawl-ref/source/mon-speak.cc:271",
+        "stable crawl-ref/source/mon-speak.cc:692",
+        "stable crawl-ref/source/mon-speak.cc:863",
+        "stable crawl-ref/source/database.cc:1515",
+        "stable crawl-ref/source/database.cc:2353",
+        "stable crawl-ref/source/database.cc:2360",
+        "trunk crawl-ref/source/mon-speak.cc:90",
+        "trunk crawl-ref/source/mon-speak.cc:272",
+        "trunk crawl-ref/source/mon-speak.cc:693",
+        "trunk crawl-ref/source/mon-speak.cc:864",
+        "trunk crawl-ref/source/database.cc:1516",
+        "trunk crawl-ref/source/database.cc:2356",
+        "trunk crawl-ref/source/database.cc:2363"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：单位为一个根 key 的完整变体组，附递归引用的全部组（含 w: 权重；不抽单条变体）。怪物 dat/mons/*.yaml name → mons->base_name(DESC_DBNAME)；mon-speak.cc 从态度/逃跑/沉默/混乱/信仰/分支等生成 prefixes，先查 prefix + key，逐级退回裸 key / default key。database.cc _getRandomisedStr 在组内按权重取变体并递归展开 @子键@；剩余运行时占位符交给 do_mon_str_replacements(msg,*mons)。"
+      ],
+      "independent_semantic_judgment": "复仇、蝙蝠、友谊、荣誉和夸耀召灵完整；文学深渊不机械外推游戏分支术语。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C7-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Breathes a blast of poison gas at a targeted creature.",
+      "production_consumers": [
+        "stable crawl-ref/source/ability.cc:355",
+        "stable crawl-ref/source/ability.cc:1609",
+        "stable crawl-ref/source/ability.cc:1616",
+        "stable crawl-ref/source/describe.cc:5149",
+        "stable crawl-ref/source/describe.cc:5153",
+        "trunk crawl-ref/source/ability.cc:361",
+        "trunk crawl-ref/source/ability.cc:1670",
+        "trunk crawl-ref/source/ability.cc:1677",
+        "trunk crawl-ref/source/ability.cc:1723",
+        "trunk crawl-ref/source/describe.cc:5699",
+        "trunk crawl-ref/source/describe.cc:5703"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：ability 枚举 → ability_name(ability, true)（英文能力名，含动态能力的 canonical 分支） + \" ability\" → getLongDescription；get_ability_desc 返回基础正文，可能再附加状态相关文字；本样本单位仅为 TextDB 正文。"
+      ],
+      "independent_semantic_judgment": "向目标生物喷吐毒气，准确。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C8-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "w:20\n@_wizard_@\n\nw:1\n@The_monster@ [grouses|grumbles] about arcanists.\n\nw:9\n__NONE\n\n%%%%\n_wizard_\n\n@_wizard_common_spell_@\n@_fake_spell_effect_@\n\nw:8\n@_wizard_medium_@\n\nw:1\n@_wizard_rare_@\n\n%%%%\n_wizard_common_spell_\n\n@The_monster@ wildly gestures.\n\n@The_monster@ mumbles some strange words.\n\n@The_monster@ howls an incantation.\n\n%%%%\n_fake_spell_effect_\n\nVISUAL:@The_monster@ shimmers violently.\n\nVISUAL:@The_monster@ glows brightly for a moment.\n\nVISUAL:@The_monster_possessive@ @hands@ start to glow.\n\nVISUAL:You feel disoriented. @player_only@\n\nVISUAL:You feel troubled. @player_only@\n\n%%%%\n_wizard_medium_\n\nVISUAL:@The_monster@ becomes larger for a moment.\n\nVISUAL:@The_monster_possessive@ eyes start to glow.\n\n@The_monster@ shouts @at_foe@, \"You can't withstand my power!\"\n\n@The_monster@ shouts @at_foe@, \"You are history!\"\n\n%%%%\n_wizard_rare_\n\n@The_monster@ says @to_foe@, \"Argatax netranoch dertex.\"\n\n@The_monster@ says @to_foe@, \"Dogrw nutew berg.\"\n\n@The_monster@ shouts @at_foe@, \"Entram moth deg ulag!\"",
+      "production_consumers": [
+        "stable crawl-ref/source/mon-speak.cc:89",
+        "stable crawl-ref/source/mon-speak.cc:271",
+        "stable crawl-ref/source/mon-speak.cc:692",
+        "stable crawl-ref/source/mon-speak.cc:863",
+        "stable crawl-ref/source/database.cc:1515",
+        "stable crawl-ref/source/database.cc:2353",
+        "stable crawl-ref/source/database.cc:2360",
+        "trunk crawl-ref/source/mon-speak.cc:90",
+        "trunk crawl-ref/source/mon-speak.cc:272",
+        "trunk crawl-ref/source/mon-speak.cc:693",
+        "trunk crawl-ref/source/mon-speak.cc:864",
+        "trunk crawl-ref/source/database.cc:1516",
+        "trunk crawl-ref/source/database.cc:2356",
+        "trunk crawl-ref/source/database.cc:2363"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：单位为一个根 key 的完整变体组，附递归引用的全部组（含 w: 权重；不抽单条变体）。怪物 dat/mons/*.yaml name → mons->base_name(DESC_DBNAME)；mon-speak.cc 从态度/逃跑/沉默/混乱/信仰/分支等生成 prefixes，先查 prefix + key，逐级退回裸 key / default key。database.cc _getRandomisedStr 在组内按权重取变体并递归展开 @子键@；剩余运行时占位符交给 do_mon_str_replacements(msg,*mons)。"
+      ],
+      "independent_semantic_judgment": "假施法递归两行、视觉限制、选择项和胡话均保留，手部名称由运行时替换。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C7-01",
+    "verdict": "objective_error",
+    "findings": [
+      {
+        "type": "terminology",
+        "description": "trunk 的魔力储备/恢复魔力实际均指 MP，应沿用法力；stable 正确。",
+        "evidence": "stable crawl-ref/source/newgame.cc:1357; stable crawl-ref/source/newgame.cc:1361; stable crawl-ref/source/database.cc:2337; trunk crawl-ref/source/newgame.cc:1336; trunk crawl-ref/source/newgame.cc:1340; trunk crawl-ref/source/database.cc:2340。吸伤与咬击恢复的是 MP；stable 法力正确，trunk 改为魔力偏离资源术语。",
+        "suggested_translation": "他们的法力储备可以吸收伤害，咬击还能恢复法力。",
+        "defect_points": 1
+      }
+    ],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Frail symbionts, Vine Stalkers cannot regain health from potions. Their magical\nreserves absorb damage, and they pack a magic-restoring bite.",
+      "production_consumers": [
+        "stable crawl-ref/source/newgame.cc:1357",
+        "stable crawl-ref/source/newgame.cc:1361",
+        "stable crawl-ref/source/database.cc:2337",
+        "trunk crawl-ref/source/newgame.cc:1336",
+        "trunk crawl-ref/source/newgame.cc:1340",
+        "trunk crawl-ref/source/database.cc:2340"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：种族枚举 id → species::name(id, species::SPNAME_PLAIN, true)，英文 name 来自 dat/species/*.yaml → getGameStartDescription(db_key)。"
+      ],
+      "independent_semantic_judgment": "吸伤与咬击恢复的是 MP；stable 法力正确，trunk 改为魔力偏离资源术语。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；本条存在上述术语或语义问题。"
+    }
+  },
+  {
+    "sample_id": "C8-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "VISUAL:@The_monster@ drips [complex|unknown] stolen formulae onto the @surface@.\n\nVISUAL:@The_monster@ is briefly caught in foreign memories of distant [stars|lands|kingdoms].\n\nVISUAL:@The_monster@ twitches its length with the pilfered instincts of [wings|pincers|fins].",
+      "production_consumers": [
+        "stable crawl-ref/source/mon-speak.cc:89",
+        "stable crawl-ref/source/mon-speak.cc:271",
+        "stable crawl-ref/source/mon-speak.cc:692",
+        "stable crawl-ref/source/mon-speak.cc:863",
+        "stable crawl-ref/source/database.cc:1515",
+        "stable crawl-ref/source/database.cc:2353",
+        "stable crawl-ref/source/database.cc:2360",
+        "trunk crawl-ref/source/mon-speak.cc:90",
+        "trunk crawl-ref/source/mon-speak.cc:272",
+        "trunk crawl-ref/source/mon-speak.cc:693",
+        "trunk crawl-ref/source/mon-speak.cc:864",
+        "trunk crawl-ref/source/database.cc:1516",
+        "trunk crawl-ref/source/database.cc:2356",
+        "trunk crawl-ref/source/database.cc:2363"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：单位为一个根 key 的完整变体组，附递归引用的全部组（含 w: 权重；不抽单条变体）。怪物 dat/mons/*.yaml name → mons->base_name(DESC_DBNAME)；mon-speak.cc 从态度/逃跑/沉默/混乱/信仰/分支等生成 prefixes，先查 prefix + key，逐级退回裸 key / default key。database.cc _getRandomisedStr 在组内按权重取变体并递归展开 @子键@；剩余运行时占位符交给 do_mon_str_replacements(msg,*mons)。"
+      ],
+      "independent_semantic_judgment": "公式、偷来的记忆和肢体本能的选择项完整，抽动句略硬但未改语义。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C8-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "@_Snorg_common_@\n\nw:2\n@_Snorg_rare_@\n\n%%%%\n_Snorg_common_\n\nVISUAL:@The_monster@ pats @possessive@ sizable gut.\n\nVISUAL:@The_monster@ beckons gently.\n\nVISUAL:@The_monster@ smiles kindly.\n\nVISUAL:A flash of anger passes briefly over @the_monster_possessive@ face.\n\nVISUAL:@The_monster@ draws @possessive@ long claws delicately across @possessive@ gut.\n\n%%%%\n_Snorg_rare_\n\n@The_monster@ remarks @to_foe@, \"Ah, I'm absolutely famished!\"\n\n@The_monster@ remarks @to_foe@, \"Ah, I could eat a centaur!\"",
+      "production_consumers": [
+        "stable crawl-ref/source/mon-speak.cc:89",
+        "stable crawl-ref/source/mon-speak.cc:271",
+        "stable crawl-ref/source/mon-speak.cc:692",
+        "stable crawl-ref/source/mon-speak.cc:863",
+        "stable crawl-ref/source/database.cc:1515",
+        "stable crawl-ref/source/database.cc:2353",
+        "stable crawl-ref/source/database.cc:2360",
+        "trunk crawl-ref/source/mon-speak.cc:90",
+        "trunk crawl-ref/source/mon-speak.cc:272",
+        "trunk crawl-ref/source/mon-speak.cc:693",
+        "trunk crawl-ref/source/mon-speak.cc:864",
+        "trunk crawl-ref/source/database.cc:1516",
+        "trunk crawl-ref/source/database.cc:2356",
+        "trunk crawl-ref/source/database.cc:2363"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：单位为一个根 key 的完整变体组，附递归引用的全部组（含 w: 权重；不抽单条变体）。怪物 dat/mons/*.yaml name → mons->base_name(DESC_DBNAME)；mon-speak.cc 从态度/逃跑/沉默/混乱/信仰/分支等生成 prefixes，先查 prefix + key，逐级退回裸 key / default key。database.cc _getRandomisedStr 在组内按权重取变体并递归展开 @子键@；剩余运行时占位符交给 do_mon_str_replacements(msg,*mons)。"
+      ],
+      "independent_semantic_judgment": "拍肚、招手、笑容、怒色、长爪与饥饿台词完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C8-07",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "@_Aizul_common_@\n\nw:5\n@_Aizul_rare_@\n\n%%%%\n_Aizul_common_\n\nVISUAL:@The_monster@ yawns, and then pretends @subjective@ didn't.\n\n@The_monster@ says, \"Feeling sleepy?\"\n\n@The_monster@ says, \"I wasn't actually sleeping!\"\n\nVISUAL:@The_monster@ hisses menacingly.\n\n@The_monster@ screams @at_foe@, \"I'll haunt your nightmares!\"\n\n%%%%\n_Aizul_rare_\n\n@The_monster@ says, \"Sweet dreams!\"\n\n@The_monster@ hums a lullaby.\n\nVISUAL:@The_monster@ coils and then uncoils.\n\n@The_monster@ says, \"Everybody has to sleep sometimes.\"\n\n@The_monster@ says @to_foe@, \"Fancy a snooze?\"\n\n@The_monster@ says, \"They said they'd gotten someone better!\"\n\n@The_monster@ says, \"Replaced! How does it feel to be replaced?\"\n\n@The_monster@ moans, \"No job prospects! Who wants sleepy Aizul to guard their treasure?\"\n\nVISUAL:@The_monster@ winks several times @at_foe@.",
+      "production_consumers": [
+        "stable crawl-ref/source/mon-speak.cc:89",
+        "stable crawl-ref/source/mon-speak.cc:271",
+        "stable crawl-ref/source/mon-speak.cc:692",
+        "stable crawl-ref/source/mon-speak.cc:863",
+        "stable crawl-ref/source/database.cc:1515",
+        "stable crawl-ref/source/database.cc:2353",
+        "stable crawl-ref/source/database.cc:2360",
+        "trunk crawl-ref/source/mon-speak.cc:90",
+        "trunk crawl-ref/source/mon-speak.cc:272",
+        "trunk crawl-ref/source/mon-speak.cc:693",
+        "trunk crawl-ref/source/mon-speak.cc:864",
+        "trunk crawl-ref/source/database.cc:1516",
+        "trunk crawl-ref/source/database.cc:2356",
+        "trunk crawl-ref/source/database.cc:2363"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：单位为一个根 key 的完整变体组，附递归引用的全部组（含 w: 权重；不抽单条变体）。怪物 dat/mons/*.yaml name → mons->base_name(DESC_DBNAME)；mon-speak.cc 从态度/逃跑/沉默/混乱/信仰/分支等生成 prefixes，先查 prefix + key，逐级退回裸 key / default key。database.cc _getRandomisedStr 在组内按权重取变体并递归展开 @子键@；剩余运行时占位符交给 do_mon_str_replacements(msg,*mons)。"
+      ],
+      "independent_semantic_judgment": "嗜睡守卫的否认、失业与噩梦威胁完整；午觉比 snooze 稍窄但属于轻微措辞。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C8-10",
+    "verdict": "readability",
+    "findings": [
+      {
+        "type": "dynamic_sentence",
+        "description": "_shouts_ 的喊道会拼成喊道，命令其宠物出击，搭配不够自然；其余变体大叫/咆哮可成立。",
+        "evidence": "stable crawl-ref/source/mon-speak.cc:89; stable crawl-ref/source/mon-speak.cc:271; stable crawl-ref/source/mon-speak.cc:692; stable crawl-ref/source/mon-speak.cc:863; stable crawl-ref/source/database.cc:1515; stable crawl-ref/source/database.cc:2353; stable crawl-ref/source/database.cc:2360; trunk crawl-ref/source/mon-speak.cc:90; trunk crawl-ref/source/mon-speak.cc:272; trunk crawl-ref/source/mon-speak.cc:693; trunk crawl-ref/source/mon-speak.cc:864; trunk crawl-ref/source/database.cc:1516; trunk crawl-ref/source/database.cc:2356; trunk crawl-ref/source/database.cc:2363。独眼、宠物攻击、投掷重物与食物威胁完整；喊道作独立喊叫动词时略显生硬。",
+        "suggested_translation": "将子键喊道改为喊叫，兼容独立喊叫及冒号引语。",
+        "defect_points": 0
+      }
+    ],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "@_Polyphemus_common_@\n\nw:5\n@_Polyphemus_rare_@\n\n%%%%\n_Polyphemus_common_\n\nVISUAL:@The_monster@ glares at @foe@ with @possessive@ lone eye.\n\nVISUAL:@The_monster@ wildly rolls @possessive@ eye at @foe@.\n\n@The_monster@ @_shouts_@ loudly for @possessive@ pets to attack!\n\n@The_monster@ @_shouts_@ @at_foe@, \"You will make a great snack!\"\n\n@The_monster@ @_shouts_@, \"Attack, my pets! Attack!\"\n\n@The_monster@ says @to_foe@, \"Trying to escape from me is @_pointless_@!\"\n\n%%%%\n_shouts_\n\nshouts\n\nyells\n\nroars\n\n%%%%\n_pointless_\n\npointless\n\nsenseless\n\nuseless\n\n%%%%\n_Polyphemus_rare_\n\nVISUAL:@The_monster@ seems to be sizing @foe@ up for @possessive@ next meal.\n\nVISUAL:@The_monster@ stomps at the @surface@ furiously.\n\nVISUAL:@The_monster@ looks around for something heavy to throw at @foe@.\n\n@The_monster@ says @to_foe@, \"Do you like to play 'catch'?\"\n\n@The_monster@ says @to_foe@, \"@Foe_genus@ for dinner? Sounds delicious!\"",
+      "production_consumers": [
+        "stable crawl-ref/source/mon-speak.cc:89",
+        "stable crawl-ref/source/mon-speak.cc:271",
+        "stable crawl-ref/source/mon-speak.cc:692",
+        "stable crawl-ref/source/mon-speak.cc:863",
+        "stable crawl-ref/source/database.cc:1515",
+        "stable crawl-ref/source/database.cc:2353",
+        "stable crawl-ref/source/database.cc:2360",
+        "trunk crawl-ref/source/mon-speak.cc:90",
+        "trunk crawl-ref/source/mon-speak.cc:272",
+        "trunk crawl-ref/source/mon-speak.cc:693",
+        "trunk crawl-ref/source/mon-speak.cc:864",
+        "trunk crawl-ref/source/database.cc:1516",
+        "trunk crawl-ref/source/database.cc:2356",
+        "trunk crawl-ref/source/database.cc:2363"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：单位为一个根 key 的完整变体组，附递归引用的全部组（含 w: 权重；不抽单条变体）。怪物 dat/mons/*.yaml name → mons->base_name(DESC_DBNAME)；mon-speak.cc 从态度/逃跑/沉默/混乱/信仰/分支等生成 prefixes，先查 prefix + key，逐级退回裸 key / default key。database.cc _getRandomisedStr 在组内按权重取变体并递归展开 @子键@；剩余运行时占位符交给 do_mon_str_replacements(msg,*mons)。"
+      ],
+      "independent_semantic_judgment": "独眼、宠物攻击、投掷重物与食物威胁完整；喊道作独立喊叫动词时略显生硬。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；本条存在上述术语或语义问题。"
+    }
+  },
+  {
+    "sample_id": "C7-06",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Shapeshifters use talismans to shift their form, making them powerful melee\nfighters (especially when unarmed) at the cost of armour.",
+      "production_consumers": [
+        "stable crawl-ref/source/newgame.cc:1357",
+        "stable crawl-ref/source/newgame.cc:1361",
+        "stable crawl-ref/source/database.cc:2337",
+        "trunk crawl-ref/source/newgame.cc:1336",
+        "trunk crawl-ref/source/newgame.cc:1340",
+        "trunk crawl-ref/source/database.cc:2340"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：职业枚举 id → get_job_name_en(id)，英文 name 来自 dat/jobs/*.yaml → getGameStartDescription(db_key)。"
+      ],
+      "independent_semantic_judgment": "护符变形、近战尤其徒手增益及护甲代价完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C7-08",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Coats a wielded weapon or your fists with slime, turning the next living or\ncorporeal undead monster hit into a neutral slime.",
+      "production_consumers": [
+        "stable crawl-ref/source/ability.cc:597",
+        "stable crawl-ref/source/ability.cc:1609",
+        "stable crawl-ref/source/ability.cc:1616",
+        "stable crawl-ref/source/describe.cc:5149",
+        "stable crawl-ref/source/describe.cc:5153",
+        "trunk crawl-ref/source/ability.cc:606",
+        "trunk crawl-ref/source/ability.cc:1670",
+        "trunk crawl-ref/source/ability.cc:1677",
+        "trunk crawl-ref/source/ability.cc:1723",
+        "trunk crawl-ref/source/describe.cc:5699",
+        "trunk crawl-ref/source/describe.cc:5703"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：ability 枚举 → ability_name(ability, true)（英文能力名，含动态能力的 canonical 分支） + \" ability\" → getLongDescription；get_ability_desc 返回基础正文，可能再附加状态相关文字；本样本单位仅为 TextDB 正文。"
+      ],
+      "independent_semantic_judgment": "武器或拳头、下一个命中目标、活物/有形亡灵及中立黏液效果完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C8-09",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "w:100\n__NONE\n\nw:2\n@The_monster@ caws, \"Nevermore!\"",
+      "production_consumers": [
+        "stable crawl-ref/source/mon-speak.cc:89",
+        "stable crawl-ref/source/mon-speak.cc:271",
+        "stable crawl-ref/source/mon-speak.cc:692",
+        "stable crawl-ref/source/mon-speak.cc:863",
+        "stable crawl-ref/source/database.cc:1515",
+        "stable crawl-ref/source/database.cc:2353",
+        "stable crawl-ref/source/database.cc:2360",
+        "trunk crawl-ref/source/mon-speak.cc:90",
+        "trunk crawl-ref/source/mon-speak.cc:272",
+        "trunk crawl-ref/source/mon-speak.cc:693",
+        "trunk crawl-ref/source/mon-speak.cc:864",
+        "trunk crawl-ref/source/database.cc:1516",
+        "trunk crawl-ref/source/database.cc:2356",
+        "trunk crawl-ref/source/database.cc:2363"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：单位为一个根 key 的完整变体组，附递归引用的全部组（含 w: 权重；不抽单条变体）。怪物 dat/mons/*.yaml name → mons->base_name(DESC_DBNAME)；mon-speak.cc 从态度/逃跑/沉默/混乱/信仰/分支等生成 prefixes，先查 prefix + key，逐级退回裸 key / default key。database.cc _getRandomisedStr 在组内按权重取变体并递归展开 @子键@；剩余运行时占位符交给 do_mon_str_replacements(msg,*mons)。"
+      ],
+      "independent_semantic_judgment": "静默权重100与啼叫权重2完整，Nevermore 文学表达成立。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C7-04",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Hunters carry a shortbow, light armour and a scroll of butterflies.",
+      "production_consumers": [
+        "stable crawl-ref/source/newgame.cc:1357",
+        "stable crawl-ref/source/newgame.cc:1361",
+        "stable crawl-ref/source/database.cc:2337",
+        "trunk crawl-ref/source/newgame.cc:1336",
+        "trunk crawl-ref/source/newgame.cc:1340",
+        "trunk crawl-ref/source/database.cc:2340"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：职业枚举 id → get_job_name_en(id)，英文 name 来自 dat/jobs/*.yaml → getGameStartDescription(db_key)。"
+      ],
+      "independent_semantic_judgment": "短弓、轻甲、蝴蝶卷轴完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C8-03",
+    "verdict": "readability",
+    "findings": [
+      {
+        "type": "wording",
+        "description": "不变而必然搭配生硬，建议保留不可改变与无可逃避的压迫感。",
+        "evidence": "stable crawl-ref/source/mon-speak.cc:89; stable crawl-ref/source/mon-speak.cc:271; stable crawl-ref/source/mon-speak.cc:692; stable crawl-ref/source/mon-speak.cc:863; stable crawl-ref/source/database.cc:1515; stable crawl-ref/source/database.cc:2353; stable crawl-ref/source/database.cc:2360; trunk crawl-ref/source/mon-speak.cc:90; trunk crawl-ref/source/mon-speak.cc:272; trunk crawl-ref/source/mon-speak.cc:693; trunk crawl-ref/source/mon-speak.cc:864; trunk crawl-ref/source/database.cc:1516; trunk crawl-ref/source/database.cc:2356; trunk crawl-ref/source/database.cc:2363。两条视觉描述与仅玩家分支完整，不变而必然的汉语搭配较生硬。",
+        "suggested_translation": "恒定不移，势不可挡",
+        "defect_points": 0
+      }
+    ],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "VISUAL:@The_monster@ glitters, immutable and inevitable, in the dim dungeon light.\n\nw:5\nVISUAL:You see your fractured reflection in @the_monster@ contort and writhe. @player_only@",
+      "production_consumers": [
+        "stable crawl-ref/source/mon-speak.cc:89",
+        "stable crawl-ref/source/mon-speak.cc:271",
+        "stable crawl-ref/source/mon-speak.cc:692",
+        "stable crawl-ref/source/mon-speak.cc:863",
+        "stable crawl-ref/source/database.cc:1515",
+        "stable crawl-ref/source/database.cc:2353",
+        "stable crawl-ref/source/database.cc:2360",
+        "trunk crawl-ref/source/mon-speak.cc:90",
+        "trunk crawl-ref/source/mon-speak.cc:272",
+        "trunk crawl-ref/source/mon-speak.cc:693",
+        "trunk crawl-ref/source/mon-speak.cc:864",
+        "trunk crawl-ref/source/database.cc:1516",
+        "trunk crawl-ref/source/database.cc:2356",
+        "trunk crawl-ref/source/database.cc:2363"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：单位为一个根 key 的完整变体组，附递归引用的全部组（含 w: 权重；不抽单条变体）。怪物 dat/mons/*.yaml name → mons->base_name(DESC_DBNAME)；mon-speak.cc 从态度/逃跑/沉默/混乱/信仰/分支等生成 prefixes，先查 prefix + key，逐级退回裸 key / default key。database.cc _getRandomisedStr 在组内按权重取变体并递归展开 @子键@；剩余运行时占位符交给 do_mon_str_replacements(msg,*mons)。"
+      ],
+      "independent_semantic_judgment": "两条视觉描述与仅玩家分支完整，不变而必然的汉语搭配较生硬。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；本条存在上述术语或语义问题。"
+    }
+  },
+  {
+    "sample_id": "C7-10",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Casts any spell from your spell library with guaranteed success. You receive a\nbonus to spell power based on your Invocations skill that is worth 50% more\nthan equivalent levels of training in the relevant skills of the spell itself.",
+      "production_consumers": [
+        "stable crawl-ref/source/ability.cc:523",
+        "stable crawl-ref/source/ability.cc:1609",
+        "stable crawl-ref/source/ability.cc:1616",
+        "stable crawl-ref/source/describe.cc:5149",
+        "stable crawl-ref/source/describe.cc:5153",
+        "trunk crawl-ref/source/ability.cc:528",
+        "trunk crawl-ref/source/ability.cc:1670",
+        "trunk crawl-ref/source/ability.cc:1677",
+        "trunk crawl-ref/source/ability.cc:1723",
+        "trunk crawl-ref/source/describe.cc:5699",
+        "trunk crawl-ref/source/describe.cc:5703"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：ability 枚举 → ability_name(ability, true)（英文能力名，含动态能力的 canonical 分支） + \" ability\" → getLongDescription；get_ability_desc 返回基础正文，可能再附加状态相关文字；本样本单位仅为 TextDB 正文。"
+      ],
+      "independent_semantic_judgment": "stable 祈神的150%等效与 trunk 施法等效、短期低虔诚再施放差异均各自保留。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C8-01",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "@_crazy_yiuf_speech_@\n\n%%%%\n_crazy_yiuf_speech_\n\nw:300\n@The_monster@ @_crazy_yiuf_speech_verbs_@, \"@_crazy_yiuf_sentence_@\"\n\nVISUAL:@The_monster@ waves @possessive@ quarterstaff at you. @player_only@\n\n@The_monster@ cries, \"You leg down broken song, no?\"\n\nVISUAL:@The_monster@ glowers.\n\nVISUAL:@The_monster@ twirls on the spot.\n\nVISUAL:@The_monster@ flaps @possessive@ cloak.\n\n@The_monster@ says, \"Crazy? Crazy!? PORCUPINE!\"\n\n@The_monster@ sings, \"Trees, trees, trees, circus!\"\n\nw:2\n@The_monster@ says, \"I'm not crazy!\"\n\nw:2\n@The_monster@ says, \"What sane person could live in this world and not be crazy?\"\n\n%%%%\n_crazy_yiuf_speech_verbs_\n\nw:20\nsays\n\nwhimpers\n\ncries\n\nlaughs\n\nscreams\n\nyells\n\ngrits\n\n%%%%\n_crazy_yiuf_sentence_\n\nw:2\n@_crazy_yiuf_wordlist1_@! @_crazy_yiuf_wordlist1_@ @_crazy_yiuf_wordlist2_@ @_crazy_yiuf_wordlist2_@.\n\nw:6\n@_crazy_yiuf_wordlist1_@ @_crazy_yiuf_wordlist2_@ @_crazy_yiuf_wordlist2_@!\n\nw:2\n@_crazy_yiuf_wordlist1_@!\n\n%%%%\n_crazy_yiuf_wordlist1_\n\nYou\n\nPeeping\n\nFire\n\nIce\n\nShadow\n\nIron\n\nAction\n\nAardvark\n\nAnnouncement\n\nPaint\n\nSnoogle\n\nHah\n\nPowder\n\nHack\n\nScoff\n\nTwo\n\nCandle\n\nGum\n\nRot\n\nCastle\n\nCholesterol\n\nBuddy\n\nSnower\n\nLeather\n\nRifle\n\nTrifle\n\nFluff\n\nGnoll\n\nOrb\n\nAdder\n\nDawk\n\nGoldfish\n\nShower\n\nLine\n\nMountain\n\nTosser\n\nTonal\n\nEast\n\nBlight\n\nLay\n\nWhiteboard\n\nFlower\n\nPapa\n\nMama\n\nWhippet\n\nPitchfork\n\nCod\n\nGhoul\n\nSnurf\n\nGoober\n\nPrologue\n\nProton\n\nKey\n\nIsland\n\nTen\n\nCards\n\nSif Muna\n\nLugonu\n\nNubble\n\nRace\n\nSeed\n\nCake\n\nCitrus\n\nSpliff\n\nDefame\n\nLiver\n\nMugger\n\nWalk\n\nEarwax\n\nMillennium\n\nHoly\n\nUnholy\n\n%%%%\n_crazy_yiuf_wordlist2_\n\nsing-song\n\nsing\n\nsong\n\nbroken\n\nhand\n\nleg\n\ndown\n\nbush\n\ntired\n\nsnail\n\nchicken\n\nhippo\n\nshrimp\n\nXom\n\ncower\n\nchair\n\nblue\n\ngreen\n\nsallow\n\nsow\n\nhorse\n\ndonkey\n\nstair\n\nwrapper\n\nKing\n\nQueen\n\ninfinity\n\ncloud\n\nbag\n\ntea\n\nlight\n\ndark\n\nlumber\n\ningot\n\nwater\n\nfoot\n\nshoe\n\nknee\n\narm\n\nhead\n\neyeball\n\nsnockshim\n\nkoolooloo\n\ntoodlewoodle\n\nchildish\n\nragdoll\n\nseventy\n\npoople\n\nladder\n\nillywillydillykilly\n\nOrb Guardian\n\nHive\n\ntortoise\n\nturtle\n\ntestudinal\n\nreturn to song\n\nmobile\n\nsenile\n\ncanine\n\nfeline\n\nbovine\n\ndisdain\n\npontify\n\nverde\n\nhog\n\nena\n\nspinner\n\nagre\n\narga\n\nmeccalolo\n\nfast\n\naubergine\n\nsanguine\n\ntwenty-three\n\ntwenty-seven\n\nforty-two\n\nunthinkable\n\nhigh\n\naction\n\npizzabubble\n\nnoodlescoop\n\nmumblescurry\n\nalas\n\nrumpyflump\n\nsizzlefizz",
+      "production_consumers": [
+        "stable crawl-ref/source/mon-speak.cc:89",
+        "stable crawl-ref/source/mon-speak.cc:271",
+        "stable crawl-ref/source/mon-speak.cc:692",
+        "stable crawl-ref/source/mon-speak.cc:863",
+        "stable crawl-ref/source/database.cc:1515",
+        "stable crawl-ref/source/database.cc:2353",
+        "stable crawl-ref/source/database.cc:2360",
+        "trunk crawl-ref/source/mon-speak.cc:90",
+        "trunk crawl-ref/source/mon-speak.cc:272",
+        "trunk crawl-ref/source/mon-speak.cc:693",
+        "trunk crawl-ref/source/mon-speak.cc:864",
+        "trunk crawl-ref/source/database.cc:1516",
+        "trunk crawl-ref/source/database.cc:2356",
+        "trunk crawl-ref/source/database.cc:2363"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：单位为一个根 key 的完整变体组，附递归引用的全部组（含 w: 权重；不抽单条变体）。怪物 dat/mons/*.yaml name → mons->base_name(DESC_DBNAME)；mon-speak.cc 从态度/逃跑/沉默/混乱/信仰/分支等生成 prefixes，先查 prefix + key，逐级退回裸 key / default key。database.cc _getRandomisedStr 在组内按权重取变体并递归展开 @子键@；剩余运行时占位符交给 do_mon_str_replacements(msg,*mons)。"
+      ],
+      "independent_semantic_judgment": "疯言呓语的无意义词表应保留荒诞；两版本新增行已对应，递归键权重和台词主意完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C7-02",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Formicids are humanoid ants adept at digging. Their limbs are exceptionally\nstrong and they live in a state of permanent stasis.",
+      "production_consumers": [
+        "stable crawl-ref/source/newgame.cc:1357",
+        "stable crawl-ref/source/newgame.cc:1361",
+        "stable crawl-ref/source/database.cc:2337",
+        "trunk crawl-ref/source/newgame.cc:1336",
+        "trunk crawl-ref/source/newgame.cc:1340",
+        "trunk crawl-ref/source/database.cc:2340"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：种族枚举 id → species::name(id, species::SPNAME_PLAIN, true)，英文 name 来自 dat/species/*.yaml → getGameStartDescription(db_key)。"
+      ],
+      "independent_semantic_judgment": "挖掘、四肢强壮、永久停滞完整。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  },
+  {
+    "sample_id": "C7-03",
+    "verdict": "ok",
+    "findings": [],
+    "confidence": "high",
+    "review_evidence": {
+      "english_full": "Djinn are ever-burning spirits. They learn spells automatically as they grow,\nand cast by drawing down their own fires.",
+      "production_consumers": [
+        "stable crawl-ref/source/newgame.cc:1357",
+        "stable crawl-ref/source/newgame.cc:1361",
+        "stable crawl-ref/source/database.cc:2337",
+        "trunk crawl-ref/source/newgame.cc:1336",
+        "trunk crawl-ref/source/newgame.cc:1340",
+        "trunk crawl-ref/source/database.cc:2340"
+      ],
+      "mechanism_and_parameters": [
+        "动态参数与键生成：种族枚举 id → species::name(id, species::SPNAME_PLAIN, true)，英文 name 来自 dat/species/*.yaml → getGameStartDescription(db_key)。"
+      ],
+      "independent_semantic_judgment": "成长自动学法术、消耗自身火焰施法完整，保留描述意象无需硬加生命值。",
+      "terminology_applicability": "依实际消费者语义检查当前 glossary；未见需要由术语表推翻的语义结论。"
+    }
+  }
+]

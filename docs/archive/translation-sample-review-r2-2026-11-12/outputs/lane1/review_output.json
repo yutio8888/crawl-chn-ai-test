@@ -1,0 +1,650 @@
+[
+  {
+    "sample_id": "C5-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C1-01",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C2-06",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C3-03",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C4-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C1-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C6-03",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C3-06",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C1-06",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C5-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C5-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C5-02",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C3-01",
+    "verdict": "ok",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "note",
+        "description": "stable 用“诅咒系”与 stable 技能名一致，trunk 用“妖术系”与 trunk 术语一致；各线内部一致。",
+        "evidence": "见 review_notes.md",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "C6-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C6-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C4-06",
+    "verdict": "readability",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "readability",
+        "description": "警报陷阱的 blaring wail 是刺耳鸣响，“哀嚎”偏拟人/悲伤；trunk 同义的 \"The alarm trap emits a blaring wail!\" 已译“尖啸”，宜统一。",
+        "evidence": "stable 83af93c8bd:crawl-ref/source/traps.cc:597 name(DESC_THE) 为陷阱名；trunk 302ecba316 catalog \"The alarm trap emits a blaring wail!\"→“警报陷阱发出刺耳的尖啸！”",
+        "defect_points": 0,
+        "suggested_translation": "%s发出了刺耳的尖啸！"
+      }
+    ]
+  },
+  {
+    "sample_id": "C4-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C1-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C4-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C4-03",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C4-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C4-02",
+    "verdict": "readability",
+    "confidence": "high",
+    "findings": [
+      {
+        "type": "readability",
+        "description": "“puff of logic”是对“puff of smoke”的戏仿；直译“在一阵逻辑中消失了”生硬，可保留戏谑同时通顺。",
+        "evidence": "stable 83af93c8bd:crawl-ref/source/stairs.cc:639 known_shaft 时；catalog 中 puff of smoke 统一作“一阵烟雾”。",
+        "defect_points": 0,
+        "suggested_translation": "竖井在一阵逻辑的烟雾中消失了！"
+      }
+    ]
+  },
+  {
+    "sample_id": "C5-09",
+    "verdict": "objective_error",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "mistranslation",
+        "description": "“religious standing”指你在所信神祇处的状态/虔诚情况（CMD_DISPLAY_RELIGION 打开宗教界面显示神祇与虔诚值），“宗教立场”在中文中意为观点/态度，语义偏离。",
+        "evidence": "stable 83af93c8bd:crawl-ref/source/hints.cc:1755-1758 仅在 !you_worship(GOD_NO_GOD) 时列出，命令为 CMD_DISPLAY_RELIGION；trunk 同键中文相同。",
+        "defect_points": 1,
+        "suggested_translation": "你的信仰状态（<w>%</w>）"
+      }
+    ]
+  },
+  {
+    "sample_id": "C4-10",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C5-08",
+    "verdict": "readability",
+    "confidence": "low",
+    "findings": [
+      {
+        "type": "readability",
+        "description": "jewellery 在 catalog 中“珠宝/首饰/饰品”混用且术语表无条目；本句用“饰品”，与“你无法佩戴珠宝”“佩戴哪个首饰”并存。建议另行登记统一译名，非本句错误。",
+        "evidence": "stable 83af93c8bd:crawl-ref/source/hints.cc:2306；catalog jewellery 相关键对照。",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "C4-01",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C6-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C1-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C6-01",
+    "verdict": "readability",
+    "confidence": "low",
+    "findings": [
+      {
+        "type": "readability",
+        "description": "同 jewellery 译名混用（珠宝/首饰/饰品）；动词“卸下”与选单“摘下哪个首饰”不一致。",
+        "evidence": "stable 83af93c8bd/trunk 302ecba316:crawl-ref/source/item-use.cc:1020/1023 OPER_REMOVE 分支；catalog \"Remove which piece of jewellery?\"→“摘下哪个首饰？”",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "C6-09",
+    "verdict": "readability",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "readability",
+        "description": "Piledriver 是把相邻敌人/一列敌人推飞撞墙，“发射”对生物不自然，易与远程发射混淆。",
+        "evidence": "stable 83af93c8bd:crawl-ref/source/spl-util.cc:1989 !piledriver_target_exists()；dat/descript/spells.txt:1313 法术说明 propelling everyone forward。",
+        "defect_points": 0,
+        "suggested_translation": "你看不到附近任何可以推飞的目标。"
+      }
+    ]
+  },
+  {
+    "sample_id": "C5-03",
+    "verdict": "objective_error",
+    "confidence": "high",
+    "findings": [
+      {
+        "type": "dynamic_sentence_omission",
+        "description": "拼接后整句丢失“altar/祭坛”：前段“altar dedicated to ”译为“你需要找到一座”，随后直接接神名和本键“，在那里”，成句为“你需要找到一座<神名>，在那里你可以重新改信”，祭坛语义消失且“一座<神名>”不成立。修复可放在本键（唯一消费者）。",
+        "evidence": "stable 83af93c8bd:crawl-ref/source/hints.cc:1514-1517 text << T_(\"Should you decide that abandoning \") << old_god_name << T_(\"wasn't such a smart move ... altar dedicated to \") << old_god_name << T_(\" where\"); 随后 1518 T_(\" you can re-convert, and all will be well.\")；catalog: 前段→“…你需要找到一座”，“ where”→“，在那里”，后段→“你可以重新改信，一切都会好起来。”。旁注：同函数 excommunication 分支“…If you can find an altar dedicated to ”→“…如果你能找到”后直接接神名，同样缺“祭坛”（非本样本键）；首段“如果你决定放弃X 并不是那么明智的选择”也把 decide that 误为“决定放弃”。",
+        "defect_points": 1,
+        "suggested_translation": "的祭坛，在那里"
+      }
+    ]
+  },
+  {
+    "sample_id": "C2-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C2-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C6-02",
+    "verdict": "readability",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "readability",
+        "description": "depleted 指资源（法力/生命）不足，“过于虚弱”偏离资源含义；resource 实参 T_(\"magic\") 译“魔法”，与术语表 MP=法力不一致（共享短键，不宜单独改）。",
+        "evidence": "stable 83af93c8bd:crawl-ref/source/quiver.cc:136-138 resource = MUT_HP_CASTING ? T_(\"health\") : T_(\"magic\")；catalog magic→魔法、health→生命。",
+        "defect_points": 0,
+        "suggested_translation": "你的%s过于匮乏，无法鲁莽地动用！"
+      }
+    ]
+  },
+  {
+    "sample_id": "C5-01",
+    "verdict": "readability",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "readability",
+        "description": "“in either direction”指上下楼两个方向，“任意方向”可能被理解为八方向移动；“图形界面下”与同类教程中的“在 Tiles 中”不一致。",
+        "evidence": "stable 83af93c8bd:crawl-ref/source/hints.cc:2516-2522 楼梯教程，前句讲 > 与 <<。",
+        "defect_points": 0,
+        "suggested_translation": " 在 Tiles 中，无论上楼还是下楼，你都可以通过点击<w>鼠标左键</w>来完成。"
+      }
+    ]
+  },
+  {
+    "sample_id": "C5-06",
+    "verdict": "ok",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "note",
+        "description": "“那个”+“怪物是”+名称 / “那个”+字形+“ 是一个怪物”两路径均通顺。",
+        "evidence": "见 review_notes.md",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "C1-02",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C3-10",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C6-06",
+    "verdict": "objective_error",
+    "confidence": "high",
+    "findings": [
+      {
+        "type": "terminology_inconsistency",
+        "description": "法术名 Frozen Ramparts 在两线 catalog 及术语表均为“冰冻壁垒”，本失败原因句译为“冰霜壁垒”，同一法术效果撞名不一致。",
+        "evidence": "stable 83af93c8bd/trunk 302ecba316:crawl-ref/source/spl-util.cc:1959/1977 case SPELL_FROZEN_RAMPARTS 且 DUR_FROZEN_RAMPARTS 存续时返回；catalog \"Frozen Ramparts\"→冰冻壁垒、\"The frozen ramparts melt away as you move.\"→冰冻壁垒；docs/glossary.md:1928 Frozen Ramparts | 冰冻壁垒。",
+        "defect_points": 1,
+        "suggested_translation": "你现在无法维持更多的冰冻壁垒。"
+      }
+    ]
+  },
+  {
+    "sample_id": "C5-10",
+    "verdict": "ok",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "note",
+        "description": "与“幸运的是，似乎”+神名+本键+神名+“。”成句通顺。",
+        "evidence": "见 review_notes.md",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "C3-02",
+    "verdict": "ok",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "note",
+        "description": "“同时提升斧类/杖类技能”：交叉训练在 skills.cc get_crosstrain_points 中计入有效技能，表述可接受。",
+        "evidence": "见 review_notes.md",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "C2-01",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C2-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C4-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C1-10",
+    "verdict": "objective_error",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "mistranslation",
+        "description": "“character dump”是角色信息转储/报告文本，不是存档；“角色存档信息”易误导为存档文件。同一概念在 catalog 中另有“角色转储”“角色报告”“角色信息”，此处偏离。",
+        "evidence": "stable 83af93c8bd/trunk 302ecba316:crawl-ref/source/command.cc:918 帮助页“# : Browse character dump”；catalog 另有 \"Generate and view character dump\"→“生成并查看角色报告”、\"dump character to file\"→“将角色信息导出至文件”；同问题也见 <darkgrey> 变体键。",
+        "defect_points": 1,
+        "suggested_translation": "<w>:</w>：浏览角色笔记\\n<w>#</w>：浏览角色报告"
+      }
+    ]
+  },
+  {
+    "sample_id": "C2-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C2-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C6-10",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C3-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C2-10",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C1-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C6-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C3-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C1-03",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C3-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C3-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C1-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C3-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C2-02",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C2-03",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C8-05",
+    "verdict": "readability",
+    "confidence": "low",
+    "findings": [
+      {
+        "type": "readability",
+        "description": "“honourless miscreant”→“无荣誉的恶棍”生硬；其余变体忠实，@foe@ 替换与 strip_cjk_spaces 处理空格可接受。",
+        "evidence": "stable 83af93c8bd:crawl-ref/source/mon-util.cc:4479-4524 @foe@ 替换，4842 strip_cjk_spaces。",
+        "defect_points": 0,
+        "suggested_translation": "见鬼去吧，不知廉耻的恶棍！"
+      }
+    ]
+  },
+  {
+    "sample_id": "C7-10",
+    "verdict": "ok",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "note",
+        "description": "trunk“重复释经能力”对应 dbname Repeat Exegesis；菜单在已有法术时显示“再次施放%s”，可接受。",
+        "evidence": "见 review_notes.md",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "C8-08",
+    "verdict": "readability",
+    "confidence": "low",
+    "findings": [
+      {
+        "type": "readability",
+        "description": "“You are history!”直译“你已经是历史了！”可懂但略生硬，可译“你完蛋了！”。",
+        "evidence": "stable 83af93c8bd 怪物言语 wizard 组 _wizard_medium_。",
+        "defect_points": 0,
+        "suggested_translation": "你完蛋了！"
+      }
+    ]
+  },
+  {
+    "sample_id": "C8-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C8-01",
+    "verdict": "ok",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "note",
+        "description": "疯子尤夫胡话词表为无意义拼贴，逐词译法可接受；@possessive@ 前空格由 strip_cjk_spaces 去除。",
+        "evidence": "见 review_notes.md",
+        "defect_points": 0
+      }
+    ]
+  },
+  {
+    "sample_id": "C7-09",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C7-03",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C7-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C8-06",
+    "verdict": "readability",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "readability",
+        "description": "(1)“@foe,@「…」”：玩家为对象时 \" @foe,@\" 被替换为半角“,”，输出“…问,「…」”，半角逗号且与本组其他行的“”引号风格不一；(2)“any day of the week”惯用语直译“一周哪一天都是”不通顺。",
+        "evidence": "stable 83af93c8bd:crawl-ref/source/mon-util.cc:4479 replace_all(msg, \" @foe,@\", \",\")；4522 非玩家对象 \"@foe,@\"→\"@foe@,\"。",
+        "defect_points": 0,
+        "suggested_translation": "@The_monster@ 问@foe@：“你见过我那了不起的哥哥吗？”（需确认 @foe@ 两路径输出）；“链枷什么时候都比镰刀强！”"
+      }
+    ]
+  },
+  {
+    "sample_id": "C8-07",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C7-02",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C8-04",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C8-10",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C7-01",
+    "verdict": "objective_error",
+    "confidence": "medium",
+    "findings": [
+      {
+        "type": "terminology_inconsistency",
+        "description": "trunk 译文将 magical reserves / magic-restoring 译为“魔力储备/恢复魔力”，与术语表 MP/magic points=法力、stable 同句“法力储备/恢复法力”及 trunk 其他 magic reserves 句（“法力储备”）不一致；藤蔓行者撕咬恢复的是 MP。仅 trunk 一处缺陷。",
+        "evidence": "trunk 302ecba316:dat/descript/zh/species.txt Vine Stalker 条（来自2022年 46e4cf009a 旧译）；docs/glossary.md:235 MP / magic points | 法力；trunk 302ecba316 catalog \"When hurt, damage is shared between your health and your magic reserves.\"→法力储备。stable 正确。",
+        "defect_points": 1,
+        "suggested_translation": "藤蔓行者是脆弱的共生生物，无法通过药水恢复生命值。\\n他们的法力储备可以吸收伤害，咬击还能恢复法力。"
+      }
+    ]
+  },
+  {
+    "sample_id": "C7-08",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C8-03",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C7-05",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C8-02",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C7-06",
+    "verdict": "ok",
+    "confidence": "high",
+    "findings": []
+  },
+  {
+    "sample_id": "C7-07",
+    "verdict": "readability",
+    "confidence": "low",
+    "findings": [
+      {
+        "type": "readability",
+        "description": "“those who would not otherwise be able to regenerate”译为“无法自行恢复的物种”，增加了“物种”限定；实际包括因突变/形态等无法再生者。",
+        "evidence": "stable 83af93c8bd:crawl-ref/source/ability.cc:529 Trog's Hand 能力描述；glossary Trog's Hand“提供强力恢复与意志力”。",
+        "defect_points": 0,
+        "suggested_translation": "即使对原本无法自然恢复的人也有效。"
+      }
+    ]
+  }
+]

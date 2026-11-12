@@ -1,0 +1,41 @@
+{
+ "moderator": "Claude Opus 5.5 (main session)",
+ "date": "2026-11-12",
+ "refs": {"stable": "83af93c8bdbbaf1b66aeac0af3eaa6ff58cebc57", "trunk": "302ecba316bee8be19b73d06c3697cf82bd5bc3e"},
+ "lanes": {
+  "lane1": {"profile": "Contextual Reviewer — Opus 5.5", "model": "claude/claude-opus-5-5", "mode": "auto", "thinking": "medium", "fast_mode": false, "glossary_sha256": "fb814f3252f249fc230e81fa132dce6a9bb194b014d687fc1524c66827b351d7"},
+  "lane2": {"profile": "Main Reviewer — GPT-6.1 Sol", "model": "codex/gpt-6.1-sol", "mode": "auto-review", "thinking": "medium", "glossary_sha256": "fb814f3252f249fc230e81fa132dce6a9bb194b014d687fc1524c66827b351d7"}
+ },
+ "samples": {"frozen": 80, "valid": 80, "invalid": 0},
+ "lane_counts": {
+  "lane1": {"ok": 64, "readability": 11, "objective_error": 5, "insufficient_evidence": 0},
+  "lane2": {"ok": 71, "readability": 4, "objective_error": 5, "insufficient_evidence": 0}
+ },
+ "agreement": {"same_verdict": 65, "both_objective": ["C5-09", "C7-01"], "objective_one_lane_only": ["C1-10", "C3-01", "C5-03", "C6-06", "C7-07", "C8-06"], "opposite_ok_vs_objective": ["C1-10", "C3-01", "C5-03", "C6-06"]},
+ "confirmed": [
+  {"id": "R2-C1", "sample_id": "C1-10", "lines": ["stable", "trunk"], "type": "objective_error", "category": "mistranslation", "summary": "'Browse character dump' rendered 浏览角色存档信息; a character dump is the text report produced by '#', not a save file (存档). Catalog already uses 生成并查看角色报告 for the same command.", "fix": "角色报告 in this help key and its darkgrey twin key", "defect_points": 1},
+  {"id": "R2-C2", "sample_id": "C5-03", "lines": ["stable"], "type": "objective_error", "category": "dynamic_sentence", "summary": "Stable hints.cc builds the re-convert hint from fragments; both branches lose 'altar': 你需要找到一座<神名>，在那里… and (same template, unsampled branch) 如果你能找到<神名>你可以重新改信. Trunk uses full $1 sentences in hints.txt.", "fix": "Stable-only C++ full-sentence templates, English byte-identical", "defect_points": 1, "same_template_collateral_points": 1},
+  {"id": "R2-C3", "sample_id": "C5-09", "lines": ["stable"], "type": "objective_error", "category": "mistranslation", "summary": "'your religious standing' (CMD_DISPLAY_RELIGION) rendered 你的宗教立场 (opinion/stance) instead of 信仰状态.", "fix": "你的信仰状态（<w>%</w>）; check same-source keys", "defect_points": 1},
+  {"id": "R2-C4", "sample_id": "C6-06", "lines": ["stable", "trunk"], "type": "objective_error", "category": "terminology", "summary": "Frozen Ramparts spell is 冰冻壁垒 in catalog and glossary; the failure message alone says 冰霜壁垒 (one occurrence per line).", "fix": "冰冻壁垒", "defect_points": 1},
+  {"id": "R2-C5", "sample_id": "C7-01", "lines": ["trunk"], "type": "objective_error", "category": "terminology", "summary": "Trunk Vine Stalker description uses 魔力储备/恢复魔力 for MP; glossary MP=法力, stable has 法力.", "fix": "法力储备/恢复法力", "defect_points": 1},
+  {"id": "R2-C6", "sample_id": "C7-07", "lines": ["stable", "trunk"], "type": "objective_error", "category": "mechanism_scope", "summary": "Trog's Hand works on 'those who would not otherwise be able to regenerate'; regeneration is blocked by regeneration_is_inhibited() and MUT_NO_REGENERATION (player.cc player_regenerates_hp), not only by species. 物种 narrows the scope.", "fix": "那些原本无法再生的人/角色", "defect_points": 1},
+  {"id": "R2-C7", "sample_id": "C8-06", "lines": ["stable", "trunk"], "type": "objective_error", "category": "addition", "summary": "Edmund line 'Someone accused me of being a cutpurse!' rendered with 诬陷, asserting the accusation is false (minor).", "fix": "指控", "defect_points": 1}
+ ],
+ "rejected": [
+  {"sample_id": "C3-01", "summary": "Stable Hexes=诅咒系 follows the stable glossary row; trunk Hexes=妖术系 follows trunk glossary. Each line is internally consistent; the cross-line naming divergence is a naming-policy question, not a translation defect in this sample."}
+ ],
+ "pending_validation_gap": [
+  {"sample_id": "C8-06", "summary": "' @foe,@' substitution when the foe is the player (mon-util.cc speech tag replacement) may leave a half-width comma before 「…」; needs runtime output."}
+ ],
+ "advisory": {
+  "readability_samples_lane_union": ["C4-02", "C4-06", "C5-01", "C5-08", "C6-01", "C6-02", "C6-09", "C8-03", "C8-05", "C8-08", "C8-10"],
+  "policy_suggestions": ["Hexes 诅咒系 (stable) vs 妖术系 (trunk) cross-line naming", "character dump also rendered 角色转储/角色信息 elsewhere", "jewellery 珠宝/首饰/饰品 has no glossary row", "shared short key 'magic' 魔法 vs 法力"]
+ },
+ "input_corrections": [
+  {"samples": ["C1-02", "C1-09"], "summary": "Sampler marked these stable-specific; trunk source.txt has normal entries (lane2 found). Two-line statistics corrected; no missing-translation finding."}
+ ],
+ "confirmed_counts": {
+  "definition": "affected_samples = distinct sample_id with a confirmed finding; confirmed_findings = records; defect_points = sampled defects; same_template_collateral_points are outside sampled counts. Sample-bound, stratified, not catalogue-wide.",
+  "affected_samples": 7, "confirmed_findings": 7, "defect_points": 7, "same_template_collateral_points": 1
+ }
+}
