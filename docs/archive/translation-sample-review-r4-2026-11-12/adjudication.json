@@ -234,6 +234,6 @@
    "ci": "all applicable pass",
    "release": "none"
   },
-  "unchanged_status": "R4-4-05 stays pending; the 22 runtime/layout check points stay unverified except the text of the overlapping samples above. Other 逃生舱口 occurrences in the catalogue were not unified (out of scope)."
+  "unchanged_status": "R4-4-05 stays pending. The 22 runtime/layout check points stay unverified; samples among them whose text changed here (e.g. R4-1-02) received text fixes only, and their in-game display remains unverified. Other 逃生舱口 occurrences in the catalogue were not unified (out of scope)."
  }
 }
