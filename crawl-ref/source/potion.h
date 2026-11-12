@@ -50,3 +50,5 @@ void potionlike_effect(potion_type effect, int pow, bool was_known = true);
 
 bool mons_benefits_from_potion(const monster& mon, potion_type potion);
 void mons_potion_effect(monster& mon, potion_type potion, const actor& source);
+
+string mutation_potion_prompt(bool resistant, bool zin_check);

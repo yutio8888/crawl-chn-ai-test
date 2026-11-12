@@ -3,6 +3,7 @@
 #include "AppHdr.h"
 #include "lang-en-guard.h"
 
+#include "potion.h"
 #include "i18n.h"                // T_()
 #include "ability.h"
 #include "ability-type.h"
@@ -8361,4 +8362,32 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     lua_setglobal(ls, "c_answer_prompt");
     REQUIRE_FALSE(check_warning_inscriptions(stone, OPER_QUIVER));
     CHECK(observed == "确定要将快捷动作设为" + item_name + "吗？");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture, "zh: mutation potion prompt",
+                 "[zh-translation]")
+{
+    for (bool resistant : {false, true})
+        for (bool zin : {false, true})
+        {
+            const string expected = resistant
+                ? "你拥有变异抗性，真的要喝下那瓶变异药水吗？"
+                : "真的要喝下那瓶变异药水吗？";
+            CHECK(mutation_potion_prompt(resistant, zin)
+                  == expected + (zin ? " 辛不会认可的。" : ""));
+        }
+}
+
+TEST_CASE_METHOD(EnTranslationFixture, "en: mutation potion prompt",
+                 "[zh-translation]")
+{
+    for (bool resistant : {false, true})
+        for (bool zin : {false, true})
+        {
+            string original = "Really drink that potion of mutation";
+            original += resistant ? " while resistant to mutation?" : "?";
+            if (zin)
+                original += " Zin will disapprove.";
+            CHECK(mutation_potion_prompt(resistant, zin) == original);
+        }
 }

@@ -4207,3 +4207,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 - **Rationale**: 与玩家鬼魂全称一致，并与 `MONS_SPECTRAL_THING` 的 `spectre → 幽灵` 后缀区分。
 - **Scope / boundaries**: SourceDB 的独立 `ghost` 键用于 player ghost 括注后缀，以及共用同一 SourceDB 键的 MONS_GHOST 旧版占位怪名（`dat/mons/ghost.yaml` → `zh_monster_name` → `T_(en.c_str())`）；`spectre`、其他复合名称及英文协议键不变。
 - **Affected files**: 中文 `source.txt`、`docs/glossary.md`、`docs/glossary.utf8`。
+
+### D-C-114 — mutation 机制名词
+
+mutation 作为游戏机制名词统一为“变异”，包括变异药水、变异记录与抑制标题。rMut 短标签采用“抗变异”（6 列），完整名称为“变异抗性”。生物学／古生物学引文保留“突变”；动词、调试文本与查询身份不机械替换。mutagenic 及 mutagenic power 继续遵循 D-C-096 的“诱变／诱变力量”。旧存档显示快照不迁移。
