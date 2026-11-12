@@ -69,6 +69,8 @@ APK 的编译资源 `res/` 按 Android 的精确路径查找语义区分大小�
    在签名阶段失败，未签名或签名无法验证的 APK 不会上传。
 2. 确认候选工作树已提交且干净，版本范围、延期平台和已知问题已经写入 release issue。
    在 `docs/releases/<tag>.md` 编写面向玩家的更新说明；工作流读取该文件并追加准确提交。
+   stable 的草稿说明完全来自该文件，因此须按下文“发布前本地门禁”列明已做的包核验、
+   待测试玩家验证的平台项目与反馈方式。
 3. 按 `.agents/policies/review-contract.md` 使用 `--base <base> --head <candidate>`
    运行匹配 profile，或复用内容及依赖未变化的验证证据，并由
    `classify_reviewers.py` 路由领域审查；现有 GitHub Actions CI 必须通过。
