@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`fb814f3252f249fc230e81fa132dce6a9bb194b014d687fc1524c66827b351d7`
-- 清单 SHA-256：`71f1d7aea53816a90ad95b6521b8c57b7d5071f6467503f7574fac6cae8d567d`
+- 清单 SHA-256：`01bb7c34e11525d79e999a0ed190a3422fff705c47a522bd23ea28e09169cf6a`
 - 身份总数：815（现行 691；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -709,7 +709,7 @@
 | `monster:MONS_ZENATA` | current; exposure=unique; name=Zenata→泽娜塔; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/zenata.yaml; desc=EN/ZH | keep |
 | `monster:MONS_METEORAN` | current; exposure=ordinary; name=meteoran→流星人; genus=MONS_METEORAN; species=MONS_METEORAN; data=crawl-ref/source/dat/mons/meteoran.yaml; desc=N/A | keep |
 | `monster:MONS_GRUNN` | current; exposure=unique; name=Grunn→格伦; genus=MONS_GNOLL; species=MONS_GNOLL; data=crawl-ref/source/dat/mons/grunn.yaml; desc=EN/ZH | retranslate: description corrected |
-| `monster:MONS_STARFLOWER` | current; exposure=ordinary; name=starflower→星花; genus=MONS_PLANT; species=MONS_STARFLOWER; data=crawl-ref/source/dat/mons/starflower.yaml; desc=EN/ZH | keep |
+| `monster:MONS_STARFLOWER` | current; exposure=ordinary; name=starflower→星花; genus=MONS_PLANT; species=MONS_STARFLOWER; data=crawl-ref/source/dat/mons/starflower.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_SICKLY_MERFOLK_SIREN` | current; exposure=ordinary; name=sickly merfolk siren→病弱人鱼塞壬; genus=MONS_MERFOLK; species=MONS_MERFOLK; data=crawl-ref/source/dat/mons/sickly-merfolk-siren.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_MALARIOUS_MERFOLK_AVATAR` | current; exposure=ordinary; name=malarious merfolk avatar→疟病人鱼化身; genus=MONS_MERFOLK; species=MONS_MERFOLK; data=crawl-ref/source/dat/mons/malarious-merfolk-avatar.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_SKYSHARK` | current; exposure=ordinary; name=skyshark→天鲨; genus=MONS_SKYSHARK; species=MONS_SKYSHARK; data=crawl-ref/source/dat/mons/skyshark.yaml; desc=EN/ZH | keep |
