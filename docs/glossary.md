@@ -894,6 +894,7 @@
 | mutagenic radiation | 诱变辐射 | 仅用于英文明确写出 mutagenic radiation 的字面辐射；不作 Contamination 的机制名；保留 D-C-096 的诱变词根；裁决 [D-C-112] |
 | mutagenic fog | 诱变雾气 | 云类型及鬃毛药水云、怪物状态描述；弃用“致变雾气／变异雾气”；decision=D-C-096 |
 | mutagenic serum | 诱变血清 | 净化诱变催化器正文；沿用 features 既有译法；decision=D-C-096 |
+| mutation | 变异 | 游戏机制名词；药水、变异列表及记录；生物学引文保留突变；decision=D-C-114 |
 | `Cleave+` | 顺劈+ | 佐姆顺劈祝福状态灯；沿用 Cleave status 的“顺劈”词根；decision=D-C-109 |
 | `Reach+` | 延展+ | 佐姆延展祝福状态；近战攻击距离 +3；decision=D-C-109 |
 | `Lock (%d)` | 封梯(%d) | 佐姆封锁楼层楼梯状态；括号内为剩余解锁所需击杀数；decision=D-C-109 |
