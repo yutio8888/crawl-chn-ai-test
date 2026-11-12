@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate exact translation keys against the generated OmegaT glossary."""
+"""Validate exact keys and explicitly rejected forms against the OmegaT glossary."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pathlib import Path
 import re
 import subprocess
 
-from i18n_shared import AuditRootError, resolve_audit_root
+from i18n_shared import AuditRootError, parse_entries, resolve_audit_root
 
 
 SCRIPT_ROOT = Path(__file__).resolve().parents[2]
@@ -135,23 +135,97 @@ def validate(
     return checked, failures
 
 
+
+def load_rejections(path: Path) -> dict[str, set[str]]:
+    """Read only explicit reject= markers, never prose such as '弃用数值名'."""
+    rules: dict[str, set[str]] = defaultdict(set)
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line or line.startswith("#"):
+            continue
+        source, _target, comment = line.split("\t")
+        for marker in re.finditer(r"(?:^|[;；])\s*reject=([^;；]*)", comment):
+            rejected = [part.strip() for part in marker[1].split("／")]
+            if not all(rejected):
+                raise ValueError(f"empty reject= form for {source!r} in {path}")
+            rules[source.casefold()].update(rejected)
+    return dict(rules)
+
+
+def validate_rejections(
+    rules: dict[str, set[str]], data_root: Path,
+) -> tuple[int, int]:
+    """Scan the whole current catalog and paired English/ZH prose bodies.
+
+    Lookup keys identify prose entries; they are never English body evidence.
+    Unpaired legacy keys have no English body and are outside this check.
+    """
+    if not rules:
+        return 0, 0
+    patterns = [(term, re.compile(r"(?<!\w)" + r"\s+".join(
+        re.escape(word) for word in term.split()) + r"(?!\w)", re.IGNORECASE), rejected)
+        for term, rejected in sorted(rules.items())]
+    checked = failures = 0
+
+    def check(path: Path, lineno: int, key: str, english: str, chinese: str):
+        nonlocal checked, failures
+        for term, pattern, rejected in patterns:
+            if not pattern.search(english):
+                continue
+            checked += 1
+            for form in sorted(rejected):
+                if form in chinese:
+                    match_line = lineno + chinese[:chinese.index(form)].count("\n")
+                    print(f"FAIL: {path}:{match_line}: {key!r}: deprecated {form!r} "
+                          f"for English term {term!r}")
+                    failures += 1
+
+    catalog = data_root / "i18n/zh/source.txt"
+    if not catalog.is_file():
+        raise ValueError(f"missing rejection-scan catalog: {catalog}")
+    for entry in parse_entries(catalog, lowercase_keys=False):
+        check(catalog, entry.key_line + 1, entry.key, entry.key, entry.value)
+    for family in ("descript", "database"):
+        zh_dir = data_root / family / "zh"
+        if not zh_dir.is_dir():
+            raise ValueError(f"missing rejection-scan directory: {zh_dir}")
+        for path in sorted(zh_dir.glob("*.txt")):
+            english_path = path.parent.parent / path.name
+            if not english_path.is_file():
+                raise ValueError(f"missing English partner: {english_path}")
+            english = {entry.key: entry.value for entry in parse_entries(english_path)}
+            for entry in parse_entries(path):
+                body = english.get(entry.key)
+                if body is not None:
+                    check(path, entry.key_line + 1, entry.key, body, entry.value)
+    return checked, failures
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--glossary", type=Path, default=DEFAULT_GLOSSARY)
     parser.add_argument("--paths", type=Path, nargs="*", default=list(DEFAULT_PATHS))
     parser.add_argument("--base", default="HEAD", help="only check entries changed since this Git revision")
     parser.add_argument("--all", action="store_true", help="audit all exact keys, including historical entries")
+    parser.add_argument("--data-root", type=Path, default=ROOT / "crawl-ref/source/dat",
+                        help="full data tree for deprecated-form scans (independent of --base/--paths)")
     args = parser.parse_args()
     try:
         terms = load_terms(args.glossary)
         checked, failures = validate(terms, args.paths, base=None if args.all else args.base)
+        rejected_checked, rejected_failures = validate_rejections(
+            load_rejections(args.glossary), args.data_root)
     except (OSError, ValueError) as error:
         parser.error(str(error))
     if failures:
         print(f"FAIL: {failures} canonical terminology violation(s) in {checked} exact-key entries")
-        return 1
-    print(f"OK: {checked} exact-key entries match the current glossary")
-    return 0
+    else:
+        print(f"OK: {checked} exact-key entries match the current glossary")
+    if rejected_failures:
+        print(f"FAIL: {rejected_failures} deprecated-form violation(s) in "
+              f"{rejected_checked} term-matched entries")
+    else:
+        print(f"OK: {rejected_checked} term-matched entries contain no explicit rejected forms")
+    return int(bool(failures or rejected_failures))
 
 
 if __name__ == "__main__":

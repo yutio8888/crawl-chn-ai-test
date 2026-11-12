@@ -699,12 +699,12 @@ mummy	木乃伊	domain=species; source=EN/ZH; 复合格式=木乃伊 + 职业
 Murray	默里	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Murray title	会说话的恶魔头骨默里	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 mutagenic	诱变	domain=status; source=EN/ZH; 依据 / 作用域=描述使生物发生变异的作用；固定法术名 Mutagenic Gaze → 变异凝视为保留例外，不扩展到其正文；decision=D-C-096
-mutagenic energies	诱变能量	domain=status; source=EN/ZH; 依据 / 作用域=普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096
-mutagenic energy	诱变能量	domain=status; source=EN/ZH; 依据 / 作用域=普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096
+mutagenic energies	诱变能量	domain=status; source=EN/ZH; 依据 / 作用域=普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096；reject=变异能量／突变能量
+mutagenic energy	诱变能量	domain=status; source=EN/ZH; 依据 / 作用域=普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096；reject=变异能量／突变能量
 mutagenic fog	诱变雾气	domain=status; source=EN/ZH; 依据 / 作用域=云类型及鬃毛药水云、怪物状态描述；弃用“致变雾气／变异雾气”；decision=D-C-096
 Mutagenic Gaze	变异凝视	domain=spells; source=EN/ZH; 备注=✅；已定稿的固定法术名例外；正文 mutagenic energy 使用“诱变能量”；decision=D-C-096
 mutagenic glow	诱变光芒	domain=status; source=EN/ZH; 依据 / 作用域=魔法污染的发光描述；与 mutagenic radiation 同词根；decision=D-C-096
-mutagenic power	诱变力量	domain=status; source=EN/ZH; 依据 / 作用域=四肢增强效果的力量；区别发生的变异（mutation）；decision=D-C-096
+mutagenic power	诱变力量	domain=status; source=EN/ZH; 依据 / 作用域=四肢增强效果的力量；区别发生的变异（mutation）；decision=D-C-096；reject=突变能量
 mutation	变异	domain=status; source=EN/ZH; 依据 / 作用域=游戏机制名词；药水、变异列表及记录；生物学引文保留突变；decision=D-C-114
 mutters	咕哝道	domain=dialogue; source=EN/ZH; 适用角色=疯狂角色（Crazy Yiuf）
 naga	纳迦	domain=species; source=EN/ZH; 裁决=[D-A-012]; 复合格式=纳迦 + 职业（纳迦法师、纳迦神射手）

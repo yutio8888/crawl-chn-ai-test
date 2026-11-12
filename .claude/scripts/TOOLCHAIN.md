@@ -196,7 +196,7 @@ python3 .claude/scripts/glossary_query.py --term cast --format json
 范围或相关术语变化时刷新；正式翻译证据记录最终词表摘要。
 `context_resolve.sh` 按需调用本脚本，支持 `--terminology auto|yes|no`。
 
-### check_glossary_terms.py — 增量精确键门禁
+### check_glossary_terms.py — 精确键与显式弃用译法门禁
 
 读取由 `docs/glossary.md` 导出的 OmegaT `docs/glossary.utf8`，检查
 `source.txt` 中“英文 key 与术语 source 完全相同”的本次改动。多个批准译法
@@ -215,6 +215,26 @@ python3 .claude/scripts/check_glossary_terms.py --all
 
 门禁前先运行 `export_omegat_glossary.py --check`，确保 OmegaT 导出与 Markdown
 源一致。该检查已接入 `post-translator.sh`、`post-coder.sh`。
+
+弃用译法检查始终扫描当前完整数据树，不受 `--base`、`--all` 或 `--paths`
+的增量范围影响。唯一规则来源是 glossary 备注中的显式 `reject=旧译／另一旧译`
+标记，经现有导出器写入 `glossary.utf8`；不解析一般“弃用”说明。
+仅当英文按词边界、大小写不敏感地包含该行术语，中文正文又含标记中的旧译时
+失败。复数只采用 glossary 中已列出的形式。SourceDB 以英文键为原文；
+descript/database 按英文 lookup key 配对正文（键本身不是英文正文证据）。
+缺少必需目录或英文配对文件会报输入错误；没有英文正文的旧 lookup key 不推断
+语义。固定 Mutagenic Gaze 名称与单独的生物学“突变”不触发能量规则。
+
+当前仅启用 mutagenic energy/energies（变异能量、突变能量）与 mutagenic power
+（突变能量）。fog 尚有已登记的 trunk 残留，不在本轮门禁中启用。
+检查复用 `i18n_shared.parse_entries`，每次读取全树配对正文；运行时间见对应
+候选的验证日志。`tests/test_check_glossary_terms.py` 将同名工具回归测试接入
+现有 `tests/run_all.sh`，不另设 runner。
+
+```bash
+# 对历史数据快照仅运行全量弃用扫描；精确键入口和输出保持原义
+python3 .claude/scripts/check_glossary_terms.py --paths --data-root /tmp/term-data
+```
 
 ### i18n_extract.py — T_() 键提取与验证
 
