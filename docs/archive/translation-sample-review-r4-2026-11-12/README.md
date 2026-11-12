@@ -70,9 +70,8 @@ The result does not extrapolate to an error rate for the whole catalogue.
 - `outputs/lane{1,2}/`: the raw reviewer outputs.
 - `fix/`: the delivery reports for both PRs and the independent review (sections A, B and C).
 - `scripts/`: the generators.
-  1. Run `build_inventory_r4.py --repo <repo> --out <dir>`.
-  2. Run `finish_r4.py --out <dir>`.
-  3. Run `validate_r4.py --out <dir>`.
+  1. Run `build_inventory_r4.py --repo <repo> --out <dir>`. It runs `finish_r4.py` automatically at the end.
+  2. Run `validate_r4.py --out <dir>`.
 
   Always pass `--out` a directory outside this archive. Otherwise the scripts overwrite the frozen files here.
 
@@ -83,7 +82,7 @@ Some archived files differ from the working copies:
 - In `outputs/*/review_notes.md` and `fix/`, absolute working paths were replaced with `<r4-work>/` or `<work>/`.
 - Trailing whitespace was stripped to satisfy the repository whitespace check.
 
-`samples_r4.json`, `selection_log_r4.json`, `coverage_r4.md` and both `review_output.json` files are byte-identical to the working copies.
+`samples_r4.json`, `selection_log_r4.json`, `coverage_r4.md` and lane 2's `review_output.json` are byte-identical to the working copies. Lane 1's `review_output.json` differs only by a trailing newline added at end of file.
 
 ## Not performed
 

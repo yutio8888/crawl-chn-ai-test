@@ -1659,7 +1659,7 @@ glossary 的 Mesmerise 作用域说明只将“5级怪物诅咒法术”改述�
 
 stable 新增 D-C-110，记录维护者来源、当前 trunk 参照、适用范围与 curse/Maledictor/书名/随机词池边界；D-C-101 保留原裁决，仅标注 Hexes/Hex 已由 D-C-110 取代。
 沿用已有 reject=，对 Hexes/Hex/Hexslinger/hexer/Ancestor Life: Hexer/hex mastery 的旧形显式约束；hexed 的 ENCH_HEXED 用语仅做精确键校验，避免全树规则误伤随机词池的同形普通形容词；不全局禁用诅咒。未改 validator 逻辑或测试来放宽门禁。
-C3-01（第二轮）与 R4-1-02（第四轮）是在当时固定基线下依据旧 stable glossary 驳回；冻结样本、原裁决和归档均保持不动。此后根据维护者决定回迁；请主持在第四轮 post-disposition 记录此后处置，本人未倒改历史。依据 <work>/：C3-01 固定 stable=83af93c8bdbbaf1b66aeac0af3eaa6ff58cebc57 / trunk=302ecba316bee8be19b73d06c3697cf82bd5bc3e，明确命名策略分歧而非当时翻译缺陷；第四轮 adjudication_r4.json 的 R4-1-02 固定 stable=ae5a420e78 / trunk=59aec6256f，同样按旧术语驳回。后续可注明“此后已按维护者要求回迁”，不追改原判。
+C3-01（第二轮）与 R4-1-02（第四轮）是在当时固定基线下依据旧 stable glossary 驳回；冻结样本、原裁决和归档均保持不动。此后根据维护者决定回迁；请主持在第四轮 post-disposition 记录此后处置，本人未倒改历史。依据 docs/archive/translation-sample-review-r2-2026-11-12/adjudication.json：C3-01 固定 stable=83af93c8bdbbaf1b66aeac0af3eaa6ff58cebc57 / trunk=302ecba316bee8be19b73d06c3697cf82bd5bc3e，明确命名策略分歧而非当时翻译缺陷；第四轮 adjudication_r4.json 的 R4-1-02 固定 stable=ae5a420e78 / trunk=59aec6256f，同样按旧术语驳回。后续可注明“此后已按维护者要求回迁”，不追改原判。
 
 === 台账处理 ===
 
