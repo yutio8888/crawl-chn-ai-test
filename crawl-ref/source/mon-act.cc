@@ -4029,8 +4029,8 @@ static bool _monster_move(monster* mons, coord_def& delta)
         else if (player_can_hear(target))
         {
             mprf(MSGCH_SOUND, mons->type == MONS_DISSOLUTION
-                                ? "You hear a sizzling sound."
-                                : "You hear a grinding noise.");
+                                ? T_("You hear a sizzling sound.")
+                                : T_("You hear a grinding noise."));
         }
     }
 

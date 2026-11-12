@@ -50188,3 +50188,6 @@ hex mastery
 Hexes are much easier for you to cast and harder to resist.
 你施放妖术系法术要容易得多，敌人也更难抵抗。
 %%%%
+You hear a sizzling sound.
+你听到一阵滋滋声。
+%%%%
