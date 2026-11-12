@@ -152,7 +152,8 @@ Submodule initialization is environment preparation, not candidate content.
    若脚本通过但尚未重现玩家场景，分别记录“自动回归通过”和“原场景待复测”。
 
 开发候选的游玩证据可在相关代码与依赖未变时复用，但不替代最终下载包的版本、
-校验值、数据完整性与启动验收。最终包验收清单及各平台覆盖状态放在 release issue，
+校验值、数据完整性与启动验收。版本、校验值与资产完整性属于发布前本地门禁；
+各平台启动与游玩验收由测试玩家在发布后进行，覆盖状态放在 release issue，
 详见 [发布工作流](release-workflow.md)。
 
 例如，稳定版与 trunk 分开进行的本机游玩为
