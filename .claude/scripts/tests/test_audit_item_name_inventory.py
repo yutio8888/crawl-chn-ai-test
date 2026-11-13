@@ -814,9 +814,10 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                          payload["schema"])
         self.assertEqual(390, payload["count"])
         # D-C-114 changes POT_MUTATION to 变异; D-C-110 changes BOOK_HEXES
-        # to 妖术系. All 390 identities remain.
+        # to 妖术系; D-C-115 contextualizes POT_MAGIC as 法力. All 390
+        # identities remain.
         self.assertEqual(
-            "190afab2dfe875ceece05c05d282b4ce305997d7ea2b377b3794583a5252698d",
+            "437777e02de52b4d363c3a0f8b6acd80257134b8bfe3d337f3a9dcc041a0ff39",
             payload["inventory_sha256"],
         )
         self.assertEqual(payload["count"], len(payload["rows"]))
