@@ -37984,7 +37984,7 @@ status|Horr
 惊骇
 %%%%
 status|Horr (%d)
-惊骇(%d)
+惊骇（%d）
 %%%%
 status|Horror overwhelms you!
 惊骇淹没了你！
@@ -40717,7 +40717,7 @@ Welcome back! If it's been a while, you may want to refresh your memory.\nYour <
 欢迎回来！如果有一段时间没玩了，你可能需要回顾一下。\n你的<w>%</w>背包
 %%%%
 This screen shows your character's set of talents. You can gain new abilities via certain items, through religion or by way of mutations. Activation of an ability usually comes at a cost, e.g. Magic power. Press '<w>!</w>' or '<w>?</w>' to toggle between ability selection and description.
-此界面显示你的角色的天赋集。你可以通过特定物品、宗教信仰或变异来获得新能力。
+此界面显示你的角色所拥有的能力。你可以通过特定物品、宗教信仰或变异来获得新能力。激活能力通常需要付出代价，例如消耗法力。按<w>!</w>或<w>?</w>可在能力选择与描述之间切换。
 %%%%
 This screen shows the skill set of your character. The number next to the skill is your current level, the higher the better. <w>Training</w> displays training percentages. <w>Costs</w> displays relative training costs. <w>Targets</w> displays skill training targets. You can toggle which skills to train by pressing their slot letters. A <darkgrey>grey</darkgrey> skill will not be trained and ease the training of others.
 此界面显示你的角色技能集。技能旁边的数字是你的当前等级，等级越高越好。

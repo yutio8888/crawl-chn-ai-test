@@ -9705,7 +9705,7 @@ VISUAL:@The_monster@ 似乎不太协调 @possessive@八条腿。
 default confused centipede
 
 
-VISUAL:@The_monster@ 似乎不太协调 @possessive@多条腿。
+VISUAL:@The_monster@ 似乎难以协调好 @possessive@多条腿。
 
 
 VISUAL:@The_monster@ 疯狂地挥舞着 @possessive@触角。

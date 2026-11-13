@@ -133,7 +133,7 @@ tutorial1 exit
 <yellow>楼梯</yellow>
   <input>$cmd[CMD_GO_UPSTAIRS]</input> 回到上一层
   <input>$cmd[CMD_GO_DOWNSTAIRS]</input> 进入下一层
-  <input>$cmd[CMD_DISPLAY_MAP]></input>/<input>$cmd[CMD_DISPLAY_MAP]<<</input> 前往最近的楼梯
+  <input>$cmd[CMD_DISPLAY_MAP]></input>/<input>$cmd[CMD_DISPLAY_MAP]<<</input> 寻找最近的下/上楼梯，再按回车前往
 
 <yellow>门</yellow> 向门移动即可打开门
   <input>$cmd[CMD_CLOSE_DOOR]</input>  关闭一扇门

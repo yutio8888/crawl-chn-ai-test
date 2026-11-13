@@ -3182,6 +3182,13 @@ string xom_bind_brain_drain_body_parts(string speech)
     return maybe_pick_random_substring(speech);
 }
 
+void xom_emit_pseudo_miscast_message(string str)
+{
+    if (Options.language == lang_t::ZH)
+        str = strip_cjk_spaces(str);
+    mpr(str);
+}
+
 static void _xom_pseudo_miscast(int /*sever*/)
 {
     take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, "silly message"), true);
@@ -3521,7 +3528,7 @@ static void _xom_pseudo_miscast(int /*sever*/)
         str = messages[random2(messages.size())];
 
     str = maybe_pick_random_substring(str);
-    mpr(str);
+    xom_emit_pseudo_miscast_message(str);
 }
 
 static void _xom_chaos_upgrade(int /*sever*/)
