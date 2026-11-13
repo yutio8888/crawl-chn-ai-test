@@ -343,7 +343,7 @@ HINT_MONSTER_SHOUTED_UNSEEN
 %%%%
 HINT_MONSTER_UNUSUAL
 
-那个怪物看起来有点不寻常。你可能想更仔细地检查它一下，
+那个怪物看起来有点不寻常。你可能想更仔细地检查它一下，方法是：
 <localtiles>将鼠标悬停在它的格子上。</localtiles>
 <nomouse>按 <w>$cmd[CMD_LOOK_AROUND]</w> 并将光标移到它的格子上。</nomouse>
 %%%%
