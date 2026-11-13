@@ -2,6 +2,7 @@
 
 #include "AppHdr.h"
 
+#include "clua.h"
 #include "god-abil.h"
 #include "item-prop.h"
 #include "message.h"
@@ -120,5 +121,41 @@ TEST_CASE("attraction potion intensity follows its duration in both languages",
         CAPTURE(language, repeat);
         CHECK(observed.get_store() == "<lightblue>" + expected + "\n");
         CHECK(you.duration[DUR_ATTRACTIVE] > (repeat ? 10 : 0));
+    }
+}
+
+TEST_CASE("Lua result extraction preserves userdata numbers booleans and strings",
+          "[zh-translation][r15][clua-results]")
+{
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        CLua lua(false);
+        REQUIRE(lua.execstring(
+            "function r15_results(value) return value, 42, true, 'raw identity' end; "
+            "function r15_missing() return nil end") == 0);
+        int marker = 7;
+        void* pointer = nullptr;
+        int number = 0;
+        bool flag = false;
+        string text;
+        REQUIRE(lua.callfn("r15_results", "u>udbs", static_cast<void*>(&marker),
+                           &pointer, &number, &flag, &text));
+        CHECK(pointer == &marker);
+        CHECK(number == 42);
+        CHECK(flag);
+        CHECK(text == "raw identity");
+        pointer = &marker;
+        number = 99;
+        flag = true;
+        text = "unchanged";
+        REQUIRE(lua.callfn("r15_missing", ">u", &pointer));
+        CHECK(pointer == &marker);
+        REQUIRE(lua.callfn("r15_missing", ">d", &number));
+        CHECK(number == 99);
+        REQUIRE(lua.callfn("r15_missing", ">b", &flag));
+        CHECK_FALSE(flag);
+        REQUIRE(lua.callfn("r15_missing", ">s", &text));
+        CHECK(text == "unchanged");
     }
 }
