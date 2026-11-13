@@ -3646,7 +3646,10 @@ void gozag_announce_shop(const shop_struct& shop, gender_type gender)
         }
         if (title.empty())
         {
-            const char* suffix = shop.shop_suffix_name.empty()
+            const bool need_suffix = shop.type != SHOP_GENERAL
+                                     && shop.type != SHOP_GENERAL_ANTIQUE
+                                     && shop.type != SHOP_DISTILLERY;
+            const char* suffix = shop.shop_suffix_name.empty() && need_suffix
                 ? "Shop" : shop.shop_suffix_name.c_str();
             title = type_name + C_("shop name suffix", suffix);
         }

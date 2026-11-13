@@ -141,7 +141,7 @@ TEST_CASE("Stable generated forms have localized player-facing catalog fields",
         if (!description.empty())
             CHECK(contains_cjk_text(T_(description.c_str())));
         if (!form->flesh_equivalent.empty())
-            CHECK(contains_cjk_text(T_(form->flesh_equivalent.c_str())));
+            CHECK(contains_cjk_text(C_("body part", form->flesh_equivalent.c_str())));
         for (const auto& pair : form->get_fakemuts())
         {
             if (!pair.first.empty())
@@ -171,6 +171,9 @@ TEST_CASE("Stable generated forms have localized player-facing catalog fields",
         if (!form->special_dice_name.empty())
             CHECK(contains_cjk_text(T_(form->special_dice_name.c_str())));
     }
+    CHECK(string(C_("body part",
+                    get_form(transformation::jelly)->flesh_equivalent.c_str()))
+          == "胶质");
     CHECK(get_form(transformation::flux)->get_description(false)
           == "你充满了变形能量。");
     CHECK(get_form(transformation::flux)->get_description(true)

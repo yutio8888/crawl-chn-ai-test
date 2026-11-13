@@ -74,6 +74,7 @@
 #include "species.h"
 #include "species-type.h"
 #include "spl-util.h"
+#include "spl-damage.h"
 #include "spl-summoning.h"
 #include "spell-type.h"
 #include "state.h"
@@ -8589,5 +8590,41 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
         CHECK(crab->get_uc_attack_name("Unarmed")
               == (language == lang_t::ZH ? "螯钳" : "pincers"));
+    }
+}
+
+TEST_CASE("Ignite Poison restores English possessives and Chinese self reference",
+          "[zh-translation][r17-r18][ignite-poison-reference]")
+{
+    init_monsters();
+    init_properties();
+    init_mon_name_cache();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> condense(Options.msg_condense_repeats, false);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 10;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        scoped_monspeak_world world;
+        monster* caster = world.place(MONS_ORC);
+        REQUIRE(caster);
+        for (bool player_cast : {false, true})
+        {
+            actor* agent = player_cast ? static_cast<actor*>(&you) : caster;
+            msgwin_temporary_mode temporary;
+            unwinder clear([]() { msgwin_clear_temporary(); });
+            msg::tee observed;
+            mpr(ignite_poison_message(*agent));
+            const string expected = language == lang_t::ZH
+                ? (player_cast ? "你引燃了自己周围的毒素！"
+                               : "兽人引燃了自己周围的毒素！")
+                : (player_cast ? "you ignite the poison around your!"
+                               : "the orc ignites the poison around its!");
+            CAPTURE(language, player_cast, expected);
+            CHECK(strip_tee_colour_tag(observed.get_store()) == expected + "\n");
+            CHECK(Options.language == language);
+        }
     }
 }
