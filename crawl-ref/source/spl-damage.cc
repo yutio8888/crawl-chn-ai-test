@@ -2010,10 +2010,7 @@ spret cast_scorch(const actor& agent, int pow, bool fail)
         {
             monster* mon = targ->as_monster();
             if (you.can_see(*mon) && !mon->has_ench(ENCH_FIRE_VULN))
-            {
-                mprf(T_("%s's fire resistance is burned away."),
-                    mon->name(DESC_ITS).c_str());
-            }
+                mpr(fire_resistance_burned_message(*mon));
             mon->add_ench(mon_enchant(ENCH_FIRE_VULN, &agent, dur * BASELINE_DELAY));
         }
         else
@@ -5430,4 +5427,10 @@ void do_catalyst_explosion(coord_def center, const item_def* wpn)
 
     for (coord_def pos : blast_targets)
         _explosion_square(&you, beam_actual, pos, pos == center, SPELL_DETONATION_CATALYST);
+}
+
+string fire_resistance_burned_message(const monster &mon)
+{
+    const string possessive = mon.name(DESC_ITS);
+    return make_stringf(T_("%s's fire resistance is burned away."), possessive.c_str());
 }

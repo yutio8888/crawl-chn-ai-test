@@ -1804,8 +1804,7 @@ void yred_make_bound_soul(monster* mon, bool force_hostile)
     // schedule our actual revival for the end of this combat round
     schedule_avoided_death_fineff(mon);
 
-    mprf(T_("The soul of %s %s."), whose.c_str(),
-             !force_hostile ? T_("is now yours") : T_("fights you"));
+    mpr(bound_soul_message(whose, force_hostile));
 }
 
 bool kiku_gift_capstone_spells()
@@ -6321,8 +6320,7 @@ spret hepliaklqana_transference(bool fail)
 static void _hepliaklqana_choose_name()
 {
     const string old_name = hepliaklqana_ally_name();
-    string prompt  = make_stringf(T_("Remember %s name as what? "),
-                                  apostrophise(old_name).c_str());
+    string prompt = hepliaklqana_rename_prompt(old_name);
 
     char buf[18];
     int ret = msgwin_get_line(prompt, buf, sizeof buf, nullptr, old_name);
@@ -7506,4 +7504,18 @@ void simulate_time_passing(int turns)
     you.doing_monster_catchup = true;
     _run_time_step();
     you.doing_monster_catchup = false;
+}
+
+string hepliaklqana_rename_prompt(const string &old_name)
+{
+    const string possessive = apostrophise(old_name);
+    return make_stringf(T_("Remember %s name as what? "), possessive.c_str());
+}
+
+// The possessor is the display snapshot taken before the monster is remade.
+string bound_soul_message(const string &possessive, bool force_hostile)
+{
+    const string ending = force_hostile ? T_("fights you") : T_("is now yours");
+    return make_stringf(T_("The soul of %s %s."),
+                        possessive.c_str(), ending.c_str());
 }

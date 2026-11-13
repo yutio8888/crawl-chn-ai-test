@@ -30,6 +30,7 @@
 #include "options.h"
 #include "player-stats.h"
 #include "potion-type.h"
+#include "positional_format.h"
 #include "prompt.h"
 #include "religion.h"
 #include "skill-menu.h"
@@ -458,6 +459,24 @@ public:
     }
 };
 
+string invisibility_blocked_message(const vector<const char *> &blockers,
+                                    bool more, bool ambient)
+{
+    vector<string> names;
+    for (const char *blocker : blockers)
+        names.emplace_back(C_("invisibility blocker", blocker));
+    const bool chinese = Options.language == lang_t::ZH;
+    const string conjunction = chinese ? T_(",") : T_(" and ");
+    const string comma = chinese ? T_(",") : ", ";
+    const string joined = comma_separated_line(names.begin(), names.end(),
+                                               conjunction, comma);
+    const string intensity = more ? C_("state intensity", "more ") : "";
+    const string possessive = ambient ? (chinese ? "" : T_("the")) : T_("your");
+    return make_stringf_p(T_("You become %1$stransparent, but the glow from %2$s "
+                            "%3$s prevents you from becoming completely invisible."),
+                          intensity.c_str(), possessive.c_str(), joined.c_str());
+}
+
 class PotionInvisibility : public PotionEffect
 {
 private:
@@ -475,24 +494,21 @@ public:
         {
             vector<const char *> afflictions;
             if (you.haloed() && !you.umbraed())
-                afflictions.push_back("halo");
+                afflictions.push_back(NC_("invisibility blocker", "halo"));
             if (player_harmful_contamination())
-                afflictions.push_back("magical contamination");
+                afflictions.push_back(NC_("invisibility blocker", "magical contamination"));
             if (you.duration[DUR_CORONA])
-                afflictions.push_back("corona");
+                afflictions.push_back(NC_("invisibility blocker", "corona"));
             if (you.duration[DUR_STICKY_FLAME])
-                afflictions.push_back("liquid flames");
+                afflictions.push_back(NC_("invisibility blocker", "liquid flames"));
             if (you.duration[DUR_QUAD_DAMAGE])
-                afflictions.push_back("!!!QUAD DAMAGE!!!");
+                afflictions.push_back(NC_("invisibility blocker", "!!!QUAD DAMAGE!!!"));
             if (you.form == transformation::flux)
-                afflictions.push_back("form");
-            mprf(MSGCH_DURATION,
-                 T_("You become %stransparent, but the glow from %s "
-                    "%s prevents you from becoming completely invisible."),
-                 you.duration[DUR_INVIS] ? T_("more ") : "",
-                 you.haloed() && you.halo_radius() == -1 ? T_("the") : T_("your"),
-                 comma_separated_line(afflictions.begin(),
-                                      afflictions.end()).c_str());
+                afflictions.push_back(NC_("invisibility blocker", "form"));
+            const string message = invisibility_blocked_message(afflictions,
+                you.duration[DUR_INVIS] != 0,
+                you.haloed() && you.halo_radius() == -1);
+            mprf(MSGCH_DURATION, "%s", message.c_str());
         }
         else
         {

@@ -107,3 +107,5 @@ void mons_felid_revive(monster* mons);
 bool mons_bennu_can_revive(const monster* mons);
 
 void blorkula_bat_merge(monster& bat);
+
+string allies_healed_message(const monster &mon);
