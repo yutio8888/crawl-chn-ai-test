@@ -1077,7 +1077,7 @@ Electrical Bolt shock serpent cast
 %%%%
 Flashing Balestra undying armoury cast
 
-一件武器从@the_monster@身上跃出，猛刺而去，@projectile_target@！
+一件武器从@the_monster@身上跃出，迅猛地@projectile_target@！
 %%%%
 Force Lance polterguardian cast
 

@@ -181,6 +181,10 @@ string xom_bind_worn_item_message(const string &speech,
 string xom_bind_pseudo_body_parts(string speech, bool plural);
 string xom_bind_brain_drain_body_parts(string speech);
 
+// Final display sink for an already selected and bound pseudo-miscast.
+// Preserve English bytes and RNG order; remove CJK-CJK spaces only in ZH.
+void xom_emit_pseudo_miscast_message(string speech);
+
 #ifdef WIZARD
 void debug_xom_effects();
 #endif
