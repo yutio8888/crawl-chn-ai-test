@@ -308,16 +308,20 @@ TEST_CASE("Blind hit chance qualifiers name the actual distance",
                 expected = armed ? name + "的命中率约为65%"
                     : "你用" + name + "攻击的命中率约为65%";
                 if (blind)
+                {
                     expected += "（你失明时，在距离为"
                         + to_string(distance) + "的情况下）";
+                }
             }
             else
             {
                 expected = "about 65% to hit with "
                     + (armed ? name : "your " + name);
                 if (blind)
+                {
                     expected += " (while you are blinded and from distance "
                         + to_string(distance) + ")";
+                }
             }
             CAPTURE(language, armed, blind, distance);
             CHECK(actual.str() == expected);
@@ -434,7 +438,7 @@ TEST_CASE("Poisoned darts use their brand context without changing status",
     {
         TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
         const bool chinese = language == lang_t::ZH;
-        CHECK(missile_brand_name(dart, MBN_NAME)
+        CHECK(string(missile_brand_name(dart, MBN_NAME))
               == (chinese ? "涂毒" : "poisoned"));
         CHECK(dart.name(DESC_PLAIN)
               == (chinese ? "涂毒飞镖" : "poisoned dart"));
