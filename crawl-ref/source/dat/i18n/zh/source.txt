@@ -1952,7 +1952,7 @@ barrage of energy
 %s%s飞向了空中！
 %%%%
 %s's clockwork bee locks onto %s.
-%s的发条蜜蜂锁定了%s。
+%s发条蜜蜂锁定了%s。
 %%%%
 %s's clockwork bee winds down and falls to the ground.
 %s的发条蜜蜂发条走完了，掉到了地上。
@@ -7321,7 +7321,7 @@ The solar flare engulfs %s%s.
 太阳耀斑吞没了%s%s。
 %%%%
 The soul of %s %s.
-%s的灵魂%s。
+%s灵魂%s。
 %%%%
 The spell fizzles.
 法术失败了。
@@ -12972,7 +12972,7 @@ The dungeon shudders... but nothing happens?
 地牢震动了一下……但什么都没有发生？
 %%%%
 You become %stransparent, but the glow from %s %s prevents you from becoming completely invisible.
-你变得%s透明了，但%s的光芒%s阻止了你完全隐形。
+你变得%s透明了，但%s%s发出的光芒使你无法完全隐形。
 %%%%
 You cannot mutate%s.
 你%s无法变异。
@@ -22865,7 +22865,7 @@ A bone-chilling cold explodes forth, blasting rocks from the ceiling!
 %1$s颤抖了。
 %%%%
 %s's fire resistance is burned away.
-%s的火焰抗性被烧掉了。
+%s火焰抗性被烧掉了。
 %%%%
 %1$s %2$s blasted with magical radiation%3$s
 %1$s被魔法辐射轰击了%3$s
@@ -22934,7 +22934,7 @@ The howl of the fallen reaches a fever pitch!
 陨落者的哀嚎达到了狂热的程度！
 %%%%
 %s's allies are healed!
-%s的盟友被治愈了！
+%s盟友被治愈了！
 %%%%
 %s falls apart, revealing a core!
 %s散架了，露出了核心！
@@ -29143,7 +29143,7 @@ kneel at
 %s撞倒了一棵树！
 %%%%
 %s mind%s blasted%s
-%s的精神%s被冲击%s
+%s精神%s被冲击%s
 %%%%
 %s remembers %s %s %s.
 %s记起了%s%s%s。
@@ -34494,7 +34494,7 @@ Regen (%d)
 再生（%d）
 %%%%
 Remember %s name as what? 
-将%s的名字记为什么？
+将%s名字记为什么？
 %%%%
 Shopping list: remove %s? (Y/n)
 购物清单：移除%s？（Y/n）

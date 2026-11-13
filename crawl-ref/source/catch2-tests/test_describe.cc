@@ -13,6 +13,8 @@
 #include "item-status-flag-type.h"
 #include "map-cell.h"
 #include "mon-info.h"
+#include "mon-util.h"
+#include "monster.h"
 #include "monster-type.h"
 #include "mutation.h"
 #include "player.h"
@@ -443,5 +445,71 @@ TEST_CASE("Poisoned darts use their brand context without changing status",
         CHECK(dart.name(DESC_PLAIN)
               == (chinese ? "涂毒飞镖" : "poisoned dart"));
         CHECK(string(T_("poisoned")) == (chinese ? "中毒" : "poisoned"));
+    }
+}
+
+TEST_CASE("Possessive message slots do not add a second Chinese particle",
+          "[zh-translation][r19][fts3]")
+{
+    init_monsters();
+    monster mon;
+    mon.type = MONS_ORC;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool chinese = language == lang_t::ZH;
+        const string possessive = mon.name(DESC_ITS, true);
+        const string name = mon.name(DESC_THE, true);
+        for (bool plural : {false, true})
+        {
+            const string verb = plural ? T_("s are") : T_(" is");
+            const string actual = make_stringf(T_("%s mind%s blasted%s"),
+                possessive.c_str(), verb.c_str(), "!");
+            CHECK(actual == (chinese ? possessive + "精神被冲击!"
+                  : possessive + " mind" + verb + " blasted!"));
+        }
+        const string ancestor = apostrophise("Anu");
+        CHECK(make_stringf(T_("Remember %s name as what? "), ancestor.c_str())
+              == (chinese ? "将" + ancestor + "名字记为什么？"
+                  : "Remember " + ancestor + " name as what? "));
+        CHECK(make_stringf(T_("%s's allies are healed!"), possessive.c_str())
+              == (chinese ? possessive + "盟友被治愈了！"
+                  : possessive + "'s allies are healed!"));
+        CHECK(make_stringf(T_("%s's fire resistance is burned away."),
+                          possessive.c_str())
+              == (chinese ? possessive + "火焰抗性被烧掉了。"
+                  : possessive + "'s fire resistance is burned away."));
+        const string pronoun = mon.pronoun(PRONOUN_POSSESSIVE, true);
+        CHECK(make_stringf(T_("%s's clockwork bee locks onto %s."),
+                          pronoun.c_str(), name.c_str())
+              == (chinese ? pronoun + "发条蜜蜂锁定了" + name + "。"
+                  : pronoun + "'s clockwork bee locks onto " + name + "."));
+        for (bool visible : {false, true})
+        for (bool hostile : {false, true})
+        {
+            const string whose = visible ? apostrophise(name) : pronoun;
+            const string end = hostile ? T_("fights you") : T_("is now yours");
+            CHECK(make_stringf(T_("The soul of %s %s."), whose.c_str(), end.c_str())
+                  == (chinese ? whose + "灵魂" + end + "。"
+                      : "The soul of " + whose + " " + end + "."));
+        }
+        for (bool more : {false, true})
+        for (bool ambient : {false, true})
+        {
+            const string prefix = more ? T_("more ") : "";
+            const string determiner = ambient ? T_("the") : T_("your");
+            // potion.cc passes this literal affliction through its list joiner.
+            const string affliction = "halo";
+            const string actual = make_stringf(T_("You become %stransparent, but the glow from %s "
+                "%s prevents you from becoming completely invisible."),
+                prefix.c_str(), determiner.c_str(), affliction.c_str());
+            CHECK(actual == (chinese
+                  ? "你变得" + prefix + "透明了，但" + determiner + affliction
+                    + "发出的光芒使你无法完全隐形。"
+                  : "You become " + prefix + "transparent, but the glow from "
+                    + determiner + " " + affliction
+                    + " prevents you from becoming completely invisible."));
+            CHECK(actual.find("的的") == string::npos);
+        }
     }
 }
