@@ -274,6 +274,13 @@ protected:
 // selector is a boolean function that filters spells according
 // to certain criteria. Currently used for Tiles to distinguish
 // spells targeted on player vs. spells targeted on monsters.
+string spell_list_title(const string& action)
+{
+    const string title = make_stringf(T_("Your spells (%s)"), action.c_str());
+    return Options.language == lang_t::ZH ? chop_string(title, 25)
+                                         : make_stringf("%-25.25s", title.c_str());
+}
+
 int list_spells(bool toggle_with_I, bool transient, bool viewing,
                 bool allow_preselect, const string &action)
 {
@@ -283,9 +290,7 @@ int list_spells(bool toggle_with_I, bool transient, bool viewing,
     const string real_action = viewing ? T_("describe") : (action.empty() ? T_("cast") : action);
 
     SpellMenu spell_menu;
-    const string titlestring = make_stringf("%-25.25s",
-            make_stringf(T_("Your spells (%s)"),
-                         real_action.c_str()).c_str());
+    const string titlestring = spell_list_title(real_action);
 
     {
         // Build column headers aligned with data columns.

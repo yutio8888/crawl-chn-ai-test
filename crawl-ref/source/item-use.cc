@@ -1633,7 +1633,8 @@ void do_equipment_change(item_def* to_equip, equipment_slot equip_slot,
             {
                 mprf(T_("You %s %s."),
                      item_unequip_verb(*item).c_str(),
-                     item->name(DESC_YOUR).c_str());
+                     item->name(Options.language == lang_t::ZH
+                                        ? DESC_PLAIN : DESC_YOUR).c_str());
                 unequip_item(*item);
             }
         }

@@ -914,7 +914,7 @@ string item_message(vector<const item_def *> const &items)
         colour_names.push_back(menu_colour_item_name(*it, DESC_A));
 
     return join_strings(colour_names.begin(), colour_names.end(),
-                    T_("; "));
+                    C_("floor item list", "; "));
 }
 
 void item_check()

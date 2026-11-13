@@ -1199,7 +1199,7 @@ void player_equip_set::handle_melding(vector<item_def*>& to_meld, bool skip_effe
 
     mprf_p(T_("Your %1$s meld%2$s into your body."),
             comma_separated_line(meld_msg.begin(), meld_msg.end(),
-                T_(" and "), T_(", ")).c_str(),
+                C_("equipment meld", " and "), T_(", ")).c_str(),
             meld_msg.size() > 1 ? "" : "s");
 
     update();
@@ -1318,7 +1318,7 @@ void player_equip_set::handle_unmelding(vector<item_def*>& to_unmeld, bool skip_
 
         mprf_p(T_("Your %1$s unmeld%2$s from your body."),
                 comma_separated_line(unmeld_msg.begin(), unmeld_msg.end(),
-                    T_(" and "), T_(", ")).c_str(),
+                    C_("equipment meld", " and "), T_(", ")).c_str(),
                 unmeld_msg.size() > 1 ? "" : "s");
     }
 

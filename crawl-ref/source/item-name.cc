@@ -1407,7 +1407,10 @@ static const char* staff_secondary_string(uint32_t s)
         "twisted ", "thick ", "long ", "short ",
     };
     COMPILE_CHECK(NDSC_STAVE_SEC == ARRAYSZ(secondary_strings));
-    return T_(secondary_strings[s % ARRAYSZ(secondary_strings)]);
+    const char* adjective = secondary_strings[s % ARRAYSZ(secondary_strings)];
+    if (strcmp(adjective, "thin ") == 0 || strcmp(adjective, "thick ") == 0)
+        return C_("staff appearance", adjective);
+    return T_(adjective);
 }
 
 static const char* staff_primary_string(uint32_t p)

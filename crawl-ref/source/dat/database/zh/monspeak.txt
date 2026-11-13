@@ -1689,7 +1689,7 @@ _Eustachio_common_
 
 @The_monster@ 立下誓言："我要为朋友们而死！"
 
-@The_monster@ 低吼道："见鬼去吧，无荣誉的恶棍！"
+@The_monster@ 低吼道："见鬼去吧，毫无荣誉感的恶棍！"
 
 @The_monster@ 问："没有礼貌、美德与荣誉，你怎么活得下去？"
 %%%%
@@ -6307,7 +6307,7 @@ _says_or_shouts_
 _shouts_
 
 
-喊道
+喊叫
 
 
 
@@ -6541,7 +6541,7 @@ VISUAL:@The_monster_possessive@双眼开始发光。
 
 @The_monster@ 对 @foe@ 吼道："你承受不了我的力量！"
 
-@The_monster@ 对 @foe@ 吼道："你已经是历史了！"
+@The_monster@ 对 @foe@ 吼道："你完蛋了！"
 %%%%
 _wizard_rare_
 @The_monster@ 对 @foe@ 说："阿加塔克斯·内特拉诺克·德特克斯。"
@@ -7054,7 +7054,7 @@ w:1
 @The_monster@抱怨道生命浪费在活人身上真是可惜。
 %%%%
 crystal guardian
-VISUAL:@The_monster@在地牢昏暗的光线中闪烁，不变而必然。
+VISUAL:@The_monster@在地牢昏暗的光线中闪烁，岿然不变，如无可逃避的宿命。
 
 w:5
 VISUAL:你在@the_monster@身上看到自己支离破碎的倒影扭曲蠕动。 @player_only@
@@ -7260,7 +7260,7 @@ VISUAL:@The_monster@愤怒地挥舞着@possessive@触角。
 nekomata
 {{
   if you.race() == "Felid" then
-    return '@The_monster@ 对 @foe@ 咕哝道："年轻的后辈该知道自己的位置。"'
+    return '@The_monster@ 对 @foe@ 咕哝道："年轻的后辈该知道自己的本分。"'
   else
     return 'VISUAL:@The_monster@审视着你的形态，发出深深的轻蔑咆哮。'
   end
@@ -7370,7 +7370,7 @@ __NONE
 thermic dynamo
 
 
-VISUAL:@The_monster@加速旋转，异想天开地转动着。
+VISUAL:@The_monster@加速运转，随性地打起转来。
 
 
 

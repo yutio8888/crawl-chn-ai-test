@@ -2691,27 +2691,47 @@ static void _hints_describe_cloud(int x, int y, ostringstream& ostr)
     if (!ostr.str().empty())
         ostr << "\n\n";
 
-    ostr << T_("The ") << cname << " ";
-
-    if (ends_with(cname, "s"))
-        ostr << T_("are ");
-    else
-        ostr << T_("is ");
-
     bool need_cloud = false;
-    if (is_harmless_cloud(ctype))
-        ostr << T_("harmless. ");
-    else if (is_damaging_cloud(ctype, true))
+    if (Options.language == lang_t::ZH)
     {
-        ostr << T_("probably dangerous, and you should stay out of it if you "
-                "can. ");
+        if (is_harmless_cloud(ctype))
+            ostr << make_stringf(T_("The %s is harmless. "), cname.c_str());
+        else if (is_damaging_cloud(ctype, true))
+        {
+            ostr << make_stringf(T_("The %s is probably dangerous, and you "
+                "should stay out of it if you can. "), cname.c_str());
+        }
+        else
+        {
+            ostr << make_stringf(T_("The %s is currently harmless, but that "
+                "could change at some point. Check the overview screen "
+                "(<w>%%</w>) to view your resistances."), cname.c_str());
+            need_cloud = true;
+        }
     }
     else
     {
-        ostr << T_("currently harmless, but that could change at some point. "
-                "Check the overview screen (<w>%</w>) to view your "
-                "resistances.");
-        need_cloud = true;
+        ostr << T_("The ") << cname << " ";
+
+        if (ends_with(cname, "s"))
+            ostr << T_("are ");
+        else
+            ostr << T_("is ");
+
+        if (is_harmless_cloud(ctype))
+            ostr << T_("harmless. ");
+        else if (is_damaging_cloud(ctype, true))
+        {
+            ostr << T_("probably dangerous, and you should stay out of it if you "
+                    "can. ");
+        }
+        else
+        {
+            ostr << T_("currently harmless, but that could change at some point. "
+                    "Check the overview screen (<w>%</w>) to view your "
+                    "resistances.");
+            need_cloud = true;
+        }
     }
 
     if (is_opaque_cloud(ctype))

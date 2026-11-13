@@ -43,7 +43,7 @@ thin metallic scales mutation
 rugged brown scales mutation
 
 你被褐色鳞片覆盖，这会提供少量保护。
-这个变异每升一级会加1点防护，并会稍稍提升你的生命力。
+这个变异每升一级会加1点防御，并会稍稍提升你的生命力。
 %%%%
 sharp scales mutation
 
@@ -60,7 +60,7 @@ large bone plates mutation
 %%%%
 thin skeletal structure mutation
 
-你的骨头变得轻巧、多孔。此变异每级提供+2敏捷，并提升潜行能力。
+你的骨头变得轻巧、多孔。此变异每级提供敏捷+2、潜行+。
 %%%%
 strong mutation
 
@@ -100,7 +100,7 @@ low mp mutation
 %%%%
 camouflage mutation
 
-你的皮肤会根据周围环境而变色。这个变异每升一级会提升潜行。
+你的皮肤会根据周围环境而变色。这项变异的每个等级都提供潜行+。
 %%%%
 # ------ 生长 -----
 horns mutation
@@ -437,7 +437,7 @@ ignite blood mutation
 %%%%
 corrupting presence mutation
 
-当你伤害到敌人时，攻击力可能会增强，并能腐蚀他们的武器和防具。
+当你伤害敌人时，你的存在可能会加重其伤势，腐蚀他们的武器和防具。
 这个变异达到第二级，事态会更为严重，你那可怜的受害者将有可能被变异、变形。
 %%%%
 black mark mutation
@@ -447,8 +447,8 @@ black mark mutation
 %%%%
 aura of silence mutation
 
-你被沉默力场所围绕。与你相邻的怪物无法发出任何声音。
-它可以阻止大多数形式的施法和祈祷，但恶魔的魔法是无声的，不受此影响。
+你被沉默光环所围绕。与你相邻的生物无法发出任何声音。
+这会阻止大多数形式的施法和祈祷，但恶魔的魔法是无声的，不受此影响。
 %%%%
 bedevilling mutation
 
@@ -648,7 +648,7 @@ devour on kill mutation
 rollpage mutation
 
 当你移向敌人时会本能地翻滚，会向前再冲出一格。
-这个变异能在你滚动时提升法力恢复速度；
+这个变异能在你翻滚时提升法力恢复速度；
 这个变异达到第二级，法力和生命值的恢复速度会同时提升。
 %%%%
 double potion healing mutation
@@ -678,7 +678,7 @@ no forms mutation
 %%%%
 inability to use devices mutation
 
-你无法使用魔法设备。
+你无法使用魔法装置。
 其中包括魔杖和大多数需要通过<input>$cmd[CMD_EVOKE]</input>激活的物品，
 但不包括可延伸攻击的武器、护符和通天塔雕像。这也使得法杖在近战时的威力大大降低。
 %%%%
@@ -690,7 +690,7 @@ hated by all mutation
 cowardly mutation
 
 看到有威胁的怪物会让你充满恐惧，
-你的法术威力、近战和远程攻击杀怪物的能力都会受到削弱。
+你的法术威力以及近战和远程攻击的命中与伤害都会降低。
 一次看到多个这样的怪物，或极其危险的怪物，会让情况变得更糟。
 %%%%
 disrupted magic mutation
@@ -793,8 +793,8 @@ Dis destruction mutation
 %%%%
 Gehenna destruction mutation
 
-你的释放毁灭能力被欣嫩谷强化。你能够投掷岩浆束而不是寒冷，
-你的火焰束可以剥离受害者的火焰抗性。
+你的释放毁灭能力被欣嫩谷强化。你能够投掷岩浆箭，而不是寒冰箭；
+你的火焰箭可以剥离受害者的火焰抗性。
 %%%%
 Mark of Annihilation mutation
 
@@ -1143,7 +1143,7 @@ ooze flood mutation
 paradox bane
 
 每当你首次发现一个怪物时，它有概率被悖论触碰，
-从而能将多重攻击作为天生能力使用，并在使用后有小概率随机闪现。
+从而能将多重攻击作为天生能力使用，并在使用后有小概率随机闪烁。
 %%%%
 poor constitution mutation
 
