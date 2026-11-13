@@ -42982,7 +42982,7 @@ move.bare|fly down
 飞了下去
 %%%%
 <magenta>[]</magenta>: Transient mutations.\n
-<magenta>[]</magenta>： 临时变异。\n
+<magenta>[]</magenta>：临时变异。\n
 %%%%
 You kneel at the altar of %s.
 你跪在%s的祭坛前。

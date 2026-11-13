@@ -28,18 +28,21 @@ struct merchant_case
 };
 
 const merchant_case merchant_cases[] = {
+    {SHOP_GENERAL, GENDER_NEUTRAL, "",
+     "Ada Vale invites you to visit their General Store.",
+     "Ada Vale邀请你光顾自家的杂货铺。"},
+    {SHOP_GENERAL_ANTIQUE, GENDER_FEMALE, "",
+     "Ada Vale invites you to visit her Assorted Antiques.",
+     "Ada Vale邀请你光顾自家的杂项古董。"},
+    {SHOP_DISTILLERY, GENDER_MALE, "",
+     "Ada Vale invites you to visit his Distillery.",
+     "Ada Vale邀请你光顾自家的蒸馏酒坊。"},
     {SHOP_JEWELLERY, GENDER_MALE, "Shop",
      "Ada Vale invites you to visit his Jewellery Shop.",
      "Ada Vale邀请你光顾自家的首饰店铺。"},
     {SHOP_JEWELLERY, GENDER_FEMALE, "Boutique",
      "Ada Vale invites you to visit her Jewellery Boutique.",
      "Ada Vale邀请你光顾自家的首饰精品店。"},
-    {SHOP_JEWELLERY, GENDER_NEUTRAL, "",
-     "Ada Vale invites you to visit their Jewellery.",
-     "Ada Vale邀请你光顾自家的首饰店铺。"},
-    {SHOP_BOOK, GENDER_MALE, "",
-     "Ada Vale invites you to visit his Book.",
-     "Ada Vale邀请你光顾自家的书店。"},
     {SHOP_BOOK, GENDER_FEMALE, "Shop",
      "Ada Vale invites you to visit her Book Shop.",
      "Ada Vale邀请你光顾自家的书店。"},
@@ -58,9 +61,6 @@ const merchant_case merchant_cases[] = {
     {SHOP_JEWELLERY, GENDER_NEUTRAL, "Emporium",
      "Ada Vale invites you to visit their Jewellery Emporium.",
      "Ada Vale邀请你光顾自家的首饰商场。"},
-    {SHOP_BOOK, GENDER_FEMALE, "Reading Room",
-     "Ada Vale invites you to visit her Book Reading Room.",
-     "Ada Vale邀请你光顾自家的书籍Reading Room。"},
 };
 
 struct scoped_merchant_locale

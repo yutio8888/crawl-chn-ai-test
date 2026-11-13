@@ -2488,6 +2488,19 @@ int ignite_poison_net_work(actor* agent)
     }, agent->pos());
 }
 
+string ignite_poison_message(const actor& agent)
+{
+    string reference;
+    {
+        ScopedLangEn english;
+        reference = agent.pronoun(PRONOUN_POSSESSIVE);
+    }
+    return make_stringf_p(T_("%1$s %2$s the poison around %3$s!"),
+                          agent.name(DESC_THE).c_str(),
+                          agent.conj_verb("ignite").c_str(),
+                          C_("ignite poison reference", reference.c_str()));
+}
+
 /**
  * Cast the spell Ignite Poison, burning poisoned creatures and poisonous
  * clouds in LOS.
@@ -2529,15 +2542,7 @@ spret cast_ignite_poison(actor* agent, int pow, bool fail, bool tracer)
 
     targeter_radius hitfunc(agent, LOS_NO_TRANS);
 
-    string reference;
-    {
-        ScopedLangEn english;
-        reference = agent->pronoun(PRONOUN_POSSESSIVE);
-    }
-    mprf_p(T_("%1$s %2$s the poison around %3$s!"),
-           agent->name(DESC_THE).c_str(),
-           agent->conj_verb("ignite").c_str(),
-           C_("ignite poison reference", reference.c_str()));
+    mpr(ignite_poison_message(*agent));
 
     // this could conceivably cause crashes if the player dies midway through
     // maybe split it up...?

@@ -59,6 +59,7 @@ spret cast_irradiate(int powc, actor &caster, bool fail);
 dice_def irradiate_damage(int powc, bool random = true);
 bool ignite_poison_affects_cell(const coord_def where, actor* agent);
 int ignite_poison_net_work(actor* agent);
+string ignite_poison_message(const actor& agent);
 spret cast_ignite_poison(actor *agent, int pow, bool fail,
                               bool tracer = false);
 spret cast_unravelling(coord_def target, int pow, bool fail);
