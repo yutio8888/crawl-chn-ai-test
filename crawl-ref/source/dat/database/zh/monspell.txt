@@ -1077,7 +1077,7 @@ Electrical Bolt shock serpent cast
 %%%%
 Flashing Balestra undying armoury cast
 
-一件武器从@the_monster@身上跃出，猛刺而去，@projectile_target@！
+一件武器从@the_monster@身上跃出，迅猛地@projectile_target@！
 %%%%
 Force Lance polterguardian cast
 
@@ -1095,7 +1095,7 @@ Grave Claw vampire bloodprince cast
 
 @The_monster@伸出了@possessive@手。
 
-@The_monster@弹了弹@possessive@手指。
+@The_monster@用@possessive@手指打了个响指。
 %%%%
 Hellfire Court cast
 
