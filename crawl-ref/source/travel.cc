@@ -886,10 +886,7 @@ void explore_pickup_event(int did_pickup, int tried_pickup)
                         }
 
                         set_item_autopickup(*si, AP_FORCE_OFF);
-                        // Miscellany keeps its database name in English; use
-                        // its translated display subtype for this message.
-                        const string name = si->base_type == OBJ_MISCELLANY
-                            ? sub_type_string(*si) : si->name(DESC_DBNAME);
+                        const string name = autopickup_display_name(*si);
                         ap_disabled.push_back(pluralise(name));
                     }
 

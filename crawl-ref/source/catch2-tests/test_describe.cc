@@ -9,10 +9,14 @@
 #include "dungeon.h"
 #include "database.h"
 #include "env.h"
+#include "terrain.h"
+#include "english.h"
 #include "i18n.h"
 #include "item-status-flag-type.h"
 #include "map-cell.h"
 #include "mon-info.h"
+#include "mon-util.h"
+#include "monster.h"
 #include "monster-type.h"
 #include "mutation.h"
 #include "player.h"
@@ -20,7 +24,13 @@
 #include "stringutil.h"
 #include "unwind.h"
 
+#include "item-prop.h"
+#include "item-name.h"
+#include "state.h"
+#include "player-equip.h"
+#include "status.h"
 #include "test_zh_fixture.h"
+#include <sstream>
 
 namespace
 {
@@ -265,5 +275,283 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                 }
             }
         }
+    }
+}
+
+TEST_CASE("Blind hit chance qualifiers name the actual distance",
+          "[zh-translation][r20][hit-chance-distance]")
+{
+    init_properties();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 20;
+    item_def bow;
+    bow.base_type = OBJ_WEAPONS;
+    bow.sub_type = WPN_LONGBOW;
+    bow.quantity = 1;
+    bow.flags = ISFLAG_IDENTIFIED;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (bool armed : {false, true})
+        for (bool blind : {false, true})
+        for (int distance : {1, 3})
+        {
+            you.duration[DUR_BLIND] = blind ? 10 : 0;
+            const string name = armed
+                ? bow.name(DESC_YOUR, false, false, false)
+                : you.hand_name(true);
+            ostringstream actual;
+            describe_hit_chance(65, actual, armed ? &bow : nullptr,
+                                true, distance);
+            string expected;
+            if (language == lang_t::ZH)
+            {
+                expected = armed ? name + "的命中率约为65%"
+                    : "你用" + name + "攻击的命中率约为65%";
+                if (blind)
+                {
+                    expected += "（你失明时，在距离为"
+                        + to_string(distance) + "的情况下）";
+                }
+            }
+            else
+            {
+                expected = "about 65% to hit with "
+                    + (armed ? name : "your " + name);
+                if (blind)
+                {
+                    expected += " (while you are blinded and from distance "
+                        + to_string(distance) + ")";
+                }
+            }
+            CAPTURE(language, armed, blind, distance);
+            CHECK(actual.str() == expected);
+        }
+    }
+}
+
+TEST_CASE("Equipped armour describes extra projectile attack delay",
+          "[zh-translation][r20][armour-attack-delay]")
+{
+    init_properties();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> saved(crawl_state.need_save, true);
+    you = player();
+    you.species = SP_HUMAN;
+    you.experience_level = 1;
+    you.hp = you.hp_max = 20;
+    you.base_stats.init(10);
+    you.equipment.num_slots.init(0);
+    you.equipment.num_slots[SLOT_BODY_ARMOUR] = 1;
+    you.equipment.num_slots[SLOT_WEAPON] = 1;
+    item_def& body = you.inv[0];
+    body.base_type = OBJ_ARMOUR;
+    body.quantity = 1;
+    body.flags = ISFLAG_IDENTIFIED;
+    body.link = 0;
+    body.pos = ITEM_IN_INVENTORY;
+    item_def& bow = you.inv[1];
+    bow.base_type = OBJ_WEAPONS;
+    bow.sub_type = WPN_LONGBOW;
+    bow.quantity = 1;
+    bow.flags = ISFLAG_IDENTIFIED;
+    bow.link = 1;
+    bow.pos = ITEM_IN_INVENTORY;
+    // Add the equipped display state without triggering equip UI effects.
+    body.sub_type = ARM_PLATE_ARMOUR;
+    you.equipment.add(body, SLOT_BODY_ARMOUR);
+    you.equipment.add(bow, SLOT_WEAPON);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (bool slight : {false, true})
+        {
+            body.sub_type = slight ? ARM_LEATHER_ARMOUR : ARM_PLATE_ARMOUR;
+            you.skills[SK_ARMOUR] = slight ? 27 : 0;
+            you.equipment.update();
+            REQUIRE(you.body_armour() == &body);
+            REQUIRE(you.weapon() == &bow);
+            const int penalty = you.adjusted_body_armour_penalty(100, true);
+            CAPTURE(language, slight, penalty);
+            REQUIRE(penalty > 0);
+            CHECK((penalty < 100) == slight);
+            const string description = get_item_description(body);
+            if (language == lang_t::ZH)
+            {
+                CHECK(description.find(slight ? "攻击延迟略微增加。"
+                                               : "攻击延迟增加1.0。")
+                      != string::npos);
+                CHECK(description.find("攻击速度，减幅") == string::npos);
+            }
+            else
+            {
+                const string expected =
+                    "Your current strength and Armour skill slows attacks "
+                    "with missile weapons (like " + bow.name(DESC_YOUR) + ") "
+                    + (slight ? "only slightly." : "by 1.0.");
+                CHECK(description.find(expected) != string::npos);
+            }
+        }
+    }
+}
+
+TEST_CASE("MP mutation display names follow the resource term without changing identities",
+          "[zh-translation][r20][mp-resource-names]")
+{
+    init_mut_index();
+    struct mutation_case
+    {
+        mutation_type type;
+        const char* english;
+        const char* chinese;
+    };
+    const mutation_case cases[] = {
+        {MUT_HIGH_MAGIC, "high MP", "高法力"},
+        {MUT_LOW_MAGIC, "low MP", "低法力"},
+        {MUT_MANA_LINK, "magic link", "法力链接"},
+        {MUT_MP_WANDS, "MP-powered wands", "魔杖消耗法力"},
+    };
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (const auto& row : cases)
+        {
+            CAPTURE(language, row.english);
+            CHECK(string(mutation_name_en(row.type)) == row.english);
+            CHECK(string(mutation_name(row.type))
+                  == (language == lang_t::ZH ? row.chinese : row.english));
+        }
+    }
+}
+
+TEST_CASE("Poisoned darts use their brand context without changing status",
+          "[zh-translation][r21][poisoned-dart]")
+{
+    init_properties();
+    item_def dart;
+    dart.base_type = OBJ_MISSILES;
+    dart.sub_type = MI_DART;
+    dart.brand = SPMSL_POISONED;
+    dart.quantity = 1;
+    dart.flags = ISFLAG_IDENTIFIED;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool chinese = language == lang_t::ZH;
+        CHECK(string(missile_brand_name(dart, MBN_NAME))
+              == (chinese ? "涂毒" : "poisoned"));
+        CHECK(dart.name(DESC_PLAIN)
+              == (chinese ? "涂毒飞镖" : "poisoned dart"));
+        CHECK(string(T_("poisoned")) == (chinese ? "中毒" : "poisoned"));
+    }
+}
+
+TEST_CASE("Possessive message slots do not add a second Chinese particle",
+          "[zh-translation][r19][fts3]")
+{
+    init_monsters();
+    monster mon;
+    mon.type = MONS_ORC;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool chinese = language == lang_t::ZH;
+        const string possessive = mon.name(DESC_ITS, true);
+        const string name = mon.name(DESC_THE, true);
+        for (bool plural : {false, true})
+        {
+            const char *format = plural ? T_("%s minds are blasted%s")
+                                        : T_("%s mind is blasted%s");
+            const string actual = make_stringf(format, possessive.c_str(), "!");
+            const string english = make_stringf("%s mind%s blasted%s",
+                possessive.c_str(), plural ? "s are" : " is", "!");
+            CHECK(actual == (chinese ? possessive + "精神被冲击!" : english));
+        }
+        const string ancestor = apostrophise("Anu");
+        CHECK(make_stringf(T_("Remember %s name as what? "), ancestor.c_str())
+              == (chinese ? "将" + ancestor + "名字记为什么？"
+                  : "Remember " + ancestor + " name as what? "));
+        CHECK(make_stringf(T_("%s's allies are healed!"), possessive.c_str())
+              == (chinese ? possessive + "盟友被治愈了！"
+                  : possessive + "'s allies are healed!"));
+        CHECK(make_stringf(T_("%s's fire resistance is burned away."),
+                          possessive.c_str())
+              == (chinese ? possessive + "火焰抗性被烧掉了。"
+                  : possessive + "'s fire resistance is burned away."));
+        const string pronoun = mon.pronoun(PRONOUN_POSSESSIVE, true);
+        CHECK(make_stringf(T_("%s's clockwork bee locks onto %s."),
+                          pronoun.c_str(), name.c_str())
+              == (chinese ? pronoun + "发条蜜蜂锁定了" + name + "。"
+                  : pronoun + "'s clockwork bee locks onto " + name + "."));
+        for (bool visible : {false, true})
+        for (bool hostile : {false, true})
+        {
+            const string whose = visible ? apostrophise(name) : pronoun;
+            const string end = hostile ? T_("fights you") : T_("is now yours");
+            CHECK(make_stringf(T_("The soul of %s %s."), whose.c_str(), end.c_str())
+                  == (chinese ? whose + "灵魂" + end + "。"
+                      : "The soul of " + whose + " " + end + "."));
+        }
+        for (bool more : {false, true})
+        for (bool ambient : {false, true})
+        {
+            const string prefix = more ? T_("more ") : "";
+            const string determiner = ambient ? T_("the") : T_("your");
+            // potion.cc passes this literal affliction through its list joiner.
+            const string affliction = "halo";
+            const string actual = make_stringf(T_("You become %stransparent, but the glow from %s "
+                "%s prevents you from becoming completely invisible."),
+                prefix.c_str(), determiner.c_str(), affliction.c_str());
+            CHECK(actual == (chinese
+                  ? "你变得" + prefix + "透明了，但" + determiner + affliction
+                    + "发出的光芒使你无法完全隐形。"
+                  : "You become " + prefix + "transparent, but the glow from "
+                    + determiner + " " + affliction
+                    + " prevents you from becoming completely invisible."));
+            CHECK(actual.find("的的") == string::npos);
+        }
+    }
+}
+
+TEST_CASE("Upheaval translates the terrain argument at its display boundary",
+          "[zh-translation][r22][upheaval-terrain]")
+{
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string key = feat_type_name(DNGN_ROCK_WALL);
+        CHECK(key == "wall");
+        const string text = make_stringf(T_("There is %s there."),
+                                        article_a(T_(key.c_str())).c_str());
+        CHECK(text == (language == lang_t::ZH ? "那里有墙壁。" : "There is a wall there."));
+    }
+}
+
+TEST_CASE("Autopickup notices translate custom weapon names without changing lookup names",
+          "[zh-translation][r22][autopickup-custom-name]")
+{
+    init_properties();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        item_def scythe;
+        scythe.base_type = OBJ_WEAPONS;
+        scythe.sub_type = WPN_HALBERD;
+        scythe.quantity = 1;
+        scythe.flags = ISFLAG_IDENTIFIED;
+        scythe.props[ITEM_NAME_KEY] = "scythe";
+        CHECK(item_base_name(scythe) == "scythe");
+        CHECK(scythe.name(DESC_DBNAME) == "scythe");
+        const string name = autopickup_display_name(scythe);
+        CHECK(name == (language == lang_t::ZH ? "镰刀" : "scythe"));
+        const string text = make_stringf(T_("Autopickup disabled for %s."),
+                                        pluralise(name).c_str());
+        CHECK(text == (language == lang_t::ZH
+              ? "已禁用镰刀的自动拾取。" : "Autopickup disabled for scythes."));
+        CHECK(scythe.name(DESC_DBNAME) == "scythe");
     }
 }

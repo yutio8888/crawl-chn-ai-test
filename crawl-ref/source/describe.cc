@@ -6193,6 +6193,13 @@ void describe_hit_chance(int hit_chance, ostringstream &result, const item_def *
                 ? C_("hit chance", "You have about %1$d%% chance to hit with %2$s")
                 : C_("unarmed hit chance", "You have about %1$d%% chance to hit with %2$s"),
             hit_chance, attack_name.c_str());
+        if (you.duration[DUR_BLIND])
+        {
+            result << make_stringf(
+                C_("hit chance", " (while you are blinded and from distance %d)"),
+                distance_from);
+        }
+        return;
     }
     else
     {

@@ -966,13 +966,13 @@ heal and protect your ancestor
 治疗并保护你的先祖
 %%%%
 You now drain nearby creatures when transferring your ancestor.
-现在你在转移先祖时会汲取附近生物的能量，使其衰弱。
+现在你在转移先祖时会使附近的生物陷入衰竭。
 %%%%
 You no longer drain nearby creatures when transferring your ancestor.
-转移先祖时，你不再汲取附近生物的能量来使其衰弱。
+转移先祖时，你不再使附近的生物陷入衰竭。
 %%%%
 You drain nearby creatures when transferring your ancestor.
-你在转移先祖时会汲取附近生物的能量，使其衰弱。
+你在转移先祖时会使附近的生物陷入衰竭。
 %%%%
 perform damaging attacks by moving towards foes
 通过向敌人移动来施展伤害性攻击
@@ -1952,7 +1952,7 @@ barrage of energy
 %s%s飞向了空中！
 %%%%
 %s's clockwork bee locks onto %s.
-%s的发条蜜蜂锁定了%s。
+%s发条蜜蜂锁定了%s。
 %%%%
 %s's clockwork bee winds down and falls to the ground.
 %s的发条蜜蜂发条走完了，掉到了地上。
@@ -2669,7 +2669,7 @@ A thick mucus forms on %s.
 一层厚厚的粘液在%s上形成了。
 %%%%
 A tiny devil pulls itself out of the air.
-一个微小的恶魔从空气中拉出了自己。
+一个微小的恶魔从虚空中钻了出来。
 %%%%
 A traitor %s dares to challenge your wrath!
 一个背叛的%s竟敢挑衅你的愤怒！
@@ -4541,7 +4541,7 @@ is covered in magical glow
 被严重浇透了！
 %%%%
  is drained terribly!
-被严重汲取了！
+陷入了严重的衰竭！
 %%%%
  is duplicated!
  被复制了！
@@ -5054,10 +5054,10 @@ Magic Scroll
 魔法卷轴
 %%%%
 Magical energy flows from %s into your mind!
-魔法能量从%s流入了你的心智！
+法力从%s流入了你的心智！
 %%%%
 Magical energy flows into your mind!
-魔法能量流入了你的心智！
+法力流入了你的心智！
 %%%%
 magical power
 法力强化
@@ -7321,7 +7321,7 @@ The solar flare engulfs %s%s.
 太阳耀斑吞没了%s%s。
 %%%%
 The soul of %s %s.
-%s的灵魂%s。
+%s灵魂%s。
 %%%%
 The spell fizzles.
 法术失败了。
@@ -9239,7 +9239,7 @@ you collect gold
 你收集金币
 %%%%
 You condense your magic into a crackling blade!
-你将魔力凝结成噼啪作响的利刃！
+你将法力凝结成噼啪作响的利刃！
 %%%%
 You conjure a globe of magical energy.
 你召唤出一个由魔法能量构成的法球。
@@ -12972,7 +12972,7 @@ The dungeon shudders... but nothing happens?
 地牢震动了一下……但什么都没有发生？
 %%%%
 You become %stransparent, but the glow from %s %s prevents you from becoming completely invisible.
-你变得%s透明了，但%s的光芒%s阻止了你完全隐形。
+你变得%s透明了，但%s%s发出的光芒使你无法完全隐形。
 %%%%
 You cannot mutate%s.
 你%s无法变异。
@@ -20429,7 +20429,7 @@ weak
 虚弱
 %%%%
 drained
-被吸取
+衰竭
 %%%%
 very drained
 重度衰竭
@@ -20732,10 +20732,10 @@ skewered by barbs
 被倒刺刺穿
 %%%%
 lightly drained
-轻度被吸取
+轻度衰竭
 %%%%
 heavily drained
-严重被吸取
+重度衰竭
 %%%%
 softly glowing
 微微发光
@@ -20759,7 +20759,7 @@ bound in place
 被束缚在原地
 %%%%
 targeted by your dimensional bullseye
-被你的次元靶心标记
+被你的维度靶心标记
 %%%%
 fragile as glass
 如玻璃般脆弱
@@ -21410,7 +21410,7 @@ Your cleaving frenzy subsides.
 你的劈砍狂暴消退了。
 %%%%
 Your dimensional bullseye dissipates.
-你的次元靶消散了。
+你的维度靶心消散了。
 %%%%
 Your enlightenment fades.
 你的启迪消退了。
@@ -22865,7 +22865,7 @@ A bone-chilling cold explodes forth, blasting rocks from the ceiling!
 %1$s颤抖了。
 %%%%
 %s's fire resistance is burned away.
-%s的火焰抗性被烧掉了。
+%s火焰抗性被烧掉了。
 %%%%
 %1$s %2$s blasted with magical radiation%3$s
 %1$s被魔法辐射轰击了%3$s
@@ -22934,7 +22934,7 @@ The howl of the fallen reaches a fever pitch!
 陨落者的哀嚎达到了狂热的程度！
 %%%%
 %s's allies are healed!
-%s的盟友被治愈了！
+%s盟友被治愈了！
 %%%%
 %s falls apart, revealing a core!
 %s散架了，露出了核心！
@@ -23150,7 +23150,7 @@ Forget %1$s, freeing %2$d spell level%3$s for a total of %4$d?%5$s
 遗忘%1$s，释放%2$d个法术等级（总计%4$d）？%5$s
 %%%%
 You draw magical energy from your own body!
-你从自己体内汲取了魔法能量！
+你从自己体内汲取了法力！
 %%%%
 Malign forces permeate your being, awaiting release.
 邪恶的力量渗透了你的身体，等待释放。
@@ -23390,7 +23390,7 @@ Space warps violently around %s%s
 %s在痛苦中扭动%s
 %%%%
 %s drains %s%s
-%s吸取了%s%s
+%s使%s陷入衰竭%s
 %%%%
 You are electrocuted%s
 你被电击了%s
@@ -29143,7 +29143,7 @@ kneel at
 %s撞倒了一棵树！
 %%%%
 %s mind%s blasted%s
-%s的精神%s被冲击%s
+%s精神%s被冲击%s
 %%%%
 %s remembers %s %s %s.
 %s记起了%s%s%s。
@@ -30154,19 +30154,19 @@ status|Drain
 衰竭
 %%%%
 status|extremely drained
-极度削命
+极度衰竭
 %%%%
 status|very heavily drained
-严重削命
+严重衰竭
 %%%%
 status|heavily drained
-重度削命
+重度衰竭
 %%%%
 status|drained
-削命
+衰竭
 %%%%
 status|lightly drained
-轻度削命
+轻度衰竭
 %%%%
 status|Your life force is extremely drained.
 你的生命力被极度削弱了。
@@ -30184,7 +30184,7 @@ status|Your life force is lightly drained.
 你的生命力被轻度削弱了。
 %%%%
 ability cost|Drain
-削命
+衰竭
 %%%%
 verb|steam
 蒸腾
@@ -30661,7 +30661,7 @@ novice
 新手
 %%%%
 only slightly.
-极小。
+略微增加。
 %%%%
 quickly
 快速地
@@ -33169,7 +33169,7 @@ Jiyva will unlock the Slime Pits vault.
 完全恢复了！
 %%%%
  is drained by nostalgia.
-因怀旧而虚弱不堪。
+因怀旧而陷入衰竭。
 %%%%
  is not worthy to be dueled!
 不配与你决斗！
@@ -33271,7 +33271,7 @@ deep water
 溺毙了。
 %%%%
  sinks to the bottom.
-沉到了底部。
+沉入了水底。
 %%%%
  seems to find hidden reserves of power!
 似乎找到了隐藏的力量储备！
@@ -34494,7 +34494,7 @@ Regen (%d)
 再生（%d）
 %%%%
 Remember %s name as what? 
-将%s的名字记为什么？
+将%s名字记为什么？
 %%%%
 Shopping list: remove %s? (Y/n)
 购物清单：移除%s？（Y/n）
@@ -35124,7 +35124,7 @@ buffed friendly %s %d %s
 强化了友方%s %d %s
 %%%%
 by %.1f.
-%.1f。
+增加%.1f。
 %%%%
 chance to %s on hit: %d%%
 命中时%s的几率：%d%%
@@ -35457,7 +35457,7 @@ magic release
 魔力释放
 %%%%
 \n\nYour current strength and Armour skill slows attacks with missile weapons (like %s) 
-\n\n你的力量和护甲技能减缓了投射武器（如%s）的攻击速度，减幅
+\n\n以你目前的力量和护甲技能，穿着这件护甲会使投射武器（如%s）的攻击延迟
 %%%%
 Your line of fire to %s is blocked by %s.
 你对%s的射击线被%s阻挡了。
@@ -35673,7 +35673,7 @@ You can use this ability even if confused.
 混乱状态下也可使用此能力。
 %%%%
 This ability will temporarily drain your maximum health when used
-使用此能力将暂时汲取你的最大生命值
+使用此能力会使你暂时陷入衰竭，降低生命值上限
 %%%%
 , even unsuccessfully
 ，即使未成功
@@ -36400,7 +36400,7 @@ Necronomicon
 死灵书
 %%%%
 Grand Grimoire
-宏大的魔典
+大魔典
 %%%%
 Everburning Encyclopedia
 永燃百科全书
@@ -42421,7 +42421,7 @@ You're still recovering from your berserk rage.
 你还未从狂暴中恢复过来。
 %%%%
 You can't enter a blood rage from death's door.
-你处于死亡之门的效果中，无法激起狂暴的热血。
+你正处于死亡之门状态，无法陷入狂暴。
 %%%%
 You are too mesmerised to rage.
 你深受迷魂影响，无法狂暴。
@@ -44117,7 +44117,7 @@ monspell raw direction|next to %s
 %%%%
 monspell raw direction|past %s
 
-朝%s身后
+朝%s以远的方向
 %%%%
 alchemical conduit
 
@@ -51070,4 +51070,55 @@ bow your heads before
 %%%%
 curl into a sanctuary of spikes before
 蜷成刺球护住自己，面向
+%%%%
+hit chance| (while you are blinded and from distance %d)
+（你失明时，在距离为%d的情况下）
+%%%%
+missile brand|poisoned
+涂毒
+%%%%
+%s mind is blasted%s
+%s精神被冲击%s
+%%%%
+%s minds are blasted%s
+%s精神被冲击%s
+%%%%
+You finish attuning to %s.
+你已与%s完成调谐。
+%%%%
+You finish wielding %s.
+你已握持%s。
+%%%%
+You finish haunting %s.
+你已附身于%s。
+%%%%
+You finish fusing with %s.
+你已与%s融合。
+%%%%
+equip finish armour|You finish putting on %s.
+你已穿上%s。
+%%%%
+equip finish jewellery|You finish putting on %s.
+你已戴上%s。
+%%%%
+You finish parting from %s.
+你已解除与%s的调谐。
+%%%%
+You finish unwielding %s.
+你已收起%s。
+%%%%
+You finish removing yourself from %s.
+你已从%s中脱离。
+%%%%
+You finish unfusing %s.
+你已解除与%s的融合。
+%%%%
+equip finish armour|You finish removing %s.
+你已脱下%s。
+%%%%
+equip finish jewellery|You finish removing %s.
+你已摘下%s。
+%%%%
+%s turns attention toward your shadow.
+%s将注意力转向了你的影子。
 %%%%

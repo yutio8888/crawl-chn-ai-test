@@ -229,7 +229,7 @@ acid resistance mutation
 negative energy resistance mutation
 
 你抵抗负能量。
-这个变异每升一级，就会减小负能量对你造成的伤害和从你身上汲取的生命值。
+这个变异每升一级，就会减小负能量对你造成的伤害和衰竭所降低的生命值上限。
 %%%%
 heat vulnerability mutation
 
@@ -443,7 +443,7 @@ corrupting presence mutation
 black mark mutation
 
 当你近战攻击敌人时，你身上的黑色标记可能会削弱敌人。
-它能够虚弱敌人、汲取他们的生命力，或扰乱他们的魔法。
+它能够虚弱敌人、使其陷入衰竭，或扰乱他们的魔法。
 %%%%
 aura of silence mutation
 
@@ -986,7 +986,7 @@ ephemeral shield mutation
 feed off suffering mutation
 
 一股邪恶却振奋人心的能量弥漫在你的灵魂中，与死亡瞬间释放的某些能量产生共鸣。
-每当中毒或被汲取的敌人在你视野内死亡时，你有概率吸取其少量生命力和法力。
+每当中毒或陷入衰竭的敌人在你视野内死亡时，你有概率吸取其少量生命力和法力。
 每级此变异都会提高触发概率和吸取量。
 %%%%
 formless mutation

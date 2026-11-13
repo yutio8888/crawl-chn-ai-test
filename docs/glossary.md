@@ -237,7 +237,7 @@
 | AC | 护甲 / 防御 | 同一防御数值：HUD、神器属性沿用护甲；变异列表及说明沿用防御；不全库替换；decision=D-C-115 |
 | critical hit | 暴击 |
 | resist | 抵抗 |
-| Drain | 汲取 | 生命/魔力吸取效果 |
+| Drain | 汲取 | 仅限真正的生命或法力转移；不含 drain_player / monster::drain / ENCH_DRAINED 的衰竭状态及生命上限暂时降低；武器铭印专名沿用各自条目 |
 | Torment | 折磨 | 按比例造成伤害 |
 | vulnerable | 脆弱 |
 | immune | 免疫 |
@@ -665,8 +665,8 @@
 | weak | 虚弱 | mutation; source=mutations.txt |
 | dopey | 愚钝 | mutation; source=mutations.txt |
 | clumsy | 笨拙 | mutation; source=mutations.txt |
-| high mp | 高魔力 | mutation; source=mutations.txt |
-| low mp | 低魔力 | mutation; source=mutations.txt |
+| high mp | 高法力 | mutation; source=mutations.txt |
+| low mp | 低法力 | mutation; source=mutations.txt |
 | camouflage | 伪装 | mutation; source=mutations.txt |
 | horns | 角 | mutation; source=mutations.txt |
 | beak | 鸟喙 | mutation; source=mutations.txt |

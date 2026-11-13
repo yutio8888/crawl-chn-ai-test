@@ -865,7 +865,7 @@ Yredelemnul penance
 %%%%
 Yredelemnul welcome
 
-伊莱德莱姆努尔说：拿着黑色的火炬！唤醒无所事事的死者！
+伊莱德莱姆努尔说：高举黑火炬！唤醒沉寂的死者！
 %%%%
 Yredelemnul death corpse
 
