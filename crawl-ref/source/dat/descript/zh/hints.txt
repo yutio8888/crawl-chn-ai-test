@@ -80,7 +80,7 @@ finished stashes
 %%%%
 finished random 0
 
-游戏会自动为你的角色保存冒险日志。按下 <input>$cmd[CMD_DISPLAY_COMMANDS]:</input> 即可阅读。角色死亡后，<w>morgue/</w> 目录中会留下两个 morgue 文件，其中以 .txt 结尾的文件包含你的日志副本。游戏过程中，你可以用 <input>$cmd[CMD_CHARACTER_DUMP]</input> 创建角色转储文件。
+游戏会自动为你的角色保存冒险日志。按下 <input>$cmd[CMD_DISPLAY_COMMANDS]:</input> 即可阅读。角色死亡后，<w>morgue/</w> 目录中会留下两个 morgue 文件，其中以 .txt 结尾的文件包含你的日志副本。游戏过程中，你可以用 <input>$cmd[CMD_CHARACTER_DUMP]</input> 创建角色报告文件。
 %%%%
 finished random 1
 
@@ -191,7 +191,7 @@ HINT_CONVERT Gozag
 %%%%
 HINT_CONVERT Ru
 
-你刚刚皈依了 <w>入</w>。与其他神祇不同，入以永久性的舍弃换取虔诚值（神眷），例如放弃训练某些技能的能力，或永久失去一只手。你的虔诚值越高，入赐予你的能力就越多，这些能力也越强大。当你探索地牢深处时，入会向你提出更多舍弃。
+你刚刚皈依了 <w>入</w>。与其他神祇不同，入会因你的永久性献祭而赐予虔诚值（神眷），例如放弃训练某些技能的能力，或永久失去一只手。你的虔诚值越高，入赐予你的能力就越多，这些能力也越强大。当你探索地牢深处时，入会向你提出更多献祭选择。
 %%%%
 HINT_CONVERT Uskayaw
 
@@ -484,7 +484,7 @@ HINT_SEEN_GOLD
 %%%%
 HINT_SEEN_JEWELLERY
 
-你捡到了一件珠宝，可能是戒指
+你捡到了一件首饰，可能是戒指
 <console>（“<w>$item[jewellery]</w>”）</console>，也可能是项链<console>（“<w>$item[amulet]</w>”）</console>。
 <nomouse>按 <w>$cmd[CMD_WEAR_JEWELLERY]</w> 穿戴，按 <w>$cmd[CMD_REMOVE_JEWELLERY]</w> 卸下。你可以在物品栏（<w>$cmd[CMD_DISPLAY_INVENTORY]</w>）中查看它的属性。</nomouse>
 <localtiles>单击它即可穿戴，再次单击即可卸下；<w>右键单击</w>可查看它的属性。</localtiles>

@@ -2755,7 +2755,8 @@ bool melee_attack::player_aux_apply(unarmed_attack_type atk)
 
                 mprf(T_("You drain %s %s."),
                      defender->as_monster()->pronoun(PRONOUN_POSSESSIVE).c_str(),
-                     spell_user ? "magic" : "power");
+                     spell_user ? C_("drained resource", "magic")
+                                 : C_("drained resource", "power"));
 
                 if (you.magic_points != you.max_magic_points
                     && !defender->is_summoned()
@@ -4339,7 +4340,8 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
                 mprf(T_("%s drains %s %s."),
                      attacker->name(DESC_THE).c_str(),
                      defender->pronoun(PRONOUN_POSSESSIVE).c_str(),
-                     spell_user ? T_("magic") : T_("power"));
+                     spell_user ? C_("drained resource", "magic")
+                                 : C_("drained resource", "power"));
             }
 
             monster* vine = attacker->as_monster();

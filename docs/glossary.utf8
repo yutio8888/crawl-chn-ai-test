@@ -11,6 +11,7 @@ __SHOUT	喊叫	domain=shouts; source=EN/ZH
 __SKITTER	窸窣声	domain=shouts; source=EN/ZH
 Abjuration	驱逐术	domain=spells; source=EN/ZH; 备注=✅；缩短附近所有敌对召唤生物的剩余存续时间
 Abyss	深渊	domain=core; source=EN/ZH
+AC	护甲 / 防御	domain=combat; source=EN/ZH; column3=同一防御数值：HUD、神器属性沿用护甲；变异列表及说明沿用防御；不全库替换；decision=D-C-115
 Acid Ball	酸液球	domain=spells; source=EN/ZH; 备注=✅；投掷后爆炸的腐蚀性酸液球
 acid blob	酸液团	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 acid dragon	酸龙	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -220,6 +221,8 @@ Chaos Breath	混沌吐息	domain=spells; source=EN/ZH; 备注=✅
 Chaos Knight	混沌骑士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 chaos spawn	混沌之子	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 chaotic	混沌	domain=items; source=EN/ZH; Scope / comment=weapon brand adjective; decision=D-B-016/D-B-020
+char dump	角色报告	domain=core; source=EN/ZH; 注意事项=生成、浏览、导出结果、教程及载入报告文件的显示名；文件与命令身份不改；decision=D-C-115；reject=角色转储
+character dump	角色报告	domain=core; source=EN/ZH; 注意事项=生成、浏览、导出结果、教程及载入报告文件的显示名；文件与命令身份不改；decision=D-C-115；reject=角色转储
 Charm	魅惑	domain=spells; source=EN/ZH; 备注=✅
 Cheibriados	切布理亚多	domain=gods; source=EN/ZH; 类型=音译
 cherub	智天使	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -298,6 +301,9 @@ Death Rattle	死亡之响	domain=spells; source=EN/ZH; 备注=✅；呼出垂死
 Death's Door	死亡之门	domain=spells; source=EN/ZH; 备注=✅；近乎免疫伤害但将生命降至濒死状态
 Debugging Ray	调试射线	domain=spells; source=EN/ZH; 备注=✅
 deep elf	精灵	domain=species; source=EN/ZH; 裁决=[D-A-008]; 复合格式=精灵 + 职业（精灵剑圣、精灵湮灭者）
+deep troll	深地巨魔	domain=species; source=EN/ZH; 裁决=D-C-115; 复合格式=地下巨魔系列；非Abyss；reject=深渊巨魔
+deep troll earth mage	深地巨魔地法师	domain=species; source=EN/ZH; 裁决=D-C-115; 复合格式=完整怪名及描述；reject=深渊巨魔
+deep troll shaman	深地巨魔萨满	domain=species; source=EN/ZH; 裁决=D-C-115; 复合格式=完整怪名及描述；reject=深渊巨魔
 Deflect Missiles	偏转飞弹	domain=spells; source=EN/ZH; 备注=✅；排斥力场提高对所有投射物的闪避
 Delayed Fireball	延迟火球	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Delver	挖掘者	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
@@ -347,6 +353,7 @@ Drain	汲取	domain=combat; source=EN/ZH; column3=生命/魔力吸取效果
 Drain	衰竭	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Drain Life	汲取生命	domain=spells; source=EN/ZH; 备注=🆕；与 `Drain Magic → 汲取魔力` 统一
 Drain Magic	汲取魔力	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
+drained resource|magic	法力	domain=core; source=EN/ZH; 注意事项=反魔法汲取的资源参数；decision=D-C-115；reject=魔法／魔力
 Draining Gaze	衰竭凝视	domain=spells; source=EN/ZH; 备注=✅；施加 Drain/衰竭，不治疗施法者
 Dream Dust	梦尘	domain=spells; source=EN/ZH; 备注=✅
 Druid's Call	德鲁伊呼唤	domain=spells; source=EN/ZH; 备注=✅；召回同层已有林地生物，非创造召唤物
@@ -398,7 +405,7 @@ Fannar	凡纳尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-mo
 Fannar title	冷酷的凡纳尔	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Fastroot	速生根须	domain=spells; source=EN/ZH; 备注=🆕；射出种子，以速生树根缠住并挤压目标
 faun	牧神	domain=species; source=EN/ZH
-Fear	恐惧	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Fear	恐惧	domain=status; source=EN/ZH; Scope / comment=Fear机制，保留；区别Horror惊骇；decision=D-C-115
 Fedhas	费德哈	domain=gods; source=EN/ZH; 类型=音译
 felid	猫	domain=species; source=EN/ZH; 裁决=[D-A-039]
 Fighter	战士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
@@ -450,6 +457,7 @@ Frenzy	狂乱术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；�
 Frge	锻造	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
 Frozen	冰封	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Frozen Ramparts	冰冻壁垒	domain=spells; source=EN/ZH; 备注=✅；短暂冰封周围墙壁并伤害邻近敌人
+Fugue	赋格	domain=status; source=EN/ZH; Scope / comment=DUR_FUGUE，含状态、持续与结束消息；法术仍为亡灵赋格；damned/fallen灵魂限定不混并；book of decay的普通神游叙述保留；decision=D-C-115
 Fugue of the Fallen	亡灵赋格	domain=spells; source=EN/ZH; 备注=✅
 Fulminant Prism	爆裂棱镜	domain=spells; source=EN/ZH; 备注=✅
 Fulsome Distillation	精华蒸馏	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
@@ -530,6 +538,7 @@ Holy word	圣言术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容�
 Homunculus	人造人	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 hooves	蹄	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 horns	角	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Horror	惊骇	domain=status; source=EN/ZH; Scope / comment=DUR_HORROR：怯懦导致的攻击/法术惩罚；不是Fear；普通叙述或怪物专名不机械改；decision=D-C-115
 human	人类	domain=species; source=EN/ZH; 复合格式=人类 + 职业
 Hunter	猎手	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Hunting Call	狩猎呼唤	domain=spells; source=EN/ZH; 备注=✅
@@ -579,6 +588,7 @@ Jeremiah	耶利米	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-
 Jeremiah title	耶利米，蛙人神游者	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Jessica	杰西卡	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Jessica title	见习女术师杰西卡	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+jewellery	首饰	domain=items; source=EN/ZH; column3=戒指与项链的物品总类，包括商店分类、教程和装备提示；不替换jewel/gem、普通装饰物或护符trinket；decision=D-C-115；reject=珠宝／饰品
 jewellery full name|flight	飞行	domain=items; source=EN/ZH; Scope / comment=jewellery context key; decision=D-B-020
 Jiangshi	僵尸	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; Chinese hopping-vampire name, distinguished from zombie → 丧尸
 Jinxbite	厄运之咬	domain=spells; source=EN/ZH; 备注=✅
@@ -632,8 +642,9 @@ Lugonu	卢格努	domain=gods; source=EN/ZH; 类型=音译
 Maces & Flails	锤与链枷	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Maggie	玛吉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Maggie title	自负的玛吉	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+magic	魔法	domain=core; source=EN/ZH; 注意事项=普通魔法概念；MP 资源按法力；英文协议身份不改；decision=D-C-115
 Magic Dart	魔法飞弹	domain=spells; source=EN/ZH; 备注=✅
-magic points	法力	domain=core; source=EN/ZH; 注意事项=施法资源
+magic points	法力	domain=core; source=EN/ZH; 注意事项=施法资源；普通 magic 仍为魔法；decision=D-C-115
 magic regeneration	法力再生	domain=items; source=EN/ZH; Scope / comment=jewellery effect; decision=D-B-020
 magical power	法力强化	domain=items; source=EN/ZH; Scope / comment=jewellery effect; decision=D-B-020
 Magma Barrage	岩浆弹幕	domain=spells; source=EN/ZH; 备注=✅
@@ -696,7 +707,7 @@ morningstar	晨星锤	domain=items; source=EN/ZH; Scope / comment=weapon; paired
 morningstar "Eos"	晨星锤"厄俄斯"	domain=items; source=EN/ZH; Scope / comment=unrand; decision=D-B-017/D-B-021
 mountain dwarf	山矮人	domain=species; source=EN/ZH
 Mourning Wail	哀恸之嚎	domain=spells; source=EN/ZH; 备注=🆕；吐出遗忘悲恸形成负能量云
-MP	法力	domain=core; source=EN/ZH; 注意事项=施法资源
+MP	法力	domain=core; source=EN/ZH; 注意事项=施法资源；普通 magic 仍为魔法；decision=D-C-115
 Mud Breath	泥浆吐息	domain=spells; source=EN/ZH; 备注=✅
 mumbles	嘟囔道	domain=dialogue; source=EN/ZH; 适用角色=疯狂角色（Crazy Yiuf）
 mummy	木乃伊	domain=species; source=EN/ZH; 复合格式=木乃伊 + 职业
@@ -806,7 +817,10 @@ Porkalator	变猪术	domain=spells; source=EN/ZH; 备注=✅
 Portal Projectile	传送投射物	domain=spells; source=EN/ZH; 备注=✅
 potion	药水	domain=items; source=EN/ZH
 potion full name|invisibility	隐形	domain=items; source=EN/ZH; Scope / comment=potion context key; decision=D-B-020
+potion full name|magic	法力	domain=core; source=EN/ZH; 注意事项=恢复MP的药水词根；与普通magic分离；decision=D-C-115；reject=魔法
 potion full name|might	力量	domain=items; source=EN/ZH; Scope / comment=potion context key; melee-only effect; decision=D-B-022
+potion of magic	法力药水	domain=core; source=EN/ZH; 注意事项=恢复MP的药水全称；lookup键不改；decision=D-C-115；reject=魔法药水
+potions of magic	法力药水	domain=core; source=EN/ZH; 注意事项=恢复MP的药水全称；lookup键不改；decision=D-C-115；reject=魔法药水
 Prayer of Brilliance	聪慧祈祷	domain=spells; source=EN/ZH; 备注=✅
 Primal Wave	原初浪潮	domain=spells; source=EN/ZH; 备注=🆕；召出激流击退目标并留下短时浅水
 Prince Ribbit	蛙王子	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -817,6 +831,7 @@ Qazlal	卡兹拉尔	domain=gods; source=EN/ZH; 类型=音译
 quarterstaff	长棍	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
 Quicksilver Bolt	水银箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 quill talisman	棘刺护符	domain=items; source=EN/ZH; Scope / comment=talisman; decision=D-B-020
+quiver resource|magic	法力	domain=core; source=EN/ZH; 注意事项=MP不足提示的资源参数；decision=D-C-115；reject=魔法
 Rakshasa Summon	召唤罗刹	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Rampage	冲锋	domain=core; source=EN/ZH; 注意事项=攻击时自动向敌人移动一步
 rampaging	冲锋	domain=items; source=EN/ZH; Scope / comment=armour ego; decision=D-B-020
@@ -974,6 +989,8 @@ status|ambrosia-drunk	神食酣醉	domain=status; source=EN/ZH; 依据 / 作用�
 status|Barbs	尖刺	domain=status; source=EN/ZH; 依据 / 作用域=玩家状态的稳定版共享上下文键；普通 barbs 仍用倒刺；decision=D-C-098（取代 D-C-096 的此状态标签译法）
 status|Blood	血甲	domain=status; source=EN/ZH; Scope / comment=defensive sanguine armour status; decision=D-D-005
 status|confused	混乱	domain=status; source=EN/ZH; 依据 / 作用域=玩家困惑状态的短标签（@ 行、标记、取消药水说明）；与灯标 `status|Conf`、长描述及怪物状态说明同根；不重命名固定法术名“困惑之触／困惑凝视”与感受消息；decision=D-C-108
+status|Fugue	赋格	domain=status; source=EN/ZH; Scope / comment=DUR_FUGUE状态灯；decision=D-C-115；reject=神游
+status|Horr	惊骇	domain=status; source=EN/ZH; Scope / comment=DUR_HORROR状态灯；decision=D-C-115；reject=恐惧
 Staves	杖类	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Steam Ball	蒸汽球	domain=spells; source=EN/ZH; 备注=✅
 Steam Breath	蒸汽吐息	domain=spells; source=EN/ZH; 备注=✅
@@ -1148,6 +1165,7 @@ yaktaur	牦牛人马	domain=species; source=EN/ZH; 复合格式=牦牛人马 + �
 Yara's Violent Unravelling	亚拉之猛烈解构	domain=spells; source=EN/ZH; 备注=✅；撕裂附魔并转化为诱变爆炸
 yellow scales	黄色鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 yells	大喊	domain=dialogue; source=EN/ZH; 适用角色=战士、兽人
+Your fugue has ended.	你的赋格结束了。	domain=status; source=EN/ZH; Scope / comment=DUR_FUGUE专用结束键；不涉及普通神游；decision=D-C-115；reject=神游
 Yredelemnul	伊莱德莱姆努尔	domain=gods; source=EN/ZH; 类型=音译
 Zenata	泽娜塔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Zenata title	泽娜塔，西泽的追寻者	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt

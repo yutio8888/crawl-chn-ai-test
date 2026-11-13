@@ -935,7 +935,7 @@ const char* potion_type_name(int potiontype)
         return C_("potion full name", "invisibility");
     case POT_MOONSHINE:         return T_("moonshine");
     case POT_EXPERIENCE:        return T_("experience");
-    case POT_MAGIC:             return T_("magic");
+    case POT_MAGIC:             return C_("potion full name", "magic");
     case POT_BERSERK_RAGE:      return T_("berserk rage");
     case POT_MUTATION:          return T_("mutation");
     case POT_RESISTANCE:        return T_("resistance");

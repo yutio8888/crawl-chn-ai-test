@@ -148,7 +148,7 @@ Xom hostile monster
 %%%%
 Xom banishment
 
-“你在你的小世界里变得太舒服了，凡人！”
+“你在你的小世界里待得太安逸了，凡人！”
 
 佐姆把你扔入深渊！
 
@@ -169,7 +169,7 @@ Xom revert other banishment
 
 “给我回来！”
 
-“别那样！”
+“休想！”
 
 佐姆把你拉回了相对宁静的地牢。
 %%%%
@@ -288,9 +288,9 @@ Xom snakes to sticks
 
 “我更喜欢他们这样。”
 
-“我从来不喜欢这些扭曲的东西。”
+“我从来不喜欢这些弯弯曲曲的东西。”
 
-佐姆接触你周围的环境。
+佐姆触碰你周围的环境。
 
 @Xom good monster polymorph@
 %%%%
@@ -1096,7 +1096,7 @@ Xom feature metal wall
 
 电流的卷须在 @the_feature@ 上爬行。
 
-@The_feature@ 短暂地显得锈蚀了。
+@The_feature@短暂地显得暗淡无光。
 
 %%%%
 Xom feature shallow water
@@ -1225,7 +1225,7 @@ Xom gizmo slot
 
 @Your_item@ 晃动了一下！
 
-@Your_item@ 漏出了 @rainbow_colour@ 的烟雾！
+@Your_item@漏出了@rainbow_colour@色的烟雾！
 
 %%%%
 Xom gloves slot
@@ -1291,7 +1291,7 @@ Xom inventory plural
 
 @your_item@ 中的一件短暂地振动了。
 
-@your_item@ 中的一件短暂地闪烁了 @any_colour@。
+@your_item@中的一件短暂地闪起@any_colour@光。
 
 @Your_item@ 短暂地发光。
 
@@ -1299,7 +1299,7 @@ Xom inventory plural
 
 @Your_item@ 短暂地振动。
 
-@Your_item@ 短暂地闪烁着 @any_colour@。
+@Your_item@短暂地闪起@any_colour@光。
 
 %%%%
 Xom inventory singular
@@ -1310,7 +1310,7 @@ Xom inventory singular
 
 @Your_item@ 短暂地振动了。
 
-@Your_item@ 短暂地闪烁了 @any_colour@。
+@Your_item@短暂地闪起@any_colour@光。
 
 %%%%
 Xom kind door ring
@@ -1391,7 +1391,7 @@ Xom offhand slot
 
 @Your_item@ 旋转了！
 
-@Your_item@ 短暂地闪烁了 @any_glowing_colour@！
+@Your_item@短暂地闪起@any_glowing_colour@光！
 
 %%%%
 Xom one eye
