@@ -3004,7 +3004,7 @@ static void _maybe_disable_autopickup_for_dropped_items(vector<SelItem> &items)
     if (autopickup_remove_count == 1)
     {
         mprf(T_("Autopickup disabled for %s."),
-             pluralise(last_touched_item->name(DESC_DBNAME)).c_str());
+             pluralise(autopickup_display_name(*last_touched_item)).c_str());
     }
     else if (autopickup_remove_count > 1)
         mprf(T_("Autopickup disabled for %d items."), autopickup_remove_count);

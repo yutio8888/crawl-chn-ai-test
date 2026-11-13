@@ -97,7 +97,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"possessive", "actor_possessive_pronoun"}, {"target", "resolved_target"} },
                         { "actor", "possessive", "target" },
                     {
-                      { sensory_mode::PLAIN, "", true, false, { {"en", "AT", "${actor} points ${possessive} staff at ${target}, shooting a stream of webbing."}, {"en", "NEXT_TO", "${actor} points ${possessive} staff next to ${target}, shooting a stream of webbing."}, {"en", "PAST", "${actor} points ${possessive} staff past ${target}, shooting a stream of webbing."}, {"zh", "AT", "${actor}用法杖指向${target}，射出一股蛛网。"}, {"zh", "NEXT_TO", "${actor}用法杖指向${target}旁边，射出一股蛛网。"}, {"zh", "PAST", "${actor}用法杖指向${target}身后，射出一股蛛网。"} } },
+                      { sensory_mode::PLAIN, "", true, false, { {"en", "AT", "${actor} points ${possessive} staff at ${target}, shooting a stream of webbing."}, {"en", "NEXT_TO", "${actor} points ${possessive} staff next to ${target}, shooting a stream of webbing."}, {"en", "PAST", "${actor} points ${possessive} staff past ${target}, shooting a stream of webbing."}, {"zh", "AT", "${actor}用法杖指向${target}，射出一股蛛网。"}, {"zh", "NEXT_TO", "${actor}用法杖指向${target}旁边，射出一股蛛网。"}, {"zh", "PAST", "${actor}用法杖指向${target}以远的地方，射出一股蛛网。"} } },
                     },
                         {},
                         {  },
@@ -145,7 +145,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"reflexive", "actor_reflexive"}, {"possessive", "actor_possessive_pronoun"}, {"target", "resolved_target"} },
                         { "actor", "reflexive", "possessive", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} coils ${reflexive} and waves ${possessive} upper body at ${target}."}, {"en", "NEXT_TO", "${actor} coils ${reflexive} and waves ${possessive} upper body next to ${target}."}, {"en", "PAST", "${actor} coils ${reflexive} and waves ${possessive} upper body past ${target}."}, {"zh", "AT", "${actor}盘起身躯，向${target}摆动上半身。"}, {"zh", "NEXT_TO", "${actor}盘起身躯，向${target}旁边摆动上半身。"}, {"zh", "PAST", "${actor}盘起身躯，向${target}身后摆动上半身。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} coils ${reflexive} and waves ${possessive} upper body at ${target}."}, {"en", "NEXT_TO", "${actor} coils ${reflexive} and waves ${possessive} upper body next to ${target}."}, {"en", "PAST", "${actor} coils ${reflexive} and waves ${possessive} upper body past ${target}."}, {"zh", "AT", "${actor}盘起身躯，向${target}摆动上半身。"}, {"zh", "NEXT_TO", "${actor}盘起身躯，向${target}旁边摆动上半身。"}, {"zh", "PAST", "${actor}盘起身躯，朝${target}以远的地方摆动上半身。"} } },
                     },
                         {},
                         {  },
@@ -165,7 +165,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"possessive", "actor_possessive_pronoun"}, {"target", "resolved_target"} },
                         { "actor", "possessive", "target" },
                     {
-                      { sensory_mode::PLAIN, "", true, false, { {"en", "AT", "${actor} gestures with ${possessive} tail at ${target}."}, {"en", "NEXT_TO", "${actor} gestures with ${possessive} tail next to ${target}."}, {"en", "PAST", "${actor} gestures with ${possessive} tail past ${target}."}, {"zh", "AT", "${actor}用尾巴向${target}做出手势。"}, {"zh", "NEXT_TO", "${actor}用尾巴向${target}旁边做出手势。"}, {"zh", "PAST", "${actor}用尾巴向${target}身后做出手势。"} } },
+                      { sensory_mode::PLAIN, "", true, false, { {"en", "AT", "${actor} gestures with ${possessive} tail at ${target}."}, {"en", "NEXT_TO", "${actor} gestures with ${possessive} tail next to ${target}."}, {"en", "PAST", "${actor} gestures with ${possessive} tail past ${target}."}, {"zh", "AT", "${actor}用尾巴向${target}做出手势。"}, {"zh", "NEXT_TO", "${actor}用尾巴向${target}旁边做出手势。"}, {"zh", "PAST", "${actor}用尾巴朝${target}以远的地方做出手势。"} } },
                     },
                         {},
                         {  },
@@ -213,7 +213,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", true, false, { {"en", "AT", "${actor} gestures at ${target} while chanting."}, {"en", "NEXT_TO", "${actor} gestures next to ${target} while chanting."}, {"en", "PAST", "${actor} gestures past ${target} while chanting."}, {"zh", "AT", "${actor}一边吟诵，一边向${target}做出手势。"}, {"zh", "NEXT_TO", "${actor}一边吟诵，一边向${target}旁边做出手势。"}, {"zh", "PAST", "${actor}一边吟诵，一边向${target}身后做出手势。"} } },
+                      { sensory_mode::PLAIN, "", true, false, { {"en", "AT", "${actor} gestures at ${target} while chanting."}, {"en", "NEXT_TO", "${actor} gestures next to ${target} while chanting."}, {"en", "PAST", "${actor} gestures past ${target} while chanting."}, {"zh", "AT", "${actor}一边吟诵，一边向${target}做出手势。"}, {"zh", "NEXT_TO", "${actor}一边吟诵，一边向${target}旁边做出手势。"}, {"zh", "PAST", "${actor}一边吟诵，一边朝${target}以远的地方做出手势。"} } },
                     },
                         {},
                         {  },
@@ -233,7 +233,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", true, false, { {"en", "AT", "${actor} points at ${target} and mumbles some strange words."}, {"en", "NEXT_TO", "${actor} points next to ${target} and mumbles some strange words."}, {"en", "PAST", "${actor} points past ${target} and mumbles some strange words."}, {"zh", "AT", "${actor}指向${target}，咕哝着一些奇怪的话。"}, {"zh", "NEXT_TO", "${actor}指向${target}旁边，咕哝着一些奇怪的话。"}, {"zh", "PAST", "${actor}指向${target}身后，咕哝着一些奇怪的话。"} } },
+                      { sensory_mode::PLAIN, "", true, false, { {"en", "AT", "${actor} points at ${target} and mumbles some strange words."}, {"en", "NEXT_TO", "${actor} points next to ${target} and mumbles some strange words."}, {"en", "PAST", "${actor} points past ${target} and mumbles some strange words."}, {"zh", "AT", "${actor}指向${target}，咕哝着一些奇怪的话。"}, {"zh", "NEXT_TO", "${actor}指向${target}旁边，咕哝着一些奇怪的话。"}, {"zh", "PAST", "${actor}指向${target}以远的地方，咕哝着一些奇怪的话。"} } },
                     },
                         {},
                         {  },
@@ -253,7 +253,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} casts a spell at ${target}."}, {"en", "NEXT_TO", "${actor} casts a spell next to ${target}."}, {"en", "PAST", "${actor} casts a spell past ${target}."}, {"zh", "AT", "${actor}向${target}施展了一个法术。"}, {"zh", "NEXT_TO", "${actor}向${target}旁边施展了一个法术。"}, {"zh", "PAST", "${actor}向${target}身后施展了一个法术。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} casts a spell at ${target}."}, {"en", "NEXT_TO", "${actor} casts a spell next to ${target}."}, {"en", "PAST", "${actor} casts a spell past ${target}."}, {"zh", "AT", "${actor}向${target}施展了一个法术。"}, {"zh", "NEXT_TO", "${actor}向${target}旁边施展了一个法术。"}, {"zh", "PAST", "${actor}朝${target}以远的地方施展了一个法术。"} } },
                     },
                         {},
                         {  },
@@ -349,7 +349,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", true, false, { {"en", "AT", "${actor} gestures at ${target}."}, {"en", "NEXT_TO", "${actor} gestures next to ${target}."}, {"en", "PAST", "${actor} gestures past ${target}."}, {"zh", "AT", "${actor}向${target}做出手势。"}, {"zh", "NEXT_TO", "${actor}向${target}旁边做出手势。"}, {"zh", "PAST", "${actor}向${target}身后做出手势。"} } },
+                      { sensory_mode::PLAIN, "", true, false, { {"en", "AT", "${actor} gestures at ${target}."}, {"en", "NEXT_TO", "${actor} gestures next to ${target}."}, {"en", "PAST", "${actor} gestures past ${target}."}, {"zh", "AT", "${actor}向${target}做出手势。"}, {"zh", "NEXT_TO", "${actor}向${target}旁边做出手势。"}, {"zh", "PAST", "${actor}朝${target}以远的地方做出手势。"} } },
                     },
                         {},
                         {  },
@@ -453,7 +453,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", true, false, { {"en", "AT", "${actor} gestures violently at ${target}."}, {"en", "NEXT_TO", "${actor} gestures violently next to ${target}."}, {"en", "PAST", "${actor} gestures violently past ${target}."}, {"zh", "AT", "${actor}向${target}猛烈地做出手势。"}, {"zh", "NEXT_TO", "${actor}向${target}旁边猛烈地做出手势。"}, {"zh", "PAST", "${actor}向${target}身后猛烈地做出手势。"} } },
+                      { sensory_mode::PLAIN, "", true, false, { {"en", "AT", "${actor} gestures violently at ${target}."}, {"en", "NEXT_TO", "${actor} gestures violently next to ${target}."}, {"en", "PAST", "${actor} gestures violently past ${target}."}, {"zh", "AT", "${actor}向${target}猛烈地做出手势。"}, {"zh", "NEXT_TO", "${actor}向${target}旁边猛烈地做出手势。"}, {"zh", "PAST", "${actor}朝${target}以远的地方猛烈地做出手势。"} } },
                     },
                         {},
                         {  },
@@ -481,7 +481,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", true, false, { {"en", "AT", "${actor} utters a dark prayer and points at ${target}."}, {"en", "NEXT_TO", "${actor} utters a dark prayer and points next to ${target}."}, {"en", "PAST", "${actor} utters a dark prayer and points past ${target}."}, {"zh", "AT", "${actor}低声念出一段黑暗祷词，指向${target}。"}, {"zh", "NEXT_TO", "${actor}低声念出一段黑暗祷词，指向${target}旁边。"}, {"zh", "PAST", "${actor}低声念出一段黑暗祷词，指向${target}身后。"} } },
+                      { sensory_mode::PLAIN, "", true, false, { {"en", "AT", "${actor} utters a dark prayer and points at ${target}."}, {"en", "NEXT_TO", "${actor} utters a dark prayer and points next to ${target}."}, {"en", "PAST", "${actor} utters a dark prayer and points past ${target}."}, {"zh", "AT", "${actor}低声念出一段黑暗祷词，指向${target}。"}, {"zh", "NEXT_TO", "${actor}低声念出一段黑暗祷词，指向${target}旁边。"}, {"zh", "PAST", "${actor}低声念出一段黑暗祷词，指向${target}以远的地方。"} } },
                     },
                         {},
                         {  },
@@ -605,7 +605,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", true, false, { {"en", "AT", "${actor} gestures stiffly at ${target}."}, {"en", "NEXT_TO", "${actor} gestures stiffly next to ${target}."}, {"en", "PAST", "${actor} gestures stiffly past ${target}."}, {"zh", "AT", "${actor}僵硬地向${target}做出手势。"}, {"zh", "NEXT_TO", "${actor}僵硬地向${target}旁边做出手势。"}, {"zh", "PAST", "${actor}僵硬地向${target}身后做出手势。"} } },
+                      { sensory_mode::PLAIN, "", true, false, { {"en", "AT", "${actor} gestures stiffly at ${target}."}, {"en", "NEXT_TO", "${actor} gestures stiffly next to ${target}."}, {"en", "PAST", "${actor} gestures stiffly past ${target}."}, {"zh", "AT", "${actor}僵硬地向${target}做出手势。"}, {"zh", "NEXT_TO", "${actor}僵硬地向${target}旁边做出手势。"}, {"zh", "PAST", "${actor}僵硬地朝${target}以远的地方做出手势。"} } },
                     },
                         {},
                         {  },
@@ -1133,7 +1133,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"foe", "resolved_foe"} },
                         { "actor", "foe" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} shouts at ${foe}, \"Taste the blood o the mountain!\""}, {"en", "NEXT_TO", "${actor} shouts next to ${foe}, \"Taste the blood o the mountain!\""}, {"en", "PAST", "${actor} shouts past ${foe}, \"Taste the blood o the mountain!\""}, {"zh", "AT", "${actor}向${foe}喊道：“尝尝大山的血！”"}, {"zh", "NEXT_TO", "${actor}向${foe}旁边喊道：“尝尝大山的血！”"}, {"zh", "PAST", "${actor}向${foe}身后喊道：“尝尝大山的血！”"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} shouts at ${foe}, \"Taste the blood o the mountain!\""}, {"en", "NEXT_TO", "${actor} shouts next to ${foe}, \"Taste the blood o the mountain!\""}, {"en", "PAST", "${actor} shouts past ${foe}, \"Taste the blood o the mountain!\""}, {"zh", "AT", "${actor}向${foe}喊道：“尝尝大山的血！”"}, {"zh", "NEXT_TO", "${actor}向${foe}旁边喊道：“尝尝大山的血！”"}, {"zh", "PAST", "${actor}的喊声从${foe}旁边掠过：“尝尝大山的血！”"} } },
                     },
                         {},
                         {  },
@@ -1153,7 +1153,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"foe", "resolved_foe"} },
                         { "actor", "foe" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} roars at ${foe}, \"Let me show ye whit a REAL cannon looks like!\""}, {"en", "NEXT_TO", "${actor} roars next to ${foe}, \"Let me show ye whit a REAL cannon looks like!\""}, {"en", "PAST", "${actor} roars past ${foe}, \"Let me show ye whit a REAL cannon looks like!\""}, {"zh", "AT", "${actor}向${foe}咆哮道：“让老子给你看看什么才叫真正的炮！”"}, {"zh", "NEXT_TO", "${actor}向${foe}旁边咆哮道：“让老子给你看看什么才叫真正的炮！”"}, {"zh", "PAST", "${actor}向${foe}身后咆哮道：“让老子给你看看什么才叫真正的炮！”"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} roars at ${foe}, \"Let me show ye whit a REAL cannon looks like!\""}, {"en", "NEXT_TO", "${actor} roars next to ${foe}, \"Let me show ye whit a REAL cannon looks like!\""}, {"en", "PAST", "${actor} roars past ${foe}, \"Let me show ye whit a REAL cannon looks like!\""}, {"zh", "AT", "${actor}向${foe}咆哮道：“让老子给你看看什么才叫真正的炮！”"}, {"zh", "NEXT_TO", "${actor}向${foe}旁边咆哮道：“让老子给你看看什么才叫真正的炮！”"}, {"zh", "PAST", "${actor}的咆哮声从${foe}旁边掠过：“让老子给你看看什么才叫真正的炮！”"} } },
                     },
                         {},
                         {  },
@@ -1368,7 +1368,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"possessive", "actor_possessive_pronoun"}, {"target", "resolved_target"} },
                         { "actor", "possessive", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} flaps ${possessive} wings at ${target}."}, {"en", "NEXT_TO", "${actor} flaps ${possessive} wings next to ${target}."}, {"en", "PAST", "${actor} flaps ${possessive} wings past ${target}."}, {"zh", "AT", "${actor}朝${target}拍动翅膀。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边拍动翅膀。"}, {"zh", "PAST", "${actor}朝${target}身后拍动翅膀。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} flaps ${possessive} wings at ${target}."}, {"en", "NEXT_TO", "${actor} flaps ${possessive} wings next to ${target}."}, {"en", "PAST", "${actor} flaps ${possessive} wings past ${target}."}, {"zh", "AT", "${actor}朝${target}拍动翅膀。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边拍动翅膀。"}, {"zh", "PAST", "${actor}朝${target}以远的地方拍动翅膀。"} } },
                     },
                         {},
                         {  },
@@ -1541,7 +1541,7 @@ const catalog_source &generated_monspell_catalog()
                                 "mon.cast.basilisk.targeted.gazes.v1",
                                 "materialization-v1|variants=2|22:basilisk cast targeted:0:0|26:floating eye cast targeted:0:1:0|lua=0|sites=0",
                             {
-                              { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} gazes at ${target}."}, {"en", "NEXT_TO", "${actor} gazes next to ${target}."}, {"en", "PAST", "${actor} gazes past ${target}."}, {"zh", "AT", "${actor}凝视${target}。"}, {"zh", "NEXT_TO", "${actor}望向${target}旁边。"}, {"zh", "PAST", "${actor}望向${target}身后。"} } },
+                              { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} gazes at ${target}."}, {"en", "NEXT_TO", "${actor} gazes next to ${target}."}, {"en", "PAST", "${actor} gazes past ${target}."}, {"zh", "AT", "${actor}凝视${target}。"}, {"zh", "NEXT_TO", "${actor}望向${target}旁边。"}, {"zh", "PAST", "${actor}的目光越过${target}。"} } },
                             },
                             },
                         },
@@ -1654,7 +1654,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"possessive", "actor_possessive_pronoun"}, {"target", "resolved_target"} },
                         { "actor", "possessive", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} chants while flapping ${possessive} wings at ${target}."}, {"en", "NEXT_TO", "${actor} chants while flapping ${possessive} wings next to ${target}."}, {"en", "PAST", "${actor} chants while flapping ${possessive} wings past ${target}."}, {"zh", "AT", "${actor}一边吟诵，一边朝${target}拍动翅膀。"}, {"zh", "NEXT_TO", "${actor}一边吟诵，一边朝${target}旁边拍动翅膀。"}, {"zh", "PAST", "${actor}一边吟诵，一边朝${target}身后拍动翅膀。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} chants while flapping ${possessive} wings at ${target}."}, {"en", "NEXT_TO", "${actor} chants while flapping ${possessive} wings next to ${target}."}, {"en", "PAST", "${actor} chants while flapping ${possessive} wings past ${target}."}, {"zh", "AT", "${actor}一边吟诵，一边朝${target}拍动翅膀。"}, {"zh", "NEXT_TO", "${actor}一边吟诵，一边朝${target}旁边拍动翅膀。"}, {"zh", "PAST", "${actor}一边吟诵，一边朝${target}以远的地方拍动翅膀。"} } },
                     },
                         {},
                         {  },
@@ -1674,7 +1674,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} screeches at ${target} while spinning and swirling."}, {"en", "NEXT_TO", "${actor} screeches next to ${target} while spinning and swirling."}, {"en", "PAST", "${actor} screeches past ${target} while spinning and swirling."}, {"zh", "AT", "${actor}一边盘旋飞舞，一边朝${target}尖啸。"}, {"zh", "NEXT_TO", "${actor}一边盘旋飞舞，一边朝${target}旁边尖啸。"}, {"zh", "PAST", "${actor}一边盘旋飞舞，一边朝${target}身后尖啸。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} screeches at ${target} while spinning and swirling."}, {"en", "NEXT_TO", "${actor} screeches next to ${target} while spinning and swirling."}, {"en", "PAST", "${actor} screeches past ${target} while spinning and swirling."}, {"zh", "AT", "${actor}一边盘旋飞舞，一边朝${target}尖啸。"}, {"zh", "NEXT_TO", "${actor}一边盘旋飞舞，一边朝${target}旁边尖啸。"}, {"zh", "PAST", "${actor}一边盘旋飞舞，一边尖啸，声音越过${target}。"} } },
                     },
                         {},
                         {  },
@@ -1702,7 +1702,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"possessive", "actor_possessive_pronoun"}, {"target", "resolved_target"} },
                         { "actor", "possessive", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} flaps ${possessive} wings at ${target}."}, {"en", "NEXT_TO", "${actor} flaps ${possessive} wings next to ${target}."}, {"en", "PAST", "${actor} flaps ${possessive} wings past ${target}."}, {"zh", "AT", "${actor}朝${target}拍动翅膀。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边拍动翅膀。"}, {"zh", "PAST", "${actor}朝${target}身后拍动翅膀。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} flaps ${possessive} wings at ${target}."}, {"en", "NEXT_TO", "${actor} flaps ${possessive} wings next to ${target}."}, {"en", "PAST", "${actor} flaps ${possessive} wings past ${target}."}, {"zh", "AT", "${actor}朝${target}拍动翅膀。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边拍动翅膀。"}, {"zh", "PAST", "${actor}朝${target}以远的地方拍动翅膀。"} } },
                     },
                         {},
                         {  },
@@ -2900,7 +2900,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} chitters at ${target}."}, {"en", "NEXT_TO", "${actor} chitters next to ${target}."}, {"en", "PAST", "${actor} chitters past ${target}."}, {"zh", "AT", "${actor}朝${target}发出窸窣声。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边发出窸窣声。"}, {"zh", "PAST", "${actor}朝${target}身后发出窸窣声。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} chitters at ${target}."}, {"en", "NEXT_TO", "${actor} chitters next to ${target}."}, {"en", "PAST", "${actor} chitters past ${target}."}, {"zh", "AT", "${actor}朝${target}发出窸窣声。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边发出窸窣声。"}, {"zh", "PAST", "${actor}发出的窸窣声从${target}旁边掠过。"} } },
                     },
                         {},
                         {  },
@@ -3283,7 +3283,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} stares piercingly at ${target}."}, {"en", "NEXT_TO", "${actor} stares piercingly next to ${target}."}, {"en", "PAST", "${actor} stares piercingly past ${target}."}, {"zh", "AT", "${actor}以锐利的目光凝视${target}。"}, {"zh", "NEXT_TO", "${actor}以锐利的目光望向${target}旁边。"}, {"zh", "PAST", "${actor}以锐利的目光望向${target}身后。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} stares piercingly at ${target}."}, {"en", "NEXT_TO", "${actor} stares piercingly next to ${target}."}, {"en", "PAST", "${actor} stares piercingly past ${target}."}, {"zh", "AT", "${actor}以锐利的目光凝视${target}。"}, {"zh", "NEXT_TO", "${actor}以锐利的目光望向${target}旁边。"}, {"zh", "PAST", "${actor}锐利的目光越过${target}。"} } },
                     },
                         {},
                         {  },
@@ -3451,7 +3451,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} smirks and gazes at ${target}."}, {"en", "NEXT_TO", "${actor} smirks and gazes next to ${target}."}, {"en", "PAST", "${actor} smirks and gazes past ${target}."}, {"zh", "AT", "${actor}得意地笑着，凝视${target}。"}, {"zh", "NEXT_TO", "${actor}得意地笑着，望向${target}旁边。"}, {"zh", "PAST", "${actor}得意地笑着，望向${target}身后。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} smirks and gazes at ${target}."}, {"en", "NEXT_TO", "${actor} smirks and gazes next to ${target}."}, {"en", "PAST", "${actor} smirks and gazes past ${target}."}, {"zh", "AT", "${actor}得意地笑着，凝视${target}。"}, {"zh", "NEXT_TO", "${actor}得意地笑着，望向${target}旁边。"}, {"zh", "PAST", "${actor}得意地笑着，目光越过${target}。"} } },
                     },
                         {},
                         {  },
@@ -3563,7 +3563,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"foe", "resolved_foe"} },
                         { "actor", "foe" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} stares at ${foe} with tortured malice."}, {"en", "NEXT_TO", "${actor} stares next to ${foe} with tortured malice."}, {"en", "PAST", "${actor} stares past ${foe} with tortured malice."}, {"zh", "AT", "${actor}以饱受折磨的恶意凝视${foe}。"}, {"zh", "NEXT_TO", "${actor}以饱受折磨的恶意望向${foe}旁边。"}, {"zh", "PAST", "${actor}以饱受折磨的恶意望向${foe}身后。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} stares at ${foe} with tortured malice."}, {"en", "NEXT_TO", "${actor} stares next to ${foe} with tortured malice."}, {"en", "PAST", "${actor} stares past ${foe} with tortured malice."}, {"zh", "AT", "${actor}以饱受折磨的恶意凝视${foe}。"}, {"zh", "NEXT_TO", "${actor}以饱受折磨的恶意望向${foe}旁边。"}, {"zh", "PAST", "${actor}的目光带着饱受折磨的恶意，越过${foe}。"} } },
                     },
                         {},
                         {  },
@@ -3659,7 +3659,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} gazes at ${target}."}, {"en", "NEXT_TO", "${actor} gazes next to ${target}."}, {"en", "PAST", "${actor} gazes past ${target}."}, {"zh", "AT", "${actor}凝视${target}。"}, {"zh", "NEXT_TO", "${actor}望向${target}旁边。"}, {"zh", "PAST", "${actor}望向${target}身后。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} gazes at ${target}."}, {"en", "NEXT_TO", "${actor} gazes next to ${target}."}, {"en", "PAST", "${actor} gazes past ${target}."}, {"zh", "AT", "${actor}凝视${target}。"}, {"zh", "NEXT_TO", "${actor}望向${target}旁边。"}, {"zh", "PAST", "${actor}的目光越过${target}。"} } },
                     },
                         {},
                         {  },
@@ -3687,7 +3687,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} focuses its will at ${target}."}, {"en", "NEXT_TO", "${actor} focuses its will next to ${target}."}, {"en", "PAST", "${actor} focuses its will past ${target}."}, {"zh", "AT", "${actor}将意志聚焦于${target}。"}, {"zh", "NEXT_TO", "${actor}将意志聚焦于${target}旁边。"}, {"zh", "PAST", "${actor}将意志聚焦于${target}身后。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} focuses its will at ${target}."}, {"en", "NEXT_TO", "${actor} focuses its will next to ${target}."}, {"en", "PAST", "${actor} focuses its will past ${target}."}, {"zh", "AT", "${actor}将意志聚焦于${target}。"}, {"zh", "NEXT_TO", "${actor}将意志聚焦于${target}旁边。"}, {"zh", "PAST", "${actor}将意志聚焦于${target}以远的地方。"} } },
                     },
                         {},
                         {  },
@@ -3947,7 +3947,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} looks at ${target} while chanting."}, {"en", "NEXT_TO", "${actor} looks next to ${target} while chanting."}, {"en", "PAST", "${actor} looks past ${target} while chanting."}, {"zh", "AT", "${actor}一边吟诵，一边看向${target}。"}, {"zh", "NEXT_TO", "${actor}一边吟诵，一边看向${target}旁边。"}, {"zh", "PAST", "${actor}一边吟诵，一边看向${target}身后。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} looks at ${target} while chanting."}, {"en", "NEXT_TO", "${actor} looks next to ${target} while chanting."}, {"en", "PAST", "${actor} looks past ${target} while chanting."}, {"zh", "AT", "${actor}一边吟诵，一边看向${target}。"}, {"zh", "NEXT_TO", "${actor}一边吟诵，一边看向${target}旁边。"}, {"zh", "PAST", "${actor}一边吟诵，一边望向${target}以远的地方。"} } },
                     },
                         {},
                         {  },
@@ -3967,7 +3967,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} looks at ${target} and mumbles some strange words."}, {"en", "NEXT_TO", "${actor} looks next to ${target} and mumbles some strange words."}, {"en", "PAST", "${actor} looks past ${target} and mumbles some strange words."}, {"zh", "AT", "${actor}看向${target}，咕哝着一些奇怪的话。"}, {"zh", "NEXT_TO", "${actor}看向${target}旁边，咕哝着一些奇怪的话。"}, {"zh", "PAST", "${actor}看向${target}身后，咕哝着一些奇怪的话。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} looks at ${target} and mumbles some strange words."}, {"en", "NEXT_TO", "${actor} looks next to ${target} and mumbles some strange words."}, {"en", "PAST", "${actor} looks past ${target} and mumbles some strange words."}, {"zh", "AT", "${actor}看向${target}，咕哝着一些奇怪的话。"}, {"zh", "NEXT_TO", "${actor}看向${target}旁边，咕哝着一些奇怪的话。"}, {"zh", "PAST", "${actor}望向${target}以远的地方，咕哝着一些奇怪的话。"} } },
                     },
                         {},
                         {  },
@@ -3987,7 +3987,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} casts a spell at ${target}."}, {"en", "NEXT_TO", "${actor} casts a spell next to ${target}."}, {"en", "PAST", "${actor} casts a spell past ${target}."}, {"zh", "AT", "${actor}向${target}施展法术。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边施展法术。"}, {"zh", "PAST", "${actor}朝${target}身后施展法术。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} casts a spell at ${target}."}, {"en", "NEXT_TO", "${actor} casts a spell next to ${target}."}, {"en", "PAST", "${actor} casts a spell past ${target}."}, {"zh", "AT", "${actor}向${target}施展法术。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边施展法术。"}, {"zh", "PAST", "${actor}朝${target}以远的地方施展法术。"} } },
                     },
                         {},
                         {  },
@@ -4071,7 +4071,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} stares at ${target}."}, {"en", "NEXT_TO", "${actor} stares next to ${target}."}, {"en", "PAST", "${actor} stares past ${target}."}, {"zh", "AT", "${actor}凝视${target}。"}, {"zh", "NEXT_TO", "${actor}望向${target}旁边。"}, {"zh", "PAST", "${actor}望向${target}身后。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} stares at ${target}."}, {"en", "NEXT_TO", "${actor} stares next to ${target}."}, {"en", "PAST", "${actor} stares past ${target}."}, {"zh", "AT", "${actor}凝视${target}。"}, {"zh", "NEXT_TO", "${actor}望向${target}旁边。"}, {"zh", "PAST", "${actor}的目光越过${target}。"} } },
                     },
                         {},
                         {  },
@@ -4155,7 +4155,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} blinks at ${target}."}, {"en", "NEXT_TO", "${actor} blinks next to ${target}."}, {"en", "PAST", "${actor} blinks past ${target}."}, {"zh", "AT", "${actor}朝${target}眨眼。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边眨眼。"}, {"zh", "PAST", "${actor}朝${target}身后眨眼。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} blinks at ${target}."}, {"en", "NEXT_TO", "${actor} blinks next to ${target}."}, {"en", "PAST", "${actor} blinks past ${target}."}, {"zh", "AT", "${actor}朝${target}眨眼。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边眨眼。"}, {"zh", "PAST", "${actor}朝${target}以远的地方眨眼。"} } },
                     },
                         {},
                         {  },
@@ -4795,7 +4795,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor_lower", "actor_ref_lower"}, {"target", "resolved_target"} },
                         { "actor_lower", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "An echo of ${actor_lower} flickers and hopelessly wails at ${target}."}, {"en", "NEXT_TO", "An echo of ${actor_lower} flickers and hopelessly wails next to ${target}."}, {"en", "PAST", "An echo of ${actor_lower} flickers and hopelessly wails past ${target}."}, {"zh", "AT", "${actor_lower}的一道回声忽明忽灭，绝望地朝${target}哀嚎。"}, {"zh", "NEXT_TO", "${actor_lower}的一道回声忽明忽灭，绝望地朝${target}旁边哀嚎。"}, {"zh", "PAST", "${actor_lower}的一道回声忽明忽灭，绝望地朝${target}身后哀嚎。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "An echo of ${actor_lower} flickers and hopelessly wails at ${target}."}, {"en", "NEXT_TO", "An echo of ${actor_lower} flickers and hopelessly wails next to ${target}."}, {"en", "PAST", "An echo of ${actor_lower} flickers and hopelessly wails past ${target}."}, {"zh", "AT", "${actor_lower}的一道回声忽明忽灭，绝望地朝${target}哀嚎。"}, {"zh", "NEXT_TO", "${actor_lower}的一道回声忽明忽灭，绝望地朝${target}旁边哀嚎。"}, {"zh", "PAST", "${actor_lower}的一道回声忽明忽灭，绝望的哀嚎从${target}旁边掠过。"} } },
                     },
                         {},
                         {  },
@@ -5262,7 +5262,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} stares at ${target} and mumbles some strange words."}, {"en", "NEXT_TO", "${actor} stares next to ${target} and mumbles some strange words."}, {"en", "PAST", "${actor} stares past ${target} and mumbles some strange words."}, {"zh", "AT", "${actor}凝视${target}，咕哝着一些奇怪的话。"}, {"zh", "NEXT_TO", "${actor}望向${target}旁边，咕哝着一些奇怪的话。"}, {"zh", "PAST", "${actor}望向${target}身后，咕哝着一些奇怪的话。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} stares at ${target} and mumbles some strange words."}, {"en", "NEXT_TO", "${actor} stares next to ${target} and mumbles some strange words."}, {"en", "PAST", "${actor} stares past ${target} and mumbles some strange words."}, {"zh", "AT", "${actor}凝视${target}，咕哝着一些奇怪的话。"}, {"zh", "NEXT_TO", "${actor}望向${target}旁边，咕哝着一些奇怪的话。"}, {"zh", "PAST", "${actor}望向${target}以远的地方，咕哝着一些奇怪的话。"} } },
                     },
                         {},
                         {  },
@@ -5282,7 +5282,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} casts a spell at ${target}."}, {"en", "NEXT_TO", "${actor} casts a spell next to ${target}."}, {"en", "PAST", "${actor} casts a spell past ${target}."}, {"zh", "AT", "${actor}向${target}施展了一个法术。"}, {"zh", "NEXT_TO", "${actor}向${target}旁边施展了一个法术。"}, {"zh", "PAST", "${actor}向${target}身后施展了一个法术。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} casts a spell at ${target}."}, {"en", "NEXT_TO", "${actor} casts a spell next to ${target}."}, {"en", "PAST", "${actor} casts a spell past ${target}."}, {"zh", "AT", "${actor}向${target}施展了一个法术。"}, {"zh", "NEXT_TO", "${actor}向${target}旁边施展了一个法术。"}, {"zh", "PAST", "${actor}朝${target}以远的地方施展了一个法术。"} } },
                     },
                         {},
                         {  },
@@ -5817,7 +5817,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} roars overwhelmingly at ${target}!"}, {"en", "NEXT_TO", "${actor} roars overwhelmingly next to ${target}!"}, {"en", "PAST", "${actor} roars overwhelmingly past ${target}!"}, {"zh", "AT", "${actor}向${target}发出势不可挡的咆哮！"}, {"zh", "NEXT_TO", "${actor}向${target}旁边发出势不可挡的咆哮！"}, {"zh", "PAST", "${actor}向${target}身后发出势不可挡的咆哮！"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} roars overwhelmingly at ${target}!"}, {"en", "NEXT_TO", "${actor} roars overwhelmingly next to ${target}!"}, {"en", "PAST", "${actor} roars overwhelmingly past ${target}!"}, {"zh", "AT", "${actor}向${target}发出势不可挡的咆哮！"}, {"zh", "NEXT_TO", "${actor}向${target}旁边发出势不可挡的咆哮！"}, {"zh", "PAST", "${actor}势不可挡的咆哮越过${target}！"} } },
                     },
                         {},
                         {  },
@@ -5837,7 +5837,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} thunders ferociously at ${target}!"}, {"en", "NEXT_TO", "${actor} thunders ferociously next to ${target}!"}, {"en", "PAST", "${actor} thunders ferociously past ${target}!"}, {"zh", "AT", "${actor}向${target}发出雷霆般的怒吼！"}, {"zh", "NEXT_TO", "${actor}向${target}旁边发出雷霆般的怒吼！"}, {"zh", "PAST", "${actor}向${target}身后发出雷霆般的怒吼！"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} thunders ferociously at ${target}!"}, {"en", "NEXT_TO", "${actor} thunders ferociously next to ${target}!"}, {"en", "PAST", "${actor} thunders ferociously past ${target}!"}, {"zh", "AT", "${actor}向${target}发出雷霆般的怒吼！"}, {"zh", "NEXT_TO", "${actor}向${target}旁边发出雷霆般的怒吼！"}, {"zh", "PAST", "${actor}雷霆般的怒吼越过${target}！"} } },
                     },
                         {},
                         {  },
@@ -6615,7 +6615,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} roars wildly at ${target}."}, {"en", "NEXT_TO", "${actor} roars wildly next to ${target}."}, {"en", "PAST", "${actor} roars wildly past ${target}."}, {"zh", "AT", "${actor}朝${target}狂野咆哮。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边狂野咆哮。"}, {"zh", "PAST", "${actor}朝${target}身后狂野咆哮。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} roars wildly at ${target}."}, {"en", "NEXT_TO", "${actor} roars wildly next to ${target}."}, {"en", "PAST", "${actor} roars wildly past ${target}."}, {"zh", "AT", "${actor}朝${target}狂野咆哮。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边狂野咆哮。"}, {"zh", "PAST", "${actor}发出狂野的咆哮，声音从${target}旁边掠过。"} } },
                     },
                         {},
                         {  },
@@ -6635,7 +6635,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} yells loudly at ${target}."}, {"en", "NEXT_TO", "${actor} yells loudly next to ${target}."}, {"en", "PAST", "${actor} yells loudly past ${target}."}, {"zh", "AT", "${actor}朝${target}高声喊叫。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边高声喊叫。"}, {"zh", "PAST", "${actor}朝${target}身后高声喊叫。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} yells loudly at ${target}."}, {"en", "NEXT_TO", "${actor} yells loudly next to ${target}."}, {"en", "PAST", "${actor} yells loudly past ${target}."}, {"zh", "AT", "${actor}朝${target}高声喊叫。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边高声喊叫。"}, {"zh", "PAST", "${actor}高声喊叫，声音从${target}旁边掠过。"} } },
                     },
                         {},
                         {  },
@@ -6907,7 +6907,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"foe", "resolved_foe"} },
                         { "actor", "foe" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} stares at ${foe} with tortured malice."}, {"en", "NEXT_TO", "${actor} stares next to ${foe} with tortured malice."}, {"en", "PAST", "${actor} stares past ${foe} with tortured malice."}, {"zh", "AT", "${actor}以饱受折磨的恶意凝视${foe}。"}, {"zh", "NEXT_TO", "${actor}以饱受折磨的恶意望向${foe}旁边。"}, {"zh", "PAST", "${actor}以饱受折磨的恶意望向${foe}身后。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} stares at ${foe} with tortured malice."}, {"en", "NEXT_TO", "${actor} stares next to ${foe} with tortured malice."}, {"en", "PAST", "${actor} stares past ${foe} with tortured malice."}, {"zh", "AT", "${actor}以饱受折磨的恶意凝视${foe}。"}, {"zh", "NEXT_TO", "${actor}以饱受折磨的恶意望向${foe}旁边。"}, {"zh", "PAST", "${actor}的目光带着饱受折磨的恶意，越过${foe}。"} } },
                     },
                         {},
                         {  },
@@ -7137,7 +7137,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} mutters an ancient curse at ${target}."}, {"en", "NEXT_TO", "${actor} mutters an ancient curse next to ${target}."}, {"en", "PAST", "${actor} mutters an ancient curse past ${target}."}, {"zh", "AT", "${actor}朝${target}咕哝着念出一道古老诅咒。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边咕哝着念出一道古老诅咒。"}, {"zh", "PAST", "${actor}朝${target}身后咕哝着念出一道古老诅咒。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} mutters an ancient curse at ${target}."}, {"en", "NEXT_TO", "${actor} mutters an ancient curse next to ${target}."}, {"en", "PAST", "${actor} mutters an ancient curse past ${target}."}, {"zh", "AT", "${actor}朝${target}咕哝着念出一道古老诅咒。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边咕哝着念出一道古老诅咒。"}, {"zh", "PAST", "${actor}朝${target}以远的地方咕哝着念出一道古老诅咒。"} } },
                     },
                         {},
                         {  },

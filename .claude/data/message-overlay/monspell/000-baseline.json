@@ -165,7 +165,7 @@
               { "language": "en", "relation": "PAST", "pattern": "${actor} points ${possessive} staff past ${target}, shooting a stream of webbing." },
               { "language": "zh", "relation": "AT", "pattern": "${actor}用法杖指向${target}，射出一股蛛网。" },
               { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}用法杖指向${target}旁边，射出一股蛛网。" },
-              { "language": "zh", "relation": "PAST", "pattern": "${actor}用法杖指向${target}身后，射出一股蛛网。" }
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}用法杖指向${target}以远的地方，射出一股蛛网。" }
             ]
           }],
           "materialization_cases": [],
@@ -237,7 +237,7 @@
               { "language": "en", "relation": "PAST", "pattern": "${actor} coils ${reflexive} and waves ${possessive} upper body past ${target}." },
               { "language": "zh", "relation": "AT", "pattern": "${actor}盘起身躯，向${target}摆动上半身。" },
               { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}盘起身躯，向${target}旁边摆动上半身。" },
-              { "language": "zh", "relation": "PAST", "pattern": "${actor}盘起身躯，向${target}身后摆动上半身。" }
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}盘起身躯，朝${target}以远的地方摆动上半身。" }
             ]
           }],
           "materialization_cases": [], "recursive_dependency_fingerprints": {}
@@ -265,7 +265,7 @@
               { "language": "en", "relation": "PAST", "pattern": "${actor} gestures with ${possessive} tail past ${target}." },
               { "language": "zh", "relation": "AT", "pattern": "${actor}用尾巴向${target}做出手势。" },
               { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}用尾巴向${target}旁边做出手势。" },
-              { "language": "zh", "relation": "PAST", "pattern": "${actor}用尾巴向${target}身后做出手势。" }
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}用尾巴朝${target}以远的地方做出手势。" }
             ]
           }],
           "materialization_cases": [], "recursive_dependency_fingerprints": {}
@@ -327,7 +327,7 @@
               { "language": "en", "relation": "PAST", "pattern": "${actor} gestures past ${target} while chanting." },
               { "language": "zh", "relation": "AT", "pattern": "${actor}一边吟诵，一边向${target}做出手势。" },
               { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}一边吟诵，一边向${target}旁边做出手势。" },
-              { "language": "zh", "relation": "PAST", "pattern": "${actor}一边吟诵，一边向${target}身后做出手势。" }
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}一边吟诵，一边朝${target}以远的地方做出手势。" }
             ]
           }],
           "materialization_cases": [], "recursive_dependency_fingerprints": {}
@@ -354,7 +354,7 @@
               { "language": "en", "relation": "PAST", "pattern": "${actor} points past ${target} and mumbles some strange words." },
               { "language": "zh", "relation": "AT", "pattern": "${actor}指向${target}，咕哝着一些奇怪的话。" },
               { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}指向${target}旁边，咕哝着一些奇怪的话。" },
-              { "language": "zh", "relation": "PAST", "pattern": "${actor}指向${target}身后，咕哝着一些奇怪的话。" }
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}指向${target}以远的地方，咕哝着一些奇怪的话。" }
             ]
           }],
           "materialization_cases": [], "recursive_dependency_fingerprints": {}
@@ -381,7 +381,7 @@
               { "language": "en", "relation": "PAST", "pattern": "${actor} casts a spell past ${target}." },
               { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}施展了一个法术。" },
               { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}向${target}旁边施展了一个法术。" },
-              { "language": "zh", "relation": "PAST", "pattern": "${actor}向${target}身后施展了一个法术。" }
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}以远的地方施展了一个法术。" }
             ]
           }],
           "materialization_cases": [], "recursive_dependency_fingerprints": {}
@@ -484,7 +484,7 @@
               { "language": "en", "relation": "PAST", "pattern": "${actor} gestures past ${target}." },
               { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}做出手势。" },
               { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}向${target}旁边做出手势。" },
-              { "language": "zh", "relation": "PAST", "pattern": "${actor}向${target}身后做出手势。" }
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}以远的地方做出手势。" }
             ]
           }],
           "materialization_cases": [], "recursive_dependency_fingerprints": {}
@@ -586,7 +586,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} gestures violently past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}猛烈地做出手势。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}向${target}旁边猛烈地做出手势。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}向${target}身后猛烈地做出手势。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}以远的地方猛烈地做出手势。" }
           ] }],
         "materialization_cases": [], "recursive_dependency_fingerprints": {}
       }]
@@ -614,7 +614,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} utters a dark prayer and points past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}低声念出一段黑暗祷词，指向${target}。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}低声念出一段黑暗祷词，指向${target}旁边。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}低声念出一段黑暗祷词，指向${target}身后。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}低声念出一段黑暗祷词，指向${target}以远的地方。" }
           ] }],
         "materialization_cases": [], "recursive_dependency_fingerprints": {}
       }]
@@ -726,7 +726,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} gestures stiffly past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}僵硬地向${target}做出手势。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}僵硬地向${target}旁边做出手势。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}僵硬地向${target}身后做出手势。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}僵硬地朝${target}以远的地方做出手势。" }
           ] }],
         "materialization_cases": [], "recursive_dependency_fingerprints": {}
       }]
@@ -1266,7 +1266,7 @@
               {
                 "language": "zh",
                 "relation": "PAST",
-                "pattern": "${actor}向${foe}身后喊道：“尝尝大山的血！”"
+                "pattern": "${actor}的喊声从${foe}旁边掠过：“尝尝大山的血！”"
               }
             ]
           }],
@@ -1328,7 +1328,7 @@
               {
                 "language": "zh",
                 "relation": "PAST",
-                "pattern": "${actor}向${foe}身后咆哮道：“让老子给你看看什么才叫真正的炮！”"
+                "pattern": "${actor}的咆哮声从${foe}旁边掠过：“让老子给你看看什么才叫真正的炮！”"
               }
             ]
           }],

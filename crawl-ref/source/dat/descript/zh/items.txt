@@ -868,7 +868,7 @@ potion of lignification
 %%%%
 potion of magic
 
-这是瓶很有用的药水，它能注入魔力。
+这是瓶很有用的药水，它能注入法力。
 %%%%
 potion of might
 

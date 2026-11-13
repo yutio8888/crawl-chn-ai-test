@@ -5,7 +5,7 @@ acid (acid) weapon ego
 %%%%
 antimagic (antimagic) weapon ego
 
-它可以减少你的魔法能量，并干扰它所击中生物的咒语和魔法能力。
+它可以减少你的法力，并干扰它所击中生物的咒语和魔法能力。
 天生能力和神赐能力不受影响。
 %%%%
 chaos (chaos) weapon ego

@@ -516,7 +516,7 @@ engulf your surroundings in Yredelemnul's grip
 用伊莱德莱姆努尔之握吞噬周围
 %%%%
 gain magical power from killing
-通过杀戮获得魔力
+通过杀戮获得法力
 %%%%
 Vehumet is now aiding your destructive spells.
 维胡梅特现在协助你的破坏性法术。
@@ -585,7 +585,7 @@ Makhleb will no longer allow you to brand your body with an infernal mark.
 马科列布不再允许你在身体上烙印地狱印记。
 %%%%
 call upon Sif Muna for magical energy
-呼唤西芙·穆娜获取魔力
+呼唤西芙·穆娜获取法力
 %%%%
 freely open your mind to new spells
 自由开放心灵学习新法术
@@ -969,13 +969,13 @@ heal and protect your ancestor
 治疗并保护你的先祖
 %%%%
 You now drain nearby creatures when transferring your ancestor.
-现在你在转移先祖时会汲取附近生物的能量，使其衰弱。
+现在你在转移先祖时会使附近的生物陷入衰竭。
 %%%%
 You no longer drain nearby creatures when transferring your ancestor.
-转移先祖时，你不再汲取附近生物的能量来使其衰弱。
+转移先祖时，你不再使附近的生物陷入衰竭。
 %%%%
 You drain nearby creatures when transferring your ancestor.
-你在转移先祖时会汲取附近生物的能量，使其衰弱。
+你在转移先祖时会使附近的生物陷入衰竭。
 %%%%
 perform damaging attacks by moving towards foes
 通过向敌人移动来施展伤害性攻击
@@ -1383,7 +1383,7 @@ You grip the centipede bauble in your %s and it winds around your %s and fuses w
 %s从记忆之雾中浮现！
 %%%%
 %s enhances the restoration.
-%s增强了魔力恢复。
+%s增强了法力恢复。
 %%%%
 %s enters %s!
 %s进入了%s！
@@ -1550,7 +1550,7 @@ The potion decomposes into %s within you.
 %s被驱散了%s
 %%%%
 %s is drained!
-%s的生命力被汲取了！
+%s陷入衰竭！
 %%%%
 %s is engulfed in flames!
 %s被火焰吞没了！
@@ -2762,7 +2762,7 @@ A thick mucus forms on %s.
 一层厚厚的粘液在%s上形成了。
 %%%%
 A tiny devil pulls itself out of the air.
-一个微小的恶魔从空气中拉出了自己。
+一个微小的恶魔从虚空中钻了出来。
 %%%%
 A traitor %s dares to challenge your wrath!
 一个背叛的%s竟敢挑衅你的愤怒！
@@ -4721,7 +4721,7 @@ You are dazed by the spores!
 被严重浇透了！
 %%%%
  is drained terribly!
-被严重汲取了！
+陷入了严重的衰竭！
 %%%%
  is duplicated!
  被复制了！
@@ -5261,10 +5261,10 @@ Magic Scroll
 魔法卷轴
 %%%%
 Magical energy flows from %s into your mind!
-魔法能量从%s流入了你的心智！
+法力从%s流入了你的心智！
 %%%%
 Magical energy flows into your mind!
-魔法能量流入了你的心智！
+法力流入了你的心智！
 %%%%
 magical power
 法力强化
@@ -9620,7 +9620,7 @@ You challenge %s to single combat, but %s is merely a clone!
 你向%s发起单挑，但%s只是个幻象！
 %%%%
 You channel some magical energy.
-你引导了一些魔力。
+你引导了一些法力。
 %%%%
 You charge forward in eerie silence!
 你在诡异的寂静中向前冲锋！
@@ -9644,7 +9644,7 @@ you collect gold
 你收集金币
 %%%%
 You condense your magic into a crackling blade!
-你将魔力凝结成噼啪作响的利刃！
+你将法力凝结成噼啪作响的利刃！
 %%%%
 You conjure a globe of magical energy.
 你召唤出一个由魔法能量构成的法球。
@@ -11629,7 +11629,7 @@ Your magical essence is drained by the effort!
 这番努力损耗了你的魔法精华！
 %%%%
 Your magical reserves are too exhausted to conjure more reagents.
-你的魔力储备太枯竭，无法召唤更多试剂。
+你的法力储备太枯竭，无法召唤更多试剂。
 %%%%
 Your maw growls hungrily at the sight of %s, but you resist your urges.
 你的吞噬之口在看到%s时饥饿地咆哮起来，但你抵抗住了冲动。
@@ -18365,7 +18365,7 @@ An external divine aura illuminates you.
 一个外部的神圣光环照亮了你。
 %%%%
 * * * LOW MAGIC WARNING * * *
-* * * 低魔力警告 * * *
+* * * 低法力警告 * * *
 %%%%
 * * * LOW HITPOINT WARNING * * *
 * * * 低生命警告 * * *
@@ -19019,7 +19019,7 @@ HP casting
 生命施法
 %%%%
 MP-powered wands
-魔杖消耗魔力
+魔杖消耗法力
 %%%%
 Mark of Annihilation
 湮灭印记
@@ -19262,7 +19262,7 @@ heat vulnerability
 炎热弱点
 %%%%
 high MP
-高魔力
+高法力
 %%%%
 icemail
 冰甲
@@ -19316,13 +19316,13 @@ large bone plates
 大型骨板
 %%%%
 low MP
-低魔力
+低法力
 %%%%
 lucky
 幸运
 %%%%
 magic link
-魔力链接
+法力链接
 %%%%
 magic shield
 魔法护盾
@@ -19715,10 +19715,10 @@ Spells you cast and wands you use may paralyse nearby enemies.
 你施放的法术和使用的魔杖可能会麻痹附近的敌人。
 %%%%
 Spells you cast cost 1 less MP (to a minimum of 1).
-你施放的法术消耗减少1点魔力（最低为1）。
+你施放的法术消耗减少1点法力（最低为1）。
 %%%%
 Spells you cast cost 2 less MP (to a minimum of 1).
-你施放的法术消耗减少2点魔力（最低为1）。
+你施放的法术消耗减少2点法力（最低为1）。
 %%%%
 Spells you cast may paralyse adjacent enemies.
 你施放的法术可能会麻痹相邻的敌人。
@@ -20282,7 +20282,7 @@ You draw destruction from the wailing grief of Tartarus.
 你从塔尔塔罗斯的哀嚎悲伤中汲取毁灭之力。
 %%%%
 You expend magic power (3 MP) to strengthen your wands.
-你消耗魔力（3点）来增强你的魔杖。
+你消耗法力（3点）来增强你的魔杖。
 %%%%
 You float through the air rather than walking.
 你在空中漂浮，而非行走。
@@ -20300,7 +20300,7 @@ You gain AC when you inflict magical misfortune on nearby enemies.
 当你对附近的敌人施加魔法灾厄时，你获得防御。
 %%%%
 You gain doubled healing and magic from potions.
-你从药水中获得双倍的治疗和魔力恢复。
+你从药水中获得双倍的治疗和法力恢复。
 %%%%
 You gain extra lives every three experience levels.
 你每三级获得一条额外生命。
@@ -20528,7 +20528,7 @@ You refuse to read scrolls in combat unless seriously injured.
 除非严重受伤，否则你在战斗中拒绝阅读卷轴。
 %%%%
 You regain HP and MP as you explore.
-你在探索时恢复生命和魔力。
+你在探索时恢复生命和法力。
 %%%%
 You regenerate a little health from kills.
 你通过击杀恢复少量生命。
@@ -20708,7 +20708,7 @@ Your magical power and effects resist disruption.
 你的魔法力量和效果能够抵抗干扰。
 %%%%
 Your magical power is your life essence.
-你的魔力就是你的生命精华。
+你的法力就是你的生命精华。
 %%%%
 Your melee attacks may debilitate your foes.
 你的近战攻击可能会削弱你的敌人。
@@ -21260,7 +21260,7 @@ weak
 虚弱
 %%%%
 drained
-被吸取
+衰竭
 %%%%
 very drained
 重度衰竭
@@ -21563,10 +21563,10 @@ skewered by barbs
 被倒刺刺穿
 %%%%
 lightly drained
-轻度被吸取
+轻度衰竭
 %%%%
 heavily drained
-严重被吸取
+重度衰竭
 %%%%
 softly glowing
 微微发光
@@ -21590,7 +21590,7 @@ bound in place
 被束缚在原地
 %%%%
 targeted by your dimensional bullseye
-被你的次元靶心标记
+被你的维度靶心标记
 %%%%
 fragile as glass
 如玻璃般脆弱
@@ -22286,7 +22286,7 @@ Your cleaving frenzy subsides.
 你的顺劈狂热平息了。
 %%%%
 Your dimensional bullseye dissipates.
-你的次元靶消散了。
+你的维度靶心消散了。
 %%%%
 Your enlightenment fades.
 你的启迪消退了。
@@ -23735,7 +23735,7 @@ you don't have enough magic to cast this spell.
 你没有足够的法力来施放此法术。
 %%%%
 your magic and health are inextricable.
-你的魔力和生命密不可分。
+你的法力和生命密不可分。
 %%%%
 your reserves of magic are already full.
 你的法力储备已经满了。
@@ -24101,7 +24101,7 @@ Forget %1$s, freeing %2$d spell level%3$s for a total of %4$d?%5$s
 遗忘%1$s，释放%2$d个法术等级（总计%4$d）？%5$s
 %%%%
 You draw magical energy from your own body!
-你从自己体内汲取了魔法能量！
+你从自己体内汲取了法力！
 %%%%
 Malign forces permeate your being, awaiting release.
 邪恶的力量渗透了你的身体，等待释放。
@@ -24359,7 +24359,7 @@ Space warps violently around %s%s
 %s在痛苦中扭动%s
 %%%%
 %s drains %s%s
-%s吸取了%s%s
+%s使%s陷入衰竭%s
 %%%%
 You are electrocuted%s
 你被电击了%s
@@ -24488,7 +24488,7 @@ average
 平均
 %%%%
 Your damage rating with %s is about %s.
-%s的伤害评级约为%s
+%s的伤害评级约为%s。
 %%%%
 You fade completely from view now that you are no longer glowing from magical contamination.
 你完全从视野中消失了，因为你不再因魔法污染而发光。
@@ -24500,7 +24500,7 @@ You feel your energy subside.
 你感觉精力减退了。
 %%%%
 You can't survive in this terrain! You fly over the %s, but the process is draining.
-你无法在这种地形上生存！你飞到了%s上方，但这个过程会汲取你的生命。
+你无法在这种地形上生存！你飞到了%s上方，但这个过程会使你陷入衰竭。
 %%%%
 buggy terrain
 有问题的地形
@@ -27939,7 +27939,7 @@ Your magical nature develops, letting you fly evasively.
 你的魔法本质发展了，使你能以闪避之姿飞行。
 %%%%
 Your magical power and health merge together.
-你的魔力和生命融合在了一起。
+你的法力和生命融合在了一起。
 %%%%
 Your magical power grows resistant to disruption.
 你的魔力变得能够抵御干扰。
@@ -31657,7 +31657,7 @@ If the wielder is skilled in Evocations, they can envenom those struck by it, de
 若使用者精通魔力释放技能，就能使被这根法杖击中的目标中毒，造成无视护甲的毒素伤害。
 %%%%
 Whenever a successful spell causes magic to be channelled from it, it may also drain additional magic from other enemies in sight, with a chance increasing with spell level.
-每当成功施法从中引导魔力时，也可能从视野内的其他敌人身上汲取额外魔力，几率随法术等级提高。
+每当成功施法从中引导法力时，也可能从视野内的其他敌人身上汲取额外法力，几率随法术等级提高。
 %%%%
 It occasionally heals its wielder for the full amount of damage dealt when it wounds a living foe.
 攻击活着的敌人时，偶尔将造成伤害的全额转化为使用者的生命值。
@@ -31852,7 +31852,7 @@ When moving toward enemies, its wearer moves as far as possible, alerting their 
 向敌人移动时，穿戴者尽可能移动最大距离，途中会惊醒目标。
 %%%%
 It empowers its wearer's blows with all of their magic.
-将穿戴者的魔力全部灌注于其攻击之中。
+将穿戴者的法力全部灌注于其攻击之中。
 %%%%
 Blows struck in melee replenish the wearer's magic.
 近战攻击会补充穿戴者的法力。
@@ -32494,19 +32494,19 @@ status|Drain
 衰竭
 %%%%
 status|extremely drained
-极度削命
+极度衰竭
 %%%%
 status|very heavily drained
-严重削命
+严重衰竭
 %%%%
 status|heavily drained
-重度削命
+重度衰竭
 %%%%
 status|drained
-削命
+衰竭
 %%%%
 status|lightly drained
-轻度削命
+轻度衰竭
 %%%%
 status|Your life force is extremely drained.
 你的生命力被极度削弱了。
@@ -32533,7 +32533,7 @@ status|Vapour
 汽雾
 %%%%
 ability cost|Drain
-削命
+衰竭
 %%%%
 , Bound item
 ，已束缚物品
@@ -35671,7 +35671,7 @@ Jiyva will unlock the Slime Pits vault.
 完全恢复了！
 %%%%
  is drained by nostalgia.
-因怀旧而虚弱不堪。
+因怀旧而陷入衰竭。
 %%%%
  is not worthy to be dueled!
 不配与你决斗！
@@ -35773,7 +35773,7 @@ deep water
 溺毙了。
 %%%%
  sinks to the bottom.
-沉到了底部。
+沉入了水底。
 %%%%
  seems to find hidden reserves of power!
 似乎找到了隐藏的力量储备！
@@ -38268,7 +38268,7 @@ You can use this ability even if confused.
 混乱状态下也可使用此能力。
 %%%%
 This ability will temporarily drain your maximum health when used
-使用此能力将暂时汲取你的最大生命值
+使用此能力会使你暂时陷入衰竭，降低生命值上限
 %%%%
 , even unsuccessfully
 ，即使未成功
@@ -39037,7 +39037,7 @@ Necronomicon
 死灵书
 %%%%
 Grand Grimoire
-宏大的魔典
+大魔典
 %%%%
 Everburning Encyclopedia
 永燃百科全书
@@ -49797,7 +49797,7 @@ monspell raw direction|next to %s
 朝%s旁边
 %%%%
 monspell raw direction|past %s
-朝%s身后
+朝%s以远的方向
 %%%%
 monspell raw projectile target|at %s
 直奔%s而去
@@ -51376,7 +51376,7 @@ The dream sheep are wreathed in dream dust.
 梦羊被梦境尘埃笼罩。
 %%%%
 The dream sheep attempt%1$s to lull %2$s to sleep.
-梦羊尝试催眠%2$s。
+梦之羊尝试催眠%2$s。
 %%%%
 rises up
 升腾而起
@@ -52972,8 +52972,7 @@ Bonus AC
 
 %%%%
 Self drain
-自身削命
-
+自身衰竭
 %%%%
  HP
 点生命上限
@@ -53357,7 +53356,7 @@ The starcursed mass shrieks in your mind.
 %s闪烁着分裂成了%s个！
 %%%%
 %s to avoid %s notice.
-%s，以避开%s的注意。
+%s，以避开%s注意。
 %%%%
 %s violently unleashes its stored power!
 %s猛烈地释放出储存的力量！
@@ -54748,4 +54747,43 @@ mutation legend|<darkgrey>[]</darkgrey>:
 %%%%
 status|You are %s.
 你%s了。
+%%%%
+You finish attuning to %s.
+你已与%s完成调谐。
+%%%%
+You finish wielding %s.
+你已握持%s。
+%%%%
+You finish haunting %s.
+你已附身于%s。
+%%%%
+You finish fusing with %s.
+你已与%s融合。
+%%%%
+equip finish armour|You finish putting on %s.
+你已穿上%s。
+%%%%
+equip finish jewellery|You finish putting on %s.
+你已戴上%s。
+%%%%
+You finish parting from %s.
+你已解除与%s的调谐。
+%%%%
+You finish unwielding %s.
+你已收起%s。
+%%%%
+You finish removing yourself from %s.
+你已从%s中脱离。
+%%%%
+You finish unfusing %s.
+你已解除与%s的融合。
+%%%%
+equip finish armour|You finish removing %s.
+你已脱下%s。
+%%%%
+equip finish jewellery|You finish removing %s.
+你已摘下%s。
+%%%%
+%s turns attention toward your shadow.
+%s将注意力转向了你的影子。
 %%%%

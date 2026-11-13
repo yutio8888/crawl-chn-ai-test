@@ -328,7 +328,7 @@ _Natasha_death_rare_
 %%%%
 Natasha permanently killed
 
-你感到 @the_monster_possessive@灵体终于安息了。
+你感到 @the_monster_possessive@灵魂终于安息了。
 %%%%
 confused Natasha killed
 
@@ -882,7 +882,7 @@ Harold triumphant
 
 @The_monster@ 说："该退休了。"
 
-@The_monster@ 叹了口气："终于，我可以购得@_Harold_retirement_plan_@ 安定下来了。"
+@The_monster@ 叹了口气："终于，我可以买下@_Harold_retirement_plan_@，安定下来了。"
 
 @The_monster@ 叹了口气："这之后，老 @the_monster@ 就只有 @_Harold_ret_hobby_@ 了。"
 %%%%
@@ -910,15 +910,15 @@ _Harold_ret_house_
 住处
 %%%%
 _Harold_ret_place_
-在山里
+山里
 
-在湖边
+湖边
 
-在海边
+海边
 
-在乡下
+乡下
 
-在林中
+林中
 %%%%
 _Harold_ret_hobby_
 钓鱼
@@ -3763,7 +3763,7 @@ _Boris_medium_
 @The_monster@ 对 @foe@ 说："你永远赢不了。"
 %%%%
 _Boris_return_common_
-@The_monster@ 对 @foe@ 说："你还没看到我的最后一面！"
+@The_monster@ 对 @foe@ 说："你还会再见到我的！"
 
 @The_monster@ 对 @foe@ 说："下次我不会放过你！"
 

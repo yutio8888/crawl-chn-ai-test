@@ -34,7 +34,7 @@
         "materialization_policy": "RECURSIVE_CASE_MAP", "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "target", "type": "resolved_target" }], "required_arguments": ["actor", "target"], "line_metadata": [],
         "materialization_cases": [{ "case_id": "mon.cast.basilisk.targeted.gazes.v1", "signature": "materialization-v1|variants=2|22:basilisk cast targeted:0:0|26:floating eye cast targeted:0:1:0|lua=0|sites=0", "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
           { "language": "en", "relation": "AT", "pattern": "${actor} gazes at ${target}." }, { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} gazes next to ${target}." }, { "language": "en", "relation": "PAST", "pattern": "${actor} gazes past ${target}." },
-          { "language": "zh", "relation": "AT", "pattern": "${actor}凝视${target}。" }, { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}望向${target}旁边。" }, { "language": "zh", "relation": "PAST", "pattern": "${actor}望向${target}身后。" }
+          { "language": "zh", "relation": "AT", "pattern": "${actor}凝视${target}。" }, { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}望向${target}旁边。" }, { "language": "zh", "relation": "PAST", "pattern": "${actor}的目光越过${target}。" }
         ] }] }],
         "recursive_dependency_fingerprints": { "floating eye cast targeted": "fnv1a64:6cb4c3195f955ba7" }, "recursive_captures": []
       }]

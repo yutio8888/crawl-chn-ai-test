@@ -3105,8 +3105,17 @@ spret dithmenos_shadowslip(bool fail)
                 mi->foe = shadow->mindex();
                 mi->behaviour = BEH_SEEK;
 
-                mprf(T_("%s turns %s attention toward your shadow."), mi->name(DESC_THE).c_str(),
-                        mi->pronoun(PRONOUN_POSSESSIVE).c_str());
+                if (Options.language == lang_t::ZH)
+                {
+                    mprf(T_("%s turns attention toward your shadow."),
+                         mi->name(DESC_THE).c_str());
+                }
+                else
+                {
+                    mprf(T_("%s turns %s attention toward your shadow."),
+                         mi->name(DESC_THE).c_str(),
+                         mi->pronoun(PRONOUN_POSSESSIVE).c_str());
+                }
             }
         }
     }
@@ -4215,7 +4224,7 @@ spret qazlal_upheaval(coord_def target, bool quiet, bool fail, dist *player_targ
         if (cell_is_invalid_target(beam.target))
         {
             mprf(T_("There is %s there."),
-                 article_a(feat_type_name(env.grid(beam.target))).c_str());
+                 article_a(T_(feat_type_name(env.grid(beam.target)))).c_str());
             return spret::abort;
         }
 
