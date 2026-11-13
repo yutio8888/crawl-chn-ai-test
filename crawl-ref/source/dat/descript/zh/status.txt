@@ -385,7 +385,7 @@ Blood status
 %%%%
 Channel status
 
-你正在引导魔法能量。
+你正在引导法力。
 %%%%
 Beast status
 

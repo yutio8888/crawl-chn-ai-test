@@ -516,7 +516,7 @@ engulf your surroundings in Yredelemnul's grip
 用伊莱德莱姆努尔之握吞噬周围
 %%%%
 gain magical power from killing
-通过杀戮获得魔力
+通过杀戮获得法力
 %%%%
 Vehumet is now aiding your destructive spells.
 维胡梅特现在协助你的破坏性法术。
@@ -585,7 +585,7 @@ Makhleb will no longer allow you to brand your body with an infernal mark.
 马科列布不再允许你在身体上烙印地狱印记。
 %%%%
 call upon Sif Muna for magical energy
-呼唤西芙·穆娜获取魔力
+呼唤西芙·穆娜获取法力
 %%%%
 freely open your mind to new spells
 自由开放心灵学习新法术
@@ -5261,10 +5261,10 @@ Magic Scroll
 魔法卷轴
 %%%%
 Magical energy flows from %s into your mind!
-魔法能量从%s流入了你的心智！
+法力从%s流入了你的心智！
 %%%%
 Magical energy flows into your mind!
-魔法能量流入了你的心智！
+法力流入了你的心智！
 %%%%
 magical power
 法力强化
@@ -9644,7 +9644,7 @@ you collect gold
 你收集金币
 %%%%
 You condense your magic into a crackling blade!
-你将魔力凝结成噼啪作响的利刃！
+你将法力凝结成噼啪作响的利刃！
 %%%%
 You conjure a globe of magical energy.
 你召唤出一个由魔法能量构成的法球。
@@ -23735,7 +23735,7 @@ you don't have enough magic to cast this spell.
 你没有足够的法力来施放此法术。
 %%%%
 your magic and health are inextricable.
-你的魔力和生命密不可分。
+你的法力和生命密不可分。
 %%%%
 your reserves of magic are already full.
 你的法力储备已经满了。
@@ -24101,7 +24101,7 @@ Forget %1$s, freeing %2$d spell level%3$s for a total of %4$d?%5$s
 遗忘%1$s，释放%2$d个法术等级（总计%4$d）？%5$s
 %%%%
 You draw magical energy from your own body!
-你从自己体内汲取了魔法能量！
+你从自己体内汲取了法力！
 %%%%
 Malign forces permeate your being, awaiting release.
 邪恶的力量渗透了你的身体，等待释放。
@@ -31657,7 +31657,7 @@ If the wielder is skilled in Evocations, they can envenom those struck by it, de
 若使用者精通魔力释放技能，就能使被这根法杖击中的目标中毒，造成无视护甲的毒素伤害。
 %%%%
 Whenever a successful spell causes magic to be channelled from it, it may also drain additional magic from other enemies in sight, with a chance increasing with spell level.
-每当成功施法从中引导魔力时，也可能从视野内的其他敌人身上汲取额外魔力，几率随法术等级提高。
+每当成功施法从中引导法力时，也可能从视野内的其他敌人身上汲取额外法力，几率随法术等级提高。
 %%%%
 It occasionally heals its wielder for the full amount of damage dealt when it wounds a living foe.
 攻击活着的敌人时，偶尔将造成伤害的全额转化为使用者的生命值。
@@ -31852,7 +31852,7 @@ When moving toward enemies, its wearer moves as far as possible, alerting their 
 向敌人移动时，穿戴者尽可能移动最大距离，途中会惊醒目标。
 %%%%
 It empowers its wearer's blows with all of their magic.
-将穿戴者的魔力全部灌注于其攻击之中。
+将穿戴者的法力全部灌注于其攻击之中。
 %%%%
 Blows struck in melee replenish the wearer's magic.
 近战攻击会补充穿戴者的法力。
