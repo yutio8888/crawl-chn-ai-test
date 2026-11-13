@@ -7586,7 +7586,8 @@ TEST_CASE("issue171: A-menu legend follows temporary mutation state",
             expected += expected_transient;
         if (future)
         {
-            expected += "<darkgrey>[]</darkgrey>: "
+            expected += string(language == lang_t::ZH
+                ? "<darkgrey>[]</darkgrey>：" : "<darkgrey>[]</darkgrey>: ")
                 + string(T_("Gained at a future XL.")) + "\n";
         }
         const string legend = mutation_menu_legend(future);
