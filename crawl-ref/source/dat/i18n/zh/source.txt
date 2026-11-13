@@ -24500,7 +24500,7 @@ You feel your energy subside.
 你感觉精力减退了。
 %%%%
 You can't survive in this terrain! You fly over the %s, but the process is draining.
-你无法在这种地形上生存！你飞到了%s上方，但这个过程会汲取你的生命。
+你无法在这种地形上生存！你飞到了%s上方，但这个过程会使你陷入衰竭。
 %%%%
 buggy terrain
 有问题的地形
@@ -35773,7 +35773,7 @@ deep water
 溺毙了。
 %%%%
  sinks to the bottom.
-沉到了底部。
+沉入了水底。
 %%%%
  seems to find hidden reserves of power!
 似乎找到了隐藏的力量储备！
