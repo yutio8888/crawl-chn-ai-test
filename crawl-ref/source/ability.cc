@@ -1022,7 +1022,7 @@ const string make_cost_description(ability_type ability)
     if (ability == ABIL_ASHENZARI_BIND
         && !you.props[CURSE_KNOWLEDGE_KEY].get_vector().empty())
     {
-        ret += ", ";
+        ret += C_("ability cost separator", ", ");
         ret += _ashenzari_curse_text();
     }
 
@@ -1061,7 +1061,7 @@ const string make_cost_description(ability_type ability)
     if (abil.flags & abflag::max_hp_drain
         && (ability != ABIL_EVOKE_TURN_INVISIBLE || _invis_causes_drain()))
     {
-        ret += ", " + string(C_("ability cost", "Drain"));
+        ret += C_("ability cost separator", ", ") + string(C_("ability cost", "Drain"));
     }
 
     if (abil.flags & abflag::curse)
@@ -1076,7 +1076,7 @@ const string make_cost_description(ability_type ability)
 
     if (abil.flags & abflag::sacrifice)
     {
-        ret += ", ";
+        ret += C_("ability cost separator", ", ");
         const string prefix = T_("Sacrifice ");
         ret += string(ability_name(ability)).substr(prefix.size());
         ret += ru_sac_text(ability);
@@ -1084,7 +1084,7 @@ const string make_cost_description(ability_type ability)
 
     if (abil.flags & abflag::card)
     {
-        ret += ", ";
+        ret += C_("ability cost separator", ", ");
         ret += T_("A Card ");
         ret += nemelex_card_text(ability);
     }

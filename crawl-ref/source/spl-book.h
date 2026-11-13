@@ -52,3 +52,5 @@ spret divine_exegesis(bool fail);
 spret imbue_servitor();
 
 book_type choose_book_type(int item_level);
+
+string spell_search_description(const string& search_text, int max_size);

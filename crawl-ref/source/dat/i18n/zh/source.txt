@@ -2267,7 +2267,7 @@ comfort your suffering allies
 。一旦所有充能用尽
 %%%%
 ...and %s %s out!
-...%s%s了出来！
+……%s%s了出来！
 %%%%
 ...and sense your way blocked. You quickly turn back.
 ……但感觉到前方被堵，你迅速折返。
@@ -2882,7 +2882,7 @@ All of your followers decide to abandon you.
 你所有的追随者决定抛弃你。
 %%%%
 All waypoints deleted. Have a nice day!
-所有路径点已删除。祝您愉快！
+所有路径点已删除。祝你愉快！
 %%%%
  already offers you all the fire that remains!
 已经给你提供了所有剩余的火焰！
@@ -3846,7 +3846,7 @@ digging
 挖掘
 %%%%
 Dir - look around, f - activate
-方向键 - 环顾四周, f - 激活
+方向键 - 环顾四周，f - 激活
 %%%%
 Dir - move target
 方向键 - 移动目标
@@ -4093,7 +4093,7 @@ evoke wands and miscellaneous items
 激发魔杖和杂项物品
 %%%%
 exalted by your worship
-因你的崇拜而荣升
+因你的崇拜而倍感荣耀
 %%%%
  excess health fades away.
 多余的生命力消散了。
@@ -5327,7 +5327,7 @@ melt
 融化了！
 %%%%
 Memorise %1$s, consuming %2$d spell slot%3$s and leaving %4$d?%5$s%6$s
-记忆%1$s，消耗%2$d法术容量，剩余%4$d？%5$s%6$s
+记忆%1$s，消耗%2$d点法术容量，剩余%4$d点？%5$s%6$s
 %%%%
  memory burns away to nothing.
 记忆燃烧殆尽。
@@ -6276,7 +6276,7 @@ Salvo (%d)
 齐射（%d）
 %%%%
 Saved games:
-存档游戏:
+已保存的游戏：
 %%%%
 Saving game... please wait.
 保存游戏……请稍候。
@@ -8105,7 +8105,7 @@ you cannot launch yourself while unable to move.
 你无法移动时无法发射自己。
 %%%%
 you cannot see anything nearby that you can launch.
-你看不到附近任何可以发射的目标。
+你看不到附近任何可以推飞的目标。
 %%%%
 there is no room nearby to place a sigil.
 附近没有空间可以放置符文。
@@ -8708,10 +8708,10 @@ You also have %d voucher%s.
 你还有%d张优惠券%.0s。
 %%%%
 You announce your regal presence to all who look upon you.
-你向所有仰望你的人宣告了你的王者存在。
+你向所有注视你者宣示了王者威仪。
 %%%%
 The shaft disappears in a puff of logic!
-竖井在一阵逻辑中消失了！
+竖井化作一缕“逻辑”消失了！
 %%%%
 you anoint %1$s with ash and charcoal and welcome %1$s as a companion.
 你将灰烬和木炭涂在%1$s身上，欢迎%1$s成为同伴。
@@ -8909,7 +8909,7 @@ You are too confused!
 你太混乱了！
 %%%%
 You are too depleted to draw on your %s recklessly!
-你过于虚弱，无法鲁莽地消耗%s！
+你的%s不足，不能再肆意消耗了！
 %%%%
 You are too exhausted to lash out.
 你已力竭，无法发动蛇之鞭笞。
@@ -10913,7 +10913,7 @@ You reel with horror at the sight of these foes!
 看到这些敌人，你恐惧得晕头转向！
 %%%%
 You reflect %s with the mirror!
-你用镜子反射了%s！
+你用镜子映出了%s的镜像！
 %%%%
 You rejoin the land of the living...
 你重新回到了生者的国度……
@@ -11533,7 +11533,7 @@ Your evil deeds will not go unpunished
 你的恶行不会不受惩罚
 %%%%
 Your existing bee falls apart.
-你的现有蜜蜂散架了。
+你原先的那只蜜蜂散架了。
 %%%%
 Your facial features are unmistakably orcish.
 你的面部特征明显像兽人。
@@ -11653,7 +11653,7 @@ Your memory of %s unravels.
 你对%s的记忆消散了。
 %%%%
 Your memory of the abyssal rune fades away.
-你对深渊符文记忆消退了。
+你对深渊符文的记忆消退了。
 %%%%
 Your messages:
 你的消息：
@@ -13014,7 +13014,7 @@ What level of %s?
 %s的哪一层？ 
 %%%%
 Sorry, you're not good enough to have a special ability.
-抱歉，你的能力还不足以拥有特殊能力。
+抱歉，你还不够格拥有特殊能力。
 %%%%
 Lua error: %s
 Lua错误：%s
@@ -19478,7 +19478,7 @@ rollpage
 翻滚冲锋
 %%%%
 rugged brown scales
-粗糙棕鳞
+粗糙褐鳞
 %%%%
 runic magic
 符文魔法
@@ -19817,7 +19817,7 @@ You are completely covered in razor-sharp scales. (AC +3, Slay +3)
 你完全覆盖着锋利鳞片。（防御+3，杀戮+3）
 %%%%
 You are completely covered in rugged brown scales. (AC +3, +7% HP)
-你完全覆盖着粗糙棕鳞。（防御+3，+7%生命）
+你完全覆盖着粗糙褐鳞。（防御+3，+7%生命）
 %%%%
 You are completely covered in sharp spines.
 你完全覆盖着锋利的尖刺。
@@ -19946,7 +19946,7 @@ You are mostly covered in razor-sharp scales. (AC +2, Slay +2)
 你大部分覆盖着锋利鳞片。（防御+2，杀戮+2）
 %%%%
 You are mostly covered in rugged brown scales. (AC +2, +5% HP)
-你大部分覆盖着粗糙棕鳞。（防御+2，+5%生命）
+你大部分覆盖着粗糙褐鳞。（防御+2，+5%生命）
 %%%%
 You are mostly covered in sharp spines.
 你大部分覆盖着锋利的尖刺。
@@ -19982,7 +19982,7 @@ You are partially covered in razor-sharp scales. (AC +1, Slay +1)
 你部分覆盖着锋利鳞片。（防御+1，杀戮+1）
 %%%%
 You are partially covered in rugged brown scales. (AC +1, +3% HP)
-你部分覆盖着粗糙棕鳞。（防御+1，+3%生命）
+你部分覆盖着粗糙褐鳞。（防御+1，+3%生命）
 %%%%
 You are partially covered in sharp spines.
 你部分覆盖着锋利的尖刺。
@@ -22229,7 +22229,7 @@ You feel energetic enough to blinkbolt again.
 你感觉有足够的能量再次闪击了。
 %%%%
 You feel less confused.
-你感到不那么困惑了。
+你感到不那么混乱了。
 %%%%
 You feel less drowsy.
 你感到不那么困倦了。
@@ -22310,7 +22310,7 @@ Your magic seems less tainted.
 你的魔法似乎不那么污浊了。
 %%%%
 Your noxious spew wanes.
-你喷吐有毒污泥的势头减弱了。
+你喷射有毒污泥的势头减弱了。
 %%%%
 Your orb has recharged its mesmeric power.
 你的宝珠重新充能了迷魂之力。
@@ -22850,7 +22850,7 @@ You feel a little less agile now.
 你感到不那么敏捷了。
 %%%%
 You feel less devious.
-你感到不那么狡黠了。
+你感到不那么狡诈了。
 %%%%
 You feel less protected from cold.
 你感到防寒效果减弱了。
@@ -26583,13 +26583,13 @@ Qazlal is protecting you from physical damage.
 卡兹拉尔正在保护你免受物理伤害。
 %%%%
 Rugged brown scales cover your body completely.
-粗糙的棕色的鳞片完全覆盖了你的身体。
+粗糙的褐色鳞片完全覆盖了你的身体。
 %%%%
 Rugged brown scales grow over part of your body.
-粗糙的棕色的鳞片覆盖了你身体的一部分。
+粗糙的褐色鳞片覆盖了你身体的一部分。
 %%%%
 Rugged brown scales spread over more of your body.
-粗糙的棕色的鳞片蔓延到你身体的更多部位。
+粗糙的褐色鳞片蔓延到你身体的更多部位。
 %%%%
 Sharp scales cover your body completely.
 锐利的鳞片完全覆盖了你的身体。
@@ -27156,7 +27156,7 @@ You feel an ache in your throat.
 你感到喉咙疼痛。
 %%%%
 You feel both weightless and legless.
-你感到既失重又失腿。
+你感到身轻如无物，双腿也仿佛不见了。
 %%%%
 You feel cold-blooded.
 你变得冷血了。
@@ -27519,7 +27519,7 @@ You grow two extra arms.
 你长出了两只额外的手臂。
 %%%%
 You have covered nearby walls with an icy ambush.
-你已用冰霜伏击覆盖了附近的墙壁。
+你已在附近墙壁上布下冰霜伏击。
 %%%%
 You have got your breath back.
 你恢复了呼吸。
@@ -27612,7 +27612,7 @@ You renounce the frivolity of worldly writings.
 你放弃了世俗文字之轻浮。
 %%%%
 You renounce the hedonism of uninhibited drinking.
-你放弃了不加节制饮酒的享乐主义。
+你摒弃了肆意畅饮的享乐主义。
 %%%%
 You shed all your fur.
 你褪去了所有毛发。
@@ -27786,13 +27786,13 @@ Your connection to magic feels less subdued.
 你与魔法的连接不那么被抑制了。
 %%%%
 Your connection to magic feels more subdued.
-你与魔法的连接感到更加被抑制了。
+你感到自己与魔法的联系受到了更强的抑制。
 %%%%
 Your connection to magic feels nearly dormant.
 你与魔法的连接几乎沉睡。
 %%%%
 Your connection to magic feels subdued.
-你与魔法的连接感到被抑制了。
+你感到自己与魔法的联系受到了抑制。
 %%%%
 Your control of surrounding life forces is gone.
 你对周围生命力的控制消失了。
@@ -27801,7 +27801,7 @@ Your control of surrounding life forces weakens.
 你对周围生命力的控制减弱了。
 %%%%
 Your corrupting presence intensifies.
-你的腐化存在变得更加强烈。
+你的腐败存在变得更加强烈。
 %%%%
 Your demonic guardian is gone.
 你的恶魔守护者消失了。
@@ -28038,10 +28038,10 @@ Your right eye vanishes! The world loses its depth.
 你的右眼消失了！世界失去了深度感。
 %%%%
 Your rugged brown scales disappear.
-你粗糙的棕色鳞片消失了。
+你粗糙的褐色鳞片消失了。
 %%%%
 Your rugged brown scales recede somewhat.
-你粗糙的棕色鳞片有所消退。
+你粗糙的褐色鳞片有所消退。
 %%%%
 Your servants grow eager to unleash destruction.
 你的仆从们渴望释放毁灭。
@@ -28263,7 +28263,7 @@ Your yellow scales recede somewhat.
 你黄色的鳞片有所消退。
 %%%%
 It affects your AC (%d).
-影响你的AC（%d）。
+影响你的护甲（%d）。
 %%%%
 It affects your evasion (%d).
 影响你的闪避（%d）。
@@ -29365,7 +29365,7 @@ closed translucent
 %%%%
 runed 
 
-刻有符文的 
+刻有符文的
 %%%%
 sealed 
 
@@ -29980,7 +29980,7 @@ Really %s?%s
 确定要%s吗？%s
 %%%%
  You can't even see any enemies this would affect.
- 你甚至看不到会被此影响的敌人。
+你甚至看不到会被此影响的敌人。
 %%%%
 Really read with monsters nearby while wearing %s?
 附近有怪物，确定要在穿戴%s时阅读吗？
@@ -41485,7 +41485,7 @@ status|silenced
 沉默
 %%%%
 status|slimy
-粘滑
+黏滑
 %%%%
 status|slimy shroud
 黏液护罩
@@ -43366,7 +43366,7 @@ All level %d spells are either disliked by %s or cannot be cast by you.
 所有%d级法术要么不被%s喜欢，要么你无法施放。
 %%%%
 Shopping list: replace %dgp %s with cheaper one? (Y/n)
-购物清单：用更便宜的替换%d金币的%s？(Y/n)
+购物清单：用更便宜的替换%d金币的%s？（Y/n）
 %%%%
 Travel to: %s\nYou cannot afford this item; travel there anyway? (y/N)
 前往：%s\n你买不起这件物品；仍然前往吗？(y/N)
@@ -54404,7 +54404,7 @@ revert banishment
 撤销放逐
 %%%%
 blink monster(s)
-使怪物闪现
+使怪物闪烁
 %%%%
 made traps
 制造陷阱
@@ -54679,3 +54679,40 @@ It renders you almost immune to %1$s.
 %%%%
 monster blink action| blinks!
 闪烁了一下！
+%%%%
+quiver resource|magic
+法力
+%%%%
+equipment meld| and 
+和
+%%%%
+floor item list|; 
+；
+%%%%
+staff appearance|thin 
+细的
+%%%%
+staff appearance|thick 
+粗的
+%%%%
+This save is from an older version.\n\nDungeon Crawl Stone Soup %s is not compatible with save files this old. You can:\n • continue your game with an older version of Dungeon Crawl Stone Soup\n • delete it and start a new game\n\nThis save's version: (%d.%d) (must be >= %d.%d)
+此存档来自较旧版本。\n\n地牢爬行石汤 %s无法兼容如此旧的存档。你可以：\n • 使用较旧版本的地牢爬行石汤继续游戏\n • 删除存档并开始新游戏\n\n此存档版本：（%d.%d）（必须 >= %d.%d）
+%%%%
+This save is from a newer version.\n\nDungeon Crawl Stone Soup cannot load saves from newer versions. You can:\n • continue your game with a newer version of Dungeon Crawl Stone Soup\n • delete it and start a new game\n\nThis save's version: (%d.%d) (must be <= %d.%d)
+此存档来自较新版本。\n\n地牢爬行石汤无法载入较新版本的存档。你可以：\n • 使用较新版本的地牢爬行石汤继续游戏\n • 删除存档并开始新游戏\n\n此存档版本：（%d.%d）（必须 <= %d.%d）
+%%%%
+Failed to unlink bones file: %s
+无法删除鬼魂文件：%s
+%%%%
+equipment interruption|unwielding
+收起
+%%%%
+equipment interruption|removing
+摘下
+%%%%
+Matches: <w>%s%s</w>
+匹配：<w>%s%s</w>
+%%%%
+ability cost separator|, 
+，
+%%%%

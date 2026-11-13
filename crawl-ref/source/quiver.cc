@@ -142,7 +142,7 @@ namespace quiver
         }
         else if (af_mp_check)
         {
-            const char* resource = you.has_mutation(MUT_HP_CASTING) ? T_("health") : T_("magic");
+            const char* resource = you.has_mutation(MUT_HP_CASTING) ? T_("health") : C_("quiver resource", "magic");
             mprf(T_("You are too depleted to draw on your %s recklessly!"), resource);
         }
         return af_hp_check || af_mp_check;
