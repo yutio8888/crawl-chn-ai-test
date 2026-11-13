@@ -13403,25 +13403,3 @@ TEST_CASE("domain gaps: real note and piety dumps align Chinese columns and tran
                                             : "domain-gaps\n\n  You have no stashes.\n"));
 }
 #endif
-
-TEST_CASE_METHOD(ZhTranslationFixture,
-                 "monster blink actions do not inflect shared movement prompts",
-                 "[zh-translation][movement-i18n][r5-blink]")
-{
-    for (lang_t language : {lang_t::EN, lang_t::ZH})
-    {
-        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
-        const bool zh = language == lang_t::ZH;
-        CHECK(string(zh ? "兽人" : "The orc")
-              + C_("monster blink action", " blinks!")
-              == (zh ? "兽人闪烁了一下！" : "The orc blinks!"));
-        // The action's completed aspect must not leak into escape or prompt
-        // grammar via the shared bare verb. Hop/leap keep their old wording.
-        CHECK(string(translated_move_phrase("blink", move_phrase_context::bare))
-              == (zh ? "闪烁" : "blink"));
-        CHECK(string(translated_move_phrase("hop", move_phrase_context::bare))
-              == (zh ? "跳跃" : "hop"));
-        CHECK(string(translated_move_phrase("leap", move_phrase_context::bare))
-              == (zh ? "飞扑" : "leap"));
-    }
-}

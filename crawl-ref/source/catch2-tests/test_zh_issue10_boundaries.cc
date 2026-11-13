@@ -616,7 +616,8 @@ TEST_CASE("issue 10 blink escapes use contextual movement at the real sink",
     // Chinese joins the name and verb directly and uses the full-width
     // exclamation mark; English keeps its ASCII separator and mark.
     const string announcement_expected = language == lang_t::ZH
-        ? mon->name(DESC_THE) + movement + "！"
+        ? mon->name(DESC_THE)
+          + (get<1>(row) ? movement + "！" : "闪烁了一下！")
         : mon->name(DESC_THE) + " " + movement + "!";
     CAPTURE(language, movement, announcement);
     CHECK(announcement.find(announcement_expected) != string::npos);
