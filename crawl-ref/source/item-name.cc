@@ -381,7 +381,7 @@ const char* missile_brand_name(const item_def &item, mbn_type t)
         return t == MBN_TERSE ? T_("obsolete") : T_("obsolescence");
 #endif
     case SPMSL_POISONED:
-        return t == MBN_NAME ? T_("poisoned") : T_("poison");
+        return t == MBN_NAME ? C_("missile brand", "poisoned") : T_("poison");
     case SPMSL_CURARE:
         return t == MBN_NAME ? T_("curare-tipped") : T_("curare");
 #if TAG_MAJOR_VERSION == 34

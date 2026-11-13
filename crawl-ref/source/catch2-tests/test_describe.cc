@@ -21,6 +21,7 @@
 #include "unwind.h"
 
 #include "item-prop.h"
+#include "item-name.h"
 #include "state.h"
 #include "player-equip.h"
 #include "status.h"
@@ -416,5 +417,27 @@ TEST_CASE("MP mutation display names follow the resource term without changing i
             CHECK(string(mutation_name(row.type))
                   == (language == lang_t::ZH ? row.chinese : row.english));
         }
+    }
+}
+
+TEST_CASE("Poisoned darts use their brand context without changing status",
+          "[zh-translation][r21][poisoned-dart]")
+{
+    init_properties();
+    item_def dart;
+    dart.base_type = OBJ_MISSILES;
+    dart.sub_type = MI_DART;
+    dart.brand = SPMSL_POISONED;
+    dart.quantity = 1;
+    dart.flags = ISFLAG_IDENTIFIED;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool chinese = language == lang_t::ZH;
+        CHECK(missile_brand_name(dart, MBN_NAME)
+              == (chinese ? "涂毒" : "poisoned"));
+        CHECK(dart.name(DESC_PLAIN)
+              == (chinese ? "涂毒飞镖" : "poisoned dart"));
+        CHECK(string(T_("poisoned")) == (chinese ? "中毒" : "poisoned"));
     }
 }

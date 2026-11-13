@@ -36400,7 +36400,7 @@ Necronomicon
 死灵书
 %%%%
 Grand Grimoire
-宏大的魔典
+大魔典
 %%%%
 Everburning Encyclopedia
 永燃百科全书
@@ -51073,4 +51073,7 @@ curl into a sanctuary of spikes before
 %%%%
 hit chance| (while you are blinded and from distance %d)
 （你失明时，在距离为%d的情况下）
+%%%%
+missile brand|poisoned
+涂毒
 %%%%
