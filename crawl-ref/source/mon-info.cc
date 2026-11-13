@@ -1199,12 +1199,14 @@ string monster_info::_core_name() const
         switch (type)
         {
         case MONS_PLAYER_GHOST:
-            s = apostrophise(mname)
-                + (T_(" ghost"));
+            s = Options.language == lang_t::ZH
+                ? make_stringf(C_("named monster ghost", "%s's ghost"), mname.c_str())
+                : apostrophise(mname) + " ghost";
             break;
         case MONS_PLAYER_ILLUSION:
-            s = apostrophise(mname)
-                + (T_(" illusion"));
+            s = Options.language == lang_t::ZH
+                ? make_stringf(C_("named monster illusion", "%s's illusion"), mname.c_str())
+                : apostrophise(mname) + " illusion";
             break;
         case MONS_PANDEMONIUM_LORD:
             s = mname;

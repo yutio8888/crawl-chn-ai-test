@@ -181,7 +181,7 @@ TEST_CASE("legacy cloud hints localize the full copula frame",
             CAPTURE(lang, type, name, text);
             if (lang == lang_t::ZH)
             {
-                CHECK(text.find("此" + name) != string::npos);
+                CHECK(text.find("这里的" + name) != string::npos);
                 CHECK(text.find("is ") == string::npos);
                 CHECK(text.find("are ") == string::npos);
                 CHECK(text.find(type == CLOUD_GREY_SMOKE ? "无害。"

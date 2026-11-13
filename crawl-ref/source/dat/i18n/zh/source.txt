@@ -3386,7 +3386,7 @@ Chaos surges forth from %s of flesh, awakening new unlife!
 混沌从%s的肉体中涌出，唤醒了新的亡灵！
 %%%%
 Char dump unsuccessful! Sorry about that.
-角色转储失败！抱歉。
+角色报告生成失败！抱歉。
 %%%%
 charming
 魅惑
@@ -3611,7 +3611,7 @@ Curse bonuses
 诅咒加成
 %%%%
 curse jewellery
-诅咒珠宝
+诅咒首饰
 %%%%
 curse weapon
 诅咒武器
@@ -4871,7 +4871,7 @@ Jet-black ravens fly out from beneath %s foliage!
 乌黑的乌鸦从%s枝叶下飞出！
 %%%%
 jewellery
-珠宝
+首饰
 %%%%
 Jiyva
 吉瓦
@@ -7096,7 +7096,7 @@ The heat overwhelms you.
 高温使你不堪重负。
 %%%%
 The heavenly storm settles.
-天界的风暴平息了。
+天堂风暴平息了。
 %%%%
 The hog vanishes!
 猪消失了！
@@ -7775,10 +7775,10 @@ you cannot redirect your momentum while unable to move.
 你无法移动时无法重新定向你的动量。
 %%%%
 your stasis prevents you from launching yourself.
-你的停滞状态阻止了你发射自己。
+你的恒定效果阻止你弹射出去。
 %%%%
 you cannot launch yourself while unable to move.
-你无法移动时无法发射自己。
+你无法移动，因而也无法弹射出去。
 %%%%
 you cannot see anything nearby that you can launch.
 你看不到附近任何可以推飞的目标。
@@ -8384,7 +8384,7 @@ You are already burning your memories away!
 你已经在燃烧你的记忆了！
 %%%%
 You are already engulfed in a heavenly storm!
-你已经被天界风暴吞没了！
+你已经被天堂风暴吞没了！
 %%%%
 You are already invisible!
 你已经隐形了！
@@ -8591,10 +8591,10 @@ You aren't carrying any items that you can evoke.
 你没有携带任何可激活的物品。
 %%%%
 You aren't carrying any jewellery or talismans.
-你没有携带任何珠宝或护符。
+你没有携带任何首饰或护符。
 %%%%
 You aren't carrying any pieces of jewellery.
-你没有携带任何珠宝。
+你没有携带任何首饰。
 %%%%
 You aren't carrying any potions.
 你没有携带任何药水。
@@ -8810,7 +8810,7 @@ You can't %s into that!
 你不能%s那里！
 %%%%
 You can't %s jewellery%s.
-你无法%s珠宝%s。
+你无法%s首饰%s。
 %%%%
 You can't %s onto %s!
 你不能%s%s身上！
@@ -9554,7 +9554,7 @@ You feel a twinge of divine disapproval.
 你感到神祇的一丝不满。
 %%%%
 You feel a twist of horror at the sight of this foe.
-看到这个敌人，你感到一阵恐惧。
+看到这个敌人，你感到一阵惊骇。
 %%%%
 You feel a wild power.
 你感到一股狂野的力量。
@@ -10418,7 +10418,7 @@ You redirect %s's attack!
 你重新导向了%s的攻击！
 %%%%
 You reel with horror at the sight of these foes!
-看到这些敌人，你恐惧得晕头转向！
+看到这些敌人，你惊骇得晕头转向！
 %%%%
 You reflect %s with the mirror!
 你用镜子映出了%s的镜像！
@@ -12126,11 +12126,11 @@ Item is not equipped
 %%%%
 Char dumped successfully.
 
-角色转储成功。
+角色报告生成成功。
 %%%%
 Char dumped to '%s'.
 
-角色已转储至'%s'。
+角色报告已保存至'%s'。
 %%%%
 Error opening file '%s'.
 
@@ -18620,7 +18620,7 @@ no ice magic
 无法使用寒冰系法术
 %%%%
 no jewellery
-无法佩戴珠宝
+无法佩戴首饰
 %%%%
 no necromancy magic
 无法使用死灵系法术
@@ -21995,7 +21995,7 @@ Your fiery armour burns out.
 你的火焰铠甲燃尽了。
 %%%%
 Your fugue has ended.
-你的神游结束了。
+你的赋格结束了。
 %%%%
 Your reaping aura expires.
 你的收割光环消失了。
@@ -24765,7 +24765,7 @@ You are fragile as glass.
 你如玻璃般脆弱。
 %%%%
 You are horrified, weakening your attacks and spells.
-你感到恐惧，攻击和法术被削弱了。
+你感到惊骇，攻击和法术被削弱了。
 %%%%
 You are imbued with divine vigour.
 你被注入了神圣活力。
@@ -25755,13 +25755,13 @@ Your brain shrinks.
 你的大脑缩小了。
 %%%%
 Your connection to magic feels less subdued.
-你与魔法的连接不那么被抑制了。
+你感到自己与魔法的联系不再那么受抑制了。
 %%%%
 Your connection to magic feels more subdued.
 你感到自己与魔法的联系受到了更强的抑制。
 %%%%
 Your connection to magic feels nearly dormant.
-你与魔法的连接几乎沉睡。
+你感到自己与魔法的联系几乎沉寂了。
 %%%%
 Your connection to magic feels subdued.
 你感到自己与魔法的联系受到了抑制。
@@ -31957,13 +31957,13 @@ deep elf zephyrmancer
 精灵和风法师
 %%%%
 deep troll
-深渊巨魔
+深地巨魔
 %%%%
 deep troll earth mage
-深渊巨魔地法师
+深地巨魔地法师
 %%%%
 deep troll shaman
-深渊巨魔萨满
+深地巨魔萨满
 %%%%
 demigod
 半神
@@ -34458,7 +34458,7 @@ Hit by a%s %s thrown by %s
 被%3$s投掷的%2$s击中
 %%%%
 Horr (%d)
-恐惧（%d）
+惊骇（%d）
 %%%%
 Input trigger key to edit or create a %s:
 输入触发键以编辑或创建%s：
@@ -37981,13 +37981,13 @@ status|Hive
 蜂巢
 %%%%
 status|Horr
-恐惧
+惊骇
 %%%%
 status|Horr (%d)
-恐惧(%d)
+惊骇(%d)
 %%%%
 status|Horror overwhelms you!
-恐惧淹没了你！
+惊骇淹没了你！
 %%%%
 status|Howl
 嚎叫
@@ -38275,13 +38275,13 @@ status|You are engaged in single combat.
 你正在单挑中。
 %%%%
 status|You are extremely horrified!
-你极度恐惧！
+你极度惊骇！
 %%%%
 status|You are flying.
 你正在飞行。
 %%%%
 status|You are horrified!
-你感到恐惧！
+你感到惊骇！
 %%%%
 status|You are moving at supernatural speed.
 你以超自然速度移动。
@@ -38428,7 +38428,7 @@ status|exhausted
 力竭
 %%%%
 status|extremely horrified
-极度恐惧
+极度惊骇
 %%%%
 status|finesse-ful
 精准
@@ -38479,7 +38479,7 @@ status|heroic
 英雄
 %%%%
 status|horrified
-恐惧
+惊骇
 %%%%
 status|immotile
 无法移动
@@ -38572,7 +38572,7 @@ status|on hellfire mortar cooldown
 地狱火迫击炮冷却
 %%%%
 status|on lithotoxin cooldown
-石毒素冷却
+石化毒素冷却
 %%%%
 status|on mesmerism cooldown
 迷魂冷却
@@ -38599,7 +38599,7 @@ status|ooze regen
 软泥恢复
 %%%%
 status|overwhelmed with horror
-被恐惧淹没
+被惊骇淹没
 %%%%
 status|paralysed
 麻痹
@@ -39859,10 +39859,10 @@ Press <w>%</w> to read this scroll.
 按<w>%</w>阅读此卷轴。
 %%%%
 Jewellery can be <w>%</w>ut on or <w>%</w>emoved again, though in Tiles, either can be done by clicking on the item in your inventory.
-可以按<w>%</w>戴上饰品，或按<w>%</w>将其取下；在 Tiles 中，也可以在物品栏中点击该物品来完成任一操作。
+可以按<w>%</w>戴上首饰，或按<w>%</w>将其取下；在 Tiles 中，也可以在物品栏中点击该物品来完成任一操作。
 %%%%
 Jewellery can be <w>%</w>ut on or <w>%</w>emoved again.
-可以按<w>%</w>戴上饰品，或按<w>%</w>将其取下。
+可以按<w>%</w>戴上首饰，或按<w>%</w>将其取下。
 %%%%
 \n\nThis %s offers its wearer protection from certain sources. For an overview of your resistances (among other things) press <w>%%</w> or click on your avatar with the <w>right mouse button</w>.
 \n\n这件%s可保护穿戴者免受某些伤害。若要查看你的抗性（以及其他信息），按<w>%%</w>，或用<w>鼠标右键</w>点击你的角色。
@@ -40474,7 +40474,7 @@ efficient metabolism
  本来会宽容得多。
 %%%%
  frowns upon the use of magic, this staff will be of little use to you and you might just as well <w>%</w>rop it now.
- 不喜魔法，这根法杖对你没什么用，你不如现在就<w>%</w>掉它。
+ 不喜魔法，这根法杖对你没什么用，你不如现在就按<w>%</w>丢掉它。
 %%%%
  In Tiles, you can achieve the same, in either direction, by clicking the <w>left mouse button</w>.
  在图形界面下，无论上楼还是下楼，都可以通过点击<w>鼠标左键</w>完成。
@@ -41722,7 +41722,7 @@ status|gold aura
 金币光环笼罩
 %%%%
 status|in a heavenly storm
-身处天界风暴
+身处天堂风暴
 %%%%
 status|parry
 招架中
@@ -43033,16 +43033,16 @@ You can't remove anything in your present form.
 你当前形态无法卸下任何东西。
 %%%%
 You can't wear jewellery.
-你无法佩戴珠宝。
+你无法佩戴首饰。
 %%%%
 You can't remove jewellery.
-你无法卸下珠宝。
+你无法卸下首饰。
 %%%%
 You can't wear jewellery in your present form.
-你当前形态无法佩戴珠宝。
+你当前形态无法佩戴首饰。
 %%%%
 You can't remove jewellery in your present form.
-你当前形态无法卸下珠宝。
+你当前形态无法卸下首饰。
 %%%%
 unwield
 卸下
@@ -43240,7 +43240,7 @@ annotate the dungeon level
 为地牢楼层添加注释
 %%%%
 dump character to file
-将角色信息导出至文件
+将角色报告导出至文件
 %%%%
 add note (use <w>%:</w> to read notes)
 添加笔记（用 <w>%:</w> 阅读笔记）
@@ -46217,7 +46217,7 @@ sap
 %%%%
 <w>#</w>      load character from a dump file\n
 
-<w>#</w>      从角色转储文件载入角色\n
+<w>#</w>      从角色报告文件载入角色\n
 %%%%
 <w>$</w>      set gold to a specified value\n
 
@@ -50289,13 +50289,13 @@ Matches: <w>%s%s</w>
 匹配：<w>%s%s</w>
 %%%%
 The %s is harmless. 
-此%s无害。
+这里的%s无害。
 %%%%
 The %s is probably dangerous, and you should stay out of it if you can. 
-此%s可能很危险，你应尽可能避开它。
+这里的%s可能很危险，你应尽可能避开它。
 %%%%
 The %s is currently harmless, but that could change at some point. Check the overview screen (<w>%%</w>) to view your resistances.
-此%s目前无害，但这一点随时可能改变。请查看总览界面（<w>%%</w>）以了解你的抗性。
+这里的%s目前无害，但这一点随时可能改变。请查看总览界面（<w>%%</w>）以了解你的抗性。
 %%%%
 Magic Parchment
 魔法羊皮纸
@@ -50320,4 +50320,19 @@ ability cost separator|,
 %%%%
 view menu action|target
 选定目标
+%%%%
+potion full name|magic
+法力
+%%%%
+drained resource|magic
+法力
+%%%%
+drained resource|power
+力量
+%%%%
+named monster ghost|%s's ghost
+%s的鬼魂
+%%%%
+named monster illusion|%s's illusion
+%s的幻象
 %%%%

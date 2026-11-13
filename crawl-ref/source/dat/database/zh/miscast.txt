@@ -53,7 +53,7 @@ hexes miscast player
 
 你感到一股诡异的能量涌动
 
-@any_colour@的光波在你身上荡漾
+@any_colour@光波在你身上荡漾
 
 你感到虚弱无力
 
