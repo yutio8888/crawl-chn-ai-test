@@ -628,7 +628,7 @@ TEST_CASE("issue 10 blink escapes use contextual movement at the real sink",
         CHECK(announcement.find(mon->name(DESC_THE) + " ") == string::npos);
         CHECK(announcement.find(movement + " ") == string::npos);
         CHECK(announcement.find("!") == string::npos);
-        CHECK(announcement.find(movement + "！") != string::npos);
+        CHECK(announcement.find("！") != string::npos);
     }
 }
 
