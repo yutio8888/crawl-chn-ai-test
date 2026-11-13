@@ -500,7 +500,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(enum_values.size() == NUM_UNRANDARTS);
     // Issue #147: the thirteen audited upstream additions are all current;
     // compatibility (19) and internal dummy (2) populations are unchanged.
-    REQUIRE(current == 134);
+    // f79d9584f8e adds the Boreal Bulwark, so current becomes 135.
+    REQUIRE(current == 135);
     REQUIRE(compatibility == 19);
     REQUIRE(internal == 2);
     emit_issue_protocol("zh_translation", "fixed_artefacts", issues);

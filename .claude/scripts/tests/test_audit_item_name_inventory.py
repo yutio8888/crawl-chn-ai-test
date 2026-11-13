@@ -904,8 +904,8 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             name = re.search(r"(?m)^NAME:\s*(.+?)\s*$", block)
             if name:
                 definitions.append((MODULE.unrand_enum_identity(name.group(1), block), name.group(1)))
-        self.assertEqual(155, len(definitions))
-        self.assertEqual(155, len(dict(definitions)))
+        self.assertEqual(156, len(definitions))
+        self.assertEqual(156, len(dict(definitions)))
         self.assertEqual(expected, {identity.removeprefix("UNRAND_"): name
                                    for identity, name in definitions
                                    if identity.removeprefix("UNRAND_") in expected})
@@ -918,7 +918,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                         MODULE.textdb_rows(MODULE.SRC / "dat/descript/zh/unrand.txt")}
         rows = MODULE.unrand_rows(descriptions, source, {}, baseline,
                                   MODULE.ISSUE29_REVIEW_BASE)
-        self.assertEqual(155, len(rows))
+        self.assertEqual(156, len(rows))
         wyrmbane = next(row for row in rows
                         if row["identity"] == "unrand:UNRAND_WYRMBANE")
         self.assertEqual("adjust", wyrmbane["_conclusion"])
@@ -1248,7 +1248,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertEqual(402, payload["ordinary_v1"]["count"])
         self.assertEqual(
             {
-                "unrand": 155,
+                "unrand": 156,
                 "unident": 7,
                 "appearance": 186,
                 "special": 23,
