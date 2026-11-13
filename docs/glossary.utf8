@@ -350,7 +350,7 @@ dragon	龙	domain=core; source=EN/ZH
 Dragon Form	巨龙变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Dragon's Call	龙之呼唤	domain=spells; source=EN/ZH; 备注=✅
 dragon-coil talisman	盘龙护符	domain=items; source=EN/ZH; Scope / comment=talisman; decision=D-B-018
-Drain	汲取	domain=combat; source=EN/ZH; column3=生命/魔力吸取效果
+Drain	汲取	domain=combat; source=EN/ZH; column3=仅限真正的生命或法力转移；不含 drain_player / monster::drain / ENCH_DRAINED 的衰竭状态及生命上限暂时降低；武器铭印专名沿用各自条目
 Drain	衰竭	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Drain Life	汲取生命	domain=spells; source=EN/ZH; 备注=🆕；与 `Drain Magic → 汲取魔力` 统一
 Drain Magic	汲取魔力	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
