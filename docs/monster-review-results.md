@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`fb814f3252f249fc230e81fa132dce6a9bb194b014d687fc1524c66827b351d7`
-- 清单 SHA-256：`4539a8fc108e347dbd1d6d1b2716b092470aabe8607f09486d34179690eb9a13`
+- 清单 SHA-256：`58601ca3fcbbf24a78348c56ec440682bd4ea1a022642afd3644589f30d1a606`
 - 身份总数：815（现行 691；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -448,7 +448,7 @@
 | `monster:MONS_JOSEPH` | current; exposure=unique; name=Joseph→约瑟夫; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/joseph.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SNORG` | current; exposure=unique; name=Snorg→斯诺格; genus=MONS_TROLL; species=MONS_TROLL; data=crawl-ref/source/dat/mons/snorg.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ERICA` | current; exposure=unique; name=Erica→艾丽卡; genus=MONS_OCTOPODE; species=MONS_OCTOPODE; data=crawl-ref/source/dat/mons/erica.yaml; desc=EN/ZH | retranslate: description corrected |
-| `monster:MONS_JOSEPHINE` | current; exposure=unique; name=Josephine→约瑟芬; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/josephine.yaml; desc=EN/ZH | keep |
+| `monster:MONS_JOSEPHINE` | current; exposure=unique; name=Josephine→约瑟芬; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/josephine.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_HAROLD` | current; exposure=unique; name=Harold→哈罗德; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/harold.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_AGNES` | current; exposure=unique; name=Agnes→艾格尼丝; genus=MONS_SPRIGGAN; species=MONS_SPRIGGAN; data=crawl-ref/source/dat/mons/agnes.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_MAUD` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
@@ -626,7 +626,7 @@
 | `monster:MONS_ENTROPY_WEAVER` | current; exposure=ordinary; name=entropy weaver→熵之编织者; genus=MONS_ENTROPY_WEAVER; species=MONS_ENTROPY_WEAVER; data=crawl-ref/source/dat/mons/entropy-weaver.yaml; desc=EN/ZH | keep |
 | `monster:MONS_MOON_TROLL` | current; exposure=ordinary; name=moon troll→月巨魔; genus=MONS_TROLL; species=MONS_MOON_TROLL; data=crawl-ref/source/dat/mons/moon-troll.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_MUTANT_BEAST` | current; exposure=ordinary; name=mutant beast→变异野兽; genus=MONS_MUTANT_BEAST; species=MONS_MUTANT_BEAST; data=crawl-ref/source/dat/mons/mutant-beast.yaml; desc=EN/ZH | keep |
-| `monster:MONS_JUGGERNAUT` | current; exposure=ordinary; name=juggernaut→巨像; genus=MONS_GIANT; species=MONS_JUGGERNAUT; data=crawl-ref/source/dat/mons/juggernaut.yaml; desc=EN/ZH | keep |
+| `monster:MONS_JUGGERNAUT` | current; exposure=ordinary; name=juggernaut→巨像; genus=MONS_GIANT; species=MONS_JUGGERNAUT; data=crawl-ref/source/dat/mons/juggernaut.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_SPARK_WASP` | current; exposure=ordinary; name=spark wasp→火花蜂; genus=MONS_HORNET; species=MONS_SPARK_WASP; data=crawl-ref/source/dat/mons/spark-wasp.yaml; desc=EN/ZH | keep |
 | `monster:MONS_OBLIVION_HOUND` | current; exposure=ordinary; name=oblivion hound→湮灭猎犬; genus=MONS_HOUND; species=MONS_OBLIVION_HOUND; data=crawl-ref/source/dat/mons/oblivion-hound.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_DEEP_ELF_ELEMENTALIST` | current; exposure=ordinary; name=deep elf elementalist→精灵元素师; genus=MONS_ELF; species=MONS_ELF; data=crawl-ref/source/dat/mons/deep-elf-elementalist.yaml; desc=EN/ZH | keep |
