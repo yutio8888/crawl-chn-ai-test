@@ -5054,10 +5054,10 @@ Magic Scroll
 魔法卷轴
 %%%%
 Magical energy flows from %s into your mind!
-魔法能量从%s流入了你的心智！
+法力从%s流入了你的心智！
 %%%%
 Magical energy flows into your mind!
-魔法能量流入了你的心智！
+法力流入了你的心智！
 %%%%
 magical power
 法力强化
@@ -9239,7 +9239,7 @@ you collect gold
 你收集金币
 %%%%
 You condense your magic into a crackling blade!
-你将魔力凝结成噼啪作响的利刃！
+你将法力凝结成噼啪作响的利刃！
 %%%%
 You conjure a globe of magical energy.
 你召唤出一个由魔法能量构成的法球。
@@ -23150,7 +23150,7 @@ Forget %1$s, freeing %2$d spell level%3$s for a total of %4$d?%5$s
 遗忘%1$s，释放%2$d个法术等级（总计%4$d）？%5$s
 %%%%
 You draw magical energy from your own body!
-你从自己体内汲取了魔法能量！
+你从自己体内汲取了法力！
 %%%%
 Malign forces permeate your being, awaiting release.
 邪恶的力量渗透了你的身体，等待释放。
