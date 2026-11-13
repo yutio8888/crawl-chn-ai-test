@@ -2296,7 +2296,8 @@ void direction_chooser::full_describe()
 
     const coord_def choice =
         _full_describe_menu(list_mons, list_items, list_features,
-                            just_looking ? "target/travel" : "target");
+                            just_looking ? C_("view menu action", "target/travel")
+                                         : C_("view menu action", "target"));
 
     if (choice != coord_def(-1, -1))
         set_target(choice);

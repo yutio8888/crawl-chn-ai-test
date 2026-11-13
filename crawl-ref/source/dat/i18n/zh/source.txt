@@ -50318,3 +50318,6 @@ Teeth
 ability cost separator|, 
 ，
 %%%%
+view menu action|target
+选定目标
+%%%%
