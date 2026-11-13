@@ -13,6 +13,8 @@
 #include "item-status-flag-type.h"
 #include "map-cell.h"
 #include "mon-info.h"
+#include "mon-util.h"
+#include "monster.h"
 #include "monster-type.h"
 #include "mutation.h"
 #include "player.h"
@@ -352,5 +354,26 @@ TEST_CASE("MP mutation display names follow the resource term without changing i
             CHECK(string(mutation_name(row.type))
                   == (language == lang_t::ZH ? row.chinese : row.english));
         }
+    }
+}
+
+TEST_CASE("Possessive message slots do not add a second Chinese particle",
+          "[zh-translation][r19][fts3]")
+{
+    init_monsters();
+    monster mon;
+    mon.type = MONS_ORC;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool chinese = language == lang_t::ZH;
+        const string possessive = mon.name(DESC_ITS, true);
+        const string action = T_("You disguise yourself as an ordinary barrel");
+        const string actual = make_stringf(T_("%s to avoid %s notice."),
+                                            action.c_str(), possessive.c_str());
+        CHECK(actual == (chinese
+              ? action + "，以避开" + possessive + "注意。"
+              : action + " to avoid " + possessive + " notice."));
+        CHECK(actual.find("的的") == string::npos);
     }
 }

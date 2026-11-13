@@ -53356,7 +53356,7 @@ The starcursed mass shrieks in your mind.
 %s闪烁着分裂成了%s个！
 %%%%
 %s to avoid %s notice.
-%s，以避开%s的注意。
+%s，以避开%s注意。
 %%%%
 %s violently unleashes its stored power!
 %s猛烈地释放出储存的力量！
