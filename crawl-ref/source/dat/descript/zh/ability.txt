@@ -457,8 +457,8 @@ Sacrifice Love ability
 %%%%
 Sacrifice Courage ability
 
-舍弃勇气，会让你恐惧危险的怪物。
-这些怪物会让你充满恐惧，这会削弱你的法术威力以及战斗中打击和伤害怪物的能力。
+献祭勇气，令你面对危险的怪物时心生惊骇。
+这些怪物引发的惊骇会削弱你的法术威力以及战斗中的命中与伤害。
 %%%%
 Sacrifice Arcana ability
 
