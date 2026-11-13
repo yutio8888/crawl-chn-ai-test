@@ -249,8 +249,14 @@ bool EquipOffDelay::try_interrupt(bool force)
 
     if (interrupt)
     {
+        const char* verb = is_weapon(equip)
+                            && !you.has_mutation(MUT_SLOW_WIELD)
+            ? C_("equipment interruption", "unwielding")
+            : equip.base_type == OBJ_JEWELLERY
+                && !you.has_mutation(MUT_FORMLESS)
+                ? C_("equipment interruption", "removing") : get_verb();
         mprf(T_("You stop %s your %s."),
-             get_verb(), _eq_category(equip).c_str());
+             verb, _eq_category(equip).c_str());
         return true;
     }
     return false;
