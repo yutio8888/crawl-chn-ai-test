@@ -11,6 +11,7 @@
 #include "format.h"
 #include "i18n.h"
 #include "item-def.h"
+#include "item-status-flag-type.h"
 #include "message.h"
 #include "mutation.h"
 #include "player.h"
