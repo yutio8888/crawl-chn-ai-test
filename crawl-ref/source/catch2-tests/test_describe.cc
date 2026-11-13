@@ -20,7 +20,12 @@
 #include "stringutil.h"
 #include "unwind.h"
 
+#include "item-prop.h"
+#include "state.h"
+#include "player-equip.h"
+#include "status.h"
 #include "test_zh_fixture.h"
+#include <sstream>
 
 namespace
 {
@@ -263,6 +268,123 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                     }
                     REQUIRE(found);
                 }
+            }
+        }
+    }
+}
+
+TEST_CASE("Blind hit chance qualifiers name the actual distance",
+          "[zh-translation][r20][hit-chance-distance]")
+{
+    init_properties();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 20;
+    item_def bow;
+    bow.base_type = OBJ_WEAPONS;
+    bow.sub_type = WPN_LONGBOW;
+    bow.quantity = 1;
+    bow.flags = ISFLAG_IDENTIFIED;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (bool armed : {false, true})
+        for (bool blind : {false, true})
+        for (int distance : {1, 3})
+        {
+            you.duration[DUR_BLIND] = blind ? 10 : 0;
+            const string name = armed
+                ? bow.name(DESC_YOUR, false, false, false)
+                : you.hand_name(true);
+            ostringstream actual;
+            describe_hit_chance(65, actual, armed ? &bow : nullptr,
+                                true, distance);
+            string expected;
+            if (language == lang_t::ZH)
+            {
+                expected = armed ? name + "的命中率约为65%"
+                    : "你用" + name + "攻击的命中率约为65%";
+                if (blind)
+                    expected += "（你失明时，在距离为"
+                        + to_string(distance) + "的情况下）";
+            }
+            else
+            {
+                expected = "about 65% to hit with "
+                    + (armed ? name : "your " + name);
+                if (blind)
+                    expected += " (while you are blinded and from distance "
+                        + to_string(distance) + ")";
+            }
+            CAPTURE(language, armed, blind, distance);
+            CHECK(actual.str() == expected);
+        }
+    }
+}
+
+TEST_CASE("Equipped armour describes extra projectile attack delay",
+          "[zh-translation][r20][armour-attack-delay]")
+{
+    init_properties();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> saved(crawl_state.need_save, true);
+    you = player();
+    you.species = SP_HUMAN;
+    you.experience_level = 1;
+    you.hp = you.hp_max = 20;
+    you.base_stats.init(10);
+    you.equipment.num_slots.init(0);
+    you.equipment.num_slots[SLOT_BODY_ARMOUR] = 1;
+    you.equipment.num_slots[SLOT_WEAPON] = 1;
+    item_def& body = you.inv[0];
+    body.base_type = OBJ_ARMOUR;
+    body.quantity = 1;
+    body.flags = ISFLAG_IDENTIFIED;
+    body.link = 0;
+    body.pos = ITEM_IN_INVENTORY;
+    item_def& bow = you.inv[1];
+    bow.base_type = OBJ_WEAPONS;
+    bow.sub_type = WPN_LONGBOW;
+    bow.quantity = 1;
+    bow.flags = ISFLAG_IDENTIFIED;
+    bow.link = 1;
+    bow.pos = ITEM_IN_INVENTORY;
+    // Add the equipped display state without triggering equip UI effects.
+    body.sub_type = ARM_PLATE_ARMOUR;
+    you.equipment.add(body, SLOT_BODY_ARMOUR);
+    you.equipment.add(bow, SLOT_WEAPON);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (bool slight : {false, true})
+        {
+            body.sub_type = slight ? ARM_LEATHER_ARMOUR : ARM_PLATE_ARMOUR;
+            you.skills[SK_ARMOUR] = slight ? 27 : 0;
+            you.equipment.update();
+            REQUIRE(you.body_armour() == &body);
+            REQUIRE(you.weapon() == &bow);
+            const int penalty = you.adjusted_body_armour_penalty(100, true);
+            CAPTURE(language, slight, penalty);
+            REQUIRE(penalty > 0);
+            CHECK((penalty < 100) == slight);
+            const string description = get_item_description(body);
+            if (language == lang_t::ZH)
+            {
+                CHECK(description.find(slight ? "攻击延迟略微增加。"
+                                               : "攻击延迟增加1.0。")
+                      != string::npos);
+                CHECK(description.find("攻击速度，减幅") == string::npos);
+            }
+            else
+            {
+                const string expected =
+                    "Your current strength and Armour skill slows attacks "
+                    "with missile weapons (like " + bow.name(DESC_YOUR) + ") "
+                    + (slight ? "only slightly." : "by 1.0.");
+                CHECK(description.find(expected) != string::npos);
             }
         }
     }

@@ -319,7 +319,7 @@
             { "language": "en", "relation": "PAST", "pattern": "An echo of ${actor_lower} flickers and hopelessly wails past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor_lower}的一道回声忽明忽灭，绝望地朝${target}哀嚎。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor_lower}的一道回声忽明忽灭，绝望地朝${target}旁边哀嚎。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor_lower}的一道回声忽明忽灭，绝望地朝${target}身后哀嚎。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor_lower}的一道回声忽明忽灭，绝望的哀嚎从${target}旁边掠过。" }
           ]
         }],
         "materialization_cases": [], "recursive_dependency_fingerprints": {}

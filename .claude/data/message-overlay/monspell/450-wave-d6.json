@@ -236,7 +236,7 @@
               { "language": "en", "relation": "PAST", "pattern": "${actor} roars wildly past ${target}." },
               { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}狂野咆哮。" },
               { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边狂野咆哮。" },
-              { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}身后狂野咆哮。" }
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}发出狂野的咆哮，声音从${target}旁边掠过。" }
             ]
           }],
           "materialization_cases": [], "recursive_dependency_fingerprints": {}
@@ -266,7 +266,7 @@
               { "language": "en", "relation": "PAST", "pattern": "${actor} yells loudly past ${target}." },
               { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}高声喊叫。" },
               { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边高声喊叫。" },
-              { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}身后高声喊叫。" }
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}高声喊叫，声音从${target}旁边掠过。" }
             ]
           }],
           "materialization_cases": [], "recursive_dependency_fingerprints": {}
@@ -371,7 +371,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} fires past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}射击。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边射击。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}身后射击。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}射出的弹丸从${target}旁边掠过。" }
           ]
         }],
         "materialization_cases": [], "recursive_dependency_fingerprints": {}
