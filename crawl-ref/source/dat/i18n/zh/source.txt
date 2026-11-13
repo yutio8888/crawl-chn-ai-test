@@ -54746,6 +54746,6 @@ gozag bookshop title|Book Emporium
 mutation legend|<darkgrey>[]</darkgrey>: 
 <darkgrey>[]</darkgrey>：
 %%%%
-held status sentence|You are %s.
+status|You are %s.
 你%s了。
 %%%%
