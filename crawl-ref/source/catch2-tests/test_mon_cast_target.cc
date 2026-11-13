@@ -2701,7 +2701,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         // This also proves that PotionInvisibility::effect uses the builder.
         you.duration[DUR_INVIS] = 0;
         you.props[WU_JIAN_HEAVENLY_STORM_KEY] = 1;
-        invalidate_agrid();
+        invalidate_agrid(true);
         REQUIRE(you.haloed());
         string output;
         {
@@ -2718,6 +2718,6 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         CHECK(you.duration[DUR_INVIS] > 0);
         you.duration[DUR_INVIS] = 0;
         you.props.erase(WU_JIAN_HEAVENLY_STORM_KEY);
-        invalidate_agrid();
+        invalidate_agrid(true);
     }
 }
