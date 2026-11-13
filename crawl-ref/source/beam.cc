@@ -6375,9 +6375,9 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
                      attack_strength_punctuation(dam).c_str());
             } else {
                 const bool plural = mon->heads() > 1;
-                mprf(T_("%s mind%s blasted%s"),
+                mprf(plural ? T_("%s minds are blasted%s")
+                            : T_("%s mind is blasted%s"),
                      mon->name(DESC_ITS).c_str(),
-                     plural ? T_("s are") : T_(" is"),
                      attack_strength_punctuation(dam).c_str());
             }
             obvious_effect = true;

@@ -51077,3 +51077,9 @@ hit chance| (while you are blinded and from distance %d)
 missile brand|poisoned
 涂毒
 %%%%
+%s mind is blasted%s
+%s精神被冲击%s
+%%%%
+%s minds are blasted%s
+%s精神被冲击%s
+%%%%

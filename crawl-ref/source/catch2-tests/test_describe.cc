@@ -9,6 +9,7 @@
 #include "dungeon.h"
 #include "database.h"
 #include "env.h"
+#include "english.h"
 #include "i18n.h"
 #include "item-status-flag-type.h"
 #include "map-cell.h"
@@ -462,11 +463,12 @@ TEST_CASE("Possessive message slots do not add a second Chinese particle",
         const string name = mon.name(DESC_THE, true);
         for (bool plural : {false, true})
         {
-            const string verb = plural ? T_("s are") : T_(" is");
-            const string actual = make_stringf(T_("%s mind%s blasted%s"),
-                possessive.c_str(), verb.c_str(), "!");
-            CHECK(actual == (chinese ? possessive + "精神被冲击!"
-                  : possessive + " mind" + verb + " blasted!"));
+            const char *format = plural ? T_("%s minds are blasted%s")
+                                        : T_("%s mind is blasted%s");
+            const string actual = make_stringf(format, possessive.c_str(), "!");
+            const string english = make_stringf("%s mind%s blasted%s",
+                possessive.c_str(), plural ? "s are" : " is", "!");
+            CHECK(actual == (chinese ? possessive + "精神被冲击!" : english));
         }
         const string ancestor = apostrophise("Anu");
         CHECK(make_stringf(T_("Remember %s name as what? "), ancestor.c_str())
