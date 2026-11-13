@@ -2966,7 +2966,7 @@ void beogh_ally_healing()
 
     mprf_p(T_("%s %s%sinvigorated by your bravery."), heal_list.size() == 1 ? heal_list[0]->name(DESC_THE).c_str()
                                    : T_("Your followers are"),
-             heal_list.size() == 1 ? T_("is ") : "",
+             heal_list.size() == 1 ? C_("follower healing", "is ") : "",
              healing_done > 25 ? T_(" greatly ") : "");
 }
 

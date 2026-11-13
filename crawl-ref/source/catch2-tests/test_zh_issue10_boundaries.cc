@@ -4518,3 +4518,46 @@ TEST_CASE("target descriptions translate silence without changing status identit
         CHECK(cell_monster_description(pos, true).find(T_("silenced")) == string::npos);
     }
 }
+
+TEST_CASE("follower healing localizes singular and plural without changing English",
+          "[zh-translation][r6-healing]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const int count = GENERATE(1, 2);
+    const bool greatly = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    you.religion = GOD_BEOGH;
+    you.raw_piety = 160;
+    vector<monster *> allies;
+    for (int i = 0; i < count; ++i)
+    {
+        monster *ally = world.place(MONS_ORC_APOSTLE, coord_def(21 + i, 20));
+        ally->base_attitude = ATT_FRIENDLY;
+        ally->god = GOD_BEOGH;
+        ally->flags |= MF_GOD_GIFT;
+        ally->hit_points = 1;
+        ally->max_hit_points = 200;
+        REQUIRE(ally->is_divine_companion());
+        allies.push_back(ally);
+    }
+    const string subject = count == 1 ? allies[0]->name(DESC_THE)
+        : language == lang_t::ZH ? "你的追随者们" : "Your followers are";
+    string text;
+    // The production ability sometimes skips a heal. Retry its real entry
+    // point rather than replacing RNG or copying the message expression.
+    for (int attempt = 0; attempt < 100 && allies[0]->hit_points == 1; ++attempt)
+    {
+        you.props[BEOGH_DAMAGE_DONE_KEY] = greatly ? 100 : 20;
+        msg::tee capture(text);
+        beogh_ally_healing();
+    }
+    REQUIRE(allies[0]->hit_points > 1);
+    const string expected = language == lang_t::ZH
+        ? subject + "因你的英勇而" + (count == 1 ? "感到" : "")
+          + (greatly ? "极其" : "") + "精神振奋。"
+        : subject + " " + (count == 1 ? "is " : "")
+          + (greatly ? " greatly " : "") + "invigorated by your bravery.";
+    CAPTURE(language, count, greatly, text);
+    CHECK(text.find(expected) != string::npos);
+}
