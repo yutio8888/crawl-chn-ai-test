@@ -952,3 +952,25 @@ TEST_CASE("follower healing localizes singular and plural without changing Engli
     CAPTURE(language, count, greatly, text);
     CHECK(text.find(expected) != string::npos);
 }
+
+TEST_CASE("Interrupted bee winding uses the caster as subject",
+          "[zh-translation][r24-bee-winding]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *caster = world.place(MONS_ORC_WIZARD, coord_def(21, 21));
+    REQUIRE(you.can_see(*caster));
+    caster->props[CLOCKWORK_BEE_TARGET].get_int() = MID_PLAYER;
+    caster->add_ench(mon_enchant(ENCH_CLOCKWORK_BEE_CAST, caster, 100));
+    REQUIRE(caster->has_ench(ENCH_CLOCKWORK_BEE_CAST));
+    caster->behaviour = BEH_SLEEP;
+    const string interrupted = observe_message([&] { caster->apply_enchantments(); });
+    CAPTURE(language, interrupted);
+    CHECK_FALSE(caster->has_ench(ENCH_CLOCKWORK_BEE_CAST));
+    if (language == lang_t::ZH)
+        CHECK(interrupted.find("兽人巫师停止了给发条蜜蜂上弦。") != string::npos);
+    else
+        CHECK(lowercase_string(interrupted).find(
+                  "the orc wizard stops winding its clockwork bee.") != string::npos);
+}
