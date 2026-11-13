@@ -969,13 +969,13 @@ heal and protect your ancestor
 治疗并保护你的先祖
 %%%%
 You now drain nearby creatures when transferring your ancestor.
-现在你在转移先祖时会汲取附近生物的能量，使其衰弱。
+现在你在转移先祖时会使附近的生物陷入衰竭。
 %%%%
 You no longer drain nearby creatures when transferring your ancestor.
-转移先祖时，你不再汲取附近生物的能量来使其衰弱。
+转移先祖时，你不再使附近的生物陷入衰竭。
 %%%%
 You drain nearby creatures when transferring your ancestor.
-你在转移先祖时会汲取附近生物的能量，使其衰弱。
+你在转移先祖时会使附近的生物陷入衰竭。
 %%%%
 perform damaging attacks by moving towards foes
 通过向敌人移动来施展伤害性攻击
@@ -4721,7 +4721,7 @@ You are dazed by the spores!
 被严重浇透了！
 %%%%
  is drained terribly!
-被严重汲取了！
+陷入了严重的衰竭！
 %%%%
  is duplicated!
  被复制了！
@@ -21260,7 +21260,7 @@ weak
 虚弱
 %%%%
 drained
-被吸取
+衰竭
 %%%%
 very drained
 重度衰竭
@@ -21563,10 +21563,10 @@ skewered by barbs
 被倒刺刺穿
 %%%%
 lightly drained
-轻度被吸取
+轻度衰竭
 %%%%
 heavily drained
-严重被吸取
+重度衰竭
 %%%%
 softly glowing
 微微发光
@@ -24359,7 +24359,7 @@ Space warps violently around %s%s
 %s在痛苦中扭动%s
 %%%%
 %s drains %s%s
-%s吸取了%s%s
+%s使%s陷入衰竭%s
 %%%%
 You are electrocuted%s
 你被电击了%s
@@ -32494,19 +32494,19 @@ status|Drain
 衰竭
 %%%%
 status|extremely drained
-极度削命
+极度衰竭
 %%%%
 status|very heavily drained
-严重削命
+严重衰竭
 %%%%
 status|heavily drained
-重度削命
+重度衰竭
 %%%%
 status|drained
-削命
+衰竭
 %%%%
 status|lightly drained
-轻度削命
+轻度衰竭
 %%%%
 status|Your life force is extremely drained.
 你的生命力被极度削弱了。
@@ -32533,7 +32533,7 @@ status|Vapour
 汽雾
 %%%%
 ability cost|Drain
-削命
+衰竭
 %%%%
 , Bound item
 ，已束缚物品
@@ -35671,7 +35671,7 @@ Jiyva will unlock the Slime Pits vault.
 完全恢复了！
 %%%%
  is drained by nostalgia.
-因怀旧而虚弱不堪。
+因怀旧而陷入衰竭。
 %%%%
  is not worthy to be dueled!
 不配与你决斗！
@@ -38268,7 +38268,7 @@ You can use this ability even if confused.
 混乱状态下也可使用此能力。
 %%%%
 This ability will temporarily drain your maximum health when used
-使用此能力将暂时汲取你的最大生命值
+使用此能力会使你暂时陷入衰竭，降低生命值上限
 %%%%
 , even unsuccessfully
 ，即使未成功
@@ -52972,8 +52972,7 @@ Bonus AC
 
 %%%%
 Self drain
-自身削命
-
+自身衰竭
 %%%%
  HP
 点生命上限
