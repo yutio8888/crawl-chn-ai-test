@@ -1300,3 +1300,7 @@ Disguised status
 Plink status
 
 你正朝火线上的所有敌人投掷飞石。
+%%%%
+-2ndWind status
+
+你的北风壁垒需要一段时间恢复力量，之后才能再次为你恢复生命。

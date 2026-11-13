@@ -30498,6 +30498,9 @@ Salvo
 Salvo,
 齐射,
 %%%%
+SecondWind
+再振
+%%%%
 ShootingStar
 流星
 %%%%
@@ -54786,4 +54789,41 @@ equip finish jewellery|You finish removing %s.
 %%%%
 %s turns attention toward your shadow.
 %s将注意力转向了你的影子。
+%%%%
+%%%%
+Boreas
+玻瑞阿斯
+%%%%
+Boreal Bulwark
+北风壁垒
+%%%%
+status|-2ndWind
+-再振
+%%%%
+status|on second wind cooldown
+再振冷却中
+%%%%
+status|second wind cooldown
+再振冷却
+%%%%
+You have recently used your second wind
+你刚刚再振过一次，尚在恢复之中。
+%%%%
+You feel your endurance being bolstered by the wind.
+你感到风正在支撑你的耐力。
+%%%%
+You feel a strange kinship with the steel in your %s.
+你感到自己与%s中的钢铁有着奇异的共鸣。
+%%%%
+You feel a cold wind start to gather around you.
+你感到一阵寒风开始在你周围汇聚。
+%%%%
+A bracing wind gives %s the strength to keep fighting!
+一阵劲风给了%s继续战斗的力量！
+%%%%
+You feel a bracing wind giving you strength to keep fighting!
+你感到一阵劲风给了你继续战斗的力量！
+%%%%
+When you are badly injured, it rapidly regenerates a percentage of your health.
+当你身受重伤时，它会迅速为你恢复一定比例的生命值。
 %%%%

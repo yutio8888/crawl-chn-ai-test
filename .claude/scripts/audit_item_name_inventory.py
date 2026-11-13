@@ -1356,8 +1356,9 @@ def unrand_rows(db, source_db, base_db, base_source_db, review_base):
             )),
         })
     enums = [definition["enum"] for definition in definitions]
-    # Thirteen upstream additions, individually audited for Issue #147.
-    if len(definitions) != 155 or len(enums) != 155:
+    # Thirteen upstream additions, individually audited for Issue #147,
+    # plus the Boreal Bulwark unrand added upstream in f79d9584f8e.
+    if len(definitions) != 156 or len(enums) != 156:
         raise RuntimeError(
             f"unrand inventory drift: definitions={len(definitions)} "
             f"enums={len(enums)}"
@@ -1381,6 +1382,8 @@ def unrand_rows(db, source_db, base_db, base_source_db, review_base):
     expected_changed_names = {
         # Issue #147: 13 new upstream definitions, Prune and Tranquillity
         # renames, plus the three surviving pre-trunk reviewed name changes.
+        # f79d9584f8e: new upstream unrand, translated in this sync.
+        "boreal bulwark",
         "amulet of the air", "amulet of tranquillity", "arcane splint mail",
         "armour of talos",  # Full item rereview: approved source-name repair.
         'athame "fimbulwinter"', "bone scales", "coolibah bardiche",
@@ -2425,7 +2428,7 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
     )
     counts = Counter(row["category"] for row in rows)
     expected_counts = {
-        "unrand": 155,
+        "unrand": 156,
         "unident": 7,
         "appearance": 186,
         "special": 23,
