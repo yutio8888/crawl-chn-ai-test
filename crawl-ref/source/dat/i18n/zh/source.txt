@@ -18704,7 +18704,7 @@ rollpage
 翻滚冲锋
 %%%%
 rugged brown scales
-粗糙棕鳞
+粗糙褐鳞
 %%%%
 runic magic
 符文魔法
@@ -19010,7 +19010,7 @@ You are completely covered in razor-sharp scales. (AC +3, Slay +3)
 你完全覆盖着锋利鳞片。（防御+3，杀戮+3）
 %%%%
 You are completely covered in rugged brown scales. (AC +3, +7% HP)
-你完全覆盖着粗糙棕鳞。（防御+3，+7%生命）
+你完全覆盖着粗糙褐鳞。（防御+3，+7%生命）
 %%%%
 You are completely covered in sharp spines.
 你完全覆盖着锋利的尖刺。
@@ -19139,7 +19139,7 @@ You are mostly covered in razor-sharp scales. (AC +2, Slay +2)
 你大部分覆盖着锋利鳞片。（防御+2，杀戮+2）
 %%%%
 You are mostly covered in rugged brown scales. (AC +2, +5% HP)
-你大部分覆盖着粗糙棕鳞。（防御+2，+5%生命）
+你大部分覆盖着粗糙褐鳞。（防御+2，+5%生命）
 %%%%
 You are mostly covered in sharp spines.
 你大部分覆盖着锋利的尖刺。
@@ -19175,7 +19175,7 @@ You are partially covered in razor-sharp scales. (AC +1, Slay +1)
 你部分覆盖着锋利鳞片。（防御+1，杀戮+1）
 %%%%
 You are partially covered in rugged brown scales. (AC +1, +3% HP)
-你部分覆盖着粗糙棕鳞。（防御+1，+3%生命）
+你部分覆盖着粗糙褐鳞。（防御+1，+3%生命）
 %%%%
 You are partially covered in sharp spines.
 你部分覆盖着锋利的尖刺。
@@ -24558,13 +24558,13 @@ Qazlal is protecting you from physical damage.
 卡兹拉尔正在保护你免受物理伤害。
 %%%%
 Rugged brown scales cover your body completely.
-粗糙的棕色鳞片完全覆盖了你的身体。
+粗糙的褐色鳞片完全覆盖了你的身体。
 %%%%
 Rugged brown scales grow over part of your body.
-粗糙的棕色鳞片覆盖了你身体的一部分。
+粗糙的褐色鳞片覆盖了你身体的一部分。
 %%%%
 Rugged brown scales spread over more of your body.
-粗糙的棕色鳞片蔓延到你身体的更多部位。
+粗糙的褐色鳞片蔓延到你身体的更多部位。
 %%%%
 Sharp scales cover your body completely.
 锐利的鳞片完全覆盖了你的身体。
@@ -25758,13 +25758,13 @@ Your connection to magic feels less subdued.
 你与魔法的连接不那么被抑制了。
 %%%%
 Your connection to magic feels more subdued.
-你与魔法的连接感到更加被抑制了。
+你感到自己与魔法的联系受到了更强的抑制。
 %%%%
 Your connection to magic feels nearly dormant.
 你与魔法的连接几乎沉睡。
 %%%%
 Your connection to magic feels subdued.
-你与魔法的连接感到被抑制了。
+你感到自己与魔法的联系受到了抑制。
 %%%%
 Your control of surrounding life forces is gone.
 你对周围生命力的控制消失了。
@@ -26010,10 +26010,10 @@ Your right eye vanishes! The world loses its depth.
 你的右眼消失了！世界失去了深度感。
 %%%%
 Your rugged brown scales disappear.
-你粗糙的棕色鳞片消失了。
+你粗糙的褐色鳞片消失了。
 %%%%
 Your rugged brown scales recede somewhat.
-你粗糙的棕色鳞片有所消退。
+你粗糙的褐色鳞片有所消退。
 %%%%
 Your servants grow eager to unleash destruction.
 你的仆从们渴望释放毁灭。

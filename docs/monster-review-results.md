@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`dcbfb16ac457e9506a5e634d171211d460652f42e2ba651ad950d15e719753ae`
-- 清单 SHA-256：`e2b6d79b770e1e46e5e46e872263d6fbb296918747a46b6ccdd5ac7ba9e71321`
+- 清单 SHA-256：`56832db99ff2317edc1811402e5686f57641851d52f6ed92c36503cc6edbde38`
 - 身份总数：795（现行 671；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -62,7 +62,7 @@
 | `monster:MONS_CANE_TOAD` | current; exposure=ordinary; name=cane toad→海蟾蜍; genus=MONS_FROG; species=MONS_CANE_TOAD; data=crawl-ref/source/dat/mons/cane-toad.yaml; desc=EN/ZH | keep |
 | `monster:MONS_BLINK_FROG` | current; exposure=ordinary; name=blink frog→闪烁蛙; genus=MONS_FROG; species=MONS_BLINK_FROG; data=crawl-ref/source/dat/mons/blink-frog.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_GRIZZLY_BEAR` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
-| `monster:MONS_POLAR_BEAR` | current; exposure=ordinary; name=polar bear→北极熊; genus=MONS_BEAR; species=MONS_POLAR_BEAR; data=crawl-ref/source/dat/mons/polar-bear.yaml; desc=EN/ZH | keep |
+| `monster:MONS_POLAR_BEAR` | current; exposure=ordinary; name=polar bear→北极熊; genus=MONS_BEAR; species=MONS_POLAR_BEAR; data=crawl-ref/source/dat/mons/polar-bear.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_BLACK_BEAR` | current; exposure=ordinary; name=black bear→黑熊; genus=MONS_BEAR; species=MONS_BLACK_BEAR; data=crawl-ref/source/dat/mons/black-bear.yaml; desc=EN/ZH | keep |
 | `monster:MONS_RIBBON_WORM` | current; exposure=ordinary; name=ribbon worm→带状虫; genus=MONS_RIBBON_WORM; species=MONS_RIBBON_WORM; data=crawl-ref/source/dat/mons/ribbon-worm.yaml; desc=EN/ZH | keep |
 | `monster:MONS_BRAIN_WORM` | current; exposure=ordinary; name=brain worm→脑虫; genus=MONS_RIBBON_WORM; species=MONS_BRAIN_WORM; data=crawl-ref/source/dat/mons/brain-worm.yaml; desc=EN/ZH | keep |
@@ -310,8 +310,8 @@
 | `monster:MONS_SWAMP_WORM` | current; exposure=ordinary; name=swamp worm→沼泽虫; genus=MONS_RIBBON_WORM; species=MONS_SWAMP_WORM; data=crawl-ref/source/dat/mons/swamp-worm.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SHARK` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_KRAKEN` | current; exposure=ordinary; name=kraken→海怪; genus=MONS_KRAKEN; species=MONS_KRAKEN; data=crawl-ref/source/dat/mons/kraken.yaml; desc=EN/ZH | keep |
-| `monster:MONS_KRAKEN_TENTACLE` | current; exposure=ordinary; name=tentacle→触手; genus=MONS_KRAKEN; species=MONS_KRAKEN_TENTACLE; data=crawl-ref/source/dat/mons/kraken-tentacle.yaml; desc=EN/ZH | keep |
-| `monster:MONS_KRAKEN_TENTACLE_SEGMENT` | current; exposure=ordinary; name=tentacle segment→触手段; genus=MONS_KRAKEN; species=MONS_KRAKEN_TENTACLE_SEGMENT; data=crawl-ref/source/dat/mons/kraken-tentacle-segment.yaml; desc=EN/ZH | keep |
+| `monster:MONS_KRAKEN_TENTACLE` | current; exposure=ordinary; name=tentacle→触手; genus=MONS_KRAKEN; species=MONS_KRAKEN_TENTACLE; data=crawl-ref/source/dat/mons/kraken-tentacle.yaml; desc=EN/ZH | retranslate: description corrected |
+| `monster:MONS_KRAKEN_TENTACLE_SEGMENT` | current; exposure=ordinary; name=tentacle segment→触手段; genus=MONS_KRAKEN; species=MONS_KRAKEN_TENTACLE_SEGMENT; data=crawl-ref/source/dat/mons/kraken-tentacle-segment.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ORANGE_STATUE` | current; exposure=ordinary; name=orange crystal statue→橙色水晶雕像; genus=MONS_STATUE; species=MONS_ORANGE_STATUE; data=crawl-ref/source/dat/mons/orange-statue.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_OBSIDIAN_STATUE` | current; exposure=ordinary; name=obsidian statue→黑曜石雕像; genus=MONS_STATUE; species=MONS_OBSIDIAN_STATUE; data=crawl-ref/source/dat/mons/obsidian-statue.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ICE_STATUE` | current; exposure=ordinary; name=ice statue→冰雕像; genus=MONS_STATUE; species=MONS_ICE_STATUE; data=crawl-ref/source/dat/mons/ice-statue.yaml; desc=EN/ZH | retranslate: description corrected |
@@ -616,7 +616,7 @@
 | `monster:MONS_MNOLEG_TENTACLE_SEGMENT` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_BENNU` | current; exposure=ordinary; name=bennu→贝努鸟; genus=MONS_BENNU; species=MONS_BENNU; data=crawl-ref/source/dat/mons/bennu.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_USHABTI` | current; exposure=ordinary; name=ushabti→乌沙布提; genus=MONS_GOLEM; species=MONS_USHABTI; data=crawl-ref/source/dat/mons/ushabti.yaml; desc=EN/ZH | retranslate: description corrected |
-| `monster:MONS_DEATH_SCARAB` | current; exposure=ordinary; name=death scarab→死亡圣甲虫; genus=MONS_DEATH_SCARAB; species=MONS_DEATH_SCARAB; data=crawl-ref/source/dat/mons/death-scarab.yaml; desc=EN/ZH | keep |
+| `monster:MONS_DEATH_SCARAB` | current; exposure=ordinary; name=death scarab→死亡圣甲虫; genus=MONS_DEATH_SCARAB; species=MONS_DEATH_SCARAB; data=crawl-ref/source/dat/mons/death-scarab.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ANUBIS_GUARD` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_CAUSTIC_SHRIKE` | current; exposure=ordinary; name=caustic shrike→腐蚀伯劳; genus=MONS_CAUSTIC_SHRIKE; species=MONS_CAUSTIC_SHRIKE; data=crawl-ref/source/dat/mons/caustic-shrike.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ROBIN` | current; exposure=unique; name=Robin→罗宾; genus=MONS_GOBLIN; species=MONS_HOBGOBLIN; data=crawl-ref/source/dat/mons/robin.yaml; desc=EN/ZH | keep |

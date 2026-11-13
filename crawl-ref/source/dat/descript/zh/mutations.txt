@@ -42,7 +42,7 @@ thin metallic scales mutation
 %%%%
 rugged brown scales mutation
 
-你被棕色鳞片覆盖，这会提供少量保护。
+你被褐色鳞片覆盖，这会提供少量保护。
 这个变异每升一级会加1点防御，并会稍稍提升你的生命力。
 %%%%
 sharp scales mutation
@@ -60,7 +60,7 @@ large bone plates mutation
 %%%%
 thin skeletal structure mutation
 
-你的骨头变得轻巧、多孔。此变异每级提供+2敏捷，并提升潜行能力。
+你的骨头变得轻巧、多孔。此变异每级提供敏捷+2、潜行+。
 %%%%
 strong mutation
 
@@ -447,8 +447,8 @@ black mark mutation
 %%%%
 aura of silence mutation
 
-你被沉默力场所围绕。与你相邻的怪物无法发出任何声音。
-它可以阻止大多数形式的施法和祈祷，但恶魔的魔法是无声的，不受此影响。
+你被沉默光环所围绕。与你相邻的生物无法发出任何声音。
+这会阻止大多数形式的施法和祈祷，但恶魔的魔法是无声的，不受此影响。
 %%%%
 bedevilling mutation
 
@@ -648,7 +648,7 @@ devour on kill mutation
 rollpage mutation
 
 当你移向敌人时会本能地翻滚，会向前再冲出一格。
-这个变异能在你滚动时提升法力恢复速度；
+这个变异能在你翻滚时提升法力恢复速度；
 这个变异达到第二级，法力和生命值的恢复速度会同时提升。
 %%%%
 double potion healing mutation
@@ -678,7 +678,7 @@ no forms mutation
 %%%%
 inability to use devices mutation
 
-你无法使用魔法设备。
+你无法使用魔法装置。
 其中包括魔杖和大多数需要通过<input>$cmd[CMD_EVOKE]</input>激活的物品，
 但不包括可延伸攻击的武器、护符和通天塔雕像。这也使得法杖在近战时的威力大大降低。
 %%%%
