@@ -505,9 +505,10 @@ public:
                 afflictions.push_back(NC_("invisibility blocker", "!!!QUAD DAMAGE!!!"));
             if (you.form == transformation::flux)
                 afflictions.push_back(NC_("invisibility blocker", "form"));
-            mpr(invisibility_blocked_message(afflictions,
-                    you.duration[DUR_INVIS] != 0,
-                    you.haloed() && you.halo_radius() == -1), MSGCH_DURATION);
+            const string message = invisibility_blocked_message(afflictions,
+                you.duration[DUR_INVIS] != 0,
+                you.haloed() && you.halo_radius() == -1);
+            mprf(MSGCH_DURATION, "%s", message.c_str());
         }
         else
         {
