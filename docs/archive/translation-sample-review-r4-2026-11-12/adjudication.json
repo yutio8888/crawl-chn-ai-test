@@ -152,5 +152,88 @@
    "scope": "43 consumer entries (35 changed / 8 kept); random book names 4 changed / 97 kept; ordinary curse, Maledictor, Maledictions, curses, kept; jobs.cc get_job_by_name also accepts old display name 诅咒射手 for old saves/scores; derived ledger cards re-rendered without glossary-SHA rebinding on notice-only ledgers; hard-freshness ledgers rebound",
    "evidence": "fix/hexes-delivery.txt; fix/review-fix.md sections B and C"
   }
- ]
+ ],
+ "advisory_followup": {
+  "date": "2026-11-12",
+  "authority": "maintainer: 请修复建议项 (updates the earlier 'advisory, not fixed' status)",
+  "bases": {
+   "stable": "27dd279443c4e01df9ab8a56f55b5f65b908f73d",
+   "trunk": "e469790144e5abd39effa10db8b1e78be4a30880"
+  },
+  "items": [
+   {
+    "id": "R4-4-09",
+    "lines": "both",
+    "outcome": "fixed",
+    "new": "黑火炬再度猛烈地咆哮起来！"
+   },
+   {
+    "id": "R4-4-10",
+    "lines": "both",
+    "outcome": "fixed",
+    "new": "特洛格是愤怒和暴力的古神。(rest unchanged)"
+   },
+   {
+    "id": "R4-6-02",
+    "lines": "both",
+    "outcome": "fixed",
+    "new": "%s从迷雾中浮现……那是记忆的迷雾吗？……"
+   },
+   {
+    "id": "R4-6-03",
+    "lines": "both",
+    "outcome": "fixed",
+    "new": "这位领主守护着佐特%s符文。(they = the single Pan lord in pan_lord_epilogue; stable also adds the missing context-free 'fiery'→火 key, as trunk)"
+   },
+   {
+    "id": "R4-7-01",
+    "lines": "both",
+    "outcome": "fixed",
+    "new": "shared no-damage suffix → '，但没有造成伤害' (plural sibling suffix also loses its leading half-width space and gains the comma); all suffix consumers checked, damage branch unaffected"
+   },
+   {
+    "id": "R4-1-06",
+    "lines": "both",
+    "outcome": "fixed",
+    "new": "一面由木材和金属制成的小盾，绑在一只手臂上用于防御。"
+   },
+   {
+    "id": "R4-3-02",
+    "lines": "both",
+    "outcome": "fixed",
+    "new": "…可以腐蚀武器、护甲甚至对方的血肉。(this entry only)"
+   },
+   {
+    "id": "R4-5-10",
+    "lines": "both",
+    "outcome": "fixed",
+    "new": "…盖在楼梯或逃生口上… (this hint only; tags and key symbols kept)"
+   },
+   {
+    "id": "R4-1-02",
+    "lines": "both",
+    "outcome": "fixed",
+    "new": "wind damage now explicitly scales with open spaces around the foe (airstrike_space_around(defender->pos(), true)); Felid Lua condition kept; stable 妖术系 unchanged"
+   }
+  ],
+  "overturned": [],
+  "delivery": {
+   "trunk": {
+    "pr": 322,
+    "head": "e7407964ca2bdb890e49ee02a7573bac61ca4522",
+    "merge": "5fe794801b84a39a09b836a3f9fe9a7c4ca1f759",
+    "merged_at": "2026-11-12T23:55:49Z"
+   },
+   "stable": {
+    "pr": 323,
+    "head": "6c866d0eb95d2c90e19ab564d2f55a0fd8ed1f03",
+    "merge": "eae9c90da27218d3469aa3d67e38652c8ef56365",
+    "merged_at": "2026-11-12T23:55:54Z"
+   },
+   "review": "independent Opus 5.5 Ready (fix/review-advisory.md)",
+   "ci": "all applicable pass",
+   "release": "none"
+  },
+  "unchanged_status": "R4-4-05 stays pending. The 22 runtime/layout check points stay unverified; samples among them whose text changed here (e.g. R4-1-02) received text fixes only, and their in-game display remains unverified. Other 逃生舱口 occurrences in the catalogue were not unified (out of scope)."
+ }
 }
