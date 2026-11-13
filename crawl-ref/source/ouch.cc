@@ -1205,7 +1205,7 @@ static void _handle_boreal_bulwark()
 
     you.duration[DUR_INDOMITABLE] += you.hp_max * 33;
     you.duration[DUR_BOREAL_BULWARK_COOLDOWN] = random_range(550, 750);
-    mprf(MSGCH_DURATION, "You feel a bracing wind giving you strength to keep fighting!");
+    mprf(MSGCH_DURATION, T_("You feel a bracing wind giving you strength to keep fighting!"));
 }
 
 static void _place_player_corpse(bool explode)

@@ -6233,7 +6233,7 @@ void monster::react_to_damage(const actor *oppressor, int damage,
     {
         if (you.can_see(*this))
         {
-            mprf("A bracing wind gives %s the strength to keep fighting!",
+            mprf(T_("A bracing wind gives %s the strength to keep fighting!"),
                  name(DESC_THE).c_str());
             add_ench(mon_enchant(ENCH_REGENERATION, this, random_range(80, 110)));
             add_ench(mon_enchant(ENCH_ORB_COOLDOWN, this, random_range(550, 750)));
