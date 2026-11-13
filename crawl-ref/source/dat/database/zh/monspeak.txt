@@ -6316,7 +6316,7 @@ _says_or_shouts_
 _shouts_
 
 
-喊叫
+大喊
 
 
 
@@ -8886,7 +8886,7 @@ w:50
 Nemelex Xobeh Frederick triumphant
 
 
-@The_monster@ 说："看来你输光了，赌徒。"
+@The_monster@ 说："看来你弃牌了，赌徒。"
 
 
 @Frederick@
@@ -9800,7 +9800,7 @@ __NONE
 default silenced confused 'y'
 
 
-VISUAL:@The_monster@ 绕着紧密的圈子飞。
+VISUAL:@The_monster@ 绕着小圈盘旋。
 %%%%
 default stupid confused humanoid
 

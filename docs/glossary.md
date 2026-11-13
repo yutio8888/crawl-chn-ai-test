@@ -232,7 +232,13 @@
 | spell | 法术 | 泛指 |
 | spellpower | 法术威力 | **绝不**译为"法力"——法力 = MP |
 | Bane / bane | 灾祸 | 负面游戏机制；专名 `Bane of X` 可按语境译为“X之灾” |
-| MP / magic points | 法力 | 施法资源 |
+| MP / magic points | 法力 | 施法资源；普通 magic 仍为魔法；decision=D-C-115 |
+| magic | 魔法 | 普通魔法概念；MP 资源按法力；英文协议身份不改；decision=D-C-115 |
+| `potion full name\|magic` | 法力 | 恢复MP的药水词根；与普通magic分离；decision=D-C-115；reject=魔法 |
+| potion of magic / potions of magic | 法力药水 | 恢复MP的药水全称；lookup键不改；decision=D-C-115；reject=魔法药水 |
+| `quiver resource\|magic` | 法力 | MP不足提示的资源参数；decision=D-C-115；reject=魔法 |
+| `drained resource\|magic` | 法力 | 反魔法汲取的资源参数；decision=D-C-115；reject=魔法／魔力 |
+| character dump / char dump | 角色报告 | 生成、浏览、导出结果、教程及载入报告文件的显示名；文件与命令身份不改；decision=D-C-115；reject=角色转储 |
 | cast | 施法（通用）/ 吟诵（仪式）/ 咏唱（神圣） | 按语境选择 |
 | miscast | 施法失误 | 非"施法失败"（后者指被中断） |
 | monster | 怪物 | 通用 |
@@ -404,6 +410,7 @@
 | dodge | 闪避 |
 | armour / armor | 护甲 |
 | shield | 盾牌 |
+| AC | 护甲 / 防御 | 同一防御数值：HUD、神器属性沿用护甲；变异列表及说明沿用防御；不全库替换；decision=D-C-115 |
 | critical hit | 暴击 |
 | resist | 抵抗 |
 | Drain | 汲取 | 生命/魔力吸取效果 |
@@ -455,6 +462,7 @@
 | scroll | 卷轴 |
 | potion | 药水 |
 | wand | 魔杖 |
+| jewellery | 首饰 | 戒指与项链的物品总类，包括商店分类、教程和装备提示；不替换jewel/gem、普通装饰物或护符trinket；decision=D-C-115；reject=珠宝／饰品 |
 | artefact | 神器 |
 | brand | 铭印 |
 | ego |  ego 装备 / 附魔装备 |
@@ -655,6 +663,8 @@
 4. 了 用于完成态：`has fled` → `逃跑了`
 5. 修饰语在前：`X of Y` → `Y之X`（名词-名词）/ `Y的X`（形容词-名词）
 
+引文格式沿用现状：只修确认的语义问题，不统一引号、署名破折号或诗行缩进；decision=D-C-115。
+
 ### 法术命名规则
 - 法术名翻译遵循 `docs/spell-naming-rules.md`
 - 系列词根审阅完毕后在本文件 Section 三登记
@@ -733,6 +743,9 @@
 | goblin | 地精 | — | 地精 + 职业 |
 | kobold | 狗头人 | — | 狗头人 + 职业 |
 | troll | 巨魔 | — | 巨魔 + 职业 |
+| deep troll | 深地巨魔 | D-C-115 | 地下巨魔系列；非Abyss；reject=深渊巨魔 |
+| deep troll earth mage | 深地巨魔地法师 | D-C-115 | 完整怪名及描述；reject=深渊巨魔 |
+| deep troll shaman | 深地巨魔萨满 | D-C-115 | 完整怪名及描述；reject=深渊巨魔 |
 | ogre | 食人魔 | — | 食人魔 + 职业 |
 | gnoll | 豺狼人 | — | 豺狼人 + 职业 |
 | vampire | 吸血鬼 | — | 吸血鬼 + 职业（吸血鬼骑士、吸血鬼法师） |
@@ -843,7 +856,12 @@
 | Sleep | 睡眠 | status; source=status.txt |
 | Held | 受困 | status; source=status.txt |
 | Constriction | 束缚 | status; source=status.txt |
-| Fear | 恐惧 | status; source=status.txt |
+| Fear | 恐惧 | Fear机制，保留；区别Horror惊骇；decision=D-C-115 |
+| Horror | 惊骇 | DUR_HORROR：怯懦导致的攻击/法术惩罚；不是Fear；普通叙述或怪物专名不机械改；decision=D-C-115 |
+| `status\|Horr` | 惊骇 | DUR_HORROR状态灯；decision=D-C-115；reject=恐惧 |
+| Fugue | 赋格 | DUR_FUGUE，含状态、持续与结束消息；法术仍为亡灵赋格；damned/fallen灵魂限定不混并；book of decay的普通神游叙述保留；decision=D-C-115 |
+| `status\|Fugue` | 赋格 | DUR_FUGUE状态灯；decision=D-C-115；reject=神游 |
+| Your fugue has ended. | 你的赋格结束了。 | DUR_FUGUE专用结束键；不涉及普通神游；decision=D-C-115；reject=神游 |
 | Fire | 着火 | status; source=status.txt |
 | Sick | 患病 | status; source=status.txt |
 | Corrosion | 腐蚀 | status; source=status.txt |
@@ -1014,6 +1032,7 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 | hexer | 妖术师 | 先祖职业；decision=D-C-110 |
 | Ancestor Life: Hexer | 先祖生涯：妖术师 | 与现行Knight/Elementalist共用生涯词根；decision=D-C-102 |
 | Sacrifice Love | 献祭爱 | 入的献祭能力；覆盖爱与友好关系，不限爱情；decision=D-C-102 |
+| Heavenly Storm | 天堂风暴 | 无间门派能力、状态及同源描述；decision=D-C-115；reject=天界风暴／天界的风暴／天云风暴 |
 | Chaos Eisegesis | 混沌曲解 | 佐姆能力：以魔法污染为代价施放借来的法术；与 Divine Exegesis 神圣释经相对；decision=D-C-109 |
 
 <!-- domain:mutations -->

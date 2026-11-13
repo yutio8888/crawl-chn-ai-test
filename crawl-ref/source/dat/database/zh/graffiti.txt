@@ -397,57 +397,57 @@ w:1
 %%%%
 _graffiti_happened_reason_
 
-一次意外
+是一次意外
 
-一个巧合
+是一个巧合
 
-一个巧合，但@_graffiti_author_any_@不相信巧合
+是一个巧合，但@_graffiti_author_any_@不相信巧合
 
-一场掩饰
+是一场掩饰
 
-一场闹剧
+是一场闹剧
 
-一桩嫁祸
+是一桩嫁祸
 
-一个错误
+是一个错误
 
-一场荒诞剧
+是一场荒诞剧
 
-对别人的警告
+是对别人的警告
 
-违背众神的意愿
+违背了众神的意愿
 
-完全随机的
+是完全随机的
 
-故意的
+是故意的
 
-罪有应得的
+是应得的
 
-正义的
+是公正的
 
-必要的
+是必要的
 
 绝非意外
 
 绝非失误
 
-更大阴谋的一部分
+是更大阴谋的一部分
 
-"普洛格"阴谋集团所为
+是"普洛格"阴谋集团所为
 
-咎由自取
+是自己造成的
 
-众神的旨意
+是众神的旨意
 
-无端的
+是无端的
 
-不该遭受的
+是不该遭受的
 
-不公的
+是不公的
 
-不必要的
+是不必要的
 
-不可想象的
+是不可想象的
 %%%%
 _graffiti_image_
 
@@ -826,7 +826,7 @@ _graffiti_short_saying_
 
 @_graffiti_author_any_@偷了@_graffiti_author_any_@的东西
 
-@_graffiti_author_any_@所遭遇的一切是@_graffiti_happened_reason_@
+@_graffiti_author_any_@所遭遇的一切@_graffiti_happened_reason_@
 
 @_graffiti_author_any_@已被@_graffiti_duplicate_@取代
 
