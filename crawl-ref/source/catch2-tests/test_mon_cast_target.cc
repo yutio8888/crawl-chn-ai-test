@@ -1449,7 +1449,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                     const char *phrase = relation == speech_target_relation::AT
                         ? (cast.projectile ? "直奔" : "朝")
                         : relation == speech_target_relation::NEXT_TO
-                            ? "旁边" : (cast.projectile ? "旁边掠过" : "以远的方向");
+                            ? "旁边" : (cast.projectile ? "旁边掠过" : "更远的地方");
                     CHECK(text.find(phrase) != string::npos);
                     if (cast.projectile || relation == speech_target_relation::PAST)
                         CHECK(text.find("身后") == string::npos);
