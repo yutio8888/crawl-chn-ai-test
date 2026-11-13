@@ -3,6 +3,7 @@
 #include "AppHdr.h"
 
 #include "areas.h"
+#include "beam.h"
 #include "cloud.h"
 #include "database.h"
 #include "describe.h"
@@ -10,6 +11,7 @@
 #include "english.h"
 #include "env.h"
 #include "format.h"
+#include "god-abil.h"
 #include "i18n.h"
 #include "item-prop.h"
 #include "item-use.h"
@@ -26,6 +28,7 @@
 #include "player.h"
 #include "player-equip.h"
 #include "spl-selfench.h"
+#include "spl-damage.h"
 #include "spl-summoning.h"
 #include "spl-util.h"
 #include "state.h"
@@ -879,4 +882,73 @@ TEST_CASE("stable followup damage rating keeps its localized label and full stop
         ? "空手的伤害评级约为" + rating + "。"
         : "Your damage rating with Unarmed is about " + rating + ".";
     CHECK(output.find(expected) != string::npos);
+}
+
+TEST_CASE("terrain fragmentation translates only its display name",
+          "[zh-translation][r6-terrain]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const auto row = GENERATE(table<dungeon_feature_type, const char *, const char *>({
+        {DNGN_ROCK_WALL, "wall", "墙壁"},
+        {DNGN_METAL_WALL, "metal wall", "金属墙"},
+    }));
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    init_zap_index();
+    monster *caster = world.place(MONS_KOBOLD_GEOMANCER, coord_def(20, 22));
+    const coord_def target(24, 20);
+    env.grid(target) = get<0>(row);
+    unwind_var<unsigned short> colour(env.grid_colours(target), LIGHTGREY);
+    invalidate_los();
+    const string text = observe_message([&] {
+        REQUIRE(cast_fragmentation(50, caster, target, false) == spret::success);
+    });
+    CAPTURE(language, text);
+    const string expected = language == lang_t::ZH
+        ? string(get<2>(row)) + "碎裂了！"
+        : "The " + string(get<1>(row)) + " shatters!";
+    CHECK(text.find(expected) != string::npos);
+}
+
+TEST_CASE("follower healing localizes singular and plural without changing English",
+          "[zh-translation][r6-healing]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const int count = GENERATE(1, 2);
+    const bool greatly = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    you.religion = GOD_BEOGH;
+    you.raw_piety = 160;
+    vector<monster *> allies;
+    for (int i = 0; i < count; ++i)
+    {
+        monster *ally = world.place(MONS_ORC_APOSTLE, coord_def(21 + i, 20));
+        ally->attitude = ATT_FRIENDLY;
+        ally->god = GOD_BEOGH;
+        ally->flags |= MF_GOD_GIFT;
+        ally->hit_points = 1;
+        ally->max_hit_points = 200;
+        REQUIRE(ally->is_divine_companion());
+        allies.push_back(ally);
+    }
+    const string subject = count == 1 ? allies[0]->name(DESC_THE)
+        : language == lang_t::ZH ? "你的追随者们" : "Your followers are";
+    string text;
+    // The production ability sometimes skips a heal. Retry its real entry
+    // point rather than replacing RNG or copying the message expression.
+    for (int attempt = 0; attempt < 100 && allies[0]->hit_points == 1; ++attempt)
+    {
+        you.props[BEOGH_DAMAGE_DONE_KEY] = greatly ? 100 : 20;
+        msg::tee capture(text);
+        beogh_ally_healing();
+    }
+    REQUIRE(allies[0]->hit_points > 1);
+    const string expected = language == lang_t::ZH
+        ? subject + "因你的英勇而" + (count == 1 ? "感到" : "")
+          + (greatly ? "极其" : "") + "精神振奋。"
+        : subject + " " + (count == 1 ? "is " : "")
+          + (greatly ? " greatly " : "") + "invigorated by your bravery.";
+    CAPTURE(language, count, greatly, text);
+    CHECK(text.find(expected) != string::npos);
 }

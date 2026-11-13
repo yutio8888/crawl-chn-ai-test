@@ -2786,7 +2786,7 @@ void beogh_ally_healing()
 
     mprf_p(T_("%s %s%sinvigorated by your bravery."), heal_list.size() == 1 ? heal_list[0]->name(DESC_THE).c_str()
                                    : T_("Your followers are"),
-             heal_list.size() == 1 ? T_("is ") : "",
+             heal_list.size() == 1 ? C_("follower healing", "is ") : "",
              healing_done > 25 ? T_(" greatly ") : "");
 }
 
@@ -6298,9 +6298,9 @@ static void _hepliaklqana_choose_gender()
 {
     static const map<gender_type, string> gender_map =
     {
-        { GENDER_NEUTRAL, "neither" },
-        { GENDER_MALE,    "male"    },
-        { GENDER_FEMALE,  "female"  },
+        { GENDER_NEUTRAL, NC_("ancestor gender", "neither") },
+        { GENDER_MALE,    NC_("ancestor gender", "male")    },
+        { GENDER_FEMALE,  NC_("ancestor gender", "female")  },
     };
 
     const gender_type current_gender =
@@ -6309,7 +6309,7 @@ static void _hepliaklqana_choose_gender()
     ASSERT(desc);
 
     mprf(T_("Was %s a) male, b) female, or c) neither? (Currently %s.)"), hepliaklqana_ally_name().c_str(),
-             desc->c_str());
+             C_("ancestor gender", desc->c_str()));
 
     int keyin = toalower(get_ch());
     if (!isaalpha(keyin))
@@ -6339,7 +6339,7 @@ static void _hepliaklqana_choose_gender()
 
     you.props[HEPLIAKLQANA_ALLY_GENDER_KEY] = new_gender;
     mprf(T_("%s was always %s, you are pretty sure."), hepliaklqana_ally_name().c_str(),
-             map_find(gender_map, new_gender)->c_str());
+             C_("ancestor gender", map_find(gender_map, new_gender)->c_str()));
     upgrade_hepliaklqana_ancestor(true);
 }
 

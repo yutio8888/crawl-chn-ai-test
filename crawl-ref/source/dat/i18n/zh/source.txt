@@ -21434,7 +21434,7 @@ Your magic seems less tainted.
 你的魔法似乎不那么污浊了。
 %%%%
 Your noxious spew wanes.
-你的毒雾喷吐减弱了。
+你喷吐有毒污泥的势头减弱了。
 %%%%
 Your orb has recharged its mesmeric power.
 你的宝珠重新充能了迷魂之力。
@@ -50194,6 +50194,30 @@ You hear a sizzling sound.
 %%%%
 fiery
 火
+%%%%
+ancestor gender|neither
+中性
+%%%%
+ancestor gender|male
+男性
+%%%%
+ancestor gender|female
+女性
+%%%%
+follower healing|is 
+感到
+%%%%
+stone idol
+石像
+%%%%
+petrified wood
+石化木
+%%%%
+stone door frame
+石门框
+%%%%
+stone arch
+石拱门
 %%%%
 It protects you from %1$s.
 它保护你免受%1$s侵害。
