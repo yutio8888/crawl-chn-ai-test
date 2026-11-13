@@ -37,6 +37,7 @@ const pseudo_case cases[] = {
     {"cloak slot", "@head@", "你的斗篷短暂地缠住了你的头！", "", "", "斗篷", true},
     {"feature metal wall", "电流的卷须", "电流的卷须在金属墙上爬行。", "金属墙", "the metal wall", "", false},
     {"inventory singular", "振动", "你的法杖短暂地振动了。", "", "", "法杖", false},
+    {"inventory singular", "闪起", "你的法杖短暂地闪起", "", "", "法杖", false},
     {"inventory plural", "闪起", "短暂地闪起", "", "", "法杖", false},
     {"offhand slot", "闪起", "你的法杖短暂地闪起", "", "", "法杖", false},
 };
