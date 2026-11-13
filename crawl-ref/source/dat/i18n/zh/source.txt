@@ -2762,7 +2762,7 @@ A thick mucus forms on %s.
 一层厚厚的粘液在%s上形成了。
 %%%%
 A tiny devil pulls itself out of the air.
-一个微小的恶魔从空气中拉出了自己。
+一个微小的恶魔从虚空中钻了出来。
 %%%%
 A traitor %s dares to challenge your wrath!
 一个背叛的%s竟敢挑衅你的愤怒！
@@ -21590,7 +21590,7 @@ bound in place
 被束缚在原地
 %%%%
 targeted by your dimensional bullseye
-被你的次元靶心标记
+被你的维度靶心标记
 %%%%
 fragile as glass
 如玻璃般脆弱
@@ -22286,7 +22286,7 @@ Your cleaving frenzy subsides.
 你的顺劈狂热平息了。
 %%%%
 Your dimensional bullseye dissipates.
-你的次元靶消散了。
+你的维度靶心消散了。
 %%%%
 Your enlightenment fades.
 你的启迪消退了。
@@ -54747,4 +54747,43 @@ mutation legend|<darkgrey>[]</darkgrey>:
 %%%%
 status|You are %s.
 你%s了。
+%%%%
+You finish attuning to %s.
+你已与%s完成调谐。
+%%%%
+You finish wielding %s.
+你已握持%s。
+%%%%
+You finish haunting %s.
+你已附身于%s。
+%%%%
+You finish fusing with %s.
+你已与%s融合。
+%%%%
+equip finish armour|You finish putting on %s.
+你已穿上%s。
+%%%%
+equip finish jewellery|You finish putting on %s.
+你已戴上%s。
+%%%%
+You finish parting from %s.
+你已解除与%s的调谐。
+%%%%
+You finish unwielding %s.
+你已收起%s。
+%%%%
+You finish removing yourself from %s.
+你已从%s中脱离。
+%%%%
+You finish unfusing %s.
+你已解除与%s的融合。
+%%%%
+equip finish armour|You finish removing %s.
+你已脱下%s。
+%%%%
+equip finish jewellery|You finish removing %s.
+你已摘下%s。
+%%%%
+%s turns attention toward your shadow.
+%s将注意力转向了你的影子。
 %%%%

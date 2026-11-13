@@ -1515,6 +1515,18 @@ const char *base_type_string(object_class_type type)
     }
 }
 
+// Autopickup rules keep canonical names; only the notification uses display text.
+string autopickup_display_name(const item_def &item)
+{
+    if (Options.language == lang_t::ZH && is_weapon(item)
+        && item.props.exists(ITEM_NAME_KEY))
+    {
+        return C_("weapon name", item_base_name(item).c_str());
+    }
+    return item.base_type == OBJ_MISCELLANY
+        ? sub_type_string(item) : item.name(DESC_DBNAME);
+}
+
 string sub_type_string(const item_def &item, bool known)
 {
     const object_class_type type = item.base_type;

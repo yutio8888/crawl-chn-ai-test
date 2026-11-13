@@ -261,6 +261,8 @@ public:
                  Delay(dur), equip(item), slot(_slot)
     { }
 
+    string completion_message();
+
     bool try_interrupt(bool force = false) override;
 
     const char* name() const override
@@ -297,6 +299,8 @@ public:
     EquipOffDelay(int dur, item_def& item) :
                    Delay(dur), equip(item)
     { }
+
+    string completion_message();
 
     bool try_interrupt(bool force = false) override;
 

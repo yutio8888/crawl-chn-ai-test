@@ -9,6 +9,9 @@
 #include "dungeon.h"
 #include "database.h"
 #include "env.h"
+#include "terrain.h"
+#include "item-name.h"
+#include "english.h"
 #include "i18n.h"
 #include "item-status-flag-type.h"
 #include "map-cell.h"
@@ -375,5 +378,44 @@ TEST_CASE("Possessive message slots do not add a second Chinese particle",
               ? action + "，以避开" + possessive + "注意。"
               : action + " to avoid " + possessive + " notice."));
         CHECK(actual.find("的的") == string::npos);
+    }
+}
+
+TEST_CASE("Upheaval translates the terrain argument at its display boundary",
+          "[zh-translation][r22][upheaval-terrain]")
+{
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const string key = feat_type_name(DNGN_ROCK_WALL);
+        CHECK(key == "wall");
+        const string text = make_stringf(T_("There is %s there."),
+                                        article_a(T_(key.c_str())).c_str());
+        CHECK(text == (language == lang_t::ZH ? "那里有墙壁。" : "There is a wall there."));
+    }
+}
+
+TEST_CASE("Autopickup notices translate custom weapon names without changing lookup names",
+          "[zh-translation][r22][autopickup-custom-name]")
+{
+    init_properties();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        item_def scythe;
+        scythe.base_type = OBJ_WEAPONS;
+        scythe.sub_type = WPN_HALBERD;
+        scythe.quantity = 1;
+        scythe.flags = ISFLAG_IDENTIFIED;
+        scythe.props[ITEM_NAME_KEY] = "scythe";
+        CHECK(item_base_name(scythe) == "scythe");
+        CHECK(scythe.name(DESC_DBNAME) == "scythe");
+        const string name = autopickup_display_name(scythe);
+        CHECK(name == (language == lang_t::ZH ? "镰刀" : "scythe"));
+        const string text = make_stringf(T_("Autopickup disabled for %s."),
+                                        pluralise(name).c_str());
+        CHECK(text == (language == lang_t::ZH
+              ? "已禁用镰刀的自动拾取。" : "Autopickup disabled for scythes."));
+        CHECK(scythe.name(DESC_DBNAME) == "scythe");
     }
 }
