@@ -1595,7 +1595,7 @@ spret cast_fragmentation(int pow, const actor *caster,
     if (what != nullptr) // Terrain explodes.
     {
         if (you.see_cell(target))
-            mprf(T_("The %s shatters!"), what);
+            mprf(T_("The %s shatters!"), T_(what));
     }
     else if (target == you.pos()) // You explode.
     {

@@ -50194,3 +50194,27 @@ You hear a sizzling sound.
 %%%%
 fiery
 火
+%%%%
+ancestor gender|neither
+中性
+%%%%
+ancestor gender|male
+男性
+%%%%
+ancestor gender|female
+女性
+%%%%
+follower healing|is 
+感到
+%%%%
+stone idol
+石像
+%%%%
+petrified wood
+石化木
+%%%%
+stone door frame
+石门框
+%%%%
+stone arch
+石拱门
