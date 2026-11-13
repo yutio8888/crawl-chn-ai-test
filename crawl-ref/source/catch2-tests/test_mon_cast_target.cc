@@ -2636,13 +2636,12 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
               ? possessive + "火焰抗性被烧掉了。"
               : possessive + "'s fire resistance is burned away."));
         const string pronoun = mon.pronoun(PRONOUN_POSSESSIVE);
-        const string target_name = target.name(DESC_THE);
         CHECK(clockwork_bee_target_message(&mon, target) == (chinese
-              ? pronoun + "发条蜜蜂锁定了" + target_name + "。"
-              : pronoun + "'s clockwork bee locks onto " + target_name + "."));
+              ? "它的发条蜜蜂锁定了老鼠。"
+              : "its clockwork bee locks onto the rat."));
         CHECK(clockwork_bee_target_message(nullptr, target) == (chinese
-              ? "某人的发条蜜蜂锁定了" + target_name + "。"
-              : "Someone's's clockwork bee locks onto " + target_name + "."));
+              ? "某人的发条蜜蜂锁定了老鼠。"
+              : "Someone's clockwork bee locks onto the rat."));
         for (bool visible : {false, true})
         for (bool hostile : {false, true})
         {

@@ -1951,7 +1951,7 @@ barrage of energy
 %s's %s flies into the air!
 %s%s飞向了空中！
 %%%%
-%s's clockwork bee locks onto %s.
+%s clockwork bee locks onto %s.
 %s发条蜜蜂锁定了%s。
 %%%%
 %s's clockwork bee winds down and falls to the ground.
