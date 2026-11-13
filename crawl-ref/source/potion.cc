@@ -355,7 +355,8 @@ public:
     {
         const bool was_attractive = you.duration[DUR_ATTRACTIVE] > 0;
 
-        const char* attractive_more = was_attractive ? T_("more ") : "";
+        const char* attractive_more = was_attractive
+            ? C_("state intensity", "more ") : "";
         mprf(MSGCH_DURATION, T_("You feel %sattractive to monsters."), attractive_more);
 
         const int dur = _scale_pot_duration((20 + random2(pow)/2), is_potion);

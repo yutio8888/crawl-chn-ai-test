@@ -1478,7 +1478,7 @@ mimic reveal plural|%s are mimics!
 %s嗡嗡作响，充满潜力！
 %%%%
 %s invites you to visit %s %s%s%s.
-%s邀请你访问%s %s%s%s。
+%s邀请你访问%s%s%s%s。
 %%%%
 %s is abraded by the %s and falls apart.
 %s被%s磨损而碎裂了。
@@ -3151,7 +3151,7 @@ Blasting
 记忆之火熄灭了！
 %%%%
  blazes with a fierce heat.
- 散发出炽热的光芒。
+散发出炽烈的热量。
 %%%%
  blazes with a vengeful fury!
 燃起了复仇的怒火！
@@ -4598,7 +4598,7 @@ is lit by a halo
 被光环照亮
 %%%%
  is no longer being sapped.
- 魔法不再被削弱。
+的魔法不再被削弱。
 %%%%
  is no longer berserk.
 不再狂暴。
@@ -4664,7 +4664,7 @@ is lit by a halo
 不再石化。
 %%%%
  is no longer regenerating.
-不再再生。
+停止了再生。
 %%%%
  is no longer strong-willed.
 不再意志坚定。
@@ -6066,7 +6066,7 @@ Game saved, see you later!
 看起来不那么混乱了。
 %%%%
  seems less drained.
-衰竭似乎减轻了。
+的衰竭似乎减轻了。
 %%%%
  seems less interested in you.
 似乎对你不再那么感兴趣了。
@@ -6093,7 +6093,7 @@ Select a spell to %s
 选择一个要%s的法术
 %%%%
 select action to be Quivered
-选择快捷施放动作
+选择快捷动作
 %%%%
 Select an artefact weapon to imprint upon your Paragon.
 选择一把神器武器，将其印记刻入你的白金典范。
@@ -6469,7 +6469,7 @@ Spells %s
 法术 %s
 %%%%
  spells are no longer diminished.
-法术不再被削弱。
+的法术不再被削弱。
 %%%%
  spells hidden
  个法术被隐藏
@@ -7216,7 +7216,7 @@ The percentage of the progress done before reaching next level is in <cyan>cyan<
 达到下一等级前的进度百分比以<cyan>青色</cyan>显示。\n
 %%%%
 The plants of the dungeon cease their hostilities.
-地牢中的植物停止了它们的敌意。
+地牢中的植物停止了敌对行动。
 %%%%
 The plants of the dungeon turn on you.
 地下城的植物都背叛了你。
@@ -7757,7 +7757,7 @@ the air is too still for clouds to form.
 空气太过静止，无法形成云雾。
 %%%%
 you cannot issue another dragon's call so soon.
-你无法这么快再次发出龙之召唤。
+你无法这么快再次发出龙之呼唤。
 %%%%
 you cannot sustain more frozen ramparts right now.
 你现在无法维持更多的冰冻壁垒。
@@ -8507,7 +8507,7 @@ You are ready to perform a blood rite again.
 你准备好再次执行血之仪式了。
 %%%%
 You are restored by drawing out deep reserves of power within.
-你通过汲取内在深处的力量储备而恢复。
+你汲取体内深藏的力量，恢复了元气。
 %%%%
 You are shrouded in an aura of darkness!
 你被黑暗光环笼罩！
@@ -12975,10 +12975,10 @@ You become %stransparent, but the glow from %s %s prevents you from becoming com
 你变得%s透明了，但%s的光芒%s阻止了你完全隐形。
 %%%%
 You cannot mutate%s.
-你无法变异%s。
+你%s无法变异。
 %%%%
  at present
-（暂时）
+暂时
 %%%%
 monster equip|%1$s %2$s.
 %1$s%2$s。
@@ -23324,10 +23324,10 @@ You dream of
  （约你最大可能虔诚值的%d%%）
 %%%%
  (next: %s)
- （下一个: %s）
+（下一个：%s）
 %%%%
  (%d in deck)
- （牌组中%d张）
+（牌组中%d张）
 %%%%
 %dd3 / 2 (against normal-speed enemies)
 %dd3 / 2（对正常速度的敌人）
@@ -27991,7 +27991,7 @@ Quad Damage is wearing off.
 四倍伤害正在消退。
 %%%%
 Vertigo is making it harder to attack, cast, and dodge.
-眩晕使你的攻击、施法和闪避更加困难。
+头晕使你的攻击、施法和闪避更加困难。
 %%%%
 You are about to teleport.
 你即将传送。
@@ -38230,7 +38230,7 @@ status|Vampire
 吸血鬼
 %%%%
 status|Vertigo
-眩晕
+头晕
 %%%%
 status|Vexed
 恼怒
@@ -38752,7 +38752,7 @@ status|untranslocatable
 无法位移
 %%%%
 status|vertiginous
-眩晕
+头晕
 %%%%
 status|vitalised
 生命活力
@@ -40582,13 +40582,13 @@ Menu
 <h>自动战斗：\n<w>Tab</w>          ：攻击最近的怪物，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发快捷动作；\n               若需要目标，则瞄准\n               最近的怪物\n
 %%%%
 <brown>(</brown> : missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
-<brown>(</brown> ：弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
+<brown>(</brown>：弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
 %%%%
 </lightcyan> : books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pick up to add to library)
-</lightcyan> ：书籍（<w>%</w>记忆、<w>%</w>施法、<w>%</w>强制施法、\n    捡起以添加至法术库）
+</lightcyan>：书籍（<w>%</w>记忆、<w>%</w>施法、<w>%</w>强制施法、\n    捡起以添加至法术库）
 %%%%
 <lightmagenta>0</lightmagenta> : the Orb of Zot\n    Carry it to the surface and win!\n
-<lightmagenta>0</lightmagenta> ：佐特宝珠\n    带上它回到地面即可获胜！\n
+<lightmagenta>0</lightmagenta>：佐特宝珠\n    带上它回到地面即可获胜！\n
 %%%%
 Many commands have context sensitive help, among them <w>%</w>, <w>%</w>, <w>%</w> (or any form of targeting), <w>%</w>, and <w>%</w>.\nYou can read descriptions of your current spells (<w>%</w>), skills (<w>%?</w>) and abilities (<w>%!</w>).
 许多命令都有上下文相关帮助，包括<w>%</w>、<w>%</w>、<w>%</w>（或任何形式的瞄准）、<w>%</w>和<w>%</w>。\n你可以阅读当前法术（<w>%</w>）、技能（<w>%?</w>）和能力（<w>%!</w>）的描述。
@@ -40720,7 +40720,7 @@ This screen shows your character's set of talents. You can gain new abilities vi
 此界面显示你的角色所拥有的能力。你可以通过特定物品、宗教信仰或变异来获得新能力。激活能力通常需要付出代价，例如消耗法力。按<w>!</w>或<w>?</w>可在能力选择与描述之间切换。
 %%%%
 This screen shows the skill set of your character. The number next to the skill is your current level, the higher the better. <w>Training</w> displays training percentages. <w>Costs</w> displays relative training costs. <w>Targets</w> displays skill training targets. You can toggle which skills to train by pressing their slot letters. A <darkgrey>grey</darkgrey> skill will not be trained and ease the training of others.
-此界面显示你的角色技能集。技能旁边的数字是你的当前等级，等级越高越好。
+此界面显示你的角色技能。技能旁边的数字是你当前的技能等级，等级越高越好。<w>训练</w>显示训练百分比，<w>成本</w>显示相对训练成本，<w>目标</w>显示技能训练目标。按技能对应的字母可切换是否训练该技能。<darkgrey>灰色</darkgrey>技能不会得到训练，从而让其他技能更容易提升。
 %%%%
 The training percentage (in <brown>brown</brown>) shows the relative amount of the experience gained which will be used to train each skill. It is automatically set depending on which skills you have used recently. Disabling a skill sets the training rate to 0.
 训练百分比（以<brown>棕色</brown>显示）表示获得的经验值中将用于训练各项技能的相对比例。它会根据你最近使用的技能自动设置。停用某项技能的训练会将其训练比例设为 0。
@@ -40732,7 +40732,7 @@ Press the letter of a skill to set a training target. When the target is reached
 按技能对应的字母来设定训练目标。达到目标后会有消息显示，训练会自动停止。
 %%%%
 This screen shows the skill set of your character. Press the letter of a skill to read its description, or press <w>?</w> again to return to the skill selection.
-此界面显示你的角色技能集。技能旁边的数字是你的当前等级，等级越高越好。
+此界面显示你的角色技能。按技能对应的字母可阅读其描述，再按 <w>?</w> 可返回技能选择界面。
 %%%%
 then be taken to target mode with the nearest monster or previous target already targeted. You can also cycle through all hostile monsters in sight with <w>+</w> or <w>-</w>. Once you're aiming at the correct monster, simply hit <w>f</w>, <w>Enter</w> or <w>.</w> to shoot at it. If you miss, <w>
 然后进入瞄准模式，最近的怪物或上一个目标已被自动锁定。你也可以循环切换所有可见目标。
@@ -50335,4 +50335,19 @@ named monster ghost|%s's ghost
 %%%%
 named monster illusion|%s's illusion
 %s的幻象
+%%%%
+ability list separator|, 
+、
+%%%%
+state intensity|more 
+更加
+%%%%
+oblivion howl|terrible
+可怕
+%%%%
+oblivion howl|silent
+无声
+%%%%
+piledriver target count|two
+两
 %%%%

@@ -1,0 +1,1129 @@
+{
+  "decision": "D-C-116",
+  "lane": "stable",
+  "baseline": "3ab8d8510477319d854f7cbdf0f2b10d39e5db13",
+  "pre_change_glossary_sha256": "5790c732dec64a4c8c1e372ac09c74fb8cbd61f770ddb38b18cb6bd0e9baf9f1",
+  "glossary_sha256": "93dcf8eb2b79e0d058f905d542c98a5b85869ef8d0140d78428a4ff5d4320382",
+  "scope": "眩晕候选 + 英文 Vertigo/vertiginous/dizzy 候选 + 已有 Vertigo 起止消息；逐条机制区分，不是全库替换。",
+  "counts": {
+    "change": 6,
+    "keep": 40
+  },
+  "consumers": [
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 1660,
+      "key": "%s orb emits a pulse of dizzying energy.",
+      "old_zh": "%s球体释放出一阵令人眩晕的能量脉冲。",
+      "disposition": "keep",
+      "new_zh": "%s球体释放出一阵令人眩晕的能量脉冲。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 1789,
+      "key": "%s snaps out of %s daze.",
+      "old_zh": "%s从%s眩晕中清醒过来。",
+      "disposition": "keep",
+      "new_zh": "%s从%s眩晕中清醒过来。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 4531,
+      "key": " is dazed by the mutagenic energy.",
+      "old_zh": "被诱变能量弄得眩晕。",
+      "disposition": "keep",
+      "new_zh": "被诱变能量弄得眩晕。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 4534,
+      "key": " is dazed by the spores.",
+      "old_zh": " 被孢子弄得眩晕。",
+      "disposition": "keep",
+      "new_zh": " 被孢子弄得眩晕。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 4612,
+      "key": " is no longer dazed.",
+      "old_zh": "不再眩晕。",
+      "disposition": "keep",
+      "new_zh": "不再眩晕。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 9586,
+      "key": "You feel dizzy.",
+      "old_zh": "你感到头晕。",
+      "disposition": "keep",
+      "new_zh": "你感到头晕。",
+      "mechanism": "vertigo",
+      "reason": "起止消息已经是头晕，或保留天旋地转结束的形象表达；无需把所有感受句强制改成状态名。",
+      "evidence_group": "vertigo"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 16676,
+      "key": "Stunning Burst",
+      "old_zh": "眩晕爆发",
+      "disposition": "keep",
+      "new_zh": "眩晕爆发",
+      "mechanism": "ordinary",
+      "reason": "BEAM_STUN_BOLT 的短暂麻痹，不是 DUR_VERTIGO；固定法术名不借本任务重命名。",
+      "evidence_group": "ordinary"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 17797,
+      "key": "You snap out of the daze.",
+      "old_zh": "你从眩晕中清醒过来。",
+      "disposition": "keep",
+      "new_zh": "你从眩晕中清醒过来。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 18211,
+      "key": "stunning bolt",
+      "old_zh": "眩晕矢",
+      "disposition": "keep",
+      "new_zh": "眩晕矢",
+      "mechanism": "ordinary",
+      "reason": "BEAM_STUN_BOLT 的短暂麻痹，不是 DUR_VERTIGO；固定射线名保留。",
+      "evidence_group": "ordinary"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 20143,
+      "key": "drain, daze, or confuse",
+      "old_zh": "造成衰竭、眩晕或混乱",
+      "disposition": "keep",
+      "new_zh": "造成衰竭、眩晕或混乱",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 20371,
+      "key": "dazed",
+      "old_zh": "眩晕",
+      "disposition": "keep",
+      "new_zh": "眩晕",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 21967,
+      "key": "The world stops spinning.",
+      "old_zh": "世界停止了旋转。",
+      "disposition": "keep",
+      "new_zh": "世界停止了旋转。",
+      "mechanism": "vertigo",
+      "reason": "起止消息已经是头晕，或保留天旋地转结束的形象表达；无需把所有感受句强制改成状态名。",
+      "evidence_group": "vertigo"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 22534,
+      "key": "chance to daze and blind: %d%%",
+      "old_zh": "眩晕兼致盲几率：%d%%",
+      "disposition": "keep",
+      "new_zh": "眩晕兼致盲几率：%d%%",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 26333,
+      "key": "It causes one to take an extra step when moving towards enemies, briefly stunning them if this results in an attack.",
+      "old_zh": "向敌人移动时可以多走一步，如果因此发动攻击会短暂眩晕它们。",
+      "disposition": "keep",
+      "new_zh": "向敌人移动时可以多走一步，如果因此发动攻击会短暂眩晕它们。",
+      "mechanism": "ordinary",
+      "reason": "奔踏攻击的 stagger，不是 DUR_VERTIGO；保留本次范围外的既有叙述。",
+      "evidence_group": "ordinary"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 27993,
+      "key": "Vertigo is making it harder to attack, cast, and dodge.",
+      "old_zh": "眩晕使你的攻击、施法和闪避更加困难。",
+      "disposition": "change",
+      "new_zh": "头晕使你的攻击、施法和闪避更加困难。",
+      "mechanism": "vertigo",
+      "reason": "DUR_VERTIGO 的实际显示或明确施加来源，按维护者决定改为头晕。",
+      "evidence_group": "vertigo"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 30723,
+      "key": "%s %s afflicted by dizzying energies!",
+      "old_zh": "%s%s令人眩晕的能量折磨！",
+      "disposition": "keep",
+      "new_zh": "%s%s令人眩晕的能量折磨！",
+      "mechanism": "confusion",
+      "reason": "AF_CONFUSE 的混乱攻击或 SPELL_MEPHITIC_CLOUD 的毒烟叙述；不施加 DUR_VERTIGO，不机械改为头晕。",
+      "evidence_group": "confusion"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 30732,
+      "key": "%s %s engulfed in a cloud of dizzying spores!",
+      "old_zh": "%s%s一团眩晕孢子云吞没！",
+      "disposition": "keep",
+      "new_zh": "%s%s一团眩晕孢子云吞没！",
+      "mechanism": "confusion",
+      "reason": "AF_CONFUSE 的混乱攻击或 SPELL_MEPHITIC_CLOUD 的毒烟叙述；不施加 DUR_VERTIGO，不机械改为头晕。",
+      "evidence_group": "confusion"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 33111,
+      "key": " is dazed by your recitation.",
+      "old_zh": "被你的吟诵弄得眩晕了。",
+      "disposition": "keep",
+      "new_zh": "被你的吟诵弄得眩晕了。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 33562,
+      "key": "%s trance deepens.",
+      "old_zh": "%s眩晕加深了。",
+      "disposition": "keep",
+      "new_zh": "%s眩晕加深了。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 36318,
+      "key": "The flask of dizzying concoctions shatters into a vile cloud!",
+      "old_zh": "装满眩晕混合物的烧瓶碎裂成一团污浊的云雾！",
+      "disposition": "keep",
+      "new_zh": "装满眩晕混合物的烧瓶碎裂成一团污浊的云雾！",
+      "mechanism": "confusion",
+      "reason": "AF_CONFUSE 的混乱攻击或 SPELL_MEPHITIC_CLOUD 的毒烟叙述；不施加 DUR_VERTIGO，不机械改为头晕。",
+      "evidence_group": "confusion"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 38232,
+      "key": "status|Vertigo",
+      "old_zh": "眩晕",
+      "disposition": "change",
+      "new_zh": "头晕",
+      "mechanism": "vertigo",
+      "reason": "DUR_VERTIGO 的实际显示或明确施加来源，按维护者决定改为头晕。",
+      "evidence_group": "vertigo"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 38754,
+      "key": "status|vertiginous",
+      "old_zh": "眩晕",
+      "disposition": "change",
+      "new_zh": "头晕",
+      "mechanism": "vertigo",
+      "reason": "DUR_VERTIGO 的实际显示或明确施加来源，按维护者决定改为头晕。",
+      "evidence_group": "vertigo"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 48582,
+      "key": "dizzying spores",
+      "old_zh": "眩晕孢子",
+      "disposition": "keep",
+      "new_zh": "眩晕孢子",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/ability.txt",
+      "line": 687,
+      "key": "Cacophony ability",
+      "old_zh": "完全展现你的骚灵本质，使你附身的所有护甲飞出并独立于你的其他动作\n进行攻击，持续一小段时间——靴子、围巾和头盔从四面八方袭击敌人，\n同时欢快的喧嚣声充满空气。\n\n这些物品仍与你相连，无法被指挥到太远的地方，\n但你不分担它们受到的伤害，也可以自由地穿过它们射击。\n它们的攻击可能使敌人陷入各种轻微的负面状态——有时会使其眩晕、衰竭，\n甚至混乱。\n\n使用此能力后，你必须获得经验值才能恢复足够的力量再次使用。",
+      "disposition": "keep",
+      "new_zh": "完全展现你的骚灵本质，使你附身的所有护甲飞出并独立于你的其他动作\n进行攻击，持续一小段时间——靴子、围巾和头盔从四面八方袭击敌人，\n同时欢快的喧嚣声充满空气。\n\n这些物品仍与你相连，无法被指挥到太远的地方，\n但你不分担它们受到的伤害，也可以自由地穿过它们射击。\n它们的攻击可能使敌人陷入各种轻微的负面状态——有时会使其眩晕、衰竭，\n甚至混乱。\n\n使用此能力后，你必须获得经验值才能恢复足够的力量再次使用。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/cards.txt",
+      "line": 71,
+      "key": "Degeneration card",
+      "old_zh": "这张牌上描绘着一只龙，其鳞片正在脱落，露出其中的绵羊。\n\n抽出此牌会尝试将附近的敌人变形并恶性变异为更弱的形态，无法被变形的敌人会短暂眩晕。",
+      "disposition": "keep",
+      "new_zh": "这张牌上描绘着一只龙，其鳞片正在脱落，露出其中的绵羊。\n\n抽出此牌会尝试将附近的敌人变形并恶性变异为更弱的形态，无法被变形的敌人会短暂眩晕。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/egos.txt",
+      "line": 15,
+      "key": "concussion (concuss) weapon ego",
+      "old_zh": "它可以将击中的目标向后推开，并短暂地眩晕它们。如果目标被推到坚固的地形上，\n它们将额外受到穿透护甲伤害的三分之一。",
+      "disposition": "keep",
+      "new_zh": "它可以将击中的目标向后推开，并短暂地眩晕它们。如果目标被推到坚固的地形上，\n它们将额外受到穿透护甲伤害的三分之一。",
+      "mechanism": "ordinary",
+      "reason": "击退成功后调用 stagger；不是 DUR_VERTIGO，保留本次范围外的既有叙述。",
+      "evidence_group": "ordinary"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/egos.txt",
+      "line": 264,
+      "key": "rampaging (Rampage) armour ego",
+      "old_zh": "它使你在向敌人移动时可以多走一步，如果这导致了攻击，\n会短暂地眩晕它们。",
+      "disposition": "keep",
+      "new_zh": "它使你在向敌人移动时可以多走一步，如果这导致了攻击，\n会短暂地眩晕它们。",
+      "mechanism": "ordinary",
+      "reason": "奔踏攻击的 stagger，不是 DUR_VERTIGO；保留本次范围外的既有叙述。",
+      "evidence_group": "ordinary"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/monsters.txt",
+      "line": 2290,
+      "key": "starcursed mass",
+      "old_zh": "一团星星的碎片，散发着垂死星星的病态腐化的光芒，永远无声地尖叫着，\n发出凡人无法理解的声音。其形态常常在波动，自发地分裂，受到威胁时又缩回去。\n当分裂时，它那震耳欲聋的齐声尖叫能压垮哪怕最勇敢的战士的理智，\n使他们陷入眩晕、无力反抗。",
+      "disposition": "keep",
+      "new_zh": "一团星星的碎片，散发着垂死星星的病态腐化的光芒，永远无声地尖叫着，\n发出凡人无法理解的声音。其形态常常在波动，自发地分裂，受到威胁时又缩回去。\n当分裂时，它那震耳欲聋的齐声尖叫能压垮哪怕最勇敢的战士的理智，\n使他们陷入眩晕、无力反抗。",
+      "mechanism": "ordinary",
+      "reason": "群体尖叫调用 paralyse；不是 DUR_VERTIGO。这里仅保留原 stunned 叙述，不借命名任务裁决另一机制。",
+      "evidence_group": "ordinary"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/monsters.txt",
+      "line": 3179,
+      "key": "boundless tesseract",
+      "old_zh": "一个闪烁着超自然色彩的不可能形状。强大的佐特之力流经其中，\n将此现实与无数个佐特领域仍完好如初的现实叠合在一起。\n\n两个超立方体彼此紧密相连，摧毁其中一个就会同时摧毁两者，\n并驱逐它们召来此现实的所有生物；即使不是由它们召来的生物，也会陷入眩晕。\n但只要任由它们存在，阻止你取得宝珠的力量就会源源不绝。",
+      "disposition": "keep",
+      "new_zh": "一个闪烁着超自然色彩的不可能形状。强大的佐特之力流经其中，\n将此现实与无数个佐特领域仍完好如初的现实叠合在一起。\n\n两个超立方体彼此紧密相连，摧毁其中一个就会同时摧毁两者，\n并驱逐它们召来此现实的所有生物；即使不是由它们召来的生物，也会陷入眩晕。\n但只要任由它们存在，阻止你取得宝珠的力量就会源源不绝。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/monsters.txt",
+      "line": 3188,
+      "key": "burstshroom",
+      "old_zh": "一种快速生长的蘑菇，其生命周期以孢子的爆发性释放为高潮。\n这些孢子具有轻微的致幻效果，有时会使吸入它们的生物眩晕。",
+      "disposition": "keep",
+      "new_zh": "一种快速生长的蘑菇，其生命周期以孢子的爆发性释放为高潮。\n这些孢子具有轻微的致幻效果，有时会使吸入它们的生物眩晕。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/mutations.txt",
+      "line": 1052,
+      "key": "hypnotic gaze mutation",
+      "old_zh": "你的凝视能催眠许多生物。每当活物、恶魔或神圣怪物首次注意到你时，\n它可能会短暂眩晕，因而无法喊叫。未通过意志力检定的生物会眩晕更久。",
+      "disposition": "keep",
+      "new_zh": "你的凝视能催眠许多生物。每当活物、恶魔或神圣怪物首次注意到你时，\n它可能会短暂眩晕，因而无法喊叫。未通过意志力检定的生物会眩晕更久。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/mutations.txt",
+      "line": 1228,
+      "key": "sporulate mutation",
+      "old_zh": "你的近战攻击会使多个爆裂菇在目标后方的空地上开始生长。\n若让它们生长数回合，它们会爆成孢子，伤害附近敌人并可能使其短暂眩晕。",
+      "disposition": "keep",
+      "new_zh": "你的近战攻击会使多个爆裂菇在目标后方的空地上开始生长。\n若让它们生长数回合，它们会爆成孢子，伤害附近敌人并可能使其短暂眩晕。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/spells.txt",
+      "line": 23,
+      "key": "Alistair's Intoxication spell",
+      "old_zh": "将你周围怪物的大脑中的一小部分物质转化成酒精，\n以此混乱视野中的所有智慧生物（但有毒抗的生物可能会抵抗这个效果）。\n如果施法者成功与其他心灵接触，便会短暂眩晕。\n在巫师们的宴会上，这道法术经常被用来打破冷场。",
+      "disposition": "change",
+      "new_zh": "将你周围怪物的大脑中的一小部分物质转化成酒精，\n以此混乱视野中的所有智慧生物（但有毒抗的生物可能会抵抗这个效果）。\n如果施法者成功与其他心灵接触，便会短暂头晕。\n在巫师们的宴会上，这道法术经常被用来打破冷场。",
+      "mechanism": "vertigo",
+      "reason": "DUR_VERTIGO 的实际显示或明确施加来源，按维护者决定改为头晕。",
+      "evidence_group": "vertigo"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/spells.txt",
+      "line": 71,
+      "key": "Avatar Song spell",
+      "old_zh": "唱出一首极具魔力、萦绕心头的歌。未能抵抗的冒险者会无法远离歌者\n（有时还会不由自主地被拉近），其他生物则会直接陷入眩晕。\n\n此外，它可能从附近的任何深水中召来溺魂。\n\n离开施法者视野会结束控制移动的效果。",
+      "disposition": "keep",
+      "new_zh": "唱出一首极具魔力、萦绕心头的歌。未能抵抗的冒险者会无法远离歌者\n（有时还会不由自主地被拉近），其他生物则会直接陷入眩晕。\n\n此外，它可能从附近的任何深水中召来溺魂。\n\n离开施法者视野会结束控制移动的效果。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/spells.txt",
+      "line": 451,
+      "key": "Enfeeble spell",
+      "old_zh": "用邪恶能量压倒敌人，不可抗拒地削弱其近战攻击并降低法术威力。\n它还会使无法抵抗全部诅咒力量的敌人眩晕和失明，\n即使目标没有视觉感官也不例外。",
+      "disposition": "keep",
+      "new_zh": "用邪恶能量压倒敌人，不可抗拒地削弱其近战攻击并降低法术威力。\n它还会使无法抵抗全部诅咒力量的敌人眩晕和失明，\n即使目标没有视觉感官也不例外。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/spells.txt",
+      "line": 851,
+      "key": "Mesmerise spell",
+      "old_zh": "尝试迷住视野内所有敌人。未能抵抗的冒险者会无法远离施法者，\n其他生物则会直接陷入眩晕。\n\n离开施法者视野会结束控制移动的效果。",
+      "disposition": "keep",
+      "new_zh": "尝试迷住视野内所有敌人。未能抵抗的冒险者会无法远离施法者，\n其他生物则会直接陷入眩晕。\n\n离开施法者视野会结束控制移动的效果。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/spells.txt",
+      "line": 1140,
+      "key": "Siren Song spell",
+      "old_zh": "唱出萦绕心头的歌，迷住附近听众。未能抵抗的冒险者会无法远离歌者，\n其他生物则会直接陷入眩晕。\n\n离开施法者视野会结束控制移动的效果。",
+      "disposition": "keep",
+      "new_zh": "唱出萦绕心头的歌，迷住附近听众。未能抵抗的冒险者会无法远离歌者，\n其他生物则会直接陷入眩晕。\n\n离开施法者视野会结束控制移动的效果。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/spells.txt",
+      "line": 1449,
+      "key": "Throw Klown Pie spell",
+      "old_zh": "扔出一块有害却出奇美味的派，可能使受击者遭受多种无法抵抗的临时\n削弱效果，包括眩晕、沉默、火焰易伤、脆弱、失明或厌恶饮用药水。",
+      "disposition": "change",
+      "new_zh": "扔出一块有害却出奇美味的派，可能使受击者遭受多种无法抵抗的临时\n削弱效果，包括头晕、沉默、火焰易伤、脆弱、失明或厌恶饮用药水。",
+      "mechanism": "vertigo",
+      "reason": "DUR_VERTIGO 的实际显示或明确施加来源，按维护者决定改为头晕。",
+      "evidence_group": "vertigo"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/status.txt",
+      "line": 181,
+      "key": "Vertigo status",
+      "old_zh": "你晕头转向，你的命中率、闪避和施法成功率均被削弱。",
+      "disposition": "change",
+      "new_zh": "你感到头晕，难辨方向，命中率、闪避和施法成功率均降低。",
+      "mechanism": "vertigo",
+      "reason": "DUR_VERTIGO 的实际显示或明确施加来源，按维护者决定改为头晕。",
+      "evidence_group": "vertigo"
+    },
+    {
+      "kind": "descript",
+      "path": "crawl-ref/source/dat/descript/zh/status.txt",
+      "line": 843,
+      "key": "Cacophony status",
+      "old_zh": "你正驱使所有护甲喧闹地攻击。你附身的每件护甲都会自主行动；\n它们受到的任何伤害都不会影响你，你也可以自由地穿过它们射击。\n它们的攻击可能使敌人眩晕、陷入衰竭，或使其陷入混乱。",
+      "disposition": "keep",
+      "new_zh": "你正驱使所有护甲喧闹地攻击。你附身的每件护甲都会自主行动；\n它们受到的任何伤害都不会影响你，你也可以自由地穿过它们射击。\n它们的攻击可能使敌人眩晕、陷入衰竭，或使其陷入混乱。",
+      "mechanism": "dazed",
+      "reason": "Dazed/daze、孢子、吟诵、催眠、奔踏、卡牌等非 Vertigo 路径，保持 D-C-096；详见实际 daze/ENCH_DAZED 消费者证据。",
+      "evidence_group": "dazed"
+    },
+    {
+      "kind": "database",
+      "path": "crawl-ref/source/dat/database/zh/miscname.txt",
+      "line": 10,
+      "key": "summon_horrible_things",
+      "old_zh": "传送门彼端的恐怖触及你的心灵，令你神智恍惚。\n\n流淌的疯狂从闪烁的门扉彼端轻抚而来，你困在凡躯之中瑟瑟发抖。\n\n# 巴尔-萨戈斯\n这场召唤仪式似乎让你的理智付出了相当大的代价。\n\n你倏然瞥见一片宏伟得非人力所及的黑色城景，冥暗的高墙巍然耸立。\n\n异样的符文遮蔽了你的视线；它们仿佛覆满鳞片般扭动，不断变换形状。\n\n某种不可名状、不可动摇的阴郁如影随形，令你无从摆脱。\n#-----------\n\n凡人认知之外的恐怖撕扯着你的心灵，令你痛苦眩晕。\n\n你透过传送门窥见彼端的幽冥，心灵竟被那崇高的疯狂所诱惑。\n\n一见那不可名状的怪物，你便疯狂地咯咯发笑。\n\n疯狂攫住了你！\n\n试图理解那无穷而不可知的深渊，令你的理智付出了代价。\n\n无休无止的嗡鸣纠缠着你的思绪，令你无处可逃。\n\n目睹这亵渎造物的存在，你的心智在疯狂中轰然崩塌！\n\n你的心智短暂地支离破碎，但你勉强维持住了自我。\n\n你感觉自己对理智的微弱掌控正开始瓦解。\n\n穿透一切的低语不断诉说着最深重的异端，侵袭你的思想。\n\n望着自己造出的蠕动骇物，你的心灵因强烈的厌恶而作痛。\n\n在那巍然无尽、不可想象的存在面前，你的心灵有一瞬间赤裸无遗。\n\n不可言说的语言飘过你的心神，你的头骨随之剧烈搏动、抽痛。\n\n一声来自时间之外的微弱单调嘶鸣越来越响。\n\n无形的恐怖徘徊在你视野边缘，不断逼近。\n\n一股不可抗拒、不可动摇的阴郁将你彻底淹没。\n\n连贯而理性的思考仿佛成了陌生之物。\n\n疯狂的触须蜿蜒渗入你心灵最幽暗的缝隙。\n\n你竭力想要理解那些正在运作的、不可理解的力量究竟为何物。\n\n噩梦般的邪魔侵袭着你清醒时的思绪！\n\n翻腾的恐怖围攻着你的理智！\n\n清明从你无力的掌控中悄然滑脱。",
+      "disposition": "keep",
+      "new_zh": "传送门彼端的恐怖触及你的心灵，令你神智恍惚。\n\n流淌的疯狂从闪烁的门扉彼端轻抚而来，你困在凡躯之中瑟瑟发抖。\n\n# 巴尔-萨戈斯\n这场召唤仪式似乎让你的理智付出了相当大的代价。\n\n你倏然瞥见一片宏伟得非人力所及的黑色城景，冥暗的高墙巍然耸立。\n\n异样的符文遮蔽了你的视线；它们仿佛覆满鳞片般扭动，不断变换形状。\n\n某种不可名状、不可动摇的阴郁如影随形，令你无从摆脱。\n#-----------\n\n凡人认知之外的恐怖撕扯着你的心灵，令你痛苦眩晕。\n\n你透过传送门窥见彼端的幽冥，心灵竟被那崇高的疯狂所诱惑。\n\n一见那不可名状的怪物，你便疯狂地咯咯发笑。\n\n疯狂攫住了你！\n\n试图理解那无穷而不可知的深渊，令你的理智付出了代价。\n\n无休无止的嗡鸣纠缠着你的思绪，令你无处可逃。\n\n目睹这亵渎造物的存在，你的心智在疯狂中轰然崩塌！\n\n你的心智短暂地支离破碎，但你勉强维持住了自我。\n\n你感觉自己对理智的微弱掌控正开始瓦解。\n\n穿透一切的低语不断诉说着最深重的异端，侵袭你的思想。\n\n望着自己造出的蠕动骇物，你的心灵因强烈的厌恶而作痛。\n\n在那巍然无尽、不可想象的存在面前，你的心灵有一瞬间赤裸无遗。\n\n不可言说的语言飘过你的心神，你的头骨随之剧烈搏动、抽痛。\n\n一声来自时间之外的微弱单调嘶鸣越来越响。\n\n无形的恐怖徘徊在你视野边缘，不断逼近。\n\n一股不可抗拒、不可动摇的阴郁将你彻底淹没。\n\n连贯而理性的思考仿佛成了陌生之物。\n\n疯狂的触须蜿蜒渗入你心灵最幽暗的缝隙。\n\n你竭力想要理解那些正在运作的、不可理解的力量究竟为何物。\n\n噩梦般的邪魔侵袭着你清醒时的思绪！\n\n翻腾的恐怖围攻着你的理智！\n\n清明从你无力的掌控中悄然滑脱。",
+      "mechanism": "ordinary",
+      "reason": "召唤副作用的叙述；当前代码增加 doom，不施加 DUR_VERTIGO。",
+      "evidence_group": "ordinary"
+    },
+    {
+      "kind": "database",
+      "path": "crawl-ref/source/dat/database/zh/monspeak.txt",
+      "line": 5507,
+      "key": "_fake_spell_effect_",
+      "old_zh": "VISUAL:@The_monster@剧烈地闪烁起来。\n\n\n\nVISUAL:@The_monster@一瞬间发出明亮的光芒。\n\n\n\nVISUAL:@The_monster_possessive@@hands@开始发光。\n\n\n\nVISUAL:你感到一阵眩晕。 @player_only@\n\n\n\nVISUAL:你感到一阵不安。 @player_only@",
+      "disposition": "keep",
+      "new_zh": "VISUAL:@The_monster@剧烈地闪烁起来。\n\n\n\nVISUAL:@The_monster@一瞬间发出明亮的光芒。\n\n\n\nVISUAL:@The_monster_possessive@@hands@开始发光。\n\n\n\nVISUAL:你感到一阵眩晕。 @player_only@\n\n\n\nVISUAL:你感到一阵不安。 @player_only@",
+      "mechanism": "ordinary",
+      "reason": "假施法视觉台词，不据此建立真实 DUR_VERTIGO 效果。",
+      "evidence_group": "ordinary"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "key": "You feel light-headed.",
+      "old_zh": "你感到头晕。",
+      "new_zh": "你感到头晕。",
+      "disposition": "keep",
+      "mechanism": "vertigo",
+      "evidence_group": "vertigo",
+      "reason": "当前已用头晕，或为酒意/天旋地转的感受叙述；不改英文键及自然感受消息。"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "key": "You feel your light-headedness will last longer.",
+      "old_zh": "你感到你的头晕将持续更久。",
+      "new_zh": "你感到你的头晕将持续更久。",
+      "disposition": "keep",
+      "mechanism": "vertigo",
+      "evidence_group": "vertigo",
+      "reason": "当前已用头晕，或为酒意/天旋地转的感受叙述；不改英文键及自然感受消息。"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "key": "You feel tipsy.",
+      "old_zh": "你感到微醺。",
+      "new_zh": "你感到微醺。",
+      "disposition": "keep",
+      "mechanism": "vertigo",
+      "evidence_group": "vertigo",
+      "reason": "当前已用头晕，或为酒意/天旋地转的感受叙述；不改英文键及自然感受消息。"
+    },
+    {
+      "kind": "source",
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "key": "The world spins around you!",
+      "old_zh": "你感到天旋地转！",
+      "new_zh": "你感到天旋地转！",
+      "disposition": "keep",
+      "mechanism": "vertigo",
+      "evidence_group": "vertigo",
+      "reason": "当前已用头晕，或为酒意/天旋地转的感受叙述；不改英文键及自然感受消息。"
+    }
+  ],
+  "code_evidence": {
+    "vertigo": [
+      {
+        "path": "crawl-ref/source/duration-data.h",
+        "line": 599,
+        "source": "{ DUR_VERTIGO, YELLOW, \"Vertigo\","
+      },
+      {
+        "path": "crawl-ref/source/duration-data.h",
+        "line": 602,
+        "source": "{{ \"The world stops spinning.\", []() {"
+      },
+      {
+        "path": "crawl-ref/source/spl-other.cc",
+        "line": 479,
+        "source": "you.increase_duration(DUR_VERTIGO, 4 + count + random2(count + 1));"
+      },
+      {
+        "path": "crawl-ref/source/potion.cc",
+        "line": 896,
+        "source": "you.increase_duration(DUR_VERTIGO, dur, 50);"
+      },
+      {
+        "path": "crawl-ref/source/cloud.cc",
+        "line": 1185,
+        "source": "you.increase_duration(DUR_VERTIGO, random_range(7, 11), 50);"
+      },
+      {
+        "path": "crawl-ref/source/beam.cc",
+        "line": 4141,
+        "source": "if (you.duration[DUR_VERTIGO])"
+      },
+      {
+        "path": "crawl-ref/source/beam.cc",
+        "line": 4146,
+        "source": "you.increase_duration(DUR_VERTIGO, 10 + random2(11), 50);"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 188,
+        "source": "inf.light_text   = C_(\"status\", ddef->light_text);"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 189,
+        "source": "inf.short_text   = C_(\"status\", ddef->short_text);"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 697,
+        "source": "inf.light_text  = C_(\"status\", \"Flooded\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 713,
+        "source": "inf.light_text   = C_(\"status\", \"Drain\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 716,
+        "source": "inf.short_text   = C_(\"status\", \"extremely drained\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 717,
+        "source": "inf.long_text    = C_(\"status\", \"Your life force is extremely drained.\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 722,
+        "source": "inf.light_text   = C_(\"status\", \"Drain\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 725,
+        "source": "inf.short_text   = C_(\"status\", \"very heavily drained\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 726,
+        "source": "inf.long_text    = C_(\"status\", \"Your life force is very heavily drained.\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 731,
+        "source": "inf.light_text   = C_(\"status\", \"Drain\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 734,
+        "source": "inf.short_text   = C_(\"status\", \"heavily drained\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 735,
+        "source": "inf.long_text    = C_(\"status\", \"Your life force is heavily drained.\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 740,
+        "source": "inf.light_text   = C_(\"status\", \"Drain\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 743,
+        "source": "inf.short_text   = C_(\"status\", \"drained\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 744,
+        "source": "inf.long_text    = C_(\"status\", \"Your life force is drained.\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 749,
+        "source": "inf.light_text   = C_(\"status\", \"Drain\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 752,
+        "source": "inf.short_text   = C_(\"status\", \"lightly drained\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 753,
+        "source": "inf.long_text    = C_(\"status\", \"Your life force is lightly drained.\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 1151,
+        "source": "inf.light_text = C_(\"status\", inf.light_text.c_str());"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 1153,
+        "source": "inf.short_text = C_(\"status\", inf.short_text.c_str());"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 1155,
+        "source": "inf.long_text = C_(\"status\", inf.long_text.c_str());"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 1252,
+        "source": "// C_(\"status\", ...) and Lua status queries, so keep it English while the"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 1272,
+        "source": "inf.light_text   = C_(\"status\", \"Rev\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 1304,
+        "source": "inf.short_text = C_(\"status\", \"regenerating\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 1305,
+        "source": "inf.long_text  = C_(\"status\", \"You are regenerating.\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 1355,
+        "source": "inf.light_text   = C_(\"status\", \"Slow\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 1423,
+        "source": "inf.light_text = C_(\"status\", \"Water\");"
+      },
+      {
+        "path": "crawl-ref/source/status.cc",
+        "line": 1428,
+        "source": "inf.light_text = C_(\"status\", \"Water\");"
+      }
+    ],
+    "dazed": [
+      {
+        "path": "crawl-ref/source/player.cc",
+        "line": 6239,
+        "source": "|| you.duration[DUR_DAZED];"
+      },
+      {
+        "path": "crawl-ref/source/player.cc",
+        "line": 8390,
+        "source": "if (break_daze && you.duration[DUR_DAZED])"
+      },
+      {
+        "path": "crawl-ref/source/player.cc",
+        "line": 8392,
+        "source": "duration[DUR_DAZED] = 0;"
+      },
+      {
+        "path": "crawl-ref/source/player.cc",
+        "line": 8753,
+        "source": "void player::daze(int dur)"
+      },
+      {
+        "path": "crawl-ref/source/player.cc",
+        "line": 8759,
+        "source": "you.duration[DUR_DAZED] += dur * BASELINE_DELAY;"
+      },
+      {
+        "path": "crawl-ref/source/player.cc",
+        "line": 9609,
+        "source": "case ENCH_DAZED:"
+      },
+      {
+        "path": "crawl-ref/source/monster.cc",
+        "line": 2934,
+        "source": "return paralysed() || petrified() || has_ench(ENCH_DAZED) || has_ench(ENCH_VEXED);"
+      },
+      {
+        "path": "crawl-ref/source/monster.cc",
+        "line": 5818,
+        "source": "void monster::daze(int duration)"
+      },
+      {
+        "path": "crawl-ref/source/monster.cc",
+        "line": 5822,
+        "source": "if (has_ench(ENCH_DAZED))"
+      },
+      {
+        "path": "crawl-ref/source/monster.cc",
+        "line": 5824,
+        "source": "mon_enchant ench = get_ench(ENCH_DAZED);"
+      },
+      {
+        "path": "crawl-ref/source/monster.cc",
+        "line": 5831,
+        "source": "add_ench(mon_enchant(ENCH_DAZED, nullptr, duration * BASELINE_DELAY,"
+      },
+      {
+        "path": "crawl-ref/source/mon-act.cc",
+        "line": 1412,
+        "source": "if (targ->alive() && !targ->has_ench(ENCH_DAZED)"
+      },
+      {
+        "path": "crawl-ref/source/mon-act.cc",
+        "line": 1415,
+        "source": "targ->daze(random_range(2, 5));"
+      },
+      {
+        "path": "crawl-ref/source/mon-act.cc",
+        "line": 2208,
+        "source": "if (mons->has_ench(ENCH_DAZED)"
+      },
+      {
+        "path": "crawl-ref/source/mon-act.cc",
+        "line": 2243,
+        "source": "mon_enchant(ENCH_DAZED, nullptr,"
+      },
+      {
+        "path": "crawl-ref/source/melee-attack.cc",
+        "line": 781,
+        "source": "act->daze(random_range(3, max_dur));"
+      },
+      {
+        "path": "crawl-ref/source/melee-attack.cc",
+        "line": 4657,
+        "source": "if (!mdefender->has_ench(ENCH_DAZED))"
+      },
+      {
+        "path": "crawl-ref/source/melee-attack.cc",
+        "line": 4658,
+        "source": "effects.push_back(ENCH_DAZED);"
+      },
+      {
+        "path": "crawl-ref/source/melee-attack.cc",
+        "line": 4666,
+        "source": "case ENCH_DAZED:"
+      },
+      {
+        "path": "crawl-ref/source/melee-attack.cc",
+        "line": 4667,
+        "source": "defender->daze(random_range(1, 2));"
+      },
+      {
+        "path": "crawl-ref/source/mon-cast.cc",
+        "line": 601,
+        "source": "return _foe_effect_viable(caster, DUR_DAZED, ENCH_DAZED);}) },"
+      },
+      {
+        "path": "crawl-ref/source/mon-cast.cc",
+        "line": 6001,
+        "source": "if (mon->has_ench(ENCH_DAZED))"
+      },
+      {
+        "path": "crawl-ref/source/mon-cast.cc",
+        "line": 6068,
+        "source": ": ai->as_monster()->has_ench(ENCH_DAZED);"
+      },
+      {
+        "path": "crawl-ref/source/mon-cast.cc",
+        "line": 6083,
+        "source": "if (mons->has_ench(ENCH_DAZED))"
+      },
+      {
+        "path": "crawl-ref/source/mon-cast.cc",
+        "line": 6089,
+        "source": "if (!mons->has_ench(ENCH_DAZED))"
+      },
+      {
+        "path": "crawl-ref/source/mon-cast.cc",
+        "line": 6090,
+        "source": "mons->add_ench(mon_enchant(ENCH_DAZED, &agent, random_range(50, 80)));"
+      },
+      {
+        "path": "crawl-ref/source/mon-cast.cc",
+        "line": 6093,
+        "source": "mon_enchant dazed = mons->get_ench(ENCH_DAZED);"
+      },
+      {
+        "path": "crawl-ref/source/decks.cc",
+        "line": 1638,
+        "source": "mons.daze(2 + 3 * power_level);"
+      },
+      {
+        "path": "crawl-ref/source/spl-monench.cc",
+        "line": 153,
+        "source": "hexes.push_back(ENCH_DAZED);"
+      },
+      {
+        "path": "crawl-ref/source/spl-monench.cc",
+        "line": 168,
+        "source": "if (hex == ENCH_DAZED)"
+      },
+      {
+        "path": "crawl-ref/source/spl-monench.cc",
+        "line": 169,
+        "source": "mon.daze(random_range(3, 5));"
+      },
+      {
+        "path": "crawl-ref/source/spl-monench.cc",
+        "line": 191,
+        "source": "hexes.push_back(DUR_DAZED);"
+      },
+      {
+        "path": "crawl-ref/source/spl-monench.cc",
+        "line": 204,
+        "source": "if (hex == DUR_DAZED)"
+      },
+      {
+        "path": "crawl-ref/source/spl-monench.cc",
+        "line": 205,
+        "source": "you.daze(random_range(2, 4));"
+      },
+      {
+        "path": "crawl-ref/source/mon-death.cc",
+        "line": 3443,
+        "source": "mon->daze(random_range(7, 12));"
+      },
+      {
+        "path": "crawl-ref/source/god-abil.cc",
+        "line": 1095,
+        "source": "mon->daze(degree + random2avg(spellpower / 10, 2));"
+      },
+      {
+        "path": "crawl-ref/source/transform.cc",
+        "line": 2673,
+        "source": "mon.daze(random_range(3, 5));"
+      },
+      {
+        "path": "crawl-ref/source/spl-goditem.cc",
+        "line": 1065,
+        "source": "mons->daze(random_range(4, 7));"
+      }
+    ],
+    "confusion": [
+      {
+        "path": "crawl-ref/source/melee-attack.cc",
+        "line": 2792,
+        "source": "defender->confuse(attacker, 5);"
+      },
+      {
+        "path": "crawl-ref/source/melee-attack.cc",
+        "line": 4144,
+        "source": "case AF_CONFUSE:"
+      },
+      {
+        "path": "crawl-ref/source/melee-attack.cc",
+        "line": 4171,
+        "source": "defender->confuse(attacker,"
+      },
+      {
+        "path": "crawl-ref/source/melee-attack.cc",
+        "line": 4673,
+        "source": "defender->confuse(attacker, 10);"
+      },
+      {
+        "path": "crawl-ref/source/cloud.cc",
+        "line": 99,
+        "source": "// CLOUD_MEPHITIC,"
+      },
+      {
+        "path": "crawl-ref/source/cloud.cc",
+        "line": 102,
+        "source": "{ TILE_CLOUD_MEPHITIC, CTVARY_DUR },      // tile"
+      },
+      {
+        "path": "crawl-ref/source/cloud.cc",
+        "line": 880,
+        "source": "case CLOUD_MEPHITIC:"
+      },
+      {
+        "path": "crawl-ref/source/cloud.cc",
+        "line": 977,
+        "source": "case CLOUD_MEPHITIC:"
+      },
+      {
+        "path": "crawl-ref/source/cloud.cc",
+        "line": 1090,
+        "source": "case CLOUD_MEPHITIC:"
+      },
+      {
+        "path": "crawl-ref/source/cloud.cc",
+        "line": 1099,
+        "source": "confuse_player(random_range(2, 3));"
+      },
+      {
+        "path": "crawl-ref/source/cloud.cc",
+        "line": 1571,
+        "source": "const bool sfx_ok = cloud.type != CLOUD_MEPHITIC"
+      },
+      {
+        "path": "crawl-ref/source/beam.cc",
+        "line": 2454,
+        "source": "return CLOUD_MEPHITIC;"
+      },
+      {
+        "path": "crawl-ref/source/beam.cc",
+        "line": 3089,
+        "source": "place_cloud(CLOUD_MEPHITIC, p,"
+      },
+      {
+        "path": "crawl-ref/source/beam.cc",
+        "line": 3096,
+        "source": "place_cloud(CLOUD_MEPHITIC, *ai,"
+      },
+      {
+        "path": "crawl-ref/source/beam.cc",
+        "line": 3143,
+        "source": "place_cloud(CLOUD_MEPHITIC, p, roll_dice(2,"
+      },
+      {
+        "path": "crawl-ref/source/beam.cc",
+        "line": 3780,
+        "source": "confuse_player(5 + random2(3));"
+      },
+      {
+        "path": "crawl-ref/source/beam.cc",
+        "line": 3817,
+        "source": "confuse_player(5 + random2(3));"
+      },
+      {
+        "path": "crawl-ref/source/beam.cc",
+        "line": 4476,
+        "source": "confuse_player(2 + random2(3));"
+      },
+      {
+        "path": "crawl-ref/source/beam.cc",
+        "line": 4879,
+        "source": "const cloud_type cloud = flavour == BEAM_MEPHITIC ? CLOUD_MEPHITIC"
+      }
+    ],
+    "ordinary": [
+      {
+        "path": "crawl-ref/source/mon-abil.cc",
+        "line": 724,
+        "source": "target->paralyse(mon, stun, \"accursed screaming\");"
+      },
+      {
+        "path": "crawl-ref/source/mon-cast.cc",
+        "line": 155,
+        "source": "static void _cast_brain_bite(monster &mons, mon_spell_slot slot, bolt&);"
+      },
+      {
+        "path": "crawl-ref/source/mon-cast.cc",
+        "line": 470,
+        "source": "{ SPELL_BRAIN_BITE, { _always_worthwhile, _cast_brain_bite, } },"
+      },
+      {
+        "path": "crawl-ref/source/mon-cast.cc",
+        "line": 1419,
+        "source": "static void _cast_brain_bite(monster &caster, mon_spell_slot slot, bolt&)"
+      },
+      {
+        "path": "crawl-ref/source/spl-summoning.cc",
+        "line": 1403,
+        "source": "spret cast_summon_horrible_things(int pow, bool fail)"
+      },
+      {
+        "path": "crawl-ref/source/spl-summoning.cc",
+        "line": 1414,
+        "source": "mpr(getMiscString(\"summon_horrible_things\"));"
+      },
+      {
+        "path": "crawl-ref/source/spl-summoning.cc",
+        "line": 1418,
+        "source": "you.doom(doom_cost);"
+      },
+      {
+        "path": "crawl-ref/source/xom.cc",
+        "line": 3923,
+        "source": "you.doom(power);"
+      },
+      {
+        "path": "crawl-ref/source/beam.cc",
+        "line": 1562,
+        "source": "case BEAM_STUN_BOLT:"
+      },
+      {
+        "path": "crawl-ref/source/beam.cc",
+        "line": 4045,
+        "source": "if (!you.doom(random_range(16, 30) + ench_power / 20))"
+      },
+      {
+        "path": "crawl-ref/source/beam.cc",
+        "line": 4452,
+        "source": "if (flavour == BEAM_STUN_BOLT"
+      },
+      {
+        "path": "crawl-ref/source/beam.cc",
+        "line": 4531,
+        "source": "you.doom(random_range(15, 25));"
+      },
+      {
+        "path": "crawl-ref/source/beam.cc",
+        "line": 5362,
+        "source": "if (flavour == BEAM_STUN_BOLT"
+      },
+      {
+        "path": "crawl-ref/source/beam.cc",
+        "line": 7640,
+        "source": "case BEAM_STUN_BOLT:                  return T_(\"stunning bolt\");"
+      },
+      {
+        "path": "crawl-ref/source/melee-attack.cc",
+        "line": 670,
+        "source": "mon->stagger(1 + random2(min(10, attacker->attack_delay().roll())) * 3 / 4);"
+      },
+      {
+        "path": "crawl-ref/source/movement.cc",
+        "line": 782,
+        "source": "mon->stagger(5);"
+      }
+    ]
+  },
+  "test_expectations": {
+    "file": "crawl-ref/source/catch2-tests/test_zh_r16.cc",
+    "tags": "[zh-translation][r16][vertigo]",
+    "ZH": [
+      "状态灯=头晕",
+      "短名=头晕",
+      "长描述=头晕使你的攻击、施法和闪避更加困难。",
+      "dazed=眩晕",
+      "You snap out of the daze.=你从眩晕中清醒过来。"
+    ],
+    "identities_unchanged": [
+      "DUR_VERTIGO",
+      "duration_name=vertigo",
+      "TextDB key=Vertigo",
+      "short_db_key=vertiginous"
+    ]
+  }
+}

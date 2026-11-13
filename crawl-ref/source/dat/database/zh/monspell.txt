@@ -1095,7 +1095,7 @@ Grave Claw vampire bloodprince cast
 
 @The_monster@伸出了@possessive@手。
 
-@The_monster@用@possessive@手指打了个响指。
+@The_monster@打了一个响指。
 %%%%
 Hellfire Court cast
 

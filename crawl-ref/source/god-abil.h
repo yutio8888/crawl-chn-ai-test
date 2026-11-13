@@ -9,6 +9,7 @@
 #include "beh-type.h"
 #include "enum.h"
 #include "god-type.h"
+#include "gender-type.h"
 #include "item-prop-enum.h" // brand_type
 #include "los-type.h"
 #include "mutation-type.h"
@@ -18,6 +19,7 @@
 #include "spl-cast.h"
 
 class dist;
+struct shop_struct;
 
 #define AVAILABLE_SAC_KEY "available_sacrifices"
 #define HEALTH_SAC_KEY "current_health_sacrifice"
@@ -194,6 +196,8 @@ bool gozag_potion_petition();
 int gozag_price_for_shop(bool max = false);
 bool gozag_setup_call_merchant(bool quiet = false, string* reason = nullptr);
 bool gozag_call_merchant();
+// Display a placed merchant offer without changing saved shop fragments.
+void gozag_announce_shop(const shop_struct& shop, gender_type gender);
 branch_type gozag_fixup_branch(branch_type branch);
 int gozag_type_bribable(monster_type type);
 bool gozag_branch_bribable(branch_type branch);
