@@ -299,7 +299,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} focuses its will past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}将意志聚焦于${target}。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}将意志聚焦于${target}旁边。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}将意志聚焦于${target}以远的地方。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}将意志聚焦于比${target}更远的地方。" }
           ]
         }],
         "materialization_cases": [],

@@ -198,3 +198,5 @@ void xom_disguise_self();
 void xom_end_disguise(bool force = false);
 
 void validate_xom_events();
+
+string xom_disguise_message(const string &action, const monster &observer);

@@ -6417,6 +6417,13 @@ static void _xom_sneaky()
     take_note(Note(NOTE_XOM_EFFECT, -1, -1, "sneaky"), true);
 }
 
+string xom_disguise_message(const string &action, const monster &observer)
+{
+    const string possessive = observer.name(DESC_ITS);
+    return make_stringf(T_("%s to avoid %s notice."),
+                        action.c_str(), possessive.c_str());
+}
+
 static void _xom_disguise(monster* observer)
 {
     tileidx_t tile = TILEP_MONS_PILE_OF_DEBRIS;
@@ -6455,9 +6462,7 @@ static void _xom_disguise(monster* observer)
             break;
     }
 
-    mprf(T_("%s to avoid %s notice."),
-         msg.c_str(),
-         observer->name(DESC_ITS).c_str());
+    mpr(xom_disguise_message(msg, *observer));
     you.duration[DUR_DISGUISED] = random_range(80, 130);
     you.props[XOM_DISGUISE_APPEARANCE_KEY].get_int() = tile;
 

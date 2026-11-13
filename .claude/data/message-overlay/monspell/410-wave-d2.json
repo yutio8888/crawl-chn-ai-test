@@ -87,7 +87,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} flaps ${possessive} wings past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}拍动翅膀。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边拍动翅膀。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}以远的地方拍动翅膀。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}朝比${target}更远的地方拍动翅膀。" }
           ]
         }],
         "materialization_cases": [], "recursive_dependency_fingerprints": {}
@@ -125,7 +125,7 @@
               { "language": "en", "relation": "PAST", "pattern": "${actor} chants while flapping ${possessive} wings past ${target}." },
               { "language": "zh", "relation": "AT", "pattern": "${actor}一边吟诵，一边朝${target}拍动翅膀。" },
               { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}一边吟诵，一边朝${target}旁边拍动翅膀。" },
-              { "language": "zh", "relation": "PAST", "pattern": "${actor}一边吟诵，一边朝${target}以远的地方拍动翅膀。" }
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}一边吟诵，一边朝比${target}更远的地方拍动翅膀。" }
             ]
           }],
           "materialization_cases": [], "recursive_dependency_fingerprints": {}
@@ -193,7 +193,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} flaps ${possessive} wings past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}拍动翅膀。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边拍动翅膀。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}以远的地方拍动翅膀。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}朝比${target}更远的地方拍动翅膀。" }
           ]
         }],
         "materialization_cases": [], "recursive_dependency_fingerprints": {}

@@ -31471,16 +31471,16 @@ the %s is presently inert.
 %s目前处于休眠状态。
 %%%%
 the dream sheep ruffle%s wool and motes of dream dust sparkle, to no effect.
-梦羊抖了抖羊毛，梦境尘埃闪烁，但毫无效果。
+梦之羊抖了抖羊毛，梦境尘埃闪烁，但毫无效果。
 %%%%
 the dream sheep shake%s wool and sparkle%s.
-梦境羊抖了抖羊毛，闪闪发光。
+梦之羊抖了抖羊毛，闪闪发光。
 %%%%
 The dream sheep shakes its wool and sparkles.
-梦羊抖动着自己的羊毛，闪闪发亮。
+梦之羊抖动着自己的羊毛，闪闪发亮。
 %%%%
 The dream sheep shake their wool and sparkle.
-梦羊们抖动着自己的羊毛，闪闪发亮。
+梦之羊们抖动着自己的羊毛，闪闪发亮。
 %%%%
 the sanctuary denies %s grip on your mind.
 庇护所让你摆脱了%s心智控制。
@@ -32872,7 +32872,7 @@ The apparition of %s
 %s的幽灵
 %%%%
 The dream sheep attempt%s to lull %s to sleep.
-梦羊尝试催眠%s。
+梦之羊尝试催眠%s。
 %%%%
 The substance of the Abyss twists violently, and a gateway leading down appears!
 深渊的物质剧烈扭曲，一道通向深处的传送门出现了！
@@ -44935,7 +44935,7 @@ The walls suddenly crumble!
 墙壁突然崩塌了！
 %%%%
 A dream sheep catches fire!
-一只梦境绵羊着火了！
+一只梦之羊着火了！
 %%%%
 You hear mad divine giggling.
 你听到神祇疯狂的窃笑。
@@ -49797,7 +49797,7 @@ monspell raw direction|next to %s
 朝%s旁边
 %%%%
 monspell raw direction|past %s
-朝%s以远的方向
+朝比%s更远的地方
 %%%%
 monspell raw projectile target|at %s
 直奔%s而去
@@ -51373,7 +51373,7 @@ You are overwhelmed by glittering dream dust!
 闪烁的梦境尘埃将你淹没！
 %%%%
 The dream sheep are wreathed in dream dust.
-梦羊被梦境尘埃笼罩。
+梦之羊被梦境尘埃笼罩。
 %%%%
 The dream sheep attempt%1$s to lull %2$s to sleep.
 梦之羊尝试催眠%2$s。
