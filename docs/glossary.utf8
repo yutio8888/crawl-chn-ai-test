@@ -528,7 +528,7 @@ hexed	被支配	domain=status; source=EN/ZH; Scope / comment=ENCH_HEXED 支配�
 hexer	妖术师	domain=monsters; source=EN/ZH; Scope / comment=先祖职业；decision=D-C-110; reject=诅咒师
 Hexes	妖术系	domain=magic; source=EN/ZH; 作用域=学派与技能全称；decision=D-C-110; reject=诅咒系
 Hexslinger	妖术射手	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt; decision=D-C-110; reject=诅咒射手
-high mp	高魔力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+high mp	高法力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 hit	击中	domain=combat; source=EN/ZH
 Hoarfrost Bullet	白霜弹	domain=spells; source=EN/ZH; 备注=✅；火炮发射的冰霜碎片，命中后施加脆霜减速
 Hoarfrost Cannonade	白霜炮击	domain=spells; source=EN/ZH; 备注=✅；塑造两座自耗式远程冰霜火炮
@@ -638,7 +638,7 @@ Lom Lobon title	洛姆·洛邦，禁忌知识之恶魔领主	domain=monster-titl
 Long Blades	长刃	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Louise	路易丝	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Louise title	腐化的路易丝	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
-low mp	低魔力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+low mp	低法力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Lugonu	卢格努	domain=gods; source=EN/ZH; 类型=音译
 Maces & Flails	锤与链枷	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Maggie	玛吉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt

@@ -665,8 +665,8 @@
 | weak | 虚弱 | mutation; source=mutations.txt |
 | dopey | 愚钝 | mutation; source=mutations.txt |
 | clumsy | 笨拙 | mutation; source=mutations.txt |
-| high mp | 高魔力 | mutation; source=mutations.txt |
-| low mp | 低魔力 | mutation; source=mutations.txt |
+| high mp | 高法力 | mutation; source=mutations.txt |
+| low mp | 低法力 | mutation; source=mutations.txt |
 | camouflage | 伪装 | mutation; source=mutations.txt |
 | horns | 角 | mutation; source=mutations.txt |
 | beak | 鸟喙 | mutation; source=mutations.txt |
