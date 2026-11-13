@@ -6093,7 +6093,7 @@ Select a spell to %s
 选择一个要%s的法术
 %%%%
 select action to be Quivered
-选择快捷施放动作
+选择快捷动作
 %%%%
 Select an artefact weapon to imprint upon your Paragon.
 选择一把神器武器，将其印记刻入你的白金典范。
@@ -27991,7 +27991,7 @@ Quad Damage is wearing off.
 四倍伤害正在消退。
 %%%%
 Vertigo is making it harder to attack, cast, and dodge.
-眩晕使你的攻击、施法和闪避更加困难。
+头晕使你的攻击、施法和闪避更加困难。
 %%%%
 You are about to teleport.
 你即将传送。
@@ -38230,7 +38230,7 @@ status|Vampire
 吸血鬼
 %%%%
 status|Vertigo
-眩晕
+头晕
 %%%%
 status|Vexed
 恼怒
@@ -38752,7 +38752,7 @@ status|untranslocatable
 无法位移
 %%%%
 status|vertiginous
-眩晕
+头晕
 %%%%
 status|vitalised
 生命活力
@@ -40582,13 +40582,13 @@ Menu
 <h>自动战斗：\n<w>Tab</w>          ：攻击最近的怪物，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发快捷动作；\n               若需要目标，则瞄准\n               最近的怪物\n
 %%%%
 <brown>(</brown> : missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
-<brown>(</brown> ：弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
+<brown>(</brown>：弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
 %%%%
 </lightcyan> : books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pick up to add to library)
-</lightcyan> ：书籍（<w>%</w>记忆、<w>%</w>施法、<w>%</w>强制施法、\n    捡起以添加至法术库）
+</lightcyan>：书籍（<w>%</w>记忆、<w>%</w>施法、<w>%</w>强制施法、\n    捡起以添加至法术库）
 %%%%
 <lightmagenta>0</lightmagenta> : the Orb of Zot\n    Carry it to the surface and win!\n
-<lightmagenta>0</lightmagenta> ：佐特宝珠\n    带上它回到地面即可获胜！\n
+<lightmagenta>0</lightmagenta>：佐特宝珠\n    带上它回到地面即可获胜！\n
 %%%%
 Many commands have context sensitive help, among them <w>%</w>, <w>%</w>, <w>%</w> (or any form of targeting), <w>%</w>, and <w>%</w>.\nYou can read descriptions of your current spells (<w>%</w>), skills (<w>%?</w>) and abilities (<w>%!</w>).
 许多命令都有上下文相关帮助，包括<w>%</w>、<w>%</w>、<w>%</w>（或任何形式的瞄准）、<w>%</w>和<w>%</w>。\n你可以阅读当前法术（<w>%</w>）、技能（<w>%?</w>）和能力（<w>%!</w>）的描述。
@@ -50341,4 +50341,13 @@ ability list separator|,
 %%%%
 state intensity|more 
 更加
+%%%%
+oblivion howl|terrible
+可怕
+%%%%
+oblivion howl|silent
+无声
+%%%%
+piledriver target count|two
+两
 %%%%

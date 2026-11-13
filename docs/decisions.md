@@ -4391,3 +4391,14 @@ mutation 作为游戏机制名词统一为“变异”，包括变异药水、�
 **AC 界面用法澄清（复审建议）**：HUD与神器属性中的AC沿用“护甲”，变异列表及长说明沿用“防御”；指向同一数值。只登记作用域，不作全库替换。
 
 **Reject 边界**：仅对能由现有工具安全识别的英文词组或语境键登记旧译；不把普通magic的“魔法”、Fear的“恐惧”、Abyss的“深渊”设为全库弃用词。配对英文正文和SourceDB键是判定证据，不能凭中文子串替换内部身份。
+
+### D-C-116 — Vertigo 与 Dazed 的机制命名分离
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-13
+- **Source**: 维护者批准 Vertigo / vertiginous →“头晕”；明确施加该状态的 dizzying →“令人头晕的”。
+- **Evidence**: [逐项消费者与测试期望](archive/r16-vertigo-2026-11-13/consumers.json)，按本线当前源码重新取证；冻结候选包括改动及保留理由。
+- **Choice / scope**: DUR_VERTIGO 的灯标、状态短名、状态正文、Alistair's Intoxication 的施法者副作用和 Throw Klown Pie 的状态列表使用“头晕”。现有起止消息“你感到头晕”“世界停止了旋转”及酒意、天旋地转的自然感受表达保留。
+- **Exceptions**: Dazed / DUR_DAZED / ENCH_DAZED 继续用“眩晕”，D-C-096 不变。mesmerism 球体实际调用 daze，burstshroom / dizzying spores 经 mon-act.cc 施加 Dazed；AF_CONFUSE 的 dizzying energies / spores、毒烟烧瓶不是 Vertigo。普通旋转、佐姆与假施法台词不按字面改名。dizzying 的新译只约束明确的 Vertigo 施加语境，不向这些例外扩展。
+- **Identity / verification**: 英文状态名、查找键、枚举、存档与脚本身份保持原样；回归通过实际 fill_status_info 核对头晕的灯标、短名、正文和英文 TextDB 身份，并核对 Dazed 及其结束句仍为眩晕。不迁移旧存档快照，不作全库“眩晕”弃用。

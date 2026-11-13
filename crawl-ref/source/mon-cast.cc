@@ -9764,6 +9764,15 @@ static void _maybe_throw_ally(const monster &mons)
     _throw_ally_to(mons, *throwee, toss_target);
 }
 
+string oblivion_howl_message(const string& name, bool silent,
+                            const string& effect)
+{
+    return make_stringf_p(T_("%s unleashes a %s howl, %s"), name.c_str(),
+                          silent ? C_("oblivion howl", "silent")
+                                 : C_("oblivion howl", "terrible"),
+                          effect.c_str());
+}
+
 /**
  * Have a monster attempt to cast Oblivion Howl.
  *
@@ -9777,10 +9786,7 @@ static void _oblivion_howl(monster &mon)
                             make_stringf(T_("but you%s"),
                                          you.resist_margin_phrase(willpower).c_str()) :
                             T_("and it begins to echo in your mind!");
-    mprf_p(T_("%s unleashes a %s howl, %s"),
-         mon.name(DESC_THE).c_str(),
-         silenced(mon.pos()) ? T_("silent") : T_("terrible"),
-         effect.c_str());
+    mpr(oblivion_howl_message(mon.name(DESC_THE), silenced(mon.pos()), effect));
     noisy(spell_effect_noise(SPELL_OBLIVION_HOWL), mon.pos(), mon.mid);
     if (willpower <= 0)
     {
