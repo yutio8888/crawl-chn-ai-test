@@ -14,8 +14,10 @@
 #include "map-cell.h"
 #include "mon-info.h"
 #include "monster-type.h"
+#include "mutation.h"
 #include "player.h"
 #include "skill-type.h"
+#include "unwind.h"
 
 #include "test_zh_fixture.h"
 
@@ -176,4 +178,46 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     const string en_key = feature_description_en(DNGN_FLOOR);
     REQUIRE(en_key == "the floor");
     REQUIRE(getLongDescription(en_key).find("地面") != string::npos);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "dynamic mutation bonuses pair parentheses in both languages",
+                 "[zh-translation][r7-mutation]")
+{
+    init_mut_index();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (mutation_type mut : {MUT_ICEMAIL, MUT_CONDENSATION_SHIELD,
+                MUT_SANGUINE_ARMOUR, MUT_STONE_BODY, MUT_PROTEAN_GRACE})
+        {
+            you = player();
+            you.species = mut == MUT_STONE_BODY ? SP_GARGOYLE : SP_HUMAN;
+            you.mutation[mut] = 1;
+            const string text = mutation_desc(mut, 1, false);
+            CAPTURE(language, mut, text);
+            const auto occurrences = [&text](const string &token) {
+                size_t count = 0;
+                size_t pos = 0;
+                while ((pos = text.find(token, pos)) != string::npos)
+                {
+                    ++count;
+                    pos += token.size();
+                }
+                return count;
+            };
+            if (language == lang_t::ZH)
+            {
+                CHECK(occurrences("（") > 0);
+                CHECK(occurrences("（") == occurrences("）"));
+            }
+            else
+            {
+                CHECK(occurrences("（") == 0);
+                CHECK(occurrences("(") > 0);
+                CHECK(occurrences("(") == occurrences(")"));
+            }
+        }
+    }
 }

@@ -2802,32 +2802,32 @@ string mutation_desc(mutation_type mut, int level, bool colour,
     if (mut == MUT_ICEMAIL)
     {
         ostringstream ostr;
-        ostr << _get_base(mdef.have[0]) << player_icemail_armour_class() << ")";
+        ostr << _get_base(mdef.have[0]) << player_icemail_armour_class() << T_(")");
         result = ostr.str();
     }
     else if (mut == MUT_CONDENSATION_SHIELD)
     {
         ostringstream ostr;
-        ostr << _get_base(mdef.have[0]) << player_condensation_shield_class() << ")";
+        ostr << _get_base(mdef.have[0]) << player_condensation_shield_class() << T_(")");
         result = ostr.str();
     }
     else if (mut == MUT_SANGUINE_ARMOUR)
     {
         ostringstream ostr;
-        ostr << _get_base(mdef.have[level - 1]) << sanguine_armour_bonus() / 100 << ")";
+        ostr << _get_base(mdef.have[level - 1]) << sanguine_armour_bonus() / 100 << T_(")");
         result = ostr.str();
     }
     else if (mut == MUT_STONE_BODY)
     {
         ostringstream ostr;
-        ostr << _get_base(mdef.have[0]) << stone_body_armour_bonus() / 100 << ")";
+        ostr << _get_base(mdef.have[0]) << stone_body_armour_bonus() / 100 << T_(")");
         result = ostr.str();
     }
     else if (mut == MUT_PROTEAN_GRACE)
     {
         ostringstream ostr;
         int num = protean_grace_amount();
-        ostr << _get_base(mdef.have[0]) << num << (T_(" EV, Slay +")) << num << ")";
+        ostr << _get_base(mdef.have[0]) << num << (T_(" EV, Slay +")) << num << T_(")");
         result = ostr.str();
     }
     else if (mut == MUT_MP_WANDS && you.has_mutation(MUT_HP_CASTING))
