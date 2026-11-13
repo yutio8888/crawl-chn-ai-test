@@ -3800,6 +3800,16 @@ static string _gozag_shop_spec(int index)
 
 }
 
+void gozag_announce_shop(const shop_struct& shop, gender_type gender)
+{
+    const string type_name = shop_type_name(shop.type);
+    const char* separator = Options.language != lang_t::ZH
+                            && !shop.shop_suffix_name.empty() ? " " : "";
+    mprf_p(T_("%s invites you to visit %s %s%s%s."), shop.shop_name.c_str(),
+           decline_pronoun(gender, PRONOUN_POSSESSIVE), type_name.c_str(),
+           separator, C_("shop name suffix", shop.shop_suffix_name.c_str()));
+}
+
 /**
  * Attempt to call the shop specified at the given index at your position.
  *
@@ -3826,11 +3836,7 @@ static void _gozag_place_shop(int index)
     const gender_type gender = random_choose(GENDER_FEMALE, GENDER_MALE,
                                              GENDER_NEUTRAL);
 
-    mprf_p(T_("%s invites you to visit %s %s%s%s."), shop->shop_name.c_str(),
-                    decline_pronoun(gender, PRONOUN_POSSESSIVE),
-                    shop_type_name(shop->type).c_str(),
-                    !shop->shop_suffix_name.empty() ? " " : "",
-                    C_("shop name suffix", shop->shop_suffix_name.c_str()));
+    gozag_announce_shop(*shop, gender);
 }
 
 static bool _shop_type_valid(shop_type type)

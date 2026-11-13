@@ -36,6 +36,10 @@ struct monster_info;
 #define OLD_ARMS_ALT_KEY "old_arms_alt"
 #define ARMS_COOLDOWN_KEY "bestow_arms_timer"
 
+// Format the final howl display after resolving its resistance effect.
+string oblivion_howl_message(const string& name, bool silent,
+                            const string& effect);
+
 void init_mons_spells();
 bool is_valid_mon_spell(spell_type spell);
 

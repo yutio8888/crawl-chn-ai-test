@@ -169,7 +169,7 @@ void CLua::save_persist()
     f = fopen_u(persistfile.c_str(), "w");
     if (!f)
     {
-        mprf(MSGCH_ERROR, "Couldn't open %s for writing!", persistfile.c_str());
+        mprf(MSGCH_ERROR, T_("Couldn't open %s for writing!"), persistfile.c_str());
         return;
     }
 
@@ -420,20 +420,32 @@ void CLua::vfnreturns(const char *format, va_list args)
         {
         case 'u':
             if (lua_islightuserdata(_state, sp))
-                *(va_arg(args, void**)) = lua_touserdata(_state, sp);
+            {
+                auto result = va_arg(args, void**);
+                *result = lua_touserdata(_state, sp);
+            }
             break;
         case 'd':
             if (lua_isnumber(_state, sp))
-                *(va_arg(args, int*)) = luaL_safe_checkint(_state, sp);
+            {
+                auto result = va_arg(args, int*);
+                *result = luaL_safe_checkint(_state, sp);
+            }
             break;
         case 'b':
-            *(va_arg(args, bool *)) = lua_toboolean(_state, sp);
-            break;
+            {
+                auto result = va_arg(args, bool *);
+                *result = lua_toboolean(_state, sp);
+                break;
+            }
         case 's':
             {
                 const char *s = lua_tostring(_state, sp);
                 if (s)
-                    *(va_arg(args, string *)) = s;
+                {
+                    auto result = va_arg(args, string *);
+                    *result = s;
+                }
                 break;
             }
         default:

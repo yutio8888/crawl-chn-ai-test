@@ -1499,7 +1499,7 @@ You grip the centipede bauble in your %s and it winds around your %s and fuses w
 %s（提升了+1）。
 %%%%
 %s invites you to visit %s %s%s%s.
-%s邀请你访问%s %s%s%s。
+%s邀请你访问%s%s%s%s。
 %%%%
 %s is abraded by the %s and falls apart.
 %s被%s磨损而碎裂了。
@@ -3256,7 +3256,7 @@ Blasting
 记忆之火熄灭了！
 %%%%
  blazes with a fierce heat.
- 散发出炽热的光芒。
+散发出炽烈的热量。
 %%%%
  blazes with a vengeful fury!
 燃起了复仇的怒火！
@@ -4781,7 +4781,7 @@ is lit by a halo
 被光环照亮
 %%%%
  is no longer being sapped.
-魔法不再被削弱。
+的魔法不再被削弱。
 %%%%
  is no longer berserk.
 不再狂暴。
@@ -4853,7 +4853,7 @@ The roots constricting %s sink back into the ground.
 不再石化。
 %%%%
  is no longer regenerating.
-不再再生。
+停止了再生。
 %%%%
  is no longer strong-willed.
 不再意志坚定。
@@ -6339,7 +6339,7 @@ Game saved, see you later!
 看起来不那么混乱了。
 %%%%
  seems less drained.
-衰竭似乎减轻了。
+的衰竭似乎减轻了。
 %%%%
  seems less interested in you.
 似乎对你不再那么感兴趣了。
@@ -6366,7 +6366,7 @@ Select a spell to %s
 选择一个要%s的法术
 %%%%
 select action to be Quivered
-选择快捷施放动作
+选择快捷动作
 %%%%
 Select an artefact weapon to imprint upon your Paragon.
 选择一把神器武器，将其印记刻入你的白金典范。
@@ -6745,7 +6745,7 @@ Spells %s
 法术 %s
 %%%%
  spells are no longer diminished.
-法术不再被削弱。
+的法术不再被削弱。
 %%%%
  spells hidden
  个法术被隐藏
@@ -6918,7 +6918,7 @@ surge of power!
 涌动着双倍活力！
 %%%%
 swap to recently quivered action
-切换到最近选定的箭袋动作
+切换到最近选定的快捷动作
 %%%%
 swim
 游泳
@@ -7519,7 +7519,7 @@ The percentage of the progress done before reaching next level is in <cyan>cyan<
 达到下一等级前的进度百分比以<cyan>青色</cyan>显示。\n
 %%%%
 The plants of the dungeon cease their hostilities.
-地牢中的植物停止了它们的敌意。
+地牢中的植物停止了敌对行动。
 %%%%
 The plants of the dungeon turn on you.
 地下城的植物都背叛了你。
@@ -8081,7 +8081,7 @@ the air is too still for clouds to form.
 空气太过静止，无法形成云雾。
 %%%%
 you cannot issue another dragon's call so soon.
-你无法这么快再次发出龙之召唤。
+你无法这么快再次发出龙之呼唤。
 %%%%
 you cannot sustain more frozen ramparts right now.
 你现在无法维持更多的冰冻壁垒。
@@ -8876,7 +8876,7 @@ You are ready to perform a blood rite again.
 你准备好再次执行血之仪式了。
 %%%%
 You are restored by drawing out deep reserves of power within.
-你通过汲取内在深处的力量储备而恢复。
+你汲取体内深藏的力量，恢复了元气。
 %%%%
 You are shrouded in an aura of darkness!
 你被黑暗光环笼罩！
@@ -13542,10 +13542,10 @@ You become %stransparent, but the glow from %s %s prevents you from becoming com
 你变得%s透明了，但%s的光芒%s阻止了你完全隐形。
 %%%%
 You cannot mutate%s.
-你无法变异%s。
+你%s无法变异。
 %%%%
  at present
-（暂时）
+暂时
 %%%%
 monster equip|%1$s %2$s.
 %1$s%2$s。
@@ -24290,10 +24290,10 @@ You dream of
  （约你最大可能虔诚值的%d%%）
 %%%%
  (next: %s)
- （下一个: %s）
+（下一个：%s）
 %%%%
  (%d in deck)
- （牌组中%d张）
+（牌组中%d张）
 %%%%
 %dd3 / 2 (against normal-speed enemies)
 %dd3 / 2（对正常速度的敌人）
@@ -30109,7 +30109,7 @@ Quad Damage is wearing off.
 四倍伤害正在消退。
 %%%%
 Vertigo is making it harder to attack, cast, and dodge.
-眩晕使你的攻击、施法和闪避更加困难。
+头晕使你的攻击、施法和闪避更加困难。
 %%%%
 You are about to teleport.
 你即将传送。
@@ -41017,7 +41017,7 @@ status|Vampire
 吸血鬼
 %%%%
 status|Vertigo
-眩晕
+头晕
 %%%%
 status|Vexed
 恼怒
@@ -41539,7 +41539,7 @@ status|untranslocatable
 无法位移
 %%%%
 status|vertiginous
-眩晕
+头晕
 %%%%
 status|vitalised
 生命活力
@@ -43438,13 +43438,13 @@ Menu
 <h>自动战斗：\n<w>Tab</w>          ：攻击最近的怪物，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发已装填的动作；\n               若需要目标，则瞄准\n               最近的怪物\n
 %%%%
 <brown>(</brown> : missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
-<brown>(</brown> ：弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
+<brown>(</brown>：弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
 %%%%
 </lightcyan> : books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pick up to add to library)
-</lightcyan> ：书籍（<w>%</w>记忆、<w>%</w>施法、<w>%</w>强制施法、\n    捡起以添加至法术库）
+</lightcyan>：书籍（<w>%</w>记忆、<w>%</w>施法、<w>%</w>强制施法、\n    捡起以添加至法术库）
 %%%%
 <lightmagenta>0</lightmagenta> : the Orb of Zot\n    Carry it to the surface and win!\n
-<lightmagenta>0</lightmagenta> ：佐特宝珠\n    带上它回到地面即可获胜！\n
+<lightmagenta>0</lightmagenta>：佐特宝珠\n    带上它回到地面即可获胜！\n
 %%%%
 Many commands have context sensitive help, among them <w>%</w>, <w>%</w>, <w>%</w> (or any form of targeting), <w>%</w>, and <w>%</w>.\nYou can read descriptions of your current spells (<w>%</w>), skills (<w>%?</w>) and abilities (<w>%!</w>).
 许多命令都有上下文相关帮助，包括<w>%</w>、<w>%</w>、<w>%</w>（或任何形式的瞄准）、<w>%</w>和<w>%</w>。\n你可以阅读当前法术（<w>%</w>）、技能（<w>%?</w>）和能力（<w>%!</w>）的描述。
@@ -54718,4 +54718,13 @@ ability cost separator|,
 %%%%
 potion full name|magic
 法力
+%%%%
+ability list separator|, 
+、
+%%%%
+oblivion howl|terrible
+可怕
+%%%%
+oblivion howl|silent
+无声
 %%%%

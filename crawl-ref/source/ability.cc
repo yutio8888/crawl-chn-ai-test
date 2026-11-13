@@ -946,7 +946,8 @@ string print_abilities()
     {
         for (unsigned int i = 0; i < talents.size(); ++i)
         {
-            text += make_stringf(T_("%s%s (%s)"), i ? ", " : "",
+            text += make_stringf(T_("%s%s (%s)"),
+                        i ? C_("ability list separator", ", ") : "",
                         ability_name(talents[i].which).c_str(),
                         failure_rate_to_string(talents[i].fail).c_str());
         }

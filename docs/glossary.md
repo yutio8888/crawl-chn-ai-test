@@ -899,6 +899,9 @@
 | EN | ZH | 依据 / 作用域 |
 |----|----|---------------|
 | dazed | 眩晕 | Dazed 状态及其机制描述；该状态叙述的 daze／dazing 同根；怪物 trance 加深消息（_mesmerise_los）延长 ENCH_DAZED，同按“眩晕”处理；DUR_MESMERISED 的结束消息按 Mesmerise“迷魂”处理，不按英文字面 daze 归入眩晕；不全局替换其他机制的“震慑”或一般“恍惚”；decision=D-C-096 |
+| Vertigo | 头晕 | DUR_VERTIGO 的状态灯、状态说明及明确施加该状态的描述；英文内部身份、存档与 TextDB 键不改；与 Dazed“眩晕”区分；decision=D-C-116 |
+| vertiginous | 头晕 | DUR_VERTIGO 的状态短名（status 语境）；同 Vertigo；decision=D-C-116 |
+| dizzying | 令人头晕的 | 仅限明确施加 DUR_VERTIGO 的机制语境；Dazed 施加源及混乱、毒烟、普通眩目叙述不据字面归入；decision=D-C-116 |
 | barbs | 倒刺 | 造成移动伤害的刺及状态词根；复用 Throw Barbs，不混作普通尖刺；decision=D-C-096 |
 | `status\|Barbs` | 尖刺 | 玩家状态的稳定版共享上下文键；普通 barbs 仍用倒刺；decision=D-C-098（取代 D-C-096 的此状态标签译法） |
 | `status\|ambrosia-drunk` | 神食酣醉 | 药水作用状态的短标签（取消药水说明、@ 行与标记）；与 ambrosia 药水、状态灯同用神食词根；弃用仙酒醉；decision=D-C-107（取代 D-C-098 的仙酒醉及本行的兼容保留） |

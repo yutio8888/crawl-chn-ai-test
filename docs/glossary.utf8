@@ -439,6 +439,7 @@ divine shield	神圣护盾	domain=abilities; source=EN/ZH; 依据 / 作用域=�
 Divine Vigour	神圣活力	domain=abilities; source=EN/ZH; 依据 / 作用域=旧能力名保留 0.34.1 兼容；trunk 菜单用 Aura of Vigour；decision=D-C-095
 divine vigour	神圣活力	domain=abilities; source=EN/ZH; 依据 / 作用域=monster enchant/message；Aura of Vigour 的效果名；decision=D-C-095
 divinely shielded	神圣护盾保护	domain=status; source=EN/ZH; 依据 / 作用域=monstatus.txt；受神圣护盾保护；decision=D-C-095
+dizzying	令人头晕的	domain=status; source=EN/ZH; 依据 / 作用域=仅限明确施加 DUR_VERTIGO 的机制语境；Dazed 施加源及混乱、毒烟、普通眩目叙述不据字面归入；decision=D-C-116
 djinni	灯神	domain=species; source=EN/ZH; 复合格式=灯神 + 职业
 dodge	闪避	domain=combat; source=EN/ZH
 Dodging	闪避	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
@@ -1518,6 +1519,8 @@ Vashnia	瓦什妮亚	domain=unique-monsters; source=EN/ZH; Scope / comment=uniqu
 Vashnia title	精英纳迦神射手瓦什妮亚	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Vehumet	维胡梅特	domain=gods; source=EN/ZH; 类型=音译; 裁决=[D-A-005]
 Venom Bolt	毒液箭	domain=spells; source=EN/ZH; 备注=✅ 现行
+vertiginous	头晕	domain=status; source=EN/ZH; 依据 / 作用域=DUR_VERTIGO 的状态短名（status 语境）；同 Vertigo；decision=D-C-116
+Vertigo	头晕	domain=status; source=EN/ZH; 依据 / 作用域=DUR_VERTIGO 的状态灯、状态说明及明确施加该状态的描述；英文内部身份、存档与 TextDB 键不改；与 Dazed“眩晕”区分；decision=D-C-116
 very stealthy	潜行极佳	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；bat-swarm:fakemuts, vampire:fakemuts；不声称是可遗传突变；decision=D-C-098
 Vex	激怒	domain=spells; source=EN/ZH; 备注=✅
 Vhi	维	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt Air owner；复用既有法术专名；decision=D-C-095
