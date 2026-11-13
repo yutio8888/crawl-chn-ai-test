@@ -4817,6 +4817,6 @@ string clockwork_bee_target_message(const actor *agent, const actor &target)
     const string possessive = agent ? agent->pronoun(PRONOUN_POSSESSIVE)
         : C_("clockwork bee owner", "Someone's");
     const string name = target.name(DESC_THE);
-    return make_stringf(T_("%s's clockwork bee locks onto %s."),
+    return make_stringf(T_("%s clockwork bee locks onto %s."),
                         possessive.c_str(), name.c_str());
 }
