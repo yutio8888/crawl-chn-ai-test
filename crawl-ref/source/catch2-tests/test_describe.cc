@@ -17,6 +17,7 @@
 #include "mutation.h"
 #include "player.h"
 #include "skill-type.h"
+#include "stringutil.h"
 #include "unwind.h"
 
 #include "test_zh_fixture.h"
@@ -217,6 +218,51 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                 CHECK(occurrences("（") == 0);
                 CHECK(occurrences("(") > 0);
                 CHECK(occurrences("(") == occurrences(")"));
+            }
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "resistance protection sentences preserve English and localize punctuation",
+                 "[zh-translation][describe][r5-resistance]")
+{
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (const auto prop : {ARTP_FIRE, ARTP_COLD, ARTP_NEGATIVE_ENERGY})
+        {
+            for (int level : {1, 2, 3})
+            {
+                CAPTURE(language, prop, level);
+                item_def item = make_test_randart();
+                artefact_set_property(item, ARTP_FIRE, 0);
+                artefact_set_property(item, prop, level);
+                vector<string> lines;
+                desc_randart_props(item, lines);
+                const string element = prop == ARTP_FIRE ? "fire"
+                    : prop == ARTP_COLD ? "cold" : "negative energy";
+                const string prefix = level == 1 ? "It protects you from "
+                    : level == 2 ? "It greatly protects you from "
+                                 : "It renders you almost immune to ";
+                const string english = prefix + element + ".";
+                if (language == lang_t::EN)
+                    REQUIRE(any_line_contains(lines, english));
+                else
+                {
+                    const string translated_element = C_("element", element.c_str());
+                    bool found = false;
+                    for (const string &line : lines)
+                    {
+                        if (line.find(translated_element) == string::npos)
+                            continue;
+                        found = true;
+                        CHECK(ends_with(line, "。"));
+                        CHECK(line.find('.') == string::npos);
+                        CHECK(line.find(element) == string::npos);
+                    }
+                    REQUIRE(found);
+                }
             }
         }
     }

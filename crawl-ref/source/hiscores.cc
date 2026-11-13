@@ -2740,8 +2740,13 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             else
             {
                 needs_called_by_monster_line = true;
-                desc += make_stringf(T_("Killed %s"),
-                          aux_display.c_str());
+                if (chinese)
+                {
+                    const string cause = _death_cause_display(auxkilldata.substr(3));
+                    desc += make_stringf(T_("Killed by %s"), cause.c_str());
+                }
+                else
+                    desc += make_stringf(T_("Killed %s"), auxkilldata.c_str());
             }
         }
         else

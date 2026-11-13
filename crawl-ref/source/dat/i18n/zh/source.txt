@@ -34449,7 +34449,7 @@ HP: %d/%d MP: %d/%d
 生命：%d/%d 法力：%d/%d
 %%%%
 Heavenly (%d)
-天赐（%d）
+天堂风暴(%d)
 %%%%
 Hit by %s thrown by %s
 被%2$s投掷的%1$s击中
@@ -50218,3 +50218,36 @@ stone door frame
 %%%%
 stone arch
 石拱门
+%%%%
+It protects you from %1$s.
+它保护你免受%1$s侵害。
+%%%%
+It greatly protects you from %1$s.
+它极大地保护你免受%1$s侵害。
+%%%%
+It renders you almost immune to %1$s.
+它使你几乎免疫%1$s。
+%%%%
+Jolt damage
+放电伤害
+%%%%
+Electricity sometimes discharges through enemies you attack.
+你攻击敌人时，有时会释放电流穿过敌人的身体。
+%%%%
+When badly injured, your eels discharge electricity violently.
+你身受重伤时，身上的电鳗会猛烈放电。
+%%%%
+a heavily-armoured crab.
+一只身披重甲的螃蟹。
+%%%%
+pincers
+螯钳
+%%%%
+Your body armour is fused into your shell, improving its AC and properties.
+你的身体护甲融入了甲壳，护甲值和属性得到增强。
+%%%%
+You can exhale clouds of rust.
+你可以吐出铁锈云。
+%%%%
+monster blink action| blinks!
+闪烁了一下！

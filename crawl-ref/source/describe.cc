@@ -816,9 +816,8 @@ void desc_randart_props(const item_def &item, vector<string> &lines)
             // to fill in to get a complete sentence
             const int idx = max(min(stval + 3, 6), 0);
 
-            // Weak-resistance props use complete sentences so the resist name
-            // can be placed by the translation; the protection prefixes stay
-            // as fragments (no complete sentence needed there).
+            // Use complete sentences so translations control the position of
+            // the resist name and the final punctuation.
             if (idx < 3)
             {
                 const char *sentence = idx == 0
@@ -829,14 +828,11 @@ void desc_randart_props(const item_def &item, vector<string> &lines)
             }
             else
             {
-                const char *const prefixes[] =
-                {
-                    N_("Buggy descriptor!"),
-                    N_("It protects you from "),
-                    N_("It greatly protects you from "),
-                    N_("It renders you almost immune to ")
-                };
-                sdesc = string(T_(prefixes[idx - 3])) + sdesc + '.';
+                const char *sentence = idx == 4
+                    ? N_("It protects you from %1$s.")
+                    : idx == 5 ? N_("It greatly protects you from %1$s.")
+                               : N_("It renders you almost immune to %1$s.");
+                sdesc = make_stringf_p(T_(sentence), sdesc.c_str());
             }
         }
 
@@ -8114,7 +8110,7 @@ static void _maybe_note_form_dice(vector<vector<string>>& items,
     return;
 
     vector<string> labels;
-    labels.push_back(label);
+    labels.push_back(T_(label.c_str()));
     labels.push_back(make_stringf(T_("%dd%d%s"), data[0].num, data[0].size, suffix.c_str()));
     labels.push_back(make_stringf(T_("%dd%d%s"), data[1].num, data[1].size, suffix.c_str()));
     labels.push_back(make_stringf(T_("%dd%d%s"), data[2].num, data[2].size, suffix.c_str()));
