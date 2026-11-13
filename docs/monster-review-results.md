@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`dcbfb16ac457e9506a5e634d171211d460652f42e2ba651ad950d15e719753ae`
-- 清单 SHA-256：`3187a4b185df846a5b48d1b9ac2e1866a2a5035a474c2ac0ebb3d3407e39baf5`
+- 清单 SHA-256：`2b7cccfe9904df76dd3d2ae5e4cbfce676ee74d3669f6d2059ecb17c8a52a952`
 - 身份总数：795（现行 671；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -669,7 +669,7 @@
 | `monster:MONS_ARMOUR_ECHO` | current; exposure=ordinary; name=armour echo→铠甲回响; genus=MONS_ARMOUR_ECHO; species=MONS_ARMOUR_ECHO; data=crawl-ref/source/dat/mons/armour-echo.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ROCKSLIME` | current; exposure=ordinary; name=rockslime→岩石黏泥; genus=MONS_JELLY; species=MONS_ROCKSLIME; data=crawl-ref/source/dat/mons/rockslime.yaml; desc=EN/ZH | keep |
 | `monster:MONS_VOID_OOZE` | current; exposure=ordinary; name=void ooze→虚空软泥; genus=MONS_JELLY; species=MONS_VOID_OOZE; data=crawl-ref/source/dat/mons/void-ooze.yaml; desc=EN/ZH | retranslate: description corrected |
-| `monster:MONS_IRONBOUND_FROSTHEART` | current; exposure=ordinary; name=ironbound frostheart→铁缚霜心; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/ironbound-frostheart.yaml; desc=EN/ZH | keep |
+| `monster:MONS_IRONBOUND_FROSTHEART` | current; exposure=ordinary; name=ironbound frostheart→铁缚霜心; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/ironbound-frostheart.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_IRONBOUND_THUNDERHULK` | current; exposure=ordinary; name=ironbound thunderhulk→铁缚雷躯; genus=MONS_OGRE; species=MONS_OGRE; data=crawl-ref/source/dat/mons/ironbound-thunderhulk.yaml; desc=EN/ZH | keep |
 | `monster:MONS_IRONBOUND_BEASTMASTER` | current; exposure=ordinary; name=ironbound beastmaster→铁缚驯兽师; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/ironbound-beastmaster.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SALAMANDER_TYRANT` | current; exposure=ordinary; name=salamander tyrant→沙罗曼蛇暴君; genus=MONS_NAGA; species=MONS_SALAMANDER; data=crawl-ref/source/dat/mons/salamander-tyrant.yaml; desc=EN/ZH | keep |
@@ -773,7 +773,7 @@
 | `monster:MONS_POLTERGEIST` | current; exposure=ordinary; name=poltergeist→骚灵; genus=MONS_POLTERGEIST; species=MONS_POLTERGEIST; data=crawl-ref/source/dat/mons/poltergeist.yaml; desc=EN/ZH | keep |
 | `monster:MONS_VAMPIRE_BLOODPRINCE` | current; exposure=ordinary; name=vampire bloodprince→吸血鬼血王子; genus=MONS_VAMPIRE; species=MONS_VAMPIRE; data=crawl-ref/source/dat/mons/vampire-bloodprince.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_REVENANT` | current; exposure=ordinary; name=revenant→归来者; genus=MONS_REVENANT; species=MONS_REVENANT; data=crawl-ref/source/dat/mons/revenant.yaml; desc=EN/ZH | retranslate: description corrected |
-| `monster:MONS_NAMELESS_REVENANT` | current; exposure=unique; name=Nobody→无名氏; genus=MONS_NAMELESS_REVENANT; species=MONS_NAMELESS_REVENANT; data=crawl-ref/source/dat/mons/nobody.yaml; desc=EN/ZH | keep |
+| `monster:MONS_NAMELESS_REVENANT` | current; exposure=unique; name=Nobody→无名氏; genus=MONS_NAMELESS_REVENANT; species=MONS_NAMELESS_REVENANT; data=crawl-ref/source/dat/mons/nobody.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_PETRIFIED_FLOWER` | current; exposure=ordinary; name=petrified flower→石化花; genus=MONS_PETRIFIED_FLOWER; species=MONS_PETRIFIED_FLOWER; data=crawl-ref/source/dat/mons/petrified-flower.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_SOLAR_EMBER` | current; exposure=ordinary; name=solar ember→太阳余烬; genus=MONS_SOLAR_EMBER; species=MONS_SOLAR_EMBER; data=crawl-ref/source/dat/mons/solar-ember.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_GOBLIN_RIDER` | current; exposure=ordinary; name=goblin rider→地精骑手; genus=MONS_GOBLIN; species=MONS_GOBLIN; data=crawl-ref/source/dat/mons/goblin-rider.yaml; desc=EN/ZH | keep |
@@ -798,8 +798,8 @@
 | `monster:MONS_MOUNTAINSHELL` | current; exposure=ordinary; name=mountainshell→山壳兽; genus=MONS_MOUNTAINSHELL; species=MONS_MOUNTAINSHELL; data=crawl-ref/source/dat/mons/mountainshell.yaml; desc=EN/ZH | keep |
 | `monster:MONS_UNDERTAKER` | current; exposure=ordinary; name=undertaker→送葬者; genus=MONS_UNDERTAKER; species=MONS_UNDERTAKER; data=crawl-ref/source/dat/mons/undertaker.yaml; desc=EN/ZH | keep |
 | `monster:MONS_ERYTHROSPITE` | current; exposure=ordinary; name=erythrospite→猩红魔; genus=MONS_ERYTHROSPITE; species=MONS_ERYTHROSPITE; data=crawl-ref/source/dat/mons/erythrospite.yaml; desc=EN/ZH | keep |
-| `monster:MONS_MORPHOGENIC_OOZE` | current; exposure=ordinary; name=morphogenic ooze→变形软泥; genus=MONS_JELLY; species=MONS_MORPHOGENIC_OOZE; data=crawl-ref/source/dat/mons/morphogenic-ooze.yaml; desc=EN/ZH | keep |
-| `monster:MONS_SLYMDRA` | current; exposure=ordinary; name=slymdra→斯莱姆德拉; genus=MONS_JELLY; species=MONS_SLYMDRA; data=crawl-ref/source/dat/mons/slymdra.yaml; desc=EN/ZH | keep |
+| `monster:MONS_MORPHOGENIC_OOZE` | current; exposure=ordinary; name=morphogenic ooze→变形软泥; genus=MONS_JELLY; species=MONS_MORPHOGENIC_OOZE; data=crawl-ref/source/dat/mons/morphogenic-ooze.yaml; desc=EN/ZH | retranslate: description corrected |
+| `monster:MONS_SLYMDRA` | current; exposure=ordinary; name=slymdra→斯莱姆德拉; genus=MONS_JELLY; species=MONS_SLYMDRA; data=crawl-ref/source/dat/mons/slymdra.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_CREEPING_PLASMODIUM` | current; exposure=ordinary; name=creeping plasmodium→蔓延原质团; genus=MONS_JELLY; species=MONS_CREEPING_PLASMODIUM; data=crawl-ref/source/dat/mons/creeping-plasmodium.yaml; desc=EN/ZH | keep |
 | `monster:MONS_CAUSTIC_SPORANGIUM` | current; exposure=ordinary; name=caustic sporangium→腐蚀孢子囊; genus=MONS_CAUSTIC_SPORANGIUM; species=MONS_CAUSTIC_SPORANGIUM; data=crawl-ref/source/dat/mons/caustic-sporangium.yaml; desc=EN/ZH | keep |
 | `monster:MONS_NASCENT_PLASMODIUM` | current; exposure=ordinary; name=nascent plasmodium→初生原质团; genus=MONS_JELLY; species=MONS_NASCENT_PLASMODIUM; data=crawl-ref/source/dat/mons/nascent-plasmodium.yaml; desc=EN/ZH | keep |
