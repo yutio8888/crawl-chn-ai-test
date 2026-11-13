@@ -81,8 +81,9 @@ bool monster::blink_to(const coord_def& dest, bool quiet, bool jump)
     {
         // Chinese joins the monster name and verb without an ASCII separator
         // and ends the sentence with the full-width exclamation mark.
-        const string message = (zh ? "" : " ") + display_verb
-                               + (zh ? "！" : "!");
+        const string message = zh && !jump
+            ? C_("monster blink action", " blinks!")
+            : (zh ? "" : " ") + display_verb + (zh ? "！" : "!");
         simple_monster_message(*this, message.c_str());
     }
 
