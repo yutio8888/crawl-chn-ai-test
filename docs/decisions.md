@@ -4982,6 +4982,10 @@ mutation 作为游戏机制名词统一为“变异”，包括变异药水、�
 
 **Reject 边界**：仅对能由现有工具安全识别的英文词组或语境键登记旧译；不把普通magic的“魔法”、Fear的“恐惧”、Abyss的“深渊”设为全库弃用词。配对英文正文和SourceDB键是判定证据，不能凭中文子串替换内部身份。
 
+**2026-11-13 R20/R21 已确认资源条目核销**：沿用本决定的 MP →“法力”，先修复已确认的十五个 trunk 资源条目：Kryia 的法力药水恢复提示、试剂齐射的 MP 不足提示、低 MP 警告、MP 相关变异的名称及消费/恢复说明、生命施法资源合一说明，以及西芙·穆娜引导恢复消息。`high MP`、`low MP`、`magic link` 的显示名分别为“高法力”“低法力”“法力链接”，两线 glossary 的 high/low mp 行同步资源名。实际消费者为 `potion.cc`、`spl-damage.cc::fire_fusillade`、`player.cc`、`ability.cc` 及 `mutation-data.h`/`mutation.cc`；英文身份、存档及查询键不改。
+
+本回查不扩大命名范围：技能 **Evocations → 魔力释放**、实体及法术专名 **Mana Viper / Summon Mana Viper → 魔力毒蛇 / 召唤魔力毒蛇** 保留；已移除的 **Drain Magic** 正式名称仍按既有暂缓记录处理。物品固有魔法、装备感受、法术威力/伤害、物品充能、施法干扰状态及引文不因包含“魔力”而机械改成 MP。同一段落中的普通魔法与 MP 资源逐处区分；“恶魔力量”的跨词子串也不属于此资源术语。
+
 ### D-C-116 — Vertigo 与 Dazed 的机制命名分离
 
 - **Type**: C — Terminology clarification

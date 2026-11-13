@@ -267,3 +267,32 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         }
     }
 }
+
+TEST_CASE("MP mutation display names follow the resource term without changing identities",
+          "[zh-translation][r20][mp-resource-names]")
+{
+    init_mut_index();
+    struct mutation_case
+    {
+        mutation_type type;
+        const char* english;
+        const char* chinese;
+    };
+    const mutation_case cases[] = {
+        {MUT_HIGH_MAGIC, "high MP", "高法力"},
+        {MUT_LOW_MAGIC, "low MP", "低法力"},
+        {MUT_MANA_LINK, "magic link", "法力链接"},
+        {MUT_MP_WANDS, "MP-powered wands", "魔杖消耗法力"},
+    };
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (const auto& row : cases)
+        {
+            CAPTURE(language, row.english);
+            CHECK(string(mutation_name_en(row.type)) == row.english);
+            CHECK(string(mutation_name(row.type))
+                  == (language == lang_t::ZH ? row.chinese : row.english));
+        }
+    }
+}

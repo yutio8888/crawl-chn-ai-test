@@ -1383,7 +1383,7 @@ You grip the centipede bauble in your %s and it winds around your %s and fuses w
 %s从记忆之雾中浮现！
 %%%%
 %s enhances the restoration.
-%s增强了魔力恢复。
+%s增强了法力恢复。
 %%%%
 %s enters %s!
 %s进入了%s！
@@ -9620,7 +9620,7 @@ You challenge %s to single combat, but %s is merely a clone!
 你向%s发起单挑，但%s只是个幻象！
 %%%%
 You channel some magical energy.
-你引导了一些魔力。
+你引导了一些法力。
 %%%%
 You charge forward in eerie silence!
 你在诡异的寂静中向前冲锋！
@@ -11629,7 +11629,7 @@ Your magical essence is drained by the effort!
 这番努力损耗了你的魔法精华！
 %%%%
 Your magical reserves are too exhausted to conjure more reagents.
-你的魔力储备太枯竭，无法召唤更多试剂。
+你的法力储备太枯竭，无法召唤更多试剂。
 %%%%
 Your maw growls hungrily at the sight of %s, but you resist your urges.
 你的吞噬之口在看到%s时饥饿地咆哮起来，但你抵抗住了冲动。
@@ -18365,7 +18365,7 @@ An external divine aura illuminates you.
 一个外部的神圣光环照亮了你。
 %%%%
 * * * LOW MAGIC WARNING * * *
-* * * 低魔力警告 * * *
+* * * 低法力警告 * * *
 %%%%
 * * * LOW HITPOINT WARNING * * *
 * * * 低生命警告 * * *
@@ -19019,7 +19019,7 @@ HP casting
 生命施法
 %%%%
 MP-powered wands
-魔杖消耗魔力
+魔杖消耗法力
 %%%%
 Mark of Annihilation
 湮灭印记
@@ -19262,7 +19262,7 @@ heat vulnerability
 炎热弱点
 %%%%
 high MP
-高魔力
+高法力
 %%%%
 icemail
 冰甲
@@ -19316,13 +19316,13 @@ large bone plates
 大型骨板
 %%%%
 low MP
-低魔力
+低法力
 %%%%
 lucky
 幸运
 %%%%
 magic link
-魔力链接
+法力链接
 %%%%
 magic shield
 魔法护盾
@@ -19715,10 +19715,10 @@ Spells you cast and wands you use may paralyse nearby enemies.
 你施放的法术和使用的魔杖可能会麻痹附近的敌人。
 %%%%
 Spells you cast cost 1 less MP (to a minimum of 1).
-你施放的法术消耗减少1点魔力（最低为1）。
+你施放的法术消耗减少1点法力（最低为1）。
 %%%%
 Spells you cast cost 2 less MP (to a minimum of 1).
-你施放的法术消耗减少2点魔力（最低为1）。
+你施放的法术消耗减少2点法力（最低为1）。
 %%%%
 Spells you cast may paralyse adjacent enemies.
 你施放的法术可能会麻痹相邻的敌人。
@@ -20282,7 +20282,7 @@ You draw destruction from the wailing grief of Tartarus.
 你从塔尔塔罗斯的哀嚎悲伤中汲取毁灭之力。
 %%%%
 You expend magic power (3 MP) to strengthen your wands.
-你消耗魔力（3点）来增强你的魔杖。
+你消耗法力（3点）来增强你的魔杖。
 %%%%
 You float through the air rather than walking.
 你在空中漂浮，而非行走。
@@ -20300,7 +20300,7 @@ You gain AC when you inflict magical misfortune on nearby enemies.
 当你对附近的敌人施加魔法灾厄时，你获得防御。
 %%%%
 You gain doubled healing and magic from potions.
-你从药水中获得双倍的治疗和魔力恢复。
+你从药水中获得双倍的治疗和法力恢复。
 %%%%
 You gain extra lives every three experience levels.
 你每三级获得一条额外生命。
@@ -20528,7 +20528,7 @@ You refuse to read scrolls in combat unless seriously injured.
 除非严重受伤，否则你在战斗中拒绝阅读卷轴。
 %%%%
 You regain HP and MP as you explore.
-你在探索时恢复生命和魔力。
+你在探索时恢复生命和法力。
 %%%%
 You regenerate a little health from kills.
 你通过击杀恢复少量生命。
@@ -20708,7 +20708,7 @@ Your magical power and effects resist disruption.
 你的魔法力量和效果能够抵抗干扰。
 %%%%
 Your magical power is your life essence.
-你的魔力就是你的生命精华。
+你的法力就是你的生命精华。
 %%%%
 Your melee attacks may debilitate your foes.
 你的近战攻击可能会削弱你的敌人。
@@ -27939,7 +27939,7 @@ Your magical nature develops, letting you fly evasively.
 你的魔法本质发展了，使你能以闪避之姿飞行。
 %%%%
 Your magical power and health merge together.
-你的魔力和生命融合在了一起。
+你的法力和生命融合在了一起。
 %%%%
 Your magical power grows resistant to disruption.
 你的魔力变得能够抵御干扰。

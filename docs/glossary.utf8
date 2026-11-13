@@ -726,7 +726,7 @@ hexer	妖术师	domain=abilities; source=EN/ZH; 依据 / 作用域=先祖职业�
 Hexes	妖术系	domain=magic; source=EN/ZH
 Hexslinger	妖术射手	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Hibernal	冬日的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；冬季意象，不是冬眠；decision=D-C-095
-high mp	高魔力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+high mp	高法力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 highly resistant	高抗性	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；wisp:fakemuts；不声称是可遗传突变；表示多种伤害抗性较高，不套用 Might 的“强效”词根；catalog 待负责译者修订；decision=D-C-098
 hit	击中	domain=combat; source=EN/ZH
 Hive	蜂巢	domain=magic; source=EN/ZH; 依据 / 作用域=form 名称／伤害标签；hive:short_name；decision=D-C-098
@@ -874,7 +874,7 @@ Long Blades	长刃	domain=skills; source=EN/ZH; Scope / comment=skill; source=so
 Louise	路易丝	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Louise title	腐化的路易丝	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 low body AC	躯干护甲低	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；maw:badmuts；不声称是可遗传突变；decision=D-C-098
-low mp	低魔力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+low mp	低法力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Lu Zhishen	鲁智深	domain=gods; source=EN/ZH; 类型=无间师父人名; 裁决=[D-C-111]
 Lugonu	卢格努	domain=gods; source=EN/ZH; 类型=音译
 lurker	潜伏者	domain=monsters; source=EN/ZH; 依据 / 作用域=mon-lurk.cc；未显现而等待触发的怪物机制类，非新增物种；区别 Stalker；decision=D-C-095
