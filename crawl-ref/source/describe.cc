@@ -855,14 +855,11 @@ void desc_randart_props(const item_def &item, vector<string> &lines)
             }
             else
             {
-                const char *const prefixes[] =
-                {
-                    N_("Buggy descriptor!"),
-                    N_("It protects you from "),
-                    N_("It greatly protects you from "),
-                    N_("It renders you almost immune to ")
-                };
-                sdesc = string(T_(prefixes[idx - 3])) + sdesc + '.';
+                const char *sentence = idx == 4
+                    ? N_("It protects you from %1$s.")
+                    : idx == 5 ? N_("It greatly protects you from %1$s.")
+                               : N_("It renders you almost immune to %1$s.");
+                sdesc = make_stringf_p(T_(sentence), sdesc.c_str());
             }
         }
 

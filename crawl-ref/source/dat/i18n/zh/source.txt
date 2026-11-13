@@ -37017,7 +37017,7 @@ HP: %d/%d MP: %d/%d
 生命：%d/%d 法力：%d/%d
 %%%%
 Heavenly (%d)
-天赐（%d）
+天堂风暴(%d)
 %%%%
 Hit by %s thrown by %s
 被%2$s投掷的%1$s击中
@@ -54664,3 +54664,15 @@ klown pie flavour|glitter
 klown pie flavour|%s!
 %s！
 %%%%
+%%%%
+It protects you from %1$s.
+它保护你免受%1$s侵害。
+%%%%
+It greatly protects you from %1$s.
+它极大地保护你免受%1$s侵害。
+%%%%
+It renders you almost immune to %1$s.
+它使你几乎免疫%1$s。
+%%%%
+monster blink action| blinks!
+闪烁了一下！
