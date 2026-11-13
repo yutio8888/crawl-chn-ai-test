@@ -26931,7 +26931,7 @@ You are unable to performed a blood rite.
 你无法进行血之仪式。
 %%%%
 You are unable to recite.
-你无法诵读。
+你无法吟诵。
 %%%%
 You are unable to siphon essence.
 你无法吸取精华。
@@ -46177,7 +46177,7 @@ panlord body adjective|slithering
 蜿蜒
 %%%%
 <magenta>[]</magenta>: Transient mutations.\n
-<magenta>[]</magenta>: 临时变异。\n
+<magenta>[]</magenta>：临时变异。\n
 %%%%
 You kneel at the altar of %s.
 你跪在%s的祭坛前。
@@ -54727,4 +54727,25 @@ oblivion howl|terrible
 %%%%
 oblivion howl|silent
 无声
+%%%%
+gozag invitation|%s invites you to visit their %s.
+%s邀请你光顾自家的%s。
+%%%%
+gozag bookshop title|Bookshop
+书店
+%%%%
+gozag bookshop title|Book Shoppe
+书铺
+%%%%
+gozag bookshop title|Book Boutique
+精品书店
+%%%%
+gozag bookshop title|Book Emporium
+书籍商场
+%%%%
+mutation legend|<darkgrey>[]</darkgrey>: 
+<darkgrey>[]</darkgrey>：
+%%%%
+status|You are %s.
+你%s了。
 %%%%
