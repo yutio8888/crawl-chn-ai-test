@@ -199,7 +199,7 @@ static void _decrement_petrification(int delay)
                                             get_form()->flesh_equivalent;
 
         mprf(MSGCH_DURATION, T_("You turn to %s%s."),
-             flesh_equiv.c_str(),
+             C_("body part", flesh_equiv.c_str()),
              you.paralysed() ? "" :
                  T_(" and can act again"));
     }

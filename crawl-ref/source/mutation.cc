@@ -1035,7 +1035,7 @@ string mutation_menu_legend(bool has_future_muts)
         extra += T_("<magenta>[]</magenta>: Transient mutations.\n");
     if (has_future_muts)
     {
-        extra += "<darkgrey>[]</darkgrey>: ";
+        extra += C_("mutation legend", "<darkgrey>[]</darkgrey>: ");
         extra += T_("Gained at a future XL.");
         extra += "\n";
     }

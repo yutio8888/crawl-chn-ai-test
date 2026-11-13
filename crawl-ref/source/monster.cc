@@ -2664,9 +2664,11 @@ bool monster::go_frenzy(actor *source)
     if (has_ench(ENCH_SLOW))
     {
         del_ench(ENCH_SLOW, true); // Give no additional message.
+        const string possessive = Options.language == lang_t::ZH
+            ? "" : pronoun(PRONOUN_POSSESSIVE);
         simple_monster_message(*this,
             make_stringf(T_(" shakes off %s lethargy."),
-                         pronoun(PRONOUN_POSSESSIVE).c_str()).c_str());
+                         possessive.c_str()).c_str());
     }
     del_ench(ENCH_HASTE, true);
     del_ench(ENCH_FATIGUE, true); // Give no additional message.
@@ -2695,9 +2697,11 @@ bool monster::go_berserk(bool intentional, bool /* potion */)
     if (has_ench(ENCH_SLOW))
     {
         del_ench(ENCH_SLOW, true); // Give no additional message.
+        const string possessive = Options.language == lang_t::ZH
+            ? "" : pronoun(PRONOUN_POSSESSIVE);
         simple_monster_message(*this,
             make_stringf(T_(" shakes off %s lethargy."),
-                         pronoun(PRONOUN_POSSESSIVE).c_str()).c_str());
+                         possessive.c_str()).c_str());
     }
     del_ench(ENCH_FATIGUE, true); // Give no additional message.
     del_ench(ENCH_FEAR, true);    // Going berserk breaks fear.
