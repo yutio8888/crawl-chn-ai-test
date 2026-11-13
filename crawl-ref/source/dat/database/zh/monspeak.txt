@@ -10162,3 +10162,68 @@ disguise success
 @The_monster@嘟囔道：“多半只是只老鼠。”
 
 @The_monster@问道：“有人在那儿吗？”
+%%%%
+############ BOREAS ### 北风骄傲的后裔
+Boreas
+
+@The_monster@ 说：“向我宣誓效忠，我或许会饶你一命。也或许不会。”
+
+@The_monster@ 说：“连佐特都吓不倒我，你又能做成什么？”
+
+@The_monster@ 说：“只要风还在吹，我就屹立不倒！”
+
+@The_monster@ 说：“我会夺回一切属于我的东西。”
+
+@The_monster@ 说：“北风长存。”
+
+@The_monster@ 说：“无论君王还是平民，都要到我这里来躲避风雪！”
+
+w:30
+@The_monster@ 说：{{
+  if you.race() ~= "Gale Centaur" then
+    return "“认清你自己的位置！”"
+  elseif you.mutation("North Wind's embodiment") > 0 then
+    return "“同类？跟我比起来，你不过是条杂种。”"
+  elseif you.mutation("South Wind's embodiment") > 0 then
+    return "“这就是南风能派来对付我的最好人选？你根本不算什么。”"
+  elseif you.mutation("East Wind's embodiment") > 0 then
+    return "“这就是东风能派来对付我的最好人选？你根本不算什么。”"
+  elseif you.mutation("West Wind's embodiment") > 0 then
+    return "“这就是西风能派来对付我的最好人选？你根本不算什么。”"
+  end
+}} @player_only@
+
+w:30
+@The_monster@ 说：{{
+  if you.race() ~= "Gale Centaur" then
+    return "“寒冬驱赶着所有其他的季节。”"
+  elseif you.mutation("North Wind's embodiment") > 0 then
+    return "“我的寒冬会把你的寒冬吞掉。”"
+  elseif you.mutation("South Wind's embodiment") > 0 then
+    return "“夏日的温暖也挡不住寒冬的脚步。”"
+  elseif you.mutation("East Wind's embodiment") > 0 then
+    return "“被寒冬征服，正是秋天的宿命。”"
+  elseif you.mutation("West Wind's embodiment") > 0 then
+    return "“我的寒冬会比你的春天更长久。”"
+  end
+}} @player_only@
+
+@The_monster@ 说：{{
+  if you.zot_orb_monster() == "orbs of winter" then
+    return '“凛冬居于佐特之境，而凛冬向我臣服！”'
+  else
+    return '“宝珠理应归我。”'
+  end
+}}
+%%%%
+Boreas killed
+
+@The_monster@ 用@possessive@最后的气息嘶声说道：{{
+  if you.mutation("North Wind's embodiment") > 0 then
+    return "“父亲……你为什么要选……他们？”"
+  elseif you.race() == "Gale Centaur" then
+    return "“我唾弃……你的血脉……”"
+  else
+    return "“愿你再也感受不到温暖……”"
+  end
+}} @player_only@
