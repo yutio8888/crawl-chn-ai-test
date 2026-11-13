@@ -625,8 +625,8 @@ public:
 
     string get_description(bool past_tense) const override
     {
-        return make_stringf(T_("You %s overflowing with transmutational energy."),
-                            past_tense ? "were" : "are");
+        return past_tense ? T_("You were overflowing with transmutational energy.")
+                          : T_("You are overflowing with transmutational energy.");
     }
 
     string transform_message() const override
@@ -653,8 +653,8 @@ public:
      */
     string get_description(bool past_tense) const override
     {
-        return make_stringf(T_("You %s blades growing out of your body."),
-                            past_tense ? "had" : "have");
+        return past_tense ? T_("You had blades growing out of your body.")
+                          : T_("You have blades growing out of your body.");
     }
 
     /**
@@ -1159,8 +1159,8 @@ public:
 
     string get_description(bool past_tense) const override
     {
-        return make_stringf(T_("Your body %s made of elemental water."),
-                            past_tense ? "was" : "is");
+        return past_tense ? T_("Your body was made of elemental water.")
+                          : T_("Your body is made of elemental water.");
     }
 
     string transform_message() const override
@@ -1286,8 +1286,8 @@ public:
 
     string get_description(bool past_tense) const override
     {
-        return make_stringf(T_("You %s a mane of long, stinging tendrils on your head."),
-                            past_tense ? "had" : "have");
+        return past_tense ? T_("You had a mane of long, stinging tendrils on your head.")
+                          : T_("You have a mane of long, stinging tendrils on your head.");
     }
 
     // Number of monsters affected by tendrils per attack (multiplied by 10,
@@ -1395,9 +1395,9 @@ public:
 
     string get_description(bool past_tense) const override
     {
-        return make_stringf_p(T_("Your %1$s %2$s a mass of colorful fungus."),
-                            you.arm_name(false).c_str(),
-                            past_tense ? "was" : "is");
+        return make_stringf(past_tense ? T_("Your %s was a mass of colorful fungus.")
+                                     : T_("Your %s is a mass of colorful fungus."),
+                            you.arm_name(false).c_str());
     }
 };
 

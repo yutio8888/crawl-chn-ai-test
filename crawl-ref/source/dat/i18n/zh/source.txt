@@ -24903,7 +24903,7 @@ You are unable to performed a blood rite.
 你无法进行血之仪式。
 %%%%
 You are unable to recite.
-你无法诵读。
+你无法吟诵。
 %%%%
 You are unable to siphon essence.
 你无法吸取精华。
@@ -39319,10 +39319,10 @@ a face from nightmares
 长着一张来自噩梦的脸
 %%%%
 One of the many lords of Pandemonium, %1$s has a %2$s%3$s body, %4$s, and %5$s.
-众多万魔殿领主之一，%1$s拥有一具%2$s%3$s的躯体，%4$s，并且%5$s。
+众多万魔殿领主之一，%1$s拥有一具%2$s%3$s躯体，%4$s，并且%5$s。
 %%%%
 One of the many lords of Pandemonium, %1$s has a %2$s%3$s body and %4$s.
-众多万魔殿领主之一，%1$s拥有一具%2$s%3$s的躯体，并且%4$s。
+众多万魔殿领主之一，%1$s拥有一具%2$s%3$s躯体，并且%4$s。
 %%%%
 light grey
 浅灰色
@@ -42982,7 +42982,7 @@ move.bare|fly down
 飞了下去
 %%%%
 <magenta>[]</magenta>: Transient mutations.\n
-<magenta>[]</magenta>: 临时变异。\n
+<magenta>[]</magenta>： 临时变异。\n
 %%%%
 You kneel at the altar of %s.
 你跪在%s的祭坛前。
@@ -50350,4 +50350,724 @@ oblivion howl|silent
 %%%%
 piledriver target count|two
 两
+%%%%
+gozag invitation|%s invites you to visit their %s.
+%s邀请你光顾自家的%s。
+%%%%
+gozag bookshop title|Bookshop
+书店
+%%%%
+gozag bookshop title|Book Shoppe
+书铺
+%%%%
+gozag bookshop title|Book Boutique
+精品书店
+%%%%
+gozag bookshop title|Book Emporium
+书籍商场
+%%%%
+mutation legend|<darkgrey>[]</darkgrey>: 
+<darkgrey>[]</darkgrey>：
+%%%%
+ignite poison reference|its
+自己
+%%%%
+ignite poison reference|his
+自己
+%%%%
+ignite poison reference|her
+自己
+%%%%
+ignite poison reference|your
+自己
+%%%%
+ignite poison reference|their
+自己
+%%%%
+App
+肢体
+%%%%
+appendages
+野兽肢体
+%%%%
+aqua-form
+水灵形态
+%%%%
+Watery Grave Dmg
+水葬伤害
+%%%%
+water reaching
+水体延伸
+%%%%
+Your aqueous body allows to you attack from a distance.
+你的水灵之躯让你可以从远处发动攻击。
+%%%%
+water splatter
+水花飞溅
+%%%%
+When injured, pools of shallow water form around you.
+你受伤时，周围会形成浅水池。
+%%%%
+You can command nearby water to drown your enemies.
+你可以操纵附近的水淹没敌人。
+%%%%
+steam response
+遇火生汽
+%%%%
+When hit by fire damage, your body sometimes produces steam.
+受到火焰伤害时，你的身体有时会产生蒸汽。
+%%%%
+freeze response
+遇冷冻结
+%%%%
+When hit by cold damage, your body sometimes freezes.
+受到寒冷伤害时，你的身体有时会冻结。
+%%%%
+bat-form
+蝙蝠形态
+%%%%
+a bat.
+一只蝙蝠。
+%%%%
+flesh
+血肉
+%%%%
+extremely fast
+极快
+%%%%
+You cover ground extremely quickly.
+你移动得极快。
+%%%%
+You are tiny, dextrous, and very evasive.
+你体型微小，身手灵巧，极善闪避。
+%%%%
+weak attacks
+攻击虚弱
+%%%%
+Your unarmed attacks are very weak.
+你的徒手攻击十分虚弱。
+%%%%
+batswarm-form
+蝠群形态
+%%%%
+a swarm of vampire bats.
+一群吸血鬼蝙蝠。
+%%%%
+vampire fangs
+吸血鬼獠牙
+%%%%
+Your fangs allow you to drain the lifeblood from your enemies.
+你的獠牙让你可以吸取敌人的生命之血。
+%%%%
+bloodcurse
+血咒
+%%%%
+torment resistance 1
+折磨抗性1
+%%%%
+very stealthy
+潜行极佳
+%%%%
+You are very stealthy.
+你极善潜行。
+%%%%
+blade-form
+刀刃形态
+%%%%
+blade aux
+刀刃辅助攻击
+%%%%
+You can perform multiple auxiliary attacks with your blades.
+你可以用身上的刀刃进行多次辅助攻击。
+%%%%
+blade parry
+刀刃格挡
+%%%%
+You gain SH while attacking, based on your slaying.
+你攻击时会根据杀戮加成获得护盾值。
+%%%%
+death-form
+死亡形态
+%%%%
+an undying horror.
+一个不死的恐怖存在。
+%%%%
+fossilised flesh
+化石般的血肉
+%%%%
+vile attack
+恶毒攻击
+%%%%
+Your melee attacks drain, slow and weaken victims.
+你的近战攻击会使受害者衰竭、减速并虚弱。
+%%%%
+You can torment nearby foes to heal from their wounds.
+你可以折磨附近的敌人，借其伤口治疗自己。
+%%%%
+dragon-form
+龙形态
+%%%%
+a fearsome dragon!
+一条可怕的龙！
+%%%%
+Breath Dmg
+吐息伤害
+%%%%
+dragon claw
+龙爪
+%%%%
+You have a powerful clawing attack.
+你拥有强大的爪击。
+%%%%
+dragon scales
+龙鳞
+%%%%
+Your giant scaled body is strong and resilient, but less evasive.
+你巨大的鳞甲之躯强壮而坚韧，但更难闪避。
+%%%%
+eel punch
+电鳗拳击
+%%%%
+eeljolt
+电鳗放电
+%%%%
+flux-form
+变形形态
+%%%%
+something dangerously unstable.
+某种危险而不稳定的东西。
+%%%%
+Contam Dmg
+污染伤害
+%%%%
+contaminating
+污染攻击
+%%%%
+Foes you strike become dangerously contaminated with transmutational energy.
+被你击中的敌人会受到变形能量的危险污染。
+%%%%
+You glow with energy, making you easy to see.
+你散发着能量的光芒，容易被看见。
+%%%%
+Your attacks are very weak.
+你的攻击十分虚弱。
+%%%%
+crab-form
+蟹形态
+%%%%
+shell
+甲壳
+%%%%
+armoured shell
+坚甲
+%%%%
+slow movement
+移动缓慢
+%%%%
+fungus-form
+菌类形态
+%%%%
+a sentient fungus.
+一个有知觉的菌类。
+%%%%
+You are tiny and evasive.
+你体型微小，善于闪避。
+%%%%
+Your melee attacks release spores that confuse breathing creatures.
+你的近战攻击释放的孢子会使需要呼吸的生物混乱。
+%%%%
+terrified
+惊恐
+%%%%
+You become terrified and freeze when enemies are visible.
+看到敌人时，你会因惊恐而无法移动。
+%%%%
+hive-form
+蜂巢形态
+%%%%
+a living hive.
+一个活着的蜂巢。
+%%%%
+hive swarm
+蜂群护体
+%%%%
+When at low health, angry bees swarm out to defend you.
+你的生命值较低时，愤怒的蜜蜂会蜂拥而出，保护你。
+%%%%
+hive regen
+蜂巢再生
+%%%%
+You regenerate HP and MP more quickly.
+你的生命值和法力恢复得更快。
+%%%%
+hydra-form
+多头蛇形态
+%%%%
+fast swimmer
+游泳迅捷
+%%%%
+You swim very quickly.
+你游泳的速度非常快。
+%%%%
+devour
+吞噬
+%%%%
+You can devour living enemies to heal.
+你可以吞噬活着的敌人来治疗自己。
+%%%%
+jelly-form
+果冻形态
+%%%%
+a lump of jelly.
+一团果冻。
+%%%%
+acid body
+酸性身体
+%%%%
+You are resistant to acid and immune to corrosive walls.
+你具有酸抗性，并免疫腐蚀墙壁。
+%%%%
+amorphous state
+无定形
+%%%%
+Your amorphous body is immune to blinding, drowning, and ensnarement.
+你的无定形身体免疫致盲、溺水和束缚。
+%%%%
+acidic touch
+酸蚀触击
+%%%%
+Your melee attacks splash acid on your foes.
+你的近战攻击会向敌人溅射酸液。
+%%%%
+heavily diminished spells
+法术严重削弱
+%%%%
+You cast all spells with heavily decreased power.
+你施放的所有法术威力都大幅降低。
+%%%%
+maw-form
+巨口形态
+%%%%
+a creature with a mouth for a stomach.
+一个胃部化为大嘴的生物。
+%%%%
+maw attack
+巨口攻击
+%%%%
+Your maw can bite with vicious strength.
+你的巨口能凶狠地咬击。
+%%%%
+devouring maw
+吞噬巨口
+%%%%
+You can devour enemies to increase your regeneration.
+你可以吞噬敌人，增强生命再生。
+%%%%
+growling stomach
+胃部咆哮
+%%%%
+Your maw sometimes becomes mesmerised by tasty morsels.
+你的巨口有时会被美味的食物迷住。
+%%%%
+low body AC
+躯干护甲低
+%%%%
+Your maw has eaten a hole through body armour, reducing its AC.
+你的巨口在身体护甲上啃出了一个洞，降低了护甲值。
+%%%%
+medusa-form
+美杜莎形态
+%%%%
+stinger hair
+毒须鬃发
+%%%%
+Your tendrils poison nearby enemies when you attack.
+你攻击时，身上的触须会使附近的敌人中毒。
+%%%%
+lithotoxin
+石化毒素
+%%%%
+When significantly injured, you may petrify poisoned enemies.
+你受到严重伤害时，可能会使中毒的敌人石化。
+%%%%
+pig-form
+猪形态
+%%%%
+a filthy swine.
+一头肮脏的猪。
+%%%%
+You cover ground very quickly.
+你移动得很快。
+%%%%
+Porc
+豪猪
+%%%%
+porc-form
+豪猪形态
+%%%%
+a spiny porcupine.
+一只浑身长刺的豪猪。
+%%%%
+quill-form
+刺毛形态
+%%%%
+covered in sharp quills.
+一个浑身长满尖锐刺毛的生物。
+%%%%
+Quill Dmg
+刺毛伤害
+%%%%
+quills
+刺毛护体
+%%%%
+Your quills sometimes injure those who attack you in melee.
+你的刺毛有时会伤害近战攻击你的敌人。
+%%%%
+yak-form
+牦牛形态
+%%%%
+an ice-encrusted yak.
+一头覆满冰霜的牦牛。
+%%%%
+Frigid Wall Dmg
+冰墙伤害
+%%%%
+icy fur
+冰冷的毛皮
+%%%%
+frigid aura
+酷寒灵光
+%%%%
+You freeze nearby walls in an area that expands as you fight.
+你会冻结附近的墙壁，冻结区域随着战斗而扩大。
+%%%%
+ice wizardry
+寒冰施法辅助
+%%%%
+amphisbaena-form
+双头蛇形态
+%%%%
+an enormous two-headed serpent.
+一条巨大的双头蛇。
+%%%%
+You have a powerful constriction melee attack.
+你拥有强大的近战绞缠攻击。
+%%%%
+two hats
+双帽
+%%%%
+You can wear a hat or helmet on each head.
+你的每个头上都可以戴一顶帽子或头盔。
+%%%%
+shadow-form
+暗影形态
+%%%%
+a swirling mass of dark shadows.
+一团翻涌的浓黑暗影。
+%%%%
+half damage
+伤害减半
+%%%%
+Damage taken is halved, but you are drained when taking damage.
+你受到的伤害减半，但受伤时会遭受衰竭。
+%%%%
+bleed smoke
+烟雾之血
+%%%%
+You bleed smoke when taking damage.
+你受伤时会流出烟雾。
+%%%%
+You are invisible.
+你处于隐形状态。
+%%%%
+unshakeable will
+意志不可动摇
+%%%%
+Your willpower is unshakeable.
+你的意志力不可动摇。
+%%%%
+Your attacks do half damage.
+你的攻击伤害减半。
+%%%%
+weak spells
+法术虚弱
+%%%%
+Your spells are much less powerful.
+你的法术威力大幅降低。
+%%%%
+slaughter-form
+屠戮形态
+%%%%
+a vessel of demonic slaughter.
+一个恶魔屠戮的容器。
+%%%%
+Damage taken is decreased by 1/3.
+你受到的伤害减少1/3。
+%%%%
+doubled heal-on-kills
+杀敌治疗加倍
+%%%%
+Healing from kills is doubled.
+杀敌带来的治疗量加倍。
+%%%%
+demonic bargain
+恶魔契约
+%%%%
+You will endure the Crucible once your slaughter is complete.
+完成屠戮后，你必须承受血肉熔炉的考验。
+%%%%
+sphinx-form
+斯芬克斯形态
+%%%%
+a cunning sphinx.
+一只狡猾的斯芬克斯。
+%%%%
+airstrike attack
+空袭攻击
+%%%%
+You unleash cutting winds upon enemies you strike.
+你会对击中的敌人释放切割之风。
+%%%%
+riddle compulsion
+谜语冲动
+%%%%
+You often pose riddles to enemies when you first see then.
+你初次看到敌人时，常会向其提出谜语。
+%%%%
+spider-form
+蜘蛛形态
+%%%%
+an agile web-spinner.
+一只灵巧的织网者。
+%%%%
+ensnaring attack
+蛛网攻击
+%%%%
+You sometimes web enemies you hit.
+你击中敌人时，有时会用蛛网困住它们。
+%%%%
+You can move swiftly towards enemies.
+你可以迅速移向敌人。
+%%%%
+jumping
+跳跃
+%%%%
+You can leap distances in the blink of an eye.
+你可以在眨眼间跃过一段距离。
+%%%%
+You are stealthy and inflict bonus damage to unaware enemies.
+你善于潜行，攻击未察觉你的敌人时会造成额外伤害。
+%%%%
+You are tiny and dextrous.
+你体型微小，身手灵巧。
+%%%%
+poison vulnerability
+毒素弱点
+%%%%
+You are susceptible to poisons. (rPois-)
+你容易受到毒素的伤害。(rPois-)
+%%%%
+spore-form
+孢子形态
+%%%%
+Burstshroom damage
+爆裂菇伤害
+%%%%
+weakening spores
+虚弱孢子
+%%%%
+Your melee attacks may weaken breathing enemies.
+你的近战攻击可能会使需要呼吸的敌人虚弱。
+%%%%
+Your melee attacks cause explosive burstshrooms to grow.
+你的近战攻击会使具有爆炸性的爆裂菇生长。
+%%%%
+statue-form
+石像形态
+%%%%
+a stone statue.
+一尊石像。
+%%%%
+Your melee attacks are powerful.
+你的近战攻击很强大。
+%%%%
+All of your actions are slow.
+你的所有行动都很缓慢。
+%%%%
+Your evasion is reduced.
+你的闪避能力降低。
+%%%%
+storm-form
+风暴形态
+%%%%
+a lightning-filled tempest!
+一团充满闪电的风暴！
+%%%%
+Blinkbolt Dmg
+闪烁箭伤害
+%%%%
+electrical cleaving
+电流横扫
+%%%%
+Your electrical attacks strike out in all directions at once.
+你的电击会同时向所有方向袭去。
+%%%%
+evasive
+善于闪避
+%%%%
+You are incredibly evasive.
+你极善闪避。
+%%%%
+You can turn into living lightning.
+你可以变成活体闪电。
+%%%%
+scarab-form
+甲虫形态
+%%%%
+a gleaming scarab beetle.
+一只闪亮的圣甲虫。
+%%%%
+Flare Dmg
+耀焰伤害
+%%%%
+carapace
+甲壳
+%%%%
+sun companion
+太阳伙伴
+%%%%
+You manifest a globe of solar heat that you carry with you.
+你会具现出一个太阳热量之球，并随身携带。
+%%%%
+Your solar ember damages enemies next to it every second time you attack.
+每当你攻击两次，你的太阳余烬就会伤害一次邻近的敌人。
+%%%%
+You heal your solar ember whenever you swap places with it.
+你每次与太阳余烬交换位置都会治疗它。
+%%%%
+searing attack
+灼热攻击
+%%%%
+Your melee attacks sometimes make enemies vulnerable to fire.
+你的近战攻击有时会使敌人更容易受到火焰伤害。
+%%%%
+fire wizardry
+火焰施法辅助
+%%%%
+wood
+木质
+%%%%
+vampire-form
+吸血鬼形态
+%%%%
+a living vampire.
+一个活着的吸血鬼。
+%%%%
+bat form
+蝠群变形
+%%%%
+You can occasionally transform into a swarm of bats.
+你可以偶尔变成一群蝙蝠。
+%%%%
+hypnotic gaze
+催眠凝视
+%%%%
+You often daze monsters when they first notice you.
+怪物初次注意到你时，常会陷入眩晕。
+%%%%
+scroll-form
+卷轴形态
+%%%%
+a walking scroll.
+一张行走的卷轴。
+%%%%
+You have increased skill with all magical schools.
+你的所有魔法学派技能都得到提高。
+%%%%
+magic absorption
+吸收魔法
+%%%%
+Your melee attacks sometimes restore your MP.
+你的近战攻击有时会恢复法力。
+%%%%
+novice magic
+新手魔法
+%%%%
+You cannot cast spells above level 4.
+你无法施放高于4级的法术。
+%%%%
+Your melee attacks are very weak.
+你的近战攻击十分虚弱。
+%%%%
+werewolf-form
+狼人形态
+%%%%
+a ferocious werewolf.
+一只凶猛的狼人。
+%%%%
+werefury
+狼人狂怒
+%%%%
+You gain temporary slaying when you kill enemies in melee.
+你用近战杀死敌人时，会暂时获得杀戮加成。
+%%%%
+werehowl
+狼人嚎叫
+%%%%
+You sometimes unleash a terrifying howl when you kill enemies in melee.
+你用近战杀死敌人时，有时会发出可怕的嚎叫。
+%%%%
+You can leap to fearful enemies and eviscerate them.
+你可以跃向恐惧中的敌人，将其开膛破肚。
+%%%%
+wisp-form
+鬼火形态
+%%%%
+an insubstantial wisp.
+一团没有实体的鬼火。
+%%%%
+highly resistant
+高抗性
+%%%%
+You are highly resistant to most damage types. (rF++, rC++, rN+++, rElec, rCorr)
+你对大多数伤害类型具有很高的抗性。(rF++, rC++, rN+++, rElec, rCorr)
+%%%%
+You were overflowing with transmutational energy.
+你当时充满了变形能量。
+%%%%
+You are overflowing with transmutational energy.
+你充满了变形能量。
+%%%%
+held status sentence|You are %s.
+你%s了。
+%%%%
+You had blades growing out of your body.
+你的身上当时长着利刃。
+%%%%
+You have blades growing out of your body.
+你的身上长着利刃。
+%%%%
+Your body was made of elemental water.
+你的身体当时由元素之水构成。
+%%%%
+Your body is made of elemental water.
+你的身体由元素之水构成。
+%%%%
+You had a mane of long, stinging tendrils on your head.
+你的头上当时有一丛长长的刺人触须。
+%%%%
+You have a mane of long, stinging tendrils on your head.
+你的头上有一丛长长的刺人触须。
+%%%%
+Your %s was a mass of colorful fungus.
+你的%s当时是一团彩色的菌菇。
+%%%%
+Your %s is a mass of colorful fungus.
+你的%s是一团彩色的菌菇。
+%%%%
+bow your heads before
+低下所有头颅拜向
+%%%%
+curl into a sanctuary of spikes before
+蜷成刺球护住自己，面向
 %%%%

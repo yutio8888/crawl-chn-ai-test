@@ -3619,8 +3619,42 @@ static string _gozag_shop_spec(int index)
 void gozag_announce_shop(const shop_struct& shop, gender_type gender)
 {
     const string type_name = shop_type_name(shop.type);
-    const char* separator = Options.language != lang_t::ZH
-                            && !shop.shop_suffix_name.empty() ? " " : "";
+    if (Options.language == lang_t::ZH)
+    {
+        string title;
+        // Only the invitation uses these idiomatic complete shop titles.
+        // Saved shop fragments and global pronoun rules stay unchanged.
+        if (shop.type == SHOP_BOOK)
+        {
+            static const struct book_title
+            {
+                const char* suffix;
+                const char* title;
+            } titles[] = {
+                { "", NC_("gozag bookshop title", "Bookshop") },
+                { "Shop", NC_("gozag bookshop title", "Bookshop") },
+                { "Shoppe", NC_("gozag bookshop title", "Book Shoppe") },
+                { "Boutique", NC_("gozag bookshop title", "Book Boutique") },
+                { "Emporium", NC_("gozag bookshop title", "Book Emporium") },
+            };
+            for (const auto& row : titles)
+                if (shop.shop_suffix_name == row.suffix)
+                {
+                    title = C_("gozag bookshop title", row.title);
+                    break;
+                }
+        }
+        if (title.empty())
+        {
+            const char* suffix = shop.shop_suffix_name.empty()
+                ? "Shop" : shop.shop_suffix_name.c_str();
+            title = type_name + C_("shop name suffix", suffix);
+        }
+        mprf(C_("gozag invitation", "%s invites you to visit their %s."),
+             shop.shop_name.c_str(), title.c_str());
+        return;
+    }
+    const char* separator = !shop.shop_suffix_name.empty() ? " " : "";
     mprf_p(T_("%s invites you to visit %s %s%s%s."), shop.shop_name.c_str(),
            decline_pronoun(gender, PRONOUN_POSSESSIVE), type_name.c_str(),
            separator, C_("shop name suffix", shop.shop_suffix_name.c_str()));

@@ -31,6 +31,7 @@
 #include "god-passive.h"
 #include "invent.h"
 #include "items.h"
+#include "lang-en-guard.h"
 #include "level-state-type.h"
 #include "los.h"
 #include "losglobal.h"
@@ -2528,10 +2529,15 @@ spret cast_ignite_poison(actor* agent, int pow, bool fail, bool tracer)
 
     targeter_radius hitfunc(agent, LOS_NO_TRANS);
 
+    string reference;
+    {
+        ScopedLangEn english;
+        reference = agent->pronoun(PRONOUN_POSSESSIVE);
+    }
     mprf_p(T_("%1$s %2$s the poison around %3$s!"),
            agent->name(DESC_THE).c_str(),
            agent->conj_verb("ignite").c_str(),
-           agent->pronoun(PRONOUN_REFLEXIVE).c_str());
+           C_("ignite poison reference", reference.c_str()));
 
     // this could conceivably cause crashes if the player dies midway through
     // maybe split it up...?

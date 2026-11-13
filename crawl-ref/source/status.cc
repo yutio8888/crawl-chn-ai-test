@@ -442,7 +442,7 @@ bool fill_status_info(int status, status_info& inf)
             inf.db_key       = "Held";
             inf.short_db_key = "held";
             inf.short_text   = T_("held");
-            inf.long_text    = make_stringf(T_("You are %s."), held_status());
+            inf.long_text    = make_stringf(C_("held status sentence", "You are %s."), held_status());
         }
         break;
 
