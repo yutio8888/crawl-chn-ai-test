@@ -50339,3 +50339,6 @@ named monster illusion|%s's illusion
 ability list separator|, 
 、
 %%%%
+state intensity|more 
+更加
+%%%%
