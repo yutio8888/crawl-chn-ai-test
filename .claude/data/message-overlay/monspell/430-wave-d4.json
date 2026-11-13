@@ -30,7 +30,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} blinks past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}眨眼。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边眨眼。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}身后眨眼。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}以远的地方眨眼。" }
           ]
         }],
         "materialization_cases": [], "recursive_dependency_fingerprints": {}

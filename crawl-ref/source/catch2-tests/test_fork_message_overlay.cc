@@ -2580,7 +2580,7 @@ TEST_CASE("Phase 2 gesture variants bind once and render every relation",
             "The orc points its staff past you, shooting a stream of webbing." },
           { "兽人用法杖指向你，射出一股蛛网。",
             "兽人用法杖指向你旁边，射出一股蛛网。",
-            "兽人用法杖指向你身后，射出一股蛛网。" } },
+            "兽人用法杖指向你以远的地方，射出一股蛛网。" } },
         { "ensnare arachne cast", 1,
           "@The_monster_possessive@ staff shoots out a stream of webbing.",
           false, cast_frame::PROJECTILE,
@@ -2599,7 +2599,7 @@ TEST_CASE("Phase 2 gesture variants bind once and render every relation",
             "The orc coils itself and waves its upper body past you." },
           { "兽人盘起身躯，向你摆动上半身。",
             "兽人盘起身躯，向你旁边摆动上半身。",
-            "兽人盘起身躯，向你身后摆动上半身。" } },
+            "兽人盘起身躯，朝你以远的地方摆动上半身。" } },
         { "guardian serpent cast targeted", 1,
           "@The_monster@ gestures with @possessive@ tail @at@ @target@.",
           true, cast_frame::GESTURE,
@@ -2609,7 +2609,7 @@ TEST_CASE("Phase 2 gesture variants bind once and render every relation",
             "The orc gestures with its tail past you." },
           { "兽人用尾巴向你做出手势。",
             "兽人用尾巴向你旁边做出手势。",
-            "兽人用尾巴向你身后做出手势。" } },
+            "兽人用尾巴朝你以远的地方做出手势。" } },
         { "guardian serpent cast targeted", 2,
           "@The_monster@ weaves intricate patterns with the tip of @possessive@ tongue.",
           false, cast_frame::GESTURE,
@@ -2894,13 +2894,13 @@ TEST_CASE("third Phase 2 batch has exact Chinese catalog goldens",
           true, true, cast_frame::GESTURE, sensory_mode::PLAIN,
           { "兽人向你猛烈地做出手势。",
             "兽人向你旁边猛烈地做出手势。",
-            "兽人向你身后猛烈地做出手势。" } },
+            "兽人朝你以远的地方猛烈地做出手势。" } },
         { "malign offering priest cast", 0,
           "@The_monster@ utters a dark prayer and points @at@ @target@.",
           true, true, cast_frame::INVOCATION, sensory_mode::PLAIN,
           { "兽人低声念出一段黑暗祷词，指向你。",
             "兽人低声念出一段黑暗祷词，指向你旁边。",
-            "兽人低声念出一段黑暗祷词，指向你身后。" } },
+            "兽人低声念出一段黑暗祷词，指向你以远的地方。" } },
         { "sheza's dance cast", 0,
           "@The_monster@ sends weapons flying into battle!",
           false, false, cast_frame::DIRECT_EFFECT, sensory_mode::PLAIN,
@@ -2922,7 +2922,7 @@ TEST_CASE("third Phase 2 batch has exact Chinese catalog goldens",
           true, true, cast_frame::GESTURE, sensory_mode::PLAIN,
           { "兽人僵硬地向你做出手势。",
             "兽人僵硬地向你旁边做出手势。",
-            "兽人僵硬地向你身后做出手势。" } },
+            "兽人僵硬地朝你以远的地方做出手势。" } },
         { "mennas cast", 0,
           "VISUAL:@The_monster@ gestures frantically.",
           false, true, cast_frame::GESTURE, sensory_mode::VISUAL,
@@ -3268,7 +3268,7 @@ TEST_CASE("Wiglaf mortar variants keep relation and foe bindings independent",
         target_relation::PAST,
     };
     const char *relation_en[] = { "at", "next to", "past" };
-    const char *relation_zh[] = { "", "旁边", "身后" };
+    const char *relation_zh[] = { "向你", "向你旁边", "从你旁边掠过" };
 
     auto bindings = [](target_relation relation, const string &relation_text,
                        bool with_foe)
@@ -3387,7 +3387,7 @@ TEST_CASE("Wiglaf mortar variants keep relation and foe bindings independent",
                     render_materialized_candidate(materialized, "zh");
                 REQUIRE(zh.result == message_result::RENDERED);
                 CHECK(zh.lines[0].text.find(
-                          "向你" + string(relation_zh[relation]))
+                          relation_zh[relation])
                       != string::npos);
             }
         }

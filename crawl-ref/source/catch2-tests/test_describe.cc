@@ -20,7 +20,10 @@
 #include "stringutil.h"
 #include "unwind.h"
 
+#include "item-prop.h"
+#include "status.h"
 #include "test_zh_fixture.h"
+#include <sstream>
 
 namespace
 {
@@ -264,6 +267,57 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                     REQUIRE(found);
                 }
             }
+        }
+    }
+}
+
+TEST_CASE("Blind hit chance qualifiers name the actual distance",
+          "[zh-translation][r20][hit-chance-distance]")
+{
+    init_properties();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 20;
+    item_def bow;
+    bow.base_type = OBJ_WEAPONS;
+    bow.sub_type = WPN_LONGBOW;
+    bow.quantity = 1;
+    bow.flags = ISFLAG_IDENTIFIED;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (bool armed : {false, true})
+        for (bool blind : {false, true})
+        for (int distance : {1, 3})
+        {
+            you.duration[DUR_BLIND] = blind ? 10 : 0;
+            const string name = armed
+                ? bow.name(DESC_YOUR, false, false, false)
+                : you.hand_name(true);
+            ostringstream actual;
+            describe_hit_chance(65, actual, armed ? &bow : nullptr,
+                                true, distance);
+            string expected;
+            if (language == lang_t::ZH)
+            {
+                expected = armed ? name + "的命中率约为65%"
+                    : "你用" + name + "攻击的命中率约为65%";
+                if (blind)
+                    expected += "（你失明时，在距离为"
+                        + to_string(distance) + "的情况下）";
+            }
+            else
+            {
+                expected = "about 65% to hit with "
+                    + (armed ? name : "your " + name);
+                if (blind)
+                    expected += " (while you are blinded and from distance "
+                        + to_string(distance) + ")";
+            }
+            CAPTURE(language, armed, blind, distance);
+            CHECK(actual.str() == expected);
         }
     }
 }

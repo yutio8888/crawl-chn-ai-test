@@ -24488,7 +24488,7 @@ average
 平均
 %%%%
 Your damage rating with %s is about %s.
-%s的伤害评级约为%s
+%s的伤害评级约为%s。
 %%%%
 You fade completely from view now that you are no longer glowing from magical contamination.
 你完全从视野中消失了，因为你不再因魔法污染而发光。
@@ -49797,7 +49797,7 @@ monspell raw direction|next to %s
 朝%s旁边
 %%%%
 monspell raw direction|past %s
-朝%s身后
+朝%s以远的方向
 %%%%
 monspell raw projectile target|at %s
 直奔%s而去
@@ -51376,7 +51376,7 @@ The dream sheep are wreathed in dream dust.
 梦羊被梦境尘埃笼罩。
 %%%%
 The dream sheep attempt%1$s to lull %2$s to sleep.
-梦羊尝试催眠%2$s。
+梦之羊尝试催眠%2$s。
 %%%%
 rises up
 升腾而起

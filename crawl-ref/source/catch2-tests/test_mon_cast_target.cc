@@ -1441,9 +1441,9 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                     const char *phrase = relation == speech_target_relation::AT
                         ? (cast.projectile ? "直奔" : "朝")
                         : relation == speech_target_relation::NEXT_TO
-                            ? "旁边" : (cast.projectile ? "旁边掠过" : "身后");
+                            ? "旁边" : (cast.projectile ? "旁边掠过" : "以远的方向");
                     CHECK(text.find(phrase) != string::npos);
-                    if (cast.projectile)
+                    if (cast.projectile || relation == speech_target_relation::PAST)
                         CHECK(text.find("身后") == string::npos);
                     if (cast.foe && relation == speech_target_relation::AT)
                     {
@@ -2117,8 +2117,8 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                 static const char *expected_zh[] =
                 {
                     "威格拉夫将他的武器砸向地面。",
-                    "威格拉夫向你身后喊道：“尝尝大山的血！”",
-                    "威格拉夫向你身后咆哮道：“让老子给你看看什么才叫真正的炮！”",
+                    "威格拉夫的喊声从你旁边掠过：“尝尝大山的血！”",
+                    "威格拉夫的咆哮声从你旁边掠过：“让老子给你看看什么才叫真正的炮！”",
                 };
                 CHECK(english.text == expected_en[ordinal]);
                 CHECK(chinese.text == expected_zh[ordinal]);
@@ -2269,7 +2269,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
               == "Wiglaf shouts past the rat, "
                  "\"Taste the blood o the mountain!\"");
         CHECK(chinese.text
-              == "威格拉夫向老鼠身后喊道：“尝尝大山的血！”");
+              == "威格拉夫的喊声从老鼠旁边掠过：“尝尝大山的血！”");
     }
 
     SECTION("speech player applicability preserves friendly foe fallback")

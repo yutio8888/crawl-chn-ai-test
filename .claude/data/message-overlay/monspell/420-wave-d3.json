@@ -129,7 +129,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} chitters past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}发出窸窣声。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边发出窸窣声。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}身后发出窸窣声。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}发出的窸窣声从${target}旁边掠过。" }
           ]
         }],
         "materialization_cases": [],
@@ -163,7 +163,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} stares piercingly past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}以锐利的目光凝视${target}。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}以锐利的目光望向${target}旁边。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}以锐利的目光望向${target}身后。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}锐利的目光越过${target}。" }
           ]
         }],
         "materialization_cases": [],
@@ -197,7 +197,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} smirks and gazes past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}得意地笑着，凝视${target}。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}得意地笑着，望向${target}旁边。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}得意地笑着，望向${target}身后。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}得意地笑着，目光越过${target}。" }
           ]
         }],
         "materialization_cases": [],
@@ -265,7 +265,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} gazes past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}凝视${target}。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}望向${target}旁边。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}望向${target}身后。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}的目光越过${target}。" }
           ]
         }],
         "materialization_cases": [],
@@ -299,7 +299,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} focuses its will past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}将意志聚焦于${target}。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}将意志聚焦于${target}旁边。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}将意志聚焦于${target}身后。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}将意志聚焦于${target}以远的地方。" }
           ]
         }],
         "materialization_cases": [],
@@ -333,7 +333,7 @@
             { "language": "en", "relation": "PAST", "pattern": "${actor} stares past ${target}." },
             { "language": "zh", "relation": "AT", "pattern": "${actor}凝视${target}。" },
             { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}望向${target}旁边。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}望向${target}身后。" }
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}的目光越过${target}。" }
           ]
         }],
         "materialization_cases": [],
