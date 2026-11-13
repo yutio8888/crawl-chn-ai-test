@@ -33271,7 +33271,7 @@ deep water
 溺毙了。
 %%%%
  sinks to the bottom.
-沉到了底部。
+沉入了水底。
 %%%%
  seems to find hidden reserves of power!
 似乎找到了隐藏的力量储备！
@@ -42421,7 +42421,7 @@ You're still recovering from your berserk rage.
 你还未从狂暴中恢复过来。
 %%%%
 You can't enter a blood rage from death's door.
-你处于死亡之门的效果中，无法激起狂暴的热血。
+你正处于死亡之门状态，无法陷入狂暴。
 %%%%
 You are too mesmerised to rage.
 你深受迷魂影响，无法狂暴。
