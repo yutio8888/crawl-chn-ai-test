@@ -8310,14 +8310,15 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(messages.get_store().find("的的") == string::npos);
         CHECK_FALSE(mons->has_ench(ENCH_CHANNEL_SEARING_RAY));
     }
-    SECTION("frenzy consumes a possessive pronoun")
+    SECTION("frenzy describes recovery without a redundant pronoun")
     {
         REQUIRE(mons->add_ench(mon_enchant(ENCH_SLOW, mons, 100)));
         msg::tee messages;
         REQUIRE(mons->go_frenzy(&you));
         INFO(messages.get_store());
+        CHECK(messages.get_store().find("摆脱了昏沉。") != string::npos);
         CHECK(messages.get_store().find("摆脱了" + possessive_pronoun + "昏沉。")
-              != string::npos);
+              == string::npos);
         CHECK(messages.get_store().find("的的") == string::npos);
         CHECK_FALSE(mons->has_ench(ENCH_SLOW));
     }

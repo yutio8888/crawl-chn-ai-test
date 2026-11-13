@@ -51038,7 +51038,7 @@ You were overflowing with transmutational energy.
 You are overflowing with transmutational energy.
 你充满了变形能量。
 %%%%
-held status sentence|You are %s.
+status|You are %s.
 你%s了。
 %%%%
 You had blades growing out of your body.
