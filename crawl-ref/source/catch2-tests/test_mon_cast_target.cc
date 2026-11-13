@@ -3,6 +3,14 @@
 #include "AppHdr.h"
 
 #include "beam.h"
+#include "xom.h"
+#include "status.h"
+#include "test_zh_fixture.h"
+#include "potion.h"
+#include "message.h"
+#include "god-abil.h"
+#include "attack.h"
+#include "areas.h"
 #include "coordit.h"
 #include "database.h"
 #include "dungeon.h"
@@ -1441,7 +1449,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                     const char *phrase = relation == speech_target_relation::AT
                         ? (cast.projectile ? "直奔" : "朝")
                         : relation == speech_target_relation::NEXT_TO
-                            ? "旁边" : (cast.projectile ? "旁边掠过" : "以远的方向");
+                            ? "旁边" : (cast.projectile ? "旁边掠过" : "更远的地方");
                     CHECK(text.find(phrase) != string::npos);
                     if (cast.projectile || relation == speech_target_relation::PAST)
                         CHECK(text.find("身后") == string::npos);
@@ -2724,4 +2732,73 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     }
     you.elapsed_time = old_time;
     env.invis_knowledge.clear();
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "Possessive regressions exercise production message builders",
+                 "[zh-translation][r23][production-messages]")
+{
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &mon = *world.placed_source();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool chinese = language == lang_t::ZH;
+        REQUIRE(you.can_see(mon));
+        const string possessive = mon.name(DESC_ITS);
+        const string action = chinese ? "你伪装成一只木桶" : "You disguise yourself as a barrel";
+        const string actual = xom_disguise_message(action, mon);
+        CHECK(actual == (chinese ? action + "，以避开" + possessive + "注意。"
+              : action + " to avoid " + possessive + " notice."));
+        CHECK(actual.find("的的") == string::npos);
+    }
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "Invisibility uses the production blocker builder and potion output",
+                 "[zh-translation][r23][invisibility-blockers]")
+{
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    init_duration_index();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool chinese = language == lang_t::ZH;
+        for (bool more : {false, true})
+        for (bool ambient : {false, true})
+        {
+            const string prefix = chinese ? (more ? "更加" : "") : (more ? "more " : "");
+            const string owner = chinese ? (ambient ? "" : "你的") : (ambient ? "the" : "your");
+            CHECK(invisibility_blocked_message({"halo"}, more, ambient) == (chinese
+                  ? "你变得" + prefix + "透明了，但" + owner + "光环的光芒使你无法完全隐形。"
+                  : "You become " + prefix + "transparent, but the glow from "
+                    + owner + " halo prevents you from becoming completely invisible."));
+        }
+        CHECK(invisibility_blocked_message({"halo", "corona"}, false, false)
+              == (chinese ? "你变得透明了，但你的光环、光晕的光芒使你无法完全隐形。"
+                  : "You become transparent, but the glow from your halo and corona prevents you from becoming completely invisible."));
+        // This also proves that PotionInvisibility::effect uses the builder.
+        you.duration[DUR_INVIS] = 0;
+        you.props[WU_JIAN_HEAVENLY_STORM_KEY] = 1;
+        invalidate_agrid();
+        REQUIRE(you.haloed());
+        string output;
+        {
+            rng::subgenerator effect_rng(0x23a0b1ULL, 0x23c0d1ULL);
+            msg::tee capture(output);
+            CHECK(get_potion_effect(POT_INVISIBILITY)->effect());
+        }
+        const string expected = chinese
+            ? "你变得透明了，但你的光环的光芒使你无法完全隐形。"
+            : "You become transparent, but the glow from your halo prevents you from becoming completely invisible.";
+        CHECK(output.find(expected) != string::npos);
+        if (chinese)
+            CHECK(output.find("halo") == string::npos);
+        CHECK(you.duration[DUR_INVIS] > 0);
+        you.duration[DUR_INVIS] = 0;
+        you.props.erase(WU_JIAN_HEAVENLY_STORM_KEY);
+        invalidate_agrid();
+    }
 }
