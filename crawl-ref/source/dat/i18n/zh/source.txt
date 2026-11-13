@@ -2189,7 +2189,7 @@ barrage of energy
 。一旦所有充能用尽
 %%%%
 ...and %s %s out!
-...%s%s了出来！
+……%s%s了出来！
 %%%%
 ...and sense your way blocked. You quickly turn back.
 ……但感觉到前方被堵，你迅速折返。
@@ -2783,7 +2783,7 @@ All of your followers decide to abandon you.
 你所有的追随者决定抛弃你。
 %%%%
 All waypoints deleted. Have a nice day!
-所有路径点已删除。祝您愉快！
+所有路径点已删除。祝你愉快！
 %%%%
  already offers you all the fire that remains!
 已经给你提供了所有剩余的火焰！
@@ -3696,7 +3696,7 @@ digging
 挖掘
 %%%%
 Dir - look around, f - activate
-方向键 - 环顾四周, f - 激活
+方向键 - 环顾四周，f - 激活
 %%%%
 Dir - move target
 方向键 - 移动目标
@@ -3943,7 +3943,7 @@ evoke wands and miscellaneous items
 激发魔杖和杂项物品
 %%%%
 exalted by your worship
-因你的崇拜而荣升
+因你的崇拜而倍感荣耀
 %%%%
  excess health fades away.
 多余的生命力消散了。
@@ -6003,7 +6003,7 @@ Salvo (%d)
 齐射（%d）
 %%%%
 Saved games:
-存档游戏:
+已保存的游戏：
 %%%%
 Saving game... please wait.
 保存游戏……请稍候。
@@ -7306,7 +7306,7 @@ A shaft crumbles and collapses.
 竖井碎裂坍塌了。
 %%%%
 The shaft vanishes in a puff of logic!
-竖井在一阵逻辑中消失了！
+竖井化作一缕“逻辑”消失了！
 %%%%
 the Shining One
 光辉者
@@ -7781,7 +7781,7 @@ you cannot launch yourself while unable to move.
 你无法移动时无法发射自己。
 %%%%
 you cannot see anything nearby that you can launch.
-你看不到附近任何可以发射的目标。
+你看不到附近任何可以推飞的目标。
 %%%%
 there is no room nearby to place a sigil.
 附近没有空间可以放置符文。
@@ -8354,7 +8354,7 @@ You also have %d voucher%s.
 你还有%d张优惠券%.0s。
 %%%%
 You announce your regal presence to all who look upon you.
-你向所有仰望你的人宣告了你的王者存在。
+你向所有注视你者宣示了王者威仪。
 %%%%
 you anoint %1$s with ash and charcoal and welcome %1$s as a companion.
 你将灰烬和木炭涂在%1$s身上，欢迎%1$s成为同伴。
@@ -8540,7 +8540,7 @@ You are too confused!
 你太混乱了！
 %%%%
 You are too depleted to draw on your %s recklessly!
-你过于虚弱，无法鲁莽地消耗%s！
+你的%s不足，不能再肆意消耗了！
 %%%%
 You are too exhausted to lash out.
 你已力竭，无法发动蛇之鞭笞。
@@ -10394,7 +10394,7 @@ You really shouldn't be using a chaotic item like this.
 你真的不应该使用这样的混乱物品。
 %%%%
 You really shouldn't be using a hasty item like this.
-你真的不应该使用这样的急躁物品。
+你真的不应该使用这样助长躁进的物品。
 %%%%
 You really shouldn't be using a holy item like this.
 你真的不应该使用这样的神圣物品。
@@ -10421,7 +10421,7 @@ You reel with horror at the sight of these foes!
 看到这些敌人，你恐惧得晕头转向！
 %%%%
 You reflect %s with the mirror!
-你用镜子反射了%s！
+你用镜子映出了%s的镜像！
 %%%%
 You rejoin the land of the living...
 你重新回到了生者的国度……
@@ -11002,7 +11002,7 @@ Your evil deeds will not go unpunished
 你的恶行不会不受惩罚
 %%%%
 Your existing bee falls apart.
-你的现有蜜蜂散架了。
+你原先的那只蜜蜂散架了。
 %%%%
 Your facial features are unmistakably orcish.
 你的面部特征明显像兽人。
@@ -11122,7 +11122,7 @@ Your memory of %s unravels.
 你对%s的记忆消散了。
 %%%%
 Your memory of the abyssal rune fades away.
-你对深渊符文记忆消退了。
+你对深渊符文的记忆消退了。
 %%%%
 Your messages:
 你的消息：
@@ -12446,7 +12446,7 @@ What level of %s?
 %s的哪一层？ 
 %%%%
 Sorry, you're not good enough to have a special ability.
-抱歉，你的能力还不足以拥有特殊能力。
+抱歉，你还不够格拥有特殊能力。
 %%%%
 Lua error: %s
 Lua错误：%s
@@ -21353,7 +21353,7 @@ You feel energetic enough to blinkbolt again.
 你感觉有足够的能量再次闪击了。
 %%%%
 You feel less confused.
-你感到不那么困惑了。
+你感到不那么混乱了。
 %%%%
 You feel less drowsy.
 你感到不那么困倦了。
@@ -21434,7 +21434,7 @@ Your magic seems less tainted.
 你的魔法似乎不那么污浊了。
 %%%%
 Your noxious spew wanes.
-你喷吐有毒污泥的势头减弱了。
+你喷射有毒污泥的势头减弱了。
 %%%%
 Your orb has recharged its mesmeric power.
 你的宝珠重新充能了迷魂之力。
@@ -21971,7 +21971,7 @@ You feel a little less agile now.
 你感到不那么敏捷了。
 %%%%
 You feel less devious.
-你感到不那么狡黠了。
+你感到不那么狡诈了。
 %%%%
 You feel less protected from cold.
 你感到防寒效果减弱了。
@@ -24558,13 +24558,13 @@ Qazlal is protecting you from physical damage.
 卡兹拉尔正在保护你免受物理伤害。
 %%%%
 Rugged brown scales cover your body completely.
-粗糙的棕色的鳞片完全覆盖了你的身体。
+粗糙的棕色鳞片完全覆盖了你的身体。
 %%%%
 Rugged brown scales grow over part of your body.
-粗糙的棕色的鳞片覆盖了你身体的一部分。
+粗糙的棕色鳞片覆盖了你身体的一部分。
 %%%%
 Rugged brown scales spread over more of your body.
-粗糙的棕色的鳞片蔓延到你身体的更多部位。
+粗糙的棕色鳞片蔓延到你身体的更多部位。
 %%%%
 Sharp scales cover your body completely.
 锐利的鳞片完全覆盖了你的身体。
@@ -25128,7 +25128,7 @@ You feel an ache in your throat.
 你感到喉咙疼痛。
 %%%%
 You feel both weightless and legless.
-你感到既失重又失腿。
+你感到身轻如无物，双腿也仿佛不见了。
 %%%%
 You feel cold-blooded.
 你变得冷血了。
@@ -25491,7 +25491,7 @@ You grow two extra arms.
 你长出了两只额外的手臂。
 %%%%
 You have covered nearby walls with an icy ambush.
-你已用冰霜伏击覆盖了附近的墙壁。
+你已在附近墙壁上布下冰霜伏击。
 %%%%
 You have got your breath back.
 你恢复了呼吸。
@@ -25584,7 +25584,7 @@ You renounce the frivolity of worldly writings.
 你放弃了世俗文字之轻浮。
 %%%%
 You renounce the hedonism of uninhibited drinking.
-你放弃了不加节制饮酒的享乐主义。
+你摒弃了肆意畅饮的享乐主义。
 %%%%
 You shed all your fur.
 你褪去了所有毛发。
@@ -25773,7 +25773,7 @@ Your control of surrounding life forces weakens.
 你对周围生命力的控制减弱了。
 %%%%
 Your corrupting presence intensifies.
-你的腐化存在变得更加强烈。
+你的腐败存在变得更加强烈。
 %%%%
 Your demonic guardian is gone.
 你的恶魔守护者消失了。
@@ -26238,7 +26238,7 @@ Your yellow scales recede somewhat.
 你黄色的鳞片有所消退。
 %%%%
 It affects your AC (%d).
-影响你的AC（%d）。
+影响你的护甲（%d）。
 %%%%
 It affects your evasion (%d).
 影响你的闪避（%d）。
@@ -27265,7 +27265,7 @@ closed translucent
 %%%%
 runed 
 
-刻有符文的 
+刻有符文的
 %%%%
 sealed 
 
@@ -27874,7 +27874,7 @@ Really %s?%s
 确定要%s吗？%s
 %%%%
  You can't even see any enemies this would affect.
- 你甚至看不到会被此影响的敌人。
+你甚至看不到会被此影响的敌人。
 %%%%
 Really read with monsters nearby while wearing %s?
 附近有怪物，确定要在穿戴%s时阅读吗？
@@ -34839,7 +34839,7 @@ morgue item inscription|unknown
 %s%s扇门猛然打开%s
 %%%%
 %s emits a blaring wail!
-%s发出了刺耳的哀嚎！
+%s发出了刺耳的尖啸！
 %%%%
 %s heals %s%s
 %s治愈了%s%s
@@ -38698,7 +38698,7 @@ status|silenced
 沉默
 %%%%
 status|slimy
-粘滑
+黏滑
 %%%%
 status|slimy shroud
 黏液护罩
@@ -40477,7 +40477,7 @@ efficient metabolism
  不喜魔法，这根法杖对你没什么用，你不如现在就<w>%</w>掉它。
 %%%%
  In Tiles, you can achieve the same, in either direction, by clicking the <w>left mouse button</w>.
- 在图形界面下，你可以通过点击<w>鼠标左键</w>来实现任意方向上的相同操作。
+ 在图形界面下，无论上楼还是下楼，都可以通过点击<w>鼠标左键</w>完成。
 %%%%
  In Tiles, you can perform either action simply by clicking the <w>left mouse button</w> instead.
  在图形界面下，你也可以通过简单点击<w>鼠标左键</w>来执行任一操作。
@@ -40510,7 +40510,7 @@ All level %d spells are either disliked by %s or cannot be cast by you.
 所有%d级法术要么不被%s喜欢，要么你无法施放。
 %%%%
 Shopping list: replace %dgp %s with cheaper one? (Y/n)
-购物清单：用更便宜的替换%d金币的%s？(Y/n)
+购物清单：用更便宜的替换%d金币的%s？（Y/n）
 %%%%
 Travel to: %s\nYou cannot afford this item; travel there anyway? (y/N)
 前往：%s\n你买不起这件物品；仍然前往吗？(y/N)
@@ -40723,7 +40723,7 @@ This screen shows the skill set of your character. The number next to the skill 
 此界面显示你的角色技能集。技能旁边的数字是你的当前等级，等级越高越好。
 %%%%
 The training percentage (in <brown>brown</brown>) shows the relative amount of the experience gained which will be used to train each skill. It is automatically set depending on which skills you have used recently. Disabling a skill sets the training rate to 0.
-训练百分比（以<brown>棕色</brown>显示）表示获得的经验值中将用于训练该技能的相对比例。
+训练百分比（以<brown>棕色</brown>显示）表示获得的经验值中将用于训练各项技能的相对比例。它会根据你最近使用的技能自动设置。停用某项技能的训练会将其训练比例设为 0。
 %%%%
 The training cost (in <cyan>cyan</cyan>) shows the experience cost to raise the given skill one level, relative to the cost of raising an aptitude zero skill from level zero to level one.
 训练成本（以<cyan>青色</cyan>显示）表示将指定技能提升一级所需的相对经验值，以资质为零的技能从零级升到一级所需的经验值为基准。
@@ -50251,3 +50251,70 @@ You can exhale clouds of rust.
 %%%%
 monster blink action| blinks!
 闪烁了一下！
+%%%%
+quiver resource|magic
+法力
+%%%%
+equipment meld| and 
+和
+%%%%
+floor item list|; 
+；
+%%%%
+staff appearance|thin 
+细的
+%%%%
+staff appearance|thick 
+粗的
+%%%%
+This save is from an older version.\n\nDungeon Crawl Stone Soup %s is not compatible with save files this old. You can:\n • continue your game with an older version of Dungeon Crawl Stone Soup\n • delete it and start a new game\n\nThis save's version: (%d.%d) (must be >= %d.%d)
+此存档来自较旧版本。\n\n地牢爬行石汤 %s无法兼容如此旧的存档。你可以：\n • 使用较旧版本的地牢爬行石汤继续游戏\n • 删除存档并开始新游戏\n\n此存档版本：（%d.%d）（必须 >= %d.%d）
+%%%%
+This save is from a newer version.\n\nDungeon Crawl Stone Soup cannot load saves from newer versions. You can:\n • continue your game with a newer version of Dungeon Crawl Stone Soup\n • delete it and start a new game\n\nThis save's version: (%d.%d) (must be <= %d.%d)
+此存档来自较新版本。\n\n地牢爬行石汤无法载入较新版本的存档。你可以：\n • 使用较新版本的地牢爬行石汤继续游戏\n • 删除存档并开始新游戏\n\n此存档版本：（%d.%d）（必须 <= %d.%d）
+%%%%
+Failed to unlink bones file: %s
+无法删除鬼魂文件：%s
+%%%%
+equipment interruption|unwielding
+收起
+%%%%
+equipment interruption|removing
+摘下
+%%%%
+view menu action|target/travel
+选定目标/自动行走
+%%%%
+Matches: <w>%s%s</w>
+匹配：<w>%s%s</w>
+%%%%
+The %s is harmless. 
+此%s无害。
+%%%%
+The %s is probably dangerous, and you should stay out of it if you can. 
+此%s可能很危险，你应尽可能避开它。
+%%%%
+The %s is currently harmless, but that could change at some point. Check the overview screen (<w>%%</w>) to view your resistances.
+此%s目前无害，但这一点随时可能改变。请查看总览界面（<w>%%</w>）以了解你的抗性。
+%%%%
+Magic Parchment
+魔法羊皮纸
+%%%%
+Mandibles
+颚
+%%%%
+Misty tendrils
+雾触须
+%%%%
+Paws
+兽爪
+%%%%
+Pseudopod
+伪足
+%%%%
+Teeth
+牙齿
+%%%%
+ability cost separator|, 
+，
+%%%%

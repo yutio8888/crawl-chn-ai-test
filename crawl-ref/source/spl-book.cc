@@ -534,6 +534,26 @@ vector<spell_type> get_sorted_spell_list(bool silent, bool memorise_only)
     return result;
 }
 
+// Match the search heading's visible width without splitting a UTF-8 codepoint.
+string spell_search_description(const string& search_text, int max_size)
+{
+    if (Options.language != lang_t::ZH)
+    {
+        const bool overflow = static_cast<int>(search_text.size()) > max_size;
+        return make_stringf(T_("Matches: <w>%.*s%s</w>"),
+                            overflow ? max_size - 2 : max_size,
+                            replace_all(search_text, "<", "<<").c_str(),
+                            overflow ? ".." : "");
+    }
+
+    const bool overflow = strwidth(search_text) > max_size;
+    const string visible = chop_string(search_text,
+                                       overflow ? max_size - 2 : max_size, false);
+    return make_stringf(T_("Matches: <w>%s%s</w>"),
+                        replace_all(visible, "<", "<<").c_str(),
+                        overflow ? ".." : "");
+}
+
 class SpellLibraryMenu : public Menu
 {
 public:
@@ -615,12 +635,7 @@ private:
             int max_size = you.divine_exegesis ? 22 : 47;
             if (!you.divine_exegesis && hidden_count)
                 max_size -= 19;
-            const bool search_overflow =
-                            static_cast<int>(search_text.size()) > max_size;
-            desc << make_stringf(T_("Matches: <w>%.*s%s</w>"),
-                            search_overflow ? max_size - 2 : max_size,
-                            replace_all(search_text, "<", "<<").c_str(),
-                            search_overflow ? ".." : "");
+            desc << spell_search_description(search_text, max_size);
         }
 
         desc << "\n";
@@ -1142,7 +1157,7 @@ bool learn_spell(spell_type specspell, bool wizard, bool interactive)
             mprf(MSGCH_WARN,
                  T_("This spell is %s to cast%s"),
                  T_(fail_severity_adjs[severity]),
-                 severity > 1 ? "!" : ".");
+                 severity > 1 ? T_("!") : T_("."));
         }
     }
 

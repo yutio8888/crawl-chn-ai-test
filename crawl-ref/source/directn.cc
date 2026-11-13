@@ -895,7 +895,7 @@ void full_describe_view()
     }
 
     coord_def target = _full_describe_menu(list_mons, list_items,
-                                           list_features, "target/travel",
+                                           list_features, C_("view menu action", "target/travel"),
                                            false, true);
 
     // need to do this after the menu has been closed on console,

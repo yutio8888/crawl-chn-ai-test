@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`dcbfb16ac457e9506a5e634d171211d460652f42e2ba651ad950d15e719753ae`
-- 清单 SHA-256：`bb3d2bfe3635651beafa737b7c28e1ab30f5528384bd83d295d8250bbc0ea327`
+- 清单 SHA-256：`e2b6d79b770e1e46e5e46e872263d6fbb296918747a46b6ccdd5ac7ba9e71321`
 - 身份总数：795（现行 671；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -60,7 +60,7 @@
 | `monster:MONS_GRIFFON` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_BULLFROG` | current; exposure=ordinary; name=bullfrog→牛蛙; genus=MONS_FROG; species=MONS_BULLFROG; data=crawl-ref/source/dat/mons/bullfrog.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_CANE_TOAD` | current; exposure=ordinary; name=cane toad→海蟾蜍; genus=MONS_FROG; species=MONS_CANE_TOAD; data=crawl-ref/source/dat/mons/cane-toad.yaml; desc=EN/ZH | keep |
-| `monster:MONS_BLINK_FROG` | current; exposure=ordinary; name=blink frog→闪烁蛙; genus=MONS_FROG; species=MONS_BLINK_FROG; data=crawl-ref/source/dat/mons/blink-frog.yaml; desc=EN/ZH | keep |
+| `monster:MONS_BLINK_FROG` | current; exposure=ordinary; name=blink frog→闪烁蛙; genus=MONS_FROG; species=MONS_BLINK_FROG; data=crawl-ref/source/dat/mons/blink-frog.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_GRIZZLY_BEAR` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_POLAR_BEAR` | current; exposure=ordinary; name=polar bear→北极熊; genus=MONS_BEAR; species=MONS_POLAR_BEAR; data=crawl-ref/source/dat/mons/polar-bear.yaml; desc=EN/ZH | keep |
 | `monster:MONS_BLACK_BEAR` | current; exposure=ordinary; name=black bear→黑熊; genus=MONS_BEAR; species=MONS_BLACK_BEAR; data=crawl-ref/source/dat/mons/black-bear.yaml; desc=EN/ZH | keep |
@@ -342,7 +342,7 @@
 | `monster:MONS_ICE_DEVIL` | current; exposure=ordinary; name=ice devil→冰魔; genus=MONS_ICE_DEVIL; species=MONS_ICE_DEVIL; data=crawl-ref/source/dat/mons/ice-devil.yaml; desc=EN/ZH | keep |
 | `monster:MONS_BLUE_DEVIL` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_SIN_BEAST` | current; exposure=ordinary; name=sin beast→罪孽兽; genus=MONS_SIN_BEAST; species=MONS_SIN_BEAST; data=crawl-ref/source/dat/mons/sin-beast.yaml; desc=EN/ZH | retranslate: description corrected |
-| `monster:MONS_RUST_DEVIL` | current; exposure=ordinary; name=rust devil→锈蚀魔鬼; genus=MONS_RUST_DEVIL; species=MONS_RUST_DEVIL; data=crawl-ref/source/dat/mons/rust-devil.yaml; desc=EN/ZH | keep |
+| `monster:MONS_RUST_DEVIL` | current; exposure=ordinary; name=rust devil→锈蚀魔鬼; genus=MONS_RUST_DEVIL; species=MONS_RUST_DEVIL; data=crawl-ref/source/dat/mons/rust-devil.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_EXECUTIONER` | current; exposure=ordinary; name=Executioner→处刑人; genus=MONS_EXECUTIONER; species=MONS_EXECUTIONER; data=crawl-ref/source/dat/mons/executioner.yaml; desc=EN/ZH | keep |
 | `monster:MONS_GREEN_DEATH` | current; exposure=ordinary; name=green death→绿色死神; genus=MONS_GREEN_DEATH; species=MONS_GREEN_DEATH; data=crawl-ref/source/dat/mons/green-death.yaml; desc=EN/ZH | keep |
 | `monster:MONS_BLIZZARD_DEMON` | current; exposure=ordinary; name=blizzard demon→暴雪恶魔; genus=MONS_BLIZZARD_DEMON; species=MONS_BLIZZARD_DEMON; data=crawl-ref/source/dat/mons/blizzard-demon.yaml; desc=EN/ZH | retranslate: description corrected |

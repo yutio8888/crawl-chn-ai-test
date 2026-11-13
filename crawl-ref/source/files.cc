@@ -3075,7 +3075,7 @@ static vector<ghost_demon> _load_ephemeral_ghosts()
 
     if (unlink(ghost_filename.c_str()) != 0)
     {
-        mprf(MSGCH_ERROR, "Failed to unlink bones file: %s",
+        mprf(MSGCH_ERROR, T_("Failed to unlink bones file: %s"),
                 ghost_filename.c_str());
     }
     return results;

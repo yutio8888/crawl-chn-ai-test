@@ -156,3 +156,5 @@ void stop_channelling_spells(bool quiet = false);
 void handle_channelled_spell();
 
 bool warn_about_contam_cost(int max_contam);
+
+string spell_list_title(const string& action);
