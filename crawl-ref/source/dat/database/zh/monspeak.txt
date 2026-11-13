@@ -10176,7 +10176,7 @@ Boreas
 
 @The_monster@ 说：“北风长存。”
 
-@The_monster@ 说：“无论君王还是平民，都要到我这里来躲避风雪！”
+@The_monster@ 说：“无论君王还是平民，都得找地方躲避我！”
 
 w:30
 @The_monster@ 说：{{
@@ -10220,7 +10220,7 @@ Boreas killed
 
 @The_monster@ 用@possessive@最后的气息嘶声说道：{{
   if you.mutation("North Wind's embodiment") > 0 then
-    return "“父亲……你为什么要选……他们？”"
+    return "“父亲……你为什么要选……他？”"
   elseif you.race() == "Gale Centaur" then
     return "“我唾弃……你的血脉……”"
   else
