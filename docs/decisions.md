@@ -4957,3 +4957,27 @@ glossary 仅补明此 trance 消息的机制作用域，仍保留一般恍惚、
 - **Source**: 维护者批准统一为变异；POT_MUTATION、notes.cc、describe.cc 与 artefact.cc 显示消费者。
 
 mutation 作为游戏机制名词统一为“变异”，包括变异药水、变异记录与抑制标题。rMut 短标签采用“抗变异”（6 列），完整名称为“变异抗性”。生物学／古生物学引文保留“突变”；动词、调试文本与查询身份不机械替换。mutagenic 及 mutagenic power 继续遵循 D-C-096 的“诱变／诱变力量”。旧存档显示快照不迁移。
+
+
+### D-C-115 — 第十一轮玩家命名与界面术语裁决
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-13
+- **Source**: 维护者明确决定“全部按建议”；第十一轮 brief 及建议积压命名处置表。
+- **Evidence**: 本轮基线、当前条目及消费者见 [冻结清单](archive/r11-terminology-2026-11-13/consumers.json)。旧抽样输入保留；清单中的内部身份是核查入口，不因同名字面量而成为翻译目标。
+
+| 决定 | 显示范围与消费者 | 保留与例外 |
+|---|---|---|
+| jewellery → 首饰 | item-name.cc、invent.cc、item-use.cc、shopping.cc、command/lookup显示；SourceDB分类、商店类别、教程、FAQ及首饰相关状态说明 | jewel/gem宝石、普通装饰物、护符的trinket/bauble不机械替换；数据库宏键及CMD身份保持英文 |
+| 普通magic → 魔法；MP资源 → 法力 | beam.cc魔法伤害、mon-info.cc施法能耗描述仍为魔法；item-name.cc的POT_MAGIC词根用potion full name语境；quiver.cc资源参数、melee-attack.cc汲取资源用各自语境 | colour.cc颜色身份和l-crawl.cc Lua返回值不翻译；不全库把magic换成法力；英文输出不变 |
+| character dump → 角色报告 | chardump.cc、command.cc、end.cc、files.cc、main.cc显示、FAQ和hints的生成、浏览、结果及载入文件提示 | dump文件名、morgue路径、CMD_CHARACTER_DUMP和协议不改；普通角色信息界面不借此重命名 |
+| Heavenly Storm → 天堂风暴 | ability.cc、duration-data.h、status.cc及能力、状态、云说明；结束/重复施放消息同名 | 保留状态计数的现有格式；布局宽度仍需玩家验证；不改无关heavenly叙述 |
+| Fugue → 赋格 | duration-data.h、status.cc与结束消息；法术Fugue of the Fallen保持亡灵赋格 | damned与fallen灵魂限定词保留差别；book of decay的nine-day fugue是普通神游，保留，因此reject只约束状态灯及专用结束键 |
+| 引文格式保留现状 | quotes.txt及引文面板 | 只修可确认语义；不开展全库引号、署名或缩进改写 |
+| deep troll → 深地巨魔 | 三个MONS_DEEP_TROLL系列的完整名称、earth mage/shaman描述，经mon-util.cc/describe.cc读取 | 普通troll仍为巨魔，Abyss仍为深渊；英文怪物身份及查找键不改 |
+| Horror → 惊骇；Fear → 恐惧 | DUR_HORROR状态灯、强度短名、status说明、player-reacts.cc开始/升级消息 | _end_horror只清状态，没有结束台词；不凭空新增消息；怪物专名、引文及普通horror叙述不机械改名 |
+
+**AC 界面用法澄清（复审建议）**：HUD与神器属性中的AC沿用“护甲”，变异列表及长说明沿用“防御”；指向同一数值。只登记作用域，不作全库替换。
+
+**Reject 边界**：仅对能由现有工具安全识别的英文词组或语境键登记旧译；不把普通magic的“魔法”、Fear的“恐惧”、Abyss的“深渊”设为全库弃用词。配对英文正文和SourceDB键是判定证据，不能凭中文子串替换内部身份。
