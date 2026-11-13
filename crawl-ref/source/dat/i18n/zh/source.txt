@@ -1550,7 +1550,7 @@ The potion decomposes into %s within you.
 %s被驱散了%s
 %%%%
 %s is drained!
-%s的生命力被汲取了！
+%s陷入衰竭！
 %%%%
 %s is engulfed in flames!
 %s被火焰吞没了！
