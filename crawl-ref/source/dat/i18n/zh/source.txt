@@ -46177,7 +46177,7 @@ panlord body adjective|slithering
 蜿蜒
 %%%%
 <magenta>[]</magenta>: Transient mutations.\n
-<magenta>[]</magenta>： 临时变异。\n
+<magenta>[]</magenta>：临时变异。\n
 %%%%
 You kneel at the altar of %s.
 你跪在%s的祭坛前。
