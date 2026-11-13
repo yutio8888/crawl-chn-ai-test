@@ -428,7 +428,7 @@ string Form::get_uc_attack_name(string default_name) const
     const string brand_suffix = _brand_suffix(get_uc_brand());
     if (uc_attack.empty())
         return default_name + brand_suffix;
-    return uc_attack + brand_suffix;
+    return string(T_(uc_attack.c_str())) + brand_suffix;
 }
 
 /**

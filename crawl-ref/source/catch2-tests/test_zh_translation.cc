@@ -8547,3 +8547,46 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                                                : form->get_fakemuts()[1].second) != string::npos);
     }
 }
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "indirect death prefixes localize without changing score identities",
+                 "[zh-translation][hiscores][r5-indirect-death]")
+{
+    init_monsters();
+    for (const char *cause : {"torment", "divine providence", "future effect"})
+    {
+        const string raw = "name=prefix-test:race=Human:cls=Fighter:xl=1:"
+            "ktyp=beam:killer=an orc priest:kaux=by " + string(cause)
+            + ":br=D:lvl=1:absdepth=1\n";
+        scorefile_entry entry;
+        REQUIRE(entry.parse(raw));
+        for (lang_t language : {lang_t::EN, lang_t::ZH})
+        {
+            TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+            const string text = entry.death_description(scorefile_entry::DDV_VERBOSE);
+            CAPTURE(language, cause, text);
+            CHECK(entry.raw_string() == raw);
+            CHECK(entry.get_fields().str_field("kaux") == "by " + string(cause));
+            if (language == lang_t::EN)
+                CHECK(text.find("Killed by " + string(cause)) != string::npos);
+            else
+            {
+                CHECK(text.find("by ") == string::npos);
+                CHECK(text.find(string(T_(cause))) != string::npos);
+            }
+        }
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "crab unarmed display resolves its English form identity",
+                 "[zh-translation][r5-form-display]")
+{
+    const Form *crab = get_form(transformation::fortress_crab);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        CHECK(crab->get_uc_attack_name("Unarmed")
+              == (language == lang_t::ZH ? "螯钳" : "pincers"));
+    }
+}

@@ -306,7 +306,8 @@ TEST_CASE("issue 10 blink escapes use contextual movement at the real sink",
         REQUIRE(mon->blink_to(coord_def(20, 23), false, get<1>(row)));
     });
     const string announcement_expected = language == lang_t::ZH
-        ? mon->name(DESC_THE) + movement + "！"
+        ? mon->name(DESC_THE)
+          + (get<1>(row) ? movement + "！" : "闪烁了一下！")
         : mon->name(DESC_THE) + " " + movement + "!";
     CHECK(announcement.find(announcement_expected) != string::npos);
     if (language == lang_t::ZH)
