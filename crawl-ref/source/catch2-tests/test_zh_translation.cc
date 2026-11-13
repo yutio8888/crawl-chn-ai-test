@@ -8620,8 +8620,8 @@ TEST_CASE("Ignite Poison restores English possessives and Chinese self reference
             const string expected = language == lang_t::ZH
                 ? (player_cast ? "你引燃了自己周围的毒素！"
                                : "兽人引燃了自己周围的毒素！")
-                : (player_cast ? "You ignite the poison around your!"
-                               : "The orc ignites the poison around its!");
+                : (player_cast ? "you ignite the poison around your!"
+                               : "the orc ignites the poison around its!");
             CAPTURE(language, player_cast, expected);
             CHECK(strip_tee_colour_tag(observed.get_store()) == expected + "\n");
             CHECK(Options.language == language);
