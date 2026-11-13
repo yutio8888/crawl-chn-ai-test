@@ -29941,10 +29941,10 @@ You can't see anything. Try to condense clouds anyway?
 你什么也看不见。仍然尝试凝结云雾吗？
 %%%%
 You are standing in a cloud of %s! Ignite poison anyway?
-你正站在%s之中！仍然引燃毒素吗？
+你正站在%s之中！仍然点燃毒素吗？
 %%%%
 You might harm nearby allies! Ignite poison anyway?
-可能会伤害附近的友方！仍然引燃毒素吗？
+可能会伤害附近的友方！仍然点燃毒素吗？
 %%%%
 You can't see anything there. Cast anyway?
 那里什么也看不见。仍然施法吗？
@@ -54664,3 +54664,6 @@ klown pie flavour|glitter
 klown pie flavour|%s!
 %s！
 %%%%
+%%%%
+follower healing|is 
+感到
