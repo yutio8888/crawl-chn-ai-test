@@ -6,6 +6,8 @@
 #include "env.h"
 #include "hints.h"
 #include "delay.h"
+#include "transform.h"
+#include "item-prop.h"
 #include "format.h"
 #include "i18n.h"
 #include "item-def.h"
@@ -196,6 +198,57 @@ TEST_CASE("legacy cloud hints localize the full copula frame",
                                         : "currently harmless, but that could change")
                       != string::npos);
             }
+        }
+    }
+}
+
+TEST_CASE("Equipment completion uses whole clauses for each equipment action",
+          "[zh-translation][r22][equipment-completion]")
+{
+    init_mut_index();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    const char * const on_en[] = {"wielding", "attuning to", "putting on",
+                                 "putting on", "haunting", "fusing with"};
+    const char * const off_en[] = {"unwielding", "parting from", "removing",
+                                  "removing", "removing yourself from", "unfusing"};
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (int kind = 0; kind < 6; ++kind)
+        {
+            you = player();
+            you.species = SP_HUMAN;
+            if (kind == 1)
+                you.mutation[MUT_SLOW_WIELD] = 1;
+            if (kind == 4)
+                you.mutation[MUT_FORMLESS] = 1;
+            if (kind == 5)
+                you.form = transformation::fortress_crab;
+            item_def item;
+            item.quantity = 1;
+            item.flags = ISFLAG_IDENTIFIED;
+            item.base_type = kind < 2 ? OBJ_WEAPONS
+                : kind == 3 ? OBJ_JEWELLERY : OBJ_ARMOUR;
+            item.sub_type = kind < 2 ? static_cast<int>(WPN_LONG_SWORD)
+                : kind == 3 ? static_cast<int>(AMU_REGENERATION)
+                            : static_cast<int>(ARM_ROBE);
+            const equipment_slot slot = kind < 2 ? SLOT_WEAPON
+                : kind == 3 ? SLOT_AMULET : SLOT_BODY_ARMOUR;
+            const string name = item.name(DESC_YOUR);
+            const string on_zh[] = {"你已握持" + name + "。", "你已与" + name + "完成调谐。",
+                "你已穿上" + name + "。", "你已戴上" + name + "。",
+                "你已附身于" + name + "。", "你已与" + name + "融合。"};
+            const string off_zh[] = {"你已收起" + name + "。", "你已解除与" + name + "的调谐。",
+                "你已脱下" + name + "。", "你已摘下" + name + "。",
+                "你已从" + name + "中脱离。", "你已解除与" + name + "的融合。"};
+            EquipOnDelay on(1, item, slot);
+            EquipOffDelay off(1, item);
+            CAPTURE(language, kind, name);
+            CHECK(on.completion_message() == (language == lang_t::ZH ? on_zh[kind]
+                : make_stringf("You finish %s %s.", on_en[kind], name.c_str())));
+            CHECK(off.completion_message() == (language == lang_t::ZH ? off_zh[kind]
+                : make_stringf("You finish %s %s.", off_en[kind], name.c_str())));
         }
     }
 }

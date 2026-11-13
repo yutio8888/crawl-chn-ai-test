@@ -750,10 +750,33 @@ bool EquipOnDelay::invalidated()
     return !equip.defined();
 }
 
+string EquipOnDelay::completion_message()
+{
+    if (Options.language != lang_t::ZH)
+    {
+        return make_stringf(T_("You finish %s %s."),
+                            get_verb(), equip.name(DESC_YOUR).c_str());
+    }
+    string format;
+    if (is_weapon(equip))
+    {
+        format = you.has_mutation(MUT_SLOW_WIELD)
+            ? T_("You finish attuning to %s.") : T_("You finish wielding %s.");
+    }
+    else if (you.has_mutation(MUT_FORMLESS))
+        format = T_("You finish haunting %s.");
+    else if (equip.base_type == OBJ_ARMOUR && you.form == transformation::fortress_crab)
+        format = T_("You finish fusing with %s.");
+    else if (equip.base_type == OBJ_ARMOUR)
+        format = C_("equip finish armour", "You finish putting on %s.");
+    else
+        format = C_("equip finish jewellery", "You finish putting on %s.");
+    return make_stringf(format.c_str(), equip.name(DESC_YOUR).c_str());
+}
+
 void EquipOnDelay::finish()
 {
-    mprf(T_("You finish %s %s."),
-         get_verb(), equip.name(DESC_YOUR).c_str());
+    mpr(completion_message());
 
     if (is_weapon(equip) && you.has_mutation(MUT_SLOW_WIELD))
         maybe_name_weapon(equip);
@@ -766,10 +789,33 @@ bool EquipOffDelay::invalidated()
     return !equip.defined();
 }
 
+string EquipOffDelay::completion_message()
+{
+    if (Options.language != lang_t::ZH)
+    {
+        return make_stringf(T_("You finish %s %s."),
+                            get_verb(), equip.name(DESC_YOUR).c_str());
+    }
+    string format;
+    if (is_weapon(equip))
+    {
+        format = you.has_mutation(MUT_SLOW_WIELD)
+            ? T_("You finish parting from %s.") : T_("You finish unwielding %s.");
+    }
+    else if (you.has_mutation(MUT_FORMLESS))
+        format = T_("You finish removing yourself from %s.");
+    else if (equip.base_type == OBJ_ARMOUR && you.form == transformation::fortress_crab)
+        format = T_("You finish unfusing %s.");
+    else if (equip.base_type == OBJ_ARMOUR)
+        format = C_("equip finish armour", "You finish removing %s.");
+    else
+        format = C_("equip finish jewellery", "You finish removing %s.");
+    return make_stringf(format.c_str(), equip.name(DESC_YOUR).c_str());
+}
+
 void EquipOffDelay::finish()
 {
-    mprf(T_("You finish %s %s."),
-         get_verb(), equip.name(DESC_YOUR).c_str());
+    mpr(completion_message());
     unequip_item(equip);
 
     // Banishment via coglin distortion unwield might not happen until the turn

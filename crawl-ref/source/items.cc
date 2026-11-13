@@ -3058,9 +3058,7 @@ static void _maybe_disable_autopickup_for_dropped_items(vector<SelItem> &items)
     {
         // Miscellany keeps its database name in English; message it via the
         // translated display subtype.
-        const string name = last_touched_item->base_type == OBJ_MISCELLANY
-            ? sub_type_string(*last_touched_item)
-            : last_touched_item->name(DESC_DBNAME);
+        const string name = autopickup_display_name(*last_touched_item);
         mprf(T_("Autopickup disabled for %s."),
              pluralise(name).c_str());
     }
