@@ -4532,7 +4532,7 @@ TEST_CASE("follower healing localizes singular and plural without changing Engli
     for (int i = 0; i < count; ++i)
     {
         monster *ally = world.place(MONS_ORC_APOSTLE, coord_def(21 + i, 20));
-        ally->attitude = ATT_FRIENDLY;
+        ally->base_attitude = ATT_FRIENDLY;
         ally->god = GOD_BEOGH;
         ally->flags |= MF_GOD_GIFT;
         ally->hit_points = 1;
