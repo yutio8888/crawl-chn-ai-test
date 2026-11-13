@@ -195,3 +195,5 @@ void do_catalyst_explosion(coord_def center, const item_def* wpn);
 spret cast_watery_grave();
 
 spret cast_golden_breath(bolt& beam, int power, bool fail);
+
+string fire_resistance_burned_message(const monster &mon);

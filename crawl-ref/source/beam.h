@@ -512,3 +512,5 @@ int apply_willpower_bypass(const monster_info& source, int willpower);
 int guile_will_reduction(bool max = false);
 
 string wall_shatter_message(bool player_agent, const string& wall);
+
+string mindburst_hit_message(const monster &mon, int damage);

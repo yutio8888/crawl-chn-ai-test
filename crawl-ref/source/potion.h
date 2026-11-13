@@ -6,6 +6,7 @@
 #pragma once
 
 #include "potion-type.h"
+#include <vector>
 
 class PotionEffect
 {
@@ -52,3 +53,6 @@ bool mons_benefits_from_potion(const monster& mon, potion_type potion);
 void mons_potion_effect(monster& mon, potion_type potion, const actor& source);
 
 string mutation_potion_prompt(bool resistant, bool zin_check);
+
+string invisibility_blocked_message(const std::vector<const char *> &blockers,
+                                    bool more, bool ambient);

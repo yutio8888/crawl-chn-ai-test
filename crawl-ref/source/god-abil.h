@@ -273,3 +273,6 @@ void makhleb_handle_crucible_of_flesh();
 void makhleb_crucible_kill(monster& victim);
 
 void simulate_time_passing(int turns);
+
+string hepliaklqana_rename_prompt(const string &old_name);
+string bound_soul_message(const string &possessive, bool force_hostile);

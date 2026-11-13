@@ -6374,11 +6374,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
                      mon->name(DESC_THE).c_str(),
                      attack_strength_punctuation(dam).c_str());
             } else {
-                const bool plural = mon->heads() > 1;
-                mprf(plural ? T_("%s minds are blasted%s")
-                            : T_("%s mind is blasted%s"),
-                     mon->name(DESC_ITS).c_str(),
-                     attack_strength_punctuation(dam).c_str());
+                mpr(mindburst_hit_message(*mon, dam));
             }
             obvious_effect = true;
         }
@@ -8154,4 +8150,13 @@ int guile_will_reduction(bool max)
 {
     const int skill = max ? 27 : you.skill(SK_EVOCATIONS);
     return 20 + stepdown(skill * 7 / 2, 75);
+}
+
+string mindburst_hit_message(const monster &mon, int damage)
+{
+    const string possessive = mon.name(DESC_ITS);
+    const string punctuation = attack_strength_punctuation(damage);
+    return make_stringf(mon.heads() > 1 ? T_("%s minds are blasted%s")
+                                       : T_("%s mind is blasted%s"),
+                        possessive.c_str(), punctuation.c_str());
 }

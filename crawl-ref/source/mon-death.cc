@@ -2521,7 +2521,7 @@ static void _player_on_kill_effects(monster& mons, killer_type killer,
         }
 
         if (visible_effect)
-            mprf(T_("%s's allies are healed!"), mons.name(DESC_ITS).c_str());
+            mpr(allies_healed_message(mons));
     }
 
     if (gives_player_xp && you.attribute[ATTR_TEMP_MUTATIONS]
@@ -4436,4 +4436,10 @@ bool mons_bennu_can_revive(const monster* mons)
 {
     return !mons->props.exists(BENNU_REVIVES_KEY)
            || mons->props[BENNU_REVIVES_KEY].get_byte() < 1;
+}
+
+string allies_healed_message(const monster &mon)
+{
+    const string possessive = mon.name(DESC_ITS);
+    return make_stringf(T_("%s's allies are healed!"), possessive.c_str());
 }

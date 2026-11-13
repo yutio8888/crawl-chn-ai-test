@@ -3,6 +3,16 @@
 #include "AppHdr.h"
 
 #include "beam.h"
+#include "spl-summoning.h"
+#include "spl-damage.h"
+#include "mon-death.h"
+#include "status.h"
+#include "test_zh_fixture.h"
+#include "potion.h"
+#include "message.h"
+#include "god-abil.h"
+#include "attack.h"
+#include "areas.h"
 #include "coordit.h"
 #include "database.h"
 #include "dungeon.h"
@@ -2601,5 +2611,113 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
             CHECK(line.find('@') == string::npos);
             CHECK(line.find(resolved.display) != string::npos);
         }
+    }
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "Possessive regressions exercise production message builders",
+                 "[zh-translation][r23][production-messages]")
+{
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &mon = *world.placed_source();
+    monster &target = *world.placed_candidates().front();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool chinese = language == lang_t::ZH;
+        REQUIRE(you.can_see(mon));
+        const string possessive = mon.name(DESC_ITS);
+        CHECK(hepliaklqana_rename_prompt("Anu") == (chinese
+              ? "将Anu的名字记为什么？" : "Remember Anu's name as what? "));
+        CHECK(allies_healed_message(mon) == (chinese
+              ? possessive + "盟友被治愈了！" : possessive + "'s allies are healed!"));
+        CHECK(fire_resistance_burned_message(mon) == (chinese
+              ? possessive + "火焰抗性被烧掉了。"
+              : possessive + "'s fire resistance is burned away."));
+        const string pronoun = mon.pronoun(PRONOUN_POSSESSIVE);
+        const string target_name = target.name(DESC_THE);
+        CHECK(clockwork_bee_target_message(&mon, target) == (chinese
+              ? pronoun + "发条蜜蜂锁定了" + target_name + "。"
+              : pronoun + "'s clockwork bee locks onto " + target_name + "."));
+        CHECK(clockwork_bee_target_message(nullptr, target) == (chinese
+              ? "某人的发条蜜蜂锁定了" + target_name + "。"
+              : "Someone's's clockwork bee locks onto " + target_name + "."));
+        for (bool visible : {false, true})
+        for (bool hostile : {false, true})
+        {
+            const string whose = visible ? apostrophise(mon.name(DESC_THE)) : pronoun;
+            const string ending = chinese ? (hostile ? "与你为敌" : "已归你所有")
+                                          : (hostile ? "fights you" : "is now yours");
+            CHECK(bound_soul_message(whose, hostile) == (chinese
+                  ? whose + "灵魂" + ending + "。"
+                  : "The soul of " + whose + " " + ending + "."));
+        }
+        const monster_type saved_type = mon.type;
+        const int saved_heads = mon.num_heads;
+        mon.type = MONS_HYDRA;
+        for (int heads : {1, 3})
+        for (int damage : {0, 7, 18})
+        {
+            mon.num_heads = heads;
+            const string owner = mon.name(DESC_ITS);
+            const string punctuation = chinese
+                ? (damage == 0 ? "。" : damage == 7 ? "！" : "！！")
+                : (damage == 0 ? "." : damage == 7 ? "!" : "!!");
+            CHECK(mindburst_hit_message(mon, damage) == (chinese
+                  ? owner + "精神被冲击" + punctuation
+                  : owner + (heads == 1 ? " mind is blasted" : " minds are blasted")
+                    + punctuation));
+        }
+        mon.type = saved_type;
+        mon.num_heads = saved_heads;
+    }
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "Invisibility uses the production blocker builder and potion output",
+                 "[zh-translation][r23][invisibility-blockers]")
+{
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    init_duration_index();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool chinese = language == lang_t::ZH;
+        for (bool more : {false, true})
+        for (bool ambient : {false, true})
+        {
+            const string prefix = chinese ? (more ? "更加" : "") : (more ? "more " : "");
+            const string owner = chinese ? (ambient ? "" : "你的") : (ambient ? "the" : "your");
+            CHECK(invisibility_blocked_message({"halo"}, more, ambient) == (chinese
+                  ? "你变得" + prefix + "透明了，但" + owner + "光环的光芒使你无法完全隐形。"
+                  : "You become " + prefix + "transparent, but the glow from "
+                    + owner + " halo prevents you from becoming completely invisible."));
+        }
+        CHECK(invisibility_blocked_message({"halo", "corona"}, false, false)
+              == (chinese ? "你变得透明了，但你的光环、光晕的光芒使你无法完全隐形。"
+                  : "You become transparent, but the glow from your halo and corona prevents you from becoming completely invisible."));
+        // This also proves that PotionInvisibility::effect uses the builder.
+        you.duration[DUR_INVIS] = 0;
+        you.props[WU_JIAN_HEAVENLY_STORM_KEY] = 1;
+        invalidate_agrid();
+        REQUIRE(you.haloed());
+        string output;
+        {
+            rng::subgenerator effect_rng(0x23a0b1ULL, 0x23c0d1ULL);
+            msg::tee capture(output);
+            CHECK(get_potion_effect(POT_INVISIBILITY)->effect());
+        }
+        const string expected = chinese
+            ? "你变得透明了，但你的光环的光芒使你无法完全隐形。"
+            : "You become transparent, but the glow from your halo prevents you from becoming completely invisible.";
+        CHECK(output.find(expected) != string::npos);
+        if (chinese)
+            CHECK(output.find("halo") == string::npos);
+        CHECK(you.duration[DUR_INVIS] > 0);
+        you.duration[DUR_INVIS] = 0;
+        you.props.erase(WU_JIAN_HEAVENLY_STORM_KEY);
+        invalidate_agrid();
     }
 }

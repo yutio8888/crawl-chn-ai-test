@@ -42022,7 +42022,7 @@ The walls suddenly crumble!
 墙壁突然崩塌了！
 %%%%
 A dream sheep catches fire!
-一只梦境绵羊着火了！
+一只梦之羊着火了！
 %%%%
 You hear mad divine giggling.
 你听到神祇疯狂的窃笑。
@@ -44117,7 +44117,7 @@ monspell raw direction|next to %s
 %%%%
 monspell raw direction|past %s
 
-朝%s以远的方向
+朝比%s更远的地方
 %%%%
 alchemical conduit
 
@@ -51121,4 +51121,28 @@ equip finish jewellery|You finish removing %s.
 %%%%
 %s turns attention toward your shadow.
 %s将注意力转向了你的影子。
+%%%%
+You become %1$stransparent, but the glow from %2$s %3$s prevents you from becoming completely invisible.
+你变得%1$s透明了，但%2$s%3$s的光芒使你无法完全隐形。
+%%%%
+invisibility blocker|halo
+光环
+%%%%
+invisibility blocker|magical contamination
+魔法污染
+%%%%
+invisibility blocker|corona
+光晕
+%%%%
+invisibility blocker|liquid flames
+液体火焰
+%%%%
+invisibility blocker|!!!QUAD DAMAGE!!!
+！！！四倍伤害！！！
+%%%%
+invisibility blocker|form
+形态
+%%%%
+clockwork bee owner|Someone's
+某人的
 %%%%

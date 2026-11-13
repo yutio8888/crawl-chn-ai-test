@@ -3816,9 +3816,7 @@ void clockwork_bee_pick_new_target(monster& bee)
        clockwork_bee_go_dormant(bee);
     else
     {
-        mprf(T_("%s's clockwork bee locks onto %s."),
-                agent ? agent->pronoun(PRONOUN_POSSESSIVE).c_str() : "Someone's",
-                targ->name(DESC_THE).c_str());
+        mpr(clockwork_bee_target_message(agent, *targ));
         bee.add_ench(mon_enchant(ENCH_HAUNTING, targ, INFINITE_DURATION));
         bee.props[CLOCKWORK_BEE_TARGET].get_int() = targ->mid;
     }
@@ -4812,4 +4810,13 @@ void trigger_rending_blade()
             return;
         }
     }
+}
+
+string clockwork_bee_target_message(const actor *agent, const actor &target)
+{
+    const string possessive = agent ? agent->pronoun(PRONOUN_POSSESSIVE)
+        : C_("clockwork bee owner", "Someone's");
+    const string name = target.name(DESC_THE);
+    return make_stringf(T_("%s's clockwork bee locks onto %s."),
+                        possessive.c_str(), name.c_str());
 }
