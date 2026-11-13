@@ -261,7 +261,7 @@ Corrupt ability
 %%%%
 Enter the Abyss ability
 
-立刻将你传送到卢格努的领域中。即使只是使用该能力，也会耗竭你的生命值。
+立刻将你传送到卢格努的领域中。即使只是发动该能力，也会让你的生命值大幅减少。
 %%%%
 Brand Weapon With Distortion ability
 
@@ -548,7 +548,7 @@ Recall Ancestor ability
 %%%%
 Idealise ability
 
-使你的先祖复现自己心目中完美的愿景。
+使你的先祖恢复到理想中最完美的状态。
 他们的创伤被忘却，无瑕的光芒注入他们，使其力量、施法能力和护甲短暂而急剧地增强。
 祈神技能可以提高治愈效果和理想化持续时间。
 %%%%
@@ -902,7 +902,7 @@ Steam Breath ability
 %%%%
 Unleash Destruction ability
 
-向目标生物引导一股地狱{{
+引导地狱的{{
     if you.get_base_mutation_level("Gehenna destruction") == 1 then
         return "穿透性火焰、熔岩（来自欣嫩谷的影响）、闪电或负能量"
     elseif you.get_base_mutation_level("Cocytus destruction") == 1 then
@@ -914,7 +914,7 @@ Unleash Destruction ability
     else
         return "火焰、寒冷、闪电或负能量"
     end
-}}的爆发。伤害和命中率随祈神技能提升。
+}}，轰击目标生物。伤害和命中率随祈神技能提升。
 %%%%
 Vessel of Slaughter ability
 
