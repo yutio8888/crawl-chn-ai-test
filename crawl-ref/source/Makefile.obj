@@ -350,6 +350,7 @@ catch2-tests/test_positional_format.o \
 catch2-tests/test_zh_advisory_backlog.o \
 catch2-tests/test_zh_r11_r12.o \
 catch2-tests/test_zh_r13_r14.o \
+catch2-tests/test_zh_r15.o \
 catch2-tests/test_zh_bilingual_search.o \
 catch2-tests/test_zh_fixture.o \
 catch2-tests/test_zh_helpers.o \
