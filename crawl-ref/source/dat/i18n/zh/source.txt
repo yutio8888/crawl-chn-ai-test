@@ -3731,7 +3731,7 @@ Current
 当前
 %%%%
 Current level annotation: <lightgrey>%s</lightgrey>
-当前楼层注释：<lightgrey>%s</lightgrey>
+当前楼层标注：<lightgrey>%s</lightgrey>
 %%%%
 curse armour
 诅咒护甲
@@ -5138,7 +5138,7 @@ level
 等级
 %%%%
 Level annotation: %s
-楼层注释：%s
+楼层标注：%s
 %%%%
 Level map cleared.
 楼层地图已清除。
@@ -9209,7 +9209,7 @@ You can't close doors while %s.
 你在%s时无法关门。
 %%%%
 You can't conjure that within a solid object!
-你不能在固体物体中召唤那个！
+你不能在实心物体内部造出它！
 %%%%
 You can't create a passage there!
 你不能在那里创造通道！
@@ -9698,7 +9698,7 @@ You craft a gleaming metal champion and it leaps into the fray!
 你锻造了一个闪亮的金属勇士，它跃入了战斗！
 %%%%
 You create a dimensional link between your ranged weaponry and %s.
-你创建了一个远程武器与%s之间的维度链接。
+你在自己的远程武器与%s之间建立了维度链接。
 %%%%
 You create some orbs of lightning!
 你制造了一些球形闪电！
@@ -12704,7 +12704,7 @@ Flasks of reagents rain from above!
 %%%%
 Add new annotation for %s (include '!' for warning):
 
-为%s添加新注释（包含'!'表示警告）：
+为%s添加新标注（包含'!'表示警告）：
 %%%%
 You are terrified of %s!
 
@@ -26808,7 +26808,7 @@ You are more vulnerable to fire.
 你更容易受到火焰伤害。
 %%%%
 You are more vulnerable to poison.
-你更容易中毒。
+你对毒素更加脆弱。
 %%%%
 You are no longer hated by all.
 你不再被所有人憎恨。
@@ -29419,7 +29419,7 @@ carrying
 %%%%
 Add new annotation for %s (include '!' for warning): 
 
-为%s添加新注释（包含'!'表示警告）：
+为%s添加新标注（包含'!'表示警告）：
 %%%%
 Adjust to which letter? 
 
@@ -30130,7 +30130,7 @@ You are briefly shielded after casting or invoking.
 你施法或使用祈神能力后会短暂获得护盾。
 %%%%
 You are disjoining your surroundings.
-你正在与周围环境隔离。
+你正在使周围的空间分离。
 %%%%
 You are liquefying the ground beneath you.
 你正在液化脚下的地面。
@@ -30139,7 +30139,7 @@ You are mighty.
 你力大无穷。
 %%%%
 You are parrying attacks and have increased SH.
-你正在格挡攻击，盾牌强度提高。
+你正在招架攻击，格挡值提高。
 %%%%
 You are standing in death's doorway.
 你正站在死亡之门中。
@@ -40213,7 +40213,7 @@ Describe which?
 请选择：
 %%%%
                     <white>Dungeon Overview and Level Annotations</white>\n
-                    <white>地牢总览与楼层注释</white>\n
+                    <white>地牢总览与楼层标注</white>\n
 %%%%
 \nThe Realm of Zot is guarded by %s.\n
 \n佐特领域由%s守卫。\n
@@ -40273,10 +40273,10 @@ Foreground palette:\n
 \n<green>传送门：</green>\n
 %%%%
 \n<green>Annotations:</green> (press <white>!</white> to add a new annotation)\n
-\n<green>注释：</green>（按<white>!</white>添加新注释）\n
+\n<green>标注：</green>（按<white>!</white>添加新标注）\n
 %%%%
 \n<green>Annotations:</green>\n
-\n<green>注释：</green>\n
+\n<green>标注：</green>\n
 %%%%
 Visible monsters, items and features
 可见的怪物、物品与地形
@@ -40657,7 +40657,7 @@ status|Dim
 暗淡
 %%%%
 status|Disjoin
-位移
+分离
 %%%%
 status|Dog
 犬灵
@@ -41197,7 +41197,7 @@ status|diminished spells
 法术减弱
 %%%%
 status|disjoining
-位移中
+空间分离中
 %%%%
 status|duelling
 决斗中
@@ -54830,3 +54830,18 @@ When you are badly injured, it rapidly regenerates a percentage of your health.
 %%%%
 %s mannequin
 %s人偶
+%%%%
+topbar status|Disjoin
+分离
+%%%%
+life note|Gained a life (%d life remaining)
+获得了一条命（剩余%d条命）
+%%%%
+life note|Gained a life (%d lives remaining)
+获得了一条命（剩余%d条命）
+%%%%
+life note|Lost a life (%d life remaining)
+失去了一条命（剩余%d条命）
+%%%%
+life note|Lost a life (%d lives remaining)
+失去了一条命（剩余%d条命）
