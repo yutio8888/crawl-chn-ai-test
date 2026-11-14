@@ -1105,10 +1105,14 @@ string Note::describe(bool when, bool where, bool what) const
                    << T_(" gem through the power of Zot.");
             break;
         case NOTE_GAIN_LIFE:
-            result << T_("Gained a life (") << first << (first == 1 ? T_(" life ") : T_(" lives ")) << T_("remaining)");
+            result << make_stringf(first == 1
+                ? C_("life note", "Gained a life (%d life remaining)")
+                : C_("life note", "Gained a life (%d lives remaining)"), first);
             break;
         case NOTE_LOSE_LIFE:
-            result << T_("Lost a life (") << first << (first == 1 ? T_(" life ") : T_(" lives ")) << T_("remaining)");
+            result << make_stringf(first == 1
+                ? C_("life note", "Lost a life (%d life remaining)")
+                : C_("life note", "Lost a life (%d lives remaining)"), first);
             break;
         case NOTE_FLED_CHALLENGE:
             result << T_("Fled from a divine trial");

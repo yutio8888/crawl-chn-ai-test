@@ -20,6 +20,7 @@
 #include "syscalls.h"
 #include "viewgeom.h"
 #include "clua.h"
+#include "unicode.h"
 #include "database.h"
 #include "describe.h"
 #include "directn.h"
@@ -4692,4 +4693,80 @@ TEST_CASE("Jinxbite uses the same full branded name at its real display sink",
     }
     CAPTURE(language, expected, witness);
     CHECK_FALSE(witness.empty());
+}
+
+namespace
+{
+void r30_note_roundtrip(const Note& note)
+{
+    vector<unsigned char> bytes;
+    writer output(&bytes);
+    note.save(output);
+    reader input(bytes);
+    input.setMinorVersion(TAG_MINOR_VERSION);
+    Note loaded;
+    loaded.load(input);
+    CHECK(loaded.type == note.type);
+    CHECK(loaded.first == note.first);
+    CHECK(loaded.second == note.second);
+    CHECK(loaded.name == note.name);
+    CHECK(loaded.desc == note.desc);
+    vector<unsigned char> after;
+    writer output_after(&after);
+    loaded.save(output_after);
+    CHECK(after == bytes);
+}
+}
+
+TEST_CASE("Life notes keep natural count order and preserve singular English",
+          "[zh-translation][r30][r30-life-notes]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const int remaining = GENERATE(0, 1, 2);
+    const bool gained = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    const Note note(gained ? NOTE_GAIN_LIFE : NOTE_LOSE_LIFE, remaining);
+    const string expected = language == lang_t::ZH
+        ? string(gained ? "获得了一条命（剩余" : "失去了一条命（剩余")
+            + to_string(remaining) + "条命）"
+        : string(gained ? "Gained a life (" : "Lost a life (")
+            + to_string(remaining) + (remaining == 1 ? " life remaining)" : " lives remaining)");
+    CHECK(note.describe(false, false) == expected);
+    r30_note_roundtrip(note);
+}
+
+TEST_CASE("Disjunction status keeps its actor and a four-column light",
+          "[zh-translation][r30][r30-disjunction]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+#if defined(UNIX) && !defined(__ANDROID__)
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([&] { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    init_duration_index();
+    you.duration[DUR_DISJUNCTION] = 1000;
+    status_info info;
+    REQUIRE(fill_status_info(DUR_DISJUNCTION, info));
+    CHECK(info.db_key == "Disjoin");
+    CHECK(info.short_db_key == "disjoining");
+    if (language == lang_t::ZH)
+    {
+        CHECK(info.light_text == "分离");
+        CHECK(info.short_text == "空间分离中");
+        CHECK(info.long_text == "你正在使周围的空间分离。");
+        CHECK(strwidth(info.light_text) == 4);
+        const string topbar = C_("topbar status", info.db_key.c_str());
+        CHECK(topbar == "分离");
+        CHECK(chop_string(topbar, 4, false) == "分离");
+    }
+    else
+    {
+        CHECK(info.light_text == "Disjoin");
+        CHECK(info.short_text == "disjoining");
+        CHECK(info.long_text == "You are disjoining your surroundings.");
+    }
 }
