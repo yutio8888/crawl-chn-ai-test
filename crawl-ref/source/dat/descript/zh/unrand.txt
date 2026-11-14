@@ -52,7 +52,7 @@ Vampire's Tooth
 %%%%
 scythe of Curses
 
-一把被环绕在不祥的恐惧光环下的镰刀。
+一把笼罩在不祥恐惧光环中的镰刀。
 它带有一种可怕而古老的诅咒，还不断将诅咒施加给持有者和敌人。
 %%%%
 sceptre of Torment
@@ -329,7 +329,7 @@ salamander hide armour
 gauntlets of War
 
 一双厚厚的钢手套。这是奥卡瓦鲁对伟大的将军的赏赐。
-它的主人注定要死在战斗中，但那将是一场多么惨烈的死亡啊！
+它的主人注定要死在战斗中，但会死得何其壮烈！
 %%%%
 shield of Resistance
 
@@ -388,7 +388,7 @@ shield of the Gong
 %%%%
 amulet of the Air
 
-一条天蓝色的项链，充满了保护佩戴者的魔法，并能增强其气系法术。
+一条天蓝色的项链，充满了保护佩戴者的魔法，并能增强其空气系法术。
 它的创造者只缺一样东西：一双稳健的手。
 %%%%
 ring of Shadows
@@ -549,8 +549,8 @@ Majin-Bo
 %%%%
 pair of quick blades "Gyre" and "Gimble"
 
-两个由链条连接的快刃。
-挥动一个会迫使持有者挥动另一个，仿佛它们有自己的想法一样。
+两把由链条连接的快刃。
+挥动一把会迫使持有者挥动另一把，仿佛它们有自己的想法一样。
 %%%%
 # TAG_MAJOR_VERSION == 34
 Maxwell's etheric cage
@@ -585,7 +585,7 @@ frozen axe "Frostbite"
 # TAG_MAJOR_VERSION == 34
 armour of Talos
 
-一个巨大而笨重的青铜板甲。只有拥有与之相称的巨大身躯的人能够穿戴。
+一副巨大而笨重的青铜板甲。只有拥有与之相称的巨大身躯的人能够穿戴。
 %%%%
 warlock's mirror
 

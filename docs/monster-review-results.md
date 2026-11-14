@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`dcbfb16ac457e9506a5e634d171211d460652f42e2ba651ad950d15e719753ae`
-- 清单 SHA-256：`9f6cad6de83739508eba92f9ba86d60f3b2027ac7bea43170289a713b17c750d`
+- 清单 SHA-256：`bc3b43ab8550762bde5ef11812c6a903c31e0155a58fba133d958c0d41f8c8d6`
 - 身份总数：795（现行 671；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -255,7 +255,7 @@
 | `monster:MONS_MERFOLK_JAVELINEER` | current; exposure=ordinary; name=merfolk javelineer→人鱼标枪手; genus=MONS_MERFOLK; species=MONS_MERFOLK; data=crawl-ref/source/dat/mons/merfolk-javelineer.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_CENTAUR` | current; exposure=ordinary; name=centaur→半人马; genus=MONS_CENTAUR; species=MONS_CENTAUR; data=crawl-ref/source/dat/mons/centaur.yaml; desc=EN/ZH | keep |
 | `monster:MONS_CENTAUR_WARRIOR` | current; exposure=ordinary; name=centaur warrior→半人马战士; genus=MONS_CENTAUR; species=MONS_CENTAUR; data=crawl-ref/source/dat/mons/centaur-warrior.yaml; desc=EN/ZH | keep |
-| `monster:MONS_YAKTAUR` | current; exposure=ordinary; name=yaktaur→牦牛人马; genus=MONS_YAKTAUR; species=MONS_YAKTAUR; data=crawl-ref/source/dat/mons/yaktaur.yaml; desc=EN/ZH | adjust: display name corrected |
+| `monster:MONS_YAKTAUR` | current; exposure=ordinary; name=yaktaur→牦牛人马; genus=MONS_YAKTAUR; species=MONS_YAKTAUR; data=crawl-ref/source/dat/mons/yaktaur.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_YAKTAUR_CAPTAIN` | current; exposure=ordinary; name=yaktaur captain→牦牛人马头领; genus=MONS_YAKTAUR; species=MONS_YAKTAUR; data=crawl-ref/source/dat/mons/yaktaur-captain.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_OGRE` | current; exposure=ordinary; name=ogre→食人魔; genus=MONS_OGRE; species=MONS_OGRE; data=crawl-ref/source/dat/mons/ogre.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_TWO_HEADED_OGRE` | current; exposure=ordinary; name=two-headed ogre→双头食人魔; genus=MONS_OGRE; species=MONS_TWO_HEADED_OGRE; data=crawl-ref/source/dat/mons/two-headed-ogre.yaml; desc=EN/ZH | keep |
@@ -483,7 +483,7 @@
 | `monster:MONS_DOWAN` | current; exposure=unique; name=Dowan→多万; genus=MONS_ELF; species=MONS_ELF; data=crawl-ref/source/dat/mons/dowan.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_GASTRONOK` | current; exposure=unique; name=Gastronok→加斯特罗诺克; genus=MONS_ELEPHANT_SLUG; species=MONS_ELEPHANT_SLUG; data=crawl-ref/source/dat/mons/gastronok.yaml; desc=EN/ZH | keep |
 | `monster:MONS_MAURICE` | current; exposure=unique; name=Maurice→莫里斯; genus=MONS_VINE_STALKER; species=MONS_VINE_STALKER; data=crawl-ref/source/dat/mons/maurice.yaml; desc=EN/ZH | retranslate: description corrected |
-| `monster:MONS_KHUFU` | current; exposure=unique; name=Khufu→胡夫; genus=MONS_MUMMY; species=MONS_MUMMY; data=crawl-ref/source/dat/mons/khufu.yaml; desc=EN/ZH | keep |
+| `monster:MONS_KHUFU` | current; exposure=unique; name=Khufu→胡夫; genus=MONS_MUMMY; species=MONS_MUMMY; data=crawl-ref/source/dat/mons/khufu.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_NIKOLA` | current; exposure=unique; name=Nikola→尼古拉; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/nikola.yaml; desc=EN/ZH | keep |
 | `monster:MONS_AIZUL` | current; exposure=unique; name=Aizul→艾祖尔; genus=MONS_GUARDIAN_SERPENT; species=MONS_GUARDIAN_SERPENT; data=crawl-ref/source/dat/mons/aizul.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_PIKEL` | current; exposure=unique; name=Pikel→皮克尔; genus=MONS_KOBOLD; species=MONS_KOBOLD; data=crawl-ref/source/dat/mons/pikel.yaml; desc=EN/ZH | retranslate: description corrected |
@@ -754,11 +754,11 @@
 | `monster:MONS_CLOCKWORK_BEE` | current; exposure=ordinary; name=clockwork bee→发条蜂; genus=MONS_KILLER_BEE; species=MONS_CLOCKWORK_BEE; data=crawl-ref/source/dat/mons/clockwork-bee.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_CLOCKWORK_BEE_INACTIVE` | current; exposure=ordinary; name=dormant clockwork bee→休眠发条蜂; genus=MONS_KILLER_BEE; species=MONS_CLOCKWORK_BEE_INACTIVE; data=crawl-ref/source/dat/mons/clockwork-bee-inactive.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_DIAMOND_SAWBLADE` | current; exposure=ordinary; name=diamond sawblade→钻石锯刃; genus=MONS_DIAMOND_SAWBLADE; species=MONS_DIAMOND_SAWBLADE; data=crawl-ref/source/dat/mons/diamond-sawblade.yaml; desc=EN/ZH | keep |
-| `monster:MONS_PLATINUM_PARAGON` | current; exposure=ordinary; name=platinum paragon→白金典范; genus=MONS_GOLEM; species=MONS_PLATINUM_PARAGON; data=crawl-ref/source/dat/mons/platinum-paragon.yaml; desc=EN/ZH | keep |
+| `monster:MONS_PLATINUM_PARAGON` | current; exposure=ordinary; name=platinum paragon→白金典范; genus=MONS_GOLEM; species=MONS_PLATINUM_PARAGON; data=crawl-ref/source/dat/mons/platinum-paragon.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_WALKING_ALEMBIC` | current; exposure=ordinary; name=walking alembic→行走的蒸馏器; genus=MONS_GOLEM; species=MONS_WALKING_ALEMBIC; data=crawl-ref/source/dat/mons/walking-alembic.yaml; desc=EN/ZH | keep |
 | `monster:MONS_MONARCH_BOMB` | current; exposure=ordinary; name=monarch bomb→君主炸弹; genus=MONS_MONARCH_BOMB; species=MONS_MONARCH_BOMB; data=crawl-ref/source/dat/mons/monarch-bomb.yaml; desc=EN/ZH | keep |
 | `monster:MONS_BOMBLET` | current; exposure=ordinary; name=bomblet→爆弹; genus=MONS_BOMBLET; species=MONS_BOMBLET; data=crawl-ref/source/dat/mons/bomblet.yaml; desc=EN/ZH | keep |
-| `monster:MONS_SPLINTERFROST_BARRICADE` | current; exposure=ordinary; name=splinterfrost barricade→碎冰壁垒; genus=MONS_SPLINTERFROST_BARRICADE; species=MONS_SPLINTERFROST_BARRICADE; data=crawl-ref/source/dat/mons/splinterfrost-barricade.yaml; desc=EN/ZH | keep |
+| `monster:MONS_SPLINTERFROST_BARRICADE` | current; exposure=ordinary; name=splinterfrost barricade→碎冰壁垒; genus=MONS_SPLINTERFROST_BARRICADE; species=MONS_SPLINTERFROST_BARRICADE; data=crawl-ref/source/dat/mons/splinterfrost-barricade.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_SEISMOSAURUS` | current; exposure=ordinary; name=seismosaurus→地震龙; genus=MONS_GIANT_LIZARD; species=MONS_SEISMOSAURUS; data=crawl-ref/source/dat/mons/seismosaurus.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SEISMOSAURUS_EGG` | current; exposure=ordinary; name=seismosaurus egg→地震龙蛋; genus=MONS_SEISMOSAURUS_EGG; species=MONS_SEISMOSAURUS_EGG; data=crawl-ref/source/dat/mons/seismosaurus-egg.yaml; desc=EN/ZH | keep |
 | `monster:MONS_PHALANX_BEETLE` | current; exposure=ordinary; name=phalanx beetle→方阵甲虫; genus=MONS_PHALANX_BEETLE; species=MONS_PHALANX_BEETLE; data=crawl-ref/source/dat/mons/phalanx-beetle.yaml; desc=EN/ZH | retranslate: description corrected |

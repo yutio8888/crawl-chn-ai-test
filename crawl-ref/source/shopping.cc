@@ -30,6 +30,7 @@
 #include "libutil.h"
 #include "menu.h"
 #include "message.h"
+#include "mon-util.h"
 #include "notes.h"
 #include "options.h"
 #include "output.h"
@@ -1718,6 +1719,9 @@ string shop_name(const shop_struct& shop)
         if (!sh_suffix.empty())
             sh_name += " " + sh_suffix;
     }
+
+    if (Options.language == lang_t::ZH)
+        sh_name = strip_cjk_spaces(sh_name);
 
     return sh_name;
 }

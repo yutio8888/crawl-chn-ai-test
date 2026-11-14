@@ -5,6 +5,8 @@
 #include "areas.h"
 #include "beam.h"
 #include "cloud.h"
+#include "cio.h"
+#include "macro.h"
 #include "database.h"
 #include "terrain.h"
 #include "mon-cast.h"
@@ -22,6 +24,7 @@
 #include "item-prop.h"
 #include "item-use.h"
 #include "items.h"
+#include "shopping.h"
 #include "losglobal.h"
 #include "message.h"
 #include "mon-info.h"
@@ -56,6 +59,8 @@ namespace
 // run through their actual mid/foe lookup paths.
 struct issue10_world
 {
+    // Rebind after saved_player restores its props, not to the temporary player.
+    unwinder restore_shopping{[] { shopping_list.refresh(); }};
     unwind_var<player> saved_player{you};
     unwind_var<bool> saved_test{crawl_state.test, true};
     unwind_var<bool> saved_started{crawl_state.game_started, false};
@@ -71,6 +76,7 @@ struct issue10_world
         init_monsters();
         init_spell_descs();
         you = player();
+        shopping_list.refresh();
         you.last_mid = old_last_mid;
         you.species = SP_HUMAN;
         you.hp = you.hp_max = 100;
@@ -1249,4 +1255,87 @@ TEST_CASE("Jinxbite uses the same full branded name at its real display sink",
     }
     CAPTURE(language, expected, witness);
     CHECK_FALSE(witness.empty());
+}
+
+// Local-Tiles Catch2 bootstraps the real menu geometry and UI resources.
+#ifdef USE_TILE_LOCAL
+TEST_CASE("Ashenzari destroy-item prompt translates at the real inventory boundary",
+          "[zh-translation][r29][r29-ash-prompt]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    item_def &item = you.inv[0];
+    item.base_type = OBJ_ARMOUR;
+    item.sub_type = ARM_ROBE;
+    item.quantity = 1;
+    item.link = 0;
+    item.slot = 'a';
+    item.pos = ITEM_IN_INVENTORY;
+    item.flags = ISFLAG_IDENTIFIED | ISFLAG_CURSED;
+    equip_item(SLOT_BODY_ARMOUR, 0, false, true);
+    REQUIRE(you.equipment.get_first_slot_item(SLOT_BODY_ARMOUR) == &item);
+    REQUIRE(item.cursed());
+    REQUIRE(get_macro_buf_size() == 0);
+    unwinder clear_keys([] { macro_clear_buffers(); });
+    // Toggle the inventory list back to the actual text prompt, then cancel.
+    macro_buf_add('?');
+    macro_buf_add(CK_ESCAPE);
+    const string message = observe_message([] { CHECK_FALSE(ashenzari_uncurse_item()); });
+    const string expected = language == lang_t::ZH
+        ? "解除哪件物品的诅咒并将其摧毁？ (? 菜单，Esc 退出)"
+        : "Uncurse and destroy which item? (? for menu, Esc to quit)";
+    CAPTURE(language, message);
+    CHECK(message.find(expected) != string::npos);
+    CHECK(item.cursed());
+    CHECK(item.quantity == 1);
+}
+
+#endif
+
+TEST_CASE("Shop names preserve English words and join only Chinese neighbours",
+          "[zh-translation][r29][r29-shop]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const bool god_keeper = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    struct shop_case
+    {
+        const char* type;
+        const char* suffix;
+        const char* english_tail;
+        const char* chinese_tail;
+    };
+    const shop_case cases[] = {
+        { "", "", " Assorted Antiques", "杂项古董" },
+        { "Platinum", "Reserve", " Platinum Reserve", " Platinum Reserve" },
+        { "Basic", "Armour", " Basic Armour", " Basic Armour" },
+        { "Saved type", "Saved suffix", " Saved type Saved suffix", " Saved type Saved suffix" },
+        { "杂货", "商场", " 杂货 商场", "杂货商场" },
+        { "珠宝", "Shop", " 珠宝 Shop", "珠宝 Shop" },
+    };
+    const string prefix = language == lang_t::ZH
+        ? (god_keeper ? "哥萨戈的" : "Ada Vale的")
+        : (god_keeper ? "Gozag's" : "Ada Vale's");
+    for (const auto& row : cases)
+    {
+        shop_struct shop;
+        shop.type = SHOP_GENERAL_ANTIQUE;
+        shop.pos = coord_def(10, 10);
+        shop.shop_name = god_keeper ? "Gozag" : "Ada Vale";
+        shop.shop_type_name = row.type;
+        shop.shop_suffix_name = row.suffix;
+        const auto state = rng::current_generator().get_state();
+        const auto count = rng::current_generator().get_count();
+        const string expected = prefix + (language == lang_t::ZH
+            ? row.chinese_tail : row.english_tail);
+        CAPTURE(language, god_keeper, row.type, row.suffix);
+        CHECK(shop_name(shop) == expected);
+        CHECK(shop.shop_name == (god_keeper ? "Gozag" : "Ada Vale"));
+        CHECK(shop.shop_type_name == row.type);
+        CHECK(shop.shop_suffix_name == row.suffix);
+        CHECK(rng::current_generator().get_state() == state);
+        CHECK(rng::current_generator().get_count() == count);
+    }
 }
