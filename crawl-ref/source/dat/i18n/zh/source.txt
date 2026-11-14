@@ -36203,13 +36203,13 @@ env.igrid(%d,%d) = %d
 env.igrid(%d,%d) = %d
 %%%%
 Held by monster #%d: %s at (%d,%d)
-被怪物 #%d：%s 于 (%d,%d) 持有
+被怪物 #%d：%s于 (%d,%d) 持有
 %%%%
 Additionally, it isn't alive.
 此外，它并非活物。
 %%%%
 Floating monster: %s at (%d,%d), midx = %d
-游离怪物：%s 于 (%d,%d)，midx = %d
+游离怪物：%s于 (%d,%d)，midx = %d
 %%%%
 Also at (%d, %d): %s, midx = %d
 同样位于 (%d, %d)：%s，midx = %d
