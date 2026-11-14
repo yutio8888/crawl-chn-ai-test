@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`dcbfb16ac457e9506a5e634d171211d460652f42e2ba651ad950d15e719753ae`
-- 清单 SHA-256：`a0a8cc5410cfaf5500f9588e124aee470a1b757d0268478c325e9b5025e7f13e`
+- 清单 SHA-256：`1a3f59c70f06a45a5517e19fa0e10fdd4f290cc24b686a41bc2b6dc05fcdb1d5`
 - 身份总数：795（现行 671；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -127,7 +127,7 @@
 | `monster:MONS_WOLF_SPIDER` | current; exposure=ordinary; name=wolf spider→狼蛛; genus=MONS_SPIDER; species=MONS_WOLF_SPIDER; data=crawl-ref/source/dat/mons/wolf-spider.yaml; desc=EN/ZH | keep |
 | `monster:MONS_TRAPDOOR_SPIDER` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_JUMPING_SPIDER` | current; exposure=ordinary; name=jumping spider→跳跃蜘蛛; genus=MONS_SPIDER; species=MONS_JUMPING_SPIDER; data=crawl-ref/source/dat/mons/jumping-spider.yaml; desc=EN/ZH | keep |
-| `monster:MONS_ORB_SPIDER` | current; exposure=ordinary; name=orb spider→魔球蛛; genus=MONS_SPIDER; species=MONS_ORB_SPIDER; data=crawl-ref/source/dat/mons/orb-spider.yaml; desc=EN/ZH | keep |
+| `monster:MONS_ORB_SPIDER` | current; exposure=ordinary; name=orb spider→魔球蛛; genus=MONS_SPIDER; species=MONS_ORB_SPIDER; data=crawl-ref/source/dat/mons/orb-spider.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_TARANTELLA` | current; exposure=ordinary; name=tarantella→塔兰图拉毒蛛; genus=MONS_SPIDER; species=MONS_TARANTELLA; data=crawl-ref/source/dat/mons/tarantella.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_REDBACK` | current; exposure=ordinary; name=redback→赤背蜘蛛; genus=MONS_SPIDER; species=MONS_REDBACK; data=crawl-ref/source/dat/mons/redback.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SCORPION` | current; exposure=ordinary; name=scorpion→蝎子; genus=MONS_SCORPION; species=MONS_SCORPION; data=crawl-ref/source/dat/mons/scorpion.yaml; desc=EN/ZH | keep |
@@ -206,7 +206,7 @@
 | `monster:MONS_ORC_HIGH_PRIEST` | current; exposure=ordinary; name=orc high priest→兽人大祭司; genus=MONS_ORC; species=MONS_ORC; data=crawl-ref/source/dat/mons/orc-high-priest.yaml; desc=EN/ZH | keep |
 | `monster:MONS_ORC_WIZARD` | current; exposure=ordinary; name=orc wizard→兽人巫师; genus=MONS_ORC; species=MONS_ORC; data=crawl-ref/source/dat/mons/orc-wizard.yaml; desc=EN/ZH | keep |
 | `monster:MONS_ORC_KNIGHT` | current; exposure=ordinary; name=orc knight→兽人骑士; genus=MONS_ORC; species=MONS_ORC; data=crawl-ref/source/dat/mons/orc-knight.yaml; desc=EN/ZH | keep |
-| `monster:MONS_ORC_SORCERER` | current; exposure=ordinary; name=orc sorcerer→兽人术士; genus=MONS_ORC; species=MONS_ORC; data=crawl-ref/source/dat/mons/orc-sorcerer.yaml; desc=EN/ZH | keep |
+| `monster:MONS_ORC_SORCERER` | current; exposure=ordinary; name=orc sorcerer→兽人术士; genus=MONS_ORC; species=MONS_ORC; data=crawl-ref/source/dat/mons/orc-sorcerer.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ORC_WARLORD` | current; exposure=ordinary; name=orc warlord→兽人军阀; genus=MONS_ORC; species=MONS_ORC; data=crawl-ref/source/dat/mons/orc-warlord.yaml; desc=EN/ZH | keep |
 | `monster:MONS_DWARF` | current; exposure=ordinary; name=dwarf→矮人; genus=MONS_DWARF; species=MONS_DWARF; data=crawl-ref/source/dat/mons/dwarf.yaml; desc=EN/ZH | keep |
 | `monster:MONS_DEEP_DWARF` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
@@ -307,7 +307,7 @@
 | `monster:MONS_ELECTRIC_EEL` | current; exposure=ordinary; name=electric eel→电鳗; genus=MONS_ELECTRIC_EEL; species=MONS_ELECTRIC_EEL; data=crawl-ref/source/dat/mons/electric-eel.yaml; desc=EN/ZH | keep |
 | `monster:MONS_JELLYFISH` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_WATER_ELEMENTAL` | current; exposure=ordinary; name=water elemental→水元素; genus=MONS_ELEMENTAL; species=MONS_WATER_ELEMENTAL; data=crawl-ref/source/dat/mons/water-elemental.yaml; desc=EN/ZH | keep |
-| `monster:MONS_SWAMP_WORM` | current; exposure=ordinary; name=swamp worm→沼泽虫; genus=MONS_RIBBON_WORM; species=MONS_SWAMP_WORM; data=crawl-ref/source/dat/mons/swamp-worm.yaml; desc=EN/ZH | keep |
+| `monster:MONS_SWAMP_WORM` | current; exposure=ordinary; name=swamp worm→沼泽虫; genus=MONS_RIBBON_WORM; species=MONS_SWAMP_WORM; data=crawl-ref/source/dat/mons/swamp-worm.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_SHARK` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_KRAKEN` | current; exposure=ordinary; name=kraken→海怪; genus=MONS_KRAKEN; species=MONS_KRAKEN; data=crawl-ref/source/dat/mons/kraken.yaml; desc=EN/ZH | keep |
 | `monster:MONS_KRAKEN_TENTACLE` | current; exposure=ordinary; name=tentacle→触手; genus=MONS_KRAKEN; species=MONS_KRAKEN_TENTACLE; data=crawl-ref/source/dat/mons/kraken-tentacle.yaml; desc=EN/ZH | retranslate: description corrected |
@@ -327,7 +327,7 @@
 | `monster:MONS_SHADOW_IMP` | current; exposure=ordinary; name=shadow imp→暗影小恶魔; genus=MONS_SHADOW_IMP; species=MONS_SHADOW_IMP; data=crawl-ref/source/dat/mons/shadow-imp.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_RED_DEVIL` | current; exposure=ordinary; name=red devil→红魔鬼; genus=MONS_RED_DEVIL; species=MONS_RED_DEVIL; data=crawl-ref/source/dat/mons/red-devil.yaml; desc=EN/ZH | keep |
 | `monster:MONS_ROTTING_DEVIL` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
-| `monster:MONS_HELLWING` | current; exposure=ordinary; name=hellwing→地狱之翼; genus=MONS_HELLWING; species=MONS_HELLWING; data=crawl-ref/source/dat/mons/hellwing.yaml; desc=EN/ZH | keep |
+| `monster:MONS_HELLWING` | current; exposure=ordinary; name=hellwing→地狱之翼; genus=MONS_HELLWING; species=MONS_HELLWING; data=crawl-ref/source/dat/mons/hellwing.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_SIXFIRHY` | current; exposure=ordinary; name=sixfirhy→六翼魔; genus=MONS_SIXFIRHY; species=MONS_SIXFIRHY; data=crawl-ref/source/dat/mons/sixfirhy.yaml; desc=EN/ZH | keep |
 | `monster:MONS_NEQOXEC` | current; exposure=ordinary; name=neqoxec→内科塞克; genus=MONS_NEQOXEC; species=MONS_NEQOXEC; data=crawl-ref/source/dat/mons/neqoxec.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ORANGE_DEMON` | current; exposure=ordinary; name=orange demon→橙色恶魔; genus=MONS_ORANGE_DEMON; species=MONS_ORANGE_DEMON; data=crawl-ref/source/dat/mons/orange-demon.yaml; desc=EN/ZH | keep |
@@ -394,7 +394,7 @@
 | `monster:MONS_FREEZING_WRAITH` | current; exposure=ordinary; name=freezing wraith→冰冻幽魂; genus=MONS_WRAITH; species=MONS_FREEZING_WRAITH; data=crawl-ref/source/dat/mons/freezing-wraith.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SHADOW_WRAITH` | current; exposure=ordinary; name=shadow wraith→暗影幽魂; genus=MONS_WRAITH; species=MONS_SHADOW_WRAITH; data=crawl-ref/source/dat/mons/shadow-wraith.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SILENT_SPECTRE` | current; exposure=ordinary; name=silent spectre→沉默幽灵; genus=MONS_WRAITH; species=MONS_SILENT_SPECTRE; data=crawl-ref/source/dat/mons/silent-spectre.yaml; desc=EN/ZH | keep |
-| `monster:MONS_EIDOLON` | current; exposure=ordinary; name=eidolon→幻灵; genus=MONS_WRAITH; species=MONS_EIDOLON; data=crawl-ref/source/dat/mons/eidolon.yaml; desc=EN/ZH | keep |
+| `monster:MONS_EIDOLON` | current; exposure=ordinary; name=eidolon→幻灵; genus=MONS_WRAITH; species=MONS_EIDOLON; data=crawl-ref/source/dat/mons/eidolon.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_LAUGHING_SKULL` | current; exposure=ordinary; name=laughing skull→笑颅骨; genus=MONS_LAUGHING_SKULL; species=MONS_LAUGHING_SKULL; data=crawl-ref/source/dat/mons/laughing-skull.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_SKELETAL_WARRIOR` | current; exposure=ordinary; name=skeletal warrior→骷髅战士; genus=MONS_SKELETAL_WARRIOR; species=MONS_SKELETAL_WARRIOR; data=crawl-ref/source/dat/mons/skeletal-warrior.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_PHANTASMAL_WARRIOR` | current; exposure=ordinary; name=phantasmal warrior→幻影战士; genus=MONS_WRAITH; species=MONS_PHANTASMAL_WARRIOR; data=crawl-ref/source/dat/mons/phantasmal-warrior.yaml; desc=EN/ZH | retranslate: description corrected |
@@ -491,7 +491,7 @@
 | `monster:MONS_MENNAS` | current; exposure=unique; name=Mennas→门纳斯; genus=MONS_ANGEL; species=MONS_ANGEL; data=crawl-ref/source/dat/mons/mennas.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_MARA` | current; exposure=unique; name=Mara→玛拉; genus=MONS_RAKSHASA; species=MONS_RAKSHASA; data=crawl-ref/source/dat/mons/mara.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_MARA_FAKE` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
-| `monster:MONS_GRINDER` | current; exposure=unique; name=Grinder→格林德; genus=MONS_SHADOW_IMP; species=MONS_SHADOW_IMP; data=crawl-ref/source/dat/mons/grinder.yaml; desc=EN/ZH | keep |
+| `monster:MONS_GRINDER` | current; exposure=unique; name=Grinder→格林德; genus=MONS_SHADOW_IMP; species=MONS_SHADOW_IMP; data=crawl-ref/source/dat/mons/grinder.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_JORY` | current; exposure=unique; name=Jory→乔里; genus=MONS_VAMPIRE; species=MONS_VAMPIRE; data=crawl-ref/source/dat/mons/jory.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_IGNACIO` | current; exposure=unique; name=Ignacio→伊格纳西奥; genus=MONS_EXECUTIONER; species=MONS_EXECUTIONER; data=crawl-ref/source/dat/mons/ignacio.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ARACHNE` | current; exposure=unique; name=Arachne→阿拉克涅; genus=MONS_SPIDER; species=MONS_ARACHNE; data=crawl-ref/source/dat/mons/arachne.yaml; desc=EN/ZH | keep |
