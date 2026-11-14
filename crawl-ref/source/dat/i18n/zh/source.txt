@@ -10343,7 +10343,7 @@ You pick up the Orb of Zot!
 你捡起了佐特宝珠！
 %%%%
 You place your %s atop %s's lifeless body and utter a vengeful prayer.
-你将%s放在%s无生命的身体上，念出复仇的祷告。
+你将%s放在%s的遗体上，念出复仇的祷告。
 %%%%
 You plunge deeper into the Abyss.
 你坠入了深渊的更深处。
@@ -10984,7 +10984,7 @@ Your divine shield fades away.
 你的神圣护盾消退了。
 %%%%
 Your divine shield is renewed.
-你的神圣护盾被更新了。
+你的神圣护盾恢复了。
 %%%%
 Your divine stamina has worn off.
 你的神圣耐力消退了。
