@@ -21,6 +21,7 @@
 #include "viewgeom.h"
 #include "clua.h"
 #include "unicode.h"
+#include "spl-zap.h"
 #include "database.h"
 #include "delay.h"
 #include "describe.h"
@@ -4835,5 +4836,71 @@ TEST_CASE("Disjunction keeps a compact localized missile brand label",
         CHECK(label == (language == lang_t::ZH ? "分离" : "disjunct"));
         CHECK(strwidth(label) == (language == lang_t::ZH ? 4 : 8));
         CHECK(dart.name(DESC_PLAIN, true).find("(" + label + ")") != string::npos);
+    }
+}
+
+TEST_CASE("Spellstride translates every real beam parameter at the speech sink",
+          "[zh-translation][r35]")
+{
+    init_zap_index();
+    const pair<spell_type, const char *> beams[] =
+    {
+        {SPELL_QUICKSILVER_BOLT, "驱散能量"},
+        {SPELL_CORROSIVE_BOLT, "强酸"},
+        {SPELL_BOLT_OF_LIGHT, "光亮"},
+        {SPELL_BOLT_OF_FLESH, "血肉"},
+        {SPELL_BOLT_OF_DEVASTATION, "毁灭"},
+        {SPELL_BOLT_OF_ANTIMAGIC, "禁魔"},
+    };
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language,
+                                       language == lang_t::ZH ? "zh" : nullptr);
+        issue10_world world;
+        set<pair<spell_type, int>> seen;
+        for (uint64_t seed = 0; seed < 512 && seen.size() < 12; ++seed)
+        {
+            rng::subgenerator random(seed, 0x523335ULL);
+            string output;
+            {
+                msgwin_temporary_mode temporary;
+                unwinder restore_messages([] { msgwin_clear_temporary(); });
+                output = observe_message([]
+                {
+                    xom_take_action(XOM_BLESSING_SPELLSTRIDE, 10);
+                });
+            }
+            const spell_type spell = static_cast<spell_type>(
+                you.props[XOM_SPELLSTRIDE_SPELL].get_int());
+            const auto beam = find_if(begin(beams), end(beams),
+                [spell](const pair<spell_type, const char *> &entry)
+                { return entry.first == spell; });
+            REQUIRE(beam != end(beams));
+            const string raw = replace_all(zap_name(spell_to_zap(spell)),
+                                           "bolt of ", "");
+            const string value = language == lang_t::ZH ? beam->second : raw;
+            const string feet = you.foot_name(true);
+            const string first = language == lang_t::ZH
+                ? "佐姆用" + value + "强化了你的" + feet + "。"
+                : "Xom improves your " + feet + " with " + value + ".";
+            const string last = language == lang_t::ZH
+                ? "踏出一条" + value + "的轨迹吧，我的玩具！"
+                : "Blaze a trail of " + value + ", my toy!";
+            if (output.find(language == lang_t::ZH ? "强化了" : "improves")
+                != string::npos)
+            {
+                CAPTURE(language, seed, output);
+                CHECK(output.find(first) != string::npos);
+                seen.emplace(spell, 0);
+            }
+            if (output.find(language == lang_t::ZH ? "轨迹" : "Blaze a trail")
+                != string::npos)
+            {
+                CAPTURE(language, seed, output);
+                CHECK(output.find(last) != string::npos);
+                seen.emplace(spell, 1);
+            }
+        }
+        CHECK(seen.size() == 12);
     }
 }

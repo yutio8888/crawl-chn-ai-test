@@ -6366,7 +6366,7 @@ static void _xom_spellstride()
 
     string xomspeak = _get_xom_speech("spellstride");
     xomspeak = replace_all(xomspeak, "@feet@", you.foot_name(true));
-    xomspeak = replace_all(xomspeak, "@beam_type@", zname);
+    xomspeak = replace_all(xomspeak, "@beam_type@", T_(zname.c_str()));
 
     god_speaks(GOD_XOM, xomspeak.c_str());
 
