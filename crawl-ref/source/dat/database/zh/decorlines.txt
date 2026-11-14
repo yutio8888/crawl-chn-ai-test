@@ -211,7 +211,7 @@ w:1
 %%%%
 Ignis fountain_blood
 
-喷泉的鲜血在你的存在下短暂地沸腾了。
+喷泉的鲜血因你在场而短暂地沸腾了。
 %%%%
 Trog peaceful fountain_blue
 
@@ -304,7 +304,7 @@ Qazlal fountain_sparkling
 Qazlal peaceful fountain_blue
 
 w:5
-你对这样试图容纳不可控元素的尝试嗤之以鼻。
+你对这种妄图约束不可控元素的举动嗤之以鼻。
 
 @Qazlal fountain_blue@
 
@@ -816,7 +816,7 @@ spriggan meat cache
 你翻找了一番，想找披萨，却一无所获。
 
 w:4
-你找到一片魔法保鲜的披萨，把肉挑了出来。美味！
+你找到一片魔法保鲜的披萨，把上面的肉挑掉。美味！
 
 %%%%
 statue baked goods cache

@@ -233,7 +233,7 @@
           "behavior": { "implies_gesture": false, "audible": false },
           "templates": [
             { "language": "en", "relation": "NONE", "pattern": "You hear gushing sobs." },
-            { "language": "zh", "relation": "NONE", "pattern": "你听到一阵喷涌而出的抽泣声。" }
+            { "language": "zh", "relation": "NONE", "pattern": "你听到不绝于耳的抽泣声。" }
           ]
         }],
         "materialization_cases": [],
