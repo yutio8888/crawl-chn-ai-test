@@ -127,8 +127,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         REQUIRE(string(T_(god)) != god);
 
         const shop_struct shop = make_shop(god);
-        const string expected = apostrophise(string(T_(god))) + " "
-                                + shop.shop_type_name + " "
+        const string expected = apostrophise(string(T_(god)))
+                                + shop.shop_type_name
                                 + shop.shop_suffix_name;
         CHECK(shop_name(shop) == expected);
         CHECK(shop_name(shop).find(god) != 0);
@@ -137,8 +137,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     SECTION("a custom keeper keeps its saved identity")
     {
         const shop_struct shop = make_shop("Bob");
-        const string expected = apostrophise("Bob") + " "
-                                + shop.shop_type_name + " "
+        const string expected = apostrophise("Bob")
+                                + shop.shop_type_name
                                 + shop.shop_suffix_name;
         CHECK(shop_name(shop) == expected);
         CHECK(shop_name(shop).find("Bob") == 0);
