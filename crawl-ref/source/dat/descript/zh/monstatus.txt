@@ -84,7 +84,7 @@ charmed monstatus
 concentrated venom monstatus
 
 这个生物的天然毒液被强化了，使其通过攻击或吐息武器施加的毒素
-有概率减速和窒息易受影响的目标。
+有概率使易受影响的目标减速并窒息。
 %%%%
 confused monstatus
 
@@ -575,8 +575,8 @@ surrounded by thunder monstatus
 %%%%
 target of orcish vengeance monstatus
 
-这个生物参与了杀害你的一位使徒。击败所有兽人复仇目标将显著加快
-比欧弗复活你使徒的时间。
+这个生物参与了杀害你的一位使徒。击败所有兽人复仇目标将显著缩短
+比欧弗复活你的使徒所需的时间。
 %%%%
 targeted by your dimensional bullseye monstatus
 

@@ -8883,7 +8883,7 @@ const catalog_source &generated_monspell_catalog()
                         {  },
                         {  },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "You hear gushing sobs."}, {"zh", "NONE", "你听到一阵喷涌而出的抽泣声。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "You hear gushing sobs."}, {"zh", "NONE", "你听到不绝于耳的抽泣声。"} } },
                     },
                         {},
                         {  },
