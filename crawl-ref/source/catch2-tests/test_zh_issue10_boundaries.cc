@@ -25,6 +25,8 @@
 #include "mutation.h"
 #include "status.h"
 #include "options.h"
+#include "orb.h"
+#include "spl-transloc.h"
 #include "player.h"
 #include "player-equip.h"
 #include "spl-selfench.h"
@@ -973,4 +975,73 @@ TEST_CASE("Interrupted bee winding uses the caster as subject",
     else
         CHECK(lowercase_string(interrupted).find(
                   "the orc wizard stops winding its clockwork bee.") != string::npos);
+}
+
+TEST_CASE("Electric charge explains a stationary landing blocker in the display language",
+          "[zh-translation][fts456][charge-blocker]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *blocker = world.place(MONS_OKLOB_PLANT, coord_def(21, 20));
+    monster *target = world.place(MONS_ORC, coord_def(22, 20));
+    REQUIRE(you.can_see(*blocker));
+    REQUIRE(mons_class_is_stationary(blocker->type));
+    string reason;
+    CHECK(get_electric_charge_landing_spot(you, target->pos(), &reason).origin());
+    const string name = blocker->name(DESC_THE);
+    CHECK(reason == name + (language == lang_t::ZH
+          ? "牢牢固定在你的路径上，无法移动。"
+          : " is immovably fixed in your path."));
+}
+
+TEST_CASE("Orb pickup custom and null messages translate at the real display boundary",
+          "[zh-translation][fts456][orb-display]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const bool silent = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    unwind_var<bool> saving(crawl_state.need_save, false);
+    you.duration[DUR_SILENCE] = silent ? 100 : 0;
+    invalidate_agrid(true);
+    REQUIRE(silenced(you.pos()) == silent);
+    struct orb_message
+    {
+        const char *audible;
+        const char *flashing;
+        const char *audible_zh;
+        const char *flashing_zh;
+    };
+    const orb_message cases[] = {
+        {"The Orb shrieks and becomes a dead weight against your magic!",
+         "The Orb lets out a furious burst of light and becomes a dead weight against your magic!",
+         "佐特宝珠尖啸着，沉重得让你的魔法无法拉动它！",
+         "佐特宝珠愤怒地迸发出一阵强光，沉重得让你的魔法无法拉动它！"},
+        {"The Orb shrieks as your magic touches it!",
+         "The Orb lets out a furious burst of light as your magic touches it!",
+         "你的魔法一碰到佐特宝珠，它就尖啸起来！",
+         "你的魔法一碰到佐特宝珠，它就愤怒地迸发出一阵强光！"},
+    };
+    for (const auto &test : cases)
+    {
+        // A zero loudness avoids queuing unrelated noise propagation; the
+        // production function still selects its real silence/flash branch.
+        const string text = observe_message([&] {
+            orb_pickup_noise(you.pos(), 0, test.audible, test.flashing);
+        });
+        const char *expected = language == lang_t::ZH
+            ? (silent ? test.flashing_zh : test.audible_zh)
+            : (silent ? test.flashing : test.audible);
+        CAPTURE(language, silent, text);
+        CHECK(text.find(expected) != string::npos);
+    }
+    const string fallback = observe_message([&] { orb_pickup_noise(you.pos(), 0); });
+    const string expected = language == lang_t::ZH
+        ? (silent ? "宝珠猛然迸发出愤怒的光芒！" : "宝珠发出了痛苦的尖叫！")
+        : (silent ? "The Orb lets out a furious burst of light!"
+                  : "The Orb lets out an agonising shriek!");
+    CHECK(fallback.find(expected) != string::npos);
+    you.duration[DUR_SILENCE] = 0;
+    invalidate_agrid(true);
 }
