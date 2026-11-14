@@ -1088,6 +1088,7 @@ Tiamat title	提亚马特，龙神的化身	domain=monster-titles; source=EN/ZH;
 Tloc	传送	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101
 Tomb of Doroklohe	多洛克洛之墓	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Torment	折磨	domain=combat; source=EN/ZH; column3=按比例造成伤害
+torpor snail	迟滞蜗牛	domain=monsters; source=EN/ZH; Scope / comment=MONS_TORPOR_SNAIL 名称及派生显示；迟缓光环，非自身休眠；普通 torpor、Shadow Torpor 与其他蜗牛不改；decision=D-C-117；reject=休眠蜗牛
 Touch	触	domain=magic; source=EN/ZH; 状态=✅ 已确认（2 项现行）
 tough skin	硬化表皮	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Translocation	传送系	domain=magic; source=EN/ZH

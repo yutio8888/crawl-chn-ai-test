@@ -5853,6 +5853,15 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         const string dump((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
         INFO(dump);
         CHECK(dump.find(language == lang_t::ZH ? "发射:" : "Fire:") != string::npos);
+        const string action_label = language == lang_t::ZH ? "发射" : "Fire";
+        const size_t action_pos = dump.find(action_label + ":");
+        REQUIRE(action_pos != string::npos);
+        const size_t previous_newline = dump.rfind('\n', action_pos);
+        const size_t line_begin = previous_newline == string::npos
+            ? 0 : previous_newline + 1;
+        CHECK(strwidth(dump.substr(line_begin,
+                       action_pos + action_label.size() - line_begin)) == 7);
+        CHECK_FALSE(rule_garbled_utf8(dump));
         if (language == lang_t::ZH)
             CHECK(dump.find(string(T_("Fire")) + ":") == string::npos);
         const size_t spear = dump.find(language == lang_t::ZH ? "长矛" : "Spear");
@@ -8626,5 +8635,126 @@ TEST_CASE("Ignite Poison restores English possessives and Chinese self reference
             CHECK(strip_tee_colour_tag(observed.get_store()) == expected + "\n");
             CHECK(Options.language == language);
         }
+    }
+}
+
+TEST_CASE("Monster pane descriptions truncate and pad by display columns",
+          "[zh-translation][fts456][monster-pane]")
+{
+#if defined(UNIX) && !defined(__ANDROID__)
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+    init_monsters();
+    const vector<monster_info> monsters = {monster_info(MONS_ORC_WARRIOR)};
+    string description;
+    int colour;
+    mons_to_string_pane(description, colour, false, monsters, 0, 1);
+    REQUIRE(description.find(language == lang_t::ZH ? "兽人战士" : "orc warrior")
+            != string::npos);
+    for (int columns = 0; columns <= strwidth(description) + 2; ++columns)
+    {
+        const string text = fit_monster_pane_description(description, columns);
+        CAPTURE(language, columns, description, text);
+        CHECK_FALSE(rule_garbled_utf8(text));
+        CHECK(strwidth(text) <= columns);
+    }
+    CHECK(fit_monster_pane_description("兽人战士", 7) == "兽人 …)");
+    CHECK(fit_monster_pane_description("兽人战士", 5) == "兽 …)");
+    CHECK(fit_monster_pane_description("兽人战士", 1) == " ");
+    CHECK(fit_monster_pane_description("兽人战士", 8) == "兽人战士");
+    CHECK(fit_monster_pane_description("orc warrior", 7) == "orc w…)");
+    CHECK(fit_monster_pane_description("orc", 5) == "orc  ");
+    CHECK(fit_monster_pane_description("orc", 1) == "o");
+    CHECK(fit_monster_pane_description("orc", 0).empty());
+    CHECK(fit_monster_pane_description("orc", -1).empty());
+}
+
+TEST_CASE("Action count labels preserve UTF-8 and their nine-column prefix",
+          "[zh-translation][fts456][action-count-width]")
+{
+#if defined(UNIX) && !defined(__ANDROID__)
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    const vector<pair<string, string>> cases = {
+        {"近战", "   近战: "},
+        {"施放法术", " 施放法: "},
+        {"A法术", "  A法术: "},
+        {"Melee", "  Melee: "},
+        {"LongActionName", "LongAct: "},
+        {"", "       : "},
+    };
+    for (const auto &test : cases)
+    {
+        const string text = chardump_action_count_label(test.first);
+        CAPTURE(test.first, text);
+        CHECK(text == test.second);
+        CHECK_FALSE(rule_garbled_utf8(text));
+        CHECK(strwidth(text) == 9);
+    }
+}
+
+TEST_CASE("Long formatted Unicode paragraphs split only at complete code points",
+          "[zh-translation][fts456][format-chunks]")
+{
+    for (const string unit : {string("中文段落"), string("🐌"), string("ASCII")})
+    for (const string prefix : {string(), string("a"), string("ab"), string("abc"),
+                                string(990, 'x') + "\n"})
+    {
+        string plain = prefix;
+        for (int i = 0; i < 400; ++i)
+            plain += unit;
+        const formatted_string formatted = formatted_string::parse_string(
+            "<red>" + plain + "</red>");
+        string joined;
+        int colour = LIGHTGREY;
+        size_t chunks = 0;
+        for (const auto &op : formatted.ops)
+        {
+            if (op.type == FSOP_COLOUR)
+                colour = op.colour;
+            if (op.type == FSOP_TEXT && !op.text.empty())
+            {
+                CAPTURE(unit, prefix.size(), chunks, op.text.size());
+                CHECK(colour == RED);
+                CHECK_FALSE(rule_garbled_utf8(op.text));
+                CHECK(op.text.size() <= 999);
+                joined += op.text;
+                ++chunks;
+            }
+        }
+        CHECK(chunks >= 2);
+        CHECK(joined == plain);
+        CHECK(formatted.tostring() == plain);
+        CHECK(colour == LIGHTGREY);
+    }
+}
+
+TEST_CASE("Torpor snail display variants share the approved name and English identity",
+          "[zh-translation][fts456][torpor-name]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    init_monsters();
+    const string name = language == lang_t::ZH ? "迟滞蜗牛" : "torpor snail";
+    CHECK(mons_type_name(MONS_TORPOR_SNAIL, DESC_PLAIN) == name);
+    CHECK(mons_type_name_en(MONS_TORPOR_SNAIL, DESC_PLAIN) == "torpor snail");
+    const monster_info info(MONS_TORPOR_SNAIL);
+    CHECK(info.db_name() == "torpor snail");
+    for (description_level_type article : {DESC_PLAIN, DESC_A, DESC_THE})
+        CHECK(info.common_name(article).find(name) != string::npos);
+    CHECK(info.pluralised_name() == (language == lang_t::ZH ? "迟滞蜗牛" : "torpor snails"));
+    for (int count : {1, 2})
+    {
+        string pane;
+        int colour;
+        info.to_string(count, pane, colour);
+        CHECK(pane.find(name) != string::npos);
+        CHECK(pane.find("休眠蜗牛") == string::npos);
     }
 }

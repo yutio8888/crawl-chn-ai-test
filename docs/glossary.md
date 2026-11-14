@@ -766,6 +766,7 @@
 | snapping turtle | 鳄龟 | monster; source=source.txt; distinguished from alligator snapping turtle → 巨鳄龟 |
 | Spatial Maelstrom | 空间乱流 | monster; source=source.txt; distinguished from spatial vortex → 空间漩涡 |
 | spatial vortex | 空间漩涡 | monster; source=source.txt |
+| torpor snail | 迟滞蜗牛 | MONS_TORPOR_SNAIL 名称及派生显示；迟缓光环，非自身休眠；普通 torpor、Shadow Torpor 与其他蜗牛不改；decision=D-C-117；reject=休眠蜗牛 |
 | zombie | 丧尸 | monster; source=source.txt; distinguished from Jiangshi → 僵尸; established work titles may retain “僵尸” |
 
 | Serpent of Hell | 地狱巨蛇 | monster; source=source.txt; shared display name |
