@@ -1518,7 +1518,7 @@ Volley of Thorns spell
 Wall of Brambles spell
 
 使附近的荆棘迅速生长。它们的结构强度极低，
-但所带的尖刺使清除工作十分困难。
+但其上狠毒的尖刺使清除工作十分困难。
 这些荆棘很稀疏，几乎任何飞弹都能畅通无阻地穿过。
 %%%%
 Warning Cry spell
