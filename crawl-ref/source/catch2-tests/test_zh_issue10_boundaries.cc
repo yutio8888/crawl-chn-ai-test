@@ -1674,6 +1674,7 @@ TEST_CASE("Macro Lua errors translate only the frame and stop the real delay",
 #ifdef CLUA_BINDINGS
     issue10_world world;
     unwind_var<bool> io(crawl_state.io_inited, false);
+    const interrupt_block block;
     lua_State *ls = clua.state();
     REQUIRE(ls);
     lua_stack_cleaner stack(ls);
@@ -1699,9 +1700,8 @@ TEST_CASE("Macro Lua errors translate only the frame and stop the real delay",
                                        language == lang_t::ZH ? "zh" : nullptr);
         clua.error.clear();
         const string emitted = observe_message([] { run_macro("r34-test"); });
-        REQUIRE(clua.error.find("You are poisoned.") != string::npos);
         const string frame = language == lang_t::ZH ? "Lua错误：" : "Lua error: ";
-        CHECK(emitted.find(frame + clua.error) != string::npos);
+        CHECK(emitted == frame + "You are poisoned.\n");
         CHECK(current_delay() == nullptr);
     }
 #endif
@@ -1710,6 +1710,9 @@ TEST_CASE("Macro Lua errors translate only the frame and stop the real delay",
 TEST_CASE("Disjunction keeps a compact localized missile brand label",
           "[zh-translation][r34]")
 {
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([&] { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(setlocale(LC_CTYPE, "C.UTF-8"));
     issue10_world world;
     item_def dart;
     dart.base_type = OBJ_MISSILES;
