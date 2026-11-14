@@ -54,7 +54,7 @@ CMD_DISPLAY_OVERMAP
 %%%%
 CMD_DISPLAY_OVERMAP verbose
 
-显示地牢分支位置、发现的祭坛、商店和楼层注释的概况。
+显示地牢分支位置、发现的祭坛、商店和楼层标注的概况。
 %%%%
 CMD_DISPLAY_RELIGION
 
@@ -730,7 +730,7 @@ CMD_MAP_EXCLUDE_RADIUS
 %%%%
 CMD_MAP_ANNOTATE_LEVEL
 
-添加楼层注释
+添加楼层标注
 %%%%
 CMD_MAP_DESCRIBE
 
