@@ -453,7 +453,7 @@ summon a divine warrior
 召唤神圣战士
 %%%%
 The Shining One will bless your weapon with holy wrath... once.
-光辉者将为你的武器加持神圣惩戒……一次。
+光辉者将为你的武器加持圣光铭印……一次。
 %%%%
 The Shining One is no longer ready to bless your weapon.
 光辉者不再准备好祝福你的武器。
@@ -2914,7 +2914,7 @@ Are you sure you want to abandon %s?
 你确定要放弃%s吗？
 %%%%
 Are you sure you want to remember your ancestor as %s?
-你确定要记住你的先祖作为%s吗？
+你确定要将你的先祖铭记为%s吗？
 %%%%
 Armaments
 武装
@@ -9650,7 +9650,7 @@ You feel less strong-willed.
 你感到意志不再那么坚定。
 %%%%
 You feel lethargic.
-你感到昏昏欲睡。
+你感到行动迟缓。
 %%%%
 You feel life coursing into your body%s
 你感到生命力涌入你的身体%s
@@ -11167,7 +11167,7 @@ Your paragon expends all of its energy in an overwhelming flurry of blows!
 你的典范耗尽所有能量，发动了一轮压倒性的猛攻！
 %%%%
 Your paragon has reached its maximum power!
-你的典范已达到最大能量！
+你的典范已达到最强状态！
 %%%%
 Your paragon is now ready to unleash a masterful attack.
 你的典范现在准备释放一次精妙的攻击。
@@ -21119,7 +21119,7 @@ autopickup state|on
 %s 仍然继续吗？
 %%%%
 %s explodes violently into a cloud of jellies%s
-%s猛烈爆裂成一团凝胶%s
+%s猛烈爆裂，迸出一群果冻怪%s
 %%%%
 %s explodes violently%s
 %s猛烈爆炸%s
@@ -31111,7 +31111,7 @@ Brand Weapon With Distortion
 扭曲铭印武器
 %%%%
 Brand Weapon With Holy Wrath
-神圣惩戒铭印武器
+圣光铭印武器
 %%%%
 Brand Weapon With Pain
 痛苦铭印武器
@@ -37969,7 +37969,7 @@ status|Gem (%d)
 宝石(%d)
 %%%%
 status|Heavenly (%d)
-天威(%d)
+天堂风暴(%d)
 %%%%
 status|Held
 受困
