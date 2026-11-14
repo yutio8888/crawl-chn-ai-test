@@ -8816,7 +8816,7 @@ You can't %s onto %s!
 你不能%s%s身上！
 %%%%
 You can't annotate this level.
-你无法注释此楼层。
+你无法标注此楼层。
 %%%%
 You can't bribe %s or %s.
 你无法贿赂%s或%s。
@@ -43237,7 +43237,7 @@ quick add macro
 快速添加宏
 %%%%
 annotate the dungeon level
-为地牢楼层添加注释
+为地牢楼层添加标注
 %%%%
 dump character to file
 将角色报告导出至文件

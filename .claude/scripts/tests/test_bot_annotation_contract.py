@@ -78,7 +78,7 @@ class BotAnnotationContractTests(unittest.TestCase):
             token = "D:1"
         else:
             token = "地牢:1"
-        self.assertEqual(f"为{token}添加新注释", self.prompt_expectation)
+        self.assertEqual(f"为{token}添加新标注", self.prompt_expectation)
         self.assertIn(token, self.overview_expectation)
 
     def test_overview_title_expectation_is_localized(self):
