@@ -20,6 +20,10 @@
 #include "god-companions.h"
 #include "religion-enum.h"
 #include "database.h"
+#include "place.h"
+#include "positional_format.h"
+#include "exclude.h"
+#include "mon-death.h"
 #include "directn.h"
 #include "delay.h"
 #include "terrain.h"
@@ -2067,5 +2071,170 @@ TEST_CASE("Target descriptions use article-free Chinese monster types",
         const string expected = zh ? "正在变为蝎尾狮" : "becoming a manticore";
         CHECK(find(descriptions.begin(), descriptions.end(), expected)
             != descriptions.end());
+    }
+}
+
+namespace
+{
+struct r40_unique_case
+{
+    monster_type type;
+    const char *english;
+    const char *chinese;
+};
+const r40_unique_case r40_unique_names[] = {
+    {MONS_ENCHANTRESS, "the Enchantress", "妖术女王"},
+    {MONS_LERNAEAN_HYDRA, "the Lernaean hydra", "勒拿多头蛇"},
+    {MONS_ROYAL_JELLY, "the Royal Jelly", "果冻王"},
+    {MONS_SERPENT_OF_HELL, "the Serpent of Hell", "地狱巨蛇"},
+    {MONS_SERPENT_OF_HELL_COCYTUS, "the Serpent of Hell", "地狱巨蛇"},
+    {MONS_SERPENT_OF_HELL_DIS, "the Serpent of Hell", "地狱巨蛇"},
+    {MONS_SERPENT_OF_HELL_TARTARUS, "the Serpent of Hell", "地狱巨蛇"},
+};
+}
+
+TEST_CASE("Unique monster class names keep English identities and omit Chinese articles",
+          "[zh-translation][r40]")
+{
+    issue10_world world;
+    set<monster_type> actual;
+    for (int i = 0; i < NUM_MONSTERS; ++i)
+    {
+        const auto type = static_cast<monster_type>(i);
+        if (!invalid_monster_type(type) && mons_is_the(type))
+            actual.insert(type);
+    }
+    set<monster_type> expected;
+    for (const auto &entry : r40_unique_names)
+        expected.insert(entry.type);
+    CHECK(actual == expected);
+    const auto state = rng::current_generator().get_state();
+    const auto count = rng::current_generator().get_count();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language,
+                                       language == lang_t::ZH ? "zh" : nullptr);
+        for (const auto &entry : r40_unique_names)
+        for (auto desc : {DESC_PLAIN, DESC_A, DESC_THE, DESC_DBNAME})
+        {
+            CAPTURE(entry.type, language, desc);
+            CHECK(mons_is_unique(entry.type));
+            CHECK(mons_type_name(entry.type, desc)
+                == (language == lang_t::ZH ? entry.chinese : entry.english));
+            CHECK(mons_type_name_en(entry.type, desc) == entry.english);
+            CHECK(Options.language == language);
+        }
+    }
+    CHECK(rng::current_generator().get_state() == state);
+    CHECK(rng::current_generator().get_count() == count);
+}
+
+TEST_CASE("Unique exclusion summaries preserve canonical and old Chinese storage",
+          "[zh-translation][r40]")
+{
+    issue10_world world;
+    extern set<pair<string, level_id>> auto_unique_annotations;
+    unwind_var<decltype(auto_unique_annotations)> saved_annotations(auto_unique_annotations);
+    auto_unique_annotations.clear();
+    const level_id level = level_id::current();
+    for (const auto &entry : r40_unique_names)
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language,
+                                       language == lang_t::ZH ? "zh" : nullptr);
+        const string english = entry.english;
+        const string old_chinese = string("the ") + entry.chinese;
+        exclude_set exclusions;
+        const string second = language == lang_t::ZH ? old_chinese : english;
+        exclusions.add_exclude(coord_def(20, 20), 2, true, english, false);
+        exclusions.add_exclude(coord_def(24, 20), 2, true, second, false);
+        string stored;
+        {
+            const ScopedLangEn canonical;
+            stored = "exclusion: 2 " + pluralise(english);
+        }
+        const string displayed = language == lang_t::ZH
+            ? string("禁区：2个") + entry.chinese : stored;
+        CAPTURE(entry.type, language);
+        CHECK(exclusions.get_exclusion_desc(level, false) == stored);
+        CHECK(exclusions.get_exclusion_desc(level, true) == displayed);
+        CHECK(exclusion_display_name(english)
+            == (language == lang_t::ZH ? entry.chinese : entry.english));
+        if (language == lang_t::ZH)
+            CHECK(exclusion_display_name(old_chinese) == entry.chinese);
+        CHECK(exclusions.get_exclude_root(coord_def(20, 20))->desc == english);
+        CHECK(exclusions.get_exclude_root(coord_def(24, 20))->desc == second);
+        CHECK(Options.language == language);
+    }
+}
+
+TEST_CASE("Unique item origins retain their canonical English notes",
+          "[zh-translation][r40]")
+{
+    issue10_world world;
+    for (const auto &entry : r40_unique_names)
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language,
+                                       language == lang_t::ZH ? "zh" : nullptr);
+        item_def item;
+        item.base_type = OBJ_WEAPONS;
+        item.sub_type = WPN_DAGGER;
+        item.quantity = 1;
+        item.flags = ISFLAG_IDENTIFIED;
+        item.orig_monnum = entry.type;
+        item.orig_place = level_id(BRANCH_DUNGEON, 3);
+        REQUIRE(origin_describable(item));
+        const string english = string("You took it off ") + entry.english
+                             + " on level 3 of the Dungeon";
+        const string expected = language == lang_t::ZH
+            ? make_stringf_p(T_("You took it off %1$s %2$s"), entry.chinese,
+                            prep_branch_level_name(item.orig_place).c_str())
+            : english;
+        CHECK(origin_desc(item) == english);
+        CHECK(origin_display_desc(item) == expected);
+        if (language == lang_t::ZH)
+            CHECK(origin_display_desc(item).find("the ") == string::npos);
+        CHECK(item.orig_monnum == entry.type);
+        CHECK(item.orig_place == level_id(BRANCH_DUNGEON, 3));
+        CHECK(Options.language == language);
+    }
+}
+
+TEST_CASE("Real unique corpses use article-free Chinese name snapshots",
+          "[zh-translation][r40]")
+{
+    for (monster_type type : {MONS_ENCHANTRESS, MONS_LERNAEAN_HYDRA})
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language,
+                                       language == lang_t::ZH ? "zh" : nullptr);
+        issue10_world world;
+        no_notes suppress_notes;
+        rng::subgenerator local_rng(400701, 400702);
+        const coord_def pos(22, 20);
+        monster *source = world.place(type, pos);
+        define_monster(*source);
+        source->hit_points = 0;
+        unwind_var<int> saved_grid(env.igrid(pos), NON_ITEM);
+        item_def *corpse = nullptr;
+        unwinder cleanup([&]
+        {
+            if (corpse && corpse->defined())
+                destroy_item(*corpse, true);
+        });
+        corpse = place_monster_corpse(*source, true);
+        REQUIRE(corpse);
+        const char *expected = type == MONS_ENCHANTRESS
+            ? (language == lang_t::ZH ? "妖术女王" : "the Enchantress")
+            : (language == lang_t::ZH ? "勒拿多头蛇" : "the Lernaean hydra");
+        CHECK(corpse->props[CORPSE_NAME_KEY].get_string() == expected);
+        CHECK(get_corpse_name(*corpse) == expected);
+        CHECK(corpse->orig_monnum == type);
+        CHECK(static_cast<monster_type>(corpse->mon_type) == mons_species(type));
+        const string name = corpse->name(DESC_PLAIN);
+        if (language == lang_t::ZH)
+            CHECK(name.find("the ") == string::npos);
+        CHECK(corpse->props[CORPSE_NAME_KEY].get_string() == expected);
     }
 }

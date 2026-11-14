@@ -490,7 +490,9 @@ static string _exclusion_description(const string &description, bool display)
             unwind_var<lang_t> language(Options.language, lang_t::ZH);
             chinese = mons_type_name(type, DESC_PLAIN);
         }
-        if (name == english || name == chinese)
+        // Old Chinese snapshots included the English article for M_NAME_THE.
+        const bool legacy_the = mons_is_the(type) && name == "the " + chinese;
+        if (name == english || name == chinese || legacy_the)
         {
             result = display ? mons_type_name(type, DESC_PLAIN) : english;
             known = true;
