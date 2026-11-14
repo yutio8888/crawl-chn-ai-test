@@ -1065,7 +1065,7 @@ Sap Magic spell
 %%%%
 Scorch spell
 
-灼烧一个随机敌人。受此伤害的会在短时间内失去火抗。
+灼烧一个随机敌人。受此伤害的敌人会在短时间内失去火焰抗性。
 %%%%
 Sculpt Simulacrum spell
 
@@ -1582,8 +1582,7 @@ Bolt of Flesh spell
 %%%%
 Bolt of Light spell
 
-发射一道灼热光芒的穿透射线，可能致盲击中的任何活着的、恶魔的
-或神圣的生物。
+发射一道可穿透目标的灼热光线，可能致盲击中的任何活物、恶魔或神圣生物。
 %%%%
 Caustic Breath spell
 
