@@ -9695,7 +9695,7 @@ VISUAL:@The_monster@ 绕着圈跑。
 default confused 'y'
 
 
-SOUND:@The_monster@ 绕着紧密的圈子嗡嗡作响。
+SOUND:@The_monster@ 绕着小圈嗡嗡作响。
 %%%%
 default confused arachnid
 
@@ -9749,7 +9749,7 @@ VISUAL:@The_monster@ 毫无规律地绕圈乱飞。
 
 VISUAL:@The_monster@ 疯狂地挥舞着 @possessive@触角。
 
-VISUAL:@The_monster@ 在@possessive@飞行中摇摇晃晃。
+VISUAL:@The_monster@ 飞行时，@possessive@身形摇摇晃晃。
 %%%%
 default electric golem
 

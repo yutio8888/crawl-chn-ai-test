@@ -1763,7 +1763,7 @@ barrage of energy
 %s碎裂成了一阵冰柱齐射！
 %%%%
 %s shreds %s%s
-%s撕碎了%s%s
+%s撕扯%s%s
 %%%%
 %s sits dull and lifeless in your grasp.
 %s在你手中暗淡无光，毫无生气。
@@ -7141,10 +7141,10 @@ The lock glows eerily!
 锁发出了诡异的光芒！
 %%%%
 The long-dead rise up around %s.
-久死的亡者从%s周围升起。
+死去已久的亡者从%s周围升起。
 %%%%
 The long-dead rise up around you.
-久死的亡者在你周围爬了起来。
+死去已久的亡者在你周围爬了起来。
 %%%%
 The mace of Variability scintillates.
 无常巨锤闪烁着。
