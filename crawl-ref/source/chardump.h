@@ -43,6 +43,7 @@ void display_char_dump();
 string chardump_desc(const item_def& item);
 
 string seed_description();
+string chardump_action_count_label(const string &action);
 
 #ifdef DGL_WHEREIS
 class xlog_fields;

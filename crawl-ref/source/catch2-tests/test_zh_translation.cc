@@ -5853,6 +5853,15 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         const string dump((istreambuf_iterator<char>(file)), istreambuf_iterator<char>());
         INFO(dump);
         CHECK(dump.find(language == lang_t::ZH ? "发射:" : "Fire:") != string::npos);
+        const string action_label = language == lang_t::ZH ? "发射" : "Fire";
+        const size_t action_pos = dump.find(action_label + ":");
+        REQUIRE(action_pos != string::npos);
+        const size_t previous_newline = dump.rfind('\n', action_pos);
+        const size_t line_begin = previous_newline == string::npos
+            ? 0 : previous_newline + 1;
+        CHECK(strwidth(dump.substr(line_begin,
+                       action_pos + action_label.size() - line_begin)) == 7);
+        CHECK_FALSE(rule_garbled_utf8(dump));
         if (language == lang_t::ZH)
             CHECK(dump.find(string(T_("Fire")) + ":") == string::npos);
         const size_t spear = dump.find(language == lang_t::ZH ? "长矛" : "Spear");
@@ -8626,5 +8635,66 @@ TEST_CASE("Ignite Poison restores English possessives and Chinese self reference
             CHECK(strip_tee_colour_tag(observed.get_store()) == expected + "\n");
             CHECK(Options.language == language);
         }
+    }
+}
+
+TEST_CASE("Monster pane descriptions truncate and pad by display columns",
+          "[zh-translation][fts456][monster-pane]")
+{
+#if defined(UNIX) && !defined(__ANDROID__)
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+    init_monsters();
+    const vector<monster_info> monsters = {monster_info(MONS_ORC_WARRIOR)};
+    string description;
+    int colour;
+    mons_to_string_pane(description, colour, false, monsters, 0, 1);
+    REQUIRE(description.find(language == lang_t::ZH ? "兽人战士" : "orc warrior")
+            != string::npos);
+    for (int columns = 0; columns <= strwidth(description) + 2; ++columns)
+    {
+        const string text = fit_monster_pane_description(description, columns);
+        CAPTURE(language, columns, description, text);
+        CHECK_FALSE(rule_garbled_utf8(text));
+        CHECK(strwidth(text) <= columns);
+    }
+    CHECK(fit_monster_pane_description("兽人战士", 7) == "兽人 …)");
+    CHECK(fit_monster_pane_description("兽人战士", 5) == "兽 …)");
+    CHECK(fit_monster_pane_description("兽人战士", 1) == " ");
+    CHECK(fit_monster_pane_description("兽人战士", 8) == "兽人战士");
+    CHECK(fit_monster_pane_description("orc warrior", 7) == "orc w…)");
+    CHECK(fit_monster_pane_description("orc", 5) == "orc  ");
+    CHECK(fit_monster_pane_description("orc", 1) == "o");
+    CHECK(fit_monster_pane_description("orc", 0).empty());
+    CHECK(fit_monster_pane_description("orc", -1).empty());
+}
+
+TEST_CASE("Action count labels preserve UTF-8 and their nine-column prefix",
+          "[zh-translation][fts456][action-count-width]")
+{
+#if defined(UNIX) && !defined(__ANDROID__)
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale]() { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    const vector<pair<string, string>> cases = {
+        {"近战", "   近战: "},
+        {"施放法术", " 施放法: "},
+        {"A法术", "  A法术: "},
+        {"Melee", "  Melee: "},
+        {"LongActionName", "LongAct: "},
+        {"", "       : "},
+    };
+    for (const auto &test : cases)
+    {
+        const string text = chardump_action_count_label(test.first);
+        CAPTURE(test.first, text);
+        CHECK(text == test.second);
+        CHECK_FALSE(rule_garbled_utf8(text));
+        CHECK(strwidth(text) == 9);
     }
 }

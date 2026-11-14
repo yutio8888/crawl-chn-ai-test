@@ -1624,6 +1624,14 @@ static caction_type _action_count_order[]
     CACT_FORM,
 };
 
+string chardump_action_count_label(const string &action)
+{
+    string label = chop_string(action, 7, false);
+    label.insert(0, max(0, 7 - strwidth(label)), ' ');
+    label += ": ";
+    return label;
+}
+
 static void _sdump_action_counts(dump_params &par)
 {
     if (you.action_count.empty())
@@ -1666,7 +1674,7 @@ static void _sdump_action_counts(dump_params &par)
             if (ac == action_vec.begin())
             {
                 const string act = _describe_action(caction_type(cact));
-                par.text += make_stringf("%7.7s: ", act.c_str());
+                par.text += chardump_action_count_label(act);
             }
             else
                 par.text.append(9, ' ');

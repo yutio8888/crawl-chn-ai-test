@@ -24,6 +24,7 @@ void smallterm_warning();
 void redraw_screen(bool show_updates = true);
 
 string mpr_monster_list(bool past = false);
+string fit_monster_pane_description(string desc, int columns);
 int update_monster_pane();
 
 int equip_slot_by_name(const char *s);
