@@ -614,7 +614,7 @@ def run_workflows(bot: PtyBot) -> None:
     # _overview_level_name(): ZH shows the translated short branch name plus
     # depth (地牢:1), while EN keeps the canonical describe(false, true) form.
     evidence.record('workflow:annotation:text', annotation_prompt,
-                    ('为地牢:1添加新注释',))
+                    ('为地牢:1添加新标注',))
     bot.send('危险测试!\r'.encode('utf-8'), 1.0)
     overview = bot.send(bytes([15]), 2.0)
     evidence.record('workflow:annotation:overview', overview,
