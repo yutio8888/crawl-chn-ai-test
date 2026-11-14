@@ -22187,7 +22187,7 @@ The regenerative ooze finishes dripping off of you.
 再生的软泥从你身上滴完了。
 %%%%
 The sentinel's mark upon you fades away.
-你身上的哨兵标记消失了。
+你身上的哨兵印记消失了。
 %%%%
 The sign of ruin upon you fades.
 你身上的毁灭印记消退了。
@@ -26451,7 +26451,7 @@ A pair of horns grows on your head!
 一对角从你的头上长了出来！
 %%%%
 A sentinel's mark is revealing your location to enemies.
-哨兵的标记正在向敌人揭示你的位置。
+哨兵印记正在向敌人揭示你的位置。
 %%%%
 A servant of Beogh has come to challenge you.
 一位贝欧格的仆从来挑战你了。
