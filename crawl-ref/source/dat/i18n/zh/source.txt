@@ -2339,7 +2339,6 @@ barrage of energy
 %%%%
 <yellow>You have %d gold%s</yellow>\n<lightgrey>
 <yellow>你拥有 %d 枚金币%s</yellow>\n<lightgrey>
-<lightgrey>
 %%%%
 > New
 > 新

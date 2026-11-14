@@ -7458,15 +7458,15 @@ Blorkula the orcula triumphant
 Cassandra killed
 
 
-@The_monster@用@possessive@最后的气息喘息道："我……试图警告过你……"
+@The_monster@用@possessive@最后一口气喘息道："我……曾试图警告你……"
 
 
 
-@The_monster@用@possessive@最后的气息喘息道："从来没有人……肯听我的……"
+@The_monster@用@possessive@最后一口气喘息道："从来没有人……肯听我的……"
 
 
 
-@The_monster@用@possessive@最后的气息喘息道："你的命运……咎由自取……"
+@The_monster@用@possessive@最后一口气喘息道："你的命运……由你自己承担……"
 %%%%
 Cassandra triumphant
 

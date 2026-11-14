@@ -42,6 +42,8 @@
 | Kikubaaqudgha | 奇库巴库哈 | 音译 | [D-A-003] |
 | Vehumet | 维胡梅特 | 音译 | [D-A-005] |
 | The Shining One | 光辉者 | 意译 | [D-A-006] |
+| Sargol | 萨格尔 | 盐之荒原神灵；既有两写法一致化，非新命名 | [D-C-118] |
+| Sheza | 谢扎 | 盐之荒原神灵；与谢扎之舞同一词根 | [D-C-118] |
 
 **废弃译名（永远不要使用）**：席夫·穆纳 → 西芙·穆娜 / 特洛戈 → 特洛格 / 奇库巴库加 → 奇库巴库哈
 
@@ -956,7 +958,7 @@
 | Wiglaf title | 炮手矮人威格拉夫 | monster-title; source=database/zh/montitle.txt |
 | Xak'krixis title | 王家远征炼金师扎克里西斯 | monster-title; source=database/zh/montitle.txt |
 | Xtahua title | 古老的扎塔瓦 | monster-title; source=database/zh/montitle.txt |
-| Zenata title | 泽娜塔，西泽的追寻者 | monster-title; source=database/zh/montitle.txt |
+| Zenata title | 泽娜塔，谢扎的追寻者 | monster-title; source=database/zh/montitle.txt |
 
 <!-- domain:spells -->
 ## 二十一、法术名全表
