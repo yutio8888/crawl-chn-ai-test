@@ -197,14 +197,14 @@ Hepliaklqana peaceful fountain_blood
 %%%%
 Ignis fountain_blue
 
-喷泉的水在你的存在下轻轻地嘶嘶作响。
+喷泉的水因你在场而轻轻地嘶嘶作响。
 
 w:1
 那垂死的火焰在喷泉的倒影中恐惧地闪烁着。
 %%%%
 Ignis fountain_sparkling
 
-闪亮喷泉的水在你的存在下轻轻地嘶嘶作响并闪烁着。
+闪亮喷泉的水因你在场而轻轻地嘶嘶作响并闪烁着。
 
 w:1
 那垂死的火焰在闪亮喷泉的倒影中恐惧地闪烁着。
@@ -228,7 +228,7 @@ end
 %%%%
 Wu Jian peaceful fountain_blue
 
-你短暂地沉思着像水流过这座喷泉那样流动的必要。
+你短暂地思索着，觉得自己也该像这座喷泉里的水一样流动。
 
 w:5
 喷泉很平静。水轻轻地流淌着。在这里可以寻得安宁。
@@ -329,7 +329,7 @@ Sif Muna peaceful fountain_blood
 %%%%
 Sif Muna peaceful fountain_eyes
 
-你懒散地数出了喷泉中至少生长着[五|六]种眼睛。
+你随意辨认了一下，发现喷泉里至少长着[五|六]种眼睛。
 
 %%%%
 Sif Muna peaceful fountain_sparkling
