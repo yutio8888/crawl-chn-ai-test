@@ -5002,3 +5002,21 @@ R19–R21 的全文检索确认项按消费者处理：MP 的恢复、储量、�
 - **Choice / scope**: DUR_VERTIGO 的灯标、状态短名、状态正文、Alistair's Intoxication 的施法者副作用和 Throw Klown Pie 的状态列表使用“头晕”。现有起止消息“你感到头晕”“世界停止了旋转”及酒意、天旋地转的自然感受表达保留。
 - **Exceptions**: Dazed / DUR_DAZED / ENCH_DAZED 继续用“眩晕”，D-C-096 不变。mesmerism 球体实际调用 daze，burstshroom / dizzying spores 经 mon-act.cc 施加 Dazed；AF_CONFUSE 的 dizzying energies / spores、毒烟烧瓶不是 Vertigo。普通旋转、佐姆与假施法台词不按字面改名。dizzying 的新译只约束明确的 Vertigo 施加语境，不向这些例外扩展。
 - **Identity / verification**: 英文状态名、查找键、枚举、存档与脚本身份保持原样；回归通过实际 fill_status_info 核对头晕的灯标、短名、正文和英文 TextDB 身份，并核对 Dazed 及其结束句仍为眩晕。不迁移旧存档快照，不作全库“眩晕”弃用。
+
+### D-C-117 — Torpor snail 的机制命名
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-14
+- **Source**: 维护者批准 R23-7-03：torpor snail“休眠蜗牛”改为“迟滞蜗牛”。
+- **Evidence**: [本线逐项消费者](archive/torpor-snail-2026-11-14/consumers.json)。`dat/mons/torpor-snail.yaml` 定义该怪物；`mon-aura.cc` 的 MONS_TORPOR_SNAIL 光环对邻近目标施加 ENCH_SLOW / DUR_SLOW，并排除 stasis。名称突出其使周围迟缓的机制，不指自身休眠。
+- **Landing**: 本线候选，PR 待合并；两条维护线使用同一作用域。
+
+| 消费者 | 修改或保留及原因 |
+|---|---|
+| SourceDB `torpor snail` | 唯一独立名称值改为“迟滞蜗牛”；没有独立冠词、复数或其他派生名称键 |
+| `mon-util.cc` 的 mons_type_name / zh_monster_name、`mon-info.cc` 的 common_name / pluralised_name / to_string、目标及怪物列表 | 通过共享名称键派生显示，自动使用新名；测试中英单数、冠词、复数、列表以及英文 db_name，不另造派生键 |
+| `dat/descript/zh/monsters.txt` 同名正文 | 保留“缓慢的腹足类动物”“拖慢”等准确的普通叙述；正文没有旧专名，不强行插入新名 |
+| `dat/descript/zh/quotes.txt` 同名引文 | 保留民谣的普通“蜗牛”，不是该怪物专名；英文查询键不变 |
+| database/zh、Lua、vault、枚举、YAML 与图块身份 | 未发现独立中文名称消费者；生成、查询、协议与存档身份继续使用 torpor snail / MONS_TORPOR_SNAIL |
+| 普通 torpor、Shadow Torpor、其他蜗牛及历史显示快照 | 作用域外，保留原文；不全局替换“休眠”，不迁移旧存档 |

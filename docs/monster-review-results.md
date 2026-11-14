@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`5c53167600f6f21ef1db5531f482140bc58c33f0a44f321c5314f8353cdb9050`
-- 清单 SHA-256：`bbc130566e98805bafe2cf27bb8c5357be2f7b4cbee5f718e41531b174742bb4`
+- 清单 SHA-256：`c976f0cbd2c63b1f7af25cdc0c163402b1eb9ecad88136dcd8999a7b5d5d7c23`
 - 身份总数：816（现行 692；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -611,7 +611,7 @@
 | `monster:MONS_OCTOPODE_CRUSHER` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_CRAB` | current; exposure=internal_or_special; name=crab→螃蟹; genus=MONS_CRAB; species=MONS_CRAB; data=crawl-ref/source/dat/mons/crab.yaml; desc=N/A | keep |
 | `monster:MONS_GHOST_CRAB` | current; exposure=ordinary; name=ghost crab→幽灵螃蟹; genus=MONS_CRAB; species=MONS_GHOST_CRAB; data=crawl-ref/source/dat/mons/ghost-crab.yaml; desc=EN/ZH | keep |
-| `monster:MONS_TORPOR_SNAIL` | current; exposure=ordinary; name=torpor snail→休眠蜗牛; genus=MONS_ELEPHANT_SLUG; species=MONS_TORPOR_SNAIL; data=crawl-ref/source/dat/mons/torpor-snail.yaml; desc=EN/ZH | retranslate: description corrected |
+| `monster:MONS_TORPOR_SNAIL` | current; exposure=ordinary; name=torpor snail→迟滞蜗牛; genus=MONS_ELEPHANT_SLUG; species=MONS_TORPOR_SNAIL; data=crawl-ref/source/dat/mons/torpor-snail.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_MNOLEG_TENTACLE` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_MNOLEG_TENTACLE_SEGMENT` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_BENNU` | current; exposure=ordinary; name=bennu→贝努鸟; genus=MONS_BENNU; species=MONS_BENNU; data=crawl-ref/source/dat/mons/bennu.yaml; desc=EN/ZH | retranslate: description corrected |

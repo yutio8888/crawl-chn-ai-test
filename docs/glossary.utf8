@@ -1474,6 +1474,7 @@ Tomb of Doroklohe	多洛克洛之墓	domain=spells; source=EN/ZH; 备注=⚠️ 
 Torment	折磨	domain=combat; source=EN/ZH; column3=按比例造成伤害
 torment immunity	折磨免疫	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；death:fakemuts, fungus:fakemuts, slaughter:fakemuts, tree:fakemuts, wisp:fakemuts；不声称是可遗传突变；decision=D-C-098
 torment resistance 1	折磨抗性1	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；bat-swarm:fakemuts, statue:fakemuts, vampire:fakemuts；不声称是可遗传突变；decision=D-C-098
+torpor snail	迟滞蜗牛	domain=monsters; source=EN/ZH; Scope / comment=MONS_TORPOR_SNAIL 名称及派生显示；迟缓光环，非自身休眠；普通 torpor、Shadow Torpor 与其他蜗牛不改；decision=D-C-117；reject=休眠蜗牛
 Touch	触	domain=magic; source=EN/ZH; 状态=✅ 已确认（2 项现行）
 Touch of Paradox	悖论之触	domain=spells; source=EN/ZH; 依据 / 作用域=spells.txt；使友军脱离常规空间；沿用 Touch 构词；decision=D-C-095
 tough skin	硬化表皮	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
