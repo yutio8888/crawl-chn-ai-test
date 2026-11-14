@@ -19,6 +19,7 @@
 #include "clua.h"
 #include "cloud.h"
 #include "chardump.h"
+#include "kills.h"
 #include "colour.h"
 #include "dlua.h"
 #include "database.h"
@@ -13404,3 +13405,79 @@ TEST_CASE("domain gaps: real note and piety dumps align Chinese columns and tran
                                             : "domain-gaps\n\n  You have no stashes.\n"));
 }
 #endif
+
+TEST_CASE("Long formatted Unicode paragraphs split only at complete code points",
+          "[zh-translation][fts456][format-chunks]")
+{
+    for (const string unit : {string("中文段落"), string("🐌"), string("ASCII")})
+    for (const string prefix : {string(), string("a"), string("ab"), string("abc"),
+                                string(990, 'x') + "\n"})
+    {
+        string plain = prefix;
+        for (int i = 0; i < 400; ++i)
+            plain += unit;
+        const formatted_string formatted = formatted_string::parse_string(
+            "<red>" + plain + "</red>");
+        string joined;
+        int colour = LIGHTGREY;
+        size_t chunks = 0;
+        for (const auto &op : formatted.ops)
+        {
+            if (op.type == FSOP_COLOUR)
+                colour = op.colour;
+            if (op.type == FSOP_TEXT && !op.text.empty())
+            {
+                CAPTURE(unit, prefix.size(), chunks, op.text.size());
+                CHECK(colour == RED);
+                CHECK_FALSE(rule_garbled_utf8(op.text));
+                CHECK(op.text.size() <= 999);
+                joined += op.text;
+                ++chunks;
+            }
+        }
+        CHECK(chunks >= 2);
+        CHECK(joined == plain);
+        CHECK(formatted.tostring() == plain);
+        CHECK(colour == LIGHTGREY);
+    }
+}
+
+TEST_CASE("Torpor snail display variants share the approved name and English identity",
+          "[zh-translation][fts456][torpor-name]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    init_monsters();
+    const string name = language == lang_t::ZH ? "迟滞蜗牛" : "torpor snail";
+    CHECK(mons_type_name(MONS_TORPOR_SNAIL, DESC_PLAIN) == name);
+    CHECK(mons_type_name_en(MONS_TORPOR_SNAIL, DESC_PLAIN) == "torpor snail");
+    const monster_info info(MONS_TORPOR_SNAIL);
+    CHECK(info.db_name() == "torpor snail");
+    for (description_level_type article : {DESC_PLAIN, DESC_A, DESC_THE})
+        CHECK(info.common_name(article).find(name) != string::npos);
+    CHECK(info.pluralised_name() == (language == lang_t::ZH ? "迟滞蜗牛" : "torpor snails"));
+    for (int count : {1, 2})
+    {
+        string pane;
+        int colour;
+        info.to_string(count, pane, colour);
+        CHECK(pane.find(name) != string::npos);
+        CHECK(pane.find("休眠蜗牛") == string::npos);
+    }
+}
+
+TEST_CASE("Mannequin kill names localize the complete modifier template",
+          "[zh-translation][fts456][mannequin-kill]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    init_monsters();
+    kill_monster_desc description;
+    description.monnum = MONS_ORC;
+    description.modifier = kill_monster_desc::M_MANNEQUIN;
+    const kill_def killed;
+    CHECK(killed.base_name(description) == (language == lang_t::ZH
+          ? "兽人人偶" : "orc mannequin"));
+    CHECK(description.monnum == MONS_ORC);
+    CHECK(description.modifier == kill_monster_desc::M_MANNEQUIN);
+}
