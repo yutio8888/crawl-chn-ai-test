@@ -118,7 +118,7 @@ Summon Divine Warrior ability
 %%%%
 Brand Weapon With Holy Wrath ability
 
-选择一件武器，让光辉者为其赋予永久的圣光烙印。
+选择一件武器，让光辉者为其赋予永久的圣光铭印。
 恶魔武器将被转化为更强力的圣武器。此祝福只能使用一次，且不可用于神器武器。
 %%%%
 Unearth Wretches ability

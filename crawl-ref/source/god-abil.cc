@@ -6088,9 +6088,11 @@ bool hepliaklqana_choose_ancestor_type(int ancestor_choice)
     auto ancestor_mapped = map_find(ancestor_types, ancestor_choice);
     ASSERT(ancestor_mapped);
     const auto ancestor_type = *ancestor_mapped;
-    const string ancestor_type_name = mons_type_name(ancestor_type, DESC_A);
+    const string ancestor_type_name = mons_type_name_en(ancestor_type, DESC_A);
+    const string display_type_name = Options.language == lang_t::ZH
+        ? mons_type_name(ancestor_type, DESC_PLAIN) : ancestor_type_name;
 
-    if (!yesno(make_stringf(T_("Are you sure you want to remember your ancestor as %s?"), ancestor_type_name.c_str()).c_str(),
+    if (!yesno(make_stringf(T_("Are you sure you want to remember your ancestor as %s?"), display_type_name.c_str()).c_str(),
                false, 'n'))
     {
         canned_msg(MSG_OK);
