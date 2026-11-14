@@ -126,6 +126,8 @@ namespace
 // run through their actual mid/foe lookup paths.
 struct issue10_world
 {
+    // Rebind after saved_player restores its props, not to the temporary player.
+    unwinder restore_shopping{[] { shopping_list.refresh(); }};
     unwind_var<player> saved_player{you};
     unwind_var<bool> saved_test{crawl_state.test, true};
     unwind_var<bool> saved_started{crawl_state.game_started, false};
@@ -141,6 +143,7 @@ struct issue10_world
         init_monsters();
         init_spell_descs();
         you = player();
+        shopping_list.refresh();
         you.last_mid = old_last_mid;
         you.species = SP_HUMAN;
         you.hp = you.hp_max = 100;
