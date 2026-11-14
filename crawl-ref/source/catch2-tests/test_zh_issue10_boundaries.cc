@@ -16,6 +16,9 @@
 #include "format.h"
 #include "god-abil.h"
 #include "i18n.h"
+#include "invent.h"
+#include "lang-en-guard.h"
+#include "item-name.h"
 #include "item-prop.h"
 #include "item-use.h"
 #include "items.h"
@@ -1169,4 +1172,81 @@ TEST_CASE("Player miscasts join expanded Chinese colours at the production displ
     CHECK(trimmed_string(emitted) == expected);
     CHECK(you.hp == 100);
     CHECK(you.duration[DUR_POISONING] == 0);
+}
+
+TEST_CASE("Adjectival weapon brands reach full inventory names and item examination",
+          "[zh-translation][r28][r28-brand-names]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const int variant = GENERATE(0, 1, 2, 3, 4);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    const brand_type brands[] = { SPWPN_VAMPIRISM, SPWPN_ANTIMAGIC, SPWPN_HEAVY,
+                                  SPWPN_SPECTRAL, SPWPN_DEVIOUS };
+    const char * const english[] = { "vampiric", "antimagic", "heavy", "spectral", "devious" };
+    const char * const chinese[] = { "吸血", "禁魔", "沉重", "幽魂", "狡诈" };
+    item_def &item = you.inv[0];
+    item.base_type = OBJ_WEAPONS;
+    item.sub_type = WPN_DAGGER;
+    item.brand = brands[variant];
+    item.quantity = 1;
+    item.flags = ISFLAG_IDENTIFIED;
+    item.link = 0;
+    item.slot = 'a';
+    item.pos = ITEM_IN_INVENTORY;
+    const string expected = language == lang_t::ZH
+        ? string("+0 ") + chinese[variant] + "匕首"
+        : string("+0 ") + english[variant] + " dagger";
+    CAPTURE(language, variant, expected);
+    CHECK(item.name(DESC_PLAIN) == expected);
+    const InvEntry entry(item);
+    CHECK(entry.get_fullname().find(expected) != string::npos);
+    describe_info info;
+    get_item_desc(item, info);
+    CHECK(info.body.str().find(expected + ".") != string::npos);
+    // The legal numeric separator and the canonical identity stay intact.
+    CHECK(item.name(DESC_PLAIN).substr(0, 3) == "+0 ");
+    {
+        ScopedLangEn canonical;
+        CHECK(item.name(DESC_DBNAME) == "dagger");
+    }
+}
+
+TEST_CASE("Jinxbite uses the same full branded name at its real display sink",
+          "[zh-translation][r28][r28-brand-sprite]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    unwind_var<bool> saving(crawl_state.need_save, false);
+    const int index = get_mitm_slot();
+    REQUIRE(index != NON_ITEM);
+    unwind_var<item_def> restore_item(env.item[index]);
+    item_def &dagger = env.item[index];
+    dagger = item_def();
+    dagger.base_type = OBJ_WEAPONS;
+    dagger.sub_type = WPN_DAGGER;
+    dagger.brand = SPWPN_HEAVY;
+    dagger.quantity = 1;
+    dagger.flags = ISFLAG_IDENTIFIED;
+    monster *mon = world.place(MONS_ORC, coord_def(22, 20));
+    REQUIRE(mon->pickup_item(dagger, true, true));
+    REQUIRE(mon->weapon() == &dagger);
+    mon->hit_points = mon->max_hit_points = 10000;
+    const string expected = language == lang_t::ZH ? "+0 沉重匕首" : "+0 heavy dagger";
+    string witness;
+    for (uint64_t seed = 1; seed <= 128 && witness.empty(); ++seed)
+    {
+        rng::subgenerator choice(seed, 280403);
+        string raw;
+        {
+            msg::tee capture(raw);
+            attempt_jinxbite_hit(*mon);
+        }
+        const string message = formatted_string::parse_string(raw).tostring();
+        if (message.find(expected) != string::npos)
+            witness = message;
+    }
+    CAPTURE(language, expected, witness);
+    CHECK_FALSE(witness.empty());
 }
