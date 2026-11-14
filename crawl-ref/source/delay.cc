@@ -995,14 +995,14 @@ void run_macro(const char *macroname)
     {
         if (!clua.error.empty())
         {
-            mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
+            mprf(MSGCH_ERROR, T_("Lua error: %s"), clua.error.c_str());
             stop_delay();
         }
         else if (delay->duration > 0)
             --delay->duration;
     }
 #else
-    mprf(MSGCH_ERROR, "CLua bindings not available on this build!");
+    mprf(MSGCH_ERROR, T_("CLua bindings not available on this build!"));
     UNUSED(macroname);
     stop_delay();
 #endif
