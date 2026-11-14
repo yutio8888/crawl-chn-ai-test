@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`5c53167600f6f21ef1db5531f482140bc58c33f0a44f321c5314f8353cdb9050`
-- 清单 SHA-256：`3099c899f8817938350ff5ec612d190c400a9ef66dc0ad4b1d60c01fc19e07b0`
+- 清单 SHA-256：`a7572a3c18033f00e02b94dbe1232dc615cceaaefca921ed07fd24c2ce90c64d`
 - 身份总数：816（现行 692；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -53,7 +53,7 @@
 | `monster:MONS_DEATH_YAK` | current; exposure=ordinary; name=death yak→死亡牦牛; genus=MONS_YAK; species=MONS_DEATH_YAK; data=crawl-ref/source/dat/mons/death-yak.yaml; desc=EN/ZH | keep |
 | `monster:MONS_CATOBLEPAS` | current; exposure=ordinary; name=catoblepas→卡托布勒帕斯; genus=MONS_YAK; species=MONS_CATOBLEPAS; data=crawl-ref/source/dat/mons/catoblepas.yaml; desc=EN/ZH | keep |
 | `monster:MONS_ELEPHANT` | current; exposure=ordinary; name=elephant→大象; genus=MONS_ELEPHANT; species=MONS_ELEPHANT; data=crawl-ref/source/dat/mons/elephant.yaml; desc=EN/ZH | keep |
-| `monster:MONS_DIRE_ELEPHANT` | current; exposure=ordinary; name=dire elephant→恐象; genus=MONS_ELEPHANT; species=MONS_DIRE_ELEPHANT; data=crawl-ref/source/dat/mons/dire-elephant.yaml; desc=EN/ZH | keep |
+| `monster:MONS_DIRE_ELEPHANT` | current; exposure=ordinary; name=dire elephant→恐象; genus=MONS_ELEPHANT; species=MONS_DIRE_ELEPHANT; data=crawl-ref/source/dat/mons/dire-elephant.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_HELLEPHANT` | current; exposure=ordinary; name=hellephant→地狱象; genus=MONS_ELEPHANT; species=MONS_HELLEPHANT; data=crawl-ref/source/dat/mons/hellephant.yaml; desc=EN/ZH | keep |
 | `monster:MONS_MANTICORE` | current; exposure=ordinary; name=manticore→蝎尾狮; genus=MONS_MANTICORE; species=MONS_MANTICORE; data=crawl-ref/source/dat/mons/manticore.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_HIPPOGRIFF` | current; exposure=ordinary; name=hippogriff→鹰头马; genus=MONS_HIPPOGRIFF; species=MONS_HIPPOGRIFF; data=crawl-ref/source/dat/mons/hippogriff.yaml; desc=EN/ZH | retranslate: description corrected |
@@ -644,7 +644,7 @@
 | `monster:MONS_BAI_SUZHEN_DRAGON` | current; exposure=unique; name=Bai Suzhen→白素贞; genus=MONS_DRAGON; species=MONS_STORM_DRAGON; data=crawl-ref/source/dat/mons/bai-suzhen-dragon.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SALTLING` | current; exposure=ordinary; name=saltling→盐偶; genus=MONS_GOLEM; species=MONS_SALTLING; data=crawl-ref/source/dat/mons/saltling.yaml; desc=EN/ZH | keep |
 | `monster:MONS_IMPERIAL_MYRMIDON` | current; exposure=ordinary; name=imperial myrmidon→帝国勇士; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/imperial-myrmidon.yaml; desc=EN/ZH | retranslate: description corrected |
-| `monster:MONS_SERVANT_OF_WHISPERS` | current; exposure=ordinary; name=servant of whispers→低语之仆; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/servant-of-whispers.yaml; desc=EN/ZH | keep |
+| `monster:MONS_SERVANT_OF_WHISPERS` | current; exposure=ordinary; name=servant of whispers→低语之仆; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/servant-of-whispers.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_PEACEKEEPER` | current; exposure=ordinary; name=peacekeeper→维和者; genus=MONS_GOLEM; species=MONS_PEACEKEEPER; data=crawl-ref/source/dat/mons/peacekeeper.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_RAGGED_HIEROPHANT` | current; exposure=ordinary; name=ragged hierophant→褴褛祭司; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/ragged-hierophant.yaml; desc=EN/ZH | keep |
 | `monster:MONS_HALAZID_WARLOCK` | current; exposure=ordinary; name=halazid warlock→哈拉兹德术士; genus=MONS_LICH; species=MONS_LICH; data=crawl-ref/source/dat/mons/halazid-warlock.yaml; desc=EN/ZH | keep |
