@@ -22205,7 +22205,7 @@ You are ready to recite again.
 你准备好再次吟诵了。
 %%%%
 You are ready to siphon essence again.
-你准备好再次汲取精华了。
+你准备好再次吸取精华了。
 %%%%
 You are ready to speak a word of chaos again.
 你准备好再次说出混沌之言了。
@@ -23780,13 +23780,13 @@ You are no longer glowing.
 你不再发光了。
 %%%%
 You feel more in control of yourself again.
-你再次感觉更能控制自己了。
+你感觉又能更好地控制自己了。
 %%%%
 Your life is in your own %s again!
 你的生命再次掌握在自己的%s中！
 %%%%
 Your familiar recovers from its injuries.
-你的魔宠从伤势中恢复了。
+你的使魔从伤势中恢复了。
 %%%%
 You can drink potions again.
 你又可以饮用药水了。
@@ -26748,7 +26748,7 @@ You are calling forth ooze from nearby walls.
 你正在从附近墙壁中召唤软泥。
 %%%%
 You are channelling the dead.
-你正在引导亡灵。
+你正在引导死者。
 %%%%
 You are channelling the inexorable grasp of Yredelemnul.
 你正在引导伊莱德莱姆努尔的无情掌控。
@@ -30148,13 +30148,13 @@ You are terrified.
 你惊恐万分。
 %%%%
 You are unable to call your canine familiar.
-你无法召唤你的犬类伙伴。
+你无法召唤你的犬类使魔。
 %%%%
 You are unable to create a polar vortex.
 你无法创造极地漩涡。
 %%%%
 You are vexed.
-你焦躁不安。
+你恼怒不已。
 %%%%
 You feel very devious.
 你感到十分狡诈。
@@ -41191,7 +41191,7 @@ status|corroded (%d)
 腐蚀(%d)
 %%%%
 status|death channelling
-引导死亡
+死亡通道
 %%%%
 status|diminished spells
 法术减弱
