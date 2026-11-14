@@ -492,7 +492,9 @@ string kill_def::base_name(const kill_monster_desc &md) const
                : "spectral " + name;
         break;
     case kill_monster_desc::M_MANNEQUIN:
-        name += " mannequin";
+        name = Options.language == lang_t::ZH
+               ? make_stringf(T_("%s mannequin"), name.c_str())
+               : name + " mannequin";
         break;
     default:
         // Silence compiler warning about not handling M_NORMAL and
