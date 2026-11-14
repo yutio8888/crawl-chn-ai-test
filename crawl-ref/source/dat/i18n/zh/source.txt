@@ -1958,7 +1958,7 @@ barrage of energy
 %s的发条蜜蜂发条走完了，掉到了地上。
 %%%%
 %s's fire resistance is stripped away!
-%s的火焰抗性被剥离了！
+%s火焰抗性被剥离了！
 %%%%
 %s's wrath is beginning to fade.
 %s的愤怒开始消退。
