@@ -1707,8 +1707,10 @@ string weapon_brand_desc(const char *body, const item_def &weap,
                              get_weapon_brand(weap);
 
     if (brand_prefers_adj.count(brand))
+    {
         return make_stringf(Options.language == lang_t::ZH ? "%s%s" : "%s %s",
                             brand_type_adj(brand), body);
+    }
     else if (brand == SPWPN_NORMAL)
     {
         if (get_equip_desc(weap))
