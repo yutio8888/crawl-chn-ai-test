@@ -219,8 +219,8 @@ Call Down Damnation spell
 %%%%
 Call Down Lightning spell
 
-用闪电轰击敌人，无需直射。
-目标性魔法需要有距离才能发挥作用，因此相邻或几乎相邻的敌人无法被击中。
+用闪电轰击指定敌人，无需直达射线。
+瞄准魔法必须在一定距离外才能生效，因此无法击中相邻或几乎相邻的敌人。
 %%%%
 Call Imp spell
 
@@ -1092,7 +1092,7 @@ Searing Breath spell
 %%%%
 Seracfall spell
 
-猛烈地将附近的一个拟像崩成大冰块，它会在轰然倒塌时爆炸。
+猛烈地将附近的一个拟像崩解为一大块冰，冰块撞击时会爆炸。
 由于强大的冲击和切削，它造成的一半伤害无视寒冰抗性。
 %%%%
 Shadow Creatures spell
