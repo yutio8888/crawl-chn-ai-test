@@ -27,6 +27,7 @@
 #include "options.h"
 #include "orb.h"
 #include "spl-transloc.h"
+#include "spl-miscast.h"
 #include "player.h"
 #include "player-equip.h"
 #include "spl-selfench.h"
@@ -1044,4 +1045,52 @@ TEST_CASE("Orb pickup custom and null messages translate at the real display bou
     CHECK(fallback.find(expected) != string::npos);
     you.duration[DUR_SILENCE] = 0;
     invalidate_agrid(true);
+}
+
+TEST_CASE("Player miscasts join expanded Chinese colours at the production display sink",
+          "[zh-translation][r26-miscast-space]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const bool dust = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    unwind_var<bool> condense(Options.msg_condense_repeats, false);
+    REQUIRE(you.see_cell(you.pos()));
+
+    // Choose a real expanded database variant that exposes an internal space.
+    // With zero level/failure, damage calculation draws no random numbers and
+    // the alchemy miscast adds no poison. Replaying the seed reaches _do_msg
+    // through the public gameplay entry point, without replacing the database.
+    uint64_t selected_seed = 0;
+    string raw;
+    for (uint64_t seed = 1; seed <= 512; ++seed)
+    {
+        rng::subgenerator choice(seed, 260301);
+        const string candidate = getSpeakString("alchemy miscast player");
+        const string witness = language == lang_t::ZH
+            ? (dust ? "尘云环绕着你" : "你的皮肤浮现出")
+            : (dust ? "You are surrounded by clouds of" : "Your skin changes to");
+        if (candidate.find(witness) != string::npos
+            && candidate.find(' ') != string::npos
+            && candidate.find_first_of("[]@") == string::npos)
+        {
+            raw = candidate;
+            selected_seed = seed;
+            break;
+        }
+    }
+    CAPTURE(language, dust, raw, selected_seed);
+    REQUIRE(selected_seed != 0);
+    // These witnesses contain only Chinese words in ZH. Do not derive the
+    // expected display by invoking the production space-normalisation helper.
+    const string expected = (language == lang_t::ZH
+        ? replace_all(raw, " ", "") + "。" : raw + ".");
+    rng::subgenerator replay(selected_seed, 260301);
+    const string emitted = observe_message([] {
+        miscast_effect(you, nullptr, {miscast_source::wizard},
+                       spschool::alchemy, 0, 0, "regression miscast");
+    });
+    CHECK(trimmed_string(emitted) == expected);
+    CHECK(you.hp == 100);
+    CHECK(you.duration[DUR_POISONING] == 0);
 }
