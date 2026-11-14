@@ -11143,7 +11143,7 @@ You swap places with %s.
 你与%s交换了位置。
 %%%%
 You swap places with your shadow and weave the vestiges of your form into it.
-你与影子交换了位置，并把你形态的残余编织进去。
+你与影子交换了位置，并将身形残留的痕迹织入影子之中。
 %%%%
 You swear to avenge %s death!
 你发誓要为%s死复仇！
@@ -26751,7 +26751,7 @@ You are channelling the dead.
 你正在引导亡灵。
 %%%%
 You are channelling the inexorable grasp of Yredelemnul.
-你正在引导伊雷德勒姆努尔的无情掌控。
+你正在引导伊莱德莱姆努尔的无情掌控。
 %%%%
 You are chanting a vengeful prayer.
 你正在吟唱复仇祷文。
