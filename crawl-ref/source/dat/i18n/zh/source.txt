@@ -21395,7 +21395,7 @@ You regain access to your magic.
 你恢复了使用魔法的能力。
 %%%%
 You step away from death's doorway.
-你从死亡之门中走了出来。
+你从死亡之门前退开了。
 %%%%
 You stop calling forth ooze.
 你停止了召唤软泥。
@@ -21440,7 +21440,7 @@ Your orb has recharged its mesmeric power.
 你的宝珠重新充能了迷魂之力。
 %%%%
 Your slime shroud regrows.
-你的黏液护盾重新生长了。
+你的黏液护罩重新长好了。
 %%%%
 Your slimification abates.
 你的黏液化消退了。
@@ -24891,7 +24891,7 @@ You are unable to cast spells.
 你无法施法。
 %%%%
 You are unable to enter death's door.
-你无法进入死门状态。
+你无法进入死亡之门状态。
 %%%%
 You are unable to hop.
 你无法跳跃。
@@ -26037,7 +26037,7 @@ Your shed blood clings to and protects you.
 你流出的血液附着并保护着你。
 %%%%
 Your shroud of slime is broken and needs time to repair.
-你的黏液屏障已破裂，需要时间修复。
+你的黏液护罩已破裂，需要时间修复。
 %%%%
 Your sickness prevents you from regenerating health.
 你的疾病阻止了生命再生。
