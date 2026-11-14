@@ -1293,28 +1293,49 @@ TEST_CASE("Ashenzari destroy-item prompt translates at the real inventory bounda
 
 #endif
 
-TEST_CASE("Shop keeper and suffix separators follow the display language",
+TEST_CASE("Shop names preserve English words and join only Chinese neighbours",
           "[zh-translation][r29][r29-shop]")
 {
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
     const bool god_keeper = GENERATE(false, true);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
     issue10_world world;
-    shop_struct shop;
-    shop.type = SHOP_GENERAL_ANTIQUE;
-    shop.pos = coord_def(10, 10);
-    shop.shop_name = god_keeper ? "Gozag" : "Ada Vale";
-    const string expected = language == lang_t::ZH
-        ? (god_keeper ? "哥萨戈的杂项古董" : "Ada Vale的杂项古董")
-        : (god_keeper ? "Gozag's Assorted Antiques" : "Ada Vale's Assorted Antiques");
-    CHECK(shop_name(shop) == expected);
-    shop.shop_type_name = "Saved type";
-    shop.shop_suffix_name = "Saved suffix";
-    const string saved_expected = language == lang_t::ZH
-        ? (god_keeper ? "哥萨戈的Saved typeSaved suffix" : "Ada Vale的Saved typeSaved suffix")
-        : (god_keeper ? "Gozag's Saved type Saved suffix" : "Ada Vale's Saved type Saved suffix");
-    CHECK(shop_name(shop) == saved_expected);
-    CHECK(shop.shop_name == (god_keeper ? "Gozag" : "Ada Vale"));
-    CHECK(shop.shop_type_name == "Saved type");
-    CHECK(shop.shop_suffix_name == "Saved suffix");
+    struct shop_case
+    {
+        const char* type;
+        const char* suffix;
+        const char* english_tail;
+        const char* chinese_tail;
+    };
+    const shop_case cases[] = {
+        { "", "", " Assorted Antiques", "杂项古董" },
+        { "Platinum", "Reserve", " Platinum Reserve", " Platinum Reserve" },
+        { "Basic", "Armour", " Basic Armour", " Basic Armour" },
+        { "Saved type", "Saved suffix", " Saved type Saved suffix", " Saved type Saved suffix" },
+        { "杂货", "商场", " 杂货 商场", "杂货商场" },
+        { "珠宝", "Shop", " 珠宝 Shop", "珠宝 Shop" },
+    };
+    const string prefix = language == lang_t::ZH
+        ? (god_keeper ? "哥萨戈的" : "Ada Vale的")
+        : (god_keeper ? "Gozag's" : "Ada Vale's");
+    for (const auto& row : cases)
+    {
+        shop_struct shop;
+        shop.type = SHOP_GENERAL_ANTIQUE;
+        shop.pos = coord_def(10, 10);
+        shop.shop_name = god_keeper ? "Gozag" : "Ada Vale";
+        shop.shop_type_name = row.type;
+        shop.shop_suffix_name = row.suffix;
+        const auto state = rng::current_generator().get_state();
+        const auto count = rng::current_generator().get_count();
+        const string expected = prefix + (language == lang_t::ZH
+            ? row.chinese_tail : row.english_tail);
+        CAPTURE(language, god_keeper, row.type, row.suffix);
+        CHECK(shop_name(shop) == expected);
+        CHECK(shop.shop_name == (god_keeper ? "Gozag" : "Ada Vale"));
+        CHECK(shop.shop_type_name == row.type);
+        CHECK(shop.shop_suffix_name == row.suffix);
+        CHECK(rng::current_generator().get_state() == state);
+        CHECK(rng::current_generator().get_count() == count);
+    }
 }

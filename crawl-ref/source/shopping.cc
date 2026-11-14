@@ -30,6 +30,7 @@
 #include "libutil.h"
 #include "menu.h"
 #include "message.h"
+#include "mon-util.h"
 #include "notes.h"
 #include "options.h"
 #include "output.h"
@@ -1681,7 +1682,6 @@ string shop_name(const shop_struct& shop)
     const shop_type type = shop.type;
 
     string sh_name = "";
-    const string separator = Options.language == lang_t::ZH ? "" : " ";
 
 #if TAG_MAJOR_VERSION == 34
     // xref ShopInfo::load
@@ -1695,7 +1695,7 @@ string shop_name(const shop_struct& shop)
         string keeper = shop.shop_name;
         if (keeper == "Gozag" || keeper == "Cheibriados" || keeper == "Zin")
             keeper = T_(keeper.c_str());
-        sh_name += apostrophise(keeper) + separator;
+        sh_name += apostrophise(keeper) + " ";
     }
     else
     {
@@ -1703,7 +1703,7 @@ string shop_name(const shop_struct& shop)
             | (static_cast<uint32_t>(shop.keeper_name[1]) << 8)
             | (static_cast<uint32_t>(shop.keeper_name[1]) << 16);
 
-        sh_name += apostrophise(make_name(seed)) + separator;
+        sh_name += apostrophise(make_name(seed)) + " ";
     }
 
     if (!shop.shop_type_name.empty())
@@ -1712,13 +1712,16 @@ string shop_name(const shop_struct& shop)
         sh_name += shop_type_name(type);
 
     if (!shop.shop_suffix_name.empty())
-        sh_name += separator + shop.shop_suffix_name;
+        sh_name += " " + shop.shop_suffix_name;
     else
     {
         string sh_suffix = _shop_type_suffix(type, shop.pos);
         if (!sh_suffix.empty())
-            sh_name += separator + sh_suffix;
+            sh_name += " " + sh_suffix;
     }
+
+    if (Options.language == lang_t::ZH)
+        sh_name = strip_cjk_spaces(sh_name);
 
     return sh_name;
 }
