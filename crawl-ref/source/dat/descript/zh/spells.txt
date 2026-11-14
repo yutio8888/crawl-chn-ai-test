@@ -112,7 +112,7 @@ Sentinel's Mark spell
 %%%%
 Blink Allies Away spell
 
-将施法者视野内的友方从附近敌人那里闪送走。
+使施法者视野内的友方闪烁远离附近的敌人。
 %%%%
 Blink Allies Encircling spell
 
@@ -820,7 +820,7 @@ March of Sorrows spell
 %%%%
 Marshlight spell
 
-在施法者附近生成两个燃烧的沼气球。球会迅速寻找最近的怪物并灼烧它们。
+在与施法者相邻的格子生成两个燃烧的沼气球。球会迅速寻找最近的怪物并灼烧它们。
 巫师试着将其仿制为“狐火”，但他们的版本的威力要小得多。
 %%%%
 Martyr's Knell spell
