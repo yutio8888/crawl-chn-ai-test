@@ -51218,3 +51218,12 @@ Fixing up corrupted PlaceInfo for %s (levels_seen is %d)
 %%%%
 CLua bindings not available on this build!
 此构建不提供CLua绑定！
+%%%%
+ancestor class|a knight
+骑士
+%%%%
+ancestor class|a battlemage
+战斗法师
+%%%%
+ancestor class|a hexer
+妖术师
