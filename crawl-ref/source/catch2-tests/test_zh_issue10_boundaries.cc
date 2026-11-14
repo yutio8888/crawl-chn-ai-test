@@ -13,6 +13,7 @@
 #include "potion.h"
 #include "god-passive.h"
 #include "syscalls.h"
+#include "species.h"
 #include "makeitem.h"
 #include "database.h"
 #include "terrain.h"
@@ -1523,6 +1524,69 @@ TEST_CASE("State intensity is localized at all five stable gameplay consumers",
         CHECK(emitted.find("更强的") == string::npos);
 }
 
+TEST_CASE("Missing species genus and adjective forms use the display fallback",
+          "[zh-translation][r31][r31-species]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    int fallbacks = 0;
+    for (int i = 0; i < NUM_SPECIES; ++i)
+    {
+        const species_type sp = static_cast<species_type>(i);
+        const species_def& def = get_species_def(sp);
+        if (!def.name)
+            continue;
+        for (const auto form : {species::SPNAME_PLAIN, species::SPNAME_GENUS,
+                                species::SPNAME_ADJ})
+        {
+            INFO("species=" << def.name << " form=" << static_cast<int>(form));
+            const char *raw = form == species::SPNAME_GENUS && def.genus_name
+                ? def.genus_name : form == species::SPNAME_ADJ && def.adj_name
+                ? def.adj_name : def.name;
+            CHECK(species::name(sp, form, true) == raw);
+            if (language == lang_t::EN)
+                CHECK(species::name(sp, form) == raw);
+            if (form != species::SPNAME_PLAIN
+                && !(form == species::SPNAME_GENUS ? def.genus_name : def.adj_name))
+            {
+                ++fallbacks;
+                CHECK(species::name(sp, form) == species::name(sp));
+            }
+        }
+    }
+    REQUIRE(fallbacks > 0);
+    CHECK(species::name(SP_HUMAN, species::SPNAME_GENUS)
+          == (language == lang_t::ZH ? "人类" : "Human"));
+    CHECK(species::name(SP_HUMAN, species::SPNAME_ADJ)
+          == (language == lang_t::ZH ? "人类" : "Human"));
+    CHECK(species::name(SP_POLTERGEIST, species::SPNAME_PLAIN)
+          == (language == lang_t::ZH ? "骚灵" : "Poltergeist"));
+    CHECK(species::name(SP_POLTERGEIST, species::SPNAME_ADJ)
+          == (language == lang_t::ZH ? "鬼魅" : "Ghostly"));
+}
+
+TEST_CASE("Frederick's real SpeakDB line receives a localized Human genus",
+          "[zh-translation][r31][r31-frederick]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *frederick = world.place(MONS_FREDERICK, coord_def(21, 20));
+    rng::subgenerator scoped_rng(0x310108ULL, 0x31000001ULL);
+    string line;
+    for (int i = 0; i < 128; ++i)
+    {
+        line = getSpeakString("Beogh Frederick triumphant");
+        if (line.find("@player_genus@") != string::npos)
+            break;
+    }
+    REQUIRE(line.find("@player_genus@") != string::npos);
+    const string actual = do_mon_str_replacements(line, *frederick, S_SILENT);
+    CHECK(actual == (language == lang_t::ZH
+        ? "弗雷德里克叹了口气，\"你的同族只会拖你后腿，人类。\""
+        : "Frederick sighs, \"Your brethren were only holding you back, Human.\""));
+    CHECK(species::name(you.species, species::SPNAME_GENUS, true) == "Human");
+}
 
 TEST_CASE("Stable missile brands keep complete names and original short tags",
           "[zh-translation][r33][r33-missile]")
