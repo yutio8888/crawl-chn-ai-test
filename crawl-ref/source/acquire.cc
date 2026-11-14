@@ -1758,7 +1758,7 @@ bool acquirement_menu()
     if (!clua.callfn("c_choose_acquirement", ">d", &index))
     {
         if (!clua.error.empty())
-            mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
+            mprf(MSGCH_ERROR, T_("Lua error: %s"), clua.error.c_str());
     }
     else if (index >= 1 && index <= acq_items.size())
     {
@@ -1821,7 +1821,7 @@ bool okawaru_gift_weapon()
     if (!clua.callfn("c_choose_okawaru_weapon", ">d", &index))
     {
         if (!clua.error.empty())
-            mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
+            mprf(MSGCH_ERROR, T_("Lua error: %s"), clua.error.c_str());
     }
     else if (index >= 1 && index <= acq_items.size())
     {
@@ -1861,7 +1861,7 @@ bool okawaru_gift_armour()
     if (!clua.callfn("c_choose_okawaru_armour", ">d", &index))
     {
         if (!clua.error.empty())
-            mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
+            mprf(MSGCH_ERROR, T_("Lua error: %s"), clua.error.c_str());
     }
     else if (index >= 1 && index <= acq_items.size())
     {
@@ -2043,7 +2043,7 @@ bool coglin_invent_gizmo()
     if (!clua.callfn("c_choose_coglin_gizmo", ">d", &index))
     {
         if (!clua.error.empty())
-            mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
+            mprf(MSGCH_ERROR, T_("Lua error: %s"), clua.error.c_str());
     }
     else if (index >= 1 && index <= acq_items.size())
     {
