@@ -1183,6 +1183,7 @@ Sanctuary	庇护所	domain=abilities; source=EN/ZH; Scope / comment=ability; sou
 Sandblast	沙爆	domain=spells; source=EN/ZH; 备注=📝
 sanguine talisman	血色护符	domain=items; source=EN/ZH; Scope / comment=talisman; decision=D-B-018
 Sap Magic	削弱魔法	domain=spells; source=EN/ZH; 备注=✅
+Sargol	萨格尔	domain=gods; source=EN/ZH; 类型=盐之荒原神灵；既有两写法一致化，非新命名; 裁决=[D-C-118]
 says	说 / 说道	domain=dialogue; source=EN/ZH; 适用角色=通用
 Scarab	甲虫	domain=magic; source=EN/ZH; 依据 / 作用域=form 名称／伤害标签；sun-scarab:short_name；decision=D-C-098
 scarab-form	甲虫形态	domain=magic; source=EN/ZH; 依据 / 作用域=form 名称／伤害标签；sun-scarab:long_name；decision=D-C-098
@@ -1229,6 +1230,7 @@ sharp scales	锐利鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutati
 Shatter	粉碎	domain=spells; source=EN/ZH; 备注=✅
 Shatter the Chains	打碎枷锁	domain=abilities; source=EN/ZH; 依据 / 作用域=ability.cc；沿用既有措辞，摧毁物品才能解除束缚；decision=D-C-095
 Shatter The Chains	打碎枷锁	domain=abilities; source=EN/ZH; 依据 / 作用域=ability.txt 的大小写变体；与能力名同译；decision=D-C-095
+Sheza	谢扎	domain=gods; source=EN/ZH; 类型=盐之荒原神灵；与谢扎之舞同一词根; 裁决=[D-C-118]
 Sheza's Dance	谢扎之舞	domain=spells; source=EN/ZH; 备注=✅；从各处召来并活化武器
 shield	盾牌	domain=combat; source=EN/ZH
 Shields	盾牌	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
@@ -1601,7 +1603,7 @@ Yredelemnul	伊莱德莱姆努尔	domain=gods; source=EN/ZH; 类型=音译
 Yunchang	云长	domain=gods; source=EN/ZH; 类型=无间师父人名; 裁决=[D-C-111]
 zarnium	扎尼姆	domain=core; source=EN/ZH; 依据 / 作用域=gizmo.txt；注释指 Calvin and Hobbes，虚构元素音译；decision=D-C-095
 Zenata	泽娜塔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Zenata title	泽娜塔，西泽的追寻者	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+Zenata title	泽娜塔，谢扎的追寻者	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 zigzags	之字纹	domain=core; source=EN/ZH; 依据 / 作用域=colourname.txt；未鉴定外观花纹；decision=D-C-095
 Zin	辛	domain=gods; source=EN/ZH; 类型=单字音译
 Zmysua	兹米苏娅	domain=core; source=EN/ZH; 依据 / 作用域=unrand lore proper name；火龙神秘学者，保守音译；decision=D-C-095

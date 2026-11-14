@@ -51,6 +51,8 @@
 | Hu Sanniang | 扈三娘 | 无间师父人名 | [D-C-111] |
 | Gene Jian Bin | 张三丰 | 无间师父人名；有意本土化替换，非音译 | [D-C-111] |
 | Cai Fang | 越女 | 无间师父人名；有意本土化替换，非音译 | [D-C-111] |
+| Sargol | 萨格尔 | 盐之荒原神灵；既有两写法一致化，非新命名 | [D-C-118] |
+| Sheza | 谢扎 | 盐之荒原神灵；与谢扎之舞同一词根 | [D-C-118] |
 
 **废弃译名（永远不要使用）**：席夫·穆纳 → 西芙·穆娜 / 特洛戈 → 特洛格 / 奇库巴库加 → 奇库巴库哈
 
@@ -1507,7 +1509,7 @@ Ashenzari 装备绑定统一使用“束缚”。物品长名前缀 **bound → 
 | Wiglaf title | 炮手矮人威格拉夫 | monster-title; source=database/zh/montitle.txt |
 | Xak'krixis title | 王家远征炼金师扎克里西斯 | monster-title; source=database/zh/montitle.txt |
 | Xtahua title | 古老的扎塔瓦 | monster-title; source=database/zh/montitle.txt |
-| Zenata title | 泽娜塔，西泽的追寻者 | monster-title; source=database/zh/montitle.txt |
+| Zenata title | 泽娜塔，谢扎的追寻者 | monster-title; source=database/zh/montitle.txt |
 
 
 ### 新增独特怪物称号（trunk B0）
