@@ -584,7 +584,7 @@ Dithmenos welcome
 %%%%
 Elyvilon penance
 
-艾利维隆说：你在照料的时候要更勤奋。
+艾利维隆说：救助他人时要更尽心。
 %%%%
 Elyvilon welcome
 
@@ -608,7 +608,7 @@ Gozag welcome
 %%%%
 Hepliaklqana welcome
 
-惠普利亚卡纳：你的过去变成了你的现在！
+惠普利亚卡纳说：你的过去变成了你的现在！
 %%%%
 Hepliaklqana death
 
