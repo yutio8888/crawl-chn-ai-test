@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`5c53167600f6f21ef1db5531f482140bc58c33f0a44f321c5314f8353cdb9050`
-- 清单 SHA-256：`c27587ab493e8442cc77e8de0dc4b7fda1dc66edc97548f5538b706af068db1d`
+- 清单 SHA-256：`e17b06b76c83f81e138fa9385f6dd49a1267c0fac4c6425998f808d577fd7353`
 - 身份总数：816（现行 692；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -258,7 +258,7 @@
 | `monster:MONS_YAKTAUR` | current; exposure=ordinary; name=yaktaur→牦牛人马; genus=MONS_YAKTAUR; species=MONS_YAKTAUR; data=crawl-ref/source/dat/mons/yaktaur.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_YAKTAUR_CAPTAIN` | current; exposure=ordinary; name=yaktaur captain→牦牛人马头领; genus=MONS_YAKTAUR; species=MONS_YAKTAUR; data=crawl-ref/source/dat/mons/yaktaur-captain.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_OGRE` | current; exposure=ordinary; name=ogre→食人魔; genus=MONS_OGRE; species=MONS_OGRE; data=crawl-ref/source/dat/mons/ogre.yaml; desc=EN/ZH | retranslate: description corrected |
-| `monster:MONS_TWO_HEADED_OGRE` | current; exposure=ordinary; name=two-headed ogre→双头食人魔; genus=MONS_OGRE; species=MONS_TWO_HEADED_OGRE; data=crawl-ref/source/dat/mons/two-headed-ogre.yaml; desc=EN/ZH | keep |
+| `monster:MONS_TWO_HEADED_OGRE` | current; exposure=ordinary; name=two-headed ogre→双头食人魔; genus=MONS_OGRE; species=MONS_TWO_HEADED_OGRE; data=crawl-ref/source/dat/mons/two-headed-ogre.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_OGRE_MAGE` | current; exposure=ordinary; name=ogre mage→食人魔法师; genus=MONS_OGRE; species=MONS_OGRE; data=crawl-ref/source/dat/mons/ogre-mage.yaml; desc=EN/ZH | keep |
 | `monster:MONS_TROLL` | current; exposure=ordinary; name=troll→巨魔; genus=MONS_TROLL; species=MONS_TROLL; data=crawl-ref/source/dat/mons/troll.yaml; desc=EN/ZH | keep |
 | `monster:MONS_ROCK_TROLL` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
@@ -435,7 +435,7 @@
 | `monster:MONS_CEREBOV` | current; exposure=unique; name=Cerebov→塞雷波夫; genus=MONS_PANDEMONIUM_LORD; species=MONS_CEREBOV; data=crawl-ref/source/dat/mons/cerebov.yaml; desc=EN/ZH | keep |
 | `monster:MONS_GLOORX_VLOQ` | current; exposure=unique; name=Gloorx Vloq→格洛克斯·弗洛克; genus=MONS_PANDEMONIUM_LORD; species=MONS_GLOORX_VLOQ; data=crawl-ref/source/dat/mons/gloorx-vloq.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SERPENT_OF_HELL` | current; exposure=unique; name=Serpent of Hell→地狱巨蛇; genus=MONS_DRAGON; species=MONS_SERPENT_OF_HELL; data=crawl-ref/source/dat/mons/serpent-of-hell.yaml; desc=N/A | keep |
-| `monster:MONS_IJYB` | current; exposure=unique; name=Ijyb→艾吉布; genus=MONS_GOBLIN; species=MONS_GOBLIN; data=crawl-ref/source/dat/mons/ijyb.yaml; desc=EN/ZH | keep |
+| `monster:MONS_IJYB` | current; exposure=unique; name=Ijyb→艾吉布; genus=MONS_GOBLIN; species=MONS_GOBLIN; data=crawl-ref/source/dat/mons/ijyb.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_JESSICA` | current; exposure=unique; name=Jessica→杰西卡; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/jessica.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SIGMUND` | current; exposure=unique; name=Sigmund→西格蒙德; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/sigmund.yaml; desc=EN/ZH | keep |
 | `monster:MONS_TERENCE` | current; exposure=unique; name=Terence→特伦斯; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/terence.yaml; desc=EN/ZH | retranslate: description corrected |
@@ -740,7 +740,7 @@
 | `monster:MONS_HOARFROST_CANNON` | current; exposure=ordinary; name=hoarfrost cannon→霜冻炮; genus=MONS_HOARFROST_CANNON; species=MONS_HOARFROST_CANNON; data=crawl-ref/source/dat/mons/hoarfrost-cannon.yaml; desc=EN/ZH | keep |
 | `monster:MONS_ELECTROFERRIC_VORTEX` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_POLTERGUARDIAN` | current; exposure=ordinary; name=polterguardian→骚灵护卫; genus=MONS_POLTERGUARDIAN; species=MONS_POLTERGUARDIAN; data=crawl-ref/source/dat/mons/polterguardian.yaml; desc=EN/ZH | keep |
-| `monster:MONS_MARROWCUDA` | current; exposure=ordinary; name=marrowcuda→骨髓梭鱼; genus=MONS_MARROWCUDA; species=MONS_MARROWCUDA; data=crawl-ref/source/dat/mons/marrowcuda.yaml; desc=EN/ZH | keep |
+| `monster:MONS_MARROWCUDA` | current; exposure=ordinary; name=marrowcuda→骨髓梭鱼; genus=MONS_MARROWCUDA; species=MONS_MARROWCUDA; data=crawl-ref/source/dat/mons/marrowcuda.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_UNDYING_ARMOURY` | current; exposure=ordinary; name=undying armoury→不灭军械库; genus=MONS_UNDYING_ARMOURY; species=MONS_UNDYING_ARMOURY; data=crawl-ref/source/dat/mons/undying-armoury.yaml; desc=EN/ZH | keep |
 | `monster:MONS_XAKKRIXIS` | current; exposure=unique; name=Xak'krixis→扎克里西斯; genus=MONS_FORMICID; species=MONS_XAKKRIXIS; data=crawl-ref/source/dat/mons/xakkrixis.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_HELLFIRE_MORTAR` | current; exposure=ordinary; name=hellfire mortar→地狱火迫击炮; genus=MONS_HELLFIRE_MORTAR; species=MONS_HELLFIRE_MORTAR; data=crawl-ref/source/dat/mons/hellfire-mortar.yaml; desc=EN/ZH | keep |
@@ -760,7 +760,7 @@
 | `monster:MONS_BOMBLET` | current; exposure=ordinary; name=bomblet→爆弹; genus=MONS_BOMBLET; species=MONS_BOMBLET; data=crawl-ref/source/dat/mons/bomblet.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SPLINTERFROST_BARRICADE` | current; exposure=ordinary; name=splinterfrost barricade→碎冰壁垒; genus=MONS_SPLINTERFROST_BARRICADE; species=MONS_SPLINTERFROST_BARRICADE; data=crawl-ref/source/dat/mons/splinterfrost-barricade.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_SEISMOSAURUS` | current; exposure=ordinary; name=seismosaurus→地震龙; genus=MONS_GIANT_LIZARD; species=MONS_SEISMOSAURUS; data=crawl-ref/source/dat/mons/seismosaurus.yaml; desc=EN/ZH | keep |
-| `monster:MONS_SEISMOSAURUS_EGG` | current; exposure=ordinary; name=seismosaurus egg→地震龙蛋; genus=MONS_SEISMOSAURUS_EGG; species=MONS_SEISMOSAURUS_EGG; data=crawl-ref/source/dat/mons/seismosaurus-egg.yaml; desc=EN/ZH | keep |
+| `monster:MONS_SEISMOSAURUS_EGG` | current; exposure=ordinary; name=seismosaurus egg→地震龙蛋; genus=MONS_SEISMOSAURUS_EGG; species=MONS_SEISMOSAURUS_EGG; data=crawl-ref/source/dat/mons/seismosaurus-egg.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_PHALANX_BEETLE` | current; exposure=ordinary; name=phalanx beetle→方阵甲虫; genus=MONS_PHALANX_BEETLE; species=MONS_PHALANX_BEETLE; data=crawl-ref/source/dat/mons/phalanx-beetle.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_RENDING_BLADE` | current; exposure=ordinary; name=rending blade→撕裂之刃; genus=MONS_WRAITH; species=MONS_RENDING_BLADE; data=crawl-ref/source/dat/mons/rending-blade.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SHADOW_TURRET` | current; exposure=ordinary; name=shadow turret→暗影炮塔; genus=MONS_SHADOW_TURRET; species=MONS_SHADOW_TURRET; data=crawl-ref/source/dat/mons/shadow-turret.yaml; desc=EN/ZH | keep |
