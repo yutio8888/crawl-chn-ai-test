@@ -21,7 +21,9 @@
 #include "viewgeom.h"
 #include "clua.h"
 #include "unicode.h"
+#include "spl-zap.h"
 #include "database.h"
+#include "delay.h"
 #include "describe.h"
 #include "directn.h"
 #include "dungeon.h"
@@ -74,7 +76,6 @@
 #include "transform.h"
 #include "unwind.h"
 #include "xom.h"
-#include "spl-zap.h"
 
 #include <clocale>
 #include <functional>
@@ -4772,6 +4773,69 @@ TEST_CASE("Disjunction status keeps its actor and a four-column light",
         CHECK(info.light_text == "Disjoin");
         CHECK(info.short_text == "disjoining");
         CHECK(info.long_text == "You are disjoining your surroundings.");
+    }
+}
+
+TEST_CASE("Macro Lua errors translate only the frame and stop the real delay",
+          "[zh-translation][r34]")
+{
+#ifdef CLUA_BINDINGS
+    issue10_world world;
+    unwind_var<bool> io(crawl_state.io_inited, false);
+    const interrupt_block block;
+    lua_State *ls = clua.state();
+    REQUIRE(ls);
+    lua_stack_cleaner stack(ls);
+    lua_getglobal(ls, "c_macro");
+    const int saved = luaL_ref(ls, LUA_REGISTRYINDEX);
+    unwinder restore([&]
+    {
+        lua_rawgeti(ls, LUA_REGISTRYINDEX, saved);
+        lua_setglobal(ls, "c_macro");
+        luaL_unref(ls, LUA_REGISTRYINDEX, saved);
+    });
+    unwind_var<string> error(clua.error);
+    lua_pushcfunction(ls, [](lua_State *state) -> int
+    {
+        // This diagnostic deliberately matches a translated catalog key.
+        lua_pushliteral(state, "You are poisoned.");
+        return lua_error(state);
+    });
+    lua_setglobal(ls, "c_macro");
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language,
+                                       language == lang_t::ZH ? "zh" : nullptr);
+        clua.error.clear();
+        const string emitted = observe_message([] { run_macro("r34-test"); });
+        const string frame = language == lang_t::ZH ? "Lua错误：" : "Lua error: ";
+        CHECK(emitted == frame + "You are poisoned.\n");
+        CHECK(current_delay() == nullptr);
+    }
+#endif
+}
+
+TEST_CASE("Disjunction keeps a compact localized missile brand label",
+          "[zh-translation][r34]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([&] { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(setlocale(LC_CTYPE, "C.UTF-8"));
+    issue10_world world;
+    item_def dart;
+    dart.base_type = OBJ_MISSILES;
+    dart.sub_type = MI_DART;
+    dart.brand = SPMSL_DISJUNCTION;
+    dart.quantity = 1;
+    dart.flags = ISFLAG_IDENTIFIED;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language,
+                                       language == lang_t::ZH ? "zh" : nullptr);
+        const string label = missile_brand_name(dart, MBN_TERSE);
+        CHECK(label == (language == lang_t::ZH ? "分离" : "disjunct"));
+        CHECK(strwidth(label) == (language == lang_t::ZH ? 4 : 8));
+        CHECK(dart.name(DESC_PLAIN, true).find("(" + label + ")") != string::npos);
     }
 }
 
