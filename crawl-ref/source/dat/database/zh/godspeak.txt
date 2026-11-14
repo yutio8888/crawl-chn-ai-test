@@ -237,7 +237,7 @@ Xom blink monsters
 #####################
 Xom potion effect
 
-“去毁灭吧!”
+“去毁灭吧！”
 
 “去制造浩劫吧，凡人！”
 
