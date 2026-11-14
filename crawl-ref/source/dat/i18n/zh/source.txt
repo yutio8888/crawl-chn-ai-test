@@ -12879,7 +12879,7 @@ You continue digging a shaft.
 你继续挖掘竖井。
 %%%%
 You continue imbuing your servitor.
-你继续向仆从灌输知识。
+你继续向仆从灌注法术。
 %%%%
 You continue imprinting.
 你继续铭刻印记。
