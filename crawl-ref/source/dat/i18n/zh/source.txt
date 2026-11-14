@@ -1556,7 +1556,7 @@ The potion decomposes into %s within you.
 %s被火焰吞没了！
 %%%%
 %s is engulfed in spores.
-%s 被孢子吞没了。
+%s被孢子吞没了。
 %%%%
 %s is filled with an inner flame.
 %s体内燃起了内焰。
@@ -1865,7 +1865,7 @@ barrage of energy
 %s偷走了%s！
 %%%%
 %s stiffens with fear!
-%s 因恐惧而僵住了！
+%s因恐惧而僵住了！
 %%%%
 %s stole %d gold
 %s偷走了%d金币
@@ -2336,7 +2336,7 @@ comfort your suffering allies
 <darkgrey>（
 %%%%
 <darkgrey>(%s unusable)</darkgrey>
-<darkgrey>(%s 不可用)</darkgrey>
+<darkgrey>(%s不可用)</darkgrey>
 %%%%
 <darkgrey>(no
 <darkgrey>（无
@@ -2348,7 +2348,7 @@ comfort your suffering allies
   <darkgrey>[
 %%%%
   <darkgrey>[%s occupied]</darkgrey>
-  <darkgrey>[%s 已占用]</darkgrey>
+  <darkgrey>[%s已占用]</darkgrey>
 %%%%
 <green>**Available to recruit**</green>
 <green>**可招募**</green>
@@ -5302,7 +5302,7 @@ Marked for pickup.
 已标记拾取。
 %%%%
 Marking area around %s as unsafe for travelling.
-将 %s 周围区域标记为旅行不安全。
+将%s周围区域标记为旅行不安全。
 %%%%
 Martial attacks:
 武术攻击：
@@ -7740,7 +7740,7 @@ The water %s and strikes %s%s
 水流%s，击中了%s%s
 %%%%
 The wave splashes down.
-波浪拍下去了。
+浪头拍落下来。
 %%%%
 the Wilderness
 荒野
@@ -21967,7 +21967,7 @@ autopickup state|on
 %s%s撞上了%s%s
 %%%%
 %s Continue anyway?
-%s 仍然继续吗？
+%s仍然继续吗？
 %%%%
 %s explodes violently into a cloud of jellies%s
 %s猛烈爆裂成一团凝胶%s
@@ -24340,7 +24340,7 @@ Shopping list: %1$d %2$s%3$s, total cost %4$d gold pieces
 %*s%5d金币  %s%s%s
 %%%%
 %s entry fee %d gold pieces.
-%s 入场费 %d 枚金币。
+%s入场费 %d 枚金币。
 %%%%
 You slip out of the net.
 你从网中滑脱了。
@@ -43356,7 +43356,7 @@ efficient metabolism
  你可以用<w>%s</w>检查它，然后按<w>%s</w>来查看其通往的位置。
 %%%%
  powers are based on %s instead of Invocations skill.
- 能力基于 %s 而非祈神技能。
+能力基于%s而非祈神技能。
 %%%%
  forbids the training of this skill.
  禁止训练此技能。

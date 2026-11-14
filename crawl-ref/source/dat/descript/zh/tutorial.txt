@@ -62,7 +62,7 @@ tutorial1 levelmap
 %%%%
 tutorial1 autoexplore
 
-长时间手动探索地图会比较乏味，你可能会希望将其自动进行。
+手动探索久了可能会觉得乏味，不妨让游戏自动探索。
 试着按下<input>$cmd[CMD_EXPLORE]</input><localtiles>，
 或点击“自动探索”，小地图下方的命令栏中的第一个按钮</localtiles>。
 %%%%
@@ -387,7 +387,7 @@ tutorial3 enter_shop
 # 待办事项： 除了如何进入商店外，其他一切都应该在购物界面上告知。
 要进入这家商店，请按<input>$cmd[CMD_GO_UPSTAIRS]</input><localtiles>
 或<input>点击</input>你的角色</localtiles>。
-要购买物品，请按它们对应的字母键选中它，
+要购买物品，请按对应的字母键选中物品，
 按<input>回车</input>并按<input>y</input>确认。
 你可以按<input>!</input>切换到描述模式。
 %%%%
@@ -473,9 +473,9 @@ tutorial4 undead
 
 # 待办事项： 这更像是提示模式的东西。
 #            虽然不确定是否有任何坏处，但鼠标界面提示很好。
-与绝大多数怪物不同，丧尸和骷髅无法恢复健康。
-<localtiles>你可以尝试重施最后用的那个法术，
-通过对着那个怪物按<input>Ctrl键+左键</input>。</localtiles>
+与大多数怪物不同，丧尸和骷髅不会自然回复生命值。
+<localtiles>你也可以在该怪物上按<input>Ctrl键+左键</input>，
+尝试重施上一个法术。</localtiles>
 %%%%
 tutorial4 spell_success
 

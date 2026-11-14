@@ -153,7 +153,7 @@ cold resistance (rC+) armour ego
 %%%%
 command (Command) armour ego
 
-它根据你的护甲技能比例提升你的召唤法术的威力和成功率。
+你的护甲技能越高，它对召唤系法术威力和成功率的提升就越大。
 %%%%
 corrosion resistance (rCorr) armour ego
 
