@@ -128,8 +128,8 @@ Unearth Wretches ability
 %%%%
 Brand Weapon With Pain ability
 
-用永久的痛楚血浴一件武器。这个祝福无法用于神器。
-你必须在这个礼物和最强大的死灵法术之间二选一，而且任何一个礼物只能收到一次。
+以痛苦本身的精髓永久浸染一件你选择的武器。此祝福不能用于神器武器。
+你必须在这份礼物与最强大的死灵法术知识之间二选一，且任一礼物都只能获得一次。
 %%%%
 Receive Forbidden Knowledge ability
 
@@ -704,7 +704,7 @@ Caustic Breath ability
 %%%%
 Combustion Breath ability
 
-喷出一股挥发性余烬，在接触每个生物时猛烈爆炸。对其使用者无害。
+喷出一股不稳定的余烬，在接触每个生物时猛烈爆炸。对其使用者无害。
 %%%%
 Dismiss Apostle ability
 
