@@ -2399,7 +2399,7 @@ bool ashenzari_curse_item()
  */
 bool ashenzari_uncurse_item()
 {
-    int item_slot = prompt_invent_item("Uncurse and destroy which item?",
+    int item_slot = prompt_invent_item(T_("Uncurse and destroy which item?"),
                                        menu_type::invlist,
                                        OSEL_CURSED_WORN, OPER_ANY,
                                        invprompt_flag::escape_only);
