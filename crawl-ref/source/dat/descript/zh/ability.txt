@@ -493,7 +493,7 @@ Sacrifice a Hand ability
 %%%%
 Sacrifice Experience ability
 
-舍弃一些你的过去的经验，使你立刻降低一个等级，你可达到的等级上限也会降一级。
+舍弃你的一部分过往经验，使你立刻降低一个等级，你可达到的等级上限也会降一级。
 %%%%
 Sacrifice Skill ability
 
@@ -610,7 +610,7 @@ Fiery Armour ability
 Foxfire Swarm ability
 
 在你周围生成一群有生命的火焰。它们迅速寻找最近的怪物，灼烧它们。
-如果没能碰到目标或与它们交换位置，它们将无害地消散。
+如果它们没能碰到目标，或者你与它们交换了位置，它们将无害地消散。
 %%%%
 Rising Flame ability
 
@@ -797,7 +797,7 @@ Hurl Torchlight ability
 
 此能力只能在火炬点燃时使用，且每层使用次数有限。
 每层可用次数随虔诚值增加，通过击杀一个独特命名敌人来用特别卓越的
-灵魂煽旺黑火炬的火焰也会提供额外使用次数。
+灵魂煽旺黑火炬的火焰也会增加一次使用次数。
 %%%%
 Imbue Servitor ability
 

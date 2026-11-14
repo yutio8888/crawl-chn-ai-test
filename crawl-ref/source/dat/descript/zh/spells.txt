@@ -523,7 +523,7 @@ Force Lance spell
 %%%%
 Forceful Invitation spell
 
-从蛇穴、蜘蛛巢穴、沼泽、海滩、精灵殿堂、宝库或墓室之一召唤一些生物；
+从蛇坑、蜘蛛巢穴、沼泽、海滩、精灵殿堂、宝库或墓室之一召唤一些生物；
 具体分支因施法者而异。
 %%%%
 Foxfire spell
@@ -1392,7 +1392,7 @@ Vanquished Vanguard spell
 %%%%
 Summon Spiders spell
 
-召唤一个或多个蜘蛛。
+召唤一只或多只蜘蛛。
 %%%%
 Summon Tzitzimitl spell
 
