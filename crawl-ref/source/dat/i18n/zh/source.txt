@@ -10816,7 +10816,7 @@ Your %s violently discharge electricity!
 你的%s猛烈地释放出电流！
 %%%%
 Your access to %s's decks is revoked.
-你对%s牌组的访问权被撤销了。
+你无法再使用%s的牌组了。
 %%%%
 Your accumulated destruction dissipates without a target.
 你积累的毁灭之力因没有目标而消散了。
@@ -17439,7 +17439,7 @@ It is%s good for stabbing helpless or unaware enemies.
 \n\n它在击中时总是会损坏。
 %%%%
 \n\nIt has a 1/%d chance to be destroyed on impact.
-\n\n它在击中时有1/%d几率损坏。
+\n\n它在撞击时有1/%d的几率损毁。
 %%%%
 the
 %%%%

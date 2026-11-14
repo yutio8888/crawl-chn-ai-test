@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`dcbfb16ac457e9506a5e634d171211d460652f42e2ba651ad950d15e719753ae`
-- 清单 SHA-256：`8c947b5e76471e7335ad540dc208c2844a9044f00f24f34c213071b6a2b16d52`
+- 清单 SHA-256：`8ea230a4248747415d43610aaf76fe280114fb86e0fa784370fa8cfdc9a4ccaa`
 - 身份总数：795（现行 671；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -271,7 +271,7 @@
 | `monster:MONS_STONE_GIANT` | current; exposure=ordinary; name=stone giant→石巨人; genus=MONS_GIANT; species=MONS_STONE_GIANT; data=crawl-ref/source/dat/mons/stone-giant.yaml; desc=EN/ZH | keep |
 | `monster:MONS_FIRE_GIANT` | current; exposure=ordinary; name=fire giant→火巨人; genus=MONS_GIANT; species=MONS_FIRE_GIANT; data=crawl-ref/source/dat/mons/fire-giant.yaml; desc=EN/ZH | keep |
 | `monster:MONS_FROST_GIANT` | current; exposure=ordinary; name=frost giant→霜巨人; genus=MONS_GIANT; species=MONS_FROST_GIANT; data=crawl-ref/source/dat/mons/frost-giant.yaml; desc=EN/ZH | keep |
-| `monster:MONS_TITAN` | current; exposure=ordinary; name=titan→泰坦; genus=MONS_GIANT; species=MONS_TITAN; data=crawl-ref/source/dat/mons/titan.yaml; desc=EN/ZH | keep |
+| `monster:MONS_TITAN` | current; exposure=ordinary; name=titan→泰坦; genus=MONS_GIANT; species=MONS_TITAN; data=crawl-ref/source/dat/mons/titan.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_HUMAN` | current; exposure=ordinary; name=human→人类; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/human.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SLAVE` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_HELL_KNIGHT` | current; exposure=ordinary; name=hell knight→地狱骑士; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/hell-knight.yaml; desc=EN/ZH | keep |
@@ -351,7 +351,7 @@
 | `monster:MONS_SUN_DEMON` | current; exposure=ordinary; name=sun demon→太阳恶魔; genus=MONS_SUN_DEMON; species=MONS_SUN_DEMON; data=crawl-ref/source/dat/mons/sun-demon.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SHADOW_DEMON` | current; exposure=ordinary; name=shadow demon→暗影恶魔; genus=MONS_SHADOW_DEMON; species=MONS_SHADOW_DEMON; data=crawl-ref/source/dat/mons/shadow-demon.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_HELL_SENTINEL` | current; exposure=ordinary; name=Hell Sentinel→地狱哨兵; genus=MONS_HELL_SENTINEL; species=MONS_HELL_SENTINEL; data=crawl-ref/source/dat/mons/hell-sentinel.yaml; desc=EN/ZH | keep |
-| `monster:MONS_BRIMSTONE_FIEND` | current; exposure=ordinary; name=Brimstone Fiend→硫磺邪魔; genus=MONS_BRIMSTONE_FIEND; species=MONS_BRIMSTONE_FIEND; data=crawl-ref/source/dat/mons/brimstone-fiend.yaml; desc=EN/ZH | keep |
+| `monster:MONS_BRIMSTONE_FIEND` | current; exposure=ordinary; name=Brimstone Fiend→硫磺邪魔; genus=MONS_BRIMSTONE_FIEND; species=MONS_BRIMSTONE_FIEND; data=crawl-ref/source/dat/mons/brimstone-fiend.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ICE_FIEND` | current; exposure=ordinary; name=Ice Fiend→冰霜邪魔; genus=MONS_ICE_FIEND; species=MONS_ICE_FIEND; data=crawl-ref/source/dat/mons/ice-fiend.yaml; desc=EN/ZH | keep |
 | `monster:MONS_TZITZIMITL` | current; exposure=ordinary; name=Tzitzimitl→齐齐米特尔; genus=MONS_TZITZIMITL; species=MONS_TZITZIMITL; data=crawl-ref/source/dat/mons/tzitzimitl.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_PANDEMONIUM_LORD` | current; exposure=ordinary; name=pandemonium lord→万魔殿领主; genus=MONS_PANDEMONIUM_LORD; species=MONS_PANDEMONIUM_LORD; data=crawl-ref/source/dat/mons/pandemonium-lord.yaml; desc=EN/ZH | retranslate: description corrected |
@@ -722,7 +722,7 @@
 | `monster:MONS_FLOATING_EYE` | current; exposure=internal_or_special; name=floating eye→浮空之眼; genus=MONS_FLOATING_EYE; species=MONS_FLOATING_EYE; data=crawl-ref/source/dat/mons/floating-eye.yaml; desc=N/A | keep |
 | `monster:MONS_ANTIQUE_CHAMPION` | current; exposure=ordinary; name=antique champion→古代斗士; genus=MONS_ANCIENT_CHAMPION; species=MONS_ANCIENT_CHAMPION; data=crawl-ref/source/dat/mons/antique-champion.yaml; desc=EN/ZH | keep |
 | `monster:MONS_KOBOLD_BLASTMINER` | current; exposure=ordinary; name=kobold blastminer→狗头人爆破矿工; genus=MONS_KOBOLD; species=MONS_KOBOLD; data=crawl-ref/source/dat/mons/kobold-blastminer.yaml; desc=EN/ZH | keep |
-| `monster:MONS_INUGAMI` | current; exposure=ordinary; name=inugami→犬神; genus=MONS_HOUND; species=MONS_INUGAMI; data=crawl-ref/source/dat/mons/inugami.yaml; desc=EN/ZH | keep |
+| `monster:MONS_INUGAMI` | current; exposure=ordinary; name=inugami→犬神; genus=MONS_HOUND; species=MONS_INUGAMI; data=crawl-ref/source/dat/mons/inugami.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_PROTEAN_PROGENITOR` | current; exposure=ordinary; name=protean progenitor→千变始祖; genus=MONS_GIANT; species=MONS_PROTEAN_PROGENITOR; data=crawl-ref/source/dat/mons/protean-progenitor.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ASPIRING_FLESH` | current; exposure=ordinary; name=aspiring flesh→渴望之肉; genus=MONS_ASPIRING_FLESH; species=MONS_ASPIRING_FLESH; data=crawl-ref/source/dat/mons/aspiring-flesh.yaml; desc=EN/ZH | keep |
 | `monster:MONS_ONI` | current; exposure=ordinary; name=oni→鬼; genus=MONS_ONI; species=MONS_ONI; data=crawl-ref/source/dat/mons/oni.yaml; desc=EN/ZH | keep |
