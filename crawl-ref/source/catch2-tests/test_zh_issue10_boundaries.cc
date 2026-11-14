@@ -1740,6 +1740,13 @@ TEST_CASE("Ancestor confirmation separates canonical classes from Chinese displa
     issue10_world world;
     unwind_var<decltype(companion_list)> companions(companion_list);
     companion_list.clear();
+    unwind_var<decltype(note_list)> saved_notes(note_list);
+    const bool old_notes_active = notes_are_active();
+    unwinder restore_notes([&] { activate_notes(old_notes_active); });
+    activate_notes(true);
+    unwind_var<bool> saving(crawl_state.need_save, false);
+    you.props[HEPLIAKLQANA_ALLY_NAME_KEY] = "Aster";
+    you.religion = GOD_HEPLIAKLQANA;
     unwind_var<bool> io(crawl_state.io_inited, false);
     const interrupt_block block;
     unwind_var<string> error(clua.error);
@@ -1747,7 +1754,7 @@ TEST_CASE("Ancestor confirmation separates canonical classes from Chinese displa
     REQUIRE(ls);
     lua_stack_cleaner stack(ls);
     vector<pair<const char *, int>> saved;
-    for (const char *name : {"c_answer_prompt", "r37_ancestor_prompt"})
+    for (const char *name : {"c_answer_prompt", "r37_ancestor_prompt", "r37_ancestor_accept"})
     {
         lua_getglobal(ls, name);
         saved.emplace_back(name, luaL_ref(ls, LUA_REGISTRYINDEX));
@@ -1762,7 +1769,7 @@ TEST_CASE("Ancestor confirmation separates canonical classes from Chinese displa
         }
     });
     REQUIRE(clua.execstring("c_answer_prompt = function(q) "
-        "r37_ancestor_prompt = q; return false end") == 0);
+        "r37_ancestor_prompt = q; return r37_ancestor_accept end") == 0);
     struct ancestor_case
     {
         int choice;
@@ -1784,6 +1791,10 @@ TEST_CASE("Ancestor confirmation separates canonical classes from Chinese displa
         {
             msgwin_temporary_mode temporary;
             unwinder rollback([] { msgwin_clear_temporary(); });
+            you.props.erase(HEPLIAKLQANA_ALLY_TYPE_KEY);
+            note_list.clear();
+            lua_pushboolean(ls, false);
+            lua_setglobal(ls, "r37_ancestor_accept");
             CHECK_FALSE(hepliaklqana_choose_ancestor_type(entry.choice));
             lua_getglobal(ls, "r37_ancestor_prompt");
             REQUIRE(lua_isstring(ls, -1));
@@ -1797,6 +1808,28 @@ TEST_CASE("Ancestor confirmation separates canonical classes from Chinese displa
             CHECK(question == expected);
             CHECK(mons_type_name_en(entry.type, DESC_A) == entry.english);
             CHECK_FALSE(you.props.exists(HEPLIAKLQANA_ALLY_TYPE_KEY));
+            CHECK(note_list.empty());
+
+            // Accept through the real ability; take_note must save English.
+            lua_pushboolean(ls, true);
+            lua_setglobal(ls, "r37_ancestor_accept");
+            REQUIRE(hepliaklqana_choose_ancestor_type(entry.choice));
+            REQUIRE(note_list.size() == 1);
+            const Note &note = note_list.back();
+            CHECK(note.type == NOTE_ANCESTOR_TYPE);
+            CHECK(note.name == entry.english);
+            CHECK(you.props[HEPLIAKLQANA_ALLY_TYPE_KEY].get_int() == entry.type);
+            const string prefix = language == lang_t::ZH
+                ? "回忆起你的先祖Aster作为" : "Remembered your ancestor Aster as ";
+            CHECK(note.describe(false, false)
+                == prefix + (language == lang_t::ZH ? entry.chinese : entry.english));
+            CHECK(note.name == entry.english);
+
+            // Existing mixed-language snapshots fall back unchanged.
+            const string legacy_name = string("a ") + entry.chinese;
+            const Note legacy(NOTE_ANCESTOR_TYPE, 0, 0, legacy_name);
+            CHECK(legacy.describe(false, false) == prefix + legacy_name);
+            CHECK(legacy.name == legacy_name);
         }
     }
 }
