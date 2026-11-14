@@ -1,7 +1,7 @@
 {
   "line": "trunk",
-  "evidence_commit": "0b434d443bf74763cd8701815b64b64d9fec23ca",
-  "pattern": "torpor.snail|休眠蜗牛",
+  "evidence_commit": "29bc85be451c3f43587d0d531c593ce9cf90f5d6",
+  "pattern": "torpor.snail|休眠蜗牛|迟滞蜗牛",
   "consumers": [
     {
       "path": "crawl-ref/source/catch2-tests/test_zh_translation.cc",
@@ -402,7 +402,7 @@
     {
       "path": "crawl-ref/source/dat/i18n/zh/source.txt",
       "line": 35410,
-      "text": "休眠蜗牛",
+      "text": "迟滞蜗牛",
       "disposition": "change display value only; preserve English key"
     },
     {
