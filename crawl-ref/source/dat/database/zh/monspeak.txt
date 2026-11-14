@@ -138,7 +138,7 @@ Edmund triumphant
 
 @The_monster@ 说："我倒想看看镰刀能不能做到这个！"
 
-@The_monster@ 哀怨道："他们最好现在注意到我了！"
+@The_monster@ 哀怨道："他们现在总该注意到我了吧！"
 %%%%
 ############ ERICA ### 脾气暴躁的触手女巫
 Erica
@@ -9046,7 +9046,7 @@ w:50
 Ru Frederick triumphant
 
 
-@The_monster@ 说："你放弃了自己太多了。"
+@The_monster@ 说："你舍弃了太多自身的东西。"
 
 
 @Frederick@
