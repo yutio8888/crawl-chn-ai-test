@@ -1,0 +1,469 @@
+{
+  "line": "trunk",
+  "evidence_commit": "0b434d443bf74763cd8701815b64b64d9fec23ca",
+  "pattern": "torpor.snail|休眠蜗牛",
+  "consumers": [
+    {
+      "path": "crawl-ref/source/catch2-tests/test_zh_translation.cc",
+      "line": 13445,
+      "text": "TEST_CASE(\"Torpor snail display variants share the approved name and English identity\",",
+      "disposition": "bilingual display and canonical-identity regression"
+    },
+    {
+      "path": "crawl-ref/source/catch2-tests/test_zh_translation.cc",
+      "line": 13451,
+      "text": "    const string name = language == lang_t::ZH ? \"迟滞蜗牛\" : \"torpor snail\";",
+      "disposition": "bilingual display and canonical-identity regression"
+    },
+    {
+      "path": "crawl-ref/source/catch2-tests/test_zh_translation.cc",
+      "line": 13452,
+      "text": "    CHECK(mons_type_name(MONS_TORPOR_SNAIL, DESC_PLAIN) == name);",
+      "disposition": "bilingual display and canonical-identity regression"
+    },
+    {
+      "path": "crawl-ref/source/catch2-tests/test_zh_translation.cc",
+      "line": 13453,
+      "text": "    CHECK(mons_type_name_en(MONS_TORPOR_SNAIL, DESC_PLAIN) == \"torpor snail\");",
+      "disposition": "bilingual display and canonical-identity regression"
+    },
+    {
+      "path": "crawl-ref/source/catch2-tests/test_zh_translation.cc",
+      "line": 13454,
+      "text": "    const monster_info info(MONS_TORPOR_SNAIL);",
+      "disposition": "bilingual display and canonical-identity regression"
+    },
+    {
+      "path": "crawl-ref/source/catch2-tests/test_zh_translation.cc",
+      "line": 13455,
+      "text": "    CHECK(info.db_name() == \"torpor snail\");",
+      "disposition": "bilingual display and canonical-identity regression"
+    },
+    {
+      "path": "crawl-ref/source/catch2-tests/test_zh_translation.cc",
+      "line": 13458,
+      "text": "    CHECK(info.pluralised_name() == (language == lang_t::ZH ? \"迟滞蜗牛\" : \"torpor snails\"));",
+      "disposition": "bilingual display and canonical-identity regression"
+    },
+    {
+      "path": "crawl-ref/source/catch2-tests/test_zh_translation.cc",
+      "line": 13465,
+      "text": "        CHECK(pane.find(\"休眠蜗牛\") == string::npos);",
+      "disposition": "bilingual display and canonical-identity regression"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/altar/overflow.des",
+      "line": 182,
+      "text": "    return \"torpor snail\"",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/altar/overflow.des",
+      "line": 461,
+      "text": "MONS:   torpor snail",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/abyss.des",
+      "line": 2723,
+      "text": "MONS:    glowing orange brain, swamp drake, wind drake, torpor snail",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/lair.des",
+      "line": 3225,
+      "text": "MONS:   torpor snail",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/lair.des",
+      "line": 3363,
+      "text": "MONS:   torpor snail, hydra",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/lair.des",
+      "line": 3620,
+      "text": "             torpor snail w:5 / komodo dragon / hydra / mountainshell w:5",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/lair.des",
+      "line": 3818,
+      "text": "KMONS:  5 = basilisk / torpor snail w:5 / manticore w:2",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/lair.des",
+      "line": 3855,
+      "text": "MONS:    torpor snail, tyrant leech, lindwurm, hornet",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/lair.des",
+      "line": 4008,
+      "text": "KMONS:   D = hydra / torpor snail w:6 / dire elephant w:6 / mountainshell w:6",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/lair.des",
+      "line": 4486,
+      "text": "KMONS:   4 = dire elephant / hydra / torpor snail",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/spider.des",
+      "line": 183,
+      "text": "MONS:   demonic crawler / boulder beetle / torpor snail",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/spider.des",
+      "line": 1754,
+      "text": "MONS:    entropy weaver, ghost moth, moth of wrath, torpor snail, orb spider",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/spider.des",
+      "line": 2079,
+      "text": "KMONS:  Q = entropy weaver / torpor snail / moth of wrath / ghost moth / \\",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/spider.des",
+      "line": 2141,
+      "text": "            jumping spider / torpor snail / nothing w:30",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/spider.des",
+      "line": 2435,
+      "text": "MONS:    demonic crawler / steelbarb worm / torpor snail / meliai",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/spider.des",
+      "line": 2493,
+      "text": "KMONS:   2 = torpor snail / pharaoh ant",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/spider.des",
+      "line": 2518,
+      "text": "KMONS:   6 = torpor snail / entropy weaver",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/spider.des",
+      "line": 2647,
+      "text": "MONS:   steelbarb worm / torpor snail / meliai / pharaoh ant / entropy weaver",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/branches/spider.des",
+      "line": 2713,
+      "text": "MONS:   pharaoh ant / entropy weaver / torpor snail",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/portals/gulch.des",
+      "line": 239,
+      "text": "              \"telencephalon w:4 / torpor snail w:1\")",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/portals/gulch.des",
+      "line": 261,
+      "text": "              \"telencephalon w:4 / torpor snail w:1\")",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/portals/gulch.des",
+      "line": 276,
+      "text": "              \"telencephalon w:4 / torpor snail w:1\")",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/portals/gulch.des",
+      "line": 290,
+      "text": "              \"telencephalon w:4 / torpor snail w:1\")",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/portals/gulch.des",
+      "line": 312,
+      "text": "              \"telencephalon w:4 / torpor snail w:1\")",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/portals/gulch.des",
+      "line": 333,
+      "text": "              \"telencephalon w:4 / torpor snail w:1\")",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/portals/necropolis.des",
+      "line": 251,
+      "text": "                      steelbarb worm / torpor snail w:5 / \\",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/portals/necropolis.des",
+      "line": 3585,
+      "text": "        torpor snail w:5 / spark wasp w:3 / ghost moth w:2 / bunyip",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/portals/necropolis.des",
+      "line": 4414,
+      "text": "MONS:   naga ritualist / satyr / torpor snail w:2",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/portals/wizlab.des",
+      "line": 1750,
+      "text": "                 \"torpor snail perm_ench:glowing_shapeshifter w:25 / \" ..",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/portals/wizlab.des",
+      "line": 2567,
+      "text": "KMONS:  H = torpor snail / ghost moth / guardian serpent / water nymph /\\",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/portals/ziggurat.des",
+      "line": 133,
+      "text": "MONS:    emperor scorpion / torpor snail",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/portals/ziggurat.des",
+      "line": 161,
+      "text": "KMONS:   3 : torpor snail / glass eye w:5 / rakshasa w:5 / soul eater",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/portals/ziggurat.des",
+      "line": 291,
+      "text": "KMONS:  C : glowing orange brain / torpor snail / tainted leviathan w:5 / \\",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/sprint/arena_sprint.des",
+      "line": 408,
+      "text": "                \"mountainshell / torpor snail / dire elephant / skyshark\",",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/sprint/pitsprint.des",
+      "line": 53,
+      "text": "               dire elephant / torpor snail / skyshark / death yak band w:5 /\\",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/sprint/zigsprint.des",
+      "line": 464,
+      "text": "                 torpor snail / hydra / catoblepas / dire elephant /\\",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/variable/float.des",
+      "line": 3606,
+      "text": "MONS:    12-headed hydra / anaconda / torpor snail w:5 / \\",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/variable/float.des",
+      "line": 6482,
+      "text": "MONS:   boulder beetle, torpor snail",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/variable/float.des",
+      "line": 11386,
+      "text": "# sanctum: 5/7 0s, 2/3 9s, an 8, and a torpor snail on the altar",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/variable/float.des",
+      "line": 11389,
+      "text": "KMONS: _ = torpor snail patrolling",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/variable/float.des",
+      "line": 11394,
+      "text": "KMONS: T = torpor snail",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/variable/large_themed.des",
+      "line": 36,
+      "text": "                     black mamba / lindwurm w:8 / torpor snail w:4 / \\",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/variable/large_themed.des",
+      "line": 2684,
+      "text": "MONS:    catoblepas / komodo dragon, lindwurm / torpor snail",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/variable/mini_monsters.des",
+      "line": 211,
+      "text": "KMONS:  4 = torpor snail",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/variable/mini_monsters.des",
+      "line": 789,
+      "text": "MONS:  blink frog / cane toad / komodo dragon / torpor snail w:5",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/variable/mini_monsters.des",
+      "line": 3910,
+      "text": "MONS:    basilisk / rime drake / raven / torpor snail",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/variable/mini_monsters.des",
+      "line": 8781,
+      "text": "MONS:    alligator / torpor snail w:6",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/des/variable/mini_monsters.des",
+      "line": 10224,
+      "text": "MONS:   rime drake, torpor snail, ice dragon",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/descript/monsters.txt",
+      "line": 3361,
+      "text": "torpor snail",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/descript/quotes.txt",
+      "line": 4162,
+      "text": "torpor snail",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/descript/zh/monsters.txt",
+      "line": 2414,
+      "text": "torpor snail",
+      "disposition": "keep generic description/folk rhyme; English lookup identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/descript/zh/quotes.txt",
+      "line": 3543,
+      "text": "torpor snail",
+      "disposition": "keep generic description/folk rhyme; English lookup identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/dlua/gauntlet.lua",
+      "line": 376,
+      "text": "    first  = {mons = \"torpor snail\", min = 1, max = 1},",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/dlua/gauntlet.lua",
+      "line": 585,
+      "text": "    first  = {mons = \"torpor snail\", min = 1, max = 1},",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/dlua/ziggurat.lua",
+      "line": 208,
+      "text": "         \"spriggan druid w:\" .. e - 5 .. \" / torpor snail w:\" .. f + 5 .. \" / \" ..",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/dlua/ziggurat.lua",
+      "line": 244,
+      "text": "  return \"place:Spider:$ w:250 / torpor snail w:\" .. d .. \" / \" ..",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/dlua/ziggurat.lua",
+      "line": 381,
+      "text": "         \"torpor snail w:\" .. d .. \" / iron golem w:\" .. d .. \" / \" ..",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 35409,
+      "text": "torpor snail",
+      "disposition": "change display value only; preserve English key"
+    },
+    {
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "line": 35410,
+      "text": "休眠蜗牛",
+      "disposition": "change display value only; preserve English key"
+    },
+    {
+      "path": "crawl-ref/source/dat/mons/torpor-snail.yaml",
+      "line": 1,
+      "text": "name: \"torpor snail\"",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/mon-aura.cc",
+      "line": 41,
+      "text": "    {MONS_TORPOR_SNAIL,",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/mon-pick-data.h",
+      "line": 293,
+      "text": "  {  1, 15,   85, SEMI, MONS_TORPOR_SNAIL },",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/mon-pick-data.h",
+      "line": 421,
+      "text": "  {  1,  4,   400, FLAT, MONS_TORPOR_SNAIL },",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/mon-pick-data.h",
+      "line": 422,
+      "text": "  {  1,  4,   200, RISE, MONS_TORPOR_SNAIL },",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/mon-place.cc",
+      "line": 2215,
+      "text": "    case MONS_TORPOR_SNAIL:",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/monster-type.h",
+      "line": 83,
+      "text": "    MONS_TORPOR_SNAIL,",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/monster-type.h",
+      "line": 1245,
+      "text": "    MONS_TORPOR_SNAIL,",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/rltiles/dc-corpse.txt",
+      "line": 93,
+      "text": "torpor_snail CORPSE_TORPOR_SNAIL",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    },
+    {
+      "path": "crawl-ref/source/rltiles/dc-mon.txt",
+      "line": 227,
+      "text": "torpor_snail MONS_TORPOR_SNAIL",
+      "disposition": "keep canonical identity, spawn definition, source mechanism or test identity"
+    }
+  ]
+}
