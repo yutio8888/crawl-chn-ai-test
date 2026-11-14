@@ -41137,7 +41137,7 @@ You cannot target a construct which is already augmented.
 你无法以已经强化的构装体为目标。
 %%%%
 You can only target your own Forgecraft constructs.
-你只能选择自己以锻造术制造的构装体。
+你只能选择自己以锻造系制造的构装体。
 %%%%
 You see nothing there you can launch.
 你在那里看不到可发射的东西。
@@ -51167,3 +51167,6 @@ Now pick up the Orb and get out of here!
 %%%%
 unseen actor|Someone
 有人
+%%%%
+Uncurse and destroy which item?
+解除哪件物品的诅咒并将其摧毁？

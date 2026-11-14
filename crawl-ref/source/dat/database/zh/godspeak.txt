@@ -1540,7 +1540,7 @@ Xom unarmed two hands
 
 两根精致的手杖短暂地出现在你的 @hands@ 中。
 
-你不由自主地拍了 @_xom_number_@ 次 @hands@。
+你不由自主地把 @hands@ 拍了 @_xom_number_@ 次。
 
 %%%%
 Xom underfoot airborne general
@@ -1554,7 +1554,7 @@ Xom underfoot airborne water
 
 @Xom underfoot airborne general@
 
-一个不可察觉的精灵流入了你身下的 @the_feature@。
+一个不可察觉的灵体流入了你身下的 @the_feature@。
 
 %%%%
 Xom underfoot general

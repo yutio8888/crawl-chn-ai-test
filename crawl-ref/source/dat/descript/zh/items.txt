@@ -497,7 +497,7 @@ eudemon blade
 %%%%
 eveningstar
 
-晨星锤的对应物。一把配重均衡的钉头锤，长柄，金属锤头上覆有致命的尖刺。
+与晨星锤恰好相反。一把配重均衡的钉头锤，长柄，金属锤头上覆有致命的尖刺。
 %%%%
 everburning encyclopedia
 
@@ -1159,7 +1159,7 @@ shortbow
 %%%%
 short sword
 
-一件个人用的短柄刺杀武器。
+一把短柄的随身刺杀武器。
 %%%%
 smoky gem
 
@@ -1520,7 +1520,7 @@ gell's gravitambourine
 %%%%
 handbook of applied construction
 
-一本关于锻造术的实用入门书，涵盖了基本原理及其常见应用。
+一本关于锻造系的实用入门书，涵盖了基本原理及其常见应用。
 %%%%
 hive talisman
 
