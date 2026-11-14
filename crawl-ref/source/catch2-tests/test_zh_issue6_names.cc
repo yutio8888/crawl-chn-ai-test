@@ -286,7 +286,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     item.brand = SPMSL_CHAOS;
     const string missile = missile_name(MI_JAVELIN);
     const string missile_brand = missile_brand_name(item, MBN_NAME);
-    CHECK(item.name(DESC_PLAIN) == missile + missile_brand + "之");
+    CHECK(item.name(DESC_PLAIN) == missile_brand + "之" + missile);
     item.base_type = OBJ_ARMOUR;
     item.sub_type = ARM_ROBE;
     item.brand = SPARM_FIRE_RESISTANCE;
