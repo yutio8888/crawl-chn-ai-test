@@ -319,7 +319,7 @@ rF- status
 %%%%
 rP- status
 
-你更容易被毒伤害。
+你对毒素更加脆弱。
 %%%%
 Bullseye status
 

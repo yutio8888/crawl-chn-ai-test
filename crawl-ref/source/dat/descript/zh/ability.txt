@@ -379,7 +379,7 @@ Purchase Blessing ability
 %%%%
 Call Merchant ability
 
-资助商人在你那里开店。
+资助商人在你所在的位置开店。
 开店的成本会随以这种方式开设的商店的数量增加而增加。
 %%%%
 Bribe Branch ability
