@@ -195,7 +195,7 @@ translocation miscast monster
 
 @The_monster@陷入一片空间扭曲场
 
-@the_monster@周围的空间呈现出[弯曲|扭曲]之势，[疯狂地|]翻涌着
+@the_monster@周围的空间[疯狂地|][弯曲|扭曲]起来
 %%%%
 translocation miscast unseen
 
