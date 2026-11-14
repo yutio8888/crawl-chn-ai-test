@@ -13,6 +13,7 @@
 #include "potion.h"
 #include "god-passive.h"
 #include "syscalls.h"
+#include "makeitem.h"
 #include "database.h"
 #include "terrain.h"
 #include "mon-cast.h"
@@ -1520,4 +1521,84 @@ TEST_CASE("State intensity is localized at all five stable gameplay consumers",
     CHECK(emitted.find(expected) != string::npos);
     if (language == lang_t::ZH)
         CHECK(emitted.find("更强的") == string::npos);
+}
+
+
+TEST_CASE("Stable missile brands keep complete names and original short tags",
+          "[zh-translation][r33][r33-missile]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const int quantity = GENERATE(1, 3);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    init_properties();
+    struct missile_case
+    {
+        missile_type type;
+        special_missile_type brand;
+        const char *en_full;
+        const char *en_plural;
+        const char *zh_full;
+        const char *en_short;
+        const char *en_short_plural;
+        const char *zh_short;
+        const char *en_noun;
+        const char *zh_noun;
+    };
+    const missile_case cases[] = {
+        { MI_BOOMERANG, SPMSL_NORMAL,
+          "boomerang", "boomerangs", "回旋镖",
+          "boomerang", "boomerangs", "回旋镖", "boomerang", "回旋镖" },
+        { MI_DART, SPMSL_POISONED,
+          "poisoned dart", "poisoned darts", "涂毒飞镖",
+          "dart (poison)", "darts (poison)", "飞镖 (毒素)", "dart", "飞镖" },
+        { MI_DART, SPMSL_DISPERSAL,
+          "dart of dispersal", "darts of dispersal", "空间驱离之飞镖",
+          "dart (disperse)", "darts (disperse)", "飞镖 (驱)", "dart", "飞镖" },
+        { MI_DART, SPMSL_DISJUNCTION,
+          "dart of disjunction", "darts of disjunction", "空间分离之飞镖",
+          "dart (disjunct)", "darts (disjunct)", "飞镖 (移位)", "dart", "飞镖" },
+        { MI_BOOMERANG, SPMSL_CHAOS,
+          "boomerang of chaos", "boomerangs of chaos", "混沌之回旋镖",
+          "boomerang (chaos)", "boomerangs (chaos)", "回旋镖 (混沌)",
+          "boomerang", "回旋镖" },
+        { MI_JAVELIN, SPMSL_CHAOS,
+          "javelin of chaos", "javelins of chaos", "混沌之标枪",
+          "javelin (chaos)", "javelins (chaos)", "标枪 (混沌)", "javelin", "标枪" },
+    };
+    for (const auto& test : cases)
+    {
+        INFO("brand=" << test.brand << " type=" << test.type
+             << " quantity=" << quantity << " language=" << static_cast<int>(language));
+        REQUIRE(is_missile_brand_ok(test.type, test.brand, true));
+        item_def item;
+        item.base_type = OBJ_MISSILES;
+        item.sub_type = test.type;
+        item.brand = test.brand;
+        item.quantity = quantity;
+        item.flags = ISFLAG_IDENTIFIED;
+        const string prefix = quantity == 1 ? "" : "3 ";
+        const string full = prefix + (language == lang_t::ZH ? test.zh_full
+            : quantity == 1 ? test.en_full : test.en_plural);
+        const string short_name = prefix + (language == lang_t::ZH ? test.zh_short
+            : quantity == 1 ? test.en_short : test.en_short_plural);
+        CHECK(item.name(DESC_PLAIN) == full);
+        CHECK(item.name(DESC_PLAIN, true) == short_name);
+        CHECK(item.name(DESC_BASENAME)
+              == (language == lang_t::ZH ? test.zh_noun : test.en_noun));
+        CHECK(item.brand == test.brand);
+        CHECK(item.quantity == quantity);
+    }
+    if (quantity == 1)
+    {
+        // The other consumer of "item ego prefix|of %s" already puts its
+        // modifier first. Keep that valid armour case unchanged.
+        item_def robe;
+        robe.base_type = OBJ_ARMOUR;
+        robe.sub_type = ARM_ROBE;
+        robe.brand = SPARM_FIRE_RESISTANCE;
+        robe.quantity = 1;
+        robe.flags = ISFLAG_IDENTIFIED;
+        CHECK(robe.name(DESC_PLAIN) == (language == lang_t::ZH
+            ? "+0 火焰抗性之长袍" : "+0 robe of fire resistance"));
+    }
 }
