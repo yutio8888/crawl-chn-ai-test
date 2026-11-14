@@ -1982,7 +1982,7 @@ Shadow Tempest spell
 Shadow Torpor spell
 
 汲取一列敌人的活力，使其短时间减速。法术威力越高，效果持续越久，
-但更强大的生物可能更快摆脱这种麻木。
+但更强大的生物可能更快摆脱这种倦怠。
 %%%%
 Shadow Turret spell
 

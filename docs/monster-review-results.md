@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`5c53167600f6f21ef1db5531f482140bc58c33f0a44f321c5314f8353cdb9050`
-- 清单 SHA-256：`7bca441293b28ef74698ab8ec3c2dc6657ac08feca5ebfc097d5ebce3d5107f4`
+- 清单 SHA-256：`c976f0cbd2c63b1f7af25cdc0c163402b1eb9ecad88136dcd8999a7b5d5d7c23`
 - 身份总数：816（现行 692；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -595,7 +595,7 @@
 | `monster:MONS_WORLDBINDER` | current; exposure=ordinary; name=worldbinder→缚界者; genus=MONS_WORLDBINDER; species=MONS_WORLDBINDER; data=crawl-ref/source/dat/mons/worldbinder.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_GRAND_AVATAR` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_VINE_STALKER` | current; exposure=ordinary; name=vine stalker→藤蔓行者; genus=MONS_VINE_STALKER; species=MONS_VINE_STALKER; data=crawl-ref/source/dat/mons/vine-stalker.yaml; desc=EN/ZH | keep |
-| `monster:MONS_DROWNED_SOUL` | current; exposure=ordinary; name=drowned soul→溺水之魂; genus=MONS_PHANTOM; species=MONS_DROWNED_SOUL; data=crawl-ref/source/dat/mons/drowned-soul.yaml; desc=EN/ZH | keep |
+| `monster:MONS_DROWNED_SOUL` | current; exposure=ordinary; name=drowned soul→溺水之魂; genus=MONS_PHANTOM; species=MONS_DROWNED_SOUL; data=crawl-ref/source/dat/mons/drowned-soul.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_SHOCK_SERPENT` | current; exposure=ordinary; name=shock serpent→电击蛇; genus=MONS_SNAKE; species=MONS_SHOCK_SERPENT; data=crawl-ref/source/dat/mons/shock-serpent.yaml; desc=EN/ZH | keep |
 | `monster:MONS_MANA_VIPER` | current; exposure=ordinary; name=mana viper→魔力毒蛇; genus=MONS_SNAKE; species=MONS_MANA_VIPER; data=crawl-ref/source/dat/mons/mana-viper.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_NAGA_RITUALIST` | current; exposure=ordinary; name=naga ritualist→纳迦仪式师; genus=MONS_NAGA; species=MONS_NAGA; data=crawl-ref/source/dat/mons/naga-ritualist.yaml; desc=EN/ZH | keep |
@@ -682,7 +682,7 @@
 | `monster:MONS_CRYSTAL_ECHIDNA` | current; exposure=ordinary; name=crystal echidna→水晶针鼹; genus=MONS_CRYSTAL_ECHIDNA; species=MONS_CRYSTAL_ECHIDNA; data=crawl-ref/source/dat/mons/crystal-echidna.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_PUTRID_MOUTH` | current; exposure=ordinary; name=putrid mouth→腐臭之口; genus=MONS_WRAITH; species=MONS_PUTRID_MOUTH; data=crawl-ref/source/dat/mons/putrid-mouth.yaml; desc=EN/ZH | keep |
 | `monster:MONS_TAINTED_LEVIATHAN` | current; exposure=ordinary; name=tainted leviathan→污秽利维坦; genus=MONS_GIANT; species=MONS_TAINTED_LEVIATHAN; data=crawl-ref/source/dat/mons/tainted-leviathan.yaml; desc=EN/ZH | keep |
-| `monster:MONS_WENDIGO` | current; exposure=ordinary; name=wendigo→温迪戈; genus=MONS_WENDIGO; species=MONS_WENDIGO; data=crawl-ref/source/dat/mons/wendigo.yaml; desc=EN/ZH | keep |
+| `monster:MONS_WENDIGO` | current; exposure=ordinary; name=wendigo→温迪戈; genus=MONS_WENDIGO; species=MONS_WENDIGO; data=crawl-ref/source/dat/mons/wendigo.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_NARGUN` | current; exposure=ordinary; name=nargun→纳尔根; genus=MONS_GOLEM; species=MONS_NARGUN; data=crawl-ref/source/dat/mons/nargun.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_HEADMASTER` | current; exposure=ordinary; name=Head Instructor→总教官; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/headmaster.yaml; desc=EN/ZH | keep |
 | `monster:MONS_LIVING_SPELL` | current; exposure=ordinary; name=living spell→活体法术; genus=MONS_LIVING_SPELL; species=MONS_LIVING_SPELL; data=crawl-ref/source/dat/mons/living-spell.yaml; desc=EN/ZH | retranslate: description corrected |
