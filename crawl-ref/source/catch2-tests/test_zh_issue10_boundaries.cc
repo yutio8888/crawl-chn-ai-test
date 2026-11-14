@@ -4778,6 +4778,7 @@ TEST_CASE("Disjunction status keeps its actor and a four-column light",
 TEST_CASE("Spellstride translates every real beam parameter at the speech sink",
           "[zh-translation][r35]")
 {
+    init_zap_index();
     const pair<spell_type, const char *> beams[] =
     {
         {SPELL_QUICKSILVER_BOLT, "驱散能量"},
