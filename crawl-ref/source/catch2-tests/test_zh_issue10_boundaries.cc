@@ -3,6 +3,7 @@
 #include "AppHdr.h"
 
 #include "areas.h"
+#include "act-iter.h"
 #include "beam.h"
 #include "cloud.h"
 #include "cio.h"
@@ -19,6 +20,7 @@
 #include "god-companions.h"
 #include "religion-enum.h"
 #include "database.h"
+#include "directn.h"
 #include "delay.h"
 #include "terrain.h"
 #include "mon-cast.h"
@@ -1922,5 +1924,148 @@ TEST_CASE("Holy wrath ability uses the stable brand term without changing its id
         CHECK(string(T_("The Shining One will bless your weapon with holy wrath... once."))
             == (zh ? "光辉者将为你的武器加持圣光铭印……一次。"
                    : "The Shining One will bless your weapon with holy wrath... once."));
+    }
+}
+
+TEST_CASE("Monster type display articles follow language without changing canonical names",
+          "[zh-translation][r39]")
+{
+    issue10_world world;
+    const auto state = rng::current_generator().get_state();
+    const auto count = rng::current_generator().get_count();
+    const description_level_type descriptions[] = {
+        DESC_PLAIN, DESC_A, DESC_THE, DESC_DBNAME,
+    };
+    map<pair<int, int>, string> english;
+    {
+        EnTranslationFixture language;
+        for (int i = 0; i < NUM_MONSTERS; ++i)
+        {
+            const auto type = static_cast<monster_type>(i);
+            if (invalid_monster_type(type))
+                continue;
+            for (auto desc : descriptions)
+            {
+                const string display = mons_type_name(type, desc);
+                english[{i, desc}] = display;
+                CHECK(mons_type_name_en(type, desc) == display);
+            }
+        }
+        CHECK(mons_type_name(MONS_ORC, DESC_A) == "an orc");
+        CHECK(mons_type_name(MONS_ORC, DESC_THE) == "the orc");
+        CHECK(mons_type_name(MONS_MANTICORE, DESC_A) == "a manticore");
+    }
+    {
+        ZhTranslationFixture language;
+        for (int i = 0; i < NUM_MONSTERS; ++i)
+        {
+            const auto type = static_cast<monster_type>(i);
+            if (invalid_monster_type(type))
+                continue;
+            const string plain = mons_type_name(type, DESC_PLAIN);
+            for (auto desc : descriptions)
+            {
+                CAPTURE(i, desc);
+                CHECK(mons_type_name_en(type, desc) == english.at({i, desc}));
+                if (!mons_is_unique(type))
+                    CHECK(mons_type_name(type, desc) == plain);
+            }
+        }
+        CHECK(mons_type_name(MONS_ORC, DESC_A) == "兽人");
+        CHECK(mons_type_name(MONS_ORC, DESC_THE) == "兽人");
+        CHECK(mons_type_name(MONS_MANTICORE, DESC_A) == "蝎尾狮");
+    }
+    CHECK(rng::current_generator().get_state() == state);
+    CHECK(rng::current_generator().get_count() == count);
+}
+
+TEST_CASE("Monstrous Menagerie emits complete bilingual names through the production spell",
+          "[zh-translation][r39]")
+{
+    struct beast_case
+    {
+        monster_type type;
+        const char *english;
+        const char *chinese;
+    };
+    const beast_case cases[] = {
+        {MONS_MANTICORE, "a manticore", "蝎尾狮"},
+        {MONS_LINDWURM, "a lindwurm", "蛇龙"},
+        {MONS_SPHINX_MARAUDER, "a sphinx marauder", "斯芬克斯掠袭者"},
+    };
+    for (const auto &entry : cases)
+    {
+        uint64_t selected = 0;
+        for (uint64_t seed = 1; seed < 512; ++seed)
+        {
+            rng::subgenerator probe(seed, 390401);
+            const auto type = random2(200) > 60 && coinflip()
+                ? MONS_SPHINX_MARAUDER
+                : coinflip() ? MONS_MANTICORE : MONS_LINDWURM;
+            if (type == entry.type)
+            {
+                selected = seed;
+                break;
+            }
+        }
+        REQUIRE(selected != 0);
+        for (lang_t language : {lang_t::EN, lang_t::ZH})
+        {
+            TranslationFixture translation(language,
+                                           language == lang_t::ZH ? "zh" : nullptr);
+            issue10_world world;
+            no_notes suppress_notes;
+            monster *caster = world.place(MONS_ORC_WIZARD, coord_def(22, 20));
+            set<mid_t> existing;
+            for (monster_iterator mi; mi; ++mi)
+                existing.insert(mi->mid);
+            unwinder collect_summons([&]
+            {
+                for (monster_iterator mi; mi; ++mi)
+                    if (!existing.count(mi->mid))
+                        world.monsters.push_back(*mi);
+            });
+            msgwin_temporary_mode temporary;
+            unwinder rollback([] { msgwin_clear_temporary(); });
+            rng::subgenerator replay(selected, 390401);
+            const string emitted = observe_message([&]
+            {
+                REQUIRE(cast_monstrous_menagerie(caster, 200) == spret::success);
+            });
+            const string expected = language == lang_t::ZH
+                ? string("兽人巫师召唤了") + entry.chinese + "！\n"
+                : string("the orc wizard summons ") + entry.english + "!\n";
+            CAPTURE(entry.type, language, emitted);
+            CHECK(emitted == expected);
+            vector<monster *> summoned;
+            for (monster_iterator mi; mi; ++mi)
+                if (!existing.count(mi->mid))
+                    summoned.push_back(*mi);
+            REQUIRE(summoned.size() == 1);
+            CHECK(summoned.front()->type == entry.type);
+            CHECK(summoned.front()->is_summoned());
+        }
+    }
+}
+
+TEST_CASE("Target descriptions use article-free Chinese monster types",
+          "[zh-translation][r39]")
+{
+    issue10_world world;
+    you.zot_orb_monster_known = true;
+    you.zot_orb_monster = MONS_ORC;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language,
+                                       language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        CHECK(feature_description(DNGN_ZOT_STATUE, NUM_TRAPS, "", DESC_PLAIN)
+            == (zh ? "兽人雕像" : "statue of an orc"));
+        monster_info flesh(MONS_ASPIRING_FLESH);
+        flesh.props[PROTEAN_TARGET_KEY] = MONS_MANTICORE;
+        const auto descriptions = get_monster_status_descriptors(flesh);
+        const string expected = zh ? "正在变为蝎尾狮" : "becoming a manticore";
+        CHECK(find(descriptions.begin(), descriptions.end(), expected)
+            != descriptions.end());
     }
 }
