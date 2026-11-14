@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`5c53167600f6f21ef1db5531f482140bc58c33f0a44f321c5314f8353cdb9050`
-- 清单 SHA-256：`d89d2da1ab02cd408946582328462f65452388b76d96482d3ce260d5b7442c4b`
+- 清单 SHA-256：`c27587ab493e8442cc77e8de0dc4b7fda1dc66edc97548f5538b706af068db1d`
 - 身份总数：816（现行 692；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -46,7 +46,7 @@
 | `monster:MONS_TYRANT_LEECH` | current; exposure=ordinary; name=tyrant leech→暴君水蛭; genus=MONS_TYRANT_LEECH; species=MONS_TYRANT_LEECH; data=crawl-ref/source/dat/mons/tyrant-leech.yaml; desc=EN/ZH | keep |
 | `monster:MONS_BABY_ALLIGATOR` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_ALLIGATOR` | current; exposure=ordinary; name=alligator→短吻鳄; genus=MONS_GIANT_LIZARD; species=MONS_ALLIGATOR; data=crawl-ref/source/dat/mons/alligator.yaml; desc=EN/ZH | keep |
-| `monster:MONS_CROCODILE` | current; exposure=ordinary; name=crocodile→鳄鱼; genus=MONS_CROCODILE; species=MONS_CROCODILE; data=crawl-ref/source/dat/mons/crocodile.yaml; desc=EN/ZH | keep |
+| `monster:MONS_CROCODILE` | current; exposure=ordinary; name=crocodile→鳄鱼; genus=MONS_CROCODILE; species=MONS_CROCODILE; data=crawl-ref/source/dat/mons/crocodile.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_HYDRA` | current; exposure=ordinary; name=hydra→多头蛇; genus=MONS_HYDRA; species=MONS_HYDRA; data=crawl-ref/source/dat/mons/hydra.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SHEEP` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_YAK` | current; exposure=ordinary; name=yak→牦牛; genus=MONS_YAK; species=MONS_YAK; data=crawl-ref/source/dat/mons/yak.yaml; desc=EN/ZH | keep |
@@ -79,7 +79,7 @@
 | `monster:MONS_FIRE_DRAGON` | current; exposure=ordinary; name=fire dragon→火龙; genus=MONS_DRAGON; species=MONS_FIRE_DRAGON; data=crawl-ref/source/dat/mons/fire-dragon.yaml; desc=EN/ZH | keep |
 | `monster:MONS_ICE_DRAGON` | current; exposure=ordinary; name=ice dragon→冰龙; genus=MONS_DRAGON; species=MONS_ICE_DRAGON; data=crawl-ref/source/dat/mons/ice-dragon.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SHADOW_DRAGON` | current; exposure=ordinary; name=shadow dragon→暗影龙; genus=MONS_DRAGON; species=MONS_SHADOW_DRAGON; data=crawl-ref/source/dat/mons/shadow-dragon.yaml; desc=EN/ZH | keep |
-| `monster:MONS_STORM_DRAGON` | current; exposure=ordinary; name=storm dragon→风暴龙; genus=MONS_DRAGON; species=MONS_STORM_DRAGON; data=crawl-ref/source/dat/mons/storm-dragon.yaml; desc=EN/ZH | keep |
+| `monster:MONS_STORM_DRAGON` | current; exposure=ordinary; name=storm dragon→风暴龙; genus=MONS_DRAGON; species=MONS_STORM_DRAGON; data=crawl-ref/source/dat/mons/storm-dragon.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_BONE_DRAGON` | current; exposure=ordinary; name=bone dragon→骨龙; genus=MONS_DRAGON; species=MONS_BONE_DRAGON; data=crawl-ref/source/dat/mons/bone-dragon.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_QUICKSILVER_DRAGON` | current; exposure=ordinary; name=quicksilver dragon→水银龙; genus=MONS_DRAGON; species=MONS_QUICKSILVER_DRAGON; data=crawl-ref/source/dat/mons/quicksilver-dragon.yaml; desc=EN/ZH | keep |
 | `monster:MONS_IRON_DRAGON` | current; exposure=ordinary; name=iron dragon→铁龙; genus=MONS_DRAGON; species=MONS_IRON_DRAGON; data=crawl-ref/source/dat/mons/iron-dragon.yaml; desc=EN/ZH | keep |
@@ -164,7 +164,7 @@
 | `monster:MONS_ELECTRIC_GOLEM` | current; exposure=ordinary; name=electric golem→电击魔像; genus=MONS_GOLEM; species=MONS_ELECTRIC_GOLEM; data=crawl-ref/source/dat/mons/electric-golem.yaml; desc=EN/ZH | keep |
 | `monster:MONS_ORB_OF_FIRE` | current; exposure=ordinary; name=orb of fire→火焰之球; genus=MONS_ORB_OF_FIRE; species=MONS_ORB_OF_FIRE; data=crawl-ref/source/dat/mons/orb-of-fire.yaml; desc=EN/ZH | keep |
 | `monster:MONS_EARTH_ELEMENTAL` | current; exposure=ordinary; name=earth elemental→地元素; genus=MONS_ELEMENTAL; species=MONS_EARTH_ELEMENTAL; data=crawl-ref/source/dat/mons/earth-elemental.yaml; desc=EN/ZH | retranslate: description corrected |
-| `monster:MONS_FIRE_ELEMENTAL` | current; exposure=ordinary; name=fire elemental→火元素; genus=MONS_ELEMENTAL; species=MONS_FIRE_ELEMENTAL; data=crawl-ref/source/dat/mons/fire-elemental.yaml; desc=EN/ZH | keep |
+| `monster:MONS_FIRE_ELEMENTAL` | current; exposure=ordinary; name=fire elemental→火元素; genus=MONS_ELEMENTAL; species=MONS_FIRE_ELEMENTAL; data=crawl-ref/source/dat/mons/fire-elemental.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_AIR_ELEMENTAL` | current; exposure=ordinary; name=air elemental→气元素; genus=MONS_ELEMENTAL; species=MONS_AIR_ELEMENTAL; data=crawl-ref/source/dat/mons/air-elemental.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_TWISTER` | current; exposure=ordinary; name=twister→旋风; genus=MONS_FIRE_VORTEX; species=MONS_TWISTER; data=crawl-ref/source/dat/mons/twister.yaml; desc=EN/ZH | keep |
 | `monster:MONS_GOLDEN_EYE` | current; exposure=ordinary; name=golden eye→金色之眼; genus=MONS_FLOATING_EYE; species=MONS_GOLDEN_EYE; data=crawl-ref/source/dat/mons/golden-eye.yaml; desc=EN/ZH | keep |
@@ -513,7 +513,7 @@
 | `monster:MONS_SENSED_NASTY` | current; exposure=internal_or_special; name=nasty sensed monster→感知到的极危险怪物; genus=MONS_SENSED; species=MONS_SENSED; data=crawl-ref/source/dat/mons/sensed-nasty.yaml; desc=EN/ZH | adjust: display name corrected |
 | `monster:MONS_SENSED_FRIENDLY` | current; exposure=internal_or_special; name=friendly sensed monster→感知到的友方怪物; genus=MONS_SENSED; species=MONS_SENSED; data=crawl-ref/source/dat/mons/sensed-friendly.yaml; desc=EN/ZH | adjust: display name corrected |
 | `monster:MONS_PLAYER` | current; exposure=internal_or_special; name=player→玩家; genus=MONS_PLAYER; species=MONS_PLAYER; data=crawl-ref/source/dat/mons/player.yaml; desc=N/A | keep |
-| `monster:MONS_TEST_SPAWNER` | current; exposure=internal_or_special; name=test spawner→测试生成器; genus=MONS_TEST_SPAWNER; species=MONS_TEST_SPAWNER; data=crawl-ref/source/dat/mons/TESTspawner.yaml; desc=EN/ZH | keep |
+| `monster:MONS_TEST_SPAWNER` | current; exposure=internal_or_special; name=test spawner→测试生成器; genus=MONS_TEST_SPAWNER; species=MONS_TEST_SPAWNER; data=crawl-ref/source/dat/mons/TESTspawner.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_SERPENT_OF_HELL_COCYTUS` | current; exposure=unique; name=Serpent of Hell→地狱巨蛇; genus=MONS_DRAGON; species=MONS_SERPENT_OF_HELL; data=crawl-ref/source/dat/mons/serpent-of-hell-cocytus.yaml; desc=N/A | keep |
 | `monster:MONS_SERPENT_OF_HELL_DIS` | current; exposure=unique; name=Serpent of Hell→地狱巨蛇; genus=MONS_DRAGON; species=MONS_SERPENT_OF_HELL; data=crawl-ref/source/dat/mons/serpent-of-hell-dis.yaml; desc=N/A | keep |
 | `monster:MONS_SERPENT_OF_HELL_TARTARUS` | current; exposure=unique; name=Serpent of Hell→地狱巨蛇; genus=MONS_DRAGON; species=MONS_SERPENT_OF_HELL; data=crawl-ref/source/dat/mons/serpent-of-hell-tartarus.yaml; desc=N/A | keep |
@@ -678,7 +678,7 @@
 | `monster:MONS_CREEPING_INFERNO` | current; exposure=ordinary; name=creeping inferno→蔓延地狱火; genus=MONS_CREEPING_INFERNO; species=MONS_CREEPING_INFERNO; data=crawl-ref/source/dat/mons/creeping-inferno.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_SEARING_WRETCH` | current; exposure=ordinary; name=searing wretch→灼炎苦尸; genus=MONS_GHOUL; species=MONS_SEARING_WRETCH; data=crawl-ref/source/dat/mons/searing-wretch.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_STOKER` | current; exposure=ordinary; name=stoker→焚炉者; genus=MONS_LICH; species=MONS_STOKER; data=crawl-ref/source/dat/mons/stoker.yaml; desc=EN/ZH | retranslate: description corrected |
-| `monster:MONS_QUICKSILVER_ELEMENTAL` | current; exposure=ordinary; name=quicksilver elemental→水银元素; genus=MONS_ELEMENTAL; species=MONS_QUICKSILVER_ELEMENTAL; data=crawl-ref/source/dat/mons/quicksilver-elemental.yaml; desc=EN/ZH | keep |
+| `monster:MONS_QUICKSILVER_ELEMENTAL` | current; exposure=ordinary; name=quicksilver elemental→水银元素; genus=MONS_ELEMENTAL; species=MONS_QUICKSILVER_ELEMENTAL; data=crawl-ref/source/dat/mons/quicksilver-elemental.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_CRYSTAL_ECHIDNA` | current; exposure=ordinary; name=crystal echidna→水晶针鼹; genus=MONS_CRYSTAL_ECHIDNA; species=MONS_CRYSTAL_ECHIDNA; data=crawl-ref/source/dat/mons/crystal-echidna.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_PUTRID_MOUTH` | current; exposure=ordinary; name=putrid mouth→腐臭之口; genus=MONS_WRAITH; species=MONS_PUTRID_MOUTH; data=crawl-ref/source/dat/mons/putrid-mouth.yaml; desc=EN/ZH | keep |
 | `monster:MONS_TAINTED_LEVIATHAN` | current; exposure=ordinary; name=tainted leviathan→污秽利维坦; genus=MONS_GIANT; species=MONS_TAINTED_LEVIATHAN; data=crawl-ref/source/dat/mons/tainted-leviathan.yaml; desc=EN/ZH | keep |
@@ -698,7 +698,7 @@
 | `monster:MONS_STEELBARB_WORM` | current; exposure=ordinary; name=steelbarb worm→钢刺蠕虫; genus=MONS_RIBBON_WORM; species=MONS_STEELBARB_WORM; data=crawl-ref/source/dat/mons/steelbarb-worm.yaml; desc=EN/ZH | keep |
 | `monster:MONS_JOROGUMO` | current; exposure=ordinary; name=jorogumo→络新妇; genus=MONS_JOROGUMO; species=MONS_JOROGUMO; data=crawl-ref/source/dat/mons/jorogumo.yaml; desc=EN/ZH | keep |
 | `monster:MONS_BROODMOTHER` | current; exposure=ordinary; name=broodmother→育母蜘蛛; genus=MONS_SPIDER; species=MONS_BROODMOTHER; data=crawl-ref/source/dat/mons/broodmother.yaml; desc=EN/ZH | keep |
-| `monster:MONS_CULICIVORA` | current; exposure=ordinary; name=culicivora→库蚊蛛; genus=MONS_SPIDER; species=MONS_CULICIVORA; data=crawl-ref/source/dat/mons/culicivora.yaml; desc=EN/ZH | keep |
+| `monster:MONS_CULICIVORA` | current; exposure=ordinary; name=culicivora→库蚊蛛; genus=MONS_SPIDER; species=MONS_CULICIVORA; data=crawl-ref/source/dat/mons/culicivora.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_SUN_MOTH` | current; exposure=ordinary; name=sun moth→太阳蛾; genus=MONS_MOTH; species=MONS_SUN_MOTH; data=crawl-ref/source/dat/mons/sun-moth.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_RADROACH` | current; exposure=ordinary; name=radroach→辐射蟑螂; genus=MONS_RADROACH; species=MONS_RADROACH; data=crawl-ref/source/dat/mons/radroach.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_PARGHIT` | current; exposure=unique; name=Parghit→帕吉特; genus=MONS_TROLL; species=MONS_TROLL; data=crawl-ref/source/dat/mons/parghit.yaml; desc=EN/ZH | keep |
