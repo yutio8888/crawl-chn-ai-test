@@ -512,7 +512,7 @@ everburning encyclopedia
 executioner's axe
 
 一件可怕的武器，上面有着凝固的血和关于酷刑与死亡的粗糙雕刻，
-带有一个巨大的斧头。
+配有巨大的斧刃。
 %%%%
 falchion
 
