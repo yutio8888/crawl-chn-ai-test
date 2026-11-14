@@ -125,7 +125,7 @@ HINT_AUTOPICKUP_THROWN
 %%%%
 HINT_AUTO_EXCLUSION
 
-为防止自动旅行或自动探索把你带入危险区域，可以进入地图视图（<w>$cmd[CMD_DISPLAY_MAP]</w>），然后在怪物位置按 <w>$cmd[CMD_MAP_EXCLUDE_AREA]</w> 切换排除半径。为了简化操作，<w>auto_exclude</w> 选项列出的一些无法移动的怪物（例如眼前这个）会被视为足够危险，系统会自动为它们设置禁区。杀死怪物后，该禁区会自动清除。你也可以按 <w>$cmd[CMD_DISPLAY_MAP]</w> 进入地图，再按两次 <w>$cmd[CMD_MAP_EXCLUDE_AREA]</w> 手动移除禁区；但除非把这种怪物从 <w>auto_exclude</w> 列表中移除，否则下一回合禁区还会重新出现。
+为防止自动旅行或自动探索把你带入危险区域，可以进入地图视图（<w>$cmd[CMD_DISPLAY_MAP]</w>），然后在怪物位置按 <w>$cmd[CMD_MAP_EXCLUDE_AREA]</w> 切换禁区半径。为了简化操作，<w>auto_exclude</w> 选项列出的一些无法移动的怪物（例如眼前这个）会被视为足够危险，系统会自动为它们设置禁区。杀死怪物后，该禁区会自动清除。你也可以按 <w>$cmd[CMD_DISPLAY_MAP]</w> 进入地图，再按两次 <w>$cmd[CMD_MAP_EXCLUDE_AREA]</w> 手动移除禁区；但除非把这种怪物从 <w>auto_exclude</w> 列表中移除，否则下一回合禁区还会重新出现。
 %%%%
 HINT_AUTO_EXPLORE
 

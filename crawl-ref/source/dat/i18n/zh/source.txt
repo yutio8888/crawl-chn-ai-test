@@ -1604,7 +1604,7 @@ mimic reveal plural|%s are mimics!
 %s生命力被献祭了。
 %%%%
 %s liquefies the ground around %s!
-%s将%s周围的地面液化！
+%s将自身周围的地面液化！%.0s
 %%%%
 %s looks even more glass-like.
 %s看起来更像玻璃了。
@@ -8444,10 +8444,10 @@ You are hurled out of the way!
 你被猛烈地推开了！
 %%%%
 You are hurled through space towards a monster!
-你被抛着穿过空间，冲向一只怪物！
+你被抛飞，穿过空间冲向一只怪物！
 %%%%
 You are hurled through space towards some monsters!
-你被抛着穿过空间，冲向一些怪物！
+你被抛飞，穿过空间冲向一些怪物！
 %%%%
 You are hurled through space towards %s monster%s!
 你被抛向空间中的%s怪物%s！
@@ -34233,10 +34233,10 @@ Stack %s
  （你有%d金币）
 %%%%
  and %s
- 和%s
+和%s
 %%%%
  and the adjacent constructs
- 和相邻的构装体
+和相邻的构装体
 %%%%
  is wracked by anguish%s
  被痛苦折磨%s
@@ -35988,7 +35988,7 @@ To attack a monster,
 要攻击怪物，
 %%%%
 To attack a monster, you can simply walk into it.
-要攻击怪物，你只需走进它。
+要攻击怪物，你只需朝它所在的格子移动。
 %%%%
 To do this, 
 为此，
@@ -51164,3 +51164,6 @@ The Orb lets out a furious burst of light as your magic touches it!
 %%%%
 Now pick up the Orb and get out of here!
 现在拾起佐特宝珠，逃出去！
+%%%%
+unseen actor|Someone
+有人

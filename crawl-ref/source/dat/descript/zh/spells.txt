@@ -1390,7 +1390,7 @@ Vanquished Vanguard spell
 %%%%
 Summon Spiders spell
 
-召唤一个或多个蜘蛛。
+召唤一只或多只蜘蛛。
 %%%%
 Summon Tzitzimitl spell
 
