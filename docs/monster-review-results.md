@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`dcbfb16ac457e9506a5e634d171211d460652f42e2ba651ad950d15e719753ae`
-- 清单 SHA-256：`6b924695cd0caa2c726857b42322c4819ed87258ab21811bbaac72aacaad7206`
+- 清单 SHA-256：`8ea230a4248747415d43610aaf76fe280114fb86e0fa784370fa8cfdc9a4ccaa`
 - 身份总数：795（现行 671；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -245,7 +245,7 @@
 | `monster:MONS_NAGA_WARRIOR` | current; exposure=ordinary; name=naga warrior→纳迦战士; genus=MONS_NAGA; species=MONS_NAGA; data=crawl-ref/source/dat/mons/naga-warrior.yaml; desc=EN/ZH | keep |
 | `monster:MONS_NAGA_MAGE` | current; exposure=ordinary; name=naga mage→纳迦法师; genus=MONS_NAGA; species=MONS_NAGA; data=crawl-ref/source/dat/mons/naga-mage.yaml; desc=EN/ZH | keep |
 | `monster:MONS_NAGARAJA` | current; exposure=ordinary; name=nagaraja→纳迦王; genus=MONS_NAGA; species=MONS_NAGA; data=crawl-ref/source/dat/mons/nagaraja.yaml; desc=EN/ZH | keep |
-| `monster:MONS_GUARDIAN_SERPENT` | current; exposure=ordinary; name=guardian serpent→守护蛇; genus=MONS_GUARDIAN_SERPENT; species=MONS_GUARDIAN_SERPENT; data=crawl-ref/source/dat/mons/guardian-serpent.yaml; desc=EN/ZH | keep |
+| `monster:MONS_GUARDIAN_SERPENT` | current; exposure=ordinary; name=guardian serpent→守护蛇; genus=MONS_GUARDIAN_SERPENT; species=MONS_GUARDIAN_SERPENT; data=crawl-ref/source/dat/mons/guardian-serpent.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_OCTOPODE` | current; exposure=ordinary; name=octopode→章鱼; genus=MONS_OCTOPODE; species=MONS_OCTOPODE; data=crawl-ref/source/dat/mons/octopode.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_MERFOLK` | current; exposure=ordinary; name=merfolk→人鱼; genus=MONS_MERFOLK; species=MONS_MERFOLK; data=crawl-ref/source/dat/mons/merfolk.yaml; desc=EN/ZH | keep |
 | `monster:MONS_MERFOLK_SIREN` | current; exposure=ordinary; name=merfolk siren→人鱼塞壬; genus=MONS_MERFOLK; species=MONS_MERFOLK; data=crawl-ref/source/dat/mons/merfolk-siren.yaml; desc=EN/ZH | retranslate: description corrected |

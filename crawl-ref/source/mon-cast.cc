@@ -3575,7 +3575,7 @@ static bool _seal_doors_and_stairs(const monster* warden,
         ASSERT(!check_only);
         mprf(MSGCH_MONSTER_SPELL, T_("%s activates a sealing rune."),
                 (warden->visible_to(&you) ? warden->name(DESC_THE, true).c_str()
-                                          : "Someone"));
+                                          : C_("unseen actor", "Someone")));
         if (num_closed > 1)
             mpr(T_("The doors slam shut!"));
         else if (num_closed == 1)

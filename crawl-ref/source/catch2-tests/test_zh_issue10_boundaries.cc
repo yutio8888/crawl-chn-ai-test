@@ -6,6 +6,9 @@
 #include "beam.h"
 #include "cloud.h"
 #include "database.h"
+#include "terrain.h"
+#include "mon-cast.h"
+#include "coordit.h"
 #include "describe.h"
 #include "dungeon.h"
 #include "english.h"
@@ -1045,6 +1048,73 @@ TEST_CASE("Orb pickup custom and null messages translate at the real display bou
     CHECK(fallback.find(expected) != string::npos);
     you.duration[DUR_SILENCE] = 0;
     invalidate_agrid(true);
+}
+
+TEST_CASE("Sealing runes name an unseen caster in the active display language",
+          "[zh-translation][r27][r27-seal-caster]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const bool visible = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    you.wizard_vision = false;
+    // Seal Doors scans a full LOS_RADIUS square, slightly larger than the
+    // shared fixture's original floor. Give that scan a clean, owned arena.
+    for (radius_iterator ri(you.pos(), LOS_RADIUS, C_SQUARE); ri; ++ri)
+    {
+        const coord_def p = *ri;
+        if (p.x >= 15 && p.x <= 30 && p.y >= 15 && p.y <= 30)
+            continue;
+        world.cells.emplace_back(p, env.grid(p), env.mgrid(p), env.level_map_ids(p));
+        env.grid(p) = DNGN_FLOOR;
+        env.mgrid(p) = NON_MONSTER;
+        env.level_map_ids(p) = INVALID_MAP_INDEX;
+    }
+    const coord_def stairs(21, 20);
+    unwind_var<map_cell> knowledge(env.map_knowledge(stairs));
+    REQUIRE_FALSE(is_temp_terrain(stairs));
+    env.grid(stairs) = DNGN_STONE_STAIRS_DOWN_I;
+    unwinder unseal([&] { revert_terrain_change(stairs, TERRAIN_CHANGE_DOOR_SEAL); });
+    invalidate_los();
+    monster *warden = world.place(MONS_VAULT_WARDEN, coord_def(22, 20));
+    if (!visible)
+        warden->add_ench(mon_enchant(ENCH_INVIS, warden, 100));
+    REQUIRE(warden->visible_to(&you) == visible);
+    REQUIRE(warden->can_see(you));
+    bolt spell;
+    spell.target = you.pos();
+    const string message = observe_message([&] {
+        mons_cast(warden, spell, SPELL_SEAL_DOORS, MON_SPELL_WIZARD, false);
+    });
+    CHECK(env.grid(stairs) == DNGN_SEALED_STAIRS_DOWN);
+    const string subject = visible ? warden->name(DESC_THE, true)
+        : (language == lang_t::ZH ? "有人" : "Someone");
+    const string expected = subject + (language == lang_t::ZH
+        ? "激活了一道封印符文。" : " activates a sealing rune.");
+    CAPTURE(language, visible, message);
+    CHECK(trimmed_string(message) == expected);
+}
+
+TEST_CASE("Liquefaction renders a reflexive subject without printing a redundant argument",
+          "[zh-translation][r27][r27-liquefaction]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    unwind_var<bool> saving(crawl_state.need_save, false);
+    monster *caster = world.place(MONS_ORC_WIZARD, coord_def(22, 20));
+    REQUIRE(you.can_see(*caster));
+    bolt spell;
+    spell.target = you.pos();
+    const string message = observe_message([&] {
+        mons_cast(caster, spell, SPELL_LEDAS_LIQUEFACTION, MON_SPELL_WIZARD, false);
+    });
+    const string expected = caster->name(DESC_THE) + (language == lang_t::ZH
+        ? "将自身周围的地面液化！"
+        : " liquefies the ground around " + caster->pronoun(PRONOUN_REFLEXIVE) + "!");
+    CAPTURE(language, message);
+    CHECK(message.find(expected) != string::npos);
+    CHECK(caster->has_ench(ENCH_LIQUEFYING));
 }
 
 TEST_CASE("Player miscasts join expanded Chinese colours at the production display sink",
