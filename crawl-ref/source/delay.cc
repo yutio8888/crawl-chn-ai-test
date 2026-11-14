@@ -1012,7 +1012,7 @@ void run_macro(const char *macroname)
             --delay->duration;
     }
 #else
-    mprf(MSGCH_ERROR, "CLua bindings not available on this build!");
+    mprf(MSGCH_ERROR, T_("CLua bindings not available on this build!"));
     UNUSED(macroname);
     stop_delay();
 #endif
