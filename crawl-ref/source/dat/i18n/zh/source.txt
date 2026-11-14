@@ -11743,7 +11743,7 @@ Your resistance to physical damage fades away.
 你对物理伤害的抵抗力消失了。
 %%%%
 Your rising flame fizzles out.
-你上升的火焰熄灭了。
+你的升腾之焰熄灭了。
 %%%%
 Your robe already provides the effects of brilliance.
 你的长袍已经提供了智慧效果。
@@ -11906,7 +11906,7 @@ Zin
 辛
 %%%%
 Zin cleanses your body of Beogh's taint.
-辛净化了你体内比欧弗的污点。
+辛清除了比欧弗在你身上留下的污秽。
 %%%%
 Zombie hands grab %s from below!
 尸手从地下抓住了%s！
@@ -22871,7 +22871,7 @@ Your bloodlust subsides.
 你的嗜血欲望消退了。
 %%%%
 Your fiery armour burns out.
-你的火焰铠甲燃尽了。
+你的火焰护甲燃尽了。
 %%%%
 Your fugue has ended.
 你的赋格结束了。
@@ -28143,7 +28143,7 @@ Your suffering will be repaid in blood.
 你的苦难将以鲜血偿还。
 %%%%
 Your swarm has recently come to your defence.
-你的蜂群最近来保护你了。
+你的虫群最近来保护过你了。
 %%%%
 Your system completely accepts the healing effects of potions.
 你的身体完全接受了药水的治疗效果。
@@ -54845,3 +54845,6 @@ life note|Lost a life (%d life remaining)
 %%%%
 life note|Lost a life (%d lives remaining)
 失去了一条命（剩余%d条命）
+%%%%
+Fixing up corrupted PlaceInfo for %s (levels_seen is %d)
+正在修复%s中损坏的PlaceInfo（levels_seen为%d）。
