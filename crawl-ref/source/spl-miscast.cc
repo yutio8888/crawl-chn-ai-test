@@ -18,6 +18,8 @@
 #include "monster-type.h"
 #include "mon-death.h"
 #include "mon-place.h"
+#include "mon-util.h"
+#include "options.h"
 #include "religion.h"
 #include "shout.h"
 #include "spl-goditem.h"
@@ -67,7 +69,11 @@ static void _do_msg(actor& target, spschool which, int dam)
     }
     // For monsters this is done inside do_mon_str_replacements
     else
+    {
         msg = maybe_pick_random_substring(msg);
+        if (Options.language == lang_t::ZH)
+            msg = strip_cjk_spaces(msg);
+    }
 
     mpr(msg + attack_strength_punctuation(dam));
 }
