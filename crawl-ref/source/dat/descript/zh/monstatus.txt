@@ -466,7 +466,7 @@ sick monstatus
 silenced monstatus
 
 这个生物被一片不自然的沉默力场吞没了，阻止其发出任何噪音，
-包括大多数生物施法所需的发声。
+包括许多生物施法所需的发声。
 %%%%
 skewered by barbs monstatus
 

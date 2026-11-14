@@ -87,7 +87,7 @@ foul pestilence cloud
 %%%%
 thin mist cloud
 
-一团薄雾云。营造氛围的，但无害。
+一团薄雾云。虽能烘托气氛，却并无危害。
 %%%%
 seething chaos cloud
 
@@ -116,7 +116,7 @@ whirling frost cloud
 %%%%
 sparse dust cloud
 
-一团稀疏的尘埃云。营造氛围的，但无害。
+一团稀疏的尘埃云。虽能烘托气氛，却并无危害。
 %%%%
 spectral mist cloud
 
@@ -144,8 +144,8 @@ white fluffiness cloud
 %%%%
 salt cloud
 
-一团急速旋转的尘和盐云。
-它会刺痛身处其中的生物的眼睛和皮肤，尽管它终究是无害的。
+一团急速旋转的尘土与盐粒之云。
+它会刺痛身处其中的生物的眼睛和皮肤，但终究无害。
 %%%%
 golden dust cloud
 
@@ -154,7 +154,7 @@ golden dust cloud
 %%%%
 wisps of flame cloud
 
-一道火花和缕缕火焰。营造氛围的，但无害。
+一串火花和缕缕火焰。虽能烘托气氛，却并无危害。
 %%%%
 degeneration cloud
 
@@ -167,7 +167,7 @@ blastmotes cloud
 %%%%
 sparks cloud
 
-一道电火花。营造氛围的，但无害。
+一道电火花。虽能烘托气氛，却并无危害。
 %%%%
 alcoholic mist cloud
 

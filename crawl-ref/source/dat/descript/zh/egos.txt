@@ -139,7 +139,7 @@ air (Air) armour ego
 %%%%
 archery (Archery) armour ego
 
-进行远程战斗时，它的负重仅为正常值的三分之一，
+进行远程战斗时，它的负重等级仅为正常值的三分之一，
 并会根据穿戴者的护甲技能略微增加远程伤害。
 %%%%
 attunement (Attunement) armour ego
