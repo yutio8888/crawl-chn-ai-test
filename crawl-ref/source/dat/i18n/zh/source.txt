@@ -10656,7 +10656,7 @@ You tear a large gash into the net.
 你把网撕开一个大口子。
 %%%%
 You tried to hop, but there was no room to land!
-你试图跳，但没有着陆的空间！
+你试图跳跃，但没有可以落脚的地方！
 %%%%
 You trigger a net trap.
 你触发了一个网陷阱。
@@ -24881,7 +24881,7 @@ You are unable to call dragons.
 你无法召唤龙。
 %%%%
 You are unable to cast Gavotte.
-你无法施放加沃特舞曲。
+你无法施放盖尔之加沃特。
 %%%%
 You are unable to cast Hellfire Mortar.
 你无法施放地狱火迫击炮。
@@ -25922,7 +25922,7 @@ Your magical power will grow resistant to disruption.
 你的魔力将会变得能够抵御干扰。
 %%%%
 Your maw is digesting a delicious meal.
-你的大嘴正在消化一顿美味大餐。
+你的巨口正在消化一顿美味大餐。
 %%%%
 Your melee and ranged attacks are strengthened by the souls of the fallen.
 你的近战和远程攻击被亡者的灵魂所增强。
