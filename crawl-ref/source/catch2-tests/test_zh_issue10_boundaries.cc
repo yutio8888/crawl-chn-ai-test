@@ -16,6 +16,7 @@
 #include "species.h"
 #include "makeitem.h"
 #include "database.h"
+#include "delay.h"
 #include "terrain.h"
 #include "mon-cast.h"
 #include "coordit.h"
@@ -1664,5 +1665,64 @@ TEST_CASE("Stable missile brands keep complete names and original short tags",
         robe.flags = ISFLAG_IDENTIFIED;
         CHECK(robe.name(DESC_PLAIN) == (language == lang_t::ZH
             ? "+0 火焰抗性之长袍" : "+0 robe of fire resistance"));
+    }
+}
+
+TEST_CASE("Macro Lua errors translate only the frame and stop the real delay",
+          "[zh-translation][r34]")
+{
+#ifdef CLUA_BINDINGS
+    issue10_world world;
+    lua_State *ls = clua.state();
+    REQUIRE(ls);
+    lua_stack_cleaner stack(ls);
+    lua_getglobal(ls, "c_macro");
+    const int saved = luaL_ref(ls, LUA_REGISTRYINDEX);
+    unwinder restore([&]
+    {
+        lua_rawgeti(ls, LUA_REGISTRYINDEX, saved);
+        lua_setglobal(ls, "c_macro");
+        luaL_unref(ls, LUA_REGISTRYINDEX, saved);
+    });
+    unwind_var<string> error(clua.error);
+    lua_pushcfunction(ls, [](lua_State *state) -> int
+    {
+        // This diagnostic deliberately matches a translated catalog key.
+        lua_pushliteral(state, "You are poisoned.");
+        return lua_error(state);
+    });
+    lua_setglobal(ls, "c_macro");
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language,
+                                       language == lang_t::ZH ? "zh" : nullptr);
+        clua.error.clear();
+        const string emitted = observe_message([] { run_macro("r34-test"); });
+        REQUIRE(clua.error.find("You are poisoned.") != string::npos);
+        const string frame = language == lang_t::ZH ? "Lua错误：" : "Lua error: ";
+        CHECK(emitted.find(frame + clua.error) != string::npos);
+        CHECK(current_delay() == nullptr);
+    }
+#endif
+}
+
+TEST_CASE("Disjunction keeps a compact localized missile brand label",
+          "[zh-translation][r34]")
+{
+    issue10_world world;
+    item_def dart;
+    dart.base_type = OBJ_MISSILES;
+    dart.sub_type = MI_DART;
+    dart.brand = SPMSL_DISJUNCTION;
+    dart.quantity = 1;
+    dart.flags = ISFLAG_IDENTIFIED;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language,
+                                       language == lang_t::ZH ? "zh" : nullptr);
+        const string label = missile_brand_name(dart, MBN_TERSE);
+        CHECK(label == (language == lang_t::ZH ? "分离" : "disjunct"));
+        CHECK(strwidth(label) == (language == lang_t::ZH ? 4 : 8));
+        CHECK(dart.name(DESC_PLAIN, true).find("(" + label + ")") != string::npos);
     }
 }
