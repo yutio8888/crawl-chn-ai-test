@@ -1649,7 +1649,7 @@ The potion decomposes into %s within you.
 %s生命力被献祭了。
 %%%%
 %s liquefies the ground around %s!
-%s将%s周围的地面液化！
+%s将自身周围的地面液化！%.0s
 %%%%
 %s looks even more glass-like.
 %s看起来更像玻璃了。
@@ -8807,10 +8807,10 @@ You are hurled out of the way!
 你被猛烈地推开了！
 %%%%
 You are hurled through space towards a monster!
-你被抛着穿过空间，冲向一只怪物！
+你被抛飞，穿过空间冲向一只怪物！
 %%%%
 You are hurled through space towards some monsters!
-你被抛着穿过空间，冲向一些怪物！
+你被抛飞，穿过空间冲向一些怪物！
 %%%%
 You are hurled through space towards %s monster%s!
 你被抛向空间中的%s怪物%s！
@@ -36774,10 +36774,10 @@ Stack %s
  （你有%d金币）
 %%%%
  and %s
- 和%s
+和%s
 %%%%
  and the adjacent constructs
- 和相邻的构装体
+和相邻的构装体
 %%%%
  is wracked by anguish%s
  被痛苦折磨%s
