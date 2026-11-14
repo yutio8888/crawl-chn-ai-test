@@ -880,6 +880,7 @@ Sanctuary	庇护所	domain=abilities; source=EN/ZH; Scope / comment=ability; sou
 Sandblast	沙爆	domain=spells; source=EN/ZH; 备注=📝
 sanguine talisman	血色护符	domain=items; source=EN/ZH; Scope / comment=talisman; decision=D-B-018
 Sap Magic	削弱魔法	domain=spells; source=EN/ZH; 备注=✅
+Sargol	萨格尔	domain=gods; source=EN/ZH; 类型=盐之荒原神灵；既有两写法一致化，非新命名; 裁决=[D-C-118]
 says	说 / 说道	domain=dialogue; source=EN/ZH; 适用角色=通用
 Scattershot	散射术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 Scorch	烧焦	domain=spells; source=EN/ZH; 备注=✅
@@ -916,6 +917,7 @@ Shapeshifter	变形人	domain=backgrounds; source=EN/ZH; Scope / comment=backgro
 Shapeshifting	变形术	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 sharp scales	锐利鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Shatter	粉碎	domain=spells; source=EN/ZH; 备注=✅
+Sheza	谢扎	domain=gods; source=EN/ZH; 类型=盐之荒原神灵；与谢扎之舞同一词根; 裁决=[D-C-118]
 Sheza's Dance	谢扎之舞	domain=spells; source=EN/ZH; 备注=✅；从各处召来并活化武器
 shield	盾牌	domain=combat; source=EN/ZH
 Shields	盾牌	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
@@ -1172,7 +1174,7 @@ yells	大喊	domain=dialogue; source=EN/ZH; 适用角色=战士、兽人
 Your fugue has ended.	你的赋格结束了。	domain=status; source=EN/ZH; Scope / comment=DUR_FUGUE专用结束键；不涉及普通神游；decision=D-C-115；reject=神游
 Yredelemnul	伊莱德莱姆努尔	domain=gods; source=EN/ZH; 类型=音译
 Zenata	泽娜塔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Zenata title	泽娜塔，西泽的追寻者	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+Zenata title	泽娜塔，谢扎的追寻者	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Zin	辛	domain=gods; source=EN/ZH; 类型=单字音译
 zombie	丧尸	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from Jiangshi → 僵尸; established work titles may retain “僵尸”
 Zonguldrok	宗古德洛克	domain=core; source=EN/ZH; 注意事项=巫师实验室与相关物品传说专名；裁决 [D-A-049]

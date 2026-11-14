@@ -3819,7 +3819,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
     （英文 `Elite Marksnaga`，`descript/monsters.txt` 确认她兼具精英与
     神射手队长身份；原译发明“上层”并丢失神射手语义，按 [D-A-012] 纳迦
     职业命名恢复）。
-- **Cross-domain note (non-binding)**: `Zenata title` 中 `Sheza → 西泽` 与
+- **Cross-domain note (non-binding; 已由 D-C-118 更正，保留原记录)**: `Zenata title` 中 `Sheza → 西泽` 与
   `branches.txt`/`monsters.txt` 中神灵 Sheza 音译一致，但法术
   `Sheza's Dance → 谢扎之舞`（[D-C-045]）使用不同音译；两域各自内部一致，
   跨域统一超出本 Issue 范围，留待法术命名域复审时处理，不在本次改动。
@@ -4430,3 +4430,15 @@ R19–R21 的全文检索确认项按消费者处理：MP 的恢复、储量、�
 | `dat/descript/zh/quotes.txt` 同名引文 | 保留民谣的普通“蜗牛”，不是该怪物专名；英文查询键不变 |
 | database/zh、Lua、vault、枚举、YAML 与图块身份 | 未发现独立中文名称消费者；生成、查询、协议与存档身份继续使用 torpor snail / MONS_TORPOR_SNAIL |
 | 普通 torpor、Shadow Torpor、其他蜗牛及历史显示快照 | 作用域外，保留原文；不全局替换“休眠”，不迁移旧存档 |
+
+
+### D-C-118 — 盐之荒原神名既有两写法一致化
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-14
+- **Source**: R44 主持裁决；既有两写法一致化，非新命名。
+- **Decision**: Sheza 统一为“谢扎”，沿用 Sheza's Dance“谢扎之舞”的词根；Sargol 统一为“萨格尔”，沿用 halazid warlock 中的既有写法。
+- **Consumers**: `dat/descript/zh/monsters.txt` 的 `halazid warlock`（Sheza、Sargol），`dat/descript/zh/branches.txt` 的 `Desolation`（两神），`dat/database/zh/montitle.txt` 的 `Zenata title`（泽娜塔，谢扎的追寻者）。`glossary.md` 的同名头衔同步；`source.txt` 与 glossary 的 `Sheza's Dance` 既有“谢扎之舞”保持。
+- **Correction**: 此前 Zenata 头衔决定中的非约束跨域备注已标更正并保留历史原文，本决定取代其暂留两种音译的处理。
+- **Boundaries**: 两线完整 `dat/`、Catch2 与工具测试检索未发现其他“西泽／赛格尔”消费者或别义；仅统一上述两位神的中文，不改英文查询键、神名身份、法术名或存档快照。没有为 Sargol 新造译名，也不建立全库字形替换规则。
