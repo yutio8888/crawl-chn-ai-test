@@ -255,7 +255,7 @@ Cause Fear spell
 Chain of Chaos spell
 
 创造一个纯混沌能量的弧，以不可预知的效果攻击周围的生物。
-能量弧会触及施法者但不会伤害他。
+能量弧可能触及施法者，但不会伤害他。
 %%%%
 Chain Lightning spell
 
@@ -1027,7 +1027,7 @@ Porkalator spell
 %%%%
 Portal Projectile spell
 
-向一个目标敌人传送一个投射的弹药。
+将射出或投出的弹药传送到目标敌人处。
 %%%%
 Primal Wave spell
 
