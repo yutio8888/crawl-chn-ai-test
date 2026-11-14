@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`5c53167600f6f21ef1db5531f482140bc58c33f0a44f321c5314f8353cdb9050`
-- 清单 SHA-256：`b6f1eee5ed5d490cab6c9e16d10a29b2d386d1f5fe6a73732be6cadbf95454d6`
+- 清单 SHA-256：`3099c899f8817938350ff5ec612d190c400a9ef66dc0ad4b1d60c01fc19e07b0`
 - 身份总数：816（现行 692；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -745,7 +745,7 @@
 | `monster:MONS_XAKKRIXIS` | current; exposure=unique; name=Xak'krixis→扎克里西斯; genus=MONS_FORMICID; species=MONS_XAKKRIXIS; data=crawl-ref/source/dat/mons/xakkrixis.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_HELLFIRE_MORTAR` | current; exposure=ordinary; name=hellfire mortar→地狱火迫击炮; genus=MONS_HELLFIRE_MORTAR; species=MONS_HELLFIRE_MORTAR; data=crawl-ref/source/dat/mons/hellfire-mortar.yaml; desc=EN/ZH | keep |
 | `monster:MONS_GOD_WRATH_AVATAR` | current; exposure=ordinary; name=god wrath avatar→神罚化身; genus=MONS_GOD_WRATH_AVATAR; species=MONS_GOD_WRATH_AVATAR; data=crawl-ref/source/dat/mons/god-wrath-avatar.yaml; desc=N/A | keep |
-| `monster:MONS_SHADOW_PUPPET` | current; exposure=ordinary; name=shadow puppet→暗影傀儡; genus=MONS_SHADOW_PUPPET; species=MONS_SHADOW_PUPPET; data=crawl-ref/source/dat/mons/shadow-puppet.yaml; desc=EN/ZH | keep |
+| `monster:MONS_SHADOW_PUPPET` | current; exposure=ordinary; name=shadow puppet→暗影傀儡; genus=MONS_SHADOW_PUPPET; species=MONS_SHADOW_PUPPET; data=crawl-ref/source/dat/mons/shadow-puppet.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_SHADOW_PRISM` | current; exposure=ordinary; name=shadow prism→暗影棱镜; genus=MONS_SHADOW_PRISM; species=MONS_SHADOW_PRISM; data=crawl-ref/source/dat/mons/shadow-prism.yaml; desc=EN/ZH | keep |
 | `monster:MONS_SOUL_WISP` | current; exposure=ordinary; name=soul wisp→灵魂微光; genus=MONS_SOUL_WISP; species=MONS_SOUL_WISP; data=crawl-ref/source/dat/mons/soul-wisp.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_GLOBE_OF_ANNIHILATION` | current; exposure=ordinary; name=globe of annihilation→湮灭之球; genus=MONS_GLOBE_OF_ANNIHILATION; species=MONS_GLOBE_OF_ANNIHILATION; data=crawl-ref/source/dat/mons/globe-of-annihilation.yaml; desc=EN/ZH | keep |
@@ -801,7 +801,7 @@
 | `monster:MONS_MORPHOGENIC_OOZE` | current; exposure=ordinary; name=morphogenic ooze→变形软泥; genus=MONS_JELLY; species=MONS_MORPHOGENIC_OOZE; data=crawl-ref/source/dat/mons/morphogenic-ooze.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_SLYMDRA` | current; exposure=ordinary; name=slymdra→斯莱姆德拉; genus=MONS_JELLY; species=MONS_SLYMDRA; data=crawl-ref/source/dat/mons/slymdra.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_CREEPING_PLASMODIUM` | current; exposure=ordinary; name=creeping plasmodium→蔓延原质团; genus=MONS_JELLY; species=MONS_CREEPING_PLASMODIUM; data=crawl-ref/source/dat/mons/creeping-plasmodium.yaml; desc=EN/ZH | keep |
-| `monster:MONS_CAUSTIC_SPORANGIUM` | current; exposure=ordinary; name=caustic sporangium→腐蚀孢子囊; genus=MONS_CAUSTIC_SPORANGIUM; species=MONS_CAUSTIC_SPORANGIUM; data=crawl-ref/source/dat/mons/caustic-sporangium.yaml; desc=EN/ZH | keep |
+| `monster:MONS_CAUSTIC_SPORANGIUM` | current; exposure=ordinary; name=caustic sporangium→腐蚀孢子囊; genus=MONS_CAUSTIC_SPORANGIUM; species=MONS_CAUSTIC_SPORANGIUM; data=crawl-ref/source/dat/mons/caustic-sporangium.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_NASCENT_PLASMODIUM` | current; exposure=ordinary; name=nascent plasmodium→初生原质团; genus=MONS_JELLY; species=MONS_NASCENT_PLASMODIUM; data=crawl-ref/source/dat/mons/nascent-plasmodium.yaml; desc=EN/ZH | keep |
 | `monster:MONS_STAR_JELLY` | current; exposure=ordinary; name=star jelly→星之果冻; genus=MONS_JELLY; species=MONS_STAR_JELLY; data=crawl-ref/source/dat/mons/star-jelly.yaml; desc=EN/ZH | keep |
 | `monster:MONS_BURSTSHROOM` | current; exposure=ordinary; name=burstshroom→爆裂菇; genus=MONS_FUNGUS; species=MONS_BURSTSHROOM; data=crawl-ref/source/dat/mons/burstshroom.yaml; desc=EN/ZH | retranslate: description corrected |
