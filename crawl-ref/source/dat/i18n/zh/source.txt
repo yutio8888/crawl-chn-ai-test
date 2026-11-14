@@ -11743,7 +11743,7 @@ Your resistance to physical damage fades away.
 你对物理伤害的抵抗力消失了。
 %%%%
 Your rising flame fizzles out.
-你上升的火焰熄灭了。
+你的升腾之焰熄灭了。
 %%%%
 Your robe already provides the effects of brilliance.
 你的长袍已经提供了智慧效果。
@@ -22871,7 +22871,7 @@ Your bloodlust subsides.
 你的嗜血欲望消退了。
 %%%%
 Your fiery armour burns out.
-你的火焰铠甲燃尽了。
+你的火焰护甲燃尽了。
 %%%%
 Your fugue has ended.
 你的赋格结束了。
