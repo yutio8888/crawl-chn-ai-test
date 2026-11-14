@@ -118,8 +118,8 @@ Summon Divine Warrior ability
 %%%%
 Brand Weapon With Holy Wrath ability
 
-选择一件武器，让光辉者的神怒永久祝福它。
-恶魔武器将被转化为更强力的圣武器。这个祝福只能使用一次，且不可用于神器。
+选择一件武器，让光辉者为其赋予永久的圣光烙印。
+恶魔武器将被转化为更强力的圣武器。此祝福只能使用一次，且不可用于神器武器。
 %%%%
 Unearth Wretches ability
 
@@ -179,7 +179,7 @@ Receive Weapon ability
 %%%%
 Receive Armour ability
 
-从四件防具中选取其中一件。这个福泽只能承蒙一次。
+从四件护甲中选择一件。这项赐福只能领取一次。
 %%%%
 # Sif Muna
 %%%%
