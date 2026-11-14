@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`5c53167600f6f21ef1db5531f482140bc58c33f0a44f321c5314f8353cdb9050`
-- 清单 SHA-256：`a7572a3c18033f00e02b94dbe1232dc615cceaaefca921ed07fd24c2ce90c64d`
+- 清单 SHA-256：`2787d973051bbf74e2916e2a2c01efc62044d14ddc18ad7e3e77773736f73092`
 - 身份总数：816（现行 692；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -715,7 +715,7 @@
 | `monster:MONS_SKYSHARK` | current; exposure=ordinary; name=skyshark→天鲨; genus=MONS_SKYSHARK; species=MONS_SKYSHARK; data=crawl-ref/source/dat/mons/skyshark.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_SLEEPCAP` | current; exposure=ordinary; name=sleepcap→眠帽; genus=MONS_FUNGUS; species=MONS_SLEEPCAP; data=crawl-ref/source/dat/mons/sleepcap.yaml; desc=EN/ZH | keep |
 | `monster:MONS_CERULEAN_IMP` | current; exposure=ordinary; name=cerulean imp→蔚蓝小恶魔; genus=MONS_CERULEAN_IMP; species=MONS_CERULEAN_IMP; data=crawl-ref/source/dat/mons/cerulean-imp.yaml; desc=EN/ZH | keep |
-| `monster:MONS_FORMLESS_JELLYFISH` | current; exposure=ordinary; name=formless jellyfish→无形水母; genus=MONS_JELLY; species=MONS_FORMLESS_JELLYFISH; data=crawl-ref/source/dat/mons/formless-jellyfish.yaml; desc=EN/ZH | keep |
+| `monster:MONS_FORMLESS_JELLYFISH` | current; exposure=ordinary; name=formless jellyfish→无形水母; genus=MONS_JELLY; species=MONS_FORMLESS_JELLYFISH; data=crawl-ref/source/dat/mons/formless-jellyfish.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_JEREMIAH` | current; exposure=unique; name=Jeremiah→耶利米; genus=MONS_FROG; species=MONS_BARACHI; data=crawl-ref/source/dat/mons/jeremiah.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_BOULDER` | current; exposure=ordinary; name=boulder→巨石; genus=MONS_BOULDER; species=MONS_BOULDER; data=crawl-ref/source/dat/mons/boulder.yaml; desc=EN/ZH | keep |
 | `monster:MONS_ARCANIST` | current; exposure=ordinary; name=arcanist→奥术师; genus=MONS_HUMAN; species=MONS_HUMAN; data=crawl-ref/source/dat/mons/arcanist.yaml; desc=EN/ZH | retranslate: description corrected |
@@ -778,7 +778,7 @@
 | `monster:MONS_SOLAR_EMBER` | current; exposure=ordinary; name=solar ember→太阳余烬; genus=MONS_SOLAR_EMBER; species=MONS_SOLAR_EMBER; data=crawl-ref/source/dat/mons/solar-ember.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_GOBLIN_RIDER` | current; exposure=ordinary; name=goblin rider→地精骑手; genus=MONS_GOBLIN; species=MONS_GOBLIN; data=crawl-ref/source/dat/mons/goblin-rider.yaml; desc=EN/ZH | keep |
 | `monster:MONS_IRONBOUND_MECHANIST` | current; exposure=ordinary; name=ironbound mechanist→铁缚机械师; genus=MONS_GOBLIN; species=MONS_GOBLIN; data=crawl-ref/source/dat/mons/ironbound-mechanist.yaml; desc=EN/ZH | keep |
-| `monster:MONS_SPROZZ` | current; exposure=unique; name=Sprozz→斯普罗兹; genus=MONS_GOBLIN; species=MONS_GOBLIN; data=crawl-ref/source/dat/mons/sprozz.yaml; desc=EN/ZH | keep |
+| `monster:MONS_SPROZZ` | current; exposure=unique; name=Sprozz→斯普罗兹; genus=MONS_GOBLIN; species=MONS_GOBLIN; data=crawl-ref/source/dat/mons/sprozz.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_CRAWLING_FLESH_CAGE` | current; exposure=ordinary; name=crawling flesh cage→爬行血肉笼; genus=MONS_CRAWLING_FLESH_CAGE; species=MONS_CRAWLING_FLESH_CAGE; data=crawl-ref/source/dat/mons/crawling-flesh-cage.yaml; desc=EN/ZH | keep |
 | `monster:MONS_COGNITOGAUNT` | current; exposure=ordinary; name=cognitogaunt→智性鬼; genus=MONS_GHOUL; species=MONS_COGNITOGAUNT; data=crawl-ref/source/dat/mons/cognitogaunt.yaml; desc=EN/ZH | keep |
 | `monster:MONS_CHONCHON` | current; exposure=ordinary; name=chonchon→飞头妖; genus=MONS_CHONCHON; species=MONS_CHONCHON; data=crawl-ref/source/dat/mons/chonchon.yaml; desc=EN/ZH | adjust: display name corrected |
