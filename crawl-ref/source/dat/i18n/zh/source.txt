@@ -41137,7 +41137,7 @@ You cannot target a construct which is already augmented.
 你无法以已经强化的构装体为目标。
 %%%%
 You can only target your own Forgecraft constructs.
-你只能选择自己以锻造系制造的构装体。
+你只能选择自己用锻造系法术制造的构装体。
 %%%%
 You see nothing there you can launch.
 你在那里看不到可发射的东西。
