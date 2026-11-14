@@ -61,7 +61,7 @@ Xom single summon
 %%%%
 Xom animate monster weapon
 
-“是时候找点乐子了!”
+“是时候找点乐子了！”
 
 你听到佐姆疯狂的笑声。
 
@@ -138,7 +138,7 @@ Xom suffering
 # 25％的几率是飞舞的武器，其余情况召唤敌对的怪物
 Xom hostile monster
 
-“是时候找点乐子了!”
+“是时候找点乐子了！”
 
 “为生存而战，凡人。”
 
