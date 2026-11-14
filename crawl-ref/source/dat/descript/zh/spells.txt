@@ -604,7 +604,7 @@ Haste Other spell
 %%%%
 Harpoon Shot spell
 
-发射一个长而灵活的带刺重物。
+发射一个长而柔韧的带刺物体。
 被它捕捉的受害者会被拉至与施法者相邻的位置或与挡住去路的东西相撞。
 %%%%
 Haste spell

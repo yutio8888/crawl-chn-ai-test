@@ -1299,7 +1299,7 @@ The alarm trap emits a blaring wail!
 %s召唤出一个暗影来保护自己。
 %%%%
 %s calls on %s to defend %s!
-%s召唤%s来保护%s！
+%s呼唤%s来保护%s！
 %%%%
 %s cannot be improved any further.
 %s无法再进一步提升了。
@@ -2609,7 +2609,7 @@ A dragon appears.
 一条龙出现了。
 %%%%
 A dragon arrives to answer your call!
-一条龙回应你的召唤到来了！
+一条龙应你的召唤而来！
 %%%%
 A dragon tries to answer your call, but you don't have enough magical power!
 一条龙试图回应你的召唤，但你的法力不足！
@@ -7522,7 +7522,7 @@ The plants of the dungeon cease their hostilities.
 地牢中的植物停止了敌对行动。
 %%%%
 The plants of the dungeon turn on you.
-地下城的植物都背叛了你。
+地牢里的植物都转而与你为敌。
 %%%%
 The poison in your system burns terribly!
 你体内的毒素剧烈燃烧！
@@ -22187,7 +22187,7 @@ The regenerative ooze finishes dripping off of you.
 再生的软泥从你身上滴完了。
 %%%%
 The sentinel's mark upon you fades away.
-你身上的哨兵印记消失了。
+你身上的哨兵标记消失了。
 %%%%
 The sign of ruin upon you fades.
 你身上的毁灭印记消退了。
@@ -23822,7 +23822,7 @@ A bone-chilling cold explodes forth, blasting rocks from the ceiling!
 %1$s蓝色电弧%2$.0s无害地%3$.0s接地了。
 %%%%
 %s is struck by a surge of electricity%s
-%s被电流涌动击中了%s
+%s被一股电流击中%s
 %%%%
 Electricity surges outward!
 电流向外涌出！
@@ -31417,7 +31417,7 @@ The residue of %s spell condenses into glimmer.
 %s发动了反击。
 %%%%
 %s shimmers and seems to become %s!
-%s闪烁了一下，似乎分成了%s个！
+%s闪烁了一下，似乎一分为%s！
 %%%%
 %s spells are empowered by the prayer of brilliance!
 %s法术被聪慧祈祷强化了！
