@@ -15,6 +15,9 @@
 #include "syscalls.h"
 #include "species.h"
 #include "makeitem.h"
+#include "ability.h"
+#include "god-companions.h"
+#include "religion-enum.h"
 #include "database.h"
 #include "delay.h"
 #include "terrain.h"
@@ -1728,5 +1731,163 @@ TEST_CASE("Disjunction keeps a compact localized missile brand label",
         CHECK(label == (language == lang_t::ZH ? "分离" : "disjunct"));
         CHECK(strwidth(label) == (language == lang_t::ZH ? 4 : 8));
         CHECK(dart.name(DESC_PLAIN, true).find("(" + label + ")") != string::npos);
+    }
+}
+
+TEST_CASE("Ancestor confirmation separates canonical classes from Chinese display",
+          "[zh-translation][r37]")
+{
+    issue10_world world;
+    unwind_var<decltype(companion_list)> companions(companion_list);
+    companion_list.clear();
+    unwind_var<bool> io(crawl_state.io_inited, false);
+    const interrupt_block block;
+    unwind_var<string> error(clua.error);
+    lua_State *ls = clua.state();
+    REQUIRE(ls);
+    lua_stack_cleaner stack(ls);
+    vector<pair<const char *, int>> saved;
+    for (const char *name : {"c_answer_prompt", "r37_ancestor_prompt"})
+    {
+        lua_getglobal(ls, name);
+        saved.emplace_back(name, luaL_ref(ls, LUA_REGISTRYINDEX));
+    }
+    unwinder restore_globals([&]
+    {
+        for (const auto &entry : saved)
+        {
+            lua_rawgeti(ls, LUA_REGISTRYINDEX, entry.second);
+            lua_setglobal(ls, entry.first);
+            luaL_unref(ls, LUA_REGISTRYINDEX, entry.second);
+        }
+    });
+    REQUIRE(clua.execstring("c_answer_prompt = function(q) "
+        "r37_ancestor_prompt = q; return false end") == 0);
+    struct ancestor_case
+    {
+        int choice;
+        monster_type type;
+        const char *english;
+        const char *chinese;
+    };
+    const ancestor_case cases[] = {
+        {ABIL_HEPLIAKLQANA_TYPE_KNIGHT, MONS_ANCESTOR_KNIGHT, "a knight", "骑士"},
+        {ABIL_HEPLIAKLQANA_TYPE_BATTLEMAGE, MONS_ANCESTOR_BATTLEMAGE,
+         "a battlemage", "战斗法师"},
+        {ABIL_HEPLIAKLQANA_TYPE_HEXER, MONS_ANCESTOR_HEXER, "a hexer", "妖术师"},
+    };
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language,
+                                       language == lang_t::ZH ? "zh" : nullptr);
+        for (const auto &entry : cases)
+        {
+            msgwin_temporary_mode temporary;
+            unwinder rollback([] { msgwin_clear_temporary(); });
+            CHECK_FALSE(hepliaklqana_choose_ancestor_type(entry.choice));
+            lua_getglobal(ls, "r37_ancestor_prompt");
+            REQUIRE(lua_isstring(ls, -1));
+            const string question = lua_tostring(ls, -1);
+            lua_pop(ls, 1);
+            const string expected = language == lang_t::ZH
+                ? string("你确定要将你的先祖铭记为") + entry.chinese + "吗？"
+                : string("Are you sure you want to remember your ancestor as ")
+                    + entry.english + "?";
+            CAPTURE(language, question);
+            CHECK(question == expected);
+            CHECK(mons_type_name_en(entry.type, DESC_A) == entry.english);
+            CHECK_FALSE(you.props.exists(HEPLIAKLQANA_ALLY_TYPE_KEY));
+        }
+    }
+}
+
+TEST_CASE("Royal Jelly explosion format retains actor and final punctuation",
+          "[zh-translation][r37]")
+{
+    issue10_world world;
+    monster *royal = world.place(MONS_ROYAL_JELLY, coord_def(22, 20));
+    monster *orc = world.place(MONS_ORC, coord_def(23, 20));
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language,
+                                       language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        const string royal_name = royal->name(DESC_THE, false);
+        const string orc_name = orc->name(DESC_THE, false);
+        for (const char *punctuation : {"!", "!!!"})
+        {
+            msgwin_temporary_mode temporary;
+            unwinder rollback([] { msgwin_clear_temporary(); });
+            const string emitted = observe_message([&]
+            {
+                mprf(T_("%s explodes violently into a cloud of jellies%s"),
+                     royal_name.c_str(), punctuation);
+            });
+            const string expected = zh
+                ? string("果冻王猛烈爆裂，迸出一群果冻怪") + punctuation
+                : string("the Royal Jelly explodes violently into a cloud of jellies")
+                    + punctuation;
+            CHECK(emitted == expected + "\n");
+            const string generic = make_stringf(T_("%s explodes violently%s"),
+                                                orc_name.c_str(), punctuation);
+            CHECK(generic == (zh ? string("兽人猛烈爆炸")
+                                 : string("the orc explodes violently")) + punctuation);
+        }
+    }
+}
+
+TEST_CASE("Heavenly storm status keeps its mechanism name and numeric strength",
+          "[zh-translation][r37]")
+{
+    issue10_world world;
+    const string old_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([&] { setlocale(LC_CTYPE, old_locale.c_str()); });
+#if defined(UNIX) && !defined(__ANDROID__)
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    init_duration_index();
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language,
+                                       language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        for (int strength : {5, 10})
+        {
+            you.props[WU_JIAN_HEAVENLY_STORM_KEY] = strength;
+            status_info info;
+            REQUIRE(fill_status_info(STATUS_HEAVENLY_STORM, info));
+            const string expected = make_stringf(zh ? "天堂风暴(%d)"
+                                                    : "Heavenly (%d)", strength);
+            CHECK(info.light_text == expected);
+            CHECK(you.props[WU_JIAN_HEAVENLY_STORM_KEY].get_int() == strength);
+            CHECK(info.db_key.empty());
+            CHECK(info.short_db_key.empty());
+            CHECK(strwidth(info.light_text) == (zh ? 10 : 11)
+                + static_cast<int>(to_string(strength).size()));
+            // This legacy qualified alias has no direct production caller.
+            // The actual status above uses the unqualified T_ template.
+            CHECK(make_stringf(C_("status", "Heavenly (%d)"), strength) == expected);
+        }
+    }
+}
+
+TEST_CASE("Holy wrath ability uses the stable brand term without changing its identity",
+          "[zh-translation][r37]")
+{
+    issue10_world world;
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture translation(language,
+                                       language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        CHECK(ability_name(ABIL_TSO_BLESS_WEAPON, true) == "Brand Weapon With Holy Wrath");
+        CHECK(ability_name(ABIL_TSO_BLESS_WEAPON)
+            == (zh ? "圣光铭印武器" : "Brand Weapon With Holy Wrath"));
+        const string desc = getLongDescription("Brand Weapon With Holy Wrath ability");
+        CHECK(desc.find(zh ? "圣光铭印" : "holy wrath") != string::npos);
+        CHECK(desc.find("圣光烙印") == string::npos);
+        CHECK(string(T_("The Shining One will bless your weapon with holy wrath... once."))
+            == (zh ? "光辉者将为你的武器加持圣光铭印……一次。"
+                   : "The Shining One will bless your weapon with holy wrath... once."));
     }
 }
