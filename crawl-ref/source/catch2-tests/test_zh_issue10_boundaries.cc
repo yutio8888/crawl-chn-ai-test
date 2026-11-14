@@ -1673,6 +1673,7 @@ TEST_CASE("Macro Lua errors translate only the frame and stop the real delay",
 {
 #ifdef CLUA_BINDINGS
     issue10_world world;
+    unwind_var<bool> io(crawl_state.io_inited, false);
     lua_State *ls = clua.state();
     REQUIRE(ls);
     lua_stack_cleaner stack(ls);
