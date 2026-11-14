@@ -5,6 +5,12 @@
 #include "areas.h"
 #include "beam.h"
 #include "cloud.h"
+#include "tags.h"
+#include "files.h"
+#include "unicode.h"
+#include "potion.h"
+#include "god-passive.h"
+#include "syscalls.h"
 #include "database.h"
 #include "terrain.h"
 #include "mon-cast.h"
@@ -1249,4 +1255,180 @@ TEST_CASE("Jinxbite uses the same full branded name at its real display sink",
     }
     CAPTURE(language, expected, witness);
     CHECK_FALSE(witness.empty());
+}
+
+namespace
+{
+void r30_note_roundtrip(const Note& note)
+{
+    vector<unsigned char> bytes;
+    writer output(&bytes);
+    note.save(output);
+    reader input(bytes);
+    input.setMinorVersion(TAG_MINOR_VERSION);
+    Note loaded;
+    loaded.load(input);
+    CHECK(loaded.type == note.type);
+    CHECK(loaded.first == note.first);
+    CHECK(loaded.second == note.second);
+    CHECK(loaded.name == note.name);
+    CHECK(loaded.desc == note.desc);
+    vector<unsigned char> after;
+    writer output_after(&after);
+    loaded.save(output_after);
+    CHECK(after == bytes);
+}
+}
+
+TEST_CASE("Life notes keep natural count order and preserve singular English",
+          "[zh-translation][r30][r30-life-notes]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const int remaining = GENERATE(0, 1, 2);
+    const bool gained = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    const Note note(gained ? NOTE_GAIN_LIFE : NOTE_LOSE_LIFE, remaining);
+    const string expected = language == lang_t::ZH
+        ? string(gained ? "获得了一条命（剩余" : "失去了一条命（剩余")
+            + to_string(remaining) + "条命）"
+        : string(gained ? "Gained a life (" : "Lost a life (")
+            + to_string(remaining) + (remaining == 1 ? " life remaining)" : " lives remaining)");
+    CHECK(note.describe(false, false) == expected);
+    r30_note_roundtrip(note);
+}
+
+TEST_CASE("Disjunction status keeps its actor and a four-column light",
+          "[zh-translation][r30][r30-disjunction]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+#if defined(UNIX) && !defined(__ANDROID__)
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([&] { setlocale(LC_CTYPE, saved_locale.c_str()); });
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    init_duration_index();
+    you.duration[DUR_DISJUNCTION] = 1000;
+    status_info info;
+    REQUIRE(fill_status_info(DUR_DISJUNCTION, info));
+    CHECK(info.db_key == "Disjoin");
+    CHECK(info.short_db_key == "disjoining");
+    if (language == lang_t::ZH)
+    {
+        CHECK(info.light_text == "分离");
+        CHECK(info.short_text == "空间分离中");
+        CHECK(info.long_text == "你正在使周围的空间分离。");
+        CHECK(strwidth(info.light_text) == 4);
+        const string topbar = C_("topbar status", info.db_key.c_str());
+        CHECK(topbar == "分离");
+        CHECK(chop_string(topbar, 4, false) == "分离");
+    }
+    else
+    {
+        CHECK(info.light_text == "Disjoin");
+        CHECK(info.short_text == "disjoining");
+        CHECK(info.long_text == "You are disjoining your surroundings.");
+    }
+}
+
+TEST_CASE("Skill note frames translate the whole sentence without changing stored IDs",
+          "[zh-translation][r30][r30-skill-notes]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const bool gained = GENERATE(false, true);
+    const bool fighting = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    const skill_type skill = fighting ? SK_FIGHTING : SK_LONG_BLADES;
+    const Note note(gained ? NOTE_GAIN_SKILL : NOTE_LOSE_SKILL, skill, 5);
+    const string name = language == lang_t::ZH
+        ? (fighting ? "格斗" : "长刃") : (fighting ? "Fighting" : "Long Blades");
+    const string expected = language == lang_t::ZH
+        ? name + (gained ? "技能达到等级5" : "技能降至等级5")
+        : (gained ? "Reached skill level 5 in " + name : "Reduced skill " + name + " to level 5");
+    CHECK(note.describe(false, false) == expected);
+    r30_note_roundtrip(note);
+}
+
+TEST_CASE("Constructed defeat notes cover the defensive ally display frame",
+          "[zh-translation][r30][r30-defeat-notes]")
+{
+    // Decoder/display coverage only: live ally producer reachability is unproved.
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const bool ally = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    const char* verbs[] = { "killed", "banished", "pacified", "bound", "slimified" };
+    const char* chinese[] = { "击杀", "放逐", "安抚", "束缚", "黏液化" };
+    for (unsigned i = 0; i < ARRAYSZ(verbs); ++i)
+    {
+        const Note note(NOTE_DEFEAT_MONSTER, MONS_ORC, ally, "Robin", verbs[i]);
+        const string expected = language == lang_t::ZH
+            ? (ally ? string("Robin（友军）被") + chinese[i] : string(chinese[i]) + "Robin")
+            : (ally ? string("Robin (ally) was ") + verbs[i] : uppercase_first(verbs[i]) + " Robin");
+        CHECK(note.describe(false, false) == expected);
+        r30_note_roundtrip(note);
+    }
+}
+
+TEST_CASE("State intensity is localized at all five stable gameplay consumers",
+          "[zh-translation][r30][r30-intensity]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const int action = GENERATE(0, 1, 2, 3, 4);
+    const bool repeated = GENERATE(false, true);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    init_duration_index();
+    unwind_var<bool> saving(crawl_state.need_save, false);
+    string expected;
+    string emitted;
+    if (action == 0)
+    {
+        you.duration[DUR_BRILLIANCE] = repeated ? 10 : 0;
+        emitted = observe_message([] { REQUIRE(get_potion_effect(POT_BRILLIANCE)->effect()); });
+        expected = language == lang_t::ZH
+            ? (repeated ? "你突然感到更加聪明了。" : "你突然感到聪明了。")
+            : (repeated ? "You feel more clever all of a sudden." : "You feel clever all of a sudden.");
+    }
+    else if (action == 1)
+    {
+        you.religion = GOD_QAZLAL;
+        you.raw_piety = 200;
+        you.duration[DUR_QAZLAL_FIRE_RES] = repeated ? 10 : 0;
+        emitted = observe_message([] { qazlal_element_adapt(BEAM_FIRE, 100); });
+        expected = language == lang_t::ZH
+            ? (repeated ? "你感到更加能抵御火焰。" : "你感到能抵御火焰。")
+            : (repeated ? "You feel more protected from fire." : "You feel protected from fire.");
+    }
+    else if (action == 2)
+    {
+        you.duration[DUR_CONF] = repeated ? 10 : 0;
+        emitted = observe_message([] { REQUIRE(confuse_player(10)); });
+        expected = language == lang_t::ZH
+            ? (repeated ? "你感到更加困惑了。" : "你感到困惑了。")
+            : (repeated ? "You are more confused." : "You are confused.");
+    }
+    else if (action == 3)
+    {
+        you.duration[DUR_AGILITY] = repeated ? 10 : 0;
+        emitted = observe_message([] { you.be_agile(40); });
+        expected = language == lang_t::ZH
+            ? (repeated ? "你突然感觉更加敏捷。" : "你突然感觉敏捷。")
+            : (repeated ? "You suddenly feel more agile." : "You suddenly feel agile.");
+    }
+    else
+    {
+        you.duration[DUR_CONF] = repeated ? 10 : 0;
+        emitted = observe_message([] { xom_take_action(XOM_BAD_CONFUSION, 10); });
+        expected = language == lang_t::ZH
+            ? (repeated ? "你感到更加困惑了。" : "你感到困惑了。")
+            : (repeated ? "You are more confused." : "You are confused.");
+    }
+    CAPTURE(language, action, repeated, emitted, expected);
+    CHECK(emitted.find(expected) != string::npos);
+    if (language == lang_t::ZH)
+        CHECK(emitted.find("更强的") == string::npos);
 }

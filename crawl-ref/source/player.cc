@@ -4640,7 +4640,7 @@ bool confuse_player(int amount, bool quiet, bool force)
         if (!quiet)
         {
             mprf(MSGCH_WARN, T_("You are %sconfused."),
-                 old_value > 0 ? T_("more ") : "");
+                 old_value > 0 ? C_("state intensity", "more ") : "");
         }
 
         learned_something_new(HINT_YOU_ENCHANTED);
@@ -9771,7 +9771,7 @@ void player::be_agile(int pow)
 {
     const bool were_agile = you.duration[DUR_AGILITY] > 0;
     mprf(MSGCH_DURATION, T_("You suddenly feel %sagile."),
-         were_agile ? T_("more ") : "");
+         were_agile ? C_("state intensity", "more ") : "");
 
     you.increase_duration(DUR_AGILITY, 35 + random2(pow), 80);
     if (!were_agile)
