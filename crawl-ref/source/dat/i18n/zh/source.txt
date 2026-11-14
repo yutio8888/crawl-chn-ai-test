@@ -9521,7 +9521,7 @@ You feel a malign power afflict you.
 你感到一股邪恶的力量折磨着你。
 %%%%
 You feel a momentary loss of self-confidence.
-你感到短暂的自信丧失。
+你的自信短暂地动摇了。
 %%%%
 You feel a momentary urge to oink.
 你短暂地有想要发出猪叫声的冲动。
@@ -10774,7 +10774,7 @@ Your %s blocks the %s... and reflects it back!
 你的%s格挡了%s……并将其反射了回去！
 %%%%
 Your %s burns with power once more.
-你的%s再次燃烧着力量。
+你的%s再次燃起，充满力量。
 %%%%
 Your %s feel%s oddly empty.
 你的%s感到%s异常空洞。
@@ -26292,7 +26292,7 @@ It prevents most forms of teleportation.
 阻止大多数形式的传送。
 %%%%
 It berserks you when you make melee attacks (%d% chance).
-近战攻击时有概率使你狂暴（%d%概率）。
+近战攻击时可能使你狂暴（概率%d%）。
 %%%%
 It protects you from confusion, rage, mesmerisation and fear.
 保护你免受混乱、狂暴、迷魂和恐惧。
@@ -26319,7 +26319,7 @@ It drains your maximum health when unequipped.
 卸下时消耗你的最大生命值。
 %%%%
 It may slow you when you take damage.
-受到伤害时可能减速你。
+受到伤害时可能使你减速。
 %%%%
 It will be destroyed if unequipped.
 卸下时将被摧毁。
