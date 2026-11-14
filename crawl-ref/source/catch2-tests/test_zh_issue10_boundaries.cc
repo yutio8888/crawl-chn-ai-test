@@ -1257,6 +1257,8 @@ TEST_CASE("Jinxbite uses the same full branded name at its real display sink",
     CHECK_FALSE(witness.empty());
 }
 
+// Local-Tiles Catch2 bootstraps the real menu geometry and UI resources.
+#ifdef USE_TILE_LOCAL
 TEST_CASE("Ashenzari destroy-item prompt translates at the real inventory boundary",
           "[zh-translation][r29][r29-ash-prompt]")
 {
@@ -1288,6 +1290,8 @@ TEST_CASE("Ashenzari destroy-item prompt translates at the real inventory bounda
     CHECK(item.cursed());
     CHECK(item.quantity == 1);
 }
+
+#endif
 
 TEST_CASE("Shop keeper and suffix separators follow the display language",
           "[zh-translation][r29][r29-shop]")
