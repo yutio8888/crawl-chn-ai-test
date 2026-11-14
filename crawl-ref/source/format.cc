@@ -168,6 +168,21 @@ void formatted_string::parse_string1(const string &s, formatted_string &fs,
             else
                 bound = 999;
 
+            // currs is filled byte by byte, so its last code point may
+            // continue at s[tag]. Keep that partial point for the next chunk.
+            const string::size_type byte_bound = bound;
+            while (bound > 0)
+            {
+                const unsigned char next_byte = static_cast<unsigned char>(
+                    bound < currs.size() ? currs[bound] : s[tag]);
+                if ((next_byte & 0xc0) != 0x80)
+                    break;
+                --bound;
+            }
+            // Preserve progress for malformed input as well.
+            if (bound == 0)
+                bound = byte_bound;
+
             fs.cprintf(currs.substr(0, bound));
             if (currs.size() > bound)
                 currs = currs.substr(bound);

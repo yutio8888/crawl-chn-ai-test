@@ -996,10 +996,10 @@ move at supernatural speeds
 以超自然速度移动
 %%%%
 summon a storm of heavenly clouds to empower your attacks
-召唤天界云暴来强化你的攻击
+召唤天堂风暴来强化你的攻击
 %%%%
 summon a storm of heavenly clouds
-召唤天界云暴
+召唤天堂风暴
 %%%%
 You are resistant to fire.
 你抵抗火焰。
@@ -32920,7 +32920,7 @@ tormentor
 折磨者
 %%%%
 torpor snail
-休眠蜗牛
+迟滞蜗牛
 %%%%
 torturous demonspawn
 折磨恶魔裔
@@ -51146,3 +51146,21 @@ invisibility blocker|form
 clockwork bee owner|Someone's
 某人的
 %%%%
+%%%%
+%s is immovably fixed in your path.
+%s牢牢固定在你的路径上，无法移动。
+%%%%
+The Orb shrieks and becomes a dead weight against your magic!
+佐特宝珠尖啸着，沉重得让你的魔法无法拉动它！
+%%%%
+The Orb lets out a furious burst of light and becomes a dead weight against your magic!
+佐特宝珠愤怒地迸发出一阵强光，沉重得让你的魔法无法拉动它！
+%%%%
+The Orb shrieks as your magic touches it!
+你的魔法一碰到佐特宝珠，它就尖啸起来！
+%%%%
+The Orb lets out a furious burst of light as your magic touches it!
+你的魔法一碰到佐特宝珠，它就愤怒地迸发出一阵强光！
+%%%%
+Now pick up the Orb and get out of here!
+现在拾起佐特宝珠，逃出去！

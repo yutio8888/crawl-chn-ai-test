@@ -640,8 +640,8 @@ coord_def get_electric_charge_landing_spot(const actor& agent, coord_def target,
             {
                 if (fail_reason)
                 {
-                    *fail_reason = mon->name(DESC_THE)
-                                   + " is immovably fixed in your path.";
+                    *fail_reason = make_stringf(T_("%s is immovably fixed in your path."),
+                                                mon->name(DESC_THE).c_str());
                 }
 
                 return coord_def(0, 0);
@@ -1579,17 +1579,17 @@ spret cast_apportation(int pow, bolt& beam, bool fail)
         if (one_chance_in(3))
         {
             orb_pickup_noise(where, 30,
-                "The Orb shrieks and becomes a dead weight against your magic!",
-                "The Orb lets out a furious burst of light and becomes "
-                    "a dead weight against your magic!");
+                N_("The Orb shrieks and becomes a dead weight against your magic!"),
+                N_("The Orb lets out a furious burst of light and becomes "
+                   "a dead weight against your magic!"));
             return spret::success;
         }
         else // Otherwise it's just a noisy little shiny thing
         {
             orb_pickup_noise(where, 30,
-                "The Orb shrieks as your magic touches it!",
-                "The Orb lets out a furious burst of light as your magic touches it!");
-            start_orb_run(CHAPTER_ANGERED_PANDEMONIUM, "Now pick up the Orb and get out of here!");
+                N_("The Orb shrieks as your magic touches it!"),
+                N_("The Orb lets out a furious burst of light as your magic touches it!"));
+            start_orb_run(CHAPTER_ANGERED_PANDEMONIUM, T_("Now pick up the Orb and get out of here!"));
         }
     }
 

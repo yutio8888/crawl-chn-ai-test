@@ -2473,6 +2473,21 @@ string mpr_monster_list(bool past)
     return msg;
 }
 
+// The pane description is display text; its budget is measured in columns.
+string fit_monster_pane_description(string desc, int columns)
+{
+    if (columns <= 0)
+        return "";
+    if (strwidth(desc) > columns && columns > 1)
+    {
+        desc = chop_string(desc, columns - 2);
+        desc += "…)";
+    }
+    else
+        desc = chop_string(desc, columns);
+    return desc;
+}
+
 #ifndef USE_TILE_LOCAL
 static void _print_next_monster_desc(const vector<monster_info>& mons,
                                      int& start, bool zombified = false)
@@ -2538,14 +2553,8 @@ static void _print_next_monster_desc(const vector<monster_info>& mons,
             mons_to_string_pane(desc, desc_colour, zombified,
                                 mons, start, count);
             textcolour(desc_colour);
-            if (static_cast<int>(desc.length()) > crawl_view.mlistsz.x - printed)
-            {
-                ASSERT(crawl_view.mlistsz.x - 2 - printed >= 0);
-                desc.resize(crawl_view.mlistsz.x - 2 - printed, ' ');
-                desc += "…)";
-            }
-            else
-                desc.resize(crawl_view.mlistsz.x - printed, ' ');
+            desc = fit_monster_pane_description(desc,
+                                                crawl_view.mlistsz.x - printed);
             CPRINTF("%s", desc.c_str());
         }
     }
