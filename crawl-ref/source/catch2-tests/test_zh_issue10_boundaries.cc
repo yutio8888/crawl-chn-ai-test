@@ -1377,7 +1377,7 @@ TEST_CASE("Missing species genus and adjective forms use the display fallback",
     CHECK(species::name(SP_HUMAN, species::SPNAME_ADJ)
           == (language == lang_t::ZH ? "人类" : "Human"));
     CHECK(species::name(SP_POLTERGEIST, species::SPNAME_PLAIN)
-          == (language == lang_t::ZH ? "吵闹鬼" : "Poltergeist"));
+          == (language == lang_t::ZH ? "骚灵" : "Poltergeist"));
     CHECK(species::name(SP_POLTERGEIST, species::SPNAME_ADJ)
           == (language == lang_t::ZH ? "鬼魅" : "Ghostly"));
 }
