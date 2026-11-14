@@ -27522,7 +27522,7 @@ You have covered nearby walls with an icy ambush.
 你已在附近墙壁上布下冰霜伏击。
 %%%%
 You have got your breath back.
-你恢复了呼吸。
+你缓过气来了。
 %%%%
 You have lost your courage.
 你失去了勇气。
@@ -41566,7 +41566,7 @@ status|Recruit
 招募
 %%%%
 status|Slimifying
-软化
+黏液化
 %%%%
 status|Vengeance
 复仇
