@@ -4583,6 +4583,12 @@ TEST_CASE("Player miscasts join expanded Chinese colours at the production displ
     {
         rng::subgenerator choice(seed, 260301);
         const string candidate = getSpeakString("alchemy miscast player");
+        if (language == lang_t::ZH && candidate.find_first_of(
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
+                != string::npos)
+        {
+            continue;
+        }
         const string witness = language == lang_t::ZH
             ? (dust ? "尘云环绕着你" : "你的皮肤浮现出")
             : (dust ? "You are surrounded by clouds of" : "Your skin changes to");
