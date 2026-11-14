@@ -4797,10 +4797,15 @@ TEST_CASE("Spellstride translates every real beam parameter at the speech sink",
         for (uint64_t seed = 0; seed < 512 && seen.size() < 12; ++seed)
         {
             rng::subgenerator random(seed, 0x523335ULL);
-            const string output = observe_message([]
+            string output;
             {
-                xom_take_action(XOM_BLESSING_SPELLSTRIDE, 10);
-            });
+                msgwin_temporary_mode temporary;
+                unwinder restore_messages([] { msgwin_clear_temporary(); });
+                output = observe_message([]
+                {
+                    xom_take_action(XOM_BLESSING_SPELLSTRIDE, 10);
+                });
+            }
             const spell_type spell = static_cast<spell_type>(
                 you.props[XOM_SPELLSTRIDE_SPELL].get_int());
             const auto beam = find_if(begin(beams), end(beams),
