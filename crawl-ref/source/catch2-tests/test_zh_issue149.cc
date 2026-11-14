@@ -1060,7 +1060,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         const string confirmation = make_stringf(
             T_("Are you sure you want to remember your ancestor as %s?"), type_name.c_str());
         CHECK(confirmation == (language == lang_t::ZH
-            ? "你确定要记住你的先祖作为妖术师吗？"
+            ? "你确定要将你的先祖铭记为妖术师吗？"
             : "Are you sure you want to remember your ancestor as a hexer?"));
         monster_info ancestor(MONS_ANCESTOR_HEXER);
         ancestor.mname = "Xochitl";
