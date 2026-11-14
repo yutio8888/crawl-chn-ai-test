@@ -3861,7 +3861,7 @@ Discarded %d spells due to being uncastable and %d spells due to being disliked 
 丢弃了%d个无法施放的法术和%d个%s不喜欢的法术。
 %%%%
 disjunct
-移位
+分离
 %%%%
  dislikes it when %s.
 讨厌%s。
@@ -9062,7 +9062,7 @@ You begin to dig a shaft.
 你开始挖掘竖井。
 %%%%
 You begin to imbue your servitor with knowledge of %s.
-你开始向你的仆从灌输%s的知识。
+你开始向仆从灌注%s的法术知识。
 %%%%
 You begin to imprint %s upon your paragon.
 你开始将%s的印记刻入你的白金典范。
@@ -10403,10 +10403,10 @@ You finish doing something buggy.
 你完成了一件有问题的操作。
 %%%%
 You finish imbuing your servitor.
-你完成了向仆从灌输知识。
+你完成了向仆从灌注法术。
 %%%%
 You finish imprinting the physical structure of %s upon your paragon.
-你完成了将%s的物理结构刻入你的白金典范。
+你已将%s的物理结构完整刻印到你的白金典范上。
 %%%%
 You finish memorising.
 你完成了记忆法术。
@@ -11119,7 +11119,7 @@ You stop dropping stuff.
 你停止了丢弃物品。
 %%%%
 You stop imbuing your servitor.
-你停止了向仆从灌输知识。
+你停止了向仆从灌注法术。
 %%%%
 You stop transforming.
 你停止了变形。
@@ -11470,7 +11470,7 @@ Your catalyst becomes inert.
 你的催化剂失效了。
 %%%%
 Your charge dissipates without a target.
-你的电荷没有目标而消散了。
+由于没有目标，你的电荷消散了。
 %%%%
 your claw
 爪
@@ -23801,7 +23801,7 @@ A bone-chilling cold explodes forth, blasting rocks from the ceiling!
 刺骨的寒冷爆发了，从天花板上炸下了岩石！
 %%%%
 %s shatters%s
-%s粉碎了%s
+%s碎裂了%s
 %%%%
 %1$s shudder%2$s.
 %1$s颤抖了。
@@ -28890,7 +28890,7 @@ Keep transforming yourself?
 继续变形吗？
 %%%%
 Keep imbuing your servitor?
-继续灌注仆从吗？
+继续向仆从灌注法术吗？
 %%%%
 Have to go through %s. Continue?
 需要经过%s。继续吗？
@@ -54848,3 +54848,6 @@ life note|Lost a life (%d lives remaining)
 %%%%
 Fixing up corrupted PlaceInfo for %s (levels_seen is %d)
 正在修复%s中损坏的PlaceInfo（levels_seen为%d）。
+%%%%
+CLua bindings not available on this build!
+此构建不提供CLua绑定！
