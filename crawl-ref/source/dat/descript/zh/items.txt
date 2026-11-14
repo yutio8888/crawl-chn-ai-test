@@ -507,7 +507,7 @@ everburning encyclopedia
 executioner's axe
 
 一件可怕的武器，上面有着凝固的血和关于酷刑与死亡的粗糙雕刻，
-带有一个巨大的斧头。
+配有巨大的斧刃。
 %%%%
 falchion
 
@@ -658,7 +658,7 @@ javelin
 它将击穿目标，并有可能击中其路径中的所有目标，直到达到最大射程。
 {{
     if you.race() == "Kobold" or you.race() == "Spriggan" then
-        return "很遗憾，对于你来说它太长了，不方便使用。"
+        return "很遗憾，它对你来说太长而且太笨拙，无法使用。"
     end
 }}
 %%%%
