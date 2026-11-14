@@ -80,11 +80,11 @@ SOUND:@The_monster@在咩叫！
 %%%%
 __TRUMPET unseen
 
-SOUND:你听到一声吼叫！
+SOUND:你听到一声长鸣！
 %%%%
 __TRUMPET seen
 
-SOUND:@The_monster@在吼叫！
+SOUND:@The_monster@在长鸣！
 %%%%
 __SCREECH unseen
 
@@ -156,11 +156,11 @@ SOUND:@The_monster_possessive@多条腿在窜行。
 %%%%
 __FAINT_SKITTER unseen
 
-SOUND:你听到微弱的窜行声音。
+SOUND:你听到微弱的窸窣声。
 %%%%
 __FAINT_SKITTER seen
 
-SOUND:@The_monster_possessive@多条腿在微微窜行。
+SOUND:@The_monster_possessive@多条腿移动时发出微弱的窸窣声。
 %%%%
 __SQUEAL unseen
 
@@ -377,11 +377,11 @@ SOUND:@The_monster@喊道：“进攻，我的宠物！进攻！”
 %%%%
 __CAW seen
 
-SOUND:@The_monster@呱呱叫着。
+SOUND:@The_monster@嘎嘎叫着。
 %%%%
 __CAW unseen
 
-SOUND:你听到一声响亮的呱呱叫声。
+SOUND:你听到一声响亮的嘎嘎叫声。
 %%%%
 __LAUGH seen
 

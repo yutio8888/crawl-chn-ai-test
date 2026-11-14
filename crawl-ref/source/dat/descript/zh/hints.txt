@@ -258,7 +258,7 @@ HINT_GLOWING
 %%%%
 HINT_GOD_DISPLEASED
 
-糟了，$1 因你的虔诚值太低而越来越不悦。这可能是因为你做了亵渎之举，也可能是因为 $1 认为你的崇拜不够虔诚，或两者兼有。如果虔诚值降到零，你就会被逐出教门。赶紧设法提高虔诚值，或停止惹怒你的神祇，必要时两者都做。不管怎样，你最好重新阅读宗教说明。按 <w>$cmd[CMD_DISPLAY_RELIGION]</w><localtiles>，或按住 <w>Shift</w> 并<w>右键点击</w>你的头像</localtiles>即可查看。
+糟了，$1因你的虔诚值太低而越来越不悦。这可能是因为你做了亵渎之举，也可能是因为$1认为你的崇拜不够虔诚，或两者兼有。如果虔诚值降到零，你就会被逐出教门。赶紧设法提高虔诚值，或停止惹怒你的神祇，必要时两者都做。不管怎样，你最好重新阅读宗教说明。按 <w>$cmd[CMD_DISPLAY_RELIGION]</w><localtiles>，或按住 <w>Shift</w> 并<w>右键点击</w>你的头像</localtiles>即可查看。
 %%%%
 HINT_HEALING_POTIONS
 
@@ -334,7 +334,7 @@ HINT_MONSTER_FRIENDLY
 %%%%
 HINT_MONSTER_LEFT_LOS
 
-$1 没有消失，只是移动到了一个你当前看不到的格子上。
+$1没有消失，只是移动到了一个你当前看不到的格子上。
 它仍然在附近，除非在它离开视线的短时间内发生了什么意外。
 %%%%
 HINT_MONSTER_NO_SHOUT

@@ -252,7 +252,7 @@ Jiyva peaceful fountain_blue
 %%%%
 Kikubaaqudgha peaceful dry_fountain
 
-你沉思着那一天——当整个世界都将与这座喷泉共享同样的命运。
+你思索着整个世界也将步这座喷泉后尘的那一天。
 
 %%%%
 Lugonu peaceful fountain_eyes
@@ -334,7 +334,7 @@ Sif Muna peaceful fountain_eyes
 %%%%
 Sif Muna peaceful fountain_sparkling
 
-你努力分辨着喷泉中无数稀释了的药剂。
+你努力辨别着喷泉里混着的种种稀释药剂。
 
 %%%%
 The Shining One fountain_blood
