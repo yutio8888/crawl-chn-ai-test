@@ -329,8 +329,8 @@ public:
     {
         const bool were_brilliant = you.duration[DUR_BRILLIANCE] > 0;
 
-        const char* feel_clever = were_brilliant ? T_("more ") : "";
-        mprf(MSGCH_DURATION, T_("You feel %sclever all of a sudden."), feel_clever);
+        const string feel_clever = were_brilliant ? C_("state intensity", "more ") : "";
+        mprf(MSGCH_DURATION, T_("You feel %sclever all of a sudden."), feel_clever.c_str());
         const int dur = _scale_pot_duration(35 + random2(pow), is_potion);
         you.increase_duration(DUR_BRILLIANCE, dur);
         return true;
