@@ -49786,6 +49786,195 @@ skill title|Leviathan
 skill title|God-Hated
 神憎者
 %%%%
+skill title|Talismancer
+护符术士
+%%%%
+skill title|Protean
+千变者
+%%%%
+skill title|Papyrus Preeminent
+纸莎草至尊
+%%%%
+skill title|Farsighted
+远视者
+%%%%
+skill title|Veil Piercer
+破幕者
+%%%%
+skill title|Leopard Gecko
+豹纹守宫
+%%%%
+skill title|Hedgehog
+刺猬
+%%%%
+skill title|Cordyceps Champion
+虫草勇士
+%%%%
+skill title|@Genus@ O' War
+@Genus@水母
+%%%%
+skill title|Who Moves the Sun
+推动太阳者
+%%%%
+skill title|Little Ice Age
+小冰期
+%%%%
+skill title|Brewmaster
+酿酒大师
+%%%%
+skill title|Arachnophile
+爱蛛者
+%%%%
+skill title|Lone Wolf
+孤狼
+%%%%
+skill title|Apex Predator
+顶级掠食者
+%%%%
+skill title|Whose Coils Crush All
+绞碎万物者
+%%%%
+skill title|Jellied Eel
+鳗鱼冻
+%%%%
+skill title|Black Horse
+黑马
+%%%%
+skill title|Piranha
+食人鱼
+%%%%
+skill title|Insatiable
+贪食无厌
+%%%%
+skill title|Hippocampus
+马头鱼尾兽
+%%%%
+skill title|Tideshaper
+塑潮者
+%%%%
+skill title|Riddle's Answer
+谜底
+%%%%
+skill title|Bloodprince
+血王子
+%%%%
+skill title|Dragonlord
+龙领主
+%%%%
+skill title|Beeserker
+蜂狂战士
+%%%%
+skill title|Endless Swarm
+无尽蜂群
+%%%%
+skill title|Golden Calf
+金牛犊
+%%%%
+skill title|Hundred Blades
+百刃
+%%%%
+skill title|Storm of the Century
+世纪风暴
+%%%%
+skill title|Pale Horse
+灰马
+%%%%
+skill title|White Horse
+白马
+%%%%
+skill title|Godsmith
+神匠
+%%%%
+skill title|Nuckelavee
+纳克拉维
+%%%%
+skill title|Copycat
+模仿者
+%%%%
+skill title|Red Horse
+红马
+%%%%
+skill title|Xom's Canvas
+佐姆的画布
+%%%%
+skill title|Aleatoric Ace
+随机王牌
+%%%%
+skill title|Hand of Misfortune
+厄运之手
+%%%%
+skill title|Avatar of the Absurd
+荒诞化身
+%%%%
+skill title|Heavens' Harlequin
+天界丑角
+%%%%
+skill title|Bringer of Disorder
+混乱使者
+%%%%
+skill title|Hopelessly Reckless
+无可救药的鲁莽
+%%%%
+skill title|Calamity-Blessed
+灾祸眷顾者
+%%%%
+skill title|Living Farce
+活闹剧
+%%%%
+skill title|Champion of Folly
+愚行冠军
+%%%%
+skill title|Lord of Playthings
+玩物之主
+%%%%
+skill title|Circus Champion
+马戏冠军
+%%%%
+skill title|Prime Anarchist
+头号无政府主义者
+%%%%
+skill title|Unburdened By Reality
+摆脱现实
+%%%%
+skill title|Connoisseur of Chaos
+混沌鉴赏家
+%%%%
+skill title|Procedurally Generated
+程序生成
+%%%%
+skill title|Crown Chesspiece
+王冠棋子
+%%%%
+skill title|Profoundly Silly
+极度滑稽
+%%%%
+skill title|Dismantled Masterpiece
+被拆解的杰作
+%%%%
+skill title|Ringmaster's Favourite
+马戏团长的宠儿
+%%%%
+skill title|Divine Plaything
+神明玩物
+%%%%
+skill title|Riotous Rainbow
+狂暴彩虹
+%%%%
+skill title|Extremely Free Spirit
+极度自由灵魂
+%%%%
+skill title|Stunt@genus@
+@genus@特技替身
+%%%%
+skill title|Godsjester
+神明弄臣
+%%%%
+skill title|Whimsical Wunderkind
+奇想神童
+%%%%
+skill title|Survivor of Endless Pranks
+无尽恶作剧的幸存者
+%%%%
 skill title|Trooper
 士兵
 %%%%

@@ -42,6 +42,7 @@
 #include "stringutil.h"
 #include "tag-version.h"
 #include "unwind.h"
+#include "xom.h"
 
 // MAX_COST_LIMIT is the maximum XP amount it will cost to raise a skill
 //                by 10 skill points (ie one standard practice).
@@ -126,7 +127,7 @@ static const char *skill_titles[NUM_SKILLS][7] =
     // or, in U's case, invocations skill.
     {"Invocations",    "Unbeliever",    "Agnostic",        "Dissident",       "Heretic",        "Apostate",     "Invo"},
     {"Evocations",     "Charlatan",     "Prestidigitator", "Fetichist",       "Evocator",       "Ex Machina",  "Evo"},
-    {"Shapeshifting",  "Changeling",    "Mimic",           "Metamorph",       "Skinwalker",     "Shapeless @Genus@", "Shft"},
+    {"Shapeshifting",  "Changeling",    "Metamorph",       "Talismancer",     "Shapeless @Genus@",  "Protean", "Shft"},
 };
 
 static const char *martial_arts_titles[6] =
@@ -2284,6 +2285,43 @@ enum special_title_type
     ST_ABYSSOPELAGIC,
     ST_LEVIATHAN,
     ST_GOD_HATED,
+    // Conduct titles added upstream (form exclusivity, Xom early join, new
+    // rank overrides). Kept in the shared table so the saved-title matcher and
+    // the display lookup use the same English keys.
+    ST_PAPYRUS_PREEMINENT,
+    ST_FARSIGHTED,
+    ST_VEIL_PIERCER,
+    ST_LEOPARD_GECKO,
+    ST_HEDGEHOG,
+    ST_CORDYCEPS_CHAMPION,
+    ST_SPECIES_O_WAR,
+    ST_WHO_MOVES_THE_SUN,
+    ST_LITTLE_ICE_AGE,
+    ST_BREWMASTER,
+    ST_ARACHNOPHILE,
+    ST_LONE_WOLF,
+    ST_APEX_PREDATOR,
+    ST_WHOSE_COILS_CRUSH_ALL,
+    ST_JELLIED_EEL,
+    ST_BLACK_HORSE,
+    ST_PIRANHA,
+    ST_INSATIABLE,
+    ST_HIPPOCAMPUS,
+    ST_TIDESHAPER,
+    ST_RIDDLES_ANSWER,
+    ST_BLOODPRINCE,
+    ST_DRAGONLORD,
+    ST_BEESERKER,
+    ST_ENDLESS_SWARM,
+    ST_GOLDEN_CALF,
+    ST_HUNDRED_BLADES,
+    ST_STORM_OF_THE_CENTURY,
+    ST_PALE_HORSE,
+    ST_WHITE_HORSE,
+    ST_GODSMITH,
+    ST_NUCKELAVEE,
+    ST_COPYCAT,
+    ST_RED_HORSE,
     NUM_SPECIAL_TITLES,
 };
 
@@ -2356,9 +2394,75 @@ static const char* special_title_templates[] =
     NC_("skill title", "Abyssopelagic"),
     NC_("skill title", "Leviathan"),
     NC_("skill title", "God-Hated"),
+    NC_("skill title", "Papyrus Preeminent"),
+    NC_("skill title", "Farsighted"),
+    NC_("skill title", "Veil Piercer"),
+    NC_("skill title", "Leopard Gecko"),
+    NC_("skill title", "Hedgehog"),
+    NC_("skill title", "Cordyceps Champion"),
+    NC_("skill title", "@Genus@ O' War"),
+    NC_("skill title", "Who Moves the Sun"),
+    NC_("skill title", "Little Ice Age"),
+    NC_("skill title", "Brewmaster"),
+    NC_("skill title", "Arachnophile"),
+    NC_("skill title", "Lone Wolf"),
+    NC_("skill title", "Apex Predator"),
+    NC_("skill title", "Whose Coils Crush All"),
+    NC_("skill title", "Jellied Eel"),
+    NC_("skill title", "Black Horse"),
+    NC_("skill title", "Piranha"),
+    NC_("skill title", "Insatiable"),
+    NC_("skill title", "Hippocampus"),
+    NC_("skill title", "Tideshaper"),
+    NC_("skill title", "Riddle's Answer"),
+    NC_("skill title", "Bloodprince"),
+    NC_("skill title", "Dragonlord"),
+    NC_("skill title", "Beeserker"),
+    NC_("skill title", "Endless Swarm"),
+    NC_("skill title", "Golden Calf"),
+    NC_("skill title", "Hundred Blades"),
+    NC_("skill title", "Storm of the Century"),
+    NC_("skill title", "Pale Horse"),
+    NC_("skill title", "White Horse"),
+    NC_("skill title", "Godsmith"),
+    NC_("skill title", "Nuckelavee"),
+    NC_("skill title", "Copycat"),
+    NC_("skill title", "Red Horse"),
 };
 COMPILE_CHECK(ARRAYSZ(special_title_templates) == NUM_SPECIAL_TITLES);
 
+// A unique title depending on the day that the current game was started.
+// (With titles rotating each day, in a 27 day cycle.)
+static const char *xom_title[27] =
+{
+    NC_("skill title", "Xom's Canvas"),
+    NC_("skill title", "Aleatoric Ace"),
+    NC_("skill title", "Hand of Misfortune"),
+    NC_("skill title", "Avatar of the Absurd"),
+    NC_("skill title", "Heavens' Harlequin"),
+    NC_("skill title", "Bringer of Disorder"),
+    NC_("skill title", "Hopelessly Reckless"),
+    NC_("skill title", "Calamity-Blessed"),
+    NC_("skill title", "Living Farce"),
+    NC_("skill title", "Champion of Folly"),
+    NC_("skill title", "Lord of Playthings"),
+    NC_("skill title", "Circus Champion"),
+    NC_("skill title", "Prime Anarchist"),
+    NC_("skill title", "Unburdened By Reality"),
+    NC_("skill title", "Connoisseur of Chaos"),
+    NC_("skill title", "Procedurally Generated"),
+    NC_("skill title", "Crown Chesspiece"),
+    NC_("skill title", "Profoundly Silly"),
+    NC_("skill title", "Dismantled Masterpiece"),
+    NC_("skill title", "Ringmaster's Favourite"),
+    NC_("skill title", "Divine Plaything"),
+    NC_("skill title", "Riotous Rainbow"),
+    NC_("skill title", "Extremely Free Spirit"),
+    NC_("skill title", "Stunt@genus@"),
+    NC_("skill title", "Godsjester"),
+    NC_("skill title", "Whimsical Wunderkind"),
+    NC_("skill title", "Survivor of Endless Pranks"),
+};
 /**
  * Special conduct skill title tracking, extending the range of skill titles
  * beyond what's covered in skill_title_by_rank. These titles are used only if
@@ -2417,11 +2521,179 @@ string special_conduct_title(skill_type best_skill, uint8_t skill_rank)
         return special_title_templates[ST_KEEPER_OF_THE_FLAME];
     }
 
-    // Award for being very good at crab
-    if (you.form == transformation::fortress_crab
-        && best_skill == SK_SHAPESHIFTING && skill_rank == 5)
+    // Form conduct titles. These require exclusively using a form after a
+    // certain level threshold (XL 8/11/14/17/20, depending on form tier),
+    // possibly with some other requirement.
+    // Put the form exclusivity check last because it requires a lot of computation.
+    switch (you.default_form)
     {
-        return special_title_templates[ST_PINNACLE_OF_EVOLUTION];
+    case transformation::walking_scroll:
+        if (player_exclusively_used_form_since(8) && you.experience_level > 17)
+            return special_title_templates[ST_PAPYRUS_PREEMINENT];
+        break;
+    case transformation::vision:
+        if (best_skill == SK_SHAPESHIFTING && player_exclusively_used_form_since(8))
+        {
+            if (you.species == SP_KOBOLD)
+                return special_title_templates[ST_FARSIGHTED];
+            return special_title_templates[ST_VEIL_PIERCER];
+        }
+        break;
+    case transformation::hypnogecko:
+        if (you.species == SP_FELID && best_skill == SK_SHAPESHIFTING && player_exclusively_used_form_since(8))
+            return special_title_templates[ST_LEOPARD_GECKO];
+        break;
+     case transformation::quill:
+        if (you.species == SP_SPRIGGAN && best_skill == SK_SHAPESHIFTING && player_exclusively_used_form_since(8))
+            return special_title_templates[ST_HEDGEHOG];
+        break;
+    case transformation::spore:
+        if (you.species == SP_FORMICID && best_skill == SK_SHAPESHIFTING && player_exclusively_used_form_since(11))
+            return special_title_templates[ST_CORDYCEPS_CHAMPION];
+        break;
+    case transformation::medusa:
+        if (best_skill == SK_SHAPESHIFTING && player_exclusively_used_form_since(11))
+            return special_title_templates[ST_SPECIES_O_WAR];
+        break;
+    case transformation::sun_scarab:
+        if (best_skill == SK_SHAPESHIFTING && player_exclusively_used_form_since(11))
+            return special_title_templates[ST_WHO_MOVES_THE_SUN];
+        break;
+    case transformation::rime_yak:
+        if (best_skill == SK_SHAPESHIFTING && player_exclusively_used_form_since(11))
+            return special_title_templates[ST_LITTLE_ICE_AGE];
+        break;
+    case transformation::mistmane:
+        if (you.species == SP_ONI
+            && best_skill == SK_SHAPESHIFTING && player_exclusively_used_form_since(11))
+        {
+            return special_title_templates[ST_BREWMASTER];
+        }
+        break;
+    case transformation::spider:
+        if (best_skill == SK_SHAPESHIFTING && player_exclusively_used_form_since(14))
+            return special_title_templates[ST_ARACHNOPHILE];
+        break;
+    case transformation::werewolf:
+        if (best_skill == SK_SHAPESHIFTING && skill_rank == 5
+            && player_exclusively_used_form_since(14))
+        {
+            // Okawaru, or Ru sac love
+            if (you.allies_forbidden())
+                return special_title_templates[ST_LONE_WOLF];
+            return special_title_templates[ST_APEX_PREDATOR];
+        }
+        break;
+    case transformation::serpent:
+        if (best_skill == SK_SHAPESHIFTING && skill_rank == 5
+            && player_exclusively_used_form_since(14))
+        {
+            return special_title_templates[ST_WHOSE_COILS_CRUSH_ALL];
+        }
+        break;
+    case transformation::eel_hands:
+        if (you_worship(GOD_JIYVA) && piety_rank(you.raw_piety) >= 6
+            && best_skill == SK_SHAPESHIFTING && player_exclusively_used_form_since(14))
+        {
+            return special_title_templates[ST_JELLIED_EEL];
+        }
+        break;
+    case transformation::maw:
+        if (best_skill == SK_SHAPESHIFTING && player_exclusively_used_form_since(14))
+        {
+            if (you.species == SP_GALE_CENTAUR && !is_good_god(you.religion))
+                return special_title_templates[ST_BLACK_HORSE]; // Famine
+            else if (you.species == SP_MERFOLK)
+                return special_title_templates[ST_PIRANHA];
+
+            return special_title_templates[ST_INSATIABLE];
+        }
+        break;
+    case transformation::aqua:
+        if (best_skill == SK_SHAPESHIFTING && skill_rank == 5
+            && player_exclusively_used_form_since(14))
+        {
+            if (you.species == SP_GALE_CENTAUR)
+                return special_title_templates[ST_HIPPOCAMPUS];
+            return special_title_templates[ST_TIDESHAPER];
+        }
+        break;
+    case transformation::fortress_crab:
+        if (best_skill == SK_SHAPESHIFTING && skill_rank == 5
+            && player_exclusively_used_form_since(14))
+        {
+            return special_title_templates[ST_PINNACLE_OF_EVOLUTION];
+        }
+        break;
+    case transformation::sphinx:
+        if (you.species == SP_HUMAN && best_skill == SK_SHAPESHIFTING
+            && player_exclusively_used_form_since(17))
+        {
+            return special_title_templates[ST_RIDDLES_ANSWER];
+        }
+        break;
+    case transformation::vampire:
+        if (best_skill == SK_SHAPESHIFTING && skill_rank == 5
+            && player_exclusively_used_form_since(17))
+        {
+            return special_title_templates[ST_BLOODPRINCE];
+        }
+        break;
+    case transformation::dragon:
+        if (species::is_draconian(you.species) && best_skill == SK_SUMMONINGS
+            && skill_rank == 5 && player_exclusively_used_form_since(17))
+        {
+            return special_title_templates[ST_DRAGONLORD];
+        }
+        break;
+    case transformation::hive:
+        if (best_skill == SK_SHAPESHIFTING && skill_rank == 5
+            && player_exclusively_used_form_since(17))
+        {
+            if (you_worship(GOD_TROG))
+                return special_title_templates[ST_BEESERKER];
+            return special_title_templates[ST_ENDLESS_SWARM];
+        }
+        break;
+    case transformation::statue:
+        if (you.species == SP_MINOTAUR && you_worship(GOD_GOZAG)
+            && you.gold >= 10000 && player_exclusively_used_form_since(17))
+        {
+            return special_title_templates[ST_GOLDEN_CALF];
+        }
+        break;
+    case transformation::blade:
+        if ((best_skill == SK_SHORT_BLADES || best_skill == SK_LONG_BLADES)
+            && skill_rank == 5 && player_exclusively_used_form_since(17))
+        {
+            return special_title_templates[ST_HUNDRED_BLADES];
+        }
+        break;
+    case transformation::storm:
+        if (you_worship(GOD_QAZLAL) && piety_rank(you.raw_piety) >= 6
+            && player_exclusively_used_form_since(20))
+        {
+            return special_title_templates[ST_STORM_OF_THE_CENTURY];
+        }
+        break;
+    case transformation::death:
+        if (you.species == SP_GALE_CENTAUR && player_exclusively_used_form_since(20))
+            return special_title_templates[ST_PALE_HORSE]; // Needs no introduction
+        break;
+    default:
+        break;
+    }
+
+    // Those who joined Xom by XL 8 and never left get a title that varies based
+    // on the day the game was started. (This isn't really a 'challenge' in the
+    // same sense as most of these, but is in this function because it is
+    // player-centric and doesn't work for ghosts.)
+    if (you_worship(GOD_XOM) && you.worshipped[GOD_XOM] == 1
+        && best_skill == SK_FIGHTING && skill_rank == 5
+        && you.props.exists(XOM_EARLY_JOIN_KEY))
+    {
+        const int day = (you.birth_time / 86400) % 27;
+        return xom_title[day];
     }
 
     return title;
@@ -2469,6 +2741,8 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
                 result = special_title_templates[ST_HELL_KNIGHT];
             else if (species == SP_HUMAN && skill_rank == 5 && god == GOD_YREDELEMNUL)
                 result = special_title_templates[ST_DEATH_KNIGHT];
+            else if (species == SP_GALE_CENTAUR && skill_rank == 5 && !is_good_god(god))
+                result = special_title_templates[ST_WHITE_HORSE]; // Conquest, rather than Conqueror
             break;
 
         case SK_UNARMED_COMBAT:
@@ -2571,12 +2845,10 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
             break;
 
         case SK_FORGECRAFT:
-            if (species == SP_ONI && skill_rank == 4)
-                result = special_title_templates[ST_BRIMSTONE_SMITER];
-            else if (species == SP_ONI && skill_rank == 5)
-                result = special_title_templates[ST_TITANCASTER];
-            else if (species == SP_BARACHI && skill_rank == 5)
+            if (species == SP_BARACHI && skill_rank == 5)
                 result = special_title_templates[ST_FROGWRIGHT];
+            else if (species == SP_MOUNTAIN_DWARF && skill_rank == 5)
+                result = special_title_templates[ST_GODSMITH];
             break;
 
         case SK_SUMMONINGS:
@@ -2600,6 +2872,8 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
         case SK_ALCHEMY:
             if (species::is_draconian(species) && skill_rank == 5)
                 result = special_title_templates[ST_SWAMP_DRAGON];
+            else if (species == SP_GALE_CENTAUR && is_evil_god(god))
+                result = special_title_templates[ST_NUCKELAVEE];
             break;
 
         case SK_FIRE_MAGIC:
@@ -2641,6 +2915,11 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
                 result = special_title_templates[ST_THIEF_OF_DIVINITY];
             break;
 
+        case SK_SHAPESHIFTING:
+            if (species == SP_FELID && skill_rank == 5)
+                result = "Copycat";
+            break;
+
         case SK_INVOCATIONS:
             if (species == SP_MUMMY && skill_rank == 5 && god == GOD_GOZAG)
                 result = special_title_templates[ST_ROYAL_MUMMY];
@@ -2652,6 +2931,8 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
                 result = special_title_templates[ST_NECRODANCER];
             else if (species::is_draconian(species) && skill_rank == 5 && is_good_god(god))
                 result = special_title_templates[ST_PEARL_DRAGON];
+            else if (species == SP_GALE_CENTAUR && skill_rank == 5 && god == GOD_TROG)
+                result = special_title_templates[ST_RED_HORSE]; // War
             else if (species == SP_GARGOYLE && skill_rank == 5 && god == GOD_JIYVA)
                 result = special_title_templates[ST_ROCKSLIME];
             else if (species == SP_VINE_STALKER && skill_rank == 5 && god == GOD_NEMELEX_XOBEH)
@@ -2717,25 +2998,44 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
 
 /** What is the player's current title.
  *
- *  @param the whether to prepend a definite article.
+ *  @param use_prefix whether to prepend the title's prefix (usually 'the'),
+ *                    along with leading spacing.
  *  @returns the title.
  */
-static string _title_with_article(const string& title, bool the)
+// Article, comma or "of a" prepended to a player title at its display boundary.
+// Chinese titles take no article and no separating space, so callers can simply
+// concatenate the name and the title there.
+string player_title_prefix(const string& title)
 {
-    const string article = !the ? ""
-        : Options.language == lang_t::ZH ? ""
-        : title == "Petite Mort" ? C_("title article", "La ")
-        : title == "Who Hides the Stars" ? C_("title article", ", ")
-        : C_("title article", "the ");
-    return article + title;
+    if (Options.language == lang_t::ZH)
+        return "";
+
+    if (title == "Petite Mort")
+        return C_("title article", "La ");
+    else if (title == "Ex Machina")
+        return " ";
+    else if (title == "Hundred Blades")
+        return " of a ";
+    else if (title == "Xom's Canvas"
+             || title == "Unburdened By Reality"
+             || title == "Survivor of Endless Pranks"
+             || title.rfind("Who", 0) == 0)
+        return C_("title article", ", ");
+    else
+        return C_("title article", "the ");
 }
 
-string player_title(bool the)
+static string _title_with_article(const string& title, bool use_prefix)
+{
+    return (use_prefix ? player_title_prefix(title) : "") + title;
+}
+
+string player_title(bool use_prefix)
 {
     const skill_type best = best_skill(SK_FIRST_SKILL, SK_LAST_SKILL);
     const string title =
             skill_title_by_rank(best, get_skill_rank(you.skills[best]));
-    return _title_with_article(title, the);
+    return _title_with_article(title, use_prefix);
 }
 
 string translated_ghost_title(const string& saved_title, species_type species)
@@ -2769,6 +3069,10 @@ string translated_ghost_title(const string& saved_title, species_type species)
     for (const auto& titles : skill_titles)
         for (int rank = 1; rank <= 5; ++rank)
             consider_skill(titles[rank]);
+    // Rank titles retired upstream still exist as saved ghost titles in older
+    // games; keep displaying them in Chinese instead of regressing to English.
+    for (const char *retired : { "Mimic", "Skinwalker" })
+        consider_skill(retired);
     for (int rank = 1; rank <= 5; ++rank)
     {
         consider_skill(martial_arts_titles[rank]);
@@ -2783,6 +3087,7 @@ string translated_ghost_title(const string& saved_title, species_type species)
     // Different contexts can have the same English spelling. Do not guess
     // which title was saved if their current translations disagree.
     return matches.size() == 1 ? *matches.begin() : saved_title;
+
 }
 
 skill_type best_skill(skill_type min_skill, skill_type max_skill,

@@ -2250,7 +2250,8 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
     if (verbose)
     {
         desc = make_stringf(T_("%8d %s the %s (level %d"),
-                  points, name.c_str(), T_(title.c_str()), lvl);
+                  points, name.c_str(),
+                  (player_title_prefix(title) + T_(title.c_str())).c_str(), lvl);
     }
     else
     {

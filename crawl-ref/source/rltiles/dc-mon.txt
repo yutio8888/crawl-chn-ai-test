@@ -400,6 +400,7 @@ living_spell_flesh MONS_LIVING_SPELL_FLESH
 living_spell_holy MONS_LIVING_SPELL_HOLY
 living_spell_ice MONS_LIVING_SPELL_ICE
 living_spell_quicksilver MONS_LIVING_SPELL_QUICKSILVER
+living_spell_warp MONS_LIVING_SPELL_WARP
 splinterfrost_barricade MONS_SPLINTERFROST_BARRICADE
 %rim 1
 ball_lightning MONS_BALL_LIGHTNING /*'*'*/
