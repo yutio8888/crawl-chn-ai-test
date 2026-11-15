@@ -13595,3 +13595,41 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(source->mname == identity);
     CHECK(source->mname.find("「") == string::npos);
 }
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "special names: actual pan lord miasma keeps poison killer undecorated",
+                 "[zh-translation][special-name-quotes][miasma]")
+{
+    init_properties();
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 50;
+        you.equipment.update();
+        you.where_are_you = BRANCH_DUNGEON;
+        you.depth = 1;
+        scoped_monspeak_world world;
+        rng::subgenerator sequence(73518041, 0x418);
+        monster *source = create_monster(mgen_data(MONS_PANDEMONIUM_LORD,
+            BEH_HOSTILE, coord_def(22, 22), MHITYOU), false);
+        REQUIRE(source);
+        unwinder cleanup([source]() { source->reset(); });
+        source->mname = "Houn";
+        REQUIRE(you.can_see(*source));
+        CHECK(source->name(DESC_A)
+              == (language == lang_t::ZH ? "「Houn」" : "Houn"));
+        REQUIRE(miasma_player(source, "a miasma cloud"));
+        CHECK(you.props[POISONER_KEY].get_string() == "Houn");
+        CHECK(you.props[POISON_AUX_KEY].get_string() == "a miasma cloud");
+        scorefile_entry death(5, MID_NOBODY, KILLED_BY_POISON,
+                              "a miasma cloud");
+        death.init(1600000000);
+        const xlog_fields fields(death.raw_string());
+        CHECK(fields.str_field("killer") == "Houn");
+        CHECK(source->mname == "Houn");
+    }
+}

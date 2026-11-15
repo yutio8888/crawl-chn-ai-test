@@ -5,7 +5,6 @@
 #include "english.h"
 #include "database.h"
 #include "format.h"
-#include "hiscores.h"
 #include "invent.h"
 #include "item-name.h"
 #include "item-prop.h"
@@ -243,20 +242,20 @@ TEST_CASE_METHOD(ZhTranslationFixture, "special names: artefact rendering preser
         set_unique_item_status(unrand, prior_status);
     });
     unrand.flags |= ISFLAG_IDENTIFIED;
-    CHECK(unrand.name(DESC_PLAIN).find("「") == 0);
-    CHECK(unrand.name(DESC_PLAIN).find("骑枪『屠龙者』") != string::npos);
+    CHECK(unrand.name(DESC_PLAIN).find("「+8 『屠龙者』骑枪」") == 0);
+    CHECK(unrand.name(DESC_PLAIN).find("『屠龙者』骑枪") != string::npos);
     InvEntry unrand_entry(unrand);
-    CHECK(unrand_entry.get_filter_text().find("骑枪\"屠龙者\"") != string::npos);
+    CHECK(unrand_entry.get_filter_text().find("「屠龙者」骑枪") != string::npos);
     you.inv[1] = unrand;
     you.inv[1].pos = ITEM_IN_INVENTORY;
     you.inv[1].link = 1;
     you.inv[1].slot = 'b';
     const auto unrand_search = inventory_search(
-        plaintext_pattern("骑枪\"屠龙者\"", true));
+        plaintext_pattern("「屠龙者」骑枪", true));
     REQUIRE(unrand_search.size() == 1);
     CHECK(unrand_search[0].item.special == UNRAND_WYRMBANE);
     CHECK(get_unrand_name_en(unrand) == string("lance \"Wyrmbane\""));
-    CHECK(get_artefact_name(unrand) == "骑枪\"屠龙者\"");
+    CHECK(get_artefact_name(unrand) == "「屠龙者」骑枪");
     CHECK(quote_special_name("<red>「西格蒙德」</red>")
           == "<red>「西格蒙德」</red>");
 }
@@ -281,23 +280,6 @@ TEST_CASE_METHOD(ZhTranslationFixture, "special names: poison identity remains u
         CHECK(source.mname.empty());
         CHECK(source.name(DESC_A, true)
               == (language == lang_t::ZH ? "「西格蒙德」" : "Sigmund"));
-
-        // A named pan lord's miasma follows a separate poison-source path.
-        source.type = MONS_PANDEMONIUM_LORD;
-        source.mname = "Houn";
-        you.duration[DUR_POISONING] = 0;
-        you.props.erase(POISONER_KEY);
-        REQUIRE(miasma_player(&source, "a miasma cloud"));
-        CHECK(source.name(DESC_A, true)
-              == (language == lang_t::ZH ? "「Houn」" : "Houn"));
-        CHECK(you.props[POISONER_KEY].get_string() == "Houn");
-        CHECK(you.props[POISON_AUX_KEY].get_string() == "a miasma cloud");
-        scorefile_entry death(5, MID_NOBODY, KILLED_BY_POISON,
-                              "a miasma cloud");
-        death.init(1600000000);
-        const xlog_fields fields(death.raw_string());
-        CHECK(fields.str_field("killer") == "Houn");
-        CHECK(source.mname == "Houn");
     }
 }
 
