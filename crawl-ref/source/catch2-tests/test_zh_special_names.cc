@@ -18,6 +18,8 @@
 #include "operation-types.h"
 #include "pattern.h"
 #include "player.h"
+#include "player-equip.h"
+#include "player-reacts.h"
 #include "random.h"
 #include "stash.h"
 #include "stringutil.h"
@@ -267,5 +269,43 @@ TEST_CASE_METHOD(ZhTranslationFixture, "special names: poison identity remains u
         CHECK(source.mname.empty());
         CHECK(source.name(DESC_A, true)
               == (language == lang_t::ZH ? "「西格蒙德」" : "Sigmund"));
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture, "special names: actual artefact attunement decorates only display",
+                 "[zh-translation][special-name-quotes]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 100;
+        you.magic_points = you.max_magic_points = 20;
+        item_def& item = you.inv[0];
+        item.quantity = 1;
+        const auto prior_status = get_unique_item_status(UNRAND_VITALITY);
+        REQUIRE(make_item_unrandart(item, UNRAND_VITALITY));
+        unwinder restore_status([&item, prior_status]() {
+            set_unique_item_status(item, prior_status);
+        });
+        item.flags |= ISFLAG_IDENTIFIED;
+        item.link = 0;
+        item.pos = ITEM_IN_INVENTORY;
+        const string identity = get_artefact_name(item);
+        you.equipment.add(item, SLOT_AMULET);
+        you.check_hp_regen_attunement = true;
+        you.check_mp_regen_attunement = true;
+        msg::tee messages;
+        maybe_attune_regen_items();
+        const string text = messages.get_store();
+        CHECK(text.find(quote_special_name(identity)) != string::npos);
+        CHECK(get_artefact_name(item) == identity);
+        CHECK_FALSE(you.check_hp_regen_attunement);
+        if (language == lang_t::EN)
+            CHECK(text.find("Your " + identity + " attunes itself to your body")
+                  != string::npos);
     }
 }
