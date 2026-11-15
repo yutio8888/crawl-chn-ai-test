@@ -41,7 +41,10 @@ static void _setup_base_explosion(bolt & beam, const monster& origin)
     beam.source_id    = origin.mid;
     beam.glyph        = dchar_glyph(DCHAR_FIRED_BURST);
     beam.source       = origin.pos();
-    beam.source_name  = origin.base_name(DESC_BASENAME, true);
+    {
+        ScopedUnquotedNames unquoted;
+        beam.source_name = origin.base_name(DESC_BASENAME, true);
+    }
     beam.target       = origin.pos();
     beam.explode_noise_msg = T_("You hear an explosion!");
 
@@ -95,7 +98,7 @@ static void _setup_blazeheart_core_explosion(bolt & beam, const monster& origin)
     beam.name         = "fiery explosion";
     beam.colour       = RED;
     beam.ex_size      = 1;
-    beam.source_name  = origin.name(DESC_PLAIN, true);
+    beam.source_name  = name_for_storage(origin, DESC_PLAIN, true);
     beam.thrower      = KILL_MON;
 
     // This is so it places flame clouds under the explosion
@@ -196,7 +199,7 @@ static void _setup_inner_flame_explosion(bolt & beam, const monster& origin,
     beam.name        = "fiery explosion";
     beam.colour      = RED;
     beam.ex_size     = (size > SIZE_LARGE) ? 2 : 1;
-    beam.source_name = origin.name(DESC_PLAIN, true);
+    beam.source_name = name_for_storage(origin, DESC_PLAIN, true);
     beam.origin_spell = SPELL_INNER_FLAME;
     beam.thrower     = (agent && agent->is_player()) ? KILL_YOU_MISSILE
                                                      : KILL_MON_MISSILE;
@@ -214,7 +217,7 @@ static void _setup_haemoclasm_explosion(bolt& beam, const monster& origin)
     beam.colour      = RED;
     beam.tile_explode= TILE_BOLT_HAEMOCLASM;
     beam.ex_size     = 1;
-    beam.source_name = origin.name(DESC_PLAIN, true);
+    beam.source_name = name_for_storage(origin, DESC_PLAIN, true);
     beam.thrower     = KILL_YOU_MISSILE;
     beam.source_id   = MID_PLAYER;
 }
@@ -398,7 +401,7 @@ bool explode_monster(monster* mons, killer_type killer, bool pet_kill)
         if (agent && agent->is_player())
             mons_add_blame(mons, "hexed by the player character");
         else if (agent)
-            mons_add_blame(mons, "hexed by " + agent->name(DESC_A, true));
+            mons_add_blame(mons, "hexed by " + name_for_storage(*agent, DESC_A, true));
         mons->flags    |= MF_EXPLODE_KILL;
         sanct_msg       = make_stringf(T_("By Zin's power, the %s is contained."), T_("fiery explosion"));
         beam.aux_source = "ignited by their inner flame";

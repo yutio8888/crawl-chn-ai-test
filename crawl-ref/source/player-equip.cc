@@ -2613,6 +2613,8 @@ static void _handle_regen_item_equip(const item_def& item)
                                          : eq_slot == SLOT_AMULET
                                          ? T_("amulet")
                                          : lowercase_string(equip_slot_name(eq_slot, true));
+    if (is_artefact(item) && item.is_identified())
+        item_name = quote_special_name(item_name);
 
 #if TAG_MAJOR_VERSION == 34
     if (regen_hp && !regen_mp && you.get_mutation_level(MUT_NO_REGENERATION))

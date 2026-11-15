@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "english.h"
 
 #include "ouch.h"
 
@@ -203,7 +204,7 @@ int check_your_resists(int hurted, beam_type flavour, string source,
                 beam->agent(true)->as_monster()->has_ench(ENCH_CONCENTRATE_VENOM))
             {
                 curare_actor(beam->agent(), &you, "concentrated venom",
-                             beam->agent(true)->name(DESC_PLAIN), pois);
+                             name_for_storage(*beam->agent(true), DESC_PLAIN), pois);
             }
             else
             {

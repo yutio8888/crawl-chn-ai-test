@@ -1061,7 +1061,7 @@ class ShopEntry : public InvEntry
                                                   YELLOW;
         const string keystr = colour_to_str(keycol);
         const string itemstr =
-            colour_to_str(menu_colour(text, item_prefix(*item, false), tag, false));
+            colour_to_str(menu_colour(unquoted_text, item_prefix(*item, false), tag, false));
         const int owned = shop_owned_consumable_count(*item);
         const string ownedstr =
             owned > 0 ? make_stringf(T_(" (owned: %d)"), owned) : "";
@@ -2513,6 +2513,7 @@ void ShoppingList::fill_out_menu(Menu& shopmenu)
             const item_def &item = get_thing_item(thing);
 
             const string colprf = item_prefix(item, false);
+            ScopedUnquotedNames unquoted_colour;
             const int col = menu_colour(item.name(DESC_A),
                                         colprf, "shop", false);
 
@@ -2804,5 +2805,6 @@ string ShoppingList::describe_thing(const CrawlHashTable& thing,
 // Item name without inscription.
 string ShoppingList::item_name_simple(const item_def& item, bool ident)
 {
+    ScopedUnquotedNames unquoted;
     return item.name(DESC_PLAIN, false, ident, false, false);
 }

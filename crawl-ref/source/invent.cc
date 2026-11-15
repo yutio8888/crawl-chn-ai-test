@@ -20,6 +20,7 @@
 #include "database.h"
 #include "describe.h"
 #include "env.h"
+#include "english.h"
 #include "evoke.h"
 #include "god-item.h"
 #include "god-passive.h"
@@ -81,15 +82,19 @@ InvEntry::InvEntry(const item_def &i)
     // use the const item in this class whenever possible
     data = const_cast<item_def *>(item);
 
-    if (in_inventory(i) && i.base_type != OBJ_GOLD)
+    const auto entry_name = [&i]() {
+        // Inventory prefixes are ASCII ("a - "); strip only that UI prefix.
+        return in_inventory(i) && i.base_type != OBJ_GOLD
+            ? i.name(DESC_INVENTORY_EQUIP, false).substr(4)
+            : i.name(DESC_A, false);
+    };
+    text = entry_name();
+    unquoted_text = text;
+    if (Options.language == lang_t::ZH && is_artefact(i) && i.is_identified())
     {
-        // We need to do this in order to get the 'wielded' annotation.
-        // We then toss out the first four characters, which look
-        // like this: "a - ". Ow. FIXME.
-        text = i.name(DESC_INVENTORY_EQUIP, false).substr(4);
+        ScopedUnquotedNames unquoted;
+        unquoted_text = entry_name();
     }
-    else
-        text = i.name(DESC_A, false);
 
     if (i.base_type != OBJ_GOLD && in_inventory(i))
         add_hotkey(i.slot);
@@ -101,9 +106,16 @@ InvEntry::InvEntry(const item_def &i)
     quantity = i.quantity;
 }
 
+string InvEntry::_get_unquoted_text() const
+{
+    const string label = get_text();
+    return text == unquoted_text ? label : replace_all(label, text, unquoted_text);
+}
+
 int InvEntry::highlight_colour(bool temp) const
 {
-    return menu_colour(get_text(), item_prefix(*item, temp), tag, false);
+    return menu_colour(_get_unquoted_text(),
+                       item_prefix(*item, temp), tag, false);
 }
 
 const string &InvEntry::get_basename() const
@@ -179,7 +191,7 @@ void InvEntry::select(int qty)
 
 string InvEntry::get_filter_text() const
 {
-    return item_prefix(*item, false) + " " + get_text()
+    return item_prefix(*item, false) + " " + _get_unquoted_text()
            + " " + item_english_name(*item);
 }
 

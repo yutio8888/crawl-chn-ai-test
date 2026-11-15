@@ -5181,7 +5181,7 @@ bool miasma_player(actor *who, string source_aux)
     }
 
     bool success = poison_player(5 + roll_dice(3, 12),
-                                 who ? who->name(DESC_A) : "",
+                                 who ? name_for_storage(*who, DESC_A) : "",
                                  source_aux);
 
     if (one_chance_in(3))
@@ -7788,7 +7788,7 @@ monster_type player::mons_species(bool /*zombie_base*/) const
 
 bool player::poison(actor *agent, int amount, bool force)
 {
-    return ::poison_player(amount, agent? agent->name(DESC_A, true) : "", "",
+    return ::poison_player(amount, agent ? name_for_storage(*agent, DESC_A, true) : "", "",
                            force);
 }
 
@@ -7985,13 +7985,13 @@ void player::paralyse(const actor *who, int str, string source)
 
     const bool use_actor_name = source.empty() && who != nullptr;
     if (use_actor_name)
-        source = who->name(DESC_A);
+        source = name_for_storage(*who, DESC_A);
 
     if (!source.empty())
     {
         take_note(Note(NOTE_PARALYSIS, you.duration[DUR_PARALYSIS], 0, source));
         // use the real name here even for invisible monsters
-        props[DISABLED_BY_KEY] = use_actor_name ? who->name(DESC_A, true)
+        props[DISABLED_BY_KEY] = use_actor_name ? name_for_storage(*who, DESC_A, true)
                                                : source;
     }
     else
@@ -8022,7 +8022,7 @@ void player::petrify(const actor *who, bool force)
     duration[DUR_PETRIFYING] = 30 + you.time_taken;
 
     if (who)
-        props[DISABLED_BY_KEY] = who->name(DESC_A, true);
+        props[DISABLED_BY_KEY] = name_for_storage(*who, DESC_A, true);
     else
         props.erase(DISABLED_BY_KEY);
 
@@ -8070,13 +8070,13 @@ bool player::vex(const actor* who, int dur, string source, string special_msg)
     if (use_actor_name)
     {
         ScopedLangEn canonical_language;
-        source = who->name(DESC_A);
+        source = name_for_storage(*who, DESC_A);
     }
     if (!source.empty())
     {
         take_note(Note(NOTE_VEXED, dur, 0, source));
         ScopedLangEn canonical_language;
-        props[DISABLED_BY_KEY] = use_actor_name ? who->name(DESC_A, true)
+        props[DISABLED_BY_KEY] = use_actor_name ? name_for_storage(*who, DESC_A, true)
                                                : source;
     }
     else
@@ -8640,7 +8640,7 @@ void player::put_to_sleep(actor* source, int dur, bool hibernate)
     }
 
     if (source)
-        props[DISABLED_BY_KEY] = source->name(DESC_A, true).c_str();
+        props[DISABLED_BY_KEY] = name_for_storage(*source, DESC_A, true).c_str();
     else
         props.erase(DISABLED_BY_KEY);
 
@@ -9071,7 +9071,7 @@ bool player::floodify(const actor* attacker, int dur, const char* substance)
     props[WATER_HOLDER_KEY].get_int() = attacker->mid;
     {
         const ScopedLangEn english;
-        props[WATER_HOLDER_NAME_KEY] = attacker->name(DESC_A, true);
+        props[WATER_HOLDER_NAME_KEY] = name_for_storage(*attacker, DESC_A, true);
     }
 
     mprf(MSGCH_WARN, T_("%s floods into your lungs!"), C_("flood substance", substance));

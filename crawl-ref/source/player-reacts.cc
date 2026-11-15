@@ -4,6 +4,7 @@
  **/
 
 #include "AppHdr.h"
+#include "english.h"
 
 #include "player-reacts.h"
 
@@ -1278,9 +1279,12 @@ void maybe_attune_regen_items()
             else if (!gained_mana_regen && is_mana_regen_item(arm))
                 gained_mana_regen = true;
 
-            eq_list.push_back(is_artefact(arm) ? get_artefact_name(arm) :
+            string name = is_artefact(arm) ? get_artefact_name(arm) :
                 entry.slot == SLOT_AMULET ? T_("amulet") :
-                    lowercase_string(equip_slot_name(entry.slot, true)));
+                    lowercase_string(equip_slot_name(entry.slot, true));
+            if (is_artefact(arm) && arm.is_identified())
+                name = quote_special_name(name);
+            eq_list.push_back(name);
 
             if (entry.slot == SLOT_BOOTS || entry.slot == SLOT_GLOVES)
                 plural = true;

@@ -602,12 +602,12 @@ void record_monster_defeat(const monster* mons, killer_type killer)
     if (mons->is_named() && mons->friendly()
         && !mons_is_hepliaklqana_ancestor(mons->type))
     {
-        take_note(Note(NOTE_ALLY_DEATH, 0, 0, mons->name(DESC_PLAIN, true)));
+        take_note(Note(NOTE_ALLY_DEATH, 0, 0, name_for_storage(*mons, DESC_PLAIN, true)));
     }
     else if (mons_is_notable(*mons))
     {
         take_note(Note(NOTE_DEFEAT_MONSTER, mons->type, mons->friendly(),
-                       mons->full_name(DESC_A).c_str(),
+                       full_name_for_storage(*mons, DESC_A).c_str(),
                        _milestone_kill_verb(killer).c_str()));
     }
     if (mons->type == MONS_PLAYER_GHOST)
@@ -623,7 +623,7 @@ void record_monster_defeat(const monster* mons, killer_type killer)
         mark_milestone("uniq",
                        _milestone_kill_verb(killer)
                        + " "
-                       + mons->name(DESC_THE, true)
+                       + name_for_storage(*mons, DESC_THE, true)
                        + ".");
     }
 }
@@ -996,7 +996,7 @@ static bool _blorkula_bat_split(monster& blorkula, killer_type ktype)
             bat->props[MONSTER_TILE_KEY] = (int)bat_colours[i];
 #endif
             saved_blork.write_to_prop(bat->props[SAVED_BLORKULA_KEY].get_vector());
-            mons_add_blame(bat, "manifested out of " + blorkula.name(DESC_A, true));
+            mons_add_blame(bat, "manifested out of " + name_for_storage(blorkula, DESC_A, true));
             bat->flags |= (MF_NO_REWARD | MF_WAS_IN_VIEW);
             placed_bat = true;
             if (is_vengeance_target)
@@ -1662,7 +1662,7 @@ static void _make_derived_monster(monster* mons, bool quiet,
     {
         const auto agent = mons->get_ench(ENCH_BOUND_SOUL).agent();
         if (agent)
-            agent_name = agent->as_monster()->full_name(DESC_A);
+            agent_name = full_name_for_storage(*agent->as_monster(), DESC_A);
     }
 
     const string message = quiet ? "" :
@@ -1784,7 +1784,7 @@ static void _protean_explosion(monster* mons)
             child->foe = mons->foe;
             child->behaviour = BEH_SEEK;
 
-            mons_add_blame(child, "spawned from " + mons->name(DESC_A, true), true);
+            mons_add_blame(child, "spawned from " + name_for_storage(*mons, DESC_A, true), true);
 
             // Make each one shift a little later than the last
             delay += random_range(1, 2) * BASELINE_DELAY;
@@ -3999,7 +3999,7 @@ int dismiss_monsters(string pattern)
             && (mobile ? !mons_class_is_stationary(mi->type) :
                 harmful ? mons_is_threatening(**mi) && !mi->wont_attack() :
                 los ? you.see_cell(mi->pos())
-                : tpat.empty() || tpat.matches(mi->name(DESC_PLAIN, true))))
+                : tpat.empty() || tpat.matches(name_for_storage(**mi, DESC_PLAIN, true))))
         {
             if (!keep_item)
                 _vanish_orig_eq(*mi);
@@ -4014,7 +4014,7 @@ int dismiss_monsters(string pattern)
     bool removed_lurker = false;
     for (int i = env.lurkers.size() - 1; i >= 0; --i)
     {
-        if (tpat.empty() || tpat.matches(env.lurkers[i].mon.mons.name(DESC_PLAIN, true)))
+        if (tpat.empty() || tpat.matches(name_for_storage(env.lurkers[i].mon.mons, DESC_PLAIN, true)))
         {
             ++ndismissed;
             env.lurkers.erase(env.lurkers.begin() + i);
@@ -4314,8 +4314,8 @@ void elven_twin_died(monster* twin, bool in_transit, killer_type killer, int kil
     // Will generate strings such as 'Duvessa_Duvessa_dies' or, alternately
     // 'Dowan_Dowan_dies', but as neither will match, these can safely be
     // ignored.
-    string key = mons->name(DESC_THE, true) + "_"
-                 + twin->name(DESC_THE, true) + "_dies_";
+    string key = name_for_storage(*mons, DESC_THE, true) + "_"
+                 + name_for_storage(*twin, DESC_THE, true) + "_dies_";
 
     if (you.see_cell(mons->pos()))
     {

@@ -1442,10 +1442,10 @@ void scorefile_entry::init_death_cause(int dam, mid_t dsrc,
         // Capture both representations while the source still exists. Only the
         // canonical value reaches xlog; the owning ZH snapshot is display-only.
         const auto source_name = [&]() {
-            string name = mons->name(desc, death);
+            string name = name_for_storage(*mons, desc, death);
 
             if (death || you.can_see(*mons))
-                name = mons->full_name(desc);
+                name = full_name_for_storage(*mons, desc);
 
             if (mons_is_player_shadow(*mons))
                 name = T_("their own shadow"); // heh

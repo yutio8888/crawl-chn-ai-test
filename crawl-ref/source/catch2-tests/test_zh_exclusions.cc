@@ -10,6 +10,7 @@
 #include "lang-en-guard.h"
 #include "stringutil.h"
 #include "mon-util.h"
+#include "monster.h"
 #include "player.h"
 #include "tags.h"
 #include "travel.h"
@@ -18,6 +19,7 @@
 
 extern map<level_id, string> level_exclusions;
 extern map<level_id, string> level_annotations;
+extern map<level_id, string> level_uniques;
 extern set<pair<string, level_id>> auto_unique_annotations;
 
 TEST_CASE_METHOD(ZhTranslationFixture,
@@ -148,4 +150,52 @@ TEST_CASE("Experience progress stays bounded during pending level-ups",
     }
     you.experience_level = you.get_max_xl();
     CHECK(get_exp_progress() == 0);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "special names: unique annotation identities survive production save and removal",
+                 "[zh-translation][special-name-quotes][exclusions]")
+{
+    init_monsters();
+    unwind_var<player> player_state(you);
+    you.where_are_you = BRANCH_DUNGEON;
+    you.depth = 3;
+    unwind_var<set<pair<string, level_id>>> uniques(auto_unique_annotations, {});
+    unwind_var<map<level_id, string>> cached(level_uniques, {});
+    unwind_var<map<level_id, string>> notes(level_annotations, {});
+    unwind_var<map<level_id, string>> exclusions(level_exclusions, {});
+    monster sigmund;
+    sigmund.type = MONS_SIGMUND;
+    const level_id level = level_id::current();
+    set_unique_annotation(&sigmund, level);
+    REQUIRE(auto_unique_annotations.size() == 1);
+    CHECK(auto_unique_annotations.begin()->first == "西格蒙德");
+    CHECK(level_uniques[level] == "西格蒙德");
+    CHECK(get_level_annotation(level, true) == "「西格蒙德」");
+    CHECK(level_uniques[level] == "西格蒙德");
+    vector<unsigned char> bytes;
+    writer output(&bytes);
+    marshallUniqueAnnotations(output);
+    auto_unique_annotations.clear();
+    reader input(bytes);
+    input.setMinorVersion(TAG_MINOR_VERSION);
+    unmarshallUniqueAnnotations(input);
+    REQUIRE(auto_unique_annotations.size() == 1);
+    CHECK(auto_unique_annotations.begin()->first == "西格蒙德");
+    exclude_set source;
+    source.add_exclude(coord_def(10, 10), 0, false, "Sigmund");
+    source.add_exclude(coord_def(11, 10), 0, false, "西格蒙德");
+    CHECK(source.get_exclusion_desc(level).empty());
+    CHECK(source.get_exclusion_desc(level, true).empty());
+    remove_unique_annotation(&sigmund);
+    CHECK(auto_unique_annotations.empty());
+    CHECK(level_uniques.count(level) == 0);
+    CHECK_FALSE(source.get_exclusion_desc(level).empty());
+    // The historical raw entry follows the same production removal path.
+    auto_unique_annotations.emplace("西格蒙德", level);
+    level_uniques[level] = "西格蒙德";
+    set_unique_annotation(&sigmund, level);
+    REQUIRE(auto_unique_annotations.size() == 1);
+    remove_unique_annotation(&sigmund);
+    CHECK(auto_unique_annotations.empty());
 }

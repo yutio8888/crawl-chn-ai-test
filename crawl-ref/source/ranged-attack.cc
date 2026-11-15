@@ -674,7 +674,7 @@ bool ranged_attack::apply_missile_brand()
     case SPMSL_CURARE:
         obvious_effect = curare_actor(attacker, defender,
                                       proj_name,
-                                      attacker->name(DESC_A));
+                                      name_for_storage(*attacker, DESC_A));
         break;
     case SPMSL_CHAOS:
         obvious_effect = chaos_affects_actor(defender, attacker);
@@ -717,7 +717,7 @@ bool ranged_attack::apply_missile_brand()
             you.duration[DUR_BLINKITIS] = random_range(30, 40);
             {
                 ScopedLangEn canonical_language;
-                you.props[BLINKITIS_SOURCE_KEY] = attacker->name(DESC_A, true);
+                you.props[BLINKITIS_SOURCE_KEY] = name_for_storage(*attacker, DESC_A, true);
             }
             you.props[BLINKITIS_AUX_KEY] = proj_name_en;
         }

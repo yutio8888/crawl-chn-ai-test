@@ -1114,13 +1114,36 @@ string monster_info::db_name() const
     return get_monster_data(type)->name;
 }
 
+bool monster_info::has_special_display_name() const
+{
+    return mons_is_unique(type)
+        || (!mname.empty() && (type == MONS_PANDEMONIUM_LORD
+                              || type == MONS_PLAYER_GHOST
+                              || type == MONS_PLAYER_ILLUSION));
+}
+
 string monster_info::title_name() const
 {
     // A database title must not hide the upstream visibility qualifier.
     if (invisible_to_player())
         return full_name(DESC_PLAIN);
-    const string title = getMiscString(db_name() + " title");
-    return title.empty() ? full_name(DESC_PLAIN) : title;
+    return title_name(getMiscString(db_name() + " title"));
+}
+
+string monster_info::title_name(const string &title) const
+{
+    if (title.empty())
+        return full_name(DESC_PLAIN);
+    if (Options.language != lang_t::ZH || !has_special_display_name())
+        return title;
+    // Titles can include narrative qualifiers ("the dreaded Sigmund").
+    // Decorate only the actual name, preserving the surrounding title text.
+    const string name = _core_name();
+    const auto pos = title.find(name);
+    if (name.empty() || pos == string::npos)
+        return title;
+    return title.substr(0, pos) + quote_special_name(name)
+        + title.substr(pos + name.size());
 }
 
 string monster_info::_core_name() const
@@ -1361,6 +1384,8 @@ string monster_info::_apply_adjusted_description(description_level_type desc,
 string monster_info::common_name(description_level_type desc) const
 {
     const string core = _core_name();
+    const string display_core = has_special_display_name()
+        ? quote_special_name(core) : core;
     const bool nocore = mons_class_is_derived(type)
                           && mons_is_unique(base_type)
                           // XXX: Hack to keep zombified Gehenna SoH's name.
@@ -1428,7 +1453,7 @@ string monster_info::common_name(description_level_type desc) const
     }
 
     if (!nocore)
-        ss << core;
+        ss << display_core;
 
     // Add suffixes.
     const char* const hydra_suffix_sep =
@@ -1497,12 +1522,13 @@ string monster_info::common_name(description_level_type desc) const
         }
     }
 
+    const string display = ss.str();
     string s;
     // only respect unqualified if nothing was added ("Sigmund" or "The spectral Sigmund")
-    if (!is(MB_NAME_UNQUALIFIED) || has_proper_name() || ss.str() != core)
-        s = _apply_adjusted_description(desc, ss.str());
+    if (!is(MB_NAME_UNQUALIFIED) || has_proper_name() || ss.str() != display_core)
+        s = _apply_adjusted_description(desc, display);
     else
-        s = ss.str();
+        s = display;
 
     if (desc == DESC_ITS)
         s = apostrophise(s);
@@ -1525,10 +1551,12 @@ string monster_info::proper_name(description_level_type desc) const
 {
     if (has_proper_name())
     {
+        const string display = has_special_display_name()
+            ? quote_special_name(mname) : mname;
         if (desc == DESC_ITS)
-            return apostrophise(mname);
+            return apostrophise(display);
         else
-            return mname;
+            return display;
     }
     else
         return common_name(desc);
@@ -1541,9 +1569,32 @@ string monster_info::full_name(description_level_type desc) const
 
     if (has_proper_name())
     {
-        const string common = common_name();
+        string common;
+        if (has_special_display_name())
+        {
+            ScopedUnquotedNames unquoted;
+            common = common_name();
+        }
+        else
+            common = common_name();
+        string prefix;
+        // Retain temporary qualifiers outside a compound proper name too.
+        if (Options.language == lang_t::ZH && has_special_display_name())
+        {
+            const string core = _core_name();
+            const auto pos = quote_special_name(core) == core
+                ? string::npos : common.find(core);
+            if (!core.empty() && pos != string::npos)
+            {
+                prefix = common.substr(0, pos);
+                common.erase(0, pos);
+            }
+        }
         string s = make_stringf_p(C_("monster full name", "%1$s the %2$s"),
                                  mname.c_str(), common.c_str());
+        if (has_special_display_name())
+            s = quote_special_name(s);
+        s = prefix + s;
         if (desc == DESC_ITS)
             s = apostrophise(s);
         return s;
@@ -1683,7 +1734,8 @@ string monster_info::pluralised_name(bool fullname) const
             && !is(MB_NAME_REPLACE))
 
     {
-        return pluralise_monster(mons_type_name(type, DESC_PLAIN));
+        const string name = pluralise_monster(mons_type_name(type, DESC_PLAIN));
+        return has_special_display_name() ? quote_special_name(name) : name;
     }
     else
         return pluralise_monster(common_name());

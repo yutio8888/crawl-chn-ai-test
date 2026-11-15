@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "english.h"
 
 #include "mon-clone.h"
 
@@ -31,7 +32,7 @@
 static string _monster_clone_id_for(monster* mons)
 {
     return make_stringf("%s%d",
-                        mons->name(DESC_PLAIN, true).c_str(),
+                        name_for_storage(*mons, DESC_PLAIN, true).c_str(),
                         you.num_turns);
 }
 
@@ -97,7 +98,7 @@ static void _mons_summon_monster_illusion(monster* caster,
         clone->props[CLONE_REPLICA_KEY] = clone_id;
         foe->props[CLONE_PRIMARY_KEY] = clone_id;
         mons_add_blame(clone,
-                       "woven by " + caster->name(DESC_THE));
+                       "woven by " + name_for_storage(*caster, DESC_THE));
         if (!clone->has_ench(ENCH_SUMMON_TIMER))
             clone->mark_summoned(MON_SUMM_CLONE, summ_dur(6), true, true);
         // If isn't very ambiguous if a monster makes a hostile clone out of a
