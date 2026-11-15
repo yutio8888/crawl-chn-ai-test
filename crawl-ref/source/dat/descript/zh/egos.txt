@@ -101,7 +101,7 @@ reaping (reap) weapon ego
 %%%%
 rebuke (rebuke) weapon ego
 
-如果使用者的上一个动作是近战攻击，它会为穿戴者提供护盾（+10 SH），
+如果使用者的上一个动作是近战攻击，它会为使用者提供护盾（+10 SH），
 并将格挡的近战攻击转向附近的其他敌人。
 %%%%
 spectralising (spect) weapon ego
