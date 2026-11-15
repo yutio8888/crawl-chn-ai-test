@@ -28566,7 +28566,7 @@ amulet of the Four Winds
 四方之风项链
 %%%%
 arbalest "Damnation"
-重弩"天谴"
+「天谴」重弩
 %%%%
 arc blade
 电弧之刃
@@ -28620,7 +28620,7 @@ cutlass
 弯刀
 %%%%
 dagger "Morg"
-匕首"莫尔格"
+「莫尔格」匕首
 %%%%
 dagger of Chilly Death
 寒冷死亡之匕首
@@ -28629,16 +28629,16 @@ dark maul
 黑暗战锤
 %%%%
 demon blade "Bloodbane"
-恶魔之刃"血祸"
+「血祸」恶魔之刃
 %%%%
 demon blade "Leech"
-恶魔之刃"吸血者"
+「吸血者」恶魔之刃
 %%%%
 demon trident "Rift"
-恶魔三叉戟"裂痕"
+「裂痕」恶魔三叉戟
 %%%%
 demon whip "Spellbinder"
-恶魔之鞭"缚法者"
+「缚法者」恶魔之鞭
 %%%%
 dragonskin cloak
 龙皮斗篷
@@ -28650,7 +28650,7 @@ dreamshard necklace
 梦碎项链
 %%%%
 eveningstar "Brilliance"
-暮星锤"光辉"
+「光辉」暮星锤
 %%%%
 faerie dragon scales
 仙灵龙鳞甲
@@ -28662,7 +28662,7 @@ flamberge
 焰形剑
 %%%%
 frozen axe "Frostbite"
-冰封之斧"冻伤"
+「冻伤」冰封之斧
 %%%%
 fungal fisticloak
 真菌拳斗篷
@@ -28671,7 +28671,7 @@ gauntlets of War
 战争护手
 %%%%
 giant club "Skullcrusher"
-巨棒"碎颅者"
+「碎颅者」巨棒
 %%%%
 glaive of Prune
 梅干长柄刀
@@ -28683,19 +28683,19 @@ gloves of the gadgeteer
 机关师手套
 %%%%
 great mace "Firestarter"
-巨型钉头锤"纵火者"
+「纵火者」巨型钉头锤
 %%%%
 great mace "Undeadhunter"
-巨型钉头锤"亡灵猎人"
+「亡灵猎人」巨型钉头锤
 %%%%
 greatsling
 巨投石索
 %%%%
 greatsling "Punk"
-巨投石索"庞克"
+「庞克」巨投石索
 %%%%
 hand cannon "Mule"
-手炮"骡子"
+「骡子」手炮
 %%%%
 hat of Pondering
 沉思之帽
@@ -28713,7 +28713,7 @@ heavy crossbow
 重弩
 %%%%
 heavy crossbow "Sniper"
-重弩"狙击手"
+「狙击手」重弩
 %%%%
 hood of the Assassin
 刺客兜帽
@@ -28740,16 +28740,16 @@ lance
 骑枪
 %%%%
 lance "Wyrmbane"
-骑枪"屠龙者"
+「屠龙者」骑枪
 %%%%
 lightning scales
 闪电鳞甲
 %%%%
 longbow "Piercer"
-长弓"穿透者"
+「穿透者」长弓
 %%%%
 longbow "Zephyr"
-长弓"西风"
+「西风」长弓
 %%%%
 macabre finger necklace
 骇人指骨项链
@@ -28764,13 +28764,13 @@ maul
 战锤
 %%%%
 mithril axe "Arga"
-秘银斧"阿尔加"
+「阿尔加」秘银斧
 %%%%
 moon troll leather armour
 月之巨魔皮甲
 %%%%
 morningstar "Eos"
-晨星锤"厄俄斯"
+「厄俄斯」晨星锤
 %%%%
 mountain boots
 山岳之靴
@@ -28857,7 +28857,7 @@ scythe
 镰刀
 %%%%
 scythe "Finisher"
-镰刀"终结者"
+「终结者」镰刀
 %%%%
 scythe of Curses
 诅咒之镰
@@ -28875,7 +28875,7 @@ shillelagh
 橡木棍
 %%%%
 shillelagh "Devastator"
-橡木棍"毁灭者"
+「毁灭者」橡木棍
 %%%%
 skin of Zhor
 佐尔之皮
@@ -28917,10 +28917,10 @@ sword of the Dread Knight
 恐惧骑士之剑
 %%%%
 toga "Victory"
-托加袍"胜利"
+「胜利」托加袍
 %%%%
 tower shield "Bullseye"
-塔盾"靶心"
+「靶心」塔盾
 %%%%
 tower shield of Ignorance
 无知塔盾
@@ -28929,13 +28929,13 @@ trident of the Octopus King
 章鱼王的三叉戟
 %%%%
 trishula "Condemnation"
-三叉戟"天罚"
+「天罚」三叉戟
 %%%%
 warlock's mirror
 术士之镜
 %%%%
 whip "Snakebite"
-鞭子"蛇咬"
+「蛇咬」鞭子
 %%%%
 woodcutter's axe
 伐木工之斧

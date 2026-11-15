@@ -7,6 +7,7 @@ import hashlib
 import importlib.util
 import io
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -155,6 +156,33 @@ def quality_m1_fixture():
 
 
 class ItemNameInventoryAuditTest(unittest.TestCase):
+    def test_approved_unrand_word_order_preserves_historical_decisions(self):
+        source = MODULE.source_entries(MODULE.ZH_SOURCE_DIR)
+        baseline = MODULE.source_entries_at_revision(
+            MODULE.ZH_SOURCE_DIR, MODULE.ISSUE29_REVIEW_BASE)
+        descriptions = {entry.canonical_key: entry.value for entry in
+                        MODULE.textdb_rows(MODULE.SRC / "dat/descript/zh/unrand.txt")}
+        original_order = dict(source)
+        reordered = []
+        for key in MODULE.UNRAND_NAME_ORDER_KEYS:
+            name = source.get(key, "")
+            match = re.fullmatch(r"「([^」]+)」([^「」]+)", name)
+            if match:
+                original_order[key] = f'{match[2]}"{match[1]}"'
+                reordered.append(key)
+        self.assertTrue(reordered)
+        before = MODULE.unrand_rows(descriptions, original_order, {}, baseline,
+                                    MODULE.ISSUE29_REVIEW_BASE)
+        after = MODULE.unrand_rows(descriptions, source, {}, baseline,
+                                   MODULE.ISSUE29_REVIEW_BASE)
+        self.assertEqual([(r["identity"], r["_conclusion"]) for r in before],
+                         [(r["identity"], r["_conclusion"]) for r in after])
+        # Reordering is allowed, changing the epithet is still rejected.
+        source['arbalest "damnation"'] = "「unreviewed」重弩"
+        with self.assertRaisesRegex(RuntimeError, "conclusion boundary drift"):
+            MODULE.unrand_rows(descriptions, source, {}, baseline,
+                               MODULE.ISSUE29_REVIEW_BASE)
+
     def test_source_entries_match_localized_sourcedb_semantics(self):
         with tempfile.TemporaryDirectory() as directory:
             source_dir = Path(directory)

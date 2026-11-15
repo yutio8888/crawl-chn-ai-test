@@ -1,0 +1,798 @@
+{
+  "branch_line": "stable",
+  "decision": "D-C-120",
+  "approval": "2026-11-15 maintainer scheme A",
+  "entries": [
+    {
+      "key": "arbalest \"Damnation\"",
+      "before": "重弩\"天谴\"",
+      "after": "「天谴」重弩",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28569,
+          "before": "重弩\"天谴\"",
+          "after": "「天谴」重弩"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 160,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 548
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "athame \"Fimbulwinter\"",
+      "disposition": "not_applicable",
+      "reason": "本线 art-data.txt 未定义该英文名称；不新增不存在的神器/翻译键",
+      "definition": []
+    },
+    {
+      "key": "dagger \"Morg\"",
+      "before": "匕首\"莫尔格\"",
+      "after": "「莫尔格」匕首",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28623,
+          "before": "匕首\"莫尔格\"",
+          "after": "「莫尔格」匕首"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 118,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 460
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "demon blade \"Bloodbane\"",
+      "before": "恶魔之刃\"血祸\"",
+      "after": "「血祸」恶魔之刃",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28632,
+          "before": "恶魔之刃\"血祸\"",
+          "after": "「血祸」恶魔之刃"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 83,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 392
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "demon blade \"Leech\"",
+      "before": "恶魔之刃\"吸血者\"",
+      "after": "「吸血者」恶魔之刃",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28635,
+          "before": "恶魔之刃\"吸血者\"",
+          "after": "「吸血者」恶魔之刃"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 106,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 431
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "demon trident \"Rift\"",
+      "before": "恶魔三叉戟\"裂痕\"",
+      "after": "「裂痕」恶魔三叉戟",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28638,
+          "before": "恶魔三叉戟\"裂痕\"",
+          "after": "「裂痕」恶魔三叉戟"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 603,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 1573
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "demon whip \"Spellbinder\"",
+      "before": "恶魔之鞭\"缚法者\"",
+      "after": "「缚法者」恶魔之鞭",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28641,
+          "before": "恶魔之鞭\"缚法者\"",
+          "after": "「缚法者」恶魔之鞭"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 523,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 1375
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "eveningstar \"Brilliance\"",
+      "before": "暮星锤\"光辉\"",
+      "after": "「光辉」暮星锤",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28653,
+          "before": "暮星锤\"光辉\"",
+          "after": "「光辉」暮星锤"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 95,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 419
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "frozen axe \"Frostbite\"",
+      "before": "冰封之斧\"冻伤\"",
+      "after": "「冻伤」冰封之斧",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28665,
+          "before": "冰封之斧\"冻伤\"",
+          "after": "「冻伤」冰封之斧"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 580,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 1509
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "giant club \"Skullcrusher\"",
+      "before": "巨棒\"碎颅者\"",
+      "after": "「碎颅者」巨棒",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28674,
+          "before": "巨棒\"碎颅者\"",
+          "after": "「碎颅者」巨棒"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 143,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 510
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "giant spiked club \"Carina at Dusk\"",
+      "disposition": "not_applicable",
+      "reason": "本线 art-data.txt 未定义该英文名称；不新增不存在的神器/翻译键",
+      "definition": []
+    },
+    {
+      "key": "great mace \"Firestarter\"",
+      "before": "巨型钉头锤\"纵火者\"",
+      "after": "「纵火者」巨型钉头锤",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28686,
+          "before": "巨型钉头锤\"纵火者\"",
+          "after": "「纵火者」巨型钉头锤"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 533,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 1402
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "great mace \"Undeadhunter\"",
+      "before": "巨型钉头锤\"亡灵猎人\"",
+      "after": "「亡灵猎人」巨型钉头锤",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28689,
+          "before": "巨型钉头锤\"亡灵猎人\"",
+          "after": "「亡灵猎人」巨型钉头锤"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 230,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 727
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "greatsling \"Punk\"",
+      "before": "巨投石索\"庞克\"",
+      "after": "「庞克」巨投石索",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28695,
+          "before": "巨投石索\"庞克\"",
+          "after": "「庞克」巨投石索"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 131,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 487
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "hand cannon \"Mule\"",
+      "before": "手炮\"骡子\"",
+      "after": "「骡子」手炮",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28698,
+          "before": "手炮\"骡子\"",
+          "after": "「骡子」手炮"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 717,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 1832
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "heavy crossbow \"Sniper\"",
+      "before": "重弩\"狙击手\"",
+      "after": "「狙击手」重弩",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28716,
+          "before": "重弩\"狙击手\"",
+          "after": "「狙击手」重弩"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 199,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 641
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "lance \"Wyrmbane\"",
+      "before": "骑枪\"屠龙者\"",
+      "after": "「屠龙者」骑枪",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28743,
+          "before": "骑枪\"屠龙者\"",
+          "after": "「屠龙者」骑枪"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 214,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 682
+        }
+      ],
+      "other_full_name_mentions": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 216,
+          "text": "“屠龙者”是一把对所有龙类致命的魔法骑枪。",
+          "disposition": "keep",
+          "reason": "独立专名与自然正文；无完整旧语序"
+        }
+      ]
+    },
+    {
+      "key": "longbow \"Piercer\"",
+      "before": "长弓\"穿透者\"",
+      "after": "「穿透者」长弓",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28749,
+          "before": "长弓\"穿透者\"",
+          "after": "「穿透者」长弓"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 205,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 656
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "longbow \"Zephyr\"",
+      "before": "长弓\"西风\"",
+      "after": "「西风」长弓",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28752,
+          "before": "长弓\"西风\"",
+          "after": "「西风」长弓"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 136,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 500
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "mithril axe \"Arga\"",
+      "before": "秘银斧\"阿尔加\"",
+      "after": "「阿尔加」秘银斧",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28767,
+          "before": "秘银斧\"阿尔加\"",
+          "after": "「阿尔加」秘银斧"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 190,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 615
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "morningstar \"Eos\"",
+      "before": "晨星锤\"厄俄斯\"",
+      "after": "「厄俄斯」晨星锤",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28773,
+          "before": "晨星锤\"厄俄斯\"",
+          "after": "「厄俄斯」晨星锤"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 175,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 574
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "scythe \"Finisher\"",
+      "before": "镰刀\"终结者\"",
+      "after": "「终结者」镰刀",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28860,
+          "before": "镰刀\"终结者\"",
+          "after": "「终结者」镰刀"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 123,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 472
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "shillelagh \"Devastator\"",
+      "before": "橡木棍\"毁灭者\"",
+      "after": "「毁灭者」橡木棍",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28878,
+          "before": "橡木棍\"毁灭者\"",
+          "after": "「毁灭者」橡木棍"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 472,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 1243
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "toga \"Victory\"",
+      "before": "托加袍\"胜利\"",
+      "after": "「胜利」托加袍",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28920,
+          "before": "托加袍\"胜利\"",
+          "after": "「胜利」托加袍"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 703,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 1796
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "tower shield \"Bullseye\"",
+      "before": "塔盾\"靶心\"",
+      "after": "「靶心」塔盾",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28923,
+          "before": "塔盾\"靶心\"",
+          "after": "「靶心」塔盾"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 279,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 833
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "trishula \"Condemnation\"",
+      "before": "三叉戟\"天罚\"",
+      "after": "「天罚」三叉戟",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28932,
+          "before": "三叉戟\"天罚\"",
+          "after": "「天罚」三叉戟"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 662,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 1691
+        }
+      ],
+      "other_full_name_mentions": []
+    },
+    {
+      "key": "whip \"Snakebite\"",
+      "before": "鞭子\"蛇咬\"",
+      "after": "「蛇咬」鞭子",
+      "disposition": "change",
+      "catalog_consumers": [
+        {
+          "file": "crawl-ref/source/dat/i18n/zh/source.txt",
+          "line": 28938,
+          "before": "鞭子\"蛇咬\"",
+          "after": "「蛇咬」鞭子"
+        }
+      ],
+      "description_keys": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 236,
+          "disposition": "keep",
+          "reason": "英文查询标题；正文的专名/类型无完整旧序列，保持自然叙述"
+        }
+      ],
+      "production_chain": "art-data.txt NAME -> get_artefact_name / get_unrand_name_en -> item_def::name；描述以英文键查询；查询/存档不改",
+      "definition": [
+        {
+          "file": "crawl-ref/source/art-data.txt",
+          "line": 738
+        }
+      ],
+      "other_full_name_mentions": []
+    }
+  ],
+  "keep": [
+    "英文 NAME / unrand enum / get_unrand_name_en 与 TextDB 查询标题",
+    "unrand 专属消息与正文的独立专名、所有格及普通类型叙述；不机械重排",
+    "Margery 的屠龙者称号",
+    "冻结历史与人工审查理由；旧存档显示快照不迁移"
+  ],
+  "display_boundary": "名称固有内引号用「」；未包裹显示「屠龙者」骑枪；#418 ZH 显示包装规范成「+8 『屠龙者』骑枪」；未知外观与英文均不变",
+  "glossary_sha256": "44a8629fed8e003b0311e35834c635f68d78af149ebfcd4124c9b9e6153c1232",
+  "shared_consumers": [
+    {
+      "file": "crawl-ref/source/artefact.cc",
+      "line": 1737,
+      "text": "string get_artefact_name(const item_def &item, bool force_known)"
+    },
+    {
+      "file": "crawl-ref/source/artefact.cc",
+      "line": 1761,
+      "text": "const char *get_unrand_name_en(const item_def &item)"
+    }
+  ],
+  "generated_ledger": "Current/adopted names and SourceDB dependencies; generated semantic_reason fields reflect display changes; historical terminal conclusions and glossary snapshot retained. Generator compares original word order solely for old review boundary; unapproved epithet edits remain rejected."
+}

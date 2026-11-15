@@ -301,7 +301,7 @@
 | lajatang | 双头杖 | weapon; decision=D-A-050 |
 | lance | 骑枪 | 神器武器类型及其战斗消息、描述、动作统计；与基础武器 spear → 长矛区分；不适用于 Force Lance 法术、lance of force 投射物或 living force lance；decision=D-B-023 |
 | spear | 长矛 | 基础武器；与神器类型 lance → 骑枪区分；decision=D-B-023 |
-| lance "Wyrmbane" | 骑枪"屠龙者" | 固定神器名称键；Wyrmbane 专名为“屠龙者”，消息与描述沿用；弃用“斩龙剑”；Margery 的称号“the Dragonslayer”也译为“屠龙者”（dat/database/zh/montitle.txt:204），与神器指称不同，属于有意保留的同名；decision=D-B-023 |
+| lance "Wyrmbane" | 「屠龙者」骑枪 | 固定神器名称键；Wyrmbane 专名为“屠龙者”，消息与描述沿用；弃用“斩龙剑”；Margery 的称号“the Dragonslayer”也译为“屠龙者”（dat/database/zh/montitle.txt:204），与神器指称不同，属于有意保留的同名；decision=D-B-023；语序按 D-C-120 |
 | old falchion | 旧弯刃剑 | legacy weapon key; decision=D-B-018 |
 | partisan | 阔头枪 | weapon; decision=D-B-018 |
 | `potion full name\|invisibility` | 隐形 | potion context key; decision=D-B-020 |
@@ -318,7 +318,7 @@
 | amulet of the Air | 空气项链 | unrand; decision=D-B-021 |
 | Eiolaiphi | 埃奥莱菲 | unrand lore proper name; decision=D-B-021 |
 | glaive of Prune | 梅干长柄刀 | unrand; `Prune` is the giant-prune transformation pun; decision=D-B-021 |
-| morningstar "Eos" | 晨星锤"厄俄斯" | unrand; decision=D-B-017/D-B-021 |
+| morningstar "Eos" | 「厄俄斯」晨星锤 | unrand; decision=D-B-017/D-B-021；语序按 D-C-120 |
 | Rutra | 鲁特拉 | unrand lore proper name; decision=D-B-021 |
 | St. Lee | 圣李 | unrand lore proper name; decision=D-B-021 |
 | sword of Cerebov | 塞雷波夫之剑 | unrand; follows unique name; decision=D-B-021 |
