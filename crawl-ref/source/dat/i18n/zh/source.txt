@@ -37348,6 +37348,9 @@ Detonate Monarch Bomb
 %8d %s the %s (level %d
 %8d %s，%s（等级%d
 %%%%
+%8d %s%s (level %d
+%8d %s，%s（等级%d
+%%%%
 %d (base %d)
 %d（基础%d）
 %%%%

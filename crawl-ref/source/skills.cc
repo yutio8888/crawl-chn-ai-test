@@ -3011,7 +3011,7 @@ string player_title_prefix(const string& title)
         return "";
 
     if (title == "Petite Mort")
-        return C_("title article", "La ");
+        return " " + C_("title article", "La ");
     else if (title == "Ex Machina")
         return " ";
     else if (title == "Hundred Blades")
@@ -3022,7 +3022,7 @@ string player_title_prefix(const string& title)
              || title.rfind("Who", 0) == 0)
         return C_("title article", ", ");
     else
-        return C_("title article", "the ");
+        return " " + C_("title article", "the ");
 }
 
 static string _title_with_article(const string& title, bool use_prefix)
@@ -3079,6 +3079,9 @@ string translated_ghost_title(const string& saved_title, species_type species)
         consider_skill(claw_and_tooth_titles[rank]);
     }
     for (const char* key : special_title_templates)
+        consider_skill(key);
+    // Xom's day-rotating titles are saved as English on ghosts too.
+    for (const char* key : xom_title)
         consider_skill(key);
     consider("Adventurer", T_("Adventurer"));
     for (const auto& title : god_title_translation_pairs(species))
