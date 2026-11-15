@@ -5045,3 +5045,15 @@ R19–R21 的全文检索确认项按消费者处理：MP 的恢复、储量、�
 - **Change**: SourceDB `hellion` 显示值改为“地狱魔”；通用怪物名称、所有格、复数、召唤／幻象组合及列表由同一名称入口派生，不另造英文键。
 - **Keep**: monsters.txt 的 hellion 正文未直称旧专名，保留已有天谴说明。未发现 database/zh、引文、vault/Lua 或测试中的独立中文旧名称消费者。hell knight、hellephant、hell hog、hellwing、普通“地狱”叙述均不改；英文键、MONS_HELLION、生成／查询／存档身份及旧显示快照不迁移。
 - **Ledger**: 严格台账只同步生成的当前名称事实；人工理由、历史证据与术语快照不作为新命名裁决改写。历史 keep 的命名意见由本决定取代，不删除原记录。
+
+
+### D-C-120 — 固定神器引号专名的中文语序
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-15
+- **Source**: 维护者批准方案 A：固定神器“类型+引号名”调整为“「名」类型”，与随机神器模板一致。
+- **Scope**: 仅归档清单中的现行固定神器名称显示值；保留专名和类型用词，不扩展至一般所有格神器或怪物称号。
+- **Consumers**: [逐条前后对照](archive/unrand-name-order-2026-11-15/README.md)与[消费者清单](archive/unrand-name-order-2026-11-15/consumers.json)。`art-data.txt` NAME 经 `get_artefact_name()` / `item_def::name()` 用中文名称显示；`get_unrand_name_en()` 及 unrand 描述标题保持英文查询键。glossary 已登记的同名行与 Wyrmbane 生产路径测试同步。
+- **Display**: 名称固有内引号采用 randname 的「」；无外层包装时为「屠龙者」骑枪，#418 中文包装层显示为「+8 『屠龙者』骑枪」。未知外观不显示真名；英文不变。现行中文名仍可搜索，不改变对象名存储结构或内部身份。
+- **Keep**: 专属消息与说明中的独立专名、自然类型叙述、Margery 的同名屠龙者称号、英文名称和存档身份均保留。历史决定及审查快照保留原文，本决定仅取代现行名称的语序。严格台账只由生成器同步必要字段。

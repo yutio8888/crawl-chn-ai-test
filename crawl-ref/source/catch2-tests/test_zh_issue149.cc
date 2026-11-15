@@ -1883,7 +1883,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(key == "lance \"Wyrmbane\"");
     const char *message = "<green>Wyrmbane glows as a worthy foe approaches.</green>";
     const char *skewer = "<green>The lance glows as it skewers %s.</green>";
-    CHECK(get_artefact_name(item) == "骑枪\"屠龙者\"");
+    CHECK(get_artefact_name(item) == "「屠龙者」骑枪");
     CHECK(string(T_(message)) == "<green>屠龙者在强大的敌人接近时发出光芒。</green>");
     CHECK(string(T_(skewer)) == "<green>骑枪刺穿%s时发出光芒。</green>");
     CHECK(getLongDescription(key).find("屠龙者") != string::npos);
