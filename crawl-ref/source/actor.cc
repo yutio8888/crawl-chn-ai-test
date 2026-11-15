@@ -1023,8 +1023,8 @@ void actor::collide(coord_def newpos, const actor *agent, int damage)
         if (other->is_monster() && !immune_other)
             behaviour_event(other->as_monster(), ME_WHACK, agent);
 
-        const string thisname = name(DESC_A, true);
-        const string othername = other->name(DESC_A, true);
+        const string thisname = name_for_storage(*this, DESC_A, true);
+        const string othername = name_for_storage(*other, DESC_A, true);
         if (other->alive() && !immune_other)
         {
             other->hurt(agent, damother, BEAM_MISSILE, KILLED_BY_COLLISION,

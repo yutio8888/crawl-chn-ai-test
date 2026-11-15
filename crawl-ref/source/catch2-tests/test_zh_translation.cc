@@ -13633,3 +13633,109 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(source->mname == "Houn");
     }
 }
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "special names: actual collision keeps death snapshot undecorated",
+                 "[zh-translation][special-name-quotes][special-name-storage-followup]")
+{
+    init_properties();
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    unwind_var<vector<Note>> restore_notes(note_list, {});
+    const bool prior_notes = notes_are_active();
+    activate_notes(true);
+    unwinder restore_active([prior_notes]() { activate_notes(prior_notes); });
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    for (bool player_moves : {false, true})
+    {
+        INFO(player_moves);
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = 1;
+        you.hp_max = 50;
+        you.equipment.update();
+        you.where_are_you = BRANCH_DUNGEON;
+        you.depth = 1;
+        scoped_monspeak_world world;
+        monster *source = world.place(MONS_SIGMUND);
+        REQUIRE(source);
+        source->hit_points = source->max_hit_points = 500;
+        unwind_var<decltype(crawl_state.disables)> restore_disables(crawl_state.disables);
+        crawl_state.disables.set(DIS_DEATH, false);
+        note_list.clear();
+        msg::tee emitted;
+        rng::subgenerator sequence(73518041, 0xC011);
+        if (player_moves)
+            you.collide(source->pos(), source, 40);
+        else
+            source->collide(you.pos(), source, 40);
+        const auto found = find_if(note_list.begin(), note_list.end(),
+            [](const Note &note) { return note.type == NOTE_DEATH; });
+        REQUIRE(found != note_list.end());
+        if (language == lang_t::ZH)
+            CHECK(emitted.get_store().find("「西格蒙德」") != string::npos);
+        CHECK(found->name.find("「") == string::npos);
+        const string collided_with = name_for_storage(*source, DESC_A, true);
+        CHECK(found->name.find(collided_with) != string::npos);
+        // The real collision above exercises both hurt argument orientations
+        // through the global player and records NOTE_DEATH. Wizard simulation
+        // returns before logfile writing; exercise its production xlog consumer
+        // separately with the same participants' undecorated source/aux values.
+        const string player_source = name_for_storage(you, DESC_A, true);
+        scorefile_entry death(40, source->mid, KILLED_BY_COLLISION,
+                             collided_with.c_str(), true, player_source.c_str());
+        death.init(1600000000);
+        const xlog_fields fields(death.raw_string());
+        CHECK(fields.str_field("ktyp") == "collision");
+        CHECK(fields.str_field("killer") == "Sigmund");
+        CHECK(fields.str_field("kaux") == collided_with);
+        CHECK(fields.str_field("killer").find("「") == string::npos);
+        CHECK(fields.str_field("kaux").find("「") == string::npos);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "special names: actual unrand callbacks keep poison and fire sources raw",
+                 "[zh-translation][special-name-quotes][special-name-storage-followup]")
+{
+    init_properties();
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (unrand_type type : {UNRAND_SNAKEBITE, UNRAND_FLAMING_DEATH})
+        {
+            INFO(static_cast<int>(type));
+            you = player();
+            you.species = SP_HUMAN;
+            you.hp = you.hp_max = 500;
+            you.equipment.update();
+            you.where_are_you = BRANCH_DUNGEON;
+            you.depth = 1;
+            scoped_monspeak_world world;
+            monster *source = world.place(MONS_SIGMUND);
+            REQUIRE(source);
+            item_def weapon;
+            weapon.quantity = 1;
+            const auto prior_status = get_unique_item_status(type);
+            REQUIRE(make_item_unrandart(weapon, type));
+            unwinder restore_status([&weapon, prior_status]() {
+                set_unique_item_status(weapon, prior_status);
+            });
+            const auto callback = get_unrand_entry(type)->melee_effects;
+            REQUIRE(callback);
+            const string key = type == UNRAND_SNAKEBITE
+                ? POISONER_KEY : STICKY_FLAMER_KEY;
+            rng::subgenerator sequence(73518041, 0xA47);
+            for (int i = 0; i < 100 && !you.props.exists(key); ++i)
+                callback(&weapon, source, &you, 10, nullptr);
+            REQUIRE(you.props.exists(key));
+            CHECK(you.props[key].get_string()
+                  == (language == lang_t::ZH ? "西格蒙德" : "Sigmund"));
+            CHECK(source->name(DESC_PLAIN)
+                  == (language == lang_t::ZH ? "「西格蒙德」" : "Sigmund"));
+        }
+    }
+}

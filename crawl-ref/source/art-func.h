@@ -745,7 +745,10 @@ static void _SNAKEBITE_melee_effects(item_def* /*weapon*/, actor* attacker,
                                      actor* defender, int /*dam*/, melee_attack*)
 {
     if (defender->alive() && x_chance_in_y(2, 5))
-        curare_actor(attacker, defender, "curare", attacker->name(DESC_PLAIN));
+    {
+        curare_actor(attacker, defender, "curare",
+                     name_for_storage(*attacker, DESC_PLAIN));
+    }
 }
 
 ///////////////////////////////////////////////////
@@ -1128,7 +1131,7 @@ static void _FLAMING_DEATH_melee_effects(item_def* /*weapon*/, actor* attacker,
     if (defender->alive() && (dam > 2 && one_chance_in(3)))
     {
         if (defender->is_player())
-            sticky_flame_player(5, 10, attacker->name(DESC_A, true));
+            sticky_flame_player(5, 10, name_for_storage(*attacker, DESC_A, true));
         else
         {
             sticky_flame_monster(
