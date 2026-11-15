@@ -12,6 +12,7 @@
  * - Scythe of curses
  */
 #include "AppHdr.h"
+#include "english.h"
 
 #include "death-curse.h"
 
@@ -91,7 +92,7 @@ static void _ouch(actor& target, const actor * source, int dam,
     {
         ouch(dam, KILLED_BY_DEATH_CURSE, source ? source->mid : MID_NOBODY,
              cause.c_str(),
-             source ? source->name(DESC_A, true).c_str() : nullptr);
+             source ? name_for_storage(*source, DESC_A, true).c_str() : nullptr);
     }
 }
 

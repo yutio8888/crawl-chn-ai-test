@@ -1663,7 +1663,7 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
                 // (7 bonus poison will apply exactly 1 additional level of
                 // poison to monsters, mirroring the normal effect of BEAM_POISON)
                 curare_actor(pbolt.agent(), mons, "concentrated venom",
-                             pbolt.agent(true)->name(DESC_PLAIN), 7);
+                             name_for_storage(*pbolt.agent(true), DESC_PLAIN), 7);
             }
             else
                 poison_monster(mons, pbolt.agent());

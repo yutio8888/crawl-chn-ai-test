@@ -984,7 +984,7 @@ void mark_corrupted_level(level_id li)
 
 ////////////////////////////////////////////////////////////////////////
 
-static void _update_unique_annotation(level_id level)
+static string _unique_annotation_text(level_id level, bool display)
 {
     string note = "";
     string sep = ", ";
@@ -999,9 +999,19 @@ static void _update_unique_annotation(level_id level)
         {
             if (note.length() > 0)
                 note += sep;
-            note += annot.first;
+            const auto comma = annot.first.find(',');
+            note += display
+                ? quote_special_name(annot.first.substr(0, comma))
+                    + (comma == string::npos ? "" : annot.first.substr(comma))
+                : annot.first;
         }
     }
+    return note;
+}
+
+static void _update_unique_annotation(level_id level)
+{
+    const string note = _unique_annotation_text(level, false);
     if (note.empty())
         level_uniques.erase(level);
     else
@@ -1010,7 +1020,7 @@ static void _update_unique_annotation(level_id level)
 
 static string unique_name(monster* mons)
 {
-    string name = mons->name(DESC_PLAIN, true);
+    string name = name_for_storage(*mons, DESC_PLAIN, true);
     if (mons->type == MONS_PLAYER_GHOST)
         name += ", " + short_ghost_description(mons, true);
     // Don't show the Lernaean hydra's number of heads here.
@@ -1110,7 +1120,9 @@ string get_level_annotation(level_id li, bool skip_excl, bool skip_uniq,
         {
             if (note.length() > 0)
                 note += ", ";
-            note += *uniq;
+            const string display = Options.language == lang_t::ZH
+                ? _unique_annotation_text(li, true) : "";
+            note += display.empty() ? *uniq : display;
         }
 
     return note;

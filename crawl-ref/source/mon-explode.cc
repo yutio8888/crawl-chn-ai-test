@@ -401,7 +401,7 @@ bool explode_monster(monster* mons, killer_type killer, bool pet_kill)
         if (agent && agent->is_player())
             mons_add_blame(mons, "hexed by the player character");
         else if (agent)
-            mons_add_blame(mons, "hexed by " + agent->name(DESC_A, true));
+            mons_add_blame(mons, "hexed by " + name_for_storage(*agent, DESC_A, true));
         mons->flags    |= MF_EXPLODE_KILL;
         sanct_msg       = make_stringf(T_("By Zin's power, the %s is contained."), T_("fiery explosion"));
         beam.aux_source = "ignited by their inner flame";

@@ -291,7 +291,7 @@ void change_monster_type(monster* mons, monster_type targetc, bool do_seen)
     }
     else if (mons_is_unique(mons->type))
     {
-        name = mons->name(DESC_PLAIN, true);
+        name = name_for_storage(*mons, DESC_PLAIN, true);
 
         // "Blorkula the Orcula" (if he weren't undead) and similar.
         const size_t the_pos = name.find(" the ");
