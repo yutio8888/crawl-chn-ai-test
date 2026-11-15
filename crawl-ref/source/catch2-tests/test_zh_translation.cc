@@ -9044,3 +9044,48 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(get_unrand_name_en(*moved) == string("lance \"Wyrmbane\""));
     }
 }
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "special names: actual unrand callbacks keep poison and fire sources raw",
+                 "[zh-translation][special-name-quotes]")
+{
+    init_properties();
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (unrand_type type : {UNRAND_SNAKEBITE, UNRAND_FLAMING_DEATH})
+        {
+            INFO(static_cast<int>(type));
+            you = player();
+            you.species = SP_HUMAN;
+            you.hp = you.hp_max = 500;
+            you.equipment.update();
+            you.where_are_you = BRANCH_DUNGEON;
+            you.depth = 1;
+            scoped_monspeak_world world;
+            monster *source = world.place(MONS_SIGMUND);
+            REQUIRE(source);
+            item_def weapon;
+            weapon.quantity = 1;
+            const auto prior_status = get_unique_item_status(type);
+            REQUIRE(make_item_unrandart(weapon, type));
+            unwinder restore_status([&weapon, prior_status]() {
+                set_unique_item_status(weapon, prior_status);
+            });
+            const auto callback = get_unrand_entry(type)->melee_effects;
+            REQUIRE(callback);
+            const string key = type == UNRAND_SNAKEBITE
+                ? POISONER_KEY : STICKY_FLAMER_KEY;
+            rng::subgenerator sequence(73518041, 0xA47);
+            for (int i = 0; i < 100 && !you.props.exists(key); ++i)
+                callback(&weapon, source, &you, false, 10);
+            REQUIRE(you.props.exists(key));
+            CHECK(you.props[key].get_string()
+                  == (language == lang_t::ZH ? "西格蒙德" : "Sigmund"));
+            CHECK(source->name(DESC_PLAIN)
+                  == (language == lang_t::ZH ? "「西格蒙德」" : "Sigmund"));
+        }
+    }
+}
