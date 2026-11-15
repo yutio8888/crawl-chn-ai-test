@@ -305,7 +305,9 @@ TEST_CASE_METHOD(ZhTranslationFixture, "special names: actual artefact attunemen
         CHECK(get_artefact_name(item) == identity);
         CHECK_FALSE(you.check_hp_regen_attunement);
         if (language == lang_t::EN)
+        {
             CHECK(text.find("Your " + identity + " attunes itself to your body")
                   != string::npos);
+        }
     }
 }
