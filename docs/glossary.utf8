@@ -615,7 +615,7 @@ Kiss of Death	死亡之吻	domain=spells; source=EN/ZH; 备注=✅；衰竭目�
 kobold	狗头人	domain=species; source=EN/ZH; 复合格式=狗头人 + 职业
 lajatang	双头杖	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-A-050
 lance	骑枪	domain=items; source=EN/ZH; Scope / comment=神器武器类型及其战斗消息、描述、动作统计；与基础武器 spear → 长矛区分；不适用于 Force Lance 法术、lance of force 投射物或 living force lance；decision=D-B-023
-lance "Wyrmbane"	骑枪"屠龙者"	domain=items; source=EN/ZH; Scope / comment=固定神器名称键；Wyrmbane 专名为“屠龙者”，消息与描述沿用；弃用“斩龙剑”；Margery 的称号“the Dragonslayer”也译为“屠龙者”（dat/database/zh/montitle.txt:204），与神器指称不同，属于有意保留的同名；decision=D-B-023
+lance "Wyrmbane"	「屠龙者」骑枪	domain=items; source=EN/ZH; Scope / comment=固定神器名称键；Wyrmbane 专名为“屠龙者”，消息与描述沿用；弃用“斩龙剑”；Margery 的称号“the Dragonslayer”也译为“屠龙者”（dat/database/zh/montitle.txt:204），与神器指称不同，属于有意保留的同名；decision=D-B-023；语序按 D-C-120
 Landbreaker	裂地	domain=spells; source=EN/ZH; 备注=✅
 large bone plates	大型骨板	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 laughs	笑道	domain=dialogue; source=EN/ZH; 适用角色=Xom、小恶魔
@@ -706,7 +706,7 @@ monster	怪物	domain=core; source=EN/ZH; 注意事项=通用
 Monstrous Menagerie	怪物动物园	domain=spells; source=EN/ZH; 备注=✅
 moonshine	私酒	domain=items; source=EN/ZH; Scope / comment=potion effect; decision=D-B-020
 morningstar	晨星锤	domain=items; source=EN/ZH; Scope / comment=weapon; paired with eveningstar; decision=D-B-017
-morningstar "Eos"	晨星锤"厄俄斯"	domain=items; source=EN/ZH; Scope / comment=unrand; decision=D-B-017/D-B-021
+morningstar "Eos"	「厄俄斯」晨星锤	domain=items; source=EN/ZH; Scope / comment=unrand; decision=D-B-017/D-B-021；语序按 D-C-120
 mountain dwarf	山矮人	domain=species; source=EN/ZH
 Mourning Wail	哀恸之嚎	domain=spells; source=EN/ZH; 备注=🆕；吐出遗忘悲恸形成负能量云
 MP	法力	domain=core; source=EN/ZH; 注意事项=施法资源；普通 magic 仍为魔法；decision=D-C-115
