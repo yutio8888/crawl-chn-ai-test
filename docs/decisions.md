@@ -4451,7 +4451,7 @@ R19–R21 的全文检索确认项按消费者处理：MP 的恢复、储量、�
 - **Date**: 2026-11-15
 - **Source**: 维护者批准 hellion“地狱骑兵”改为“地狱魔”。
 - **Scope**: 仅 MONS_HELLION 的名称及其派生、复数、所有格显示。旧译额外引入骑兵意象；现名不改变其人形恶魔、天谴施法者身份。
-- **Evidence**: [本线冲突核查与逐项消费者](archive/r51-hellion-2026-11-15/consumers.json)。修改前 dat 中“地狱魔”无命中；smoke demon 的正式名是“烟雾恶魔”，审查评语中的“地狱魔”及历史建议“地狱魔头”不构成正式名称冲突。
+- **Evidence**: [本线冲突核查与逐项消费者](archive/r51-hellion-2026-11-15/consumers.json)。修改前 dat 中“地狱魔”无命中；smoke demon 的正式名是“烟雾恶魔”；trunk 审查评语中的“地狱魔”及历史建议“地狱魔头”仅作外线历史旁证，不是 stable 本地消费者，也不构成正式名称冲突。
 - **Change**: SourceDB `hellion` 显示值改为“地狱魔”；通用怪物名称、所有格、复数、召唤／幻象组合及列表由同一名称入口派生，不另造英文键。
 - **Keep**: monsters.txt 的 hellion 正文未直称旧专名，保留已有天谴说明。未发现 database/zh、引文、vault/Lua 或测试中的独立中文旧名称消费者。hell knight、hellephant、hell hog、hellwing、普通“地狱”叙述均不改；英文键、MONS_HELLION、生成／查询／存档身份及旧显示快照不迁移。
 - **Ledger**: 严格台账只同步生成的当前名称事实；人工理由、历史证据与术语快照不作为新命名裁决改写。历史 keep 的命名意见由本决定取代，不删除原记录。

@@ -10,17 +10,20 @@
       "crawl-ref/source/dat/i18n/zh/source.txt:32265:地狱骑兵"
     ],
     "other_formal_object_collision": false,
-    "historical_substrings": [
+    "local_historical_substrings": [],
+    "other_line_historical_references": [
       {
         "source": "docs/monster-review-results.md",
         "identity": "monster-body:smoke demon",
         "current_name": "烟雾恶魔",
-        "reason": "审查理由的概述用词，不是正式名称"
+        "reason": "审查理由的概述用词，不是正式名称；仅作 trunk 历史旁证，不是 stable 本地消费者。",
+        "reference_line": "trunk"
       },
       {
         "source": "docs/source-review-results.md",
         "identity": "source:hellion",
-        "reason": "历史备选地狱凶魔／地狱魔头，不是另一对象的正式名称"
+        "reason": "历史备选地狱凶魔／地狱魔头，不是另一对象的正式名称；仅作 trunk 历史旁证，不是 stable 本地消费者。",
+        "reference_line": "trunk"
       }
     ]
   },
@@ -69,11 +72,10 @@
     },
     {
       "paths": [
-        "docs/source-review-results.md",
         "docs/monster-review-results.md"
       ],
       "disposition": "generated_only",
-      "reason": "保留旧人工命名理由作为历史，本决定取代；只按当前生成器要求同步当前事实"
+      "reason": "只同步 stable monster 台账的当前生成事实；stable 无 source-review-results.md，不迁移 trunk 历史台账。人工命名理由保留。"
     },
     {
       "scope": "hell knight / hellephant / hell hog / hellwing / ordinary hell / historical snapshots",
@@ -189,5 +191,73 @@
     "crawl-ref/source/dat/mons/hellion.yaml:1:name: \"hellion\"",
     "crawl-ref/source/dat/mons/hellion.yaml:13:spells: hellion"
   ],
-  "runtime_test_gap": "本批无 C++ 变更。通过现有名称库存、glossary 精确键与派生函数源码核查；不声称已运行 hellion 实体的原生单复数／所有格新回归。"
+  "runtime_test_gap": "本批无 C++ 变更。通过现有名称库存、glossary 精确键与派生函数源码核查；不声称已运行 hellion 实体的原生单复数／所有格新回归。",
+  "stable_english_recheck": {
+    "mutation_message": "You feel ready to unleash a true cacophony.",
+    "source": "crawl-ref/source/mutation-data.h",
+    "tutorial_source": "crawl-ref/source/dat/descript/tutorial.txt",
+    "tutorial_decisions": [
+      {
+        "key": "tutorial1 autoexplore",
+        "disposition": "keep",
+        "reason": "英文 command bar；保留命令栏。"
+      },
+      {
+        "key": "tutorial2 resting",
+        "disposition": "keep",
+        "reason": "英文 command bar；保留命令栏。"
+      },
+      {
+        "key": "tutorial3 command_help",
+        "disposition": "fix",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial3 autoexplore_reminder",
+        "disposition": "fix",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial3 go_shopping",
+        "disposition": "keep",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial3 exit",
+        "disposition": "fix",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial4 resting_reminder",
+        "disposition": "fix",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial5 dungeon_overview",
+        "disposition": "fix",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial5 religion",
+        "disposition": "fix",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial5 berserk",
+        "disposition": "fix",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial5 exhaustion",
+        "disposition": "fix",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial4 spellquivering",
+        "disposition": "keep",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      }
+    ],
+    "note": "逐段按 stable 当前英文核对；没有用 trunk 行号或正文覆盖 stable 英文。"
+  }
 }
