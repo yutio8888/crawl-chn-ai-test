@@ -69,7 +69,6 @@
     },
     {
       "paths": [
-        "docs/source-review-results.md",
         "docs/monster-review-results.md"
       ],
       "disposition": "generated_only",
@@ -79,6 +78,12 @@
       "scope": "hell knight / hellephant / hell hog / hellwing / ordinary hell / historical snapshots",
       "disposition": "keep",
       "reason": "MONS_HELLION 以外及历史显示数据不迁移"
+    },
+    {
+      "path": "docs/source-review-results.md",
+      "identity": "source:hellion",
+      "disposition": "historical_keep_unchanged",
+      "reason": "历史保留，未改；本 PR 未改该文件，旧 keep 行与命名意见由 D-C-119 取代，不回写历史。"
     }
   ],
   "english_reference_hits": [
@@ -188,5 +193,31 @@
     "crawl-ref/source/dat/des/altar/altar.des:267:MONS:  hellion",
     "crawl-ref/source/dat/descript/fr/monsters.txt:1032:hellion"
   ],
-  "runtime_test_gap": "本批无 C++ 变更。通过现有名称库存、glossary 精确键与派生函数源码核查；不声称已运行 hellion 实体的原生单复数／所有格新回归。"
+  "runtime_test_gap": "本批无 C++ 变更。通过现有名称库存、glossary 精确键与派生函数源码核查；不声称已运行 hellion 实体的原生单复数／所有格新回归。",
+  "related_display_consumers": [
+    {
+      "key": "status|Cacophony",
+      "duration": "DUR_CACOPHONY",
+      "producer": "crawl-ref/source/duration-data.h",
+      "consumer": "crawl-ref/source/status.cc: C_(status, ddef->light_text/short_text)",
+      "disposition": "fix",
+      "old": "噪音",
+      "new": "杂音",
+      "old_columns": 4,
+      "new_columns": 4,
+      "reason": "同一能力的状态灯标/短状态描述，不是普通噪音；英文 db_key / short_db_key 不变。"
+    },
+    {
+      "key": "status|making a cacophony",
+      "duration": "DUR_CACOPHONY",
+      "producer": "crawl-ref/source/duration-data.h",
+      "consumer": "crawl-ref/source/status.cc: C_(status, ddef->light_text/short_text)",
+      "disposition": "fix",
+      "old": "制造噪音",
+      "new": "制造杂音",
+      "old_columns": 8,
+      "new_columns": 8,
+      "reason": "同一能力的状态灯标/短状态描述，不是普通噪音；英文 db_key / short_db_key 不变。"
+    }
+  ]
 }
