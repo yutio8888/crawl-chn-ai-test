@@ -3011,7 +3011,7 @@ string player_title_prefix(const string& title)
         return "";
 
     if (title == "Petite Mort")
-        return " " + C_("title article", "La ");
+        return string(" ") + C_("title article", "La ");
     else if (title == "Ex Machina")
         return " ";
     else if (title == "Hundred Blades")
@@ -3022,7 +3022,7 @@ string player_title_prefix(const string& title)
              || title.rfind("Who", 0) == 0)
         return C_("title article", ", ");
     else
-        return " " + C_("title article", "the ");
+        return string(" ") + C_("title article", "the ");
 }
 
 static string _title_with_article(const string& title, bool use_prefix)
@@ -3036,6 +3036,18 @@ string player_title(bool use_prefix)
     const string title =
             skill_title_by_rank(best, get_skill_rank(you.skills[best]));
     return _title_with_article(title, use_prefix);
+}
+
+// Article form used by saved titles written before player_title_prefix() moved
+// the leading spacing into the prefix. Only the finite known-title matcher uses
+// this; arbitrary saved strings are never re-split.
+static string _legacy_title_article(const string& title)
+{
+    if (title == "Petite Mort")
+        return "La ";
+    if (title.rfind("Who", 0) == 0)
+        return ", ";
+    return "the ";
 }
 
 string translated_ghost_title(const string& saved_title, species_type species)
@@ -3053,8 +3065,15 @@ string translated_ghost_title(const string& saved_title, species_type species)
             ScopedLangEn protocol_language;
             canonical = _title_with_article(english, true);
         }
-        if (saved_title == english || saved_title == canonical)
+        // Snapshots written before the prefix refactor carry the older article
+        // ("the Fighter") without the leading space; match those too so old
+        // ghosts keep displaying in Chinese.
+        const string legacy_canonical = _legacy_title_article(english) + english;
+        if (saved_title == english || saved_title == canonical
+            || saved_title == legacy_canonical)
+        {
             matches.insert(translated);
+        }
     };
     const auto consider_skill = [&](const char* key)
     {
