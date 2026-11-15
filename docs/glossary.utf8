@@ -716,6 +716,7 @@ Hedge Wizard	杂学巫师	domain=backgrounds; source=EN/ZH; Scope / comment=back
 Held	受困	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Hellfire Court	地狱火法庭	domain=spells; source=EN/ZH; 备注=✅
 Hellfire Mortar	地狱火迫击炮	domain=spells; source=EN/ZH; 备注=✅
+hellion	地狱魔	domain=monsters; source=EN/ZH; Scope / comment=MONS_HELLION 名称及派生／复数／所有格显示；不含其他 hell 系怪物或普通地狱叙述；decision=D-C-119; reject=地狱骑兵
 Hepliaklqana	惠普利亚卡纳	domain=gods; source=EN/ZH; 类型=音译
 Hepliaklqana the Forgotten	被遗忘者惠普利亚卡纳	domain=gods; source=EN/ZH; 类型=神祇长名；Forgotten为被动称谓，非遗忘他人的施事者; 裁决=D-C-104
 herald of the Abyss	深渊先驱	domain=monsters; source=EN/ZH; 依据 / 作用域=herald-of-the-abyss.yaml；深渊来使，不凭空加圣性；decision=D-C-095

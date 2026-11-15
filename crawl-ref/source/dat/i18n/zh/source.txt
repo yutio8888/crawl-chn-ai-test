@@ -27365,7 +27365,7 @@ You feel quick.
 你感到敏捷。
 %%%%
 You feel ready to unleash a true cacophony.
-你感到准备好释放真正的刺耳之音。
+你感到已准备好释放真正的杂音。
 %%%%
 You feel rebellious.
 你感到叛逆。
@@ -34749,7 +34749,7 @@ hell rat
 地狱鼠
 %%%%
 hellion
-地狱骑兵
+地狱魔
 %%%%
 hellwing
 地狱之翼
