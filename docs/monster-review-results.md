@@ -2,7 +2,7 @@
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
 - 术语表 SHA-256：`5c53167600f6f21ef1db5531f482140bc58c33f0a44f321c5314f8353cdb9050`
-- 清单 SHA-256：`c9009dc7667145b0ea4c7acecda9c8c706ed0df8e433f374b887bcf702f3333d`
+- 清单 SHA-256：`3317017976831386b18e95fdf9e158272d33352901fa719e9fb9879d6686316a`
 - 身份总数：816（现行 692；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -334,7 +334,7 @@
 | `monster:MONS_SMOKE_DEMON` | current; exposure=ordinary; name=smoke demon→烟雾恶魔; genus=MONS_SMOKE_DEMON; species=MONS_SMOKE_DEMON; data=crawl-ref/source/dat/mons/smoke-demon.yaml; desc=EN/ZH | keep |
 | `monster:MONS_YNOXINUL` | current; exposure=ordinary; name=ynoxinul→伊诺辛努; genus=MONS_YNOXINUL; species=MONS_YNOXINUL; data=crawl-ref/source/dat/mons/ynoxinul.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_CHAOS_SPAWN` | current; exposure=ordinary; name=chaos spawn→混沌之子; genus=MONS_CHAOS_SPAWN; species=MONS_CHAOS_SPAWN; data=crawl-ref/source/dat/mons/chaos-spawn.yaml; desc=EN/ZH | retranslate: description corrected |
-| `monster:MONS_HELLION` | current; exposure=ordinary; name=hellion→地狱骑兵; genus=MONS_HELLION; species=MONS_HELLION; data=crawl-ref/source/dat/mons/hellion.yaml; desc=EN/ZH | retranslate: description corrected |
+| `monster:MONS_HELLION` | current; exposure=ordinary; name=hellion→地狱魔; genus=MONS_HELLION; species=MONS_HELLION; data=crawl-ref/source/dat/mons/hellion.yaml; desc=EN/ZH | retranslate: name and description corrected |
 | `monster:MONS_LOROCYPROCA` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
 | `monster:MONS_TORMENTOR` | current; exposure=ordinary; name=tormentor→折磨者; genus=MONS_TORMENTOR; species=MONS_TORMENTOR; data=crawl-ref/source/dat/mons/tormentor.yaml; desc=EN/ZH | keep |
 | `monster:MONS_REAPER` | current; exposure=ordinary; name=reaper→收割者; genus=MONS_REAPER; species=MONS_REAPER; data=crawl-ref/source/dat/mons/reaper.yaml; desc=EN/ZH | keep |

@@ -5032,3 +5032,16 @@ R19–R21 的全文检索确认项按消费者处理：MP 的恢复、储量、�
 - **Consumers**: `dat/descript/zh/monsters.txt` 的 `halazid warlock`（Sheza、Sargol），`dat/descript/zh/branches.txt` 的 `Desolation`（两神），`dat/database/zh/montitle.txt` 的 `Zenata title`（泽娜塔，谢扎的追寻者）。`glossary.md` 的同名头衔同步；`source.txt` 与 glossary 的 `Sheza's Dance` 既有“谢扎之舞”保持。
 - **Correction**: 此前 Zenata 头衔决定中的非约束跨域备注已标更正并保留历史原文，本决定取代其暂留两种音译的处理。
 - **Boundaries**: 两线完整 `dat/`、Catch2 与工具测试检索未发现其他“西泽／赛格尔”消费者或别义；仅统一上述两位神的中文，不改英文查询键、神名身份、法术名或存档快照。没有为 Sargol 新造译名，也不建立全库字形替换规则。
+
+
+### D-C-119 — Hellion 的正式中文名称
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-15
+- **Source**: 维护者批准 hellion“地狱骑兵”改为“地狱魔”。
+- **Scope**: 仅 MONS_HELLION 的名称及其派生、复数、所有格显示。旧译额外引入骑兵意象；现名不改变其人形恶魔、天谴施法者身份。
+- **Evidence**: [本线冲突核查与逐项消费者](archive/r51-hellion-2026-11-15/consumers.json)。修改前 dat 中“地狱魔”无命中；smoke demon 的正式名是“烟雾恶魔”，审查评语中的“地狱魔”及历史建议“地狱魔头”不构成正式名称冲突。
+- **Change**: SourceDB `hellion` 显示值改为“地狱魔”；通用怪物名称、所有格、复数、召唤／幻象组合及列表由同一名称入口派生，不另造英文键。
+- **Keep**: monsters.txt 的 hellion 正文未直称旧专名，保留已有天谴说明。未发现 database/zh、引文、vault/Lua 或测试中的独立中文旧名称消费者。hell knight、hellephant、hell hog、hellwing、普通“地狱”叙述均不改；英文键、MONS_HELLION、生成／查询／存档身份及旧显示快照不迁移。
+- **Ledger**: 严格台账只同步生成的当前名称事实；人工理由、历史证据与术语快照不作为新命名裁决改写。历史 keep 的命名意见由本决定取代，不删除原记录。
