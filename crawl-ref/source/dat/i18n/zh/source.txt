@@ -2746,7 +2746,7 @@ adjust
 调整
 %%%%
 Adjust (g)ear, (s)pells, (a)bilities, (p)otions, sc(r)olls or e(v)ocables?
-整理（g）装备、（s）法术、（a）能力、（p）药水、卷（r）轴或（v）可激活物品？
+调整字母快捷键：装备（g）、法术（s）、能力（a）、药水（p）、卷轴（r）或可激活物品（v）？
 %%%%
 adjust to
 调整到
@@ -2755,7 +2755,7 @@ Adjust to which letter?
 调整到哪个字母？
 %%%%
 Adjust which item?
-整理哪个物品？
+调整哪个物品？
 %%%%
 After Damaging Hits
 造成伤害后效果
