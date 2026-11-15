@@ -487,8 +487,8 @@ softly glowing monstatus
 %%%%
 soul bound monstatus
 
-这个生物的灵魂被束缚在寒冰中。当它死亡时，一个其原形态的拟像将从其
-所在位置升起。
+这个生物的灵魂被束缚在寒冰中。当它死亡时，
+一个与其原形态相同的拟像将在原地升起。
 %%%%
 soul-gripped monstatus
 

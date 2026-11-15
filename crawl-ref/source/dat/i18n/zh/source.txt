@@ -2758,7 +2758,7 @@ A tentacle reaches out from the kraken!
 一条触手从克拉肯体内伸出！
 %%%%
 A thick mucus forms on %s.
-一层厚厚的粘液在%s上形成了。
+%s上覆盖了一层厚厚的粘液。
 %%%%
 A tiny devil pulls itself out of the air.
 一个微小的恶魔从虚空中钻了出来。
@@ -3057,7 +3057,7 @@ As expected.
 果然如此。
 %%%%
 As the last of your armour is driven back to you, your cacophony ends.
-随着最后一件护甲被击退回你身边，你的嘈杂声结束了。
+随着最后一件护甲被击回你身边，你的杂音平息了。
 %%%%
 As you %s the %s, it %s.
 当你%s%s时，它%s。
@@ -7089,7 +7089,7 @@ The %s misses you.
 %s没有击中你。
 %%%%
 The %s passes through %s.
-%s穿透了%s。
+%s从%s身上穿了过去。
 %%%%
 The %s reflects off an invisible shield around %s!
 %s从%s周围的隐形护盾上反射了出去！
@@ -7191,7 +7191,7 @@ The buzzing within you returns to its normal rhythm.
 你体内的嗡嗡声恢复了正常的节奏。
 %%%%
 The cacophony subsides as you leave the area.
-你离开该区域时，嘈杂声平息了。
+你离开该区域时，杂音平息了。
 %%%%
 You have escaped!
 你逃出去了！
@@ -8752,7 +8752,7 @@ You are already lashing out.
 你已经发动蛇之鞭笞了。
 %%%%
 You are already making a cacophony!
-你已经在制造刺耳噪音了！
+你已经在制造杂音了！
 %%%%
 You are already unleashing the legions of chaos!
 你已经在释放混沌军团了！
@@ -9121,7 +9121,7 @@ You burst free from the webs!
 你从蛛网中挣脱出来了！
 %%%%
 You call down Yredelemnul's inexorable grip.
-你召唤了伊莱德莱姆努尔无可抗拒的掌握之力。
+你唤来伊莱德莱姆努尔无可抗拒的束缚之力。
 %%%%
 You call for your canine familiar and it appears with a howl!
 你呼唤你的犬类使魔，它伴随着一声嚎叫出现了！
@@ -10717,7 +10717,7 @@ You must recover your energy before scattering into bats again.
 你必须恢复能量才能再次化为蝙蝠群。
 %%%%
 You must recover your energy before unleashing another cacophony.
-你必须恢复能量才能再次释放刺耳噪音。
+你必须恢复能量才能再次释放杂音。
 %%%%
 You must stoke the torch's fire more first.
 你必须先给火炬添加更多燃料。
@@ -10978,7 +10978,7 @@ You see nothing there to target.
 你在那里看不到任何目标。
 %%%%
 You send your armour flying and begin to make an unholy cacophony!
-你把护甲抛飞，开始制造亵渎的刺耳噪音！
+你把护甲抛飞，开始制造亵渎的杂音！
 %%%%
 You sense a hostile presence.
 你感知到了一个敌对的存在。
@@ -11460,7 +11460,7 @@ Your bribe of %s has been exhausted.
 你对%s的贿赂已经耗尽了。
 %%%%
 Your cacophony subsides and your armour settles down once more.
-你的嘈杂之音消退，你的盔甲再次安定了下来。
+你的杂音平息，护甲也再次安定下来。
 %%%%
 Your can't wear that!
 你无法穿戴那个！
@@ -18370,7 +18370,7 @@ An external divine aura illuminates you.
 * * * 低生命警告 * * *
 %%%%
 You are functionally dead and cannot pay life.
-你功能上已死亡，无法支付生命。
+你已形同死人，无法消耗生命值。
 %%%%
 You don't have enough health right now.
 你当前没有足够的生命值。
