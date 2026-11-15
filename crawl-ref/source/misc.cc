@@ -135,7 +135,7 @@ string counted_monster_list::describe(description_level_type desc) const
 
     for (auto i = list.begin(); i != list.end();)
     {
-        const counted_monster &cm(*i);
+        const counted_monster &cm = *i;
         if (i != list.begin())
         {
             ++i;
