@@ -521,6 +521,7 @@ Hedge Wizard	杂学巫师	domain=backgrounds; source=EN/ZH; Scope / comment=back
 Held	受困	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Hellfire Court	地狱火法庭	domain=spells; source=EN/ZH; 备注=✅
 Hellfire Mortar	地狱火迫击炮	domain=spells; source=EN/ZH; 备注=✅
+hellion	地狱魔	domain=monsters; source=EN/ZH; Scope / comment=MONS_HELLION 名称及派生／复数／所有格显示；不含其他 hell 系怪物或普通地狱叙述；decision=D-C-119; reject=地狱骑兵
 Hepliaklqana	惠普利亚卡纳	domain=gods; source=EN/ZH; 类型=音译
 Hex	妖术	domain=magic; source=EN/ZH; 作用域=学派简称；法术列表；D-C-101，由 D-C-110 更新; reject=诅咒
 hex mastery	妖术精通	domain=mutations; source=EN/ZH; Scope / comment=sphinx form 伪变异／特征，非遗传变异；decision=D-C-110; reject=诅咒精通

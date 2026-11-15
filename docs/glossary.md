@@ -729,6 +729,7 @@
 | bombardier beetle | 投弹甲虫 | monster; source=source.txt |
 | bone dragon | 骨龙 | monster; source=source.txt |
 | gnoll bouda | 豺狼人布达 | monster; source=source.txt |
+| hellion | 地狱魔 | MONS_HELLION 名称及派生／复数／所有格显示；不含其他 hell 系怪物或普通地狱叙述；decision=D-C-119; reject=地狱骑兵 |
 | boulder | 巨石 | monster; source=source.txt |
 | boulder beetle | 巨砾甲虫 | monster; source=source.txt |
 | bound soul | 缚魂 | monster; source=source.txt |

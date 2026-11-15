@@ -1,0 +1,290 @@
+{
+  "schema_version": 1,
+  "decision": "D-C-119",
+  "line": "stable",
+  "baseline": "08290b3fc5c432639fddd19092c2f75faf487787",
+  "glossary_before_sha256": "afe126ba77fec1ac2d7a32e41ab4fa6b5759bc5a8248b048b8aaa3ee7904659d",
+  "collision_check": {
+    "dat_matches_before": [],
+    "old_live_name_matches": [
+      "crawl-ref/source/dat/i18n/zh/source.txt:32265:地狱骑兵"
+    ],
+    "other_formal_object_collision": false,
+    "local_historical_substrings": [],
+    "other_line_historical_references": [
+      {
+        "source": "docs/monster-review-results.md",
+        "identity": "monster-body:smoke demon",
+        "current_name": "烟雾恶魔",
+        "reason": "审查理由的概述用词，不是正式名称；仅作 trunk 历史旁证，不是 stable 本地消费者。",
+        "reference_line": "trunk"
+      },
+      {
+        "source": "docs/source-review-results.md",
+        "identity": "source:hellion",
+        "reason": "历史备选地狱凶魔／地狱魔头，不是另一对象的正式名称；仅作 trunk 历史旁证，不是 stable 本地消费者。 历史保留，未改；该文件仅存在于 trunk。",
+        "reference_line": "trunk",
+        "disposition": "historical_keep_unchanged"
+      }
+    ]
+  },
+  "consumers": [
+    {
+      "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+      "key": "hellion",
+      "disposition": "fix",
+      "old": "地狱骑兵",
+      "new": "地狱魔",
+      "reason": "唯一实时中文专名键"
+    },
+    {
+      "path": "crawl-ref/source/dat/descript/zh/monsters.txt",
+      "key": "hellion",
+      "disposition": "keep",
+      "reason": "正文仅称一个可恶的恶魔；无旧名称，天谴叙述保留"
+    },
+    {
+      "paths": [
+        "crawl-ref/source/mon-util.cc",
+        "crawl-ref/source/mon-info.cc",
+        "crawl-ref/source/monster.cc"
+      ],
+      "disposition": "derived",
+      "reason": "mons_type_name / zh_monster_name / common_name / pluralised_name / DESC_ITS 与名称组合通过同一 SourceDB 键，不另造独立复数或所有格键；EN/canonical_english/db_name 保持"
+    },
+    {
+      "paths": [
+        "crawl-ref/source/dat/database/zh",
+        "crawl-ref/source/dat/descript/zh/quotes.txt",
+        "crawl-ref/source/catch2-tests",
+        ".claude/scripts/tests"
+      ],
+      "disposition": "keep",
+      "reason": "未找到独立旧中文专名或依赖旧译的测试期望；不新增镜像实现测试"
+    },
+    {
+      "paths": [
+        "crawl-ref/source/dat/des",
+        "crawl-ref/source/dat/dlua",
+        "crawl-ref/source/dat/mons/hellion.yaml"
+      ],
+      "disposition": "keep",
+      "reason": "枚举、英文查找与生成语法，不翻译；召唤／幻象若产生 hellion 使用通用显示入口，无另一个中文专名"
+    },
+    {
+      "paths": [
+        "docs/monster-review-results.md"
+      ],
+      "disposition": "generated_only",
+      "reason": "只同步 stable monster 台账的当前生成事实；stable 无 source-review-results.md，不迁移 trunk 历史台账。人工命名理由保留。"
+    },
+    {
+      "scope": "hell knight / hellephant / hell hog / hellwing / ordinary hell / historical snapshots",
+      "disposition": "keep",
+      "reason": "MONS_HELLION 以外及历史显示数据不迁移"
+    }
+  ],
+  "english_reference_hits": [
+    "crawl-ref/source/dat/des/variable/large_themed.des:1407:        sin beast / hellion w:8 / reaper / tormentor w:8",
+    "crawl-ref/source/dat/descript/zh/monsters.txt:1384:hellion",
+    "crawl-ref/source/dat/des/variable/mini_monsters.des:824:# Remaining non-Zot branches: hell knights, balrugs and hellions, and multiple",
+    "crawl-ref/source/dat/des/variable/mini_monsters.des:828:KMONS:   2 = hellion / balrug",
+    "crawl-ref/source/dat/des/variable/mini_monsters.des:834:KMONS:   2 = hellion / balrug",
+    "crawl-ref/source/dat/des/variable/mini_monsters.des:838:KMONS:   2 = hellion / balrug",
+    "crawl-ref/source/dat/des/variable/mini_monsters.des:847:KMONS:   1 = hell knight / hellion / balrug",
+    "crawl-ref/source/dat/des/variable/mini_monsters.des:3946:MONS:   balrug / hellion, blizzard demon",
+    "crawl-ref/source/dat/des/variable/mini_monsters.des:4116:         sin beast / hellion / reaper / tormentor / zykzyl w:2",
+    "crawl-ref/source/dat/des/variable/mini_monsters.des:9586:MONS:   deep elf sorcerer / deep elf high priest, hellion",
+    "crawl-ref/source/dat/des/variable/mini_monsters.des:9590:MONS:   efreet, hellion",
+    "crawl-ref/source/dat/des/variable/mini_monsters.des:11268:KMONS:  1 = tormentor / hellion / shadow demon / tzitzimitl / \\",
+    "crawl-ref/source/dat/des/variable/mini_monsters.des:11272:KMONS:  1 = tormentor / hellion / balrug / brimstone fiend w:15 / \\",
+    "crawl-ref/source/dat/descript/ru/monsters.txt:799:hellion",
+    "crawl-ref/source/dat/descript/monsters.txt:1749:hellion",
+    "crawl-ref/source/dat/descript/lv/monsters.txt:209:hellion",
+    "crawl-ref/source/dat/descript/ja/monsters.txt:320:hellion",
+    "crawl-ref/source/dat/descript/ko/monsters.txt:995:hellion",
+    "crawl-ref/source/dat/descript/it/monsters.txt:52:hellion",
+    "crawl-ref/source/dat/des/portals/wizlab.des:904:                hellion / shadow demon / tormentor",
+    "crawl-ref/source/dat/des/portals/wizlab.des:972:                     cacodemon / green death / sin beast / hellion / \\",
+    "crawl-ref/source/dat/des/portals/wizlab.des:1753:                  \"hellion w:5 / tormentor w:5 /  \" ..",
+    "crawl-ref/source/dat/descript/fr/monsters.txt:1032:hellion",
+    "crawl-ref/source/dat/des/variable/float.des:3675:             sin beast w:12 / hellion / reaper / tormentor",
+    "crawl-ref/source/dat/des/portals/necropolis.des:3847:        hellion w:2 / cacodemon w:2 / profane servitor w:2",
+    "crawl-ref/source/dat/des/portals/necropolis.des:3878:MONS:   glowing orange brain / lurking horror / wretched star / hellion w:5 / \\",
+    "crawl-ref/source/dat/des/portals/necropolis.des:3923:MONS:   wretched star / lurking horror / hellion / apocalypse crab",
+    "crawl-ref/source/dat/des/portals/necropolis.des:3941:MONS:   lurking horror / wretched star / hellion / \\",
+    "crawl-ref/source/dat/des/variable/ambush.des:37:KMONS:    & = hellion / tormentor / ancient lich",
+    "crawl-ref/source/dat/des/variable/ambush.des:42:KMONS:    & = hellion / tormentor / brimstone fiend w:5",
+    "crawl-ref/source/dat/descript/es/monsters.txt:425:hellion",
+    "crawl-ref/source/dat/des/altar/altar.des:267:MONS:  hellion",
+    "crawl-ref/source/dat/des/sprint/arena_sprint.des:502:                \"orb of fire w:5 / brimstone fiend / balrug / hellion /\\",
+    "crawl-ref/source/dat/des/sprint/arena_sprint.des:528:                \"hellion / hell sentinel / sin beast / hell hog / hell knight /\\",
+    "crawl-ref/source/dat/des/sprint/arena_sprint.des:580:                \"orb of fire / brimstone fiend / balrug / hellion /\\",
+    "crawl-ref/source/dat/des/sprint/arena_sprint.des:602:                \"w:20 hellion / hell sentinel / sin beast / hell hog / hell knight /\\",
+    "crawl-ref/source/dat/des/sprint/arena_sprint.des:628:                \"hellion / w:5 efreet\"",
+    "crawl-ref/source/dat/des/sprint/arena_sprint.des:661:                \"orb of fire w:25 / brimstone fiend / balrug / hellion w:5 /\\",
+    "crawl-ref/source/dat/des/sprint/arena_sprint.des:682:                \"w:30 hellion / hell sentinel / sin beast / hell hog / hell knight /\\",
+    "crawl-ref/source/dat/des/sprint/arena_sprint.des:706:                \"hellion\"",
+    "crawl-ref/source/dat/des/sprint/pitsprint.des:109:               hellion / tormentor / executioner / nekomata / nargun w:5 /\\",
+    "crawl-ref/source/dat/des/sprint/sprint_mu.des:1219:KMONS: 2 = hellion",
+    "crawl-ref/source/dat/des/branches/coc.des:529:KMONS:  2 = hellion / tormentor",
+    "crawl-ref/source/dat/des/branches/abyss.des:819:         shadow demon w:4 / executioner w:4 / hellion w:4",
+    "crawl-ref/source/dat/des/branches/abyss.des:1481:MONS:    balrug w:12 / hellion / tormentor / zykzyl / cacodemon w:12 / \\",
+    "crawl-ref/source/dat/des/branches/abyss.des:1739:MONS:   cognitogaunt w:4 / tormentor / hellion / shadow demon / \\",
+    "crawl-ref/source/dat/des/branches/dis.des:108:MONS:   iron dragon / quicksilver elemental, hellion / tormentor",
+    "crawl-ref/source/dat/des/branches/dis.des:165:MONS:    hellion / tormentor / ancient champion / \\",
+    "crawl-ref/source/dat/des/branches/dis.des:527:MONS:    ancient champion / war gargoyle / hellion / tormentor / \\",
+    "crawl-ref/source/dat/des/branches/dis.des:765:KMONS: 1 = tormentor / hellion / nothing w:5",
+    "crawl-ref/source/dat/des/branches/dis.des:843:KMONS:   1} = hell sentinel w:20 / hellion / tormentor",
+    "crawl-ref/source/dat/des/branches/dis.des:926:KMONS:  2 = hellion / tormentor",
+    "crawl-ref/source/dat/des/branches/geh.des:43:NAME:   lemuel_hellion_isle",
+    "crawl-ref/source/dat/des/branches/geh.des:46:KMONS:  1 = hellion",
+    "crawl-ref/source/dat/des/branches/geh.des:75:MONS:    salamander tyrant, hellion, balrug, oni incarcerator",
+    "crawl-ref/source/dat/des/branches/geh.des:110:MONS:    hellion, oni incarcerator",
+    "crawl-ref/source/dat/des/branches/geh.des:177:KMONS:   1 = hellion",
+    "crawl-ref/source/dat/des/branches/geh.des:558:KMONS:  2 = hellion / tormentor",
+    "crawl-ref/source/dat/des/branches/geh.des:767:KMONS:   K = hellion",
+    "crawl-ref/source/dat/des/branches/geh.des:808:MONS:    hellion, balrug, hellephant, searing wretch",
+    "crawl-ref/source/dat/des/branches/geh.des:911:MONS:   balrug, searing wretch, hellion, fire giant, hellephant",
+    "crawl-ref/source/dat/des/branches/geh.des:1005:MONS:    searing wretch, balrug, hellion, fire giant",
+    "crawl-ref/source/dat/des/branches/geh.des:1100:MONS:    hellion, searing wretch, fire giant, salamander tyrant / stoker w:1",
+    "crawl-ref/source/dat/des/branches/geh.des:1195:MONS: smoke demon w:9 / sun demon w:9 / hellion w:1 / balrug w:1",
+    "crawl-ref/source/dat/des/branches/geh.des:1197:MONS: red devil / sun demon w:1 / smoke demon w:1, hellion",
+    "crawl-ref/source/dat/des/branches/geh.des:1255:MONS:    hellion, fire giant, salamander tyrant, hell hog",
+    "crawl-ref/source/dat/des/branches/geh.des:1362:MONS:    hellion, searing wretch, fire giant, salamander tyrant",
+    "crawl-ref/source/dat/des/branches/tar.des:995:KMONS:  2 = hellion / tormentor",
+    "crawl-ref/source/dat/des/branches/tar.des:1046:KMONS:  2 = tormentor / hellion",
+    "crawl-ref/source/dat/des/builder/rooms.des:360:        {\"hellion\", weight_d},",
+    "crawl-ref/source/dat/des/branches/hells.des:146:MONS:    balrug / hellion / fire crab w:5 / hellephant w:5",
+    "crawl-ref/source/dat/des/branches/hells.des:198:KMONS:  2 = sin beast / hellion / reaper / tormentor / shadow demon / cacodemon",
+    "crawl-ref/source/dat/des/branches/hells.des:201:KMONS:  2 = sin beast / hellion / reaper / tormentor / shadow demon / balrug",
+    "crawl-ref/source/dat/des/branches/hells.des:204:KMONS:  2 = sin beast / hellion / reaper / tormentor / shadow demon / \\",
+    "crawl-ref/source/dat/des/branches/hells.des:208:KMONS:  2 = sin beast / hellion / reaper / tormentor / shadow demon / \\",
+    "crawl-ref/source/dat/des/branches/hells.des:285:KMONS: 1 = tormentor / hellion / nothing",
+    "crawl-ref/source/dat/des/branches/pan.des:262:                    \"green death / sin beast / hellion / \" ..",
+    "crawl-ref/source/dat/des/branches/pan.des:294:  local set = { \"boxes\", \"hellions\", \"pain\", \"frozen\", \"disco\" }",
+    "crawl-ref/source/dat/des/branches/pan.des:2818:NAME:    lemuel_hellion_island",
+    "crawl-ref/source/dat/des/branches/pan.des:2819:TAGS:    pan_fixed_rune_hellions pan_fixed_lure_hellions",
+    "crawl-ref/source/dat/des/branches/pan.des:2821:MONS:    fire bat, hellion, hellephant",
+    "crawl-ref/source/dat/des/branches/pan.des:2854:NAME:    serial_pan_hellions_one",
+    "crawl-ref/source/dat/des/branches/pan.des:2855:MONS:    hellion, any demon",
+    "crawl-ref/source/dat/des/branches/pan.des:2857:: serial_pan_setup(_G, \"hellions\")",
+    "crawl-ref/source/dat/des/branches/pan.des:2868:NAME:    serial_pan_hellions_two",
+    "crawl-ref/source/dat/des/branches/pan.des:2869:MONS:    hellion, any demon",
+    "crawl-ref/source/dat/des/branches/pan.des:2871:: serial_pan_setup(_G, \"hellions\")",
+    "crawl-ref/source/dat/des/branches/pan.des:2880:NAME:    serial_pan_hellions_three",
+    "crawl-ref/source/dat/des/branches/pan.des:2881:MONS:    hellion, any demon",
+    "crawl-ref/source/dat/des/branches/pan.des:2883:: serial_pan_setup(_G, \"hellions\")",
+    "crawl-ref/source/dat/des/branches/hell.des:80:MONS:   hellion / balrug / reaper / sin beast / hell knight",
+    "crawl-ref/source/dat/des/branches/hell.des:116:MONS:   hellion / balrug / reaper / sin beast / hell knight",
+    "crawl-ref/source/dat/des/branches/hell.des:157:MONS:   hellion / balrug w:20 / sin beast",
+    "crawl-ref/source/dat/des/branches/hell.des:194:        balrug / hellion w:5 / tormentor w:5 / nothing w:30",
+    "crawl-ref/source/dat/des/branches/hell.des:774:KMONS:  3 = shining eye w:5 / hell hound / hell hog / sin beast / hellion",
+    "crawl-ref/source/dat/des/branches/hell.des:1095:KMONS: G = hellion / balrug",
+    "crawl-ref/source/dat/des/branches/hell.des:1120:KMONS:  2 = hellion",
+    "crawl-ref/source/dat/des/branches/hell.des:1153:KMONS:   H = hellion",
+    "crawl-ref/source/dat/des/branches/hell.des:1180:MONS:   balrug / hellion, sin beast / hell hog",
+    "crawl-ref/source/dat/des/branches/hell.des:1648:KMONS:   2 = hellion",
+    "crawl-ref/source/dat/dlua/gauntlet.lua:521:    first  = {mons = \"hellion\", min = 1, max = 1},",
+    "crawl-ref/source/dat/dlua/ziggurat.lua:315:  return \"place:Geh:$ w:\" .. d .. \" / hellion w:\" .. e .. \" / \" ..",
+    "crawl-ref/source/dat/dlua/ziggurat.lua:541:         \"hellion w:5 / tormentor w:5 / greater demon w:\" .. f .. \" / \" ..",
+    "crawl-ref/source/dat/i18n/zh/source.txt:32264:hellion",
+    "crawl-ref/source/dat/mons/hellion.yaml:1:name: \"hellion\"",
+    "crawl-ref/source/dat/mons/hellion.yaml:13:spells: hellion"
+  ],
+  "runtime_test_gap": "本批无 C++ 变更。通过现有名称库存、glossary 精确键与派生函数源码核查；不声称已运行 hellion 实体的原生单复数／所有格新回归。",
+  "stable_english_recheck": {
+    "mutation_message": "You feel ready to unleash a true cacophony.",
+    "source": "crawl-ref/source/mutation-data.h",
+    "tutorial_source": "crawl-ref/source/dat/descript/tutorial.txt",
+    "tutorial_decisions": [
+      {
+        "key": "tutorial1 autoexplore",
+        "disposition": "keep",
+        "reason": "英文 command bar；保留命令栏。"
+      },
+      {
+        "key": "tutorial2 resting",
+        "disposition": "keep",
+        "reason": "英文 command bar；保留命令栏。"
+      },
+      {
+        "key": "tutorial3 command_help",
+        "disposition": "fix",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial3 autoexplore_reminder",
+        "disposition": "fix",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial3 go_shopping",
+        "disposition": "keep",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial3 exit",
+        "disposition": "fix",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial4 resting_reminder",
+        "disposition": "fix",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial5 dungeon_overview",
+        "disposition": "fix",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial5 religion",
+        "disposition": "fix",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial5 berserk",
+        "disposition": "fix",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial5 exhaustion",
+        "disposition": "fix",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      },
+      {
+        "key": "tutorial4 spellquivering",
+        "disposition": "keep",
+        "reason": "英文 command panel；当前正文使用命令面板。TODO 注释非显示正文，保留。"
+      }
+    ],
+    "note": "逐段按 stable 当前英文核对；没有用 trunk 行号或正文覆盖 stable 英文。"
+  },
+  "related_display_consumers": [
+    {
+      "key": "status|Cacophony",
+      "duration": "DUR_CACOPHONY",
+      "producer": "crawl-ref/source/duration-data.h",
+      "consumer": "crawl-ref/source/status.cc: C_(status, ddef->light_text/short_text)",
+      "disposition": "fix",
+      "old": "噪音",
+      "new": "杂音",
+      "old_columns": 4,
+      "new_columns": 4,
+      "reason": "同一能力的状态灯标/短状态描述，不是普通噪音；英文 db_key / short_db_key 不变。"
+    },
+    {
+      "key": "status|making a cacophony",
+      "duration": "DUR_CACOPHONY",
+      "producer": "crawl-ref/source/duration-data.h",
+      "consumer": "crawl-ref/source/status.cc: C_(status, ddef->light_text/short_text)",
+      "disposition": "fix",
+      "old": "制造噪音",
+      "new": "制造杂音",
+      "old_columns": 8,
+      "new_columns": 8,
+      "reason": "同一能力的状态灯标/短状态描述，不是普通噪音；英文 db_key / short_db_key 不变。"
+    }
+  ]
+}
