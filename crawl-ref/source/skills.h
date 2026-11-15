@@ -105,7 +105,8 @@ string skill_title_by_rank(
 
 unsigned get_skill_rank(unsigned skill_lev);
 
-string player_title(bool the = true);
+string player_title(bool use_prefix = true);
+string player_title_prefix(const string& title);
 // Display known canonical saved titles; preserve unknown and old ZH snapshots.
 string translated_ghost_title(const string& saved_title, species_type species);
 

@@ -1695,7 +1695,7 @@ static void _redraw_title()
 {
     const unsigned int WIDTH = crawl_view.hudsz.x;
     string title = filtered_lang(player_title());
-    title = you.your_name + (title[0] == ',' ? "" : " ") + title;
+    title = you.your_name + title;
     const bool small_layout = _uses_compact_hud();
 
     if (small_layout)
@@ -2894,8 +2894,7 @@ static void _print_overview_screen_equip(column_composer& cols,
 
 static string _overview_screen_title(int sw)
 {
-    string title = player_title();
-    title = (title[0] == ',' ? "" : " ") + title + " ";
+    string title = player_title() + " ";
 
     string species_job = make_stringf("(%s %s)",
                                       species::name(you.species).c_str(),

@@ -687,7 +687,7 @@ static vector<spell_type> _wanderer_good_equipment(skill_type skill, set<skill_t
 
     case SK_ARMOUR:
         if (you_can_wear(SLOT_BODY_ARMOUR) != true)
-            newgame_make_item(OBJ_ARMOUR, ARM_ACID_DRAGON_ARMOUR);
+            newgame_make_item(OBJ_ARMOUR, ARM_ACID_DRAGON_ARMOUR, 1, -1);
         else if (coinflip())
             newgame_make_item(OBJ_ARMOUR, ARM_SCALE_MAIL, 1, 2);
         else

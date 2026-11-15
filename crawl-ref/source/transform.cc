@@ -1971,11 +1971,11 @@ bool transforming_is_unsafe(transformation which_trans)
 
     // Now check if there are any items that would break if we changed form in
     // this way.
+    const transformation old_form = you.form;
     unwind_var<player_equip_set> unwind_eq(you.equipment);
     unwind_var<transformation> unwind_default_form(you.default_form);
     unwind_var<transformation> unwind_form(you.form);
 
-    const transformation old_form = you.form;
     you.default_form = which_trans;
     you.form = which_trans;
 

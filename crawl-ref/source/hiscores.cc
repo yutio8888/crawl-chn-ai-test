@@ -2249,8 +2249,17 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
     // Please excuse the following bit of mess in the name of flavour ;)
     if (verbose)
     {
-        desc = make_stringf(T_("%8d %s the %s (level %d"),
-                  points, name.c_str(), T_(title.c_str()), lvl);
+        // The saved title is English; display it through the same finite
+        // known-title matcher used for ghosts (unknown names stay as-is).
+        string display_title = translated_ghost_title(title,
+            static_cast<species_type>(race < 0 ? SP_HUMAN : race));
+        // Historic or unmatched titles still go through the plain-key lookup
+        // that the translated score line has always used.
+        if (display_title == title)
+            display_title = T_(title.c_str());
+        desc = make_stringf(T_("%8d %s%s (level %d"),
+                  points, name.c_str(),
+                  (player_title_prefix(title) + display_title).c_str(), lvl);
     }
     else
     {
