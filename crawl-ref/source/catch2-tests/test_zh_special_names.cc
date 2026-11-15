@@ -243,6 +243,17 @@ TEST_CASE_METHOD(ZhTranslationFixture, "special names: artefact rendering preser
     });
     unrand.flags |= ISFLAG_IDENTIFIED;
     CHECK(unrand.name(DESC_PLAIN).find("「") == 0);
+    CHECK(unrand.name(DESC_PLAIN).find("骑枪『屠龙者』") != string::npos);
+    InvEntry unrand_entry(unrand);
+    CHECK(unrand_entry.get_filter_text().find("骑枪\"屠龙者\"") != string::npos);
+    you.inv[1] = unrand;
+    you.inv[1].pos = ITEM_IN_INVENTORY;
+    you.inv[1].link = 1;
+    you.inv[1].slot = 'b';
+    const auto unrand_search = inventory_search(
+        plaintext_pattern("骑枪\"屠龙者\"", true));
+    REQUIRE(unrand_search.size() == 1);
+    CHECK(unrand_search[0].item.special == UNRAND_WYRMBANE);
     CHECK(get_unrand_name_en(unrand) == string("lance \"Wyrmbane\""));
     CHECK(get_artefact_name(unrand) == "骑枪\"屠龙者\"");
     CHECK(quote_special_name("<red>「西格蒙德」</red>")
@@ -310,4 +321,36 @@ TEST_CASE_METHOD(ZhTranslationFixture, "special names: actual artefact attunemen
                   != string::npos);
         }
     }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture, "special names: paired inner punctuation is display only",
+                 "[zh-translation][special-name-quotes]")
+{
+    const vector<pair<string, string>> cases = {
+        {"plain name", "「plain name」"},
+        {"blade \"Wyrmbane\"", "「blade 『Wyrmbane』」"},
+        {"blade 「Giant Slayer」", "「blade 『Giant Slayer』」"},
+        {"blade \"A\" and \"B\"", "「blade 『A』 and 『B』」"},
+        {"blade \"unpaired", "「blade \"unpaired」"},
+        {"blade 「unpaired", "「blade 「unpaired」"},
+        {"blade unpaired」", "「blade unpaired」」"},
+        {"blade \"pair\" \"unpaired", "「blade 『pair』 \"unpaired」"},
+        {"blade 「outer「inner」end」", "「blade 『outer『inner』end』」"},
+        {"<red>blade \"Wyrmbane\"</red>", "「<red>blade 『Wyrmbane』</red>」"},
+        {"<red>「blade \"Wyrmbane\"」</red>", "<red>「blade 『Wyrmbane』」</red>"},
+    };
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (const auto &entry : cases)
+        {
+            INFO(entry.first);
+            CHECK(quote_special_name(entry.first)
+                  == (language == lang_t::ZH ? entry.second : entry.first));
+        }
+        const string name = quote_special_name("blade \"Wyrmbane\"");
+        CHECK(make_stringf("%s says \"outside\".", name.c_str())
+              == name + " says \"outside\".");
+    }
+    CHECK(quote_special_name("「blade 『Wyrmbane』」") == "「blade 『Wyrmbane』」");
 }
