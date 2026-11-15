@@ -168,6 +168,9 @@ struct stash_search_result
     }
 };
 
+// Carried-item lookup shared by the actual search UI and boundary regressions.
+vector<stash_search_result> inventory_search(const base_pattern &search);
+
 class LevelStashes
 {
 public:

@@ -660,10 +660,15 @@ bool ranged_attack::apply_missile_brand()
         }
         break;
     case SPMSL_CURARE:
-        obvious_effect = curare_actor(attacker, defender,
-                                      proj_name,
-                                      atk_name(DESC_A));
+    {
+        string source_name;
+        {
+            ScopedUnquotedNames unquoted;
+            source_name = atk_name(DESC_A);
+        }
+        obvious_effect = curare_actor(attacker, defender, proj_name, source_name);
         break;
+    }
     case SPMSL_CHAOS:
         obvious_effect = chaos_affects_actor(defender, attacker);
         break;
@@ -706,7 +711,7 @@ bool ranged_attack::apply_missile_brand()
             {
                 // Persistent props are protocol: store canonical English.
                 const ScopedLangEn canonical_language;
-                you.props[BLINKITIS_SOURCE_KEY] = attacker->name(DESC_A, true);
+                you.props[BLINKITIS_SOURCE_KEY] = name_for_storage(*attacker, DESC_A, true);
                 you.props[BLINKITIS_AUX_KEY] = proj_name_en;
             }
         }

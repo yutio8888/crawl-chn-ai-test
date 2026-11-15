@@ -89,9 +89,11 @@ public:
     {
     }
 
+    // Persisted snapshots pass false for decorate_name; raw fields stay unchanged.
     string name(description_level_type descrip, bool terse = false,
                 bool ident = false, bool with_inscription = true,
-                bool quantity_in_words = false) const;
+                bool quantity_in_words = false,
+                bool decorate_name = true) const;
     bool has_spells() const;
     bool cursed() const;
     colour_t get_colour() const;

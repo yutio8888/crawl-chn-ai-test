@@ -3854,7 +3854,7 @@ bool melee_attack::mons_do_poison()
     {
         // Attach our base poison damage to the curare effect
         return curare_actor(attacker, defender, "concentrated venom",
-                            attacker->name(DESC_PLAIN), amount);
+                            name_for_storage(*attacker, DESC_PLAIN), amount);
     }
 
     if (!defender->poison(attacker, amount))

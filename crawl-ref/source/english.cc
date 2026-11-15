@@ -8,15 +8,120 @@
 
 #include "english.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cwctype>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "actor.h"
+#include "format.h"
+#include "monster.h"
 #include "i18n.h"
 #include "lang-en-guard.h"
 #include "options.h"
 #include "stringutil.h"
+
+namespace
+{
+bool special_name_quotes = true;
+constexpr char name_quote_open[] = "「";
+constexpr char name_quote_close[] = "」";
+constexpr char inner_quote_open[] = "『";
+constexpr char inner_quote_close[] = "』";
+
+bool _has_outer_name_quotes(const string &text)
+{
+    if (!starts_with(text, name_quote_open) || !ends_with(text, name_quote_close))
+        return false;
+    int depth = 0;
+    for (size_t pos = 0; pos < text.size(); ++pos)
+    {
+        if (text.compare(pos, sizeof(name_quote_open) - 1, name_quote_open) == 0)
+            ++depth;
+        else if (text.compare(pos, sizeof(name_quote_close) - 1, name_quote_close) == 0
+                 && --depth == 0 && pos + sizeof(name_quote_close) - 1 != text.size())
+        {
+            return false;
+        }
+    }
+    return depth == 0;
+}
+
+string _normalise_inner_name_quotes(string text, bool has_outer)
+{
+    vector<size_t> straight_quotes;
+    for (size_t pos = text.find('"'); pos != string::npos; pos = text.find('"', pos + 1))
+        straight_quotes.push_back(pos);
+    // Pair straight quotes from left to right. Leave an unmatched final one.
+    for (size_t i = straight_quotes.size() / 2 * 2; i > 0; --i)
+    {
+        text.replace(straight_quotes[i - 1], 1,
+                     i % 2 ? inner_quote_open : inner_quote_close);
+    }
+
+    vector<size_t> openings;
+    vector<pair<size_t, bool>> replacements;
+    const auto first = text.find(name_quote_open);
+    const auto last = text.rfind(name_quote_close);
+    for (size_t pos = 0; pos < text.size(); ++pos)
+    {
+        if (text.compare(pos, sizeof(name_quote_open) - 1, name_quote_open) == 0)
+            openings.push_back(pos);
+        else if (text.compare(pos, sizeof(name_quote_close) - 1, name_quote_close) == 0
+                 && !openings.empty())
+        {
+            const auto opening = openings.back();
+            openings.pop_back();
+            if (has_outer && opening == first && pos == last)
+                continue;
+            replacements.emplace_back(opening, true);
+            replacements.emplace_back(pos, false);
+        }
+    }
+    sort(replacements.rbegin(), replacements.rend());
+    for (const auto &replacement : replacements)
+    {
+        text.replace(replacement.first, sizeof(name_quote_open) - 1,
+                     replacement.second ? inner_quote_open : inner_quote_close);
+    }
+    return text;
+}
+}
+
+ScopedUnquotedNames::ScopedUnquotedNames() : previous_(special_name_quotes)
+{
+    special_name_quotes = false;
+}
+
+ScopedUnquotedNames::~ScopedUnquotedNames()
+{
+    special_name_quotes = previous_;
+}
+
+string quote_special_name(const string &name)
+{
+    if (!special_name_quotes || Options.language != lang_t::ZH || name.empty())
+        return name;
+    const string visible = formatted_string::parse_string(name).tostring();
+    const bool has_outer = _has_outer_name_quotes(visible);
+    const string inner = _normalise_inner_name_quotes(name, has_outer);
+    return has_outer ? inner : name_quote_open + inner + name_quote_close;
+}
+
+string name_for_storage(const actor &who, description_level_type desc,
+                        bool force_visible)
+{
+    ScopedUnquotedNames unquoted;
+    return who.name(desc, force_visible);
+}
+
+string full_name_for_storage(const monster &who, description_level_type desc)
+{
+    ScopedUnquotedNames unquoted;
+    return who.full_name(desc);
+}
 
 const char * const standard_plural_qualifiers[] =
 {

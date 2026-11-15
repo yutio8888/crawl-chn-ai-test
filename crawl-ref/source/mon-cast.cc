@@ -2297,7 +2297,7 @@ bolt mons_spell_beam(const monster* mons, spell_type spell_cast, int power,
     beam.thrower = KILL_MON_MISSILE;
     beam.origin_spell = real_spell;
     beam.source_id = mons->mid;
-    beam.source_name = mons->name(DESC_A, true);
+    beam.source_name = name_for_storage(*mons, DESC_A, true);
 
     if (!mons_spell_is_spell(real_spell))
         power = mons_power_for_hd(real_spell, mons->get_hit_dice());
@@ -6938,7 +6938,7 @@ static void _mons_upheaval(monster& mons, actor& /*foe*/, bool randomize)
 {
     bolt beam;
     beam.source_id   = mons.mid;
-    beam.source_name = mons.name(DESC_THE).c_str();
+    beam.source_name = name_for_storage(mons, DESC_THE);
     beam.thrower     = KILL_MON_MISSILE;
     beam.range       = LOS_RADIUS;
     beam.damage      = dice_def(3, 24);

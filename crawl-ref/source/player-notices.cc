@@ -343,7 +343,7 @@ static string _describe_monsters_from_species(const vector<details> &species)
             {
                 string title = getMiscString(det.mon->name(DESC_DBNAME) + " title");
                 if (!title.empty())
-                    return title;
+                    return monster_info(det.mon).title_name(title);
 
                 // Use monster_info to get the monster's full name, so we get
                 // proper articles for all named monsters as well as proper
@@ -631,7 +631,7 @@ void seen_monster(monster* mons, bool do_encounter_message)
 
     if (mons_is_notable(*mons))
     {
-        string name = mons->name(DESC_A, true);
+        string name = name_for_storage(*mons, DESC_A, true);
         if (mons->type == MONS_PLAYER_GHOST)
         {
             name += make_stringf(" (%s)",

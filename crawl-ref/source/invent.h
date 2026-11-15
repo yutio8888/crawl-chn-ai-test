@@ -85,8 +85,10 @@ private:
     mutable string basename;
     mutable string qualname;
     mutable string dbname;
+    string _get_unquoted_text() const;
 
 protected:
+    string unquoted_text;
     // Should we show the floor tile, etc?
     bool show_background = true;
     string _get_text_preface() const override;

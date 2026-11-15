@@ -1449,7 +1449,7 @@ void TilesFramework::_send_player(bool force_full)
 }
 
 // Checks if an item should be displayed on the action panel
-static int _useful_consumable_order(const item_def &item, const string &name)
+static int _useful_consumable_order(const item_def &item)
 {
     const vector<object_class_type> &base_types = Options.action_panel;
     const auto order = std::find(base_types.begin(), base_types.end(),
@@ -1462,6 +1462,7 @@ static int _useful_consumable_order(const item_def &item, const string &name)
         return -1;
     }
 
+    const string name = item.name(DESC_A, true, false, true, false, false);
     for (const text_pattern &p : Options.action_panel_filter)
         if (p.matches(name))
             return -1;
@@ -1566,18 +1567,18 @@ void TilesFramework::_send_item(item_def& current, const item_def& next,
         // -1 in this field means don't show. *note*: showing in the action
         // panel has undefined behavior for item types that don't have a
         // quiver::action implementation...
-        json_write_int("action_panel_order", _useful_consumable_order(next, name));
+        json_write_int("action_panel_order", _useful_consumable_order(next));
         json_write_string("qty_field", _qty_field_name(next));
 
         const string prefix = item_prefix(next);
-        const int prefcol = menu_colour(next.name(DESC_INVENTORY), prefix, "inventory", false);
+        const int prefcol = menu_colour(next.name(DESC_INVENTORY, false, false, true, false, false), prefix, "inventory", false);
         if (force_full)
             json_write_int("col", macro_colour(prefcol));
         else
         {
             const string current_prefix = item_prefix(current);
             const int current_prefcol = menu_colour(
-                current.name(DESC_INVENTORY), current_prefix,
+                current.name(DESC_INVENTORY, false, false, true, false, false), current_prefix,
                 "inventory", false);
 
             if (current_prefcol != prefcol)

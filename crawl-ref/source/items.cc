@@ -1004,7 +1004,7 @@ void identify_item(item_def& item)
         && !(item.flags & (ISFLAG_NOTED_ID)))
     {
         // Make a note of it.
-        take_note(Note(NOTE_ID_ITEM, 0, 0, item.name(DESC_A),
+        take_note(Note(NOTE_ID_ITEM, 0, 0, item.name(DESC_A, false, false, true, false, false),
                        origin_desc(item)));
 
         // Sometimes (e.g. shops) you can ID an item before you get it;
@@ -1206,7 +1206,7 @@ static void _check_note_item(item_def &item)
     if (item_is_collectible(item) || is_artefact(item))
     {
         int v = item.base_type == OBJ_GEMS ? gem_time_left(item.sub_type) : 0;
-        take_note(Note(NOTE_GET_ITEM, v, 0, item.name(DESC_A),
+        take_note(Note(NOTE_GET_ITEM, v, 0, item.name(DESC_A, false, false, true, false, false),
                        origin_desc(item)));
         item.flags |= ISFLAG_NOTED_GET;
 
@@ -2422,7 +2422,7 @@ item_def *auto_assign_item_slot(item_def& item, bool quiet)
         // `matches` has a validity check
         if (!mapping.first.matches(item.name(DESC_QUALNAME))
             && !mapping.first.matches(item_prefix(item)
-                                      + " " + item.name(DESC_A)))
+                                      + " " + item.name(DESC_A, false, false, true, false, false)))
         {
             continue;
         }
@@ -2443,7 +2443,7 @@ item_def *auto_assign_item_slot(item_def& item, bool quiet)
                     || overwrite
                        && !mapping.first.matches(iitem.name(DESC_QUALNAME))
                        && !mapping.first.matches(item_prefix(iitem)
-                                                 + " " + iitem.name(DESC_A)))
+                                                 + " " + iitem.name(DESC_A, false, false, true, false, false)))
                 {
                     newslot = index;
                     break;
@@ -3426,6 +3426,7 @@ static bool _interesting_explore_pickup(const item_def& item)
     vector<text_pattern> &ignores = Options.explore_stop_pickup_ignore;
     if (!ignores.empty())
     {
+        ScopedUnquotedNames unquoted;
         const string name = item.name(DESC_PLAIN);
 
         for (const text_pattern &pat : ignores)

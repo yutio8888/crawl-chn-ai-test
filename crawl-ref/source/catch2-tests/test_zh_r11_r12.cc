@@ -95,7 +95,8 @@ TEST_CASE("named player ghosts and illusions add one possessive",
                 const string suffix = type == MONS_PLAYER_GHOST
                     ? (zh ? "的鬼魂" : "'s ghost")
                     : (zh ? "的幻象" : "'s illusion");
-                CHECK(mon.common_name(DESC_PLAIN) == owner + suffix);
+                CHECK(mon.common_name(DESC_PLAIN)
+                      == (zh ? "「" + owner + suffix + "」" : owner + suffix));
                 CHECK(mon.mname == owner);
             }
         }

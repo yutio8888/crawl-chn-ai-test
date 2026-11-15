@@ -4,6 +4,7 @@
  **/
 
 #include "AppHdr.h"
+#include "english.h"
 
 #include "player-reacts.h"
 
@@ -1129,7 +1130,7 @@ static void _handle_emergency_flight()
 // Regeneration and Magic Regeneration items only work if the player has reached
 // max hp/mp while they are being worn. This scans and updates such items when
 // the player refills their hp/mp.
-static void _maybe_attune_regen_items()
+void maybe_attune_regen_items()
 {
     bool attune_regen = you.check_hp_regen_attunement;
     bool attune_mana_regen = you.check_mp_regen_attunement;
@@ -1165,9 +1166,12 @@ static void _maybe_attune_regen_items()
             else if (!gained_mana_regen && is_mana_regen_item(arm))
                 gained_mana_regen = true;
 
-            eq_list.push_back(is_artefact(arm) ? get_artefact_name(arm) :
+            string name = is_artefact(arm) ? get_artefact_name(arm) :
                 entry.slot == SLOT_AMULET ? T_("amulet") :
-                    lowercase_string(equip_slot_name(entry.slot, true)));
+                    lowercase_string(equip_slot_name(entry.slot, true));
+            if (is_artefact(arm) && arm.is_identified())
+                name = quote_special_name(name);
+            eq_list.push_back(name);
 
             if (entry.slot == SLOT_BOOTS || entry.slot == SLOT_GLOVES)
                 plural = true;
@@ -1371,7 +1375,7 @@ void player_reacts()
     _regenerate_hp_and_mp(you.time_taken);
 
     // Update attunement of regeneration items if our hp/mp has refilled.
-    _maybe_attune_regen_items();
+    maybe_attune_regen_items();
 
     _decrement_durations();
 

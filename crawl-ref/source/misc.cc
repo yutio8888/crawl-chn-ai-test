@@ -109,10 +109,10 @@ counted_monster_list::counted_monster_list(vector<monster *> ms)
 
 void counted_monster_list::add(const monster* mons)
 {
-    const string name = mons->name(DESC_PLAIN);
+    const string name = name_for_storage(*mons, DESC_PLAIN);
     for (auto &entry : list)
     {
-        if (entry.first->name(DESC_PLAIN) == name)
+        if (name_for_storage(*entry.first, DESC_PLAIN) == name)
         {
             entry.second++;
             return;
@@ -135,7 +135,7 @@ string counted_monster_list::describe(description_level_type desc) const
 
     for (auto i = list.begin(); i != list.end();)
     {
-        const counted_monster &cm(*i);
+        const counted_monster &cm = *i;
         if (i != list.begin())
         {
             ++i;

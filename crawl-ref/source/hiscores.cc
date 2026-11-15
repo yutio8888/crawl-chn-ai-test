@@ -1424,7 +1424,7 @@ void scorefile_entry::init_death_cause(int dam, mid_t dsrc,
             {
                 const auto weapon_name = [&]() -> string
                 {
-                    string result = env.item[mons->inv[MSLOT_WEAPON]].name(DESC_A);
+                    string result = env.item[mons->inv[MSLOT_WEAPON]].name(DESC_A, false, false, true, false, false);
                     if (mons->has_ench(ENCH_ARMED))
                         result += T_(" (from an undying armoury)");
                     return result;
@@ -1446,10 +1446,10 @@ void scorefile_entry::init_death_cause(int dam, mid_t dsrc,
         // before handing any strings to xlog, not at the final writer.
         const auto source_name = [&]() -> string
         {
-            string result = mons->name(desc, death);
+            string result = name_for_storage(*mons, desc, death);
 
             if (death || you.can_see(*mons))
-                result = mons->full_name(desc);
+                result = full_name_for_storage(*mons, desc);
 
             if (mons_is_player_shadow(*mons))
                 result = T_("their own shadow"); // heh

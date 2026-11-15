@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "english.h"
 
 #include "spl-miscast.h"
 
@@ -144,7 +145,7 @@ static void _ouch(actor& target, actor * source, miscast_source_info mc_info, in
         bool see_source = source && you.can_see(*source);
         ouch(dam, method, source ? source->mid : MID_NOBODY,
              cause.c_str(), see_source,
-             source ? source->name(DESC_A, true).c_str() : nullptr);
+             source ? name_for_storage(*source, DESC_A, true).c_str() : nullptr);
     }
 }
 
