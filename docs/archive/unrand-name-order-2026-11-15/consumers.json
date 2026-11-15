@@ -30,7 +30,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 557
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "athame \"Fimbulwinter\"",
@@ -59,7 +60,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 1960
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "dagger \"Morg\"",
@@ -88,7 +90,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 466
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "demon blade \"Bloodbane\"",
@@ -117,7 +120,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 397
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "demon blade \"Leech\"",
@@ -146,7 +150,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 437
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "demon trident \"Rift\"",
@@ -175,7 +180,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 1583
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "demon whip \"Spellbinder\"",
@@ -204,7 +210,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 1385
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "eveningstar \"Brilliance\"",
@@ -233,7 +240,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 424
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "frozen axe \"Frostbite\"",
@@ -262,7 +270,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 1519
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "giant club \"Skullcrusher\"",
@@ -291,7 +300,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 519
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "giant spiked club \"Carina at Dusk\"",
@@ -320,7 +330,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 2007
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "great mace \"Firestarter\"",
@@ -349,7 +360,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 1412
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "great mace \"Undeadhunter\"",
@@ -378,7 +390,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 736
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "greatsling \"Punk\"",
@@ -407,7 +420,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 493
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "hand cannon \"Mule\"",
@@ -436,7 +450,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 1842
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "heavy crossbow \"Sniper\"",
@@ -465,7 +480,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 650
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "lance \"Wyrmbane\"",
@@ -493,6 +509,15 @@
         {
           "file": "crawl-ref/source/art-data.txt",
           "line": 691
+        }
+      ],
+      "other_full_name_mentions": [
+        {
+          "file": "crawl-ref/source/dat/descript/zh/unrand.txt",
+          "line": 206,
+          "text": "“屠龙者”是一把对所有龙类致命的魔法骑枪。",
+          "disposition": "keep",
+          "reason": "独立专名与自然正文；无完整旧语序"
         }
       ]
     },
@@ -523,7 +548,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 665
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "longbow \"Zephyr\"",
@@ -552,7 +578,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 506
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "mithril axe \"Arga\"",
@@ -581,7 +608,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 624
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "morningstar \"Eos\"",
@@ -610,7 +638,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 583
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "scythe \"Finisher\"",
@@ -639,7 +668,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 478
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "shillelagh \"Devastator\"",
@@ -668,7 +698,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 1253
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "toga \"Victory\"",
@@ -697,7 +728,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 1806
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "tower shield \"Bullseye\"",
@@ -726,7 +758,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 842
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "trishula \"Condemnation\"",
@@ -755,7 +788,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 1701
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     },
     {
       "key": "whip \"Snakebite\"",
@@ -784,7 +818,8 @@
           "file": "crawl-ref/source/art-data.txt",
           "line": 747
         }
-      ]
+      ],
+      "other_full_name_mentions": []
     }
   ],
   "keep": [
@@ -806,5 +841,6 @@
       "text": "const char *get_unrand_name_en(const item_def &item)"
     }
   ],
-  "generated_ledger": "27 current/adopted names and SourceDB dependencies; 23 generated semantic_reason fields reflect display changes; historical terminal conclusions and glossary snapshot retained. Generator compares original word order solely for old review boundary; unapproved epithet edits remain rejected."
+  "generated_ledger": "Current/adopted names and SourceDB dependencies; generated semantic_reason fields reflect display changes; historical terminal conclusions and glossary snapshot retained. Generator compares original word order solely for old review boundary; unapproved epithet edits remain rejected.",
+  "glossary_sha256": "60c245630789be4b439d259cd304f5c328c9df480cde4101990d25d95e3cdee1"
 }
