@@ -13,10 +13,52 @@
 #include <string>
 #include <vector>
 
+#include "actor.h"
+#include "format.h"
+#include "monster.h"
 #include "i18n.h"
 #include "lang-en-guard.h"
 #include "options.h"
 #include "stringutil.h"
+
+namespace
+{
+bool special_name_quotes = true;
+}
+
+ScopedUnquotedNames::ScopedUnquotedNames() : previous_(special_name_quotes)
+{
+    special_name_quotes = false;
+}
+
+ScopedUnquotedNames::~ScopedUnquotedNames()
+{
+    special_name_quotes = previous_;
+}
+
+string quote_special_name(const string &name)
+{
+    if (!special_name_quotes || Options.language != lang_t::ZH || name.empty())
+        return name;
+    const string visible = formatted_string::parse_string(name).tostring();
+    if (starts_with(visible, "「") && ends_with(visible, "」"))
+        return name;
+    // Preserve existing inner punctuation while using a distinct nesting level.
+    return "「" + replace_all(replace_all(name, "「", "『"), "」", "』") + "」";
+}
+
+string name_for_storage(const actor &who, description_level_type desc,
+                        bool force_visible)
+{
+    ScopedUnquotedNames unquoted;
+    return who.name(desc, force_visible);
+}
+
+string full_name_for_storage(const monster &who, description_level_type desc)
+{
+    ScopedUnquotedNames unquoted;
+    return who.full_name(desc);
+}
 
 const char * const standard_plural_qualifiers[] =
 {

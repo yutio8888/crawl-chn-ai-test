@@ -7146,7 +7146,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         killer->mname = "自定义领主";
     const string display = type == MONS_PLAYER_SHADOW
         ? string(T_("their own shadow"))
-        : killer->full_name(DESC_A)
+        : full_name_for_storage(*killer, DESC_A)
           + (type == MONS_PANDEMONIUM_LORD ? T_(" the pandemonium lord") : "");
     scorefile_entry entry(3, killer->mid, KILLED_BY_MONSTER, nullptr, true);
     entry.init(1600000000);
@@ -12752,7 +12752,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(table[bonus - 1] == ' ');
     }
 
-    item.props[ARTEFACT_NAME_KEY].get_string() = "测试测试测试测试blade";
+    item.props[ARTEFACT_NAME_KEY].get_string() = "测试测试测试blade";
     crawl_view.hudsz.x = 200;
     const string full = item.name(DESC_PLAIN, true, false, false);
     crawl_view.hudsz.x = 40;

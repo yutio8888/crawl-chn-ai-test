@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "english.h"
 
 #include "database.h"
 #include "stash.h"
@@ -509,7 +510,13 @@ vector<stash_search_result> Stash::matches_search(
 
         const string s   = stash_item_name(item);
         const string ann = stash_annotate_item(STASH_LUA_SEARCH_ANNOTATE, &item);
-        string haystack = prefix + " " + ann + " " + s
+        string search_name = s;
+        if (Options.language == lang_t::ZH && is_artefact(item) && item.is_identified())
+        {
+            ScopedUnquotedNames unquoted;
+            search_name = stash_item_name(item);
+        }
+        string haystack = prefix + " " + ann + " " + search_name
                          + " " + item_english_name(item);
         if (is_dumpable_artefact(item))
             haystack += " " + chardump_desc(item);
@@ -796,9 +803,15 @@ vector<stash_search_result> ShopInfo::matches_search(
         const string ann   = stash_annotate_item(STASH_LUA_SEARCH_ANNOTATE,
                                                  &item);
 
-        string text = prefix + " " + ann + " " + sname + " {" + shoptitle + "}"
-                      + shop_item_desc(item)
-                      + " " + item_english_name(item);
+        string search_name = sname;
+        if (Options.language == lang_t::ZH && is_artefact(item) && item.is_identified())
+        {
+            ScopedUnquotedNames unquoted;
+            search_name = shop_item_name(item);
+        }
+        const string text = prefix + " " + ann + " " + search_name
+            + " {" + shoptitle + "}" + shop_item_desc(item)
+            + " " + item_english_name(item);
         if (search.matches(text))
         {
             stash_search_result res;
@@ -1430,15 +1443,26 @@ vector<stash_search_result> inventory_search(const base_pattern &search)
         res.in_inventory = true;
         // Keep the canonical prefix for English queries and sorting. The
         // complete display form also permits localized compound queries.
-        string haystack = ann + " " + s + " " + item_english_name(item)
+        string search_name = s;
+        string search_display;
+        if (Options.language == lang_t::ZH)
+        {
+            ScopedUnquotedNames unquoted;
+            if (is_artefact(item) && item.is_identified())
+                search_name = Stash::stash_item_name(item);
+            stash_search_result search_result = res;
+            search_result.match = search_name;
+            search_display = search_result.display_match();
+        }
+        string haystack = ann + " " + search_name + " " + item_english_name(item)
                           + " " + T_("[carried]");
         if (Options.language == lang_t::ZH)
-            haystack += " " + res.display_match();
+            haystack += " " + search_display;
         if (is_dumpable_artefact(item))
             haystack += " " + chardump_desc(item);
         if (search.matches(haystack))
         {
-            res.primary_sort = s; // don't use DESC_QUALNAME for inventory items
+            res.primary_sort = search_name; // preserve undecorated inventory sorting
             res.item = item;
             res.pos = level_pos::current();
             results.push_back(res);
@@ -1969,6 +1993,7 @@ bool StashTracker::display_search_results(
             colour = CYAN;
         else if (res.item.defined())
         {
+            ScopedUnquotedNames unquoted;
             const int itemcol = menu_colour(res.item.name(DESC_PLAIN).c_str(),
                                         item_prefix(res.item, false), "pickup", false);
             if (itemcol != -1)

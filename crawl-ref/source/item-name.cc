@@ -314,7 +314,10 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
         }
     }
 
-    buff << auxname;
+    const bool quoted_artefact = display_inscription && is_artefact(*this)
+        && (ident || is_identified()) && descrip != DESC_DBNAME
+        && descrip != DESC_BASENAME && descrip != DESC_QUALNAME;
+    buff << (quoted_artefact ? quote_special_name(auxname) : auxname);
 
     if (descrip == DESC_INVENTORY_EQUIP)
     {
@@ -4146,7 +4149,14 @@ string menu_colour_item_name(const item_def &item, description_level_type desc)
     const string item_name = replace_all_of(
         replace_all(item.name(desc), "\r\n", " "), "\r\n", " ");
 
-    const int col = menu_colour(item_name, cprf, "pickup", false);
+    string colour_name = item_name;
+    if (Options.language == lang_t::ZH && is_artefact(item) && item.is_identified())
+    {
+        ScopedUnquotedNames unquoted;
+        colour_name = replace_all_of(
+            replace_all(item.name(desc), "\r\n", " "), "\r\n", " ");
+    }
+    const int col = menu_colour(colour_name, cprf, "pickup", false);
     if (col == -1)
         return item_name;
 

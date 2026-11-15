@@ -631,7 +631,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             const string displayed = ghost.full_name();
             CHECK(displayed.find("的的") == string::npos);
             CHECK(displayed == (language == lang_t::ZH
-                ? string("SpecialOrigin的") + (type == MONS_PLAYER_GHOST ? "鬼魂" : "幻象")
+                ? string("「SpecialOrigin的") + (type == MONS_PLAYER_GHOST ? "鬼魂」" : "幻象」")
                 : string("SpecialOrigin's ") + (type == MONS_PLAYER_GHOST ? "ghost" : "illusion")));
             CHECK(ghost.mname == "SpecialOrigin");
         }

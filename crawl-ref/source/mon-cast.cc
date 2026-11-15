@@ -2422,7 +2422,7 @@ bolt mons_spell_beam(const monster* mons, spell_type spell_cast, int power,
     beam.thrower = KILL_MON_MISSILE;
     beam.origin_spell = real_spell;
     beam.source_id = mons->mid;
-    beam.source_name = mons->name(DESC_A, true);
+    beam.source_name = name_for_storage(*mons, DESC_A, true);
 
     const mons_spell_logic* logic = _get_spell_logic(*mons, spell_cast);
     if (logic && logic->setup_beam)
@@ -7139,7 +7139,7 @@ static void _mons_upheaval(monster& mons, actor& /*foe*/, bool randomize)
 {
     bolt beam;
     beam.source_id   = mons.mid;
-    beam.source_name = mons.name(DESC_THE).c_str();
+    beam.source_name = name_for_storage(mons, DESC_THE);
     beam.thrower     = KILL_MON_MISSILE;
     beam.damage      = upheaval_damage();
     beam.foe_ratio   = random_range(20, 30);

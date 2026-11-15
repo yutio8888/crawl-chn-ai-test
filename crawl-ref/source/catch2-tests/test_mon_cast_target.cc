@@ -2056,10 +2056,10 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                 };
                 static const char *expected_zh[] =
                 {
-                    "芙芙猛然做出手势。",
-                    "芙芙用她的脚猛跺地面。",
-                    "芙芙用力合拢她的双掌。",
-                    "芙芙划出一道精巧的弧线。",
+                    "「芙芙」猛然做出手势。",
+                    "「芙芙」用她的脚猛跺地面。",
+                    "「芙芙」用力合拢她的双掌。",
+                    "「芙芙」划出一道精巧的弧线。",
                 };
                 CHECK(english.text == expected_en[ordinal]);
                 CHECK(chinese.text == expected_zh[ordinal]);
@@ -2076,11 +2076,11 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                 };
                 static const char *expected_zh[] =
                 {
-                    "耶利米发出一声扭曲的喊叫。",
-                    "耶利米含糊不清地咕哝着祷文。",
-                    "耶利米恳求般地举起其双臂。",
-                    "耶利米哭喊道：“可畏的主人，保护我吧！”",
-                    "耶利米大喊道：“可怖者啊，毁灭我的敌人！”",
+                    "「耶利米」发出一声扭曲的喊叫。",
+                    "「耶利米」含糊不清地咕哝着祷文。",
+                    "「耶利米」恳求般地举起其双臂。",
+                    "「耶利米」哭喊道：“可畏的主人，保护我吧！”",
+                    "「耶利米」大喊道：“可怖者啊，毁灭我的敌人！”",
                 };
                 CHECK(english.text == expected_en[ordinal]);
                 CHECK(chinese.text == expected_zh[ordinal]);
@@ -2101,10 +2101,10 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                 };
                 static const char *expected_zh[] =
                 {
-                    "加斯特罗诺克欢快地咕嘟冒泡。",
-                    "加斯特罗诺克泛起鲜亮的樱桃红光芒。",
-                    "加斯特罗诺克疯狂地摇晃起来。",
-                    "加斯特罗诺克的眼柄伸展开来，随后恢复原状。",
+                    "「加斯特罗诺克」欢快地咕嘟冒泡。",
+                    "「加斯特罗诺克」泛起鲜亮的樱桃红光芒。",
+                    "「加斯特罗诺克」疯狂地摇晃起来。",
+                    "「加斯特罗诺克」的眼柄伸展开来，随后恢复原状。",
                     "你晃了晃。",
                     "你的脸色微微发绿。",
                     "你短暂地感到迟钝。",
@@ -2124,9 +2124,9 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                 };
                 static const char *expected_zh[] =
                 {
-                    "威格拉夫将他的武器砸向地面。",
-                    "威格拉夫的喊声从你旁边掠过：“尝尝大山的血！”",
-                    "威格拉夫的咆哮声从你旁边掠过：“让老子给你看看什么才叫真正的炮！”",
+                    "「威格拉夫」将他的武器砸向地面。",
+                    "「威格拉夫」的喊声从你旁边掠过：“尝尝大山的血！”",
+                    "「威格拉夫」的咆哮声从你旁边掠过：“让老子给你看看什么才叫真正的炮！”",
                 };
                 CHECK(english.text == expected_en[ordinal]);
                 CHECK(chinese.text == expected_zh[ordinal]);
@@ -2277,7 +2277,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
               == "Wiglaf shouts past the rat, "
                  "\"Taste the blood o the mountain!\"");
         CHECK(chinese.text
-              == "威格拉夫的喊声从老鼠旁边掠过：“尝尝大山的血！”");
+              == "「威格拉夫」的喊声从老鼠旁边掠过：“尝尝大山的血！”");
     }
 
     SECTION("speech player applicability preserves friendly foe fallback")
@@ -2530,7 +2530,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                    || captures[0].value == captures[2].value
                    || captures[1].value == captures[2].value));
             CHECK(chinese.text
-                  == "内尔加勒呼唤道：“" + captures[0].value + "、"
+                  == "「内尔加勒」呼唤道：“" + captures[0].value + "、"
                      + captures[1].value + "、" + captures[2].value
                      + "——到我这里来！”");
         }
@@ -2539,7 +2539,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
             CHECK(english.text
                   == "Nergalle cries out, \"Spectres! Fight for the home you helped make!\"");
             CHECK(chinese.text
-                  == "内尔加勒哭喊道：“幽灵们！为你们亲手建造的家园而战！”");
+                  == "「内尔加勒」哭喊道：“幽灵们！为你们亲手建造的家园而战！”");
             CHECK(english.materialization.recursive_captures.empty());
             CHECK(chinese.materialization.recursive_captures.empty());
         }

@@ -1422,7 +1422,7 @@ TEST_CASE("sirocco knockback localizes its cause without changing beam identity"
     CHECK(mon->pos() == coord_def(23, 20));
     if (language == lang_t::ZH)
     {
-        CHECK(message.find("特伦斯被灼热风击退了。") != string::npos);
+        CHECK(message.find("「特伦斯」被灼热风击退了。") != string::npos);
         CHECK(message.find("scorching wind") == string::npos);
     }
     else

@@ -602,12 +602,12 @@ void record_monster_defeat(const monster* mons, killer_type killer)
     if (mons->is_named() && mons->friendly()
         && !mons_is_hepliaklqana_ancestor(mons->type))
     {
-        take_note(Note(NOTE_ALLY_DEATH, 0, 0, mons->name(DESC_PLAIN, true)));
+        take_note(Note(NOTE_ALLY_DEATH, 0, 0, name_for_storage(*mons, DESC_PLAIN, true)));
     }
     else if (mons_is_notable(*mons))
     {
         take_note(Note(NOTE_DEFEAT_MONSTER, mons->type, mons->friendly(),
-                       mons->full_name(DESC_A).c_str(),
+                       full_name_for_storage(*mons, DESC_A).c_str(),
                        _milestone_kill_verb(killer).c_str()));
     }
     if (mons->type == MONS_PLAYER_GHOST)

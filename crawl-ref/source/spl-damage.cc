@@ -347,7 +347,7 @@ spret cast_chain_spell(spell_type spell_cast, int pow,
     beam.origin_spell   = spell_cast;
 
     if (const monster* mons = caster->as_monster())
-        beam.source_name = mons->name(DESC_PLAIN, true);
+        beam.source_name = name_for_storage(*mons, DESC_PLAIN, true);
 
     bool first = true;
     coord_def source, target;
@@ -1550,7 +1550,7 @@ bool setup_fragmentation_beam(bolt &beam, int pow, const actor *caster,
             break;
     }
 
-    beam.source_name = caster->name(DESC_PLAIN, true);
+    beam.source_name = name_for_storage(*caster, DESC_PLAIN, true);
     beam.target = target;
 
     return true;
@@ -3643,7 +3643,7 @@ void toxic_radiance_effect(actor* agent, int mult, bool on_cast)
             {
                 ouch(dam, KILLED_BY_BEAM, agent->mid,
                     "by Olgreb's Toxic Radiance",
-                    agent->as_monster()->name(DESC_A).c_str());
+                    name_for_storage(*agent, DESC_A).c_str());
 
                 int poison = roll_dice(2, 3 + div_rand_round(pow, 24));
 
@@ -3652,7 +3652,7 @@ void toxic_radiance_effect(actor* agent, int mult, bool on_cast)
                 if (you.res_poison() > 0)
                     poison /= 3;
 
-                poison_player(poison, agent->name(DESC_A),
+                poison_player(poison, name_for_storage(*agent, DESC_A),
                               "toxic radiance", true);
             }
         }

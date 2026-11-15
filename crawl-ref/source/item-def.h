@@ -94,8 +94,8 @@ public:
     {
     }
 
-    // Persisted display snapshots pass false for display_inscription to keep
-    // their historical generated labels and separators byte-identical.
+    // Persisted snapshots pass false for display_inscription to omit UI-only
+    // name quotes and keep historical generated labels/separators unchanged.
     string name(description_level_type descrip, bool terse = false,
                 bool ident = false, bool with_inscription = true,
                 bool quantity_in_words = false,
