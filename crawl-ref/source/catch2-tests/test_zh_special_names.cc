@@ -5,6 +5,7 @@
 #include "english.h"
 #include "database.h"
 #include "format.h"
+#include "hiscores.h"
 #include "invent.h"
 #include "item-name.h"
 #include "item-prop.h"
@@ -280,6 +281,23 @@ TEST_CASE_METHOD(ZhTranslationFixture, "special names: poison identity remains u
         CHECK(source.mname.empty());
         CHECK(source.name(DESC_A, true)
               == (language == lang_t::ZH ? "「西格蒙德」" : "Sigmund"));
+
+        // A named pan lord's miasma follows a separate poison-source path.
+        source.type = MONS_PANDEMONIUM_LORD;
+        source.mname = "Houn";
+        you.duration[DUR_POISONING] = 0;
+        you.props.erase(POISONER_KEY);
+        REQUIRE(miasma_player(&source, "a miasma cloud"));
+        CHECK(source.name(DESC_A, true)
+              == (language == lang_t::ZH ? "「Houn」" : "Houn"));
+        CHECK(you.props[POISONER_KEY].get_string() == "Houn");
+        CHECK(you.props[POISON_AUX_KEY].get_string() == "a miasma cloud");
+        scorefile_entry death(5, MID_NOBODY, KILLED_BY_POISON,
+                              "a miasma cloud");
+        death.init(1600000000);
+        const xlog_fields fields(death.raw_string());
+        CHECK(fields.str_field("killer") == "Houn");
+        CHECK(source.mname == "Houn");
     }
 }
 

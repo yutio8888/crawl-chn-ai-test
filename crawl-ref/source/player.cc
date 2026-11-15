@@ -5181,7 +5181,7 @@ bool miasma_player(actor *who, string source_aux)
     }
 
     bool success = poison_player(5 + roll_dice(3, 12),
-                                 who ? who->name(DESC_A) : "",
+                                 who ? name_for_storage(*who, DESC_A) : "",
                                  source_aux);
 
     if (one_chance_in(3))
