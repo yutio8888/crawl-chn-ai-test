@@ -1336,6 +1336,39 @@ def art_data_blocks(text):
     return blocks
 
 
+# D-C-120 only reorders the approved quoted epithets. Compare their original
+# order for the historical review boundary; keep current_chinese as displayed.
+UNRAND_NAME_ORDER_KEYS = {
+    'arbalest "damnation"',
+    'athame "fimbulwinter"',
+    'dagger "morg"',
+    'demon blade "bloodbane"',
+    'demon blade "leech"',
+    'demon trident "rift"',
+    'demon whip "spellbinder"',
+    'eveningstar "brilliance"',
+    'frozen axe "frostbite"',
+    'giant club "skullcrusher"',
+    'giant spiked club "carina at dusk"',
+    'great mace "firestarter"',
+    'great mace "undeadhunter"',
+    'greatsling "punk"',
+    'hand cannon "mule"',
+    'heavy crossbow "sniper"',
+    'lance "wyrmbane"',
+    'longbow "piercer"',
+    'longbow "zephyr"',
+    'mithril axe "arga"',
+    'morningstar "eos"',
+    'scythe "finisher"',
+    'shillelagh "devastator"',
+    'toga "victory"',
+    'tower shield "bullseye"',
+    'trishula "condemnation"',
+    'whip "snakebite"',
+}
+
+
 def unrand_rows(db, source_db, base_db, base_source_db, review_base):
     art = active_source(SRC / "art-data.txt")
     blocks = art_data_blocks(art)
@@ -1377,7 +1410,12 @@ def unrand_rows(db, source_db, base_db, base_source_db, review_base):
     changed_names = set()
     for definition in definitions:
         key = definition["name"].lower()
-        if base_source_db.get(key) != source_db.get(key):
+        name = source_db.get(key)
+        if key in UNRAND_NAME_ORDER_KEYS and isinstance(name, str):
+            ordered = re.fullmatch(r"「([^」]+)」([^「」]+)", name)
+            if ordered:
+                name = f'{ordered[2]}"{ordered[1]}"'
+        if base_source_db.get(key) != name:
             changed_names.add(key)
     expected_changed_names = {
         # Issue #147: 13 new upstream definitions, Prune and Tranquillity
