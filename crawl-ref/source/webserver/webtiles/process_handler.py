@@ -97,6 +97,24 @@ def watch_socket_dirs():
             continue
         watcher.watch(socket_dir, handle_new_socket)
 
+def _static_fingerprint(static_path):
+    # type: (str) -> str
+    try:
+        entries = sorted(os.scandir(static_path), key=lambda e: e.name)
+    except OSError:
+        return ""
+    parts = []
+    for entry in entries:
+        try:
+            if not entry.is_file():
+                continue
+            st = entry.stat()
+        except OSError:
+            continue
+        parts.append("%s:%d:%d" % (entry.name, st.st_size, st.st_mtime_ns))
+    return "|".join(parts)
+
+
 class CrawlProcessHandlerBase(object):
     def __init__(self, game_params, username, logger):
         self.game_params = game_params
@@ -603,6 +621,12 @@ class CrawlProcessHandlerBase(object):
         h = hashlib.sha1(utf8(os.path.abspath(self.client_path)))
         if self.crawl_version:
             h.update(utf8(self.crawl_version))
+        # The version is only known when the binary reports it (WEBDIR
+        # builds). Also fingerprint the static files, so rebuilt tile atlases
+        # and tileinfo scripts get a new /gamedata/<hash>/ URL and browsers
+        # cannot pair a new binary with cached tiles from an older build.
+        h.update(utf8(_static_fingerprint(
+                            os.path.join(self.client_path, "static"))))
         v = h.hexdigest()
         GameDataHandler.add_version(v,
                                     os.path.join(self.client_path, "static"))

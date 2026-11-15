@@ -267,6 +267,30 @@ unsigned APK. Its default destination is the ignored repository-relative
 `.artifacts/android/` directory; relative overrides are resolved from the
 repository root.
 
+## WebTiles Deployment
+
+The binary picks item, monster and terrain tiles by number; the browser maps
+those numbers through `tileinfo-*.js` onto the PNG atlases. All three must come
+from the same build. Upstream syncs regularly insert new tiles (for example a
+new unrand tile early in `main.png`), so a binary paired with an older
+`main.png`/`tileinfo-main.js` shows the neighbouring tile for almost every item.
+
+1. Build once, in a clean or dedicated tree: `make WEBTILES=y -j4` from
+   `crawl-ref/source`. This regenerates rltiles and copies the PNGs,
+   `tileinfo-*.js` and `status-icon-sizes.js` into `webserver/game_data/static`.
+   A first parallel run can stop on `status-icon-sizes.js`; re-running `make`
+   completes it.
+2. Deploy `crawl` and `webserver/game_data/` from that same build. The game's
+   `client_path` in `games.d/*.yaml` must point at that `game_data` directory
+   (or install with `WEBDIR=...` and use the matching path), not at a copy from
+   an earlier build.
+3. Restart the WebTiles server after deploying, then start a new game.
+
+The server derives the `/gamedata/<hash>/` URL from `client_path`, the reported
+binary version and a fingerprint of the static files, so rebuilt atlases get a
+fresh URL and browsers do not pair a new binary with cached tiles. Clearing the
+browser cache is not a substitute for redeploying matching files.
+
 ## Local `init.txt` and Fonts
 
 `crawl-ref/source/init.txt` remains intentionally gitignored and is needed only
