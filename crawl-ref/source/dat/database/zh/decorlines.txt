@@ -217,7 +217,7 @@ Trog peaceful fountain_blue
 
 {{
 if you.transform() == "wisp" then
-  return "你在喷泉中的倒影因安静的愤怒而扭曲着。"
+  return "你在喷泉中的倒影因无声的怒火而扭曲着。"
 elseif you.transform() == "fungus" then
   return "你短暂地停下来，从菌丝体中拧出了一些血。"
 else
@@ -262,13 +262,13 @@ Lugonu peaceful fountain_eyes
 %%%%
 Makhleb peaceful fountain_blood
 
-你停下来欣赏着流经这座喷泉的血液量。
+你停下来，赞叹着喷泉里流淌的鲜血之多。
 
-你的思绪短暂地被在这座喷泉中沐浴的念头吞噬了。
+在这座喷泉中沐浴的念头一时占据了你的心神。
 
-你以泉中的鲜血为自己行涂抹之礼。
+你用泉中的鲜血为自己施行涂抹仪式。
 
-你以仪式般的狂热短暂地在喷泉中洗了洗@your_weapon@。
+你怀着仪式般的狂热，在喷泉中短暂地清洗了@your_weapon@。
 
 %%%%
 Nemelex Xobeh peaceful fountain_blue
@@ -324,7 +324,7 @@ w:2
 %%%%
 Sif Muna peaceful fountain_blood
 
-你努力辨识着这座喷泉中使用的生物血液的种类。
+你努力辨认着这座喷泉用的是哪类生物的血液。
 
 %%%%
 Sif Muna peaceful fountain_eyes
@@ -544,7 +544,7 @@ amphisbaena baked goods cache
 %%%%
 amphisbaena fruit cache
 
-你张开一只下颌，吞下@_fruit_and_reaction_@
+你撑大其中一张嘴，吞下@_fruit_and_reaction_@
 
 %%%%
 amphisbaena meat cache
