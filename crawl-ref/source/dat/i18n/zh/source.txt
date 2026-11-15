@@ -37809,7 +37809,7 @@ status|Bullseye
 靶心
 %%%%
 status|Cacophony
-噪音
+杂音
 %%%%
 status|Catalyst
 催化
@@ -38520,7 +38520,7 @@ status|magic-sapped
 魔力枯竭
 %%%%
 status|making a cacophony
-制造噪音
+制造杂音
 %%%%
 status|marked
 被标记

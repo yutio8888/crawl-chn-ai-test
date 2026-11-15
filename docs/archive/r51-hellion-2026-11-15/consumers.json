@@ -22,8 +22,9 @@
       {
         "source": "docs/source-review-results.md",
         "identity": "source:hellion",
-        "reason": "历史备选地狱凶魔／地狱魔头，不是另一对象的正式名称；仅作 trunk 历史旁证，不是 stable 本地消费者。",
-        "reference_line": "trunk"
+        "reason": "历史备选地狱凶魔／地狱魔头，不是另一对象的正式名称；仅作 trunk 历史旁证，不是 stable 本地消费者。 历史保留，未改；该文件仅存在于 trunk。",
+        "reference_line": "trunk",
+        "disposition": "historical_keep_unchanged"
       }
     ]
   },
@@ -259,5 +260,31 @@
       }
     ],
     "note": "逐段按 stable 当前英文核对；没有用 trunk 行号或正文覆盖 stable 英文。"
-  }
+  },
+  "related_display_consumers": [
+    {
+      "key": "status|Cacophony",
+      "duration": "DUR_CACOPHONY",
+      "producer": "crawl-ref/source/duration-data.h",
+      "consumer": "crawl-ref/source/status.cc: C_(status, ddef->light_text/short_text)",
+      "disposition": "fix",
+      "old": "噪音",
+      "new": "杂音",
+      "old_columns": 4,
+      "new_columns": 4,
+      "reason": "同一能力的状态灯标/短状态描述，不是普通噪音；英文 db_key / short_db_key 不变。"
+    },
+    {
+      "key": "status|making a cacophony",
+      "duration": "DUR_CACOPHONY",
+      "producer": "crawl-ref/source/duration-data.h",
+      "consumer": "crawl-ref/source/status.cc: C_(status, ddef->light_text/short_text)",
+      "disposition": "fix",
+      "old": "制造噪音",
+      "new": "制造杂音",
+      "old_columns": 8,
+      "new_columns": 8,
+      "reason": "同一能力的状态灯标/短状态描述，不是普通噪音；英文 db_key / short_db_key 不变。"
+    }
+  ]
 }

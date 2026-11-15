@@ -398,7 +398,7 @@ tutorial3 autoexplore_reminder
 tutorial3 go_shopping
 
 # 待办事项：应仅指示在此处开始搜索，并将其余指示放入搜索界面。
-#           此外，在查看此消息时，最好在命令栏中突出显示搜索按钮。
+#           此外，在查看此消息时，最好在命令面板中突出显示搜索按钮。
 你现在有钱去商店买东西啦！要想回到商店，最快捷的方法就是搜索它。
 按下<input>$cmd[CMD_SEARCH_STASHES]</input>，然后输入“<w>shop</w>”。
 选择搜索结果，即可自动前往商店。<localtiles>
