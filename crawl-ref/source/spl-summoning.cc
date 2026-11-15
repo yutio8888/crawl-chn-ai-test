@@ -2096,7 +2096,7 @@ bool trigger_battlesphere(actor* agent)
 
     // Set up the battlesphere beam
     bolt beam;
-    beam.source_name = battlesphere->name(DESC_YOUR).c_str();
+    beam.source_name = name_for_storage(*battlesphere, DESC_YOUR);
     beam.name        = T_("barrage of energy");
     beam.range       = LOS_RADIUS;
     beam.hit         = AUTOMATIC_HIT;

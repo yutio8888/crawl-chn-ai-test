@@ -1222,7 +1222,7 @@ static int _wpn_name_colour(const item_def &wpn)
         return RED;
 
     const string prefix = item_prefix(wpn);
-    const int prefcol = menu_colour(wpn.name(DESC_INVENTORY),
+    const int prefcol = menu_colour(wpn.name(DESC_INVENTORY, false, false, true, false, false),
                                     prefix, "stats", false);
     if (prefcol != -1)
         return prefcol;
@@ -2749,7 +2749,7 @@ static void _append_overview_screen_item(column_composer& cols,
                                          bool melded)
 {
     const string prefix = item_prefix(item);
-    const int prefcol = menu_colour(item.name(DESC_INVENTORY), prefix, "resists", false);
+    const int prefcol = menu_colour(item.name(DESC_INVENTORY, false, false, true, false, false), prefix, "resists", false);
     const int col = prefcol == -1 ? LIGHTGREY : prefcol;
 
     // Colour melded equipment dark grey.

@@ -1611,7 +1611,7 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
                 // (7 bonus poison will apply exactly 1 additional level of
                 // poison to monsters, mirroring the normal effect of BEAM_POISON)
                 curare_actor(pbolt.agent(), mons, "concentrated venom",
-                             pbolt.agent(true)->name(DESC_PLAIN), 7);
+                             name_for_storage(*pbolt.agent(true), DESC_PLAIN), 7);
             }
             else
                 poison_monster(mons, pbolt.agent());
@@ -5192,7 +5192,7 @@ void bolt::kill_monster(monster &mon)
     // Preserve name of the source monster if it winds up killing
     // itself.
     if (mon.mid == source_id && source_name.empty())
-        source_name = mon.name(DESC_A, true);
+        source_name = name_for_storage(mon, DESC_A, true);
 
     const coord_def where = mon.pos();
     const monster_type species = mons_species(mons_base_type(mon));
@@ -7725,7 +7725,7 @@ string bolt::get_source_name() const
         return source_name;
     const actor *a = agent();
     if (a)
-        return a->name(DESC_A, true);
+        return name_for_storage(*a, DESC_A, true);
     return "";
 }
 

@@ -1,6 +1,8 @@
 #include "catch_amalgamated.hpp"
 
 #include "AppHdr.h"
+#include "mon-poly.h"
+#include "death-curse.h"
 #include "lang-en-guard.h"
 
 #include "potion.h"
@@ -8756,5 +8758,289 @@ TEST_CASE("Torpor snail display variants share the approved name and English ide
         info.to_string(count, pane, colour);
         CHECK(pane.find(name) != string::npos);
         CHECK(pane.find("休眠蜗牛") == string::npos);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "special names: real death curse keeps killer and death snapshot undecorated",
+                 "[zh-translation][special-name-quotes]")
+{
+    init_properties();
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    unwind_var<vector<Note>> restore_notes(note_list, {});
+    const bool prior_notes = notes_are_active();
+    activate_notes(true);
+    unwinder restore_active([prior_notes]() { activate_notes(prior_notes); });
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 20;
+        you.equipment.update();
+        you.where_are_you = BRANCH_DUNGEON;
+        you.depth = 1;
+        scoped_monspeak_world world;
+        monster *source = world.place(MONS_KHUFU);
+        REQUIRE(source);
+        unwind_var<decltype(crawl_state.disables)> restore_disables(crawl_state.disables);
+        crawl_state.disables.set(DIS_DEATH, false);
+        const string identity = name_for_storage(*source, DESC_A, true);
+        bool smitten = false;
+        for (uint64_t seed = 1; seed <= 64 && !smitten; ++seed)
+        {
+            you.hp = 1;
+            note_list.clear();
+            rng::subgenerator sequence(seed, 0x418);
+            msg::tee emitted;
+            death_curse(you, source, "Khufu's death curse", 0);
+            for (const Note &note : note_list)
+            {
+                if (note.type == NOTE_DEATH && note.name.find(identity) != string::npos)
+                {
+                    CHECK(note.name.find("「") == string::npos);
+                    smitten = true;
+                }
+            }
+        }
+        REQUIRE(smitten);
+        scorefile_entry entry(5, source->mid, KILLED_BY_DEATH_CURSE,
+                             "Khufu's death curse", true, identity.c_str());
+        entry.init(1600000000);
+        const xlog_fields fields(entry.raw_string());
+        CHECK(fields.str_field("killer") == identity);
+        CHECK(fields.str_field("killer").find("「") == string::npos);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "special names: actual summon blame persists raw summoner identity",
+                 "[zh-translation][special-name-quotes]")
+{
+    init_properties();
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 50;
+        you.equipment.update();
+        you.where_are_you = BRANCH_DUNGEON;
+        you.depth = 1;
+        scoped_monspeak_world world;
+        monster *summoner = world.place(MONS_SIGMUND);
+        REQUIRE(summoner);
+        mgen_data mg(MONS_RAT, BEH_HOSTILE, coord_def(22, 22), MHITYOU);
+        mg.set_summoned(summoner, SPELL_SUMMON_SMALL_MAMMAL, 3);
+        monster *child = create_monster(mg, false);
+        REQUIRE(child);
+        unwinder cleanup([child]() { child->reset(); });
+        REQUIRE(child->props.exists(BLAME_KEY));
+        const string expected = "summoned by " + full_name_for_storage(*summoner, DESC_A);
+        CHECK(child->props[BLAME_KEY].get_vector()[0].get_string() == expected);
+        CHECK(expected.find("「") == string::npos);
+        vector<unsigned char> bytes;
+        writer output(&bytes);
+        marshallMonster(output, *child);
+        reader input(bytes);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        monster restored;
+        unmarshallMonster(input, restored);
+        CHECK(restored.props[BLAME_KEY].get_vector()[0].get_string() == expected);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "special names: actual type change stores the original unique name",
+                 "[zh-translation][special-name-quotes]")
+{
+    init_properties();
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 50;
+    you.equipment.update();
+    scoped_monspeak_world world;
+    monster *source = world.place(MONS_SIGMUND);
+    REQUIRE(source);
+    const string identity = name_for_storage(*source, DESC_PLAIN, true);
+    change_monster_type(source, MONS_RAT, false);
+    CHECK(source->mname == identity);
+    CHECK(source->mname.find("「") == string::npos);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "special names: actual pan lord miasma keeps poison killer undecorated",
+                 "[zh-translation][special-name-quotes][miasma]")
+{
+    init_properties();
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 50;
+        you.equipment.update();
+        you.where_are_you = BRANCH_DUNGEON;
+        you.depth = 1;
+        scoped_monspeak_world world;
+        rng::subgenerator sequence(73518041, 0x418);
+        monster *source = create_monster(mgen_data(MONS_PANDEMONIUM_LORD,
+            BEH_HOSTILE, coord_def(22, 22), MHITYOU), false);
+        REQUIRE(source);
+        unwinder cleanup([source]() { source->reset(); });
+        source->mname = "Houn";
+        REQUIRE(you.can_see(*source));
+        CHECK(source->name(DESC_A)
+              == (language == lang_t::ZH ? "「Houn」" : "Houn"));
+        REQUIRE(miasma_player(source, "a miasma cloud"));
+        CHECK(you.props[POISONER_KEY].get_string() == "Houn");
+        CHECK(you.props[POISON_AUX_KEY].get_string() == "a miasma cloud");
+        scorefile_entry death(5, MID_NOBODY, KILLED_BY_POISON,
+                              "a miasma cloud");
+        death.init(1600000000);
+        const xlog_fields fields(death.raw_string());
+        CHECK(fields.str_field("killer") == "Houn");
+        CHECK(source->mname == "Houn");
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "special names: stable item identification note stores the original name",
+                 "[zh-translation][special-name-quotes]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    unwind_var<vector<Note>> restore_notes(note_list, {});
+    const bool prior_notes = notes_are_active();
+    activate_notes(true);
+    unwinder restore_active([prior_notes]() { activate_notes(prior_notes); });
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 50;
+        you.where_are_you = BRANCH_DUNGEON;
+        you.depth = 1;
+        scoped_monspeak_world world;
+        item_def &item = you.inv[0];
+        item.quantity = 1;
+        const auto prior_status = get_unique_item_status(UNRAND_WYRMBANE);
+        REQUIRE(make_item_unrandart(item, UNRAND_WYRMBANE));
+        unwinder restore_status([&item, prior_status]() {
+            set_unique_item_status(item, prior_status);
+        });
+        item.pos = ITEM_IN_INVENTORY;
+        item.link = 0;
+        item.slot = 'a';
+        item.flags &= ~ISFLAG_IDENTIFIED;
+        note_list.clear();
+        identify_item(item);
+        const auto found = find_if(note_list.begin(), note_list.end(),
+            [](const Note &note) { return note.type == NOTE_ID_ITEM; });
+        REQUIRE(found != note_list.end());
+        const Note note = *found;
+        CHECK(note.name == item.name(DESC_A, false, false, true, false, false));
+        if (language == lang_t::ZH)
+        {
+            CHECK(note.name.find("「屠龙者」骑枪") != string::npos);
+            CHECK(note.name.find("『") == string::npos);
+            CHECK(item.name(DESC_A).find("「+8 『屠龙者』骑枪」") == 0);
+        }
+        vector<unsigned char> bytes;
+        writer output(&bytes);
+        note.save(output);
+        reader input(bytes);
+        input.setMinorVersion(TAG_MINOR_VERSION);
+        Note loaded;
+        loaded.load(input);
+        CHECK(loaded.name == note.name);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "special names: actual collision keeps death snapshot undecorated",
+                 "[zh-translation][special-name-quotes][name-collision]")
+{
+    init_properties();
+    init_monsters();
+    unwind_var<player> restore_player(you);
+    unwind_var<vector<Note>> restore_notes(note_list, {});
+    const bool prior_notes = notes_are_active();
+    activate_notes(true);
+    unwinder restore_active([prior_notes]() { activate_notes(prior_notes); });
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = 1;
+        you.hp_max = 50;
+        you.equipment.update();
+        you.where_are_you = BRANCH_DUNGEON;
+        you.depth = 1;
+        scoped_monspeak_world world;
+        monster *source = world.place(MONS_SIGMUND);
+        REQUIRE(source);
+        source->hit_points = source->max_hit_points = 500;
+        unwind_var<decltype(crawl_state.disables)> restore_disables(crawl_state.disables);
+        crawl_state.disables.set(DIS_DEATH, false);
+        note_list.clear();
+        msg::tee emitted;
+        rng::subgenerator sequence(73518041, 0xC011);
+        you.collide(source->pos(), source, 40);
+        const auto found = find_if(note_list.begin(), note_list.end(),
+            [](const Note &note) { return note.type == NOTE_DEATH; });
+        REQUIRE(found != note_list.end());
+        if (language == lang_t::ZH)
+            CHECK(emitted.get_store().find("「西格蒙德」") != string::npos);
+        CHECK(found->name.find("「") == string::npos);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "special names: stable automatic gear letters match the original item name",
+                 "[zh-translation][special-name-quotes]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    unwind_var<decltype(Options.auto_gear_letters)> restore_rules(Options.auto_gear_letters, {});
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        you = player();
+        you.species = SP_HUMAN;
+        you.hp = you.hp_max = 50;
+        you.where_are_you = BRANCH_DUNGEON;
+        you.depth = 1;
+        scoped_monspeak_world world;
+        item_def &item = you.inv[0];
+        item.quantity = 1;
+        const auto prior_status = get_unique_item_status(UNRAND_WYRMBANE);
+        REQUIRE(make_item_unrandart(item, UNRAND_WYRMBANE));
+        const item_def identity = item;
+        unwinder restore_status([&identity, prior_status]() {
+            set_unique_item_status(identity, prior_status);
+        });
+        item.flags |= ISFLAG_IDENTIFIED;
+        item.pos = ITEM_IN_INVENTORY;
+        item.link = 0;
+        item.slot = 'a';
+        Options.auto_gear_letters.clear();
+        Options.auto_gear_letters.emplace_back(
+            text_pattern(language == lang_t::ZH
+                ? "\\+8 「屠龙者」骑枪" : "\\+8 lance \"Wyrmbane\""), "z");
+        const item_def *moved = auto_assign_item_slot(item, true);
+        REQUIRE(moved);
+        CHECK(moved->slot == 'z');
+        CHECK(moved->special == UNRAND_WYRMBANE);
+        CHECK(get_unrand_name_en(*moved) == string("lance \"Wyrmbane\""));
     }
 }

@@ -22,6 +22,24 @@ string pluralise(const string &name,
                  const char * const no_of[] = nullptr);
 string pluralise_monster(const string &name);
 string apostrophise(const string &name);
+// Presentation only. Nested scopes restore the previous rendering policy;
+// neither TextDB values nor persisted names contain these decorations.
+class ScopedUnquotedNames
+{
+public:
+    ScopedUnquotedNames();
+    ~ScopedUnquotedNames();
+    ScopedUnquotedNames(const ScopedUnquotedNames&) = delete;
+    ScopedUnquotedNames& operator=(const ScopedUnquotedNames&) = delete;
+private:
+    bool previous_;
+};
+string quote_special_name(const string &name);
+class actor;
+class monster;
+string name_for_storage(const actor &who, description_level_type desc,
+                        bool force_visible = false);
+string full_name_for_storage(const monster &who, description_level_type desc);
 string conjugate_verb(const string &verb, bool plural);
 // Accept an English base key only; return an owned display string. Chinese
 // looks up the base key/context, while English (including fallback) conjugates.

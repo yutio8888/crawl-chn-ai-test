@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "english.h"
 
 #include "database.h"
 #include "stash.h"
@@ -90,6 +91,7 @@ string userdef_annotate_item(const char *s, const item_def *item)
 
 string stash_annotate_item(const char *s, const item_def *item)
 {
+    ScopedUnquotedNames unquoted_annotation;
     // the special-casing of gold here is for the sake of gozag players in
     // extreme circumstances. It does mean that custom annotation code can't
     // do anything with gold, but I'm not sure why you'd want to.
@@ -401,7 +403,13 @@ vector<stash_search_result> Stash::matches_search(
     {
         const string s   = stash_item_name(item);
         const string ann = stash_annotate_item(STASH_LUA_SEARCH_ANNOTATE, &item);
-        string haystack = prefix + " " + ann + " " + s
+        string search_name = s;
+        if (Options.language == lang_t::ZH && is_artefact(item))
+        {
+            ScopedUnquotedNames unquoted;
+            search_name = stash_item_name(item);
+        }
+        string haystack = prefix + " " + ann + " " + search_name
                          + " " + item_english_name(item);
         if (is_dumpable_artefact(item))
             haystack += " " + chardump_desc(item);
@@ -677,7 +685,13 @@ vector<stash_search_result> ShopInfo::matches_search(
         const string ann   = stash_annotate_item(STASH_LUA_SEARCH_ANNOTATE,
                                                  &item);
 
-        string text = prefix + " " + ann + " " + sname + " {" + shoptitle + "}"
+        string search_name = sname;
+        if (Options.language == lang_t::ZH && is_artefact(item))
+        {
+            ScopedUnquotedNames unquoted;
+            search_name = shop_item_name(item);
+        }
+        string text = prefix + " " + ann + " " + search_name + " {" + shoptitle + "}"
                       + shop_item_desc(item)
                       + " " + item_english_name(item);
         if (search.matches(text))
@@ -1279,7 +1293,7 @@ static bool _compare_by_name(const stash_search_result& lhs,
     }
 }
 
-static vector<stash_search_result> _inventory_search(const base_pattern &search)
+vector<stash_search_result> inventory_search(const base_pattern &search)
 {
     vector<stash_search_result> results;
     for (const item_def &item : you.inv)
@@ -1289,14 +1303,20 @@ static vector<stash_search_result> _inventory_search(const base_pattern &search)
 
         const string s   = Stash::stash_item_name(item);
         const string ann = stash_annotate_item(STASH_LUA_SEARCH_ANNOTATE, &item);
-        string haystack = ann + " " + s + " " + item_english_name(item);
+        string search_name = s;
+        if (Options.language == lang_t::ZH && is_artefact(item))
+        {
+            ScopedUnquotedNames unquoted;
+            search_name = Stash::stash_item_name(item);
+        }
+        string haystack = ann + " " + search_name + " " + item_english_name(item);
         if (is_dumpable_artefact(item))
             haystack += " " + chardump_desc(item);
         if (search.matches(haystack))
         {
             stash_search_result res;
             res.match = s;
-            res.primary_sort = s; // don't use DESC_QUALNAME for inventory items
+            res.primary_sort = search_name; // preserve original inventory ordering
             res.item = item;
             // Needs to not be equal to ITEM_IN_INVENTORY so the describe
             // menu doesn't think it can manipulate the item.
@@ -1452,7 +1472,7 @@ void StashTracker::search_stashes(string search_term)
 
     vector<stash_search_result> results;
     if (!curr_lev)
-        results = _inventory_search(*search);
+        results = inventory_search(*search);
     // allowing offlevel stash searching is not useful in descent mode
     get_matching_stashes(*search, results, curr_lev
                                            || crawl_state.game_is_descent());
@@ -1827,7 +1847,8 @@ bool StashTracker::display_search_results(
             colour = CYAN;
         else if (res.item.defined())
         {
-            const int itemcol = menu_colour(res.item.name(DESC_PLAIN).c_str(),
+            ScopedUnquotedNames unquoted;
+            const int itemcol = menu_colour(res.item.name(DESC_PLAIN, false, false, true, false, false).c_str(),
                                         item_prefix(res.item, false), "pickup", false);
             if (itemcol != -1)
                 colour = itemcol;

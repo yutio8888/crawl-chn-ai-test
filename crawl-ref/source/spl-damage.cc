@@ -349,7 +349,7 @@ spret cast_chain_spell(spell_type spell_cast, int pow,
     beam.origin_spell   = spell_cast;
 
     if (const monster* mons = caster->as_monster())
-        beam.source_name = mons->name(DESC_PLAIN, true);
+        beam.source_name = name_for_storage(*mons, DESC_PLAIN, true);
 
     bool first = true;
     coord_def source, target;
@@ -1559,7 +1559,7 @@ bool setup_fragmentation_beam(bolt &beam, int pow, const actor *caster,
     if (effect.hit_centre)
         hole = false;
 
-    beam.source_name = caster->name(DESC_PLAIN, true);
+    beam.source_name = name_for_storage(*caster, DESC_PLAIN, true);
     beam.target = target;
 
     return true;
@@ -1606,7 +1606,7 @@ spret cast_fragmentation(int pow, const actor *caster,
         ouch(dam, KILLED_BY_BEAM, caster->mid,
              "by Lee's Rapid Deconstruction", true,
              caster->is_player() ? "you"
-                                 : caster->name(DESC_A).c_str());
+                                 : name_for_storage(*caster, DESC_A).c_str());
     }
     else // Monster explodes.
     {
@@ -2376,7 +2376,7 @@ static int _ignite_poison_player(coord_def where, int pow, actor *agent)
 
     ouch(damage, KILLED_BY_BEAM, agent->mid,
          "by burning poison", you.can_see(*agent),
-         agent->as_monster()->name(DESC_A, true).c_str());
+         name_for_storage(*agent, DESC_A, true).c_str());
     if (damage > 0)
         you.expose_to_element(BEAM_FIRE, 2);
 
@@ -2733,7 +2733,7 @@ static int _discharge_monsters(const coord_def &where, int pow,
             mprf(T_("You are struck by an arc of lightning%s"),
                 attack_strength_punctuation(damage).c_str());
             ouch(damage, KILLED_BY_BEAM, agent.mid, "by static electricity", true,
-                agent.is_player() ? "you" : agent.name(DESC_A).c_str());
+                agent.is_player() ? "you" : name_for_storage(agent, DESC_A).c_str());
             if (damage > 0)
                 victim->expose_to_element(BEAM_ELECTRICITY, 2);
         }
@@ -3650,7 +3650,7 @@ void toxic_radiance_effect(actor* agent, int mult, bool on_cast)
             {
                 ouch(dam, KILLED_BY_BEAM, agent->mid,
                     "by Olgreb's Toxic Radiance", true,
-                    agent->as_monster()->name(DESC_A).c_str());
+                    name_for_storage(*agent, DESC_A).c_str());
 
                 int poison = roll_dice(2, 3 + div_rand_round(pow, 24));
 
@@ -3659,7 +3659,7 @@ void toxic_radiance_effect(actor* agent, int mult, bool on_cast)
                 if (you.res_poison() > 0)
                     poison /= 3;
 
-                poison_player(poison, agent->name(DESC_A),
+                poison_player(poison, name_for_storage(*agent, DESC_A),
                               "toxic radiance", true);
             }
         }

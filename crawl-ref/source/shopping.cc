@@ -887,7 +887,7 @@ static bool _purchase(shop_struct& shop, const level_pos& pos, int index,
 
     // Take a note of the purchase.
     take_note(Note(NOTE_BUY_ITEM, cost, 0,
-                   item.name(DESC_A).c_str()));
+                   item.name(DESC_A, false, false, true, false, false).c_str()));
 
     // But take no further similar notes.
     item.flags |= ISFLAG_NOTED_GET;
@@ -1031,7 +1031,7 @@ class ShopEntry : public InvEntry
                                                   YELLOW;
         const string keystr = colour_to_str(keycol);
         const string itemstr =
-            colour_to_str(menu_colour(text, item_prefix(*item, false), tag, false));
+            colour_to_str(menu_colour(unquoted_text, item_prefix(*item, false), tag, false));
         return make_stringf(T_(" <%s>%c %c </%s><%s>%4d gold   %s%s</%s>"),
                             keystr.c_str(),
                             hotkeys[0],
@@ -1401,8 +1401,8 @@ void ShopMenu::resort()
              [this](MenuEntry* a, MenuEntry* b) -> bool
              {
                  const bool id = shoptype_identifies_stock(shop.type);
-                 return dynamic_cast<ShopEntry*>(a)->item->name(DESC_PLAIN, false, id)
-                        < dynamic_cast<ShopEntry*>(b)->item->name(DESC_PLAIN, false, id);
+                 return dynamic_cast<ShopEntry*>(a)->item->name(DESC_PLAIN, false, id, true, false, false)
+                        < dynamic_cast<ShopEntry*>(b)->item->name(DESC_PLAIN, false, id, true, false, false);
              });
         break;
     case NUM_ORDERS:
@@ -2475,6 +2475,7 @@ void ShoppingList::fill_out_menu(Menu& shopmenu)
             const item_def &item = get_thing_item(thing);
 
             const string colprf = item_prefix(item, false);
+            ScopedUnquotedNames unquoted_colour;
             const int col = menu_colour(item.name(DESC_A),
                                         colprf, "shop", false);
 
@@ -2766,5 +2767,6 @@ string ShoppingList::describe_thing(const CrawlHashTable& thing,
 // Item name without inscription.
 string ShoppingList::item_name_simple(const item_def& item, bool ident)
 {
+    ScopedUnquotedNames unquoted;
     return item.name(DESC_PLAIN, false, ident, false, false);
 }

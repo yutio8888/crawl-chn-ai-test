@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "english.h"
 
 #include "mon-poly.h"
 
@@ -296,7 +297,7 @@ void change_monster_type(monster* mons, monster_type targetc, bool do_seen)
     }
     else if (mons_is_unique(mons->type))
     {
-        name = mons->name(DESC_PLAIN, true);
+        name = name_for_storage(*mons, DESC_PLAIN, true);
 
         // "Blorkula the orcula" and similar.
         const size_t the_pos = name.find(" the ");
@@ -622,6 +623,7 @@ bool monster_polymorph(monster* mons, monster_type targetc,
     bool could_see = you.can_see(*mons);
     bool need_note = could_see && mons_is_notable(*mons);
     string old_name_a = mons->full_name(DESC_A);
+    const string old_note_name = full_name_for_storage(*mons, DESC_A);
     string old_name_the = mons->full_name(DESC_THE);
     monster_type oldc = mons->type;
 
@@ -661,10 +663,10 @@ bool monster_polymorph(monster* mons, monster_type targetc,
 
     if (need_note || could_see && can_see && mons_is_notable(*mons))
     {
-        string new_name = can_see ? mons->full_name(DESC_A)
+        string new_name = can_see ? full_name_for_storage(*mons, DESC_A)
                                   : T_("something unseen");
 
-        take_note(Note(NOTE_POLY_MONSTER, 0, 0, old_name_a, new_name));
+        take_note(Note(NOTE_POLY_MONSTER, 0, 0, old_note_name, new_name));
     }
 
     const bool is_invisible = mons->has_ench(ENCH_INVIS) && !mons->friendly();

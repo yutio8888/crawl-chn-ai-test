@@ -4,6 +4,7 @@
 **/
 
 #include "AppHdr.h"
+#include "english.h"
 
 #include "mon-place.h"
 #include "mgen-data.h"
@@ -1455,7 +1456,7 @@ static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
         {
             const monster* sum = mg.summoner->as_monster();
             mons_add_blame(mon, (blame_prefix
-                                 + sum->full_name(DESC_A)));
+                                 + full_name_for_storage(*sum, DESC_A)));
             if (sum->props.exists(BLAME_KEY))
             {
                 const CrawlVector& oldblame = sum->props[BLAME_KEY].get_vector();

@@ -1593,7 +1593,7 @@ TEST_CASE("Frederick's real SpeakDB line receives a localized Human genus",
     REQUIRE(line.find("@player_genus@") != string::npos);
     const string actual = do_mon_str_replacements(line, *frederick, S_SILENT);
     CHECK(actual == (language == lang_t::ZH
-        ? "弗雷德里克叹了口气，\"你的同族只会拖你后腿，人类。\""
+        ? "「弗雷德里克」叹了口气，\"你的同族只会拖你后腿，人类。\""
         : "Frederick sighs, \"Your brethren were only holding you back, Human.\""));
     CHECK(species::name(you.species, species::SPNAME_GENUS, true) == "Human");
 }
@@ -1863,7 +1863,7 @@ TEST_CASE("Royal Jelly explosion format retains actor and final punctuation",
                      royal_name.c_str(), punctuation);
             });
             const string expected = zh
-                ? string("果冻王猛烈爆裂，迸出一群果冻怪") + punctuation
+                ? string("「果冻王」猛烈爆裂，迸出一群果冻怪") + punctuation
                 : string("the Royal Jelly explodes violently into a cloud of jellies")
                     + punctuation;
             CHECK(emitted == expected + "\n");

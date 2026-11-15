@@ -5063,14 +5063,18 @@ void explore_discoveries::add_item(const item_def &i)
 {
     item_def copy = i;
     copy.quantity = 1;
-    const string cname = copy.name(DESC_PLAIN);
+    const auto original_name = [](const item_def &item) {
+        ScopedUnquotedNames unquoted;
+        return item.name(DESC_PLAIN);
+    };
+    const string cname = original_name(copy);
 
     // Try to find something to stack it with, stacking by name.
     for (named_thing<item_def> &item : items)
     {
         const int orig_quantity = item.thing.quantity;
         item.thing.quantity = 1;
-        if (cname == item.thing.name(DESC_PLAIN))
+        if (cname == original_name(item.thing))
         {
             item.thing.quantity = orig_quantity + i.quantity;
             item.name = item.thing.name(DESC_A, false, false, true,

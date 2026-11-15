@@ -638,7 +638,7 @@ static string _wanderer_equip_str()
         + comma_separated_fn(begin(you.inv), end(you.inv),
                          [] (const item_def &item) -> string
                          {
-                             return item.name(DESC_A, false, true);
+                             return item.name(DESC_A, false, true, true, false, false);
                          }, ", ", ", ", mem_fn(&item_def::defined));
 }
 
