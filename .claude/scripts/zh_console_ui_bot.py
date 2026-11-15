@@ -563,10 +563,10 @@ def run_workflows(bot: PtyBot) -> None:
 
     adjust_menu = bot.send(b'=', 1.0)
     evidence.record('workflow:item:adjust:menu', adjust_menu,
-                    ('整理（g）装备',))
+                    ('调整字母快捷键：装备',))
     adjust_item = bot.send(b'g', 1.5)
     evidence.record('workflow:item:adjust:item', adjust_item,
-                    ('整理哪个物品？', '棍棒'))
+                    ('调整哪个物品？', '棍棒'))
     adjust_letter = bot.send(old_letter.encode('ascii'), 1.0)
     evidence.record('workflow:item:adjust:letter', adjust_letter,
                     ('调整到哪个字母？',))
