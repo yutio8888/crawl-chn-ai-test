@@ -114,7 +114,7 @@ assortment of trash	杂乱垃圾	domain=core; source=EN/ZH; 依据 / 作用域=f
 Asterion	阿斯忒里翁	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Asterion title	堕落之王阿斯忒里翁	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 athame	仪式匕首	domain=items; source=EN/ZH; 依据 / 作用域=item-prop.cc / items.txt；由历史兼容恢复为现行武器；decision=D-C-095
-athame "Fimbulwinter"	仪式匕首"芬布尔之冬"	domain=items; source=EN/ZH; 依据 / 作用域=unrand.txt；末日前三年冬季的专名，武器基词复用；decision=D-C-095
+athame "Fimbulwinter"	「芬布尔之冬」仪式匕首	domain=items; source=EN/ZH; 依据 / 作用域=unrand.txt；末日前三年冬季的专名，武器基词复用；decision=D-C-095；语序按 D-C-120
 attack	攻击	domain=combat; source=EN/ZH
 attack of opportunity	借机攻击	domain=combat; source=EN/ZH; 依据 / 作用域=player invis desc 与 blind／unable to see you 怪物状态；不译为普通的措手不及伤害；decision=D-C-096
 attacks of opportunity	借机攻击	domain=combat; source=EN/ZH; 依据 / 作用域=player invis desc 与 blind／unable to see you 怪物状态；不译为普通的措手不及伤害；decision=D-C-096
@@ -657,7 +657,7 @@ Ghostly Fireball	幽灵火球	domain=spells; source=EN/ZH; 备注=✅；负能�
 Ghostly Sacrifice	幽灵献祭	domain=spells; source=EN/ZH; 备注=✅；吞噬友方并产生使活物衰竭的负能量爆发
 ghoul	食尸鬼	domain=species; source=EN/ZH; 复合格式=食尸鬼 + 职业
 giant spiked club	巨刺棍	domain=items; source=EN/ZH; 依据 / 作用域=Carina 神器所依赖的现行武器基词；沿用现行资产措辞并登记于 SSOT；decision=D-C-095
-giant spiked club "Carina at Dusk"	巨刺棍"暮色船底座"	domain=items; source=EN/ZH; 依据 / 作用域=unrand.txt 的星空颂歌、art-data.txt 的 ShootingStar 铭文与流星效果共同确认 Carina 指船底座；decision=D-C-095
+giant spiked club "Carina at Dusk"	「暮色船底座」巨刺棍	domain=items; source=EN/ZH; 依据 / 作用域=unrand.txt 的星空颂歌、art-data.txt 的 ShootingStar 铭文与流星效果共同确认 Carina 指船底座；decision=D-C-095；语序按 D-C-120
 gift timeout	神赐等待计数	domain=core; source=EN/ZH; 依据 / 作用域=wiz-you.cc 完整提示句中的神赐等待计数；范围 0–255，不擅设单位为回合；decision=D-C-098
 Glacial Breath	冰川吐息	domain=spells; source=EN/ZH; 备注=✅
 Glaciate	冰封	domain=spells; source=EN/ZH; 备注=🆕；锥形寒冰冲击会冰封并减速目标
@@ -844,7 +844,7 @@ Kiss of Death	死亡之吻	domain=spells; source=EN/ZH; 备注=✅；衰竭目�
 kobold	狗头人	domain=species; source=EN/ZH; 复合格式=狗头人 + 职业
 lajatang	双头杖	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-A-050
 lance	骑枪	domain=items; source=EN/ZH; Scope / comment=神器武器类型及其战斗消息、描述、动作统计；与基础武器 spear → 长矛区分；不适用于 Force Lance 法术、lance of force 投射物或 living force lance；decision=D-B-023
-lance "Wyrmbane"	骑枪"屠龙者"	domain=items; source=EN/ZH; Scope / comment=固定神器名称键；Wyrmbane 专名为“屠龙者”，消息与描述沿用；弃用“斩龙剑”；Margery 的称号“the Dragonslayer”也译为“屠龙者”（dat/database/zh/montitle.txt:204），与神器指称不同，属于有意保留的同名；decision=D-B-023
+lance "Wyrmbane"	「屠龙者」骑枪	domain=items; source=EN/ZH; Scope / comment=固定神器名称键；Wyrmbane 专名为“屠龙者”，消息与描述沿用；弃用“斩龙剑”；Margery 的称号“the Dragonslayer”也译为“屠龙者”（dat/database/zh/montitle.txt:204），与神器指称不同，属于有意保留的同名；decision=D-B-023；语序按 D-C-120
 Landbreaker	裂地	domain=spells; source=EN/ZH; 备注=✅
 large bone plates	大型骨板	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 laughs	笑道	domain=dialogue; source=EN/ZH; 适用角色=Xom、小恶魔
@@ -958,7 +958,7 @@ monster	怪物	domain=core; source=EN/ZH; 注意事项=通用
 Monstrous Menagerie	怪物动物园	domain=spells; source=EN/ZH; 备注=✅
 moonshine	私酒	domain=items; source=EN/ZH; Scope / comment=potion effect; decision=D-B-020
 morningstar	晨星锤	domain=items; source=EN/ZH; Scope / comment=weapon; paired with eveningstar; decision=D-B-017
-morningstar "Eos"	晨星锤"厄俄斯"	domain=items; source=EN/ZH; Scope / comment=unrand; decision=D-B-017/D-B-021
+morningstar "Eos"	「厄俄斯」晨星锤	domain=items; source=EN/ZH; Scope / comment=unrand; decision=D-B-017/D-B-021；语序按 D-C-120
 mountain dwarf	山矮人	domain=species; source=EN/ZH
 Mourning Wail	哀恸之嚎	domain=spells; source=EN/ZH; 备注=🆕；吐出遗忘悲恸形成负能量云
 MP	法力	domain=core; source=EN/ZH; 注意事项=施法资源；普通 magic 仍为魔法；decision=D-C-115
