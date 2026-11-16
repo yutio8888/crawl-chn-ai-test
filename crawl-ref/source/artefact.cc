@@ -219,7 +219,13 @@ string replace_name_parts(const string &name_in, const item_def& item)
         if (zh_randart)
             place = T_(place.c_str());
         if (!place.empty())
+        {
+            // A branch's own genitive belongs inside its intrinsic name,
+            // rather than stacking another 之 before the item's base type.
+            if (zh_randart && place.find("之") != string::npos)
+                name = replace_all(name, "@branch_name@之", "「" + place + "」");
             name = replace_all(name, "@branch_name@", place);
+        }
     }
 
     // Occasionally use long name for Xom (see religion.cc).
