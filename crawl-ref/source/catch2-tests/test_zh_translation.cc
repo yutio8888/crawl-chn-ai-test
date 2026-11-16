@@ -8952,7 +8952,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         {
             CHECK(note.name.find("「屠龙者」骑枪") != string::npos);
             CHECK(note.name.find("『") == string::npos);
-            CHECK(item.name(DESC_A).find("「+8 『屠龙者』骑枪」") == 0);
+            CHECK(item.name(DESC_A).find("+8 「屠龙者」骑枪") == 0);
         }
         vector<unsigned char> bytes;
         writer output(&bytes);

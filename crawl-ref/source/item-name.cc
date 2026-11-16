@@ -2339,7 +2339,8 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 
     case OBJ_GIZMOS:
     {
-        buff << get_gizmo_name(*this);
+        const string core = get_gizmo_name(*this);
+        buff << (quote_name ? quote_artefact_name(core) : core);
     }
     break;
 
