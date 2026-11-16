@@ -55042,3 +55042,23 @@ Fixing up corrupted PlaceInfo for %s (levels_seen is %d)
 %%%%
 CLua bindings not available on this build!
 此构建不提供CLua绑定！
+
+%%%%
+the Dwarven Hall
+矮人大厅
+
+%%%%
+the Hall of Blades
+刀锋殿堂
+
+%%%%
+the Enchanted Forest
+附魔森林
+
+%%%%
+randart jewellery appearance|%1$s %2$s
+%1$s%2$s
+
+%%%%
+randart divine esteem|of %1$s %2$s
+「%1$s之%2$s」

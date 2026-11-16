@@ -5057,3 +5057,20 @@ R19–R21 的全文检索确认项按消费者处理：MP 的恢复、储量、�
 - **Consumers**: [逐条前后对照](archive/unrand-name-order-2026-11-15/README.md)与[消费者清单](archive/unrand-name-order-2026-11-15/consumers.json)。`art-data.txt` NAME 经 `get_artefact_name()` / `item_def::name()` 用中文名称显示；`get_unrand_name_en()` 及 unrand 描述标题保持英文查询键。glossary 已登记的同名行与 Wyrmbane 生产路径测试同步。
 - **Display**: 名称固有内引号采用 randname 的「」；无外层包装时为「屠龙者」骑枪，#418 中文包装层显示为「+8 『屠龙者』骑枪」。未知外观不显示真名；英文不变。现行中文名仍可搜索，不改变对象名存储结构或内部身份。
 - **Keep**: 专属消息与说明中的独立专名、自然类型叙述、Margery 的同名屠龙者称号、英文名称和存档身份均保留。历史决定及审查快照保留原文，本决定仅取代现行名称的语序。严格台账只由生成器同步必要字段。
+
+### D-C-121 — 新生成随机神器的中文名称语法
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-16
+- **Source**: 维护者批准随机神器中文命名改进；依据生产 `make_item_randart()` 的固定种子对照逐类修复。
+- **Scope**: 仅新生成的中文随机神器真名与独立未鉴定外观；不迁移已有 `ARTEFACT_NAME_KEY` / `ARTEFACT_APPEAR_KEY`，不改英文、神器属性、随机书名、先祖、固定神器或 gizmo 命名。
+- **Grammar**: 普通随机神器与神赐词库的名词型主题用“之”连接基础类型；自身含所有格或“之”的主题采用固有专名引号，避免重复连接。保留自然职业修饰语、既有引号专名与拉丁音节专名的生成入口和比例。数量模板使用与各名词配套的量词；多层数词/动词定语改为数量主题。独立主动谓语池明确动作主体，避免“喂养的蝎子”等施受不清的组合。神祇敬意主题采用“「神名之敬意」类型”，`Supremacy` 在此名词位置译“崇高”；不借此修改共享神名或普通所有格规则。
+- **Consumers**: `dat/database/zh/randname.txt` 的 `weapon`、`armour`、`jewellery` 与 Trog/Okawaru/Xom 神赐入口，经 `getRandNameString()` → `replace_name_parts()` → `make_artefact_name()` → `make_item_randart()` 保存生成名。新增 `_randart_*` 语法池仅由这些入口使用；原 `_number_or_qualifier_` / `_thing_names_` / `_verbing_` / `_place_name_` 等共享池保留，随机书名与 Ashenzari 独立入口不迁移。`rand_wpn.txt` 的 Lifebane 改“生命克星”，Extenuating Circumstances 改“情有可原”；其余法律、经济、食品与生造名的刻意戏谑保留。
+- **Appearance**: `ring appearance` / `amulet appearance` 经首饰专用 `randart jewellery appearance` 语境直接连接材质和戒指/护符；首饰修饰词自带“的”，消除空格与材质后多余的“的”。武器/护甲保留 `artefact appearance` 原框架；`masterwork` 用“大师级”、`runed` 用“刻满符文”。外观不与属性绑定，不显示隐藏真名。
+- **Branches**: 补全 `@branch_name@` 使用的长名查找（三个新键，Arena 复用已有 `The Arena` 的大小写规范键）：the Dwarven Hall → 矮人大厅、the Hall of Blades → 刀锋殿堂、the Enchanted Forest → 附魔森林、the Arena → 竞技场；前三者沿用现有楼梯/分支短名译文，Arena 沿用 glossary。the Pit 在随机神器专用地点池译“深坑”，与 Abyss“深渊”区分；原书名共享地点池不改。
+- **Storage/display**: 新名称固有引号属于名称本身；特殊名称显示层继续将固有内引号显示为『』并加外层「」。不在生成层调用显示装饰函数；存储、原名搜索与查询仍遵守既有边界。英文词库同源的缺空行问题仅记录，保持英文数据与随机推进不变。
+- **Verification**: 生产路径回归覆盖独立外观、固有引号、长角色名、分支名、数量主题、旧名称保留及中英路径；固定种子前后对照同时记录属性和生成后的 RNG 状态。模板权重与逐项前后对照随候选交付，中文新增语法抽取允许改变中文抽样，非中文路径保持原有抽取。
+
+- **2026-11-16 复审更正（B1）**: `@branch_name@之` 的实际代入也必须遵守上述连接规则：盐之荒原、百兽之巢、史莱姆之坑自身带“之”，使用固有「分支名」主题直接接类型，避免“之……之”；独立分支名称和查询键保持原样。新增三个分支的生产路径回归，并重新检查所有随机名称池的 `@…@之` 边界。
+- **同种子外观与 RNG 边界（复审 B4 更正）**: 中文词库的递归抽取可与英文不同，因此同种子中英外观或配色可能不同。只有经 `items()`（`makeitem.cc`）创建时，这些额外抽取才限于该函数建立的物品子生成器，不额外推进其外层 RNG；`acquirement_create_item()`（包括获取、神赐、巫师路径）及 `decks.cc` 等在其外直接调用 `make_item_randart()` 时，则会推进调用当时活动的 RNG，可能影响后续抽取。这类中英差异此前已存在，本次不改随机生成代码；本次调用的神器属性仍在名称生成步骤之前确定。
