@@ -11,6 +11,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -118,6 +119,10 @@ def changed_v3_identities(before, after):
     )
 
 
+# Freeze the pre-D-C-121 builder with this historical M0 experiment.
+QUALITY_M1_BUILDER_BASELINE = "a401ca7ac1b1d2b0db745720ac2446f068c3eb64"
+
+
 _QUALITY_M1_FIXTURE = None
 
 
@@ -136,12 +141,20 @@ def quality_m1_fixture():
             "glaive of prune", 'morningstar "eos"',
             "sword of cerebov", "amulet of the air",
         }
+        historical = types.ModuleType("historical_item_inventory")
+        historical.__file__ = str(SCRIPT)
+        builder = subprocess.check_output(
+            ["git", "-C", str(MODULE.ROOT), "show",
+             f"{QUALITY_M1_BUILDER_BASELINE}:.claude/scripts/audit_item_name_inventory.py"],
+            env=SHARED.trusted_git_environment(), text=True,
+        )
+        exec(compile(builder, str(SCRIPT), "exec"), historical.__dict__)
         with mock.patch.object(
-            MODULE, "audit_snapshot", return_value=snapshot
+            historical, "audit_snapshot", return_value=snapshot
         ), mock.patch.object(
-            MODULE, "UNRAND_REVIEWED_CHANGED_NAMES", historical_name_changes
+            historical, "UNRAND_REVIEWED_CHANGED_NAMES", historical_name_changes
         ):
-            payload, _internal_rows = MODULE.build_extended_inventory_v3()
+            payload, _internal_rows = historical.build_extended_inventory_v3()
         payload["review_input"] = {"input_sha256": "a" * 64}
         payload["review_violations"] = {}
         files = MODULE.build_quality_m1_files(
@@ -1084,8 +1097,8 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                 "special": 23,
                 "gizmo": 539,
                 "item-description": 307,
-                "randart-component": 2440,
-                "randart-grammar": 115,
+                "randart-component": 2775,
+                "randart-grammar": 123,
             },
             payload["category_counts"],
         )
@@ -1455,6 +1468,60 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                        ("child", ["嵌套"])])
             with self.assertRaisesRegex(RuntimeError, "weight mismatch"):
                 MODULE.paired_component_rows(en, zh, "fixture")
+
+    def test_randart_localized_grammar_is_bounded_and_complete(self):
+        en_path = MODULE.SRC / "dat/database/randname.txt"
+        zh_path = MODULE.SRC / "dat/database/zh/randname.txt"
+        en = MODULE.textdb_rows(en_path)
+        zh = MODULE.textdb_rows(zh_path)
+        MODULE.validate_randart_metrics("randname.txt", en, zh)
+        additions = MODULE.localized_randart_pool_rows(en_path, zh)
+        self.assertEqual(335, sum(row["category"] == "randart-component"
+                                  for row in additions))
+        self.assertEqual(8, sum(row["category"] == "randart-grammar"
+                                for row in additions))
+        self.assertEqual(len(additions), len({r["identity"] for r in additions}))
+        self.assertTrue(all(r["_metadata"]["language"] == "zh" for r in additions))
+        with tempfile.TemporaryDirectory() as directory:
+            candidate = Path(directory) / "randname.txt"
+            candidate.write_text(zh_path.read_text().replace(
+                "@_randart_number_@@_randart_counted_thing_@",
+                "@unknown_pool_@@_randart_counted_thing_@", 1))
+            with self.assertRaisesRegex(RuntimeError, "pool token drift"):
+                MODULE.localized_randart_pool_rows(
+                    en_path, MODULE.textdb_rows(candidate))
+            candidate.write_text(zh_path.read_text()
+                                 + "\n%%%%\n_unapproved_pool_\n\nvalue\n")
+            with self.assertRaisesRegex(RuntimeError, "metric drift"):
+                MODULE.validate_randart_metrics(
+                    "randname.txt", en, MODULE.textdb_rows(candidate))
+            # English is frozen independently, including its known continuation.
+            candidate.write_text(en_path.read_text().replace(
+                "@_profession_name_@\nof @_politics_name_armour_@",
+                "@_profession_name_@\n\nof @_politics_name_armour_@", 1))
+            with self.assertRaisesRegex(RuntimeError, "production.*metric drift"):
+                MODULE.validate_randart_metrics(
+                    "randname.txt", MODULE.textdb_rows(candidate), zh)
+
+    def test_randart_localized_split_preserves_both_candidates_and_weights(self):
+        en = [(5, "of the @_adjective_@ @_profession_name_@\n"
+                   "of @_politics_name_armour_@")]
+        zh = [(5, "@_adjective_@@_profession_name_@"),
+              (10, "@_politics_name_armour_@之")]
+        result = MODULE.randart_localized_armour_candidates(en, zh)
+        self.assertEqual([(5, "@_adjective_@@_profession_name_@\n\n"
+                              "@_politics_name_armour_@之")], result)
+        for invalid in (zh[:1], [(5, zh[0][1]), (1, zh[1][1])],
+                        [(5, zh[0][1]), (10, "@unknown@")]):
+            with self.subTest(invalid=invalid):
+                with self.assertRaisesRegex(RuntimeError, "localized.*drift"):
+                    MODULE.randart_localized_armour_candidates(en, invalid)
+        approved = MODULE.randart_localized_markers("weapon", [
+            "@_number_or_qualifier_@", "@_verbing_@", "@_thing_names_@"])
+        self.assertEqual(Counter({"@_randart_quantity_motif_@": 1}), approved)
+        # Other consumers, including random books, do not receive this rewrite.
+        self.assertEqual(Counter({"@_verbing_@": 1}),
+                         MODULE.randart_localized_markers("book", ["@_verbing_@"]))
 
     def test_weighted_metrics_distinguish_variants_from_raw_lines(self):
         with tempfile.TemporaryDirectory() as directory:

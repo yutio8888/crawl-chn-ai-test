@@ -1178,6 +1178,125 @@ RANDART_METRICS = {
 }
 
 
+# D-C-121: Chinese has scoped classifier/predicate pools. English remains frozen;
+# only these explicit keys and token rewrites may diverge from paired grammar.
+ZH_RANDART_POOLS = frozenset({
+    "_randart_number_", "_randart_qualifier_", "_randart_counted_thing_",
+    "_randart_quantity_motif_", "_randart_predicate_", "_randart_place_",
+    "_randart_divine_esteem_", "_randart_xom_esteem_",
+})
+ZH_RANDART_ROOTS = frozenset({
+    "weapon", "armour", "jewellery", "trog weapon", "okawaru weapon",
+    "okawaru armour", "xom weapon", "xom armour", "xom jewellery",
+})
+ZH_RANDNAME_METRICS = {
+    "grammar_keys": 41,
+    "physical_variant_identities": 818,
+    "raw_nonempty_grammar_lines": 1068,
+    "explicit_weight_marker_lines": 250,
+    "continuation_lines": 0,
+    "weight_mass": 11955,
+}
+
+
+def randart_localized_markers(key, markers):
+    markers = list(markers)
+    if key not in ZH_RANDART_ROOTS:
+        return Counter(markers)
+    if "@_number_or_qualifier_@" in markers:
+        markers.remove("@_number_or_qualifier_@")
+        markers.remove("@_thing_names_@")
+        if "@_verbing_@" in markers:
+            markers.remove("@_verbing_@")
+        markers.append("@_randart_quantity_motif_@")
+    elif "@_verbing_@" in markers:
+        if "@death_or_doom@" in markers:
+            markers.remove("@_verbing_@")
+        elif "@_battle_or_war_@" in markers:
+            markers[markers.index("@_verbing_@")] = "@_adjective_@"
+        else:
+            markers = ["@_randart_predicate_@" if marker == "@_verbing_@"
+                       else marker for marker in markers]
+    replacements = {
+        "@_place_name_@": "@_randart_place_@",
+        "@divine_esteem@": "@_randart_divine_esteem_@",
+        "@_xom_esteem_@": "@_randart_xom_esteem_@",
+        "@god_name_possessive@": "@god_name@",
+    }
+    return Counter(replacements.get(marker, marker) for marker in markers)
+
+
+def randart_localized_armour_candidates(english, localized):
+    """One English continuation is two actual Chinese candidates (C1).
+
+    Retain the original English review identity, explicitly recording both
+    local weights and their blank-line boundary in its Chinese evidence.
+    No other count/weight drift may be repaired by this adapter.
+    """
+    split = [index for index, (_, value) in enumerate(english)
+             if value.splitlines() == [
+                 "of the @_adjective_@ @_profession_name_@",
+                 "of @_politics_name_armour_@",
+             ]]
+    if len(split) != 1:
+        raise RuntimeError("randart armour continuation boundary drift")
+    index = split[0]
+    if len(localized) != len(english) + 1:
+        raise RuntimeError("randart armour localized count drift")
+    first, second = localized[index:index + 2]
+    if first != (5, "@_adjective_@@_profession_name_@") or second != (
+        10, "@_politics_name_armour_@之"
+    ):
+        raise RuntimeError("randart armour localized split/weight drift")
+    return (localized[:index]
+            + [(5, first[1] + "\n\n" + second[1])]
+            + localized[index + 2:])
+
+
+def localized_randart_pool_rows(en_path, zh_entries):
+    rows = []
+    for entry in zh_entries:
+        key = entry.canonical_key
+        if key not in ZH_RANDART_POOLS:
+            continue
+        expected_tokens = {
+            "_randart_quantity_motif_": Counter({
+                "_randart_number_": 1, "_randart_counted_thing_": 1,
+                "_randart_qualifier_": 1, "_thing_names_": 1,
+            }),
+            "_randart_divine_esteem_": Counter({"_anger_quality_": 1}),
+            "_randart_xom_esteem_": Counter({"_randart_divine_esteem_": 1}),
+        }.get(key, Counter())
+        actual_tokens = Counter(re.findall(r"@([^@]+)@", entry.value))
+        if actual_tokens != expected_tokens:
+            raise RuntimeError(f"Chinese randart pool token drift: {key}")
+        rows.append({
+            "identity": f"randart-grammar:randname.txt:zh-only:{key}",
+            "category": "randart-grammar", "lifecycle": "current",
+            "english_source": key, "_pre_review_chinese": None,
+            "current_chinese": key,
+            "producer": f"Chinese-only RandartDB key {key} (D-C-121)",
+            "consumer": "Chinese randart classifier/predicate grammar",
+            "input": str(en_path.relative_to(ROOT)),
+            "_metadata": {"grammar_key": key, "language": "zh"},
+            "_conclusion": "adjust",
+        })
+        for ordinal, (weight, value) in enumerate(physical_candidates(entry)):
+            rows.append({
+                "identity": f"randart-component:zh-only:{key}:{ordinal:04d}",
+                "category": "randart-component", "lifecycle": "current",
+                "english_source": key, "_pre_review_chinese": None,
+                "current_chinese": value,
+                "producer": f"Chinese-only RandartDB key {key} ordinal {ordinal}",
+                "consumer": "Chinese randart classifier/predicate grammar (D-C-121)",
+                "input": str(en_path.relative_to(ROOT)),
+                "_metadata": {"grammar_key": key, "physical_ordinal": ordinal,
+                              "weight": weight, "language": "zh"},
+                "_conclusion": "adjust",
+            })
+    return rows
+
+
 def validate_randart_metrics(filename, en_entries, zh_entries):
     expected = RANDART_METRICS[filename]
     en_metrics = {
@@ -1192,7 +1311,8 @@ def validate_randart_metrics(filename, en_entries, zh_entries):
         en_metrics, expected, f"randart production {filename}"
     )
     require_weighted_metrics(
-        zh_metrics, expected, f"randart ZH {filename}"
+        zh_metrics, (ZH_RANDNAME_METRICS if filename == "randname.txt"
+                     else expected), f"randart ZH {filename}"
     )
     return expected
 
@@ -1827,7 +1947,11 @@ def paired_component_rows(
     base_zh = {
         entry.canonical_key: entry for entry in base_zh_entries
     }
-    if en.keys() != zh.keys():
+    localized_randname = (category == "randart-component"
+                          and en_path.name == "randname.txt")
+    extra_keys = ZH_RANDART_POOLS if localized_randname else set()
+    if en.keys() != zh.keys() - extra_keys or (localized_randname
+                                              and not extra_keys <= zh.keys()):
         raise RuntimeError(
             f"{category} key mismatch: missing={sorted(en.keys()-zh.keys())} "
             f"extra={sorted(zh.keys()-en.keys())}"
@@ -1840,6 +1964,9 @@ def paired_component_rows(
     for key in sorted(en):
         en_values = physical_candidates(en[key])
         zh_values = physical_candidates(zh[key])
+        localized_split = localized_randname and key == "armour"
+        if localized_split:
+            zh_values = randart_localized_armour_candidates(en_values, zh_values)
         base_values = (
             physical_candidates(base_zh[key]) if key in base_zh else []
         )
@@ -1860,7 +1987,9 @@ def paired_component_rows(
                 )
             en_markers = re.findall(r"@[A-Za-z_][A-Za-z0-9_]*@", english)
             zh_markers = re.findall(r"@[A-Za-z_][A-Za-z0-9_]*@", chinese)
-            if Counter(en_markers) != Counter(zh_markers):
+            expected_markers = (randart_localized_markers(key, en_markers)
+                                if localized_randname else Counter(en_markers))
+            if expected_markers != Counter(zh_markers):
                 raise RuntimeError(
                     f"{category}:{key}:{ordinal} recursive token mismatch"
                 )
@@ -1889,6 +2018,9 @@ def paired_component_rows(
                     "grammar_key": key,
                     "physical_ordinal": ordinal,
                     "weight": en_weight,
+                    **({"localized_split_weights": [5, 10],
+                        "localized_split_reason": "D-C-121 C1 blank-line repair"}
+                       if localized_split and "\n\n" in chinese else {}),
                 },
                 "_conclusion": (
                     "adjust" if changed_keys
@@ -2393,6 +2525,10 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
             "randart-component", review_base,
         )
         rows.extend(component_rows)
+        if filename == "randname.txt":
+            rows.extend(localized_randart_pool_rows(
+                SRC / "dat/database" / filename, zh_randart
+            ))
         for entry in en_randart:
             rows.append({
                 "identity": f"randart-grammar:{filename}:{entry.canonical_key}",
@@ -2427,8 +2563,8 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
         "special": 23,
         "gizmo": 539,
         "item-description": 307,
-        "randart-component": 2440,
-        "randart-grammar": 115,
+        "randart-component": 2775,
+        "randart-grammar": 123,
     }
     if dict(counts) != expected_counts:
         raise RuntimeError(
@@ -2558,6 +2694,7 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
                 "per_file": randart_metrics,
                 "totals": randart_totals,
             },
+            "localized_randname_metrics": ZH_RANDNAME_METRICS,
             "ordinary_description_slots": {
                 "count": ordinary["count"],
                 "mapping": [

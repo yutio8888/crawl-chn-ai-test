@@ -174,6 +174,8 @@ string replace_name_parts(const string &name_in, const item_def& item)
     string name = name_in;
 
     const god_type god_gift = origin_as_god_gift(item);
+    const bool zh_randart = Options.language == lang_t::ZH
+                            && item.base_type != OBJ_BOOKS;
 
     // Don't allow "player's Death" type names for god gifts (except
     // for those from Xom).
@@ -186,17 +188,21 @@ string replace_name_parts(const string &name_in, const item_def& item)
                                "@player_name@"
                                + getRandNameString("killer_name"));
             name = replace_all(name, "@player_doom@",
-                               "@player_name_possessive@ "
+                               string(zh_randart ? "@player_name_possessive@"
+                                                 : "@player_name_possessive@ ")
                                + getRandNameString("death_or_doom"));
         }
         else
         {
             // Simply overwrite the name with one of type "God's Favour".
             // One key for the whole phrase so Chinese can order it correctly.
-            const string god = apostrophise(god_name(god_gift, false));
-            const string esteem = getRandNameString("divine_esteem");
-            name = make_stringf_p(
-                C_("artefact divine esteem", "of %1$s %2$s"),
+            const string god = zh_randart ? god_name(god_gift, false)
+                                          : apostrophise(god_name(god_gift, false));
+            const string esteem = getRandNameString(zh_randart
+                ? "_randart_divine_esteem_" : "divine_esteem");
+            name = make_stringf_p(zh_randart
+                ? C_("randart divine esteem", "of %1$s %2$s")
+                : C_("artefact divine esteem", "of %1$s %2$s"),
                 god.c_str(), esteem.c_str());
         }
     }
@@ -210,6 +216,8 @@ string replace_name_parts(const string &name_in, const item_def& item)
     if (name.find("@branch_name@", 0) != string::npos)
     {
         string place = branches[random2(NUM_BRANCHES)].longname;
+        if (zh_randart)
+            place = T_(place.c_str());
         if (!place.empty())
             name = replace_all(name, "@branch_name@", place);
     }
@@ -1654,8 +1662,14 @@ string make_artefact_name(const item_def &item, bool appearance)
                 appear = T_("non-descript");
         }
 
-        return make_stringf_p(C_("artefact appearance", "%1$s %2$s"),
-                              appear.c_str(), base_name.c_str());
+        // Jewellery's scoped library supplies the adjective's 的 and places
+        // the material directly before 戒指/护符. Other appearances keep their
+        // existing frame; English uses exactly the original path.
+        return make_stringf_p(
+            Options.language == lang_t::ZH && item.base_type == OBJ_JEWELLERY
+                ? C_("randart jewellery appearance", "%1$s %2$s")
+                : C_("artefact appearance", "%1$s %2$s"),
+            appear.c_str(), base_name.c_str());
     }
 
     if (_pick_db_name(item))
