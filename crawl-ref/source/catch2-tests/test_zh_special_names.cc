@@ -4,6 +4,7 @@
 #include "artefact.h"
 #include "english.h"
 #include "database.h"
+#include "describe.h"
 #include "format.h"
 #include "invent.h"
 #include "item-name.h"
@@ -130,6 +131,7 @@ TEST_CASE_METHOD(ZhTranslationFixture, "special names: artefact rendering preser
     item.link = 0;
     item.slot = 'a';
     REQUIRE(make_item_randart(item, true));
+    item.plus = 9;
     const string identity = "「巨人杀手」长剑";
     item.props[ARTEFACT_NAME_KEY].get_string() = identity;
     item.inscription = "!w @w7";
@@ -148,10 +150,10 @@ TEST_CASE_METHOD(ZhTranslationFixture, "special names: artefact rendering preser
         const string display = item.name(DESC_PLAIN);
         if (language == lang_t::ZH)
         {
-            CHECK(display.find("『巨人杀手』") != string::npos);
+            CHECK(display.find("「巨人杀手」长剑") != string::npos);
             CHECK(display.find("「「") == string::npos);
-            CHECK(starts_with(display, "「"));
-            CHECK(display.find("」 {") != string::npos);
+            CHECK(starts_with(display, "+9 「"));
+            CHECK(display.find("长剑 {") != string::npos);
             CHECK(display.find("!w @w7") > display.find("」"));
         }
         else
@@ -242,8 +244,8 @@ TEST_CASE_METHOD(ZhTranslationFixture, "special names: artefact rendering preser
         set_unique_item_status(unrand, prior_status);
     });
     unrand.flags |= ISFLAG_IDENTIFIED;
-    CHECK(unrand.name(DESC_PLAIN).find("「+8 『屠龙者』骑枪」") == 0);
-    CHECK(unrand.name(DESC_PLAIN).find("『屠龙者』骑枪") != string::npos);
+    CHECK(unrand.name(DESC_PLAIN).find("+8 「屠龙者」骑枪") == 0);
+    CHECK(unrand.name(DESC_PLAIN).find("「屠龙者」骑枪") != string::npos);
     InvEntry unrand_entry(unrand);
     CHECK(unrand_entry.get_filter_text().find("「屠龙者」骑枪") != string::npos);
     you.inv[1] = unrand;
@@ -256,6 +258,14 @@ TEST_CASE_METHOD(ZhTranslationFixture, "special names: artefact rendering preser
     CHECK(unrand_search[0].item.special == UNRAND_WYRMBANE);
     CHECK(get_unrand_name_en(unrand) == string("lance \"Wyrmbane\""));
     CHECK(get_artefact_name(unrand) == "「屠龙者」骑枪");
+    item_def boots;
+    boots.quantity = 1;
+    const auto boots_status = get_unique_item_status(UNRAND_SEVEN_LEAGUE_BOOTS);
+    REQUIRE(make_item_unrandart(boots, UNRAND_SEVEN_LEAGUE_BOOTS));
+    unwinder restore_boots([&]() { set_unique_item_status(boots, boots_status); });
+    boots.flags |= ISFLAG_IDENTIFIED;
+    boots.plus = 4;
+    CHECK(starts_with(boots.name(DESC_PLAIN), "+4 「七里格靴」"));
     CHECK(quote_special_name("<red>「西格蒙德」</red>")
           == "<red>「西格蒙德」</red>");
 }
@@ -353,4 +363,79 @@ TEST_CASE_METHOD(ZhTranslationFixture, "special names: paired inner punctuation 
               == name + " says \"outside\".");
     }
     CHECK(quote_special_name("「blade 『Wyrmbane』」") == "「blade 『Wyrmbane』」");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture, "artefact cores use one name marker outside modifiers",
+                 "[zh-translation][special-name-quotes][artefact-core-quotes]")
+{
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    item_def item;
+    item.base_type = OBJ_WEAPONS;
+    item.sub_type = WPN_LONG_SWORD;
+    item.quantity = 1;
+    item.rnd = 1;
+    item.flags = ISFLAG_IDENTIFIED;
+    REQUIRE(make_item_randart(item, true));
+    item.plus = 9;
+    item.inscription = "!w";
+    const vector<pair<string, string>> names = {
+        {"「巨人杀手」长剑", "「巨人杀手」长剑"},
+        {"\"Old Slayer\"长剑", "「Old Slayer」长剑"},
+        {"毒菌之匕首", "「毒菌之匕首」"},
+        {"Latin's blade", "「Latin's blade」"},
+        {"unpaired\" blade", "「unpaired\" blade」"},
+        {"「甲」与\"乙\"长剑", "「甲」与「乙」长剑"},
+        {"<red>「巨人杀手」</red>长剑", "<red>「巨人杀手」</red>长剑"},
+    };
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        for (const auto &entry : names)
+        {
+            INFO(entry.first);
+            item.props[ARTEFACT_NAME_KEY].get_string() = entry.first;
+            const string expected = "+9 "
+                + (language == lang_t::ZH ? entry.second : entry.first);
+            CHECK(starts_with(item.name(DESC_PLAIN), expected));
+            InvEntry menu_entry(item);
+            CHECK(menu_entry.get_text().find(expected) != string::npos);
+            describe_info inspection;
+            get_item_desc(item, inspection);
+            CHECK(inspection.body.str().find(expected) != string::npos);
+            you.inv[0] = item;
+            you.inv[0].pos = ITEM_IN_INVENTORY;
+            you.inv[0].link = 0;
+            you.inv[0].slot = 'a';
+            CHECK(starts_with(you.inv[0].name(DESC_INVENTORY),
+                              string(language == lang_t::ZH ? "a - " : "a - the ")
+                              + expected));
+            CHECK(item.name(DESC_PLAIN).find("!w") > expected.size());
+            CHECK(item.props[ARTEFACT_NAME_KEY].get_string() == entry.first);
+            const string before = item.name(DESC_PLAIN);
+            vector<unsigned char> bytes;
+            writer output(&bytes);
+            marshallItem(output, item, true);
+            reader input(bytes);
+            input.setMinorVersion(TAG_MINOR_VERSION);
+            item_def loaded;
+            unmarshallItem(input, loaded);
+            CHECK(loaded.props[ARTEFACT_NAME_KEY].get_string() == entry.first);
+            CHECK(loaded.name(DESC_PLAIN) == before);
+            {
+                ScopedUnquotedNames storage;
+                CHECK(starts_with(item.name(DESC_PLAIN), "+9 " + entry.first));
+            }
+            item.flags |= ISFLAG_CHAOTIC | ISFLAG_REPLICA;
+            const string modified = item.name(DESC_PLAIN);
+            CHECK(modified.find(expected) == string::npos);
+            CHECK(modified.find(language == lang_t::ZH ? entry.second : entry.first)
+                  > modified.find("+9 "));
+            item.flags &= ~(ISFLAG_CHAOTIC | ISFLAG_REPLICA);
+        }
+        item_def ordinary = item;
+        ordinary.flags &= ~ISFLAG_ARTEFACT_MASK;
+        CHECK(ordinary.name(DESC_PLAIN).find("「") == string::npos);
+    }
 }

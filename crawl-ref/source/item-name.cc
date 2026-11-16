@@ -185,7 +185,11 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
 
     ostringstream buff;
 
-    const string auxname = name_aux(descrip, terse, ident, with_inscription);
+    const bool quoted_artefact = display_inscription && is_artefact(*this)
+        && (ident || is_identified()) && descrip != DESC_DBNAME
+        && descrip != DESC_BASENAME && descrip != DESC_QUALNAME;
+    const string auxname = name_aux(descrip, terse, ident, with_inscription,
+                                   quoted_artefact && base_type != OBJ_BOOKS);
 
     const bool startvowel     = is_vowel(auxname[0]);
     const bool qualname       = (descrip == DESC_QUALNAME);
@@ -314,10 +318,9 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
         }
     }
 
-    const bool quoted_artefact = display_inscription && is_artefact(*this)
-        && (ident || is_identified()) && descrip != DESC_DBNAME
-        && descrip != DESC_BASENAME && descrip != DESC_QUALNAME;
-    buff << (quoted_artefact ? quote_special_name(auxname) : auxname);
+    // Random book titles keep their existing display rule.
+    buff << (quoted_artefact && base_type == OBJ_BOOKS
+             ? quote_special_name(auxname) : auxname);
 
     if (descrip == DESC_INVENTORY_EQUIP)
     {
@@ -1803,7 +1806,7 @@ string weapon_brand_desc(const char *body, const item_def &weap,
  *                      TODO: example
  */
 static string _name_weapon(const item_def &weap, description_level_type desc,
-                           bool terse, bool ident, bool inscr)
+                           bool terse, bool ident, bool inscr, bool quote_name)
 {
     const bool dbname   = (desc == DESC_DBNAME);
     const bool basename = _use_basename(weap, desc, ident);
@@ -1822,7 +1825,9 @@ static string _name_weapon(const item_def &weap, description_level_type desc,
     if (is_artefact(weap) && !dbname)
     {
         const string long_name = curse_prefix + chaotic + plus_text + replica
-                                 + get_artefact_name(weap, ident);
+                                 + (quote_name
+                                    ? quote_artefact_name(get_artefact_name(weap, ident))
+                                    : get_artefact_name(weap, ident));
 
         // crop long artefact names when not controlled by webtiles -
         // webtiles displays weapon names across multiple lines
@@ -1856,7 +1861,9 @@ static string _name_weapon(const item_def &weap, description_level_type desc,
 
         const string short_name
             = curse_prefix + chaotic + plus_text + replica
-              + get_artefact_base_name(weap, true);
+              + (quote_name
+                 ? quote_artefact_name(get_artefact_base_name(weap, true))
+                 : get_artefact_base_name(weap, true));
         return short_name;
     }
 
@@ -1884,7 +1891,7 @@ static string _name_weapon(const item_def &weap, description_level_type desc,
 // Note that "terse" is only currently used for the "in hand" listing on
 // the game screen.
 string item_def::name_aux(description_level_type desc, bool terse, bool ident,
-                          bool with_inscription) const
+                          bool with_inscription, bool quote_name) const
 {
     // Shortcuts
     const int item_typ   = sub_type;
@@ -1908,7 +1915,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
     switch (base_type)
     {
     case OBJ_WEAPONS:
-        buff << _name_weapon(*this, desc, terse, ident, with_inscription);
+        buff << _name_weapon(*this, desc, terse, ident, with_inscription, quote_name);
         break;
 
     case OBJ_MISSILES:
@@ -1963,7 +1970,8 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 
         if (is_artefact(*this) && !dbname)
         {
-            buff << get_artefact_name(*this, ident);
+            buff << (quote_name ? quote_artefact_name(get_artefact_name(*this, ident))
+                                : get_artefact_name(*this, ident));
             break;
         }
 
@@ -2194,7 +2202,8 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 
         if (is_randart && !dbname)
         {
-            buff << get_artefact_name(*this, ident);
+            buff << (quote_name ? quote_artefact_name(get_artefact_name(*this, ident))
+                                : get_artefact_name(*this, ident));
             break;
         }
 
@@ -2249,7 +2258,10 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         if (!dbname && !basename && testbits(flags, ISFLAG_CHAOTIC))
             buff << (dbname ? "chaotic " : T_("chaotic "));
         if (is_random_artefact(*this) && !dbname && !basename)
-            buff << get_artefact_name(*this, ident);
+        {
+            buff << (quote_name ? quote_artefact_name(get_artefact_name(*this, ident))
+                                : get_artefact_name(*this, ident));
+        }
         else
             buff << talisman_type_name(item_typ);
         break;
@@ -2288,7 +2300,8 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
                     buff << staff_type_name(static_cast<stave_type>(sub_type)) << " staff";
             }
             // TODO: crop long artefact names when not controlled by webtiles
-            buff << get_artefact_name(*this, ident);
+            buff << (quote_name ? quote_artefact_name(get_artefact_name(*this, ident))
+                                : get_artefact_name(*this, ident));
             if (!identified)
                 buff << (T_("staff"));
         }
