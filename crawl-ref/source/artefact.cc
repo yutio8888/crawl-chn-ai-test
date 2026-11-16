@@ -1671,11 +1671,14 @@ string make_artefact_name(const item_def &item, bool appearance)
         // Jewellery's scoped library supplies the adjective's 的 and places
         // the material directly before 戒指/护符. Other appearances keep their
         // existing frame; English uses exactly the original path.
-        return make_stringf_p(
-            Options.language == lang_t::ZH && item.base_type == OBJ_JEWELLERY
-                ? C_("randart jewellery appearance", "%1$s %2$s")
-                : C_("artefact appearance", "%1$s %2$s"),
-            appear.c_str(), base_name.c_str());
+        if (Options.language == lang_t::ZH && item.base_type == OBJ_JEWELLERY)
+        {
+            return make_stringf_p(
+                C_("randart jewellery appearance", "%1$s %2$s"),
+                appear.c_str(), base_name.c_str());
+        }
+        return make_stringf_p(C_("artefact appearance", "%1$s %2$s"),
+                              appear.c_str(), base_name.c_str());
     }
 
     if (_pick_db_name(item))
