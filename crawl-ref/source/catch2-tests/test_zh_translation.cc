@@ -1034,7 +1034,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             {
                 const string place = T_(branch.longname);
                 const string expected = language == lang_t::ZH
-                    ? place + item_base_name(item)
+                    ? place + "之" + item_base_name(item)
                     : item_base_name(item) + " of " + place;
                 if (candidate == expected)
                 {
@@ -1243,10 +1243,13 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             {
                 continue;
             }
-            const string god = apostrophise(god_name(GOD_OKAWARU, false));
-            const string esteem = getRandNameString("divine_esteem");
-            expected = language == lang_t::ZH
-                ? god + esteem : "of " + god + " " + esteem;
+            const bool zh = language == lang_t::ZH;
+            const string god = zh ? god_name(GOD_OKAWARU, false)
+                                  : apostrophise(god_name(GOD_OKAWARU, false));
+            const string esteem = getRandNameString(zh
+                ? "_randart_divine_esteem_" : "divine_esteem");
+            expected = zh ? "「" + god + "之" + esteem + "」"
+                          : "of " + god + " " + esteem;
             if (strwidth(expected) <= 25)
             {
                 chosen_seed = seed;
