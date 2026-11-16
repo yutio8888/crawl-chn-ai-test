@@ -239,3 +239,34 @@ rm "$FORMAT_DB/randname.txt" "$FORMAT_DB/zh/randname.txt"
 printf '%s\n' '%%%%' 'key' 'value' > "$FORMAT_DB/plain.txt"
 printf '%s\n' '%%%%' 'key' '值' > "$FORMAT_DB/zh/plain.txt"
 run_format_fixture > "$TMP_ROOT/format-ordinary.out" 2>&1
+
+# RandartDB references are lookup identities, even inside Chinese quotes.
+reset_format_inputs
+(
+    cd "$FORMAT_REPO"
+    /bin/bash .claude/scripts/check_consistency.sh --gods --strict
+) > "$TMP_ROOT/gods-tokens.out" 2>&1
+for text in '佐姆 Xom 「@Xom armour@」' '「@Xom armour」'; do
+    reset_format_inputs
+    printf '%s\n' "$text" >> "$FORMAT_DB/zh/randname.txt"
+    status=0
+    (
+        cd "$FORMAT_REPO"
+        /bin/bash .claude/scripts/check_consistency.sh --gods --strict
+    ) > "$TMP_ROOT/gods-residual.out" 2>&1 || status=$?
+    test "$status" -eq 1
+    grep -q "English name 'Xom' found" "$TMP_ROOT/gods-residual.out"
+done
+
+# This exemption is not applied to ordinary translated prose files.
+reset_format_inputs
+mkdir -p "$FORMAT_REPO/crawl-ref/source/dat/descript/zh"
+printf '%s\n' '佐姆 「@Xom armour@」' \
+    > "$FORMAT_REPO/crawl-ref/source/dat/descript/zh/description.txt"
+status=0
+(
+    cd "$FORMAT_REPO"
+    /bin/bash .claude/scripts/check_consistency.sh --gods --strict
+) > "$TMP_ROOT/gods-prose.out" 2>&1 || status=$?
+test "$status" -eq 1
+grep -q "English name 'Xom' found" "$TMP_ROOT/gods-prose.out"

@@ -144,7 +144,15 @@ for root in dirs:
                     if not cjk.search(line):
                         continue
                     stripped = line.strip()
-                    if not pattern.search(line):
+                    searchable = line
+                    # RandartDB expands these protocol references before display;
+                    # quoted references are not untranslated god names.
+                    if root == dirs[-1] and filename in (
+                        "randname.txt", "rand_wpn.txt", "rand_arm.txt",
+                        "rand_all.txt", "randbook.txt",
+                    ):
+                        searchable = re.sub(r'@[a-zA-Z_][a-zA-Z_0-9 ]*@', '', line)
+                    if not pattern.search(searchable):
                         continue
                     # Skip comments and embedded code/identifiers in ZH textdb files.
                     if stripped.startswith("#"):
