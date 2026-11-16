@@ -471,6 +471,7 @@ TEST_CASE_METHOD(ZhTranslationFixture, "artefact cores use one name marker outsi
             CHECK(starts_with(item.name(DESC_PLAIN), expected));
             InvEntry menu_entry(item);
             CHECK(menu_entry.get_text().find(expected) != string::npos);
+            CHECK(menu_entry.get_filter_text().find(entry.first) != string::npos);
             describe_info inspection;
             get_item_desc(item, inspection);
             CHECK(inspection.body.str().find(expected) != string::npos);

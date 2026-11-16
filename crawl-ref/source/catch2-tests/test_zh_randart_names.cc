@@ -250,13 +250,13 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(predicate.find('@') == string::npos);
     }
     // Raw intrinsic quotes stay in the generated identity. Their conversion
-    // to nested display quotes belongs to item::name, never to name storage.
+    // to display markers belongs to item::name, never to name storage.
     rng::subgenerator fixed(0x1234, 0x72616e64617274ULL);
     REQUIRE(make_item_randart(item, true));
     const string raw = "「测试名字」长剑";
     item.props[ARTEFACT_NAME_KEY] = raw;
     item.flags |= ISFLAG_IDENTIFIED;
-    CHECK(item.name(DESC_PLAIN).find("『测试名字』长剑") != string::npos);
+    CHECK(item.name(DESC_PLAIN).find("「测试名字」长剑") != string::npos);
     CHECK(item.props[ARTEFACT_NAME_KEY].get_string() == raw);
     unwind_var<string> long_name(you.your_name,
         "非常非常非常非常长的角色名字");
@@ -363,7 +363,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CAPTURE(example.first, raw);
         CHECK(raw == "「" + place + "」长剑");
         item.flags |= ISFLAG_IDENTIFIED;
-        CHECK(item.name(DESC_PLAIN).find("『" + place + "』长剑") != string::npos);
+        CHECK(item.name(DESC_PLAIN).find("「" + place + "」长剑") != string::npos);
         CHECK(item.props[ARTEFACT_NAME_KEY].get_string() == raw);
     }
 }
@@ -383,7 +383,9 @@ TEST_CASE("replay frozen randart display names", "[.artefact-name-replay]")
     init_properties();
     unwind_var<player> restore_player(you);
     you = player();
-    TranslationFixture mode(lang_t::ZH, "zh");
+    const char *language = getenv("ARTEFACT_REPLAY_LANGUAGE");
+    const bool zh = !language || string(language) != "en";
+    TranslationFixture mode(zh ? lang_t::ZH : lang_t::EN, zh ? "zh" : nullptr);
     string line;
     REQUIRE(static_cast<bool>(getline(input, line)));
     fprintf(output, "seed\tcore_before_width\tcore_after_width\tprefix_width\tproperties_width\tfull_before_width\tfull_after_width\tbefore\tafter\n");
@@ -414,6 +416,8 @@ TEST_CASE("replay frozen randart display names", "[.artefact-name-replay]")
         const string core = get_artefact_name(item, true);
         const string without_properties = item.name(DESC_PLAIN, false, true, false);
         const string full = item.name(DESC_PLAIN, false, true);
+        if (!zh)
+            CHECK(full == fields[6]);
         const int core_before = strwidth(quote_special_name(core));
         const int core_after = strwidth(quote_artefact_name(core));
         const int prefix = strwidth(without_properties) - core_after;
