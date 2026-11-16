@@ -46,113 +46,113 @@
 weapon
 
 # 武器专用关键词（见 rand_wpn.txt）
-@_power_or_anger_@
+「@_power_or_anger_@」
 
-@_battle_or_war_@
+「@_battle_or_war_@」
 
 w:1
-@player_doom@
+「@player_doom@」
 
 w:8
-@death_or_doom@
+「@death_or_doom@」
 
 w:1
-@_verbing_@@death_or_doom@
+「@death_or_doom@」
 
 w:6
-@_adjective_@@_strategy_or_justice_@
+「@_adjective_@@_strategy_or_justice_@」
 
-@_strategy_or_justice_@
-
-w:3
-@_verbing_@的@_people_name_@
+「@_strategy_or_justice_@」
 
 w:3
-@_people_name_@
+@_randart_predicate_@的@_people_name_@之
+
+w:3
+@_people_name_@之
 
 w:2
-@_verbing_@的@_diviner_name_@
+@_randart_predicate_@的@_diviner_name_@之
 
 w:5
-@_verbing_@的@_weapon_animal_@
+@_randart_predicate_@的@_weapon_animal_@之
 
 w:5
-@_weapon_animal_@
+@_weapon_animal_@之
 
 w:2
-@_plant_name_@
+@_plant_name_@之
 
 w:7
-@_evil_stuff_@
+「@_evil_stuff_@」
 
 w:5
-@_catastrophe_name_@
+「@_catastrophe_name_@」
 
 w:8
-@_chaos_name_@
+@_chaos_name_@之
 
 w:8
-@_balance_or_order_@
+@_balance_or_order_@之
 
-@_economics_or_politics_@
+@_economics_or_politics_@之
 
 w:8
-@branch_name@
+@branch_name@之
 
 w:7
-@_place_name_@
+「@_randart_place_@」
 
 w:5
-@_discomfort_weapon_@
+@_discomfort_weapon_@之
 
 w:4
-@_item_name_@
+@_item_name_@之
 
 w:1
-@_magic_name_@
+@_magic_name_@之
 
 w:5
-@_substance_name_@
+@_substance_name_@之
 
 w:7
-@_science_name_@
+@_science_name_@之
 
 w:5
-@other_weapon_name@
+「@other_weapon_name@」
 
 w:30
 「@_plain_weapon_name_@」
 
 # 通用关键词（见 rand_all.txt）
 w:5
-@_time_name_@
+@_time_name_@之
 
 w:5
-@_sky_or_light_@
+「@_sky_or_light_@」
 
 w:18
-@_virtue_or_vice_@
+@_virtue_or_vice_@之
 
-@_number_or_qualifier_@@_thing_names_@
+@_randart_quantity_motif_@之
 
 w:5
-@_destiny_name_@
+@_destiny_name_@之
 
 w:9
-@god_name_possessive@@divine_esteem@
+「@god_name@之@_randart_divine_esteem_@」
 
 w:4
-@_verbing_@的众神
+「@_randart_predicate_@的众神」
 
 w:4
-@_adjective_@神
+「@_adjective_@神」
 
 w:2
-@_verbing_@的@god_name@
+「@_randart_predicate_@的@god_name@」
 
 # 硬编码关键词
 w:1
-@god_name@
+「@god_name@」
 %%%%
 ######################################################
 # 2. 护甲
@@ -166,105 +166,106 @@ talisman
 armour
 
 # 护甲专用关键词（见 rand_arm.txt）
-@_armour_name_shielding_@
+「@_armour_name_shielding_@」
 
 w:8
-@_armour_property_name_@
+@_armour_property_name_@之
 
 w:20
-@_wacky_armour_name_@
+「@_wacky_armour_name_@」
 
-@_profession_name_@
+@_profession_name_@之
 
 w:5
 @_adjective_@@_profession_name_@
-@_politics_name_armour_@
+
+@_politics_name_armour_@之
 
 w:3
-@_weather_name_@
+@_weather_name_@之
 
 w:9
-@_good_or_divine_@
+「@_good_or_divine_@」
 
 w:9
-@_adjective_@@_good_or_divine_@
+「@_adjective_@@_good_or_divine_@」
 
 w:5
-@_celestial_bodies_@
+「@_celestial_bodies_@」
 
 w:5
-@_instrument_name_@
+@_instrument_name_@之
 
 w:20
-@_armour_animal_@
+@_armour_animal_@之
 
 w:1
-@_adjective_@@_armour_animal_@
+@_adjective_@@_armour_animal_@之
 
 w:3
-@_flower_name_@
+@_flower_name_@之
 
 w:1
-@_fruit_name_@
+@_fruit_name_@之
 
 w:2
-@_critter_name_@
+@_critter_name_@之
 
 w:1
-@_adjective_@@_critter_name_@
+@_adjective_@@_critter_name_@之
 
 w:5
-@_evil_being_@
+「@_evil_being_@」
 
-@_discomfort_and_inaction_@
+@_discomfort_and_inaction_@之
 
-@_game_name_@
+「@_game_name_@」
 
 w:15
-@_other_armour_name_@
+「@_other_armour_name_@」
 
 w:2
 「@_plain_armour_name_@」
 
 # 武器关键词（见 rand_wpn.txt）
 w:25
-@_philosophy_or_science_@
+@_philosophy_or_science_@之
 
 w:15
-@_place_name_@
+「@_randart_place_@」
 
 # 通用关键词（见 rand_all.txt）
-@_time_name_@
+@_time_name_@之
 
 w:8
-@_sky_or_light_@
+「@_sky_or_light_@」
 
 w:30
-@_virtue_or_vice_@
+@_virtue_or_vice_@之
 
 w:6
-@_number_or_qualifier_@@_verbing_@的@_thing_names_@
+@_randart_quantity_motif_@之
 
-@_number_or_qualifier_@@_thing_names_@
+@_randart_quantity_motif_@之
 
 w:20
-@god_name_possessive@@divine_esteem@
+「@god_name@之@_randart_divine_esteem_@」
 
 w:4
-@_verbing_@的众神
+「@_randart_predicate_@的众神」
 
 w:4
-@_adjective_@神
+「@_adjective_@神」
 
 w:2
-@_verbing_@的@god_name@
+「@_randart_predicate_@的@god_name@」
 
 # 硬编码关键词
 w:1
-@god_name@
+「@god_name@」
 
 w:15
-@branch_name@
+@branch_name@之
 %%%%
 ######################################################
 # 3. 饰品
@@ -273,77 +274,77 @@ jewellery
 
 # 饰品专用（见 rand_all.txt）
 w:3
-@_jewellery_animal_@
+@_jewellery_animal_@之
 
-@_jewellery_special_name_@
+@_jewellery_special_name_@之
 
-@_suspicion_name_@
+@_suspicion_name_@之
 
 # 如武器定义（见 rand_wpn.txt）
-@_people_name_@
+@_people_name_@之
 
 w:5
-@_verbing_@的@_people_name_@
+@_randart_predicate_@的@_people_name_@之
 
 w:17
-@_balance_or_order_@
+@_balance_or_order_@之
 
 w:14
-@_philosophy_name_@
+@_philosophy_name_@之
 
-@other_weapon_name@
+「@other_weapon_name@」
 
 # 如护甲定义（见 rand_arm.txt）
 w:20
-@_armour_animal_@
+@_armour_animal_@之
 
 w:3
-@_flower_name_@
+@_flower_name_@之
 
 w:3
-@_adjective_@@_fruit_name_@
+@_adjective_@@_fruit_name_@之
 
 w:5
-@_evil_being_@
+「@_evil_being_@」
 
 w:20
-@_good_or_divine_@
+「@_good_or_divine_@」
 
 w:12
-@_politics_name_armour_@
+@_politics_name_armour_@之
 
 w:2
 「@_plain_armour_name_@」
 
 # 三种类型共享（见 rand_all.txt）
 w:13
-@_time_name_@
+@_time_name_@之
 
-@_sky_or_light_@
+「@_sky_or_light_@」
 
 w:20
-@god_name_possessive@@divine_esteem@
+「@god_name@之@_randart_divine_esteem_@」
 
 w:4
-@_verbing_@的众神
+「@_randart_predicate_@的众神」
 
 w:4
-@_adjective_@神
+「@_adjective_@神」
 
 w:2
-@_verbing_@的@god_name@
+「@_randart_predicate_@的@god_name@」
 
-佐姆之@_xom_esteem_@
+「佐姆之@_randart_xom_esteem_@」
 
 w:7
-@_virtue_name_@
+@_virtue_name_@之
 
 w:13
-@_vice_name_@
+@_vice_name_@之
 
-@_number_or_qualifier_@@_thing_names_@
+@_randart_quantity_motif_@之
 
-@_number_or_qualifier_@@_verbing_@的@_thing_names_@
+@_randart_quantity_motif_@之
 %%%%
 ######################################################
 # 神赐礼物专用
@@ -354,83 +355,83 @@ Trog weapon
 
 # 包含战斗和死亡的名称更常见
 w:20
-@_power_or_anger_@
+「@_power_or_anger_@」
 
 w:5
-@_adjective_@@_power_or_anger_@
+「@_adjective_@@_power_or_anger_@」
 
 w:20
-@_battle_or_war_@
+「@_battle_or_war_@」
 
 w:5
-@_verbing_@@_battle_or_war_@
+「@_adjective_@@_battle_or_war_@」
 
 w:20
-@death_or_doom@
+「@death_or_doom@」
 
 w:5
-@_adjective_@@death_or_doom@
+「@_adjective_@@death_or_doom@」
 
 w:7
-@_strategy_name_@
+「@_strategy_name_@」
 
 w:15
-@_justice_name_@
+@_justice_name_@之
 
 w:30
-@_virtue_or_vice_@
+@_virtue_or_vice_@之
 
 w:1
-特洛格
+特洛格之
 
 w:20
-特洛格之@divine_esteem@
+「特洛格之@_randart_divine_esteem_@」
 
-特洛格之@_anger_quality_@
-
-w:15
-@_weapon_animal_@
+「特洛格之@_anger_quality_@」
 
 w:15
-@_evil_stuff_@
-
-@_catastrophe_name_@
+@_weapon_animal_@之
 
 w:15
-@_chaos_name_@
+「@_evil_stuff_@」
+
+「@_catastrophe_name_@」
+
+w:15
+@_chaos_name_@之
 
 w:20
-@_balance_or_order_@
+@_balance_or_order_@之
 
 w:20
-@_economics_or_politics_@
+@_economics_or_politics_@之
 
 w:15
-@branch_name@
+@branch_name@之
 
 w:15
-@_place_name_@
+「@_randart_place_@」
 
 w:15
-@_time_name_@
+@_time_name_@之
 
-@_sky_or_light_@
+「@_sky_or_light_@」
 
 w:20
-@_number_or_qualifier_@@_thing_names_@
+@_randart_quantity_motif_@之
 
-@_discomfort_weapon_@
+@_discomfort_weapon_@之
 
-@_item_name_@
+@_item_name_@之
 
 w:15
-@_philosophy_name_@
+@_philosophy_name_@之
 
-@_science_name_@
+@_science_name_@之
 
-@other_weapon_name@
+「@other_weapon_name@」
 
-@_monster_name_@@killer_name@
+「@_monster_name_@@killer_name@」
 
 w:30
 「@_plain_weapon_name_@」
@@ -448,51 +449,51 @@ w:400
 
 # 加上一些特殊案例
 w:2
-@player_name_possessive@@_valour_name_@
+「@player_name_possessive@@_valour_name_@」
 
 w:3
-奥卡瓦鲁之@divine_esteem@
+「奥卡瓦鲁之@_randart_divine_esteem_@」
 
 w:1
-@_verbing_@的奥卡瓦鲁
+@_randart_predicate_@的奥卡瓦鲁之
 
 # 为一些较无害的主题增加额外概率
-@_strategy_or_justice_@
+「@_strategy_or_justice_@」
 
 w:5
-@_philosophy_name_@
+@_philosophy_name_@之
 
 w:3
-@_balance_or_order_@
+@_balance_or_order_@之
 
 w:5
-@_power_name_@
+「@_power_name_@」
 
 w:2
-@_virtue_name_@
+@_virtue_name_@之
 
 w:1
-@_diviner_name_@
+@_diviner_name_@之
 
 w:5
-@_weapon_animal_@
+@_weapon_animal_@之
 
 w:5
-@_place_name_@
+「@_randart_place_@」
 
 w:2
-@_item_name_@
+@_item_name_@之
 %%%%
 ######################################################
 # 奥卡瓦鲁 护甲
 ######################################################
 Okawaru robe
 
-@Okawaru armour@
+「@Okawaru armour@」
 %%%%
 Okawaru body armour
 
-@Okawaru armour@
+「@Okawaru armour@」
 %%%%
 Okawaru armour
 
@@ -501,28 +502,28 @@ w:400
 @armour@
 
 w:2
-@player_name_possessive@@_valour_name_@
+「@player_name_possessive@@_valour_name_@」
 
 w:2
-奥卡瓦鲁之@divine_esteem@
+「奥卡瓦鲁之@_randart_divine_esteem_@」
 
 w:2
-@_armour_animal_@
+@_armour_animal_@之
 
 w:1
-@_good_or_divine_@
+「@_good_or_divine_@」
 
 w:2
-@_armour_name_shielding_@
+「@_armour_name_shielding_@」
 
 w:1
-@_armour_property_name_@
+@_armour_property_name_@之
 
 w:1
-@_wacky_armour_name_@
+「@_wacky_armour_name_@」
 
 w:2
-@_politics_name_armour_@
+@_politics_name_armour_@之
 %%%%
 ######################################################
 # 佐姆 武器
@@ -532,26 +533,26 @@ Xom weapon
 
 # 增加的几率（显然！）
 w:5
-@_chaos_name_@
+@_chaos_name_@之
 
 w:5
-佐姆之@_xom_esteem_@
+「佐姆之@_randart_xom_esteem_@」
 
 w:2
-佐姆之@divine_esteem@
+「佐姆之@_randart_divine_esteem_@」
 
 w:2
-「@_verbing_@而@_verbing_@的佐姆」
+「@_randart_predicate_@而@_randart_predicate_@的佐姆」
 
 w:2
-@_verbing_@的@_fruit_name_@
+@_randart_predicate_@的@_fruit_name_@之
 
 # 使用长名称
 w:1
-@xom_name@
+「@xom_name@」
 
 w:1
-@_game_name_@
+「@_game_name_@」
 
 w:400
 @weapon@
@@ -566,36 +567,36 @@ w:400
 ######################################################
 Xom robe
 
-@Xom armour@
+「@Xom armour@」
 %%%%
 Xom body armour
 
-@Xom armour@
+「@Xom armour@」
 %%%%
 Xom armour
 
 # 增加的几率（显然！）
 w:5
-@_chaos_name_@
+@_chaos_name_@之
 
 w:5
-佐姆之@_xom_esteem_@
+「佐姆之@_randart_xom_esteem_@」
 
 w:2
-佐姆之@divine_esteem@
+「佐姆之@_randart_divine_esteem_@」
 
 w:2
 「@_adjective_@佐姆」
 
 # 使用长名称
 w:1
-@xom_name@
+「@xom_name@」
 
 w:1
-@_game_name_@
+「@_game_name_@」
 
 w:1
-@player_death@
+「@player_death@」
 
 w:400
 @armour@
@@ -611,29 +612,29 @@ Xom jewellery
 
 # 增加的几率（显然！）
 w:5
-@_chaos_name_@
+@_chaos_name_@之
 
 w:5
-佐姆之@_xom_esteem_@
+「佐姆之@_randart_xom_esteem_@」
 
 w:2
-佐姆之@divine_esteem@
+「佐姆之@_randart_divine_esteem_@」
 
 w:2
-@_verbing_@的佐姆
+@_randart_predicate_@的佐姆之
 
 # 使用长名称
 w:1
-@xom_name@
+「@xom_name@」
 
 w:1
-@_game_name_@
+「@_game_name_@」
 
 w:1
-@player_death@
+「@player_death@」
 
 w:1
-@player_doom@
+「@player_doom@」
 
 w:300
 @jewellery@
@@ -968,7 +969,7 @@ w:40
 # 三种随机神器类型共享
 general appearance
 
-明亮地发光
+明亮发光
 
 冒烟
 
@@ -1004,7 +1005,7 @@ general appearance
 
 炫目
 
-大师之作
+大师级
 
 w:2
 阴燃
@@ -1105,7 +1106,7 @@ robe appearance
 
 染灵液
 
-令人不安的毛茸茸
+诡异地毛茸茸
 
 破烂
 
@@ -1135,13 +1136,13 @@ armour appearance
 
 染血
 
-大量符文
+刻满符文
 
 镶宝石
 
 染灵液
 
-令人不安的毛茸茸
+诡异地毛茸茸
 
 带刺
 
@@ -1199,58 +1200,58 @@ _gemstone_
 ######################################################
 _jewellery appearance_
 
-闪烁
+闪烁的
 
-闪耀
+闪耀的
 
-忽明忽暗
+忽明忽暗的
 
-闪闪发光
+闪闪发光的
 
-冒烟
+冒烟的
 
-烧焦
+烧焦的
 
-微光闪烁
+微光闪烁的
 
-摇曳
+摇曳的
 
-变形
+变形的
 
-透明
+透明的
 
-半透明
+半透明的
 
-坑洼
+坑洼的
 
-黏滑
+黏滑的
 
-精良
+精良的
 
-光辉
+光彩夺目的
 
-古老
+古老的
 
-明亮发光
+明亮发光的
 
-微弱发光
+微弱发光的
 
-冒汽
+冒汽的
 
-大量符文
+刻满符文的
 
-振动
+振动的
 
-抽搐
+抽搐的
 
-盘绕
+盘绕的
 
-束缚
+束缚的
 
-雾蒙蒙
+雾蒙蒙的
 
 w:2
-蜿蜒
+蜿蜒的
 %%%%
 _ring material_
 
@@ -1307,7 +1308,7 @@ _amulet material_
 
 骨制
 
-雕刻
+雕花
 
 银
 
@@ -1351,9 +1352,741 @@ _amulet material_
 %%%%
 ring appearance
 
-@_jewellery appearance_@ @_ring material_@
+@_jewellery appearance_@@_ring material_@
 %%%%
 amulet appearance
 
-@_jewellery appearance_@ @_amulet material_@
+@_jewellery appearance_@@_amulet material_@
 %%%%
+
+# 中文随机神器专用语法池；原共享池仍供随机书名等消费者使用。
+
+%%%%
+_randart_number_
+
+三
+
+四
+
+五
+
+六
+
+七
+
+八
+
+九
+
+十
+
+十一
+
+w:5
+十二
+
+w:5
+十二
+
+十三
+
+w:5
+二十
+
+w:1
+二十七
+
+五十
+
+w:5
+六十六
+
+w:5
+七十七
+
+w:5
+九十九
+
+w:5
+一百
+
+一千
+
+一百万
+
+十亿
+
+无数
+
+众多
+
+几
+
+%%%%
+_randart_qualifier_
+
+w:5
+百倍的
+
+那些
+
+各种
+
+多重的
+
+年迈的
+
+永恒的
+
+古老的
+
+饱经风霜的
+
+跳跃的
+
+伤痕累累的
+
+失意的
+
+好奇的
+
+令人不安的
+
+无尽的
+
+被放逐的
+
+最后的
+
+最初的
+
+最前的
+
+被遗忘的
+
+被遗弃的
+
+隐藏的
+
+虚幻的
+
+不可动摇的
+
+好问的
+
+贪得无厌的
+
+无形的
+
+快乐的
+
+最后的
+
+孤独的
+
+迷失的
+
+满是疙瘩的
+
+现代的
+
+永无止境的
+
+奇特的
+
+后现代的
+
+纯粹的
+
+秘密的
+
+鬼祟的
+
+特别的
+
+口渴的
+
+深思的
+
+疲惫的
+
+不可阻挡的
+
+消失的
+
+警惕的
+
+知名的
+
+%%%%
+_randart_counted_thing_
+
+位盟友
+
+位工匠
+
+位艺术家
+
+头野兽
+
+张床
+
+名乞丐
+
+道祝福
+
+根骨头
+
+份恩惠
+
+丛荆棘
+
+w:5
+座城市
+
+枚硬币
+
+块大陆
+
+道诅咒
+
+支舞蹈
+
+次死亡
+
+位守护者
+
+个领域
+
+只恶魔
+
+个梦想
+
+只耳朵
+
+位皇帝
+
+只眼睛
+
+位朋友
+
+名修士
+
+位地卜师
+
+个鬼魂
+
+位神祇
+
+重天堂
+
+重地狱
+
+支大军
+
+名闯入者
+
+名入侵者
+
+个无赖
+
+w:25
+把刀
+
+条地脉
+
+句谎言
+
+条生命
+
+块面包
+
+位恋人
+
+只老鼠
+
+轮月亮
+
+张嘴巴
+
+位秘法师
+
+w:5
+顶睡帽
+
+只夜莺
+
+场噩梦
+
+个夜晚
+
+颗橄榄
+
+颗宝珠
+
+群人
+
+颗柿子
+
+处地方
+
+颗行星
+
+座传送门
+
+位祭司
+
+位王子
+
+位先知
+
+位女王
+
+项任务
+
+重境界
+
+枚符文
+
+道伤疤
+
+片海洋
+
+位预言者
+
+名仆从
+
+艘船
+
+只伯劳鸟
+
+首歌曲
+
+个灵魂
+
+根脊梁
+
+位精灵
+
+w:5
+张电子表格
+
+颗星星
+
+则故事
+
+轮太阳
+
+张桌子
+
+段传说
+
+颗牙齿
+
+片灌木丛
+
+w:5
+件事物
+
+w:5
+座城镇
+
+根獠牙
+
+份最后通牒
+
+名潜伏者
+
+w:5
+座村庄
+
+把小提琴
+
+位远见者
+
+道幻象
+
+场战争
+
+个愿望
+
+个奇迹
+
+个扎拉姆
+
+只异鹬
+
+份异赠
+
+w:5
+名排外者
+
+头牦牛
+
+位青年
+
+座通天塔
+
+%%%%
+_randart_quantity_motif_
+
+w:206
+@_randart_number_@@_randart_counted_thing_@
+
+w:455
+@_randart_qualifier_@@_thing_names_@
+
+%%%%
+_randart_predicate_
+
+w:5
+逐渐老去
+
+w:5
+烘焙食物
+
+令人眩惑
+
+盛装打扮
+
+施放咒语
+
+脸红
+
+w:5
+不断呼吸
+
+酿造美酒
+
+大兴土木
+
+熊熊燃烧
+
+w:5
+迸发力量
+
+变幻形态
+
+迷人
+
+咀嚼食物
+
+施展召唤
+
+制作器物
+
+散布诅咒
+
+翩翩起舞
+
+带来毁灭
+
+吞噬万物
+
+心存怀疑
+
+w:5
+滴着水
+
+施展附魔
+
+善于包裹
+
+正在进食
+
+展翅飞翔
+
+挥锤锻造
+
+不断变强
+
+冰封凝固
+
+凝视远方
+
+w:5
+微光闪烁
+
+w:5
+闪闪发光
+
+咬牙切齿
+
+咧嘴而笑
+
+不断成长
+
+挥锤猛击
+
+治愈伤痛
+
+紧握珍宝
+
+放声嚎叫
+
+w:5
+张开怀抱
+
+饥渴难耐
+
+投掷石块
+
+伤害他人
+
+纵情飞驰
+
+开怀畅饮
+
+发出邀请
+
+跳跃不休
+
+献吻
+
+守护家园
+
+飞跃险阻
+
+心怀爱意
+
+满怀渴望
+
+w:1
+心怀愤懑
+
+露齿撕咬
+
+捣碎岩石
+
+轻声低语
+
+滋养万物
+
+庇护弱者
+
+拯救生灵
+
+骑乘坐骑
+
+灼烧万物
+
+放声尖叫
+
+乐于分享
+
+庇护众生
+
+变幻莫测
+
+不断闪烁
+
+大声呼喊
+
+不断收缩
+
+放声歌唱
+
+烟雾缭绕
+
+停滞不前
+
+施展召唤
+
+声援同伴
+
+传授知识
+
+讲述故事
+
+偷窃财物
+
+辛勤打谷
+
+不断嬗变
+
+形态扭曲
+
+振奋精神
+
+篡夺王位
+
+迎风扬谷
+
+施展巫术
+
+施展魔法
+
+扭动身体
+
+w:5
+奋力猛击
+
+w:5
+挥刀劈砍
+
+w:5
+持矛突刺
+
+%%%%
+_randart_place_
+
+彼岸
+
+遥远的海岸
+
+遥远的世界
+
+未知之地
+
+近在咫尺
+
+别处
+
+赐福之境
+
+沙漠
+
+赤道
+
+永恒虚空
+
+森林
+
+隐藏的山谷
+
+丘陵
+
+已知世界
+
+丰饶之地
+
+迷宫
+
+新世界
+
+旧世界
+
+另一边
+
+深坑
+
+极地
+
+大海
+
+海岸
+
+天体
+
+树木
+
+冻原
+
+不可见的领域
+
+山谷
+
+死亡谷
+
+火山
+
+荒原
+
+荒野
+
+世界
+
+%%%%
+_randart_divine_esteem_
+
+赞许
+
+仁慈
+
+喜悦
+
+尊重
+
+恩宠
+
+w:5
+祝贺
+
+慷慨
+
+恩典
+
+希望
+
+启迪
+
+骄傲
+
+敬意
+
+w:5
+尊敬
+
+崇高
+
+心血来潮
+
+惩戒
+
+谴责
+
+不悦
+
+嫉妒
+
+责备
+
+w:70
+@_anger_quality_@
+
+%%%%
+_randart_xom_esteem_
+
+# 20% 几率选中
+w:40
+@_randart_divine_esteem_@
+
+心不在焉
+
+娱悅
+
+阁楼
+
+困惑
+
+祝福
+
+任性
+
+消遣
+
+滑稽
+
+游戏
+
+奇想
+
+全神贯注
+
+幸灾乐祸
+
+一时兴趣
+
+鲁莽
+
+响亮的笑声
+
+戏法
+
+谎言
+
+蛮勇
+
+放纵
+
+异想天开

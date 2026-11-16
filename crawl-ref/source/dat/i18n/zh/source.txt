@@ -51226,3 +51226,23 @@ ancestor class|a battlemage
 %%%%
 ancestor class|a hexer
 妖术师
+
+%%%%
+the Dwarven Hall
+矮人大厅
+
+%%%%
+the Hall of Blades
+刀锋殿堂
+
+%%%%
+the Enchanted Forest
+附魔森林
+
+%%%%
+randart jewellery appearance|%1$s %2$s
+%1$s%2$s
+
+%%%%
+randart divine esteem|of %1$s %2$s
+「%1$s之%2$s」
