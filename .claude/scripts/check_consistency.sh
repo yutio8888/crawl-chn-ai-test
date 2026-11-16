@@ -314,6 +314,38 @@ do_format() {
             zh_count=$(grep -c '^%%%%$' "$zh_file" 2>/dev/null || echo 0)
 
             if [ "$en_count" != "$zh_count" ]; then
+                # RandartDB accepts localized-only keys in its existing input
+                # files. D-C-121's eight pools are the sole block-count exception;
+                # reuse their audited identities, parser, and exact metrics.
+                if [ "$basename" = "randname.txt" ] && \
+                    python3 - "$SCRIPT_DIR" "$en_file" "$zh_file" \
+                        "$en_count" "$zh_count" <<'PY_RANDART'
+import sys
+from pathlib import Path
+
+sys.path.insert(0, sys.argv[1])
+from audit_item_name_inventory import (
+    ZH_RANDART_POOLS, textdb_rows, validate_randart_metrics,
+)
+
+try:
+    if int(sys.argv[5]) - int(sys.argv[4]) != len(ZH_RANDART_POOLS):
+        raise ValueError("separator delta is not the approved pool count")
+    english = textdb_rows(Path(sys.argv[2]))
+    chinese = textdb_rows(Path(sys.argv[3]))
+    en_keys = {entry.canonical_key for entry in english}
+    zh_keys = {entry.canonical_key for entry in chinese}
+    if en_keys - zh_keys or zh_keys - en_keys != ZH_RANDART_POOLS:
+        raise ValueError("localized-only keys are not exactly the approved pools")
+    validate_randart_metrics("randname.txt", english, chinese)
+except (OSError, RuntimeError, ValueError) as error:
+    print(f"  randname.txt localized grammar contract: {error}", file=sys.stderr)
+    raise SystemExit(1)
+PY_RANDART
+                then
+                    echo "  ✅ randname.txt: eight approved D-C-121 ZH-only pools (EN: $en_count, ZH: $zh_count)"
+                    continue
+                fi
                 echo "  ❌ $basename: %%%% count mismatch (EN: $en_count, ZH: $zh_count)"
                 issues=$((issues + 1))
                 violations_found=true
@@ -322,7 +354,7 @@ do_format() {
     done
 
     if [ "$issues" -eq 0 ]; then
-        echo "  ✅ All ZH database files have matching %%%% counts"
+        echo "  ✅ All ZH database files satisfy their block-count contracts"
     else
         echo "  ⚠️  $issues file(s) with %%%% mismatch"
     fi

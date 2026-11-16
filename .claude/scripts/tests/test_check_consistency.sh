@@ -138,3 +138,104 @@ grep -q 'must equal the current working directory Git top-level' \
     "$TMP_ROOT/mismatched-cwd.out"
 test ! -e "$TRUSTED_MARKER"
 test ! -e "$CANDIDATE_MARKER"
+
+# D-C-121: only the eight declared Chinese randart pools may add blocks.
+# Exercise the real parser/metric authority, not a duplicate exception list.
+FORMAT_REPO="$TMP_ROOT/format"
+mkdir -p "$FORMAT_REPO/.claude/scripts" \
+    "$FORMAT_REPO/crawl-ref/source/dat/database/zh"
+for file in check_consistency.sh audit_item_name_inventory.py i18n_shared.py; do
+    cp "$SCRIPT_DIR/../$file" "$FORMAT_REPO/.claude/scripts/$file"
+done
+git -C "$FORMAT_REPO" init -q
+FORMAT_DB="$FORMAT_REPO/crawl-ref/source/dat/database"
+cp "$SCRIPT_DIR/../../../crawl-ref/source/dat/database/randname.txt" \
+    "$TMP_ROOT/randname-en.txt"
+cp "$SCRIPT_DIR/../../../crawl-ref/source/dat/database/zh/randname.txt" \
+    "$TMP_ROOT/randname-zh.txt"
+
+reset_format_inputs() {
+    rm -f "$FORMAT_DB"/*.txt "$FORMAT_DB/zh"/*.txt
+    cp "$TMP_ROOT/randname-en.txt" "$FORMAT_DB/randname.txt"
+    cp "$TMP_ROOT/randname-zh.txt" "$FORMAT_DB/zh/randname.txt"
+}
+
+run_format_fixture() {
+    (
+        cd "$FORMAT_REPO"
+        env -u ZH_VERIFY_AUDIT_ROOT -u ZH_VERIFY_AUDIT_COMMIT \
+            /bin/bash .claude/scripts/check_consistency.sh --format --strict
+    )
+}
+
+expect_format_failure() {
+    local label="$1" status=0
+    run_format_fixture > "$TMP_ROOT/format-$label.out" 2>&1 || status=$?
+    if [[ "$status" -ne 1 ]]; then
+        echo "format mutation $label was not rejected (exit $status)" >&2
+        cat "$TMP_ROOT/format-$label.out" >&2
+        exit 1
+    fi
+}
+
+reset_format_inputs
+run_format_fixture > "$TMP_ROOT/format-approved.out" 2>&1
+grep -q 'eight approved D-C-121 ZH-only pools' "$TMP_ROOT/format-approved.out"
+
+python3 - "$FORMAT_DB/zh/randname.txt" <<'PY'
+from pathlib import Path
+import sys
+p = Path(sys.argv[1])
+p.write_text(p.read_text().replace('_randart_number_', '_randart_unknown_number_'))
+PY
+expect_format_failure unknown-pool
+
+reset_format_inputs
+python3 - "$FORMAT_DB/zh/randname.txt" <<'PY'
+from pathlib import Path
+import sys
+p = Path(sys.argv[1])
+p.write_text(p.read_text().replace('\n_randart_number_\n', '\n_randart_qualifier_\n', 1))
+PY
+expect_format_failure duplicate-pool
+
+reset_format_inputs
+printf '%s\n' '%%%%' >> "$FORMAT_DB/zh/randname.txt"
+expect_format_failure extra-delimiter
+
+reset_format_inputs
+python3 - "$FORMAT_DB/randname.txt" <<'PY'
+from pathlib import Path
+import sys
+p = Path(sys.argv[1])
+p.write_text(p.read_text().replace('\nweapon\n', '\nunknown-english-key\n', 1))
+PY
+expect_format_failure shared-key-drift
+
+reset_format_inputs
+python3 - "$FORMAT_DB/zh/randname.txt" <<'PY'
+from pathlib import Path
+import sys
+p = Path(sys.argv[1])
+text = p.read_text()
+assert '\nw:206\n' in text
+p.write_text(text.replace('\nw:206\n', '\nw:207\n', 1))
+PY
+expect_format_failure weight-drift
+
+reset_format_inputs
+printf '%s\n' '%%%%' 'key' 'value' > "$FORMAT_DB/other.txt"
+printf '%s\n' '%%%%' 'key' '值' '%%%%' 'extra' '值' > "$FORMAT_DB/zh/other.txt"
+expect_format_failure unrelated-file
+
+reset_format_inputs
+cp "$FORMAT_DB/randname.txt" "$FORMAT_DB/renamed.txt"
+cp "$FORMAT_DB/zh/randname.txt" "$FORMAT_DB/zh/renamed.txt"
+expect_format_failure renamed-file
+
+# Ordinary paired files retain their original parity path without an exception.
+reset_format_inputs
+rm "$FORMAT_DB/randname.txt" "$FORMAT_DB/zh/randname.txt"
+printf '%s\n' '%%%%' 'key' 'value' > "$FORMAT_DB/plain.txt"
+printf '%s\n' '%%%%' 'key' '值' > "$FORMAT_DB/zh/plain.txt"
+run_format_fixture > "$TMP_ROOT/format-ordinary.out" 2>&1
