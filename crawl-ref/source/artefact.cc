@@ -218,10 +218,21 @@ string replace_name_parts(const string &name_in, const item_def& item)
         const string place = T_(branches[random2(NUM_BRANCHES)].longname);
         if (!place.empty())
         {
-            // A branch's own genitive belongs inside its intrinsic name,
-            // rather than stacking another 之 before the item's base type.
-            if (zh_randart && place.find("之") != string::npos)
-                name = replace_all(name, "@branch_name@之", "「" + place + "」");
+            // Reuse the naming frames (not display decoration). With an
+            // empty base type they provide the joining particle or an
+            // intrinsic quoted theme, without hard-coding Chinese literals.
+            if (zh_randart)
+            {
+                const string link = make_stringf_p(
+                    C_("artefact random name", "%1$s of %2$s"), "", "");
+                if (!link.empty() && place.find(link) != string::npos)
+                {
+                    const string theme = make_stringf_p(
+                        C_("artefact random name", "%1$s \"%2$s\""),
+                        "", place.c_str());
+                    name = replace_all(name, "@branch_name@" + link, theme);
+                }
+            }
             name = replace_all(name, "@branch_name@", place);
         }
     }
