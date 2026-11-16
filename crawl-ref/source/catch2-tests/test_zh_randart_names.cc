@@ -3,7 +3,9 @@
 #include "catch_amalgamated.hpp"
 #include "test_zh_fixture.h"
 
+#include <fstream>
 #include <clocale>
+#include "english.h"
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
@@ -364,4 +366,63 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(item.name(DESC_PLAIN).find("『" + place + "』长剑") != string::npos);
         CHECK(item.props[ARTEFACT_NAME_KEY].get_string() == raw);
     }
+}
+
+TEST_CASE("replay frozen randart display names", "[.artefact-name-replay]")
+{
+    RandartNameLocale locale;
+    const char *input_path = getenv("ARTEFACT_REPLAY_INPUT");
+    const char *output_path = getenv("ARTEFACT_REPLAY_OUTPUT");
+    REQUIRE(input_path);
+    REQUIRE(output_path);
+    ifstream input(input_path);
+    REQUIRE(input.good());
+    FILE *output = fopen(output_path, "w");
+    REQUIRE(output);
+    unwinder close_output([&]() { fclose(output); });
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    TranslationFixture mode(lang_t::ZH, "zh");
+    string line;
+    REQUIRE(static_cast<bool>(getline(input, line)));
+    fprintf(output, "seed\tcore_before_width\tcore_after_width\tprefix_width\tproperties_width\tfull_before_width\tfull_after_width\tbefore\tafter\n");
+    int count = 0;
+    while (getline(input, line))
+    {
+        const auto fields = split_string("\t", line, false);
+        REQUIRE(fields.size() == 8);
+        REQUIRE(static_cast<bool>(getline(input, line)));
+        const auto meta = split_string("\t", line, false);
+        REQUIRE(meta.size() == 5);
+        REQUIRE(meta[0] == "META");
+        item_def item;
+        item.base_type = static_cast<object_class_type>(atoi(fields[2].c_str()));
+        item.sub_type = atoi(fields[3].c_str());
+        item.quantity = 1;
+        item.rnd = 1;
+        item.flags = ISFLAG_IDENTIFIED;
+        REQUIRE(make_item_randart(item, true));
+        item.props[ARTEFACT_NAME_KEY].get_string() = fields[4];
+        const auto properties = split_string(",", meta[3], true, false);
+        REQUIRE(properties.size() == ART_PROPERTIES);
+        for (int i = 0; i < ART_PROPERTIES; ++i)
+        {
+            artefact_set_property(item, static_cast<artefact_prop_type>(i),
+                                  atoi(properties[i].c_str()));
+        }
+        const string core = get_artefact_name(item, true);
+        const string without_properties = item.name(DESC_PLAIN, false, true, false);
+        const string full = item.name(DESC_PLAIN, false, true);
+        const int core_before = strwidth(quote_special_name(core));
+        const int core_after = strwidth(quote_artefact_name(core));
+        const int prefix = strwidth(without_properties) - core_after;
+        const int props = strwidth(full) - strwidth(without_properties);
+        fprintf(output, "%s\t%d\t%d\t%d\t%d\t%s\t%d\t%s\t%s\n",
+                fields[1].c_str(), core_before, core_after, prefix, props,
+                fields[5].c_str(), strwidth(full), fields[6].c_str(),
+                sample_field(full).c_str());
+        ++count;
+    }
+    CHECK(count == 1380);
 }

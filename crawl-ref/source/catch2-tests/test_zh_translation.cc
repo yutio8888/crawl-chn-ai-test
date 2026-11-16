@@ -9089,3 +9089,51 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         }
     }
 }
+
+TEST_CASE_METHOD(ZhTranslationFixture, "artefact name cores reach actual monster combat announcements",
+                 "[zh-translation][special-name-quotes][artefact-core-quotes]")
+{
+    struct named_weapon_attack : melee_attack
+    {
+        using melee_attack::melee_attack;
+        using attack::announce_hit;
+        using attack::set_attack_verb;
+    };
+    init_monsters();
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.hp = you.hp_max = 100;
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        scoped_monspeak_world world;
+        monster *attacker = world.place(MONS_ORC);
+        REQUIRE(attacker);
+        item_def weapon;
+        weapon.base_type = OBJ_WEAPONS;
+        weapon.sub_type = WPN_LONG_SWORD;
+        weapon.quantity = 1;
+        weapon.rnd = 1;
+        weapon.flags = ISFLAG_IDENTIFIED;
+        REQUIRE(make_item_randart(weapon, true));
+        weapon.plus = 9;
+        weapon.props[ARTEFACT_NAME_KEY].get_string() = "「巨人杀手」长剑";
+        named_weapon_attack hit(attacker, &you);
+        hit.set_weapon(&weapon);
+        hit.needs_message = true;
+        hit.attacker_visible = hit.defender_visible = true;
+        hit.damage_done = 5;
+        hit.set_attack_verb(5);
+        msgwin_temporary_mode temporary;
+        unwinder clear([]() { msgwin_clear_temporary(); });
+        msg::tee observed;
+        hit.announce_hit();
+        const string line = strip_tee_colour_tag(observed.get_store());
+        INFO(line);
+        CHECK(line.find("+9 「巨人杀手」长剑") != string::npos);
+        CHECK(line.find("『") == string::npos);
+        CHECK(line.find("{勇武") == string::npos);
+    }
+}
