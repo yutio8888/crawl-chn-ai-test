@@ -165,7 +165,7 @@ public:
 
 private:
     string name_aux(description_level_type desc, bool terse, bool ident,
-                    bool with_inscription) const;
+                    bool with_inscription, bool quote_name = false) const;
 
     colour_t randart_colour() const;
 
