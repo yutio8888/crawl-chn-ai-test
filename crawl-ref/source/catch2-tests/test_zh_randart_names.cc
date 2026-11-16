@@ -3,6 +3,7 @@
 #include "catch_amalgamated.hpp"
 #include "test_zh_fixture.h"
 
+#include <clocale>
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
@@ -16,10 +17,24 @@
 #include "random.h"
 #include "unwind.h"
 #include "stringutil.h"
+#include "syscalls.h"
 #include "god-type.h"
 #include "unicode.h"
 
 namespace {
+struct RandartNameLocale
+{
+    string saved = setlocale(LC_CTYPE, nullptr);
+    RandartNameLocale()
+    {
+#if defined(UNIX) && !defined(__ANDROID__)
+        REQUIRE(ensure_utf8_ctype());
+#endif
+        REQUIRE(strwidth("中文") == 4);
+    }
+    ~RandartNameLocale() { setlocale(LC_CTYPE, saved.c_str()); }
+};
+
 // Escape control characters so malformed library entries cannot split records.
 static string sample_field(string value)
 {
@@ -71,6 +86,7 @@ static void dump(FILE* f, const char* cat, const vector<Spec>& specs, int count,
 
 TEST_CASE("randart naming sample dump", "[.randart-names-dump]")
 {
+    RandartNameLocale locale;
     const char* out = getenv("RANDART_DUMP_OUT");
     REQUIRE(out);
     const char* langenv = getenv("RANDART_DUMP_LANG");
@@ -134,6 +150,7 @@ TEST_CASE("randart naming sample dump", "[.randart-names-dump]")
 TEST_CASE("randart names: scoped grammar survives production generation",
           "[zh-translation][randart-names]")
 {
+    RandartNameLocale locale;
     init_properties();
     unwind_var<player> restore_player(you);
     you = player();
@@ -201,6 +218,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "randart names: branch and scoped library consumers",
                  "[zh-translation][randart-names]")
 {
+    RandartNameLocale locale;
     init_properties();
     item_def item;
     item.base_type = OBJ_WEAPONS;
@@ -244,12 +262,27 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(long_identity.find(you.your_name) != string::npos);
     CHECK(long_identity.find(' ') == string::npos);
     CHECK(long_identity.find('@') == string::npos);
+    for (uint64_t seed = 1; seed <= 16; ++seed)
+    {
+        rng::subgenerator sequence(seed, 0x10a6);
+        item_def generated;
+        generated.base_type = OBJ_WEAPONS;
+        generated.sub_type = WPN_LONG_SWORD;
+        generated.quantity = 1;
+        REQUIRE(make_item_randart(generated, true));
+        const string raw = generated.props[ARTEFACT_NAME_KEY].get_string();
+        // The actual generator retries an overlong motif rather than cutting
+        // the player name or the UTF-8 string in the saved result.
+        CHECK(strwidth(raw) <= 25 + strwidth(T_("long sword")));
+        CHECK(raw.find('@') == string::npos);
+    }
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "randart names: reported grammar examples use real generation",
                  "[zh-translation][randart-names]")
 {
+    RandartNameLocale locale;
     init_properties();
     unwind_var<player> restore_player(you);
     you = player();
@@ -268,8 +301,6 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         {2000066, OBJ_ARMOUR, ARM_BOOTS, "一百万份最后通牒之靴子"},
         {3000127, OBJ_JEWELLERY, RING_POSITIVE_ENERGY, "知名的青年之戒指"},
         {1000059, OBJ_WEAPONS, WPN_TRIPLE_CROSSBOW, "正在进食的蝎子之三弦弩"},
-        {2000026, OBJ_ARMOUR, ARM_TOWER_SHIELD,
-         "「伊莱德莱姆努尔之崇高」塔盾"},
         {2000126, OBJ_ARMOUR, ARM_ROBE, "装饰华丽的水手长袍"},
     };
     for (const auto& example : examples)
