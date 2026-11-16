@@ -1469,6 +1469,111 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "weight mismatch"):
                 MODULE.paired_component_rows(en, zh, "fixture")
 
+    def test_component_history_matches_english_content_not_ordinal(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            en, zh = root / "en.txt", root / "zh.txt"
+            old_en, old_zh = root / "old-en.txt", root / "old-zh.txt"
+            old_en.write_text("%%%%\nkey\n\nOld A\n\nOld B\n")
+            old_zh.write_text("%%%%\nkey\n\n旧甲\n\n旧乙\n")
+            en.write_text("%%%%\nkey\n\nNew\n\nOld B\n\nOld A\n")
+            zh.write_text("%%%%\nkey\n\n新增\n\n旧乙\n\n旧甲\n")
+            with mock.patch.object(
+                MODULE, "revision_textdb_rows",
+                side_effect=lambda path, revision: MODULE.textdb_rows(
+                    old_en if path == en else old_zh
+                ),
+            ):
+                rows = MODULE.paired_component_rows(en, zh, "randart-component", "base")
+                self.assertIsNone(rows[0]["_pre_review_chinese"])
+                self.assertEqual("adjust", rows[0]["_conclusion"])
+                self.assertEqual(["旧乙", "旧甲"], [r["_pre_review_chinese"] for r in rows[1:]])
+                self.assertEqual(["keep", "keep"], [r["_conclusion"] for r in rows[1:]])
+                self.assertEqual(0, rows[2]["_metadata"]["review_base_ordinal"])
+                zh.write_text("%%%%\nkey\n\n新增\n\n修订乙\n\n旧甲\n")
+                rows = MODULE.paired_component_rows(en, zh, "randart-component", "base")
+                self.assertEqual("adjust", rows[1]["_conclusion"])
+                old_en.write_text("%%%%\nkey\n\nDuplicate\n\nDuplicate\n")
+                with self.assertRaisesRegex(RuntimeError, "ambiguous review-base English"):
+                    MODULE.paired_component_rows(en, zh, "fixture", "base")
+                old_zh.write_text("%%%%\nkey\n\n旧甲\n")
+                with self.assertRaisesRegex(RuntimeError, "ambiguous review-base pairing"):
+                    MODULE.paired_component_rows(en, zh, "fixture", "base")
+
+    def test_component_history_split_is_independent_of_current_wording(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            en, zh = root / "en.txt", root / "zh.txt"
+            old_en, old_zh = root / "old-en.txt", root / "old-zh.txt"
+            english = "%%%%\nkey\n\nw:5\nof @a@\nof @b@\n\nw:3\n@c@\n"
+            historical = "%%%%\nkey\n\nw:5\n旧@a@\n\n旧@b@\n\nw:3\n旧@c@\n"
+            en.write_text(english)
+            old_en.write_text(english)
+            old_zh.write_text(historical)
+            zh.write_text("%%%%\nkey\n\nw:5\n新@a@\n新@b@\n\nw:3\n新@c@\n")
+            with mock.patch.object(
+                MODULE, "revision_textdb_rows",
+                side_effect=lambda path, revision: MODULE.textdb_rows(
+                    old_en if path == en else old_zh
+                ),
+            ):
+                rows = MODULE.paired_component_rows(en, zh, "fixture", "base")
+                self.assertEqual(["旧@a@\n旧@b@", "旧@c@"],
+                                 [r["_pre_review_chinese"] for r in rows])
+                self.assertEqual(["adjust", "adjust"],
+                                 [r["_conclusion"] for r in rows])
+                for invalid in (
+                    historical.replace("旧@b@", "旧@a@"),
+                    historical.replace("旧@b@", "w:7\n旧@b@"),
+                    historical.replace("旧@b@", "未标记"),
+                    historical + "\n多余\n",
+                ):
+                    with self.subTest(invalid=invalid):
+                        old_zh.write_text(invalid)
+                        with self.assertRaises(RuntimeError):
+                            MODULE.paired_component_rows(en, zh, "fixture", "base")
+                old_zh.write_text(historical)
+                en.write_text(english.replace("of @a@", "changed @a@"))
+                with self.assertRaisesRegex(RuntimeError, "ambiguous review-base pairing"):
+                    MODULE.paired_component_rows(en, zh, "fixture", "base")
+
+
+    def test_randart_armour_history_uses_frozen_source_and_keeps_gizmo_evidence(self):
+        payload, _ = MODULE.build_extended_inventory_v3()
+        rows = {row["identity"]: row["decision"] for row in payload["rows"]}
+        expected = {
+            "randart-component:armour:0005": "@_weather_name_@",
+            "randart-component:armour:0006": "@_good_or_divine_@",
+            "randart-component:armour:0004":
+                "@_adjective_@@_profession_name_@\n@_politics_name_armour_@",
+        }
+        for identity, value in expected.items():
+            self.assertEqual(value, rows[identity]["pre_review_chinese"])
+            self.assertEqual("adjust", rows[identity]["terminal_conclusion"])
+        previous = MODULE.parse_review_results_v3(
+            MODULE.revision_snapshot(QUALITY_M1_BUILDER_BASELINE).read(
+                "docs/item-extended-review-results.md"))
+        for row in previous:
+            if row["identity"].startswith("gizmo:"):
+                current = rows[row["identity"]]
+                self.assertEqual(row["decision"]["pre_review_chinese"],
+                                 current["pre_review_chinese"])
+                self.assertEqual(row["decision"]["terminal_conclusion"],
+                                 current["terminal_conclusion"])
+
+    def test_existing_item_writer_preserves_notice_only_glossary_provenance(self):
+        payload, _ = MODULE.build_extended_inventory_v3()
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "review.md"
+            expected = MODULE.render_review_results_v3(
+                payload, payload["rows"], glossary_overlay="a" * 64)
+            path.write_text(expected, encoding="utf-8")
+            MODULE.write_review_results_v3(path, payload, payload["rows"])
+            self.assertEqual(expected, path.read_text(encoding="utf-8"))
+            path.write_text(expected + "\n- Glossary SHA-256: `" + "a" * 64 + "`\n")
+            with self.assertRaisesRegex(RuntimeError, "provenance is malformed"):
+                MODULE.write_review_results_v3(path, payload, payload["rows"])
+
     def test_randart_localized_grammar_is_bounded_and_complete(self):
         en_path = MODULE.SRC / "dat/database/randname.txt"
         zh_path = MODULE.SRC / "dat/database/zh/randname.txt"

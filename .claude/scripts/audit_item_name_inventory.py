@@ -1942,11 +1942,16 @@ def paired_component_rows(
         revision_textdb_rows(zh_path, review_base)
         if review_base else zh_entries
     )
+    base_en_entries = (
+        revision_textdb_rows(en_path, review_base)
+        if review_base else en_entries
+    )
     en = {entry.canonical_key: entry for entry in en_entries}
     zh = {entry.canonical_key: entry for entry in zh_entries}
     base_zh = {
         entry.canonical_key: entry for entry in base_zh_entries
     }
+    base_en = {entry.canonical_key: entry for entry in base_en_entries}
     localized_randname = (category == "randart-component"
                           and en_path.name == "randname.txt")
     extra_keys = ZH_RANDART_POOLS if localized_randname else set()
@@ -1970,11 +1975,72 @@ def paired_component_rows(
         base_values = (
             physical_candidates(base_zh[key]) if key in base_zh else []
         )
+        base_english = (
+            physical_candidates(base_en[key]) if key in base_en else []
+        )
         if len(en_values) != len(zh_values):
             raise RuntimeError(
                 f"{category}:{key} physical count mismatch "
                 f"{len(en_values)} != {len(zh_values)}"
             )
+        # Preserve the separately reviewed stable gizmo history contract.
+        # Randart evidence instead follows immutable English content, so a
+        # Chinese-only split cannot shift later historical values.
+        if category != "gizmo":
+            if len(base_english) != len(base_values):
+                # A historical block split a token-bearing English continuation
+                # into separate Chinese candidates. Recover that old pairing from
+                # its own weights and per-line tokens, not from today's wording:
+                # legitimate later translation edits must retain the old evidence.
+                if base_english != en_values:
+                    raise RuntimeError(f"{category}:{key} ambiguous review-base pairing")
+                aligned = []
+                cursor = 0
+                markers = lambda text: Counter(re.findall(
+                    r"@[A-Za-z_][A-Za-z0-9_]*@", text
+                ))
+                for weight, english in base_english:
+                    if cursor >= len(base_values):
+                        raise RuntimeError(f"{category}:{key} ambiguous review-base pairing")
+                    old_weight, text = base_values[cursor]
+                    if old_weight != weight:
+                        raise RuntimeError(f"{category}:{key} review-base weight mismatch")
+                    if markers(english) == markers(text):
+                        aligned.append((weight, text))
+                        cursor += 1
+                        continue
+                    # Only a complete, marked multiline source gives an
+                    # unambiguous boundary for joining historical candidates.
+                    source_lines = english.splitlines()
+                    parts = base_values[cursor:cursor + len(source_lines)]
+                    if (len(source_lines) < 2 or len(parts) != len(source_lines)
+                            or any(not markers(line) for line in source_lines)):
+                        raise RuntimeError(f"{category}:{key} ambiguous review-base pairing")
+                    for index, (line, (part_weight, part)) in enumerate(
+                        zip(source_lines, parts)
+                    ):
+                        if part_weight != (weight if index == 0 else 10):
+                            raise RuntimeError(f"{category}:{key} review-base weight mismatch")
+                        if "\n" in part or markers(line) != markers(part):
+                            raise RuntimeError(f"{category}:{key} ambiguous review-base pairing")
+                    aligned.append((weight, "\n".join(part for _, part in parts)))
+                    cursor += len(parts)
+                if cursor != len(base_values):
+                    raise RuntimeError(f"{category}:{key} unused review-base paragraphs")
+                base_values = aligned
+            matches = {}
+            for old_ordinal, ((weight, english), (zh_weight, chinese)) in enumerate(
+                zip(base_english, base_values)
+            ):
+                if weight != zh_weight:
+                    raise RuntimeError(f"{category}:{key} review-base weight mismatch")
+                matches.setdefault(english, []).append((old_ordinal, chinese))
+            for english, variants in matches.items():
+                if len({chinese for _, chinese in variants}) != 1:
+                    raise RuntimeError(
+                        f"{category}:{key} ambiguous review-base English identity: {english}"
+                    )
+        occurrences = Counter()
         for ordinal, (en_variant, zh_variant) in enumerate(
             zip(en_values, zh_values)
         ):
@@ -1999,14 +2065,34 @@ def paired_component_rows(
                 raise RuntimeError(
                     f"{category}:{key}:{ordinal} placeholder mismatch"
                 )
+            occurrence = occurrences[english]
+            occurrences[english] += 1
+            if category == "gizmo":
+                old_ordinal = ordinal
+                previous = _pre_review_variant_value(chinese, ordinal, base_values)
+            else:
+                prior = matches.get(english, [])
+                old_ordinal, previous = (
+                    prior[occurrence] if occurrence < len(prior) else (None, None)
+                )
+            metadata = {
+                "grammar_key": key, "physical_ordinal": ordinal,
+                "weight": en_weight,
+            }
+            if localized_split and "\n\n" in chinese:
+                metadata["localized_split_weights"] = [5, 10]
+                metadata["localized_split_reason"] = "D-C-121 C1 blank-line repair"
+            if old_ordinal != ordinal:
+                metadata["review_base_match"] = (
+                    "new-English-component" if old_ordinal is None else "English-content"
+                )
+                metadata["review_base_ordinal"] = old_ordinal
             rows.append({
                 "identity": f"{category}:{key}:{ordinal:04d}",
                 "category": category,
                 "lifecycle": "current",
                 "english_source": english,
-                "_pre_review_chinese": _pre_review_variant_value(
-                    chinese, ordinal, base_values
-                ),
+                "_pre_review_chinese": previous,
                 "current_chinese": chinese,
                 "producer": f"TextDB weighted key {key} physical ordinal",
                 "consumer": (
@@ -2014,17 +2100,11 @@ def paired_component_rows(
                     "procedural string explicitly non-enumerable"
                 ),
                 "input": input_name,
-                "_metadata": {
-                    "grammar_key": key,
-                    "physical_ordinal": ordinal,
-                    "weight": en_weight,
-                    **({"localized_split_weights": [5, 10],
-                        "localized_split_reason": "D-C-121 C1 blank-line repair"}
-                       if localized_split and "\n\n" in chinese else {}),
-                },
+                "_metadata": metadata,
                 "_conclusion": (
-                    "adjust" if changed_keys
-                    and (key, ordinal) in changed_keys else "keep"
+                    ("adjust" if changed_keys and (key, ordinal) in changed_keys
+                     else "keep") if category == "gizmo"
+                    else "keep" if previous == chinese else "adjust"
                 ),
             })
     return rows
@@ -3171,8 +3251,8 @@ def render_review_results_v3(inventory, rows, glossary_overlay=None):
 
     ``glossary_overlay`` lets a validator compare a historical ledger against
     the digest that ledger actually recorded instead of the current
-    ``docs/glossary.md`` digest.  Writer paths omit it and keep recording the
-    current digest.
+    ``docs/glossary.md`` digest. New artifacts record the current digest;
+    regeneration preserves the existing artifact's recorded provenance.
     """
     validate_v3_decision_cards(rows)
     if glossary_overlay is not None:
@@ -3851,9 +3931,21 @@ def verify_quality_m1_bundle(path, expected_files):
 
 
 def write_review_results_v3(path, inventory, rows):
+    # The recorded glossary digest is review provenance, not a freshness gate.
+    # Keep it when regenerating derived fields, just as validation already does.
+    glossary_overlay = None
+    if path.exists():
+        recorded = parse_review_header_v3(audit_snapshot().read(
+            path, allow_external_unbound=True
+        ))
+        glossary_overlay = recorded.get("glossary_sha256")
+        if (glossary_overlay is None
+                or recorded.get("glossary_sha256_header_count") != 1):
+            raise RuntimeError("item review glossary provenance is malformed")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
-        render_review_results_v3(inventory, rows),
+        render_review_results_v3(inventory, rows,
+                                 glossary_overlay=glossary_overlay),
         encoding="utf-8",
     )
 
