@@ -1170,7 +1170,7 @@ void maybe_attune_regen_items()
                 entry.slot == SLOT_AMULET ? T_("amulet") :
                     lowercase_string(equip_slot_name(entry.slot, true));
             if (is_artefact(arm) && arm.is_identified())
-                name = quote_special_name(name);
+                name = quote_artefact_name(name);
             eq_list.push_back(name);
 
             if (entry.slot == SLOT_BOOTS || entry.slot == SLOT_GLOVES)

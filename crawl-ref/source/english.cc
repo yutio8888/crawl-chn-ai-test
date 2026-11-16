@@ -110,6 +110,68 @@ string quote_special_name(const string &name)
     return has_outer ? inner : name_quote_open + inner + name_quote_close;
 }
 
+// Only receives the artefact core, never enchantment, modifiers or inscriptions.
+string quote_artefact_name(const string &name)
+{
+    if (!special_name_quotes || Options.language != lang_t::ZH || name.empty())
+        return name;
+
+    vector<pair<size_t, size_t>> pairs;
+    vector<size_t> corners;
+    size_t straight = string::npos;
+    for (size_t pos = 0; pos < name.size(); ++pos)
+    {
+        // Formatting tags belong to the core but their contents are not a name.
+        if (name[pos] == '<')
+        {
+            const auto end = name.find('>', pos);
+            if (end != string::npos)
+            {
+                pos = end;
+                continue;
+            }
+        }
+        if (name[pos] == '"')
+        {
+            if (straight == string::npos)
+                straight = pos;
+            else
+            {
+                pairs.emplace_back(straight, 1);
+                pairs.emplace_back(pos, 1);
+                straight = string::npos;
+            }
+        }
+        else if (name.compare(pos, 3, name_quote_open) == 0)
+            corners.push_back(pos);
+        else if (name.compare(pos, 3, name_quote_close) == 0 && !corners.empty())
+        {
+            pairs.emplace_back(corners.back(), 3);
+            pairs.emplace_back(pos, 3);
+            corners.pop_back();
+        }
+    }
+    if (pairs.empty())
+        return name_quote_open + name + name_quote_close;
+
+    // Pair positions refer to the original core. Replace backwards so UTF-8
+    // growth cannot shift the remaining positions. Unpaired quotes stay intact.
+    string result = name;
+    vector<pair<size_t, string>> replacements;
+    for (size_t i = 0; i < pairs.size(); ++i)
+    {
+        replacements.emplace_back(pairs[i].first,
+            i % 2 ? name_quote_close : name_quote_open);
+    }
+    sort(replacements.rbegin(), replacements.rend());
+    for (const auto &part : replacements)
+    {
+        const size_t length = name[part.first] == '"' ? 1 : 3;
+        result.replace(part.first, length, part.second);
+    }
+    return result;
+}
+
 string name_for_storage(const actor &who, description_level_type desc,
                         bool force_visible)
 {

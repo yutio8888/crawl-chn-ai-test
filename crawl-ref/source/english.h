@@ -35,6 +35,8 @@ private:
     bool previous_;
 };
 string quote_special_name(const string &name);
+// Artefact core only: keep intrinsic name quotes instead of adding an outer pair.
+string quote_artefact_name(const string &name);
 class actor;
 class monster;
 string name_for_storage(const actor &who, description_level_type desc,
