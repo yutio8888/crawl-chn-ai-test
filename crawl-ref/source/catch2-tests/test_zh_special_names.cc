@@ -438,5 +438,15 @@ TEST_CASE_METHOD(ZhTranslationFixture, "artefact cores use one name marker outsi
         item_def ordinary = item;
         ordinary.flags &= ~ISFLAG_ARTEFACT_MASK;
         CHECK(ordinary.name(DESC_PLAIN).find("「") == string::npos);
+        // Equipped gizmos are artefacts too; legacy names have no recipe.
+        item_def gizmo;
+        gizmo.base_type = OBJ_GIZMOS;
+        gizmo.quantity = 1;
+        gizmo.rnd = 1;
+        gizmo.flags = ISFLAG_RANDART | ISFLAG_IDENTIFIED;
+        gizmo.props[ARTEFACT_NAME_KEY].get_string() = "prototype device";
+        CHECK(gizmo.name(DESC_PLAIN, false, false, false)
+              == (language == lang_t::ZH ? "「prototype device」" : "prototype device"));
+        CHECK(gizmo.props[ARTEFACT_NAME_KEY].get_string() == "prototype device");
     }
 }
