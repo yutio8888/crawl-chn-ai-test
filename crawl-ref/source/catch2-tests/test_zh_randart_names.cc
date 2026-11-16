@@ -333,3 +333,35 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK(ring.props[ARTEFACT_APPEAR_KEY].get_string() == "精良的青金石戒指");
     CHECK(ring.name(DESC_PLAIN) == "精良的青金石戒指");
 }
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "randart names: genitive branch motifs use intrinsic quotes",
+                 "[zh-translation][randart-names]")
+{
+    RandartNameLocale locale;
+    init_properties();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.your_name = "小明";
+    you.game_seed = 20261115ULL;
+    const pair<uint64_t, const char*> examples[] = {
+        {370, "盐之荒原"}, {5633, "百兽之巢"}, {7521, "史莱姆之坑"},
+    };
+    for (const auto& example : examples)
+    {
+        rng::subgenerator sequence(example.first, 0x4231);
+        item_def item;
+        item.base_type = OBJ_WEAPONS;
+        item.sub_type = WPN_LONG_SWORD;
+        item.quantity = 1;
+        REQUIRE(make_item_randart(item, true));
+        const string place = example.second;
+        const string raw = item.props[ARTEFACT_NAME_KEY].get_string();
+        CAPTURE(example.first, raw);
+        CHECK(raw == "「" + place + "」长剑");
+        item.flags |= ISFLAG_IDENTIFIED;
+        CHECK(item.name(DESC_PLAIN).find("『" + place + "』长剑") != string::npos);
+        CHECK(item.props[ARTEFACT_NAME_KEY].get_string() == raw);
+    }
+}
