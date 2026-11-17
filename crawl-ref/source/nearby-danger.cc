@@ -171,15 +171,13 @@ static void _announce_monsters(string announcement, vector<coord_def> &visible,
     const string bang = _has_terminal_punctuation(announcement)
         ? "" : T_("!");
     mprf(MSGCH_WARN, "%s%s%s", announcement.c_str(), bang.c_str(),
-         none_visible && !you.gave_invis_clear_prompt
+         none_visible
 #ifdef USE_TILE_WEB
             ? T_(" (Press *t to temporarily disregard this.)")
 #else
             ? T_(" (Press Ctrl+T to temporarily disregard this.)")
 #endif
             : "");
-    if (none_visible)
-        you.gave_invis_clear_prompt = true;
 
     if (Options.use_animations & UA_MONSTER_IN_SIGHT)
     {

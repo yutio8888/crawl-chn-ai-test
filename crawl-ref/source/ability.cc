@@ -2333,15 +2333,21 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false,
                                      hepliaklqana_ally_name().c_str()));
         }
 
+        const monster* ancestor = hepliaklqana_ancestor_mon();
         if (abil.ability != ABIL_HEPLIAKLQANA_RECALL)
         {
-            monster* ancestor = hepliaklqana_ancestor_mon();
             if (!ancestor || !you.can_see(*ancestor))
             {
                 if (!quiet)
                     mprf(T_("%s is not nearby!"), hepliaklqana_ally_name().c_str());
                 return false;
             }
+        }
+        else if (companions_are_adjacent())
+        {
+            if (!quiet)
+                mprf(T_("%s is already by your side!"), ancestor->name(DESC_THE).c_str());
+            return false;
         }
 
         return true;
@@ -2427,6 +2433,22 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false,
         if (get_num_apostles() == 3)
             return fail(T_("You already have the maximum number of followers. Dismiss one first."));
         return true;
+
+    case ABIL_BEOGH_RECALL_APOSTLES:
+    {
+        if (companions_are_adjacent())
+        {
+            if (!quiet)
+            {
+                if (get_num_apostles() > 1)
+                    mpr(T_("Your apostles are already by your side."));
+                else
+                    mpr(T_("Your apostles is already by your side."));
+            }
+            return false;
+        }
+        return true;
+    }
 
     case ABIL_BEOGH_BLOOD_FOR_BLOOD:
         if (you.duration[DUR_BLOOD_FOR_BLOOD])

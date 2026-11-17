@@ -55062,3 +55062,18 @@ randart jewellery appearance|%1$s %2$s
 %%%%
 randart divine esteem|of %1$s %2$s
 「%1$s之%2$s」
+%%%%
+%s is already by your side!
+%s已在你的身边！
+%%%%
+Your apostles are already by your side.
+你的使徒们已在你的身边。
+%%%%
+Your apostles is already by your side.
+你的使徒已在你的身边。
+%%%%
+shop name type|Messages 'n'
+瓶中信
+%%%%
+shop name suffix|Bottles
+小铺
