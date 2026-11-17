@@ -1281,8 +1281,8 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                 "special": 23,
                 "gizmo": 544,
                 "item-description": 321,
-                "randart-component": 2780,
-                "randart-grammar": 123,
+                "randart-component": 2830,
+                "randart-grammar": 124,
             },
             payload["category_counts"],
         )
@@ -1765,9 +1765,9 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         zh = MODULE.textdb_rows(zh_path)
         MODULE.validate_randart_metrics("randname.txt", en, zh)
         additions = MODULE.localized_randart_pool_rows(en_path, zh)
-        self.assertEqual(335, sum(row["category"] == "randart-component"
+        self.assertEqual(385, sum(row["category"] == "randart-component"
                                   for row in additions))
-        self.assertEqual(8, sum(row["category"] == "randart-grammar"
+        self.assertEqual(9, sum(row["category"] == "randart-grammar"
                                 for row in additions))
         self.assertEqual(len(additions), len({r["identity"] for r in additions}))
         self.assertTrue(all(r["_metadata"]["language"] == "zh" for r in additions))
@@ -1795,10 +1795,10 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
     def test_randart_localized_split_preserves_both_candidates_and_weights(self):
         en = [(5, "of the @_adjective_@ @_profession_name_@\n"
                    "of @_politics_name_armour_@")]
-        zh = [(5, "@_adjective_@@_profession_name_@"),
+        zh = [(5, "@_adjective_@@_randart_profession_name_@"),
               (10, "@_politics_name_armour_@之")]
         result = MODULE.randart_localized_armour_candidates(en, zh)
-        self.assertEqual([(5, "@_adjective_@@_profession_name_@\n\n"
+        self.assertEqual([(5, "@_adjective_@@_randart_profession_name_@\n\n"
                               "@_politics_name_armour_@之")], result)
         for invalid in (zh[:1], [(5, zh[0][1]), (1, zh[1][1])],
                         [(5, zh[0][1]), (10, "@unknown@")]):
@@ -1811,6 +1811,46 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         # Other consumers, including random books, do not receive this rewrite.
         self.assertEqual(Counter({"@_verbing_@": 1}),
                          MODULE.randart_localized_markers("book", ["@_verbing_@"]))
+
+    def test_randart_profession_pool_preserves_books_order_and_weights(self):
+        localized = MODULE.textdb_rows(MODULE.SRC / "dat/database/zh/randname.txt")
+        shared = MODULE.textdb_rows(MODULE.SRC / "dat/database/zh/rand_arm.txt")
+        MODULE.validate_randart_profession_copy(localized, shared)
+        source = next(e for e in shared if e.canonical_key == "_profession_name_")
+        private = next(e for e in localized
+                       if e.canonical_key == "_randart_profession_name_")
+        original = MODULE.physical_candidates(source)
+        copied = MODULE.physical_candidates(private)
+        self.assertEqual(50, len(copied))
+        self.assertEqual([w for w, _ in original], [w for w, _ in copied])
+        self.assertEqual(500, sum(w for w, _ in copied))
+        self.assertIn((10, "理发师兼外科医生"), original)
+        self.assertIn((10, "外科理发师"), copied)
+        self.assertEqual(Counter({"@_randart_profession_name_@": 1}),
+                         MODULE.randart_localized_markers(
+                             "armour", ["@_profession_name_@"]))
+        for key in ("book", "random_book_title", "weapon"):
+            self.assertEqual(Counter({"@_profession_name_@": 1}),
+                             MODULE.randart_localized_markers(
+                                 key, ["@_profession_name_@"]))
+        for mutation in (
+            lambda value: value.replace("外科理发师", "其他职业", 1),
+            lambda value: value.replace("学徒\n\n药剂师", "药剂师\n\n学徒", 1),
+            lambda value: value.replace("学徒", "w:9\n学徒", 1),
+        ):
+            candidate = copy.deepcopy(localized)
+            entry = next(e for e in candidate
+                         if e.canonical_key == "_randart_profession_name_")
+            changed = mutation(entry.value)
+            self.assertNotEqual(entry.value, changed)
+            entry.value = changed
+            with self.assertRaisesRegex(RuntimeError, "profession copy/weight drift"):
+                MODULE.validate_randart_profession_copy(candidate, shared)
+        changed_book = copy.deepcopy(shared)
+        entry = next(e for e in changed_book if e.canonical_key == "_profession_name_")
+        entry.value = entry.value.replace("理发师兼外科医生", "外科理发师", 1)
+        with self.assertRaisesRegex(RuntimeError, "shared book profession wording drift"):
+            MODULE.validate_randart_profession_copy(localized, changed_book)
 
     def test_weighted_metrics_distinguish_variants_from_raw_lines(self):
         with tempfile.TemporaryDirectory() as directory:

@@ -139,7 +139,7 @@ grep -q 'must equal the current working directory Git top-level' \
 test ! -e "$TRUSTED_MARKER"
 test ! -e "$CANDIDATE_MARKER"
 
-# D-C-121: only the eight declared Chinese randart pools may add blocks.
+# D-C-121: only the nine declared Chinese randart pools may add blocks.
 # Exercise the real parser/metric authority, not a duplicate exception list.
 FORMAT_REPO="$TMP_ROOT/format"
 mkdir -p "$FORMAT_REPO/.claude/scripts" \
@@ -154,10 +154,17 @@ cp "$SCRIPT_DIR/../../../crawl-ref/source/dat/database/randname.txt" \
 cp "$SCRIPT_DIR/../../../crawl-ref/source/dat/database/zh/randname.txt" \
     "$TMP_ROOT/randname-zh.txt"
 
+cp "$SCRIPT_DIR/../../../crawl-ref/source/dat/database/rand_arm.txt" \
+    "$TMP_ROOT/rand-arm-en.txt"
+cp "$SCRIPT_DIR/../../../crawl-ref/source/dat/database/zh/rand_arm.txt" \
+    "$TMP_ROOT/rand-arm-zh.txt"
+
 reset_format_inputs() {
     rm -f "$FORMAT_DB"/*.txt "$FORMAT_DB/zh"/*.txt
     cp "$TMP_ROOT/randname-en.txt" "$FORMAT_DB/randname.txt"
     cp "$TMP_ROOT/randname-zh.txt" "$FORMAT_DB/zh/randname.txt"
+    cp "$TMP_ROOT/rand-arm-en.txt" "$FORMAT_DB/rand_arm.txt"
+    cp "$TMP_ROOT/rand-arm-zh.txt" "$FORMAT_DB/zh/rand_arm.txt"
 }
 
 run_format_fixture() {
@@ -180,7 +187,7 @@ expect_format_failure() {
 
 reset_format_inputs
 run_format_fixture > "$TMP_ROOT/format-approved.out" 2>&1
-grep -q 'eight approved D-C-121 ZH-only pools' "$TMP_ROOT/format-approved.out"
+grep -q 'nine approved D-C-121 ZH-only pools' "$TMP_ROOT/format-approved.out"
 
 python3 - "$FORMAT_DB/zh/randname.txt" <<'PY'
 from pathlib import Path
@@ -232,6 +239,37 @@ reset_format_inputs
 cp "$FORMAT_DB/randname.txt" "$FORMAT_DB/renamed.txt"
 cp "$FORMAT_DB/zh/randname.txt" "$FORMAT_DB/zh/renamed.txt"
 expect_format_failure renamed-file
+
+# The ninth pool is an exact, ordered, weighted copy with one scoped wording.
+for mutation in key wording order missing; do
+    reset_format_inputs
+    python3 - "$FORMAT_DB/zh/randname.txt" "$mutation" <<'PY'
+from pathlib import Path
+import sys
+p = Path(sys.argv[1])
+text = p.read_text()
+prefix, body = text.split('\n_randart_profession_name_\n', 1)
+if sys.argv[2] == 'key':
+    text = prefix + '\n_unapproved_profession_\n' + body
+elif sys.argv[2] == 'wording':
+    text = prefix + '\n_randart_profession_name_\n' + body.replace('外科理发师', '其他职业', 1)
+elif sys.argv[2] == 'order':
+    text = prefix + '\n_randart_profession_name_\n' + body.replace('学徒\n\n药剂师', '药剂师\n\n学徒', 1)
+else:
+    text = prefix.rsplit('%%%%', 1)[0]
+assert text != p.read_text()
+p.write_text(text)
+PY
+    expect_format_failure "profession-$mutation"
+done
+reset_format_inputs
+python3 - "$FORMAT_DB/zh/rand_arm.txt" <<'PY'
+from pathlib import Path
+import sys
+p = Path(sys.argv[1])
+p.write_text(p.read_text().replace('理发师兼外科医生', '外科理发师', 1))
+PY
+expect_format_failure shared-book-wording
 
 # Ordinary paired files retain their original parity path without an exception.
 reset_format_inputs
