@@ -323,7 +323,7 @@ do_format() {
 
             if [ "$en_count" != "$zh_count" ]; then
                 # RandartDB accepts localized-only keys in its existing input
-                # files. D-C-121's eight pools are the sole block-count exception;
+                # files. D-C-121's nine pools are the sole block-count exception;
                 # reuse their audited identities, parser, and exact metrics.
                 if [ "$basename" = "randname.txt" ] && \
                     python3 - "$SCRIPT_DIR" "$en_file" "$zh_file" \
@@ -334,6 +334,7 @@ from pathlib import Path
 sys.path.insert(0, sys.argv[1])
 from audit_item_name_inventory import (
     ZH_RANDART_POOLS, textdb_rows, validate_randart_metrics,
+    validate_randart_profession_copy,
 )
 
 try:
@@ -346,12 +347,15 @@ try:
     if en_keys - zh_keys or zh_keys - en_keys != ZH_RANDART_POOLS:
         raise ValueError("localized-only keys are not exactly the approved pools")
     validate_randart_metrics("randname.txt", english, chinese)
+    validate_randart_profession_copy(
+        chinese, textdb_rows(Path(sys.argv[3]).with_name("rand_arm.txt"))
+    )
 except (OSError, RuntimeError, ValueError) as error:
     print(f"  randname.txt localized grammar contract: {error}", file=sys.stderr)
     raise SystemExit(1)
 PY_RANDART
                 then
-                    echo "  ✅ randname.txt: eight approved D-C-121 ZH-only pools (EN: $en_count, ZH: $zh_count)"
+                    echo "  ✅ randname.txt: nine approved D-C-121 ZH-only pools (EN: $en_count, ZH: $zh_count)"
                     continue
                 fi
                 echo "  ❌ $basename: %%%% count mismatch (EN: $en_count, ZH: $zh_count)"
