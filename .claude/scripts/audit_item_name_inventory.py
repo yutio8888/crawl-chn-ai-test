@@ -1181,18 +1181,19 @@ ZH_RANDART_POOLS = frozenset({
     "_randart_number_", "_randart_qualifier_", "_randart_counted_thing_",
     "_randart_quantity_motif_", "_randart_predicate_", "_randart_place_",
     "_randart_divine_esteem_", "_randart_xom_esteem_",
+    "_randart_profession_name_",
 })
 ZH_RANDART_ROOTS = frozenset({
     "weapon", "armour", "jewellery", "trog weapon", "okawaru weapon",
     "okawaru armour", "xom weapon", "xom armour", "xom jewellery",
 })
 ZH_RANDNAME_METRICS = {
-    "grammar_keys": 41,
-    "physical_variant_identities": 818,
-    "raw_nonempty_grammar_lines": 1068,
+    "grammar_keys": 42,
+    "physical_variant_identities": 868,
+    "raw_nonempty_grammar_lines": 1118,
     "explicit_weight_marker_lines": 250,
     "continuation_lines": 0,
-    "weight_mass": 11955,
+    "weight_mass": 12455,
 }
 
 
@@ -1220,6 +1221,8 @@ def randart_localized_markers(key, markers):
         "@_xom_esteem_@": "@_randart_xom_esteem_@",
         "@god_name_possessive@": "@god_name@",
     }
+    if key == "armour":
+        replacements["@_profession_name_@"] = "@_randart_profession_name_@"
     return Counter(replacements.get(marker, marker) for marker in markers)
 
 
@@ -1241,7 +1244,7 @@ def randart_localized_armour_candidates(english, localized):
     if len(localized) != len(english) + 1:
         raise RuntimeError("randart armour localized count drift")
     first, second = localized[index:index + 2]
-    if first != (5, "@_adjective_@@_profession_name_@") or second != (
+    if first != (5, "@_adjective_@@_randart_profession_name_@") or second != (
         10, "@_politics_name_armour_@之"
     ):
         raise RuntimeError("randart armour localized split/weight drift")
@@ -1273,7 +1276,9 @@ def localized_randart_pool_rows(en_path, zh_entries):
             "english_source": key, "_pre_review_chinese": None,
             "current_chinese": key,
             "producer": f"Chinese-only RandartDB key {key} (D-C-121)",
-            "consumer": "Chinese randart classifier/predicate grammar",
+            "consumer": ("Chinese randart profession grammar"
+                         if key == "_randart_profession_name_"
+                         else "Chinese randart classifier/predicate grammar"),
             "input": str(en_path.relative_to(ROOT)),
             "_metadata": {"grammar_key": key, "language": "zh"},
             "_conclusion": "adjust",
@@ -1292,6 +1297,22 @@ def localized_randart_pool_rows(en_path, zh_entries):
                 "_conclusion": "adjust",
             })
     return rows
+
+
+def validate_randart_profession_copy(localized, shared):
+    """The private pool preserves the shared book pool's order and weights."""
+    local = {entry.canonical_key: entry for entry in localized}
+    original = {entry.canonical_key: entry for entry in shared}
+    if ("_randart_profession_name_" not in local
+            or "_profession_name_" not in original):
+        raise RuntimeError("Chinese randart profession pool missing")
+    source = physical_candidates(original["_profession_name_"])
+    if sum(value == "理发师兼外科医生" for _, value in source) != 1:
+        raise RuntimeError("Chinese shared book profession wording drift")
+    expected = [(weight, value.replace("理发师兼外科医生", "外科理发师"))
+                for weight, value in source]
+    if physical_candidates(local["_randart_profession_name_"]) != expected:
+        raise RuntimeError("Chinese randart profession copy/weight drift")
 
 
 def validate_randart_metrics(filename, en_entries, zh_entries):
@@ -2558,6 +2579,10 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
         "randname.txt", "rand_wpn.txt", "rand_arm.txt", "rand_all.txt"
     ]
     randart_metrics = {}
+    validate_randart_profession_copy(
+        textdb_rows(SRC / "dat/database/zh/randname.txt"),
+        textdb_rows(SRC / "dat/database/zh/rand_arm.txt"),
+    )
     for filename in randart_files:
         en_randart = textdb_rows(SRC / "dat/database" / filename)
         zh_randart = textdb_rows(SRC / "dat/database/zh" / filename)
@@ -2608,8 +2633,8 @@ def build_extended_inventory(review_base=ISSUE29_REVIEW_BASE,
         "special": 23,
         "gizmo": 544,
         "item-description": 321,
-        "randart-component": 2780,
-        "randart-grammar": 123,
+        "randart-component": 2830,
+        "randart-grammar": 124,
     }
     if dict(counts) != expected_counts:
         raise RuntimeError(

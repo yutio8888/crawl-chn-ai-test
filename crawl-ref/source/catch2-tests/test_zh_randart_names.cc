@@ -300,7 +300,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     };
     const Example examples[] = {
         {2000038, OBJ_ARMOUR, ARM_BOOTS, "一百头野兽之靴子"},
-        {2000066, OBJ_ARMOUR, ARM_BOOTS, "一百万份最后通牒之靴子"},
+        {2000066, OBJ_ARMOUR, ARM_BOOTS, "百万份最后通牒之靴子"},
         {3000127, OBJ_JEWELLERY, RING_POSITIVE_ENERGY, "知名的青年之戒指"},
         {1000059, OBJ_WEAPONS, WPN_TRIPLE_CROSSBOW, "正在进食的蝎子之三弦弩"},
         {2000126, OBJ_ARMOUR, ARM_ROBE, "装饰华丽的水手长袍"},
