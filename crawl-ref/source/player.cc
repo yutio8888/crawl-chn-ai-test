@@ -6055,8 +6055,6 @@ player::player()
     prevailing_wind = -1;
     gave_wind_change_warning = false;
 
-    gave_invis_clear_prompt = false;
-
     reset_escaped_death();
     on_current_level    = true;
     seen_portals        = 0;

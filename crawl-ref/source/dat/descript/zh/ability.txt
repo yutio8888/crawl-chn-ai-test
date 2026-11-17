@@ -143,7 +143,7 @@ Receive Forbidden Knowledge ability
 # 伊莱德莱姆努尔
 Recall Undead Harvest ability
 
-立即将地牢中所有隶属于你的亡灵随从召唤到你的身边。
+从地牢的任何地方将隶属于你的亡灵随从召唤到你的身边。
 %%%%
 Bind Soul ability
 
@@ -553,7 +553,7 @@ Donate Gold ability
 %%%%
 Recall Ancestor ability
 
-将你的先祖从地牢的任何地方召回到你的跟前。
+将你的先祖从地牢的任何地方召回到你的身边。
 %%%%
 Idealise ability
 
@@ -880,7 +880,7 @@ Primordial Nightfall ability
 %%%%
 Recall Apostles ability
 
-从地牢各处将你的使徒召唤到你的紧邻周围。
+从地牢各处将你的使徒召唤到你的身边。
 %%%%
 Recruit Apostle ability
 
