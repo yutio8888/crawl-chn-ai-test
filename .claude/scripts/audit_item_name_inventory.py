@@ -1290,7 +1290,9 @@ def localized_randart_pool_rows(en_path, zh_entries):
                 "english_source": key, "_pre_review_chinese": None,
                 "current_chinese": value,
                 "producer": f"Chinese-only RandartDB key {key} ordinal {ordinal}",
-                "consumer": "Chinese randart classifier/predicate grammar (D-C-121)",
+                "consumer": ("Chinese randart profession grammar (D-C-121)"
+                             if key == "_randart_profession_name_"
+                             else "Chinese randart classifier/predicate grammar (D-C-121)"),
                 "input": str(en_path.relative_to(ROOT)),
                 "_metadata": {"grammar_key": key, "physical_ordinal": ordinal,
                               "weight": weight, "language": "zh"},

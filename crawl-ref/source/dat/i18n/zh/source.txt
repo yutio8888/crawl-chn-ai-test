@@ -5668,7 +5668,7 @@ Pain shudders through your %s!
 一阵痛楚传遍你的%s！
 %%%%
 Pain wracks your body!
-痛苦穿过了你的身体！
+剧痛折磨着你的身体！
 %%%%
 Pakellas
 帕克拉斯
@@ -17924,7 +17924,7 @@ throws
 投掷
 %%%%
 shoots
-射击
+射出
 %%%%
  magically
 凭空
@@ -26801,7 +26801,7 @@ You are losing your grip on the fallen.
 你对亡者的掌控正在减弱。
 %%%%
 You are making an unholy racket with your haunted armour.
-你被诅咒的护甲正在发出不洁的噪音。
+你附身的护甲正在发出不洁的喧嚣。
 %%%%
 You are more vulnerable to fire.
 你更容易受到火焰伤害。
@@ -49964,7 +49964,7 @@ skill title|Riotous Rainbow
 狂暴彩虹
 %%%%
 skill title|Extremely Free Spirit
-极度自由灵魂
+极度自由的灵魂
 %%%%
 skill title|Stunt@genus@
 @genus@特技替身
@@ -55077,3 +55077,31 @@ shop name type|Messages 'n'
 %%%%
 shop name suffix|Bottles
 小铺
+
+%%%%
+miss result| completely
+完全没能击中
+
+%%%%
+miss result|miss
+没能击中
+
+%%%%
+miss result| closely
+差点就击中
+
+%%%%
+miss result| barely
+只差毫厘就能击中
+
+%%%%
+miss result|%s%s misses %s.
+%s%s%s。
+
+%%%%
+miss result|The %s%s misses %s.
+%s%s%s。
+
+%%%%
+miss result|You%1$s miss %2$s%3$s.
+你%3$s%1$s%2$s。

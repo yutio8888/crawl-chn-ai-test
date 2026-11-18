@@ -713,6 +713,16 @@ string attack_strength_punctuation(int dmg)
  */
 string attack::evasion_margin_adverb()
 {
+    // Chinese needs the entire predicate: "barely misses" nearly hits, rather
+    // than barely failing. Do not change the shared adverb translations.
+    if (Options.language == lang_t::ZH)
+    {
+        return ev_margin <= -20 ? C_("miss result", " completely")
+             : ev_margin <= -12 ? C_("miss result", "miss")
+             : ev_margin <= -6 ? C_("miss result", " closely")
+                               : C_("miss result", " barely");
+    }
+
     return (ev_margin <= -20) ? T_(" completely") :
            (ev_margin <= -12) ? "" :
            (ev_margin <= -6)  ? T_(" closely")
