@@ -75,9 +75,6 @@ public:
     coord_def attack_position;
     item_def *mutable_wpn;
 
-    // Localized complete hit frame; never used for English or stored identity.
-    string hit_format;
-
 public:
     melee_attack(actor *attacker, actor *defender,
                  int attack_num = 0, int effective_attack_num = 0);
@@ -99,6 +96,9 @@ public:
     bool did_attack_hostiles() const;
 
 private:
+    // Localized complete hit frame; never used for English or stored identity.
+    string hit_format;
+
     /* Attack phases */
     bool handle_phase_attempted() override;
     void handle_phase_blocked() override;

@@ -27,6 +27,7 @@ import os
 import re
 import sys
 from collections import OrderedDict
+from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from i18n_shared import (parse_entries, parse_source_txt,
@@ -2068,6 +2069,132 @@ def _mprf_p_findings(masked: str):
     return results
 
 
+def _mprf_melee_member_offsets(masked: str, header: str):
+    """Prove the bounded private melee template flow, otherwise fail closed.
+
+    This is not a context-name exemption: every member use and every table
+    reference must lead to a positional format argument in announce_hit.
+    """
+    code = _mprf_code(masked)
+    header_code = _mprf_code(_mask_cpp_comments(header, raw_strings=True))
+    member = re.search(r'\bstring\s+hit_format\s*;', header_code)
+    access = list(re.finditer(r'\b(public|protected|private)\s*:',
+                             header_code[:member.start()])) if member else []
+    if (len(re.findall(r'\bhit_format\b', header_code)) != 1
+            or not access or access[-1].group(1) != 'private'):
+        return set()
+
+    def body(method):
+        match = re.search(r'void\s+melee_attack::' + method
+                          + r'\s*\([^)]*\)\s*\{', code)
+        if not match:
+            return None
+        opening = code.find('{', match.start())
+        closing = _find_matching_brace(code, opening)
+        return (opening, closing) if closing is not None else None
+
+    setter, renderer = body('set_attack_verb'), body('announce_hit')
+    if not setter or not renderer:
+        return set()
+    inside = lambda pos, bounds: bounds[0] < pos < bounds[1]
+    format_spans = _mprf_format_spans(masked, _mprf_spans(masked))
+    offsets, tables, sink_count = set(), {}, 0
+    for use in re.finditer(r'\bhit_format\b', code):
+        pos = use.start()
+        suffix = code[use.end():]
+        if inside(pos, setter) and re.match(r'\s*\.clear\(\)\s*;', suffix):
+            continue
+        if inside(pos, renderer) and re.match(r'\s*\.empty\(\)', suffix):
+            continue
+        if (inside(pos, renderer) and re.match(r'\s*\.c_str\(\)', suffix)
+                and _mprf_direct_format(masked, pos, format_spans)):
+            sink_count += 1
+            continue
+        assignment = re.match(r'\s*=\s*C_\s*\(', suffix)
+        if not inside(pos, setter) or not assignment:
+            return set()
+        call_start = code.find('C_', use.end(), use.end() + assignment.end())
+        parsed = _mprf_literal_call(masked, call_start)
+        if not parsed or parsed[1] != 'melee hit':
+            return set()
+        _kind, _context, key, call_end = parsed
+        if not re.match(r'\s*;', code[call_end:]):
+            return set()
+        if key is not None:
+            offsets.add(call_start)
+            continue
+        opening = code.find('(', call_start)
+        args = _split_call_args(masked, opening + 1, call_end - 1)
+        table = re.fullmatch(r'(\w+)\s*\[\s*choice\s*\]\s*\[\s*2\s*\]',
+                             args[1][0].strip()) if len(args) == 2 else None
+        if not table:
+            return set()
+        tables.setdefault(table.group(1), set()).add(call_start)
+    if sink_count != 1:
+        return set()
+
+    for name, consumers in tables.items():
+        declaration = re.search(
+            r'\bstatic\s+const\s+char\s*\*\s*const\s+' + re.escape(name)
+            + r'\s*\[\s*\]\s*\[\s*3\s*\]\s*=\s*\{', code)
+        if not declaration or not inside(declaration.start(), setter):
+            return set()
+        opening = code.find('{', declaration.start())
+        closing = _find_matching_brace(code, opening)
+        if closing is None:
+            return set()
+        for row, start in _split_call_args(masked, opening + 1, closing):
+            if not row.strip():
+                continue  # optional trailing comma
+            row_open = start + len(row) - len(row.lstrip())
+            if code[row_open] != '{':
+                return set()
+            row_close = _find_matching_brace(code, row_open)
+            if row_close is None or masked[row_close + 1:start + len(row)].strip():
+                return set()
+            columns = _split_call_args(masked, row_open + 1, row_close)
+            if len(columns) != 3:
+                return set()
+            for column, (text, position) in enumerate(columns):
+                position += len(text) - len(text.lstrip())
+                parsed = _mprf_literal_call(masked, position)
+                if column < 2:
+                    if parsed and parsed[1] == 'melee hit':
+                        return set()  # verb/degree slots do not reach the formatter
+                elif _mprf_decode_literal_token(text.strip()) == "":
+                    continue
+                elif (parsed and parsed[0:2] == ('NC_', 'melee hit')
+                      and parsed[2] and not masked[parsed[3]:row_close].strip()):
+                    offsets.add(position)
+                else:
+                    return set()
+        for use in re.finditer(r'\b' + re.escape(name) + r'\b', code):
+            if declaration.start() <= use.start() <= closing:
+                continue
+            if not inside(use.start(), setter):
+                return set()
+            enclosing = next(_mprf_enclosing_calls(masked, use.start()), None)
+            if not enclosing:
+                return set()
+            function, call_opening = enclosing
+            call_end = _find_matching_paren(masked, call_opening)
+            if call_end is None:
+                return set()
+            args = _split_call_args(masked, call_opening + 1, call_end)
+            values = [re.sub(r'\s+', '', arg) for arg, _start in args]
+            if function == 'ARRAYSZ' and values == [name]:
+                continue
+            if function == 'T_' and values in ([name + '[choice][0]'],
+                                               [name + '[choice][1]']):
+                continue
+            if function == 'C_' and values and values[-1] == name + '[choice][0]':
+                continue
+            if function == 'C_' and code.rfind('C_', 0, call_opening) in consumers:
+                continue
+            return set()
+    return offsets
+
+
 def cmd_mprf_p(args):
     """Check that source.txt entries with positional %n$s use mprf_p in code."""
     entries = parse_source_txt(args.source_txt)
@@ -2096,7 +2223,16 @@ def cmd_mprf_p(args):
             with open(filepath, "r", encoding="utf-8", errors="replace") as f:
                 raw = f.read()
             masked = _mask_cpp_comments(raw, raw_strings=True)
+            member_offsets = set()
+            if fn == "melee-attack.cc":
+                try:
+                    header = Path(filepath).with_suffix(".h").read_text(encoding="utf-8")
+                except OSError:
+                    header = ""
+                member_offsets = _mprf_melee_member_offsets(masked, header)
             for offset, context, key in _mprf_p_findings(masked):
+                if offset in member_offsets:
+                    continue
                 plain = key.lower()
                 composite = (f"{context}|{key}".lower()
                              if context else None)
