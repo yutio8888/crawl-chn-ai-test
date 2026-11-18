@@ -75,6 +75,9 @@ public:
     coord_def attack_position;
     item_def *mutable_wpn;
 
+    // Localized complete hit frame; never used for English or stored identity.
+    string hit_format;
+
 public:
     melee_attack(actor *attacker, actor *defender,
                  int attack_num = 0, int effective_attack_num = 0);

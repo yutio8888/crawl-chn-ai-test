@@ -3,6 +3,10 @@
 #include "AppHdr.h"
 
 #include "areas.h"
+#include "melee-attack.h"
+#include "ranged-attack.h"
+#include "randbook.h"
+#include "artefact.h"
 #include "act-iter.h"
 #include "beam.h"
 #include "cloud.h"
@@ -2236,5 +2240,162 @@ TEST_CASE("Real unique corpses use article-free Chinese name snapshots",
         if (language == lang_t::ZH)
             CHECK(name.find("the ") == string::npos);
         CHECK(corpse->props[CORPSE_NAME_KEY].get_string() == expected);
+    }
+}
+
+
+namespace
+{
+string r52_observe(const std::function<void()> &emit)
+{
+    string message = observe_message(emit);
+    trim_string_right(message);
+    return message;
+}
+struct r52_melee : melee_attack
+{
+    using melee_attack::melee_attack;
+    using attack::set_attack_verb;
+    using attack::announce_hit;
+    using attack::handle_phase_dodged;
+};
+struct r52_ranged : ranged_attack
+{
+    using ranged_attack::ranged_attack;
+    using attack::handle_phase_dodged;
+};
+}
+
+TEST_CASE("R52 miss degrees use actual melee and ranged announcements",
+          "[zh-translation][r52]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *source = world.place(MONS_ORC, coord_def(21, 20));
+    monster *target = world.place(MONS_ORC, coord_def(22, 20));
+    struct degree_case { int margin; const char *en; const char *zh; };
+    const degree_case cases[] = {
+        {-20, " completely", "完全没能击中"},
+        {-12, "", "没能击中"},
+        {-6, " closely", "差点就击中"},
+        {-1, " barely", "只差毫厘就能击中"},
+    };
+    item_def stone;
+    stone.base_type = OBJ_MISSILES;
+    stone.sub_type = MI_STONE;
+    stone.quantity = 1;
+    for (const auto &c : cases)
+    {
+        CAPTURE(c.margin, language);
+        r52_melee player_miss(&you, target);
+        player_miss.ev_margin = c.margin;
+        player_miss.needs_message = true;
+        CHECK(r52_observe([&] { player_miss.handle_phase_dodged(); })
+              == (language == lang_t::ZH ? string("你") + c.zh + "兽人。"
+                  : string("You") + c.en + " miss the orc."));
+        r52_melee monster_miss(source, target);
+        monster_miss.ev_margin = c.margin;
+        monster_miss.needs_message = true;
+        CHECK(r52_observe([&] { monster_miss.handle_phase_dodged(); })
+              == (language == lang_t::ZH ? string("兽人") + c.zh + "兽人。"
+                  : string("the orc") + c.en + " misses the orc."));
+        r52_ranged projectile(source, target, &stone);
+        projectile.ev_margin = c.margin;
+        projectile.needs_message = true;
+        const string name = projectile.projectile_name();
+        CHECK(r52_observe([&] { projectile.handle_phase_dodged(); })
+              == (language == lang_t::ZH ? name + c.zh + "兽人。"
+                  : string("The ") + name + c.en + " misses the orc."));
+    }
+    // Shared adverb consumers must retain their old translations.
+    CHECK(string(T_(" barely")) == (language == lang_t::ZH ? "勉强" : " barely"));
+    CHECK(string(T_(" closely")) == (language == lang_t::ZH ? "勉强" : " closely"));
+}
+
+TEST_CASE("R52 high damage slice choices render complete sentences",
+          "[zh-translation][r52]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    monster *target = world.place(MONS_ORC, coord_def(21, 20));
+    item_def sword;
+    sword.base_type = OBJ_WEAPONS;
+    sword.sub_type = WPN_LONG_SWORD;
+    sword.quantity = 1;
+    sword.flags = ISFLAG_IDENTIFIED;
+    bool chopped = false;
+    for (int seed = 0; seed < 64; ++seed)
+    {
+        rng::subgenerator scoped_rng(seed, 0x52);
+        r52_melee hit(&you, target);
+        hit.set_weapon(&sword);
+        hit.damage_done = 40;
+        hit.set_attack_verb(40);
+        const string text = r52_observe([&] { hit.announce_hit(); });
+        CAPTURE(language, seed, text);
+        if (language == lang_t::ZH)
+        {
+            CHECK(text.find(' ') == string::npos);
+            if (text.find("剁") != string::npos)
+            {
+                CHECK(text == "你将兽人剁成了碎片！！！");
+                chopped = true;
+            }
+        }
+        else if (text.find("chop") != string::npos)
+        {
+            CHECK(text == "You chop the orc into pieces!!!");
+            chopped = true;
+        }
+    }
+    CHECK(chopped);
+}
+
+TEST_CASE("R52 automatic god gifts translate only at the item display sink",
+          "[zh-translation][r52]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    unwind_var<maybe_bool> show(Options.show_god_gift, maybe_bool::maybe);
+    item_def gift;
+    gift.base_type = OBJ_ARMOUR;
+    gift.sub_type = ARM_ROBE;
+    gift.quantity = 1;
+    gift.orig_monnum = -GOD_OKAWARU;
+    const string before_inscription = gift.inscription;
+    const string label = language == lang_t::ZH ? "神赐" : "god gift";
+    CHECK(gift.name(DESC_PLAIN).find("{" + label + "}") != string::npos);
+    CHECK(gift.inscription == before_inscription);
+    CHECK(gift.name(DESC_PLAIN, false, false, true, false, false)
+              .find("{god gift}") != string::npos);
+    CHECK(item_english_name(gift).find("{god gift}") != string::npos);
+
+    CHECK(gift.orig_monnum == -GOD_OKAWARU);
+    CHECK(gift.name(DESC_DBNAME).find("gift") == string::npos);
+    gift.inscription = "god gift, @q1";
+    CHECK(gift.name(DESC_PLAIN).find("god gift, @q1") != string::npos);
+    CHECK(gift.inscription == "god gift, @q1");
+}
+
+TEST_CASE("R52 real level books do not duplicate the subject connector",
+          "[zh-translation][r52][r52-books]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    for (int seed = 0; seed < 16; ++seed)
+    {
+        rng::subgenerator scoped_rng(seed, 0x52b00c);
+        item_def book;
+        book.base_type = OBJ_BOOKS;
+        book.quantity = 1;
+        REQUIRE(make_book_level_randart(book, 4));
+        const string title = book.props[ARTEFACT_NAME_KEY].get_string();
+        CAPTURE(seed, language, title);
+        CHECK_FALSE(title.empty());
+        CHECK(title.find("之之路") == string::npos);
     }
 }
