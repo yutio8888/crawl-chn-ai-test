@@ -1825,21 +1825,31 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                     database[entry.canonical_key] = entry
                     if filename == "randbook.txt":
                         roots.add(entry.canonical_key)
-        reached = set()
-        todo = list(roots)
-        while todo:
-            key = todo.pop()
-            if key in reached:
-                continue
-            reached.add(key)
-            entry = database.get(key)
-            if entry:
-                todo.extend(ref.lower()
-                            for weight, value in MODULE.physical_candidates(entry)
-                            if weight > 0
-                            for ref in re.findall(r"@([^@]+)@", value))
-        self.assertNotIn("_randart_profession_name_", reached)
-        self.assertIn("_profession_name_", reached)
+
+        def verify(current):
+            reached = set()
+            todo = list(roots)
+            while todo:
+                key = todo.pop()
+                if key in reached:
+                    continue
+                reached.add(key)
+                entry = current.get(key)
+                if entry:
+                    todo.extend(ref.lower()
+                                for weight, value in MODULE.physical_candidates(entry)
+                                if weight > 0
+                                for ref in re.findall(r"@([^@]+)@", value))
+            self.assertNotIn("_randart_profession_name_", reached)
+            self.assertIn("_profession_name_", reached)
+
+        verify(database)
+        # Mutate a real reachable shared leaf, rather than a synthetic root.
+        damaged = dict(database)
+        damaged["_profession_name_"] = copy.copy(database["_profession_name_"])
+        damaged["_profession_name_"].value = "@_randart_profession_name_@"
+        with self.assertRaises(AssertionError):
+            verify(damaged)
 
     def test_randart_profession_pool_preserves_books_order_and_weights(self):
         localized = MODULE.textdb_rows(MODULE.SRC / "dat/database/zh/randname.txt")
