@@ -458,141 +458,151 @@ w:1
 傻瓜
 %%%%
 # 入门等级（等级 1）
-starting
+starting level book
 
-@_the_subject_@ 101
+w:2
+@_the_book_magic_@入门
 
-为@_beginners_@准备的@_the_subject_@
+为@_beginners_@准备的@_the_book_magic_@
 
-@_the_subject_@，第 @level@ 部分
+@_the_book_magic_@，第@level@篇
 
-@_the_subject_@，第 @level@ 卷
+@_the_book_magic_@，第@level@卷
 
-一本@book_name@ 入门法术
+@book_name@入门法术
 
-@_the_subject_@初级教程
+@_the_book_magic_@初级教程
 
-@_the_subject_@序言
+@_the_book_magic_@序论
 
-@_the_subject_@指南
+@_the_book_magic_@教程
 
-@_the_subject_@绪论
+@_the_book_magic_@绪论
 
-@_the_subject_@入门
+@_the_book_magic_@启蒙
 
-@_the_subject_@导论
+@_the_book_magic_@入门
 
-@_the_subject_@介绍
+@_the_book_magic_@导论
 
-人人都能学@_the_subject_@
+w:2
+人人都能学@_the_book_magic_@
 
-@_the_subject_@起步
+@_the_book_magic_@起步
 
-@_the_subject_@开端
+开始学习@_the_book_magic_@
 
-@_subject_@初探
+@_the_book_magic_@初探
 
-初级@_subject_@
+初级@_book_magic_@
 
-就连@_beginners_@也能学@_the_subject_@！
+w:2
+就连@_beginners_@也能学@_the_book_magic_@！
 
-@_the_subject_@第一步
+@_the_book_magic_@第一步
 
-实践@_the_subject_@
+练习@_the_book_magic_@
 
-@_the_subject_@预备知识
+@_the_book_magic_@预备知识
 
-简单@_subject_@
+简单的@_book_magic_@
 
-所以你想学@_the_subject_@
+w:2
+想学@_the_book_magic_@吗
 
-@_the_subject_@开篇
+@_the_book_magic_@开篇
 
-@_the_subject_@基础
+@_the_book_magic_@基础
 %%%%
 # 简单等级（等级 2-4）
-easy
+easy level book
 
-@_the_subject_@及其用法
+@_book_magic_@及其用法
 
-@_the_subject_@与你
+@_the_book_magic_@与你
 
-@_the_subject_@续篇
+@_the_book_magic_@续篇
 
-@_the_subject_@简易步骤
+@_the_book_magic_@简易步骤
 
-@_the_subject_@，第 @level@ 部分
+@_the_book_magic_@，第@level@篇
 
-@_the_subject_@，第 @level@ 卷
+@_the_book_magic_@，第@level@卷
 
-@_the_subject_@初级读本
+@book_name@补充法术
 
-@_the_subject_@早期指南
+@_the_book_magic_@初级读本
 
-@_the_subject_@进阶
+@_the_book_magic_@初学指南
 
-简单@_subject_@
+继续学习@_the_book_magic_@
 
-日常@_subject_@
+简易@_book_magic_@
 
-更多@_subject_@
+日常@_book_magic_@
 
-@_the_subject_@进阶研习
+更多@_book_magic_@
 
-成功的@_subject_@实践
+@_the_book_magic_@进阶研习
 
-日常@_subject_@
+成功运用@_book_magic_@
 
-@_the_subject_@倒数第三指南
+日用@_book_magic_@
 
-@_the_subject_@基石
+w:2
+@_the_book_magic_@倒数第三指南
 
-@_the_subject_@基本原理
+@_the_book_magic_@基石
 
-@_subject_@的乐趣
+@_the_book_magic_@基本原理
 
-@_the_subject_@的关键
+w:2
+@_book_magic_@的乐趣
+
+@_the_book_magic_@的诀窍
 %%%%
 # 中等等级（等级 4-6）
-moderate
+moderate level book
 
-@_the_subject_@，第 @level@ 部分
+@_the_book_magic_@，第@level@篇
 
-@_the_subject_@，第 @level@ 卷
+@_the_book_magic_@，第@level@卷
 
-一本@book_name@ 法术
+@book_name@法术
 
-高级@_subject_@
+高级@_book_magic_@
 
-@_the_subject_@高级步骤
+@_the_book_magic_@高级步骤
 
-更多@_subject_@
+更多的@_book_magic_@
 
-经验丰富的@_subject_@
+娴熟的@_book_magic_@
 
-@_the_subject_@进一步进展
+@_the_book_magic_@进展
 
-@_the_subject_@进一步步骤
+@_the_book_magic_@进一步研习
 
-提升你的@_subject_@
+提升你的@_book_magic_@
 
-实用@_subject_@
+实用@_book_magic_@
 
-@_subject_@进阶
+@_book_magic_@进阶
 
-精深的@_subject_@
+精深的@_book_magic_@
 
-@_the_subject_@高级指南
+@_the_book_magic_@高级指南
 
-@_the_subject_@之路
+@_the_book_magic_@之路
 
-@_the_subject_@倒数第二指南
+w:2
+@_the_book_magic_@倒数第二指南
 
-@_subject_@第二课程
+@_book_magic_@第二课
 
-有用的@_subject_@
+有用的@_book_magic_@
 
-又一本关于@_the_subject_@的@book_noun@
+w:2
+又一本关于@_the_book_magic_@的@book_noun@
 %%%%
 _powerful_caster_
 
@@ -728,35 +738,35 @@ _testament_noun_
 # 困难等级（等级 7-9）
 _difficult level book owner_
 
-@_the_subject_@，第 @level@ 部分
+@_the_book_magic_@，第 @level@ 部分
 
-@_the_subject_@，第 @level@ 卷
+@_the_book_magic_@，第 @level@ 卷
 
 一本@book_name@ 至高法术
 
-@_the_subject_@详尽指南
+@_the_book_magic_@详尽指南
 
-@_the_subject_@精通
+@_the_book_magic_@精通
 
-@_the_subject_@掌握
+@_the_book_magic_@掌握
 
-@_the_subject_@的终极@book_noun@
+@_the_book_magic_@的终极@book_noun@
 
-@_the_subject_@的终极@_book_noun_on_@
+@_the_book_magic_@的终极@_book_noun_on_@
 
-@_the_subject_@的@_last_or_lost_@秘密
+@_the_book_magic_@的@_last_or_lost_@秘密
 
 最大风险与效用的@book_noun@
 
-@_subject_@的奥术秘密
+@_book_magic_@的奥术秘密
 
-@_the_subject_@的最高境界
+@_the_book_magic_@的最高境界
 
-@_the_subject_@的奥妙
+@_the_book_magic_@的奥妙
 
-@_the_subject_@的终极指南
+@_the_book_magic_@的终极指南
 
-@_the_subject_@的全面理解
+@_the_book_magic_@的全面理解
 %%%%
 difficult level book
 
@@ -766,7 +776,7 @@ w:50
 @_the_powerful_caster_@的@_last_or_lost_@@book_noun@
 
 w:5
-@_the_powerful_caster_@的@_the_subject_@
+@_the_powerful_caster_@的@_the_book_magic_@
 
 w:5
 @_the_powerful_caster_@的@_last_or_lost_@@_testament_noun_@
@@ -3371,11 +3381,125 @@ Forgecraft owner
 
 __NONE
 %%%%
-_the_subject_
+_the_book_magic_
 
-@_the_subject_@
+@_occult_adjective_@技艺
+
+@_occult_adjective_@实践
+
+@_occult_adjective_@仪式
+
+@_occult_adjective_@传统
+
+@_occult_adjective_@真理
+
+隐士的传承
+
+神秘史
+
+魔法师的技艺
+
+法师之心
+
+言语的力量
+
+仪式与韵文
+
+印记与符文
+
+古人的智慧
+
+巫师的智慧
+
+力量之言
+
+w:300
+@_book_magic_@
 %%%%
-_subject_
+_book_magic_
 
-@_subject_@
+@_occult_adjective_@洞见
+
+@_occult_adjective_@知识
+
+@_occult_adjective_@力量
+
+@_occult_adjective_@理解
+
+@_occult_adjective_@智慧
+
+施法
+
+灵知
+
+诠释学
+
+赫耳墨斯秘学
+
+w:2
+戏法
+
+咒术
+
+魔法
+
+魔法力量
+
+神秘主义
+
+秘学
+
+巫术
+
+占卜术
+
+法术施放
+
+法术技艺
+
+法术编织
+
+法术运用
+
+奇术
+
+神术
+
+意志之术
+
+巫术
+
+巫术技艺
+
+巫师技艺
+
+巫师法术
+%%%%
+Xom_book_title
+
+w:30
+@random_book_title@
+
+@_chaos_name_@
+
+w:1
+@_game_name_@
+
+w:2
+@player_death@
+
+w:8
+@_wacky_armour_name_@
+
+w:1
+@_politics_name_armour_@
+
+w:5
+@_power_name_@
+
+w:3
+@_discomfort_and_inaction_@
+
+w:3
+@_discomfort_weapon_@
 %%%%
