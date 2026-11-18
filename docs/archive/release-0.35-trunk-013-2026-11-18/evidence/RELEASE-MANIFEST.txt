@@ -1,0 +1,8 @@
+Release tag: 0.35-trunk-013
+Commit: 7c79008f70e1f9b88e47d1bf9cf136387a0e2a1b
+Included: Windows Tiles; macOS Tiles; Android
+Deferred: Linux (CI build only)
+Artifacts:
+- stone_soup-0.35-trunk-013-tiles-win32.zip: sha256:bc61b0cc4dd62cb96a0f98c0041fac16ba5966215be93e7c6b82d13bff1c7b41
+- stone_soup-0.35-trunk-013-tiles-macosx.dmg: sha256:08476a8eca8664195641fb5e7cabd13210838541e00789d79888254e6953ecb3
+- stone_soup-0.35-trunk-013-android.apk: sha256:009d7966cd18a061054f1c0f9f82b35fbe12e979bf5552bcf5248c41f4e22c2d

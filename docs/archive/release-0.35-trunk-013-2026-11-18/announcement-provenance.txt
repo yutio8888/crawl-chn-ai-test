@@ -1,0 +1,7 @@
+agent: 59f01c40-dee0-4c03-95ee-781191fc31f2（antigravity provider）
+请求：profile「Gemini 4 Argon — Medium」→ create_agent provider/model = antigravity/gemini-4-argon，thinking medium，mode auto_edit。
+运行时报告（Paseo get_agent_status runtimeInfo.model）：gemini-3.8-flash-high，thinking medium。
+说明：请求型号与运行时报告型号不一致；未找到别名映射证据，不断言后端实际为 Gemini 4 Argon。品牌均为 Gemini。未改 provider 配置。
+权限：每次 shell 逐条 allow once，仅读事实包与写草稿文件。
+修订：1) 自行压缩初稿（去掉不准确表述）；2) 主持要求职业名“猎手与妖术射手”、补帮助页键列对齐；3) 主持事实校对（非 Gemini 改写）：“无形变异与刺耳状态统一为‘杂音’”→“统一‘杂音’相关获得提示和状态名称”（#416 改的是 MUT_FORMLESS 获得提示与 DUR_CACOPHONY 状态用词，非变异名）。
+文件：announcement-013-gemini.md = Gemini 原终稿；final.md = 含主持校对的发布用稿。
