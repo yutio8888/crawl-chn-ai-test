@@ -5668,7 +5668,7 @@ Pain shudders through your %s!
 一阵痛楚传遍你的%s！
 %%%%
 Pain wracks your body!
-痛苦穿过了你的身体！
+剧痛折磨着你的身体！
 %%%%
 Pakellas
 帕克拉斯
@@ -17924,7 +17924,7 @@ throws
 投掷
 %%%%
 shoots
-射击
+射出
 %%%%
  magically
 凭空
