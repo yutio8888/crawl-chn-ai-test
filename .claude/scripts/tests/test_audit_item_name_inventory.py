@@ -1628,6 +1628,35 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertEqual(Counter({"@_verbing_@": 1}),
                          MODULE.randart_localized_markers("book", ["@_verbing_@"]))
 
+    def test_randbook_cannot_reach_private_randart_profession_pool(self):
+        # RandartDB loads EN first, then overlays ZH. Follow positive-weight
+        # references from every book entry, including English-only fallbacks.
+        database = {}
+        roots = set()
+        for language in ("", "zh"):
+            for filename in ("randname.txt", "rand_wpn.txt", "rand_arm.txt",
+                             "rand_all.txt", "randbook.txt"):
+                path = MODULE.SRC / "dat/database" / language / filename
+                for entry in MODULE.textdb_rows(path):
+                    database[entry.canonical_key] = entry
+                    if filename == "randbook.txt":
+                        roots.add(entry.canonical_key)
+        reached = set()
+        todo = list(roots)
+        while todo:
+            key = todo.pop()
+            if key in reached:
+                continue
+            reached.add(key)
+            entry = database.get(key)
+            if entry:
+                todo.extend(ref.lower()
+                            for weight, value in MODULE.physical_candidates(entry)
+                            if weight > 0
+                            for ref in re.findall(r"@([^@]+)@", value))
+        self.assertNotIn("_randart_profession_name_", reached)
+        self.assertIn("_profession_name_", reached)
+
     def test_randart_profession_pool_preserves_books_order_and_weights(self):
         localized = MODULE.textdb_rows(MODULE.SRC / "dat/database/zh/randname.txt")
         shared = MODULE.textdb_rows(MODULE.SRC / "dat/database/zh/rand_arm.txt")

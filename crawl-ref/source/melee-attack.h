@@ -96,6 +96,9 @@ public:
     bool did_attack_hostiles() const;
 
 private:
+    // Localized complete hit frame; never used for English or stored identity.
+    string hit_format;
+
     /* Attack phases */
     bool handle_phase_attempted() override;
     void handle_phase_blocked() override;

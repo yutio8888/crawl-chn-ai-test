@@ -225,7 +225,7 @@ void ranged_attack::handle_phase_dodged()
 
     if (needs_message)
     {
-        mprf(T_("The %s%s misses %s."),
+        mprf(C_("miss result", "The %s%s misses %s."),
              proj_name.c_str(),
              evasion_margin_adverb().c_str(),
              defender_name(false).c_str());

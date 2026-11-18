@@ -5428,7 +5428,7 @@ Pain shudders through your %s!
 一阵痛楚传遍你的%s！
 %%%%
 Pain wracks your body!
-痛苦穿过了你的身体！
+剧痛折磨着你的身体！
 %%%%
 Pakellas
 帕克拉斯
@@ -17222,7 +17222,7 @@ throws
 投掷
 %%%%
 shoots
-射击
+射出
 %%%%
  magically
 凭空
@@ -24776,7 +24776,7 @@ You are losing your grip on the fallen.
 你对亡者的掌控正在减弱。
 %%%%
 You are making an unholy racket with your haunted armour.
-你被诅咒的护甲正在发出不洁的噪音。
+你附身的护甲正在发出不洁的喧嚣。
 %%%%
 You are more vulnerable to fire.
 你更容易受到火焰伤害。
@@ -51246,3 +51246,147 @@ randart jewellery appearance|%1$s %2$s
 %%%%
 randart divine esteem|of %1$s %2$s
 「%1$s之%2$s」
+
+%%%%
+melee hit|You spit %1$s like the proverbial pig%2$s%3$s%4$s%5$s
+你%2$s像串起俗话中的猪一样将%1$s串了起来%3$s%4$s%5$s
+
+%%%%
+melee hit|You attack %1$s's weak point%2$s%3$s%4$s%5$s
+你%2$s攻击了%1$s的弱点%3$s%4$s%5$s
+
+%%%%
+melee hit|You dice %1$s like an onion%2$s%3$s%4$s%5$s
+你%2$s像切洋葱一样将%1$s切成了丁%3$s%4$s%5$s
+
+%%%%
+melee hit|You fracture %1$s into splinters%2$s%3$s%4$s%5$s
+你%2$s将%1$s打成了碎片%3$s%4$s%5$s
+
+%%%%
+melee hit|You carve %1$s like the proverbial ham%2$s%3$s%4$s%5$s
+你%2$s像切俗话中的火腿一样切开了%1$s%3$s%4$s%5$s
+
+%%%%
+melee hit|You carve %1$s like a turkey%2$s%3$s%4$s%5$s
+你%2$s像切火鸡一样切开了%1$s%3$s%4$s%5$s
+
+%%%%
+melee hit|You shatter %1$s into splinters%2$s%3$s%4$s%5$s
+你%2$s将%1$s击成了碎片%3$s%4$s%5$s
+
+%%%%
+melee hit|You splatter %1$s into a gooey mess%2$s%3$s%4$s%5$s
+你%2$s将%1$s砸成了一团黏糊%3$s%4$s%5$s
+
+%%%%
+melee hit|You thrash %1$s mercilessly%2$s%3$s%4$s%5$s
+你%2$s毫不留情地鞭抽了%1$s%3$s%4$s%5$s
+
+%%%%
+melee hit|You squash %1$s like the proverbial ant%2$s%3$s%4$s%5$s
+你%2$s像碾碎俗话中的蚂蚁一样碾碎了%1$s%3$s%4$s%5$s
+
+%%%%
+melee hit|You beat %1$s into a bloody pulp%2$s%3$s%4$s%5$s
+你%2$s将%1$s捶成了血泥%3$s%4$s%5$s
+
+%%%%
+melee hit|You spit %1$s like a pig%2$s%3$s%4$s%5$s
+你%2$s像串起猪一样将%1$s串了起来%3$s%4$s%5$s
+
+%%%%
+melee hit|You skewer %1$s like a kebab%2$s%3$s%4$s%5$s
+你%2$s像串烤肉串一样将%1$s串了起来%3$s%4$s%5$s
+
+%%%%
+melee hit|You stick %1$s like a pincushion%2$s%3$s%4$s%5$s
+你%2$s像扎针垫一样将%1$s扎满了孔%3$s%4$s%5$s
+
+%%%%
+melee hit|You perforate %1$s like a sieve%2$s%3$s%4$s%5$s
+你%2$s将%1$s戳得像筛子一样满是窟窿%3$s%4$s%5$s
+
+%%%%
+melee hit|You open %1$s like a pillowcase%2$s%3$s%4$s%5$s
+你%2$s像拆开枕套一样剖开了%1$s%3$s%4$s%5$s
+
+%%%%
+melee hit|You slice %1$s like a ripe choko%2$s%3$s%4$s%5$s
+你%2$s像切熟透的佛手瓜一样切开了%1$s%3$s%4$s%5$s
+
+%%%%
+melee hit|You cut %1$s into ribbons%2$s%3$s%4$s%5$s
+你%2$s将%1$s切成了碎条%3$s%4$s%5$s
+
+%%%%
+melee hit|You carve %1$s like a ham%2$s%3$s%4$s%5$s
+你%2$s像切火腿一样切开了%1$s%3$s%4$s%5$s
+
+%%%%
+melee hit|You chop %1$s into pieces%2$s%3$s%4$s%5$s
+你%2$s将%1$s剁成了碎片%3$s%4$s%5$s
+
+%%%%
+melee hit|You crush %1$s like a grape%2$s%3$s%4$s%5$s
+你%2$s像压葡萄一样压碎了%1$s%3$s%4$s%5$s
+
+%%%%
+melee hit|You beat %1$s like a drum%2$s%3$s%4$s%5$s
+你%2$s像敲鼓一样捶打了%1$s%3$s%4$s%5$s
+
+%%%%
+melee hit|You hammer %1$s like a gong%2$s%3$s%4$s%5$s
+你%2$s像敲锣一样锤打了%1$s%3$s%4$s%5$s
+
+%%%%
+melee hit|You pound %1$s like an anvil%2$s%3$s%4$s%5$s
+你%2$s像敲铁砧一样猛砸了%1$s%3$s%4$s%5$s
+
+%%%%
+melee hit|You flatten %1$s like a pancake%2$s%3$s%4$s%5$s
+你%2$s将%1$s压得像煎饼一样扁%3$s%4$s%5$s
+
+%%%%
+melee hit|You pound %1$s into fine dust%2$s%3$s%4$s%5$s
+你%2$s将%1$s砸成了细粉%3$s%4$s%5$s
+
+%%%%
+melee hit|You pummel %1$s like a punching bag%2$s%3$s%4$s%5$s
+你%2$s像打沙袋一样殴击了%1$s%3$s%4$s%5$s
+
+%%%%
+melee hit|You squash %1$s like an ant%2$s%3$s%4$s%5$s
+你%2$s像碾碎蚂蚁一样碾碎了%1$s%3$s%4$s%5$s
+
+%%%%
+miss result| completely
+完全没能击中
+
+%%%%
+miss result|miss
+没能击中
+
+%%%%
+miss result| closely
+差点就击中
+
+%%%%
+miss result| barely
+只差毫厘就能击中
+
+%%%%
+miss result|%s%s misses %s.
+%s%s%s。
+
+%%%%
+miss result|The %s%s misses %s.
+%s%s%s。
+
+%%%%
+miss result|You%1$s miss %2$s%3$s.
+你%3$s%1$s%2$s。
+
+%%%%
+god gift
+神赐

@@ -104,7 +104,7 @@ static const char* _interesting_origin(const item_def &item)
 /**
  * What inscription should be appended to the given item's name?
  */
-static string _item_inscription(const item_def &item)
+static string _item_inscription(const item_def &item, bool display = true)
 {
     vector<string> insparts;
 
@@ -114,7 +114,8 @@ static string _item_inscription(const item_def &item)
             || Options.show_god_gift == maybe_bool::maybe
                 && !item.is_identified())
         {
-            insparts.push_back(orig);
+            insparts.push_back(display && string(orig) == "god gift"
+                               ? T_("god gift") : orig);
         }
     }
 
@@ -336,7 +337,7 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
     if (descrip != DESC_BASENAME && descrip != DESC_DBNAME
         && descrip != DESC_QUALNAME && with_inscription)
     {
-        buff << _item_inscription(*this);
+        buff << _item_inscription(*this, decorate_name);
     }
 
     // These didn't have "cursed " prepended; add them here so that

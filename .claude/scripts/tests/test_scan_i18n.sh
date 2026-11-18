@@ -626,6 +626,41 @@ assert_contains "i18n extract: singular XP evoker recharge key" \
 assert_contains "i18n extract: plural XP evoker recharge key" \
     "%%s has regained %d charges." /tmp/actual_i18n_extract.txt
 
+# Positional member/table flow: use the production shape and negative
+# mutations so neither a context name nor a nearby _p call can waive risk.
+echo "--- bounded melee positional member flow ---"
+set +e
+python3 - "$SCAN_I18N" "$REPO_ROOT" <<'PY_R52_MEMBER'
+from pathlib import Path
+import sys,importlib.util
+spec=importlib.util.spec_from_file_location('r52_scan',sys.argv[1])
+m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+raw=(Path(sys.argv[2])/'crawl-ref/source/melee-attack.cc').read_text()
+header=(Path(sys.argv[2])/'crawl-ref/source/melee-attack.h').read_text()
+def check(s,h=header):return m._mprf_melee_member_offsets(m._mask_cpp_comments(s,raw_strings=True),h)
+safe=check(raw)
+print('baseline offsets',len(safe));assert safe
+mutations=[
+ ('plain formatter',raw.replace('mprf_p(hit_format.c_str(),','mprf(hit_format.c_str(),'),header),
+ ('non-format argument',raw.replace('mprf_p(hit_format.c_str(),','mprf_p(\"%s\", hit_format.c_str(),'),header),
+ ('escaping member',raw.replace('void melee_attack::announce_hit()\n{','void melee_attack::announce_hit()\n{\n    auto escaped = hit_format;'),header),
+ ('extra plain use',raw+'\nvoid other() { mprf(hit_format.c_str()); }\n',header),
+ ('unknown assignment',raw.replace('hit_format.clear();','hit_format = external_format();'),header),
+ ('format in verb column',raw.replace('NC_(\"attack verb\", \"spit\")', 'NC_(\"melee hit\", \"You chop %1$s into pieces%2$s%3$s%4$s%5$s\")'),header),
+ ('third table column escapes',raw.replace('random2(ARRAYSZ(slice_desc));','random2(ARRAYSZ(slice_desc));\n            mprf(slice_desc[choice][2]);'),header),
+ ('public after prior private label',raw,header.replace('private:\n    // Localized complete hit frame','private:\n    int unused;\npublic:\n    // Localized complete hit frame')),
+ ('non-private storage',raw,header.replace('private:\n    // Localized complete hit frame','public:\n    // Localized complete hit frame')),
+]
+for name,s,h in mutations:
+ assert s!=raw or h!=header,name
+ assert not check(s,h),name
+ print('PASS rejected',name)
+print('PASS bounded member flow and all negative mutations')
+PY_R52_MEMBER
+member_flow_status=$?
+set -e
+assert_status "mprf-p: bounded private member/table flow and unsafe mutations" 0 "$member_flow_status"
+
 # ── mprf-p ──
 echo "--- mprf-p ---"
 python3 "$SCAN_I18N" mprf-p "$FIXTURES/mprf-p/" --source-txt "$FIXTURES/mprf-p/source.txt" > /tmp/actual_mprfp.txt 2>&1 || true
