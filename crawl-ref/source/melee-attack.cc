@@ -380,7 +380,7 @@ void melee_attack::handle_phase_dodged()
             player_warn_miss();
         else
         {
-            mprf(T_("%s%s misses %s."),
+            mprf(C_("miss result", "%s%s misses %s."),
                  attacker->name(DESC_THE).c_str(),
                  evasion_margin_adverb().c_str(),
                  defender_name(true).c_str());
@@ -2911,7 +2911,7 @@ void melee_attack::player_warn_miss()
 {
     did_hit = false;
 
-    mprf_p(T_("You%1$s miss %2$s%3$s."),
+    mprf_p(C_("miss result", "You%1$s miss %2$s%3$s."),
          evasion_margin_adverb().c_str(),
          defender->name(DESC_THE).c_str(),
          weapon_desc().c_str());
