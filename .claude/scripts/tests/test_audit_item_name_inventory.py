@@ -1628,6 +1628,58 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertEqual(Counter({"@_verbing_@": 1}),
                          MODULE.randart_localized_markers("book", ["@_verbing_@"]))
 
+    def test_level_book_production_roots_and_recursive_dependencies(self):
+        source = (MODULE.SRC / "randbook.cc").read_text()
+        difficulty = MODULE.function_body(source, "_randlevel_difficulty_name")
+        levels = re.findall(r'return "([a-z]+)";', difficulty)
+        self.assertEqual(4, len(levels))
+        producer = MODULE.function_body(source, "_gen_randlevel_name")
+        self.assertIn('" level book"', producer)
+        self.assertIn('lookup + " owner"', producer)
+        en = MODULE.textdb_rows(MODULE.SRC / "dat/database/randbook.txt")
+        zh = MODULE.textdb_rows(MODULE.SRC / "dat/database/zh/randbook.txt")
+        MODULE.validate_level_book_keys(en, zh)
+        english, chinese = {}, {}
+        for filename in ("randname.txt", "rand_wpn.txt", "rand_arm.txt",
+                         "rand_all.txt", "randbook.txt"):
+            for language, target in (("", english), ("zh", chinese)):
+                for entry in MODULE.textdb_rows(
+                        MODULE.SRC / "dat/database" / language / filename):
+                    target[entry.canonical_key] = entry
+        roots = {level + " level book" for level in levels}
+        roots.update({"book_noun", "xom_book_title"})
+        self.assertNotIn("book", english)
+        self.assertNotIn("book", chinese)
+        for level in levels:
+            # Empty optional probes are part of the production fallback contract.
+            self.assertNotIn(level + " level book owner", english)
+            self.assertNotIn(level + " level book owner", chinese)
+
+        def verify(database):
+            seen, todo = set(), list(roots)
+            while todo:
+                key = todo.pop()
+                if key in seen or key in {"level", "player_name", "player_death"}:
+                    continue
+                seen.add(key)
+                self.assertIn(key, database, key)
+                entry = database[key]
+                todo.extend(ref.lower() for weight, text in
+                            MODULE.physical_candidates(entry) if weight > 0
+                            for ref in re.findall(r"@([^@]+)@", text))
+            self.assertNotIn("_the_subject_", seen)
+            self.assertNotIn("_subject_", seen)
+            return seen
+
+        reached = verify(chinese)
+        for key in roots | {"_book_magic_", "_the_book_magic_"}:
+            with self.subTest(missing=key):
+                damaged = dict(chinese)
+                del damaged[key]
+                with self.assertRaises(AssertionError):
+                    verify(damaged)
+        self.assertIn("_difficult level book owner_", reached)
+
     def test_randbook_cannot_reach_private_randart_profession_pool(self):
         # RandartDB loads EN first, then overlays ZH. Follow positive-weight
         # references from every book entry, including English-only fallbacks.

@@ -271,6 +271,43 @@ p.write_text(p.read_text().replace('理发师兼外科医生', '外科理发师'
 PY
 expect_format_failure shared-book-wording
 
+# Level books have exactly one pre-existing Chinese-only owner pool.
+reset_book_inputs() {
+    reset_format_inputs
+    cp "$SCRIPT_DIR/../../../crawl-ref/source/dat/database/randbook.txt" "$FORMAT_DB/randbook.txt"
+    cp "$SCRIPT_DIR/../../../crawl-ref/source/dat/database/zh/randbook.txt" "$FORMAT_DB/zh/randbook.txt"
+}
+reset_book_inputs
+run_format_fixture > "$TMP_ROOT/format-book-approved.out" 2>&1
+grep -q 'existing Forgecraft owner ZH-only pool' "$TMP_ROOT/format-book-approved.out"
+for mutation in missing renamed extra duplicate separator other-file; do
+    reset_book_inputs
+    python3 - "$FORMAT_DB" "$mutation" <<'PY_BOOK_TEST'
+from pathlib import Path
+import sys
+root = Path(sys.argv[1])
+p = root / "zh/randbook.txt"
+s = p.read_text()
+mutation = sys.argv[2]
+if mutation == "missing":
+    # Keep the separator delta one: missing EN root plus an unauthorized key.
+    s = s.replace("starting level book\n", "missing-root\n", 1)
+elif mutation == "renamed":
+    s = s.replace("Forgecraft owner\n", "unapproved owner\n", 1)
+elif mutation == "extra":
+    s += "%%%%\nunapproved pool\n\n值\n"
+elif mutation == "duplicate":
+    s = s.replace("Forgecraft owner\n", "easy level book\n", 1)
+elif mutation == "separator":
+    s += "%%%%\n"
+elif mutation == "other-file":
+    (root / "copied.txt").write_text((root / "randbook.txt").read_text())
+    (root / "zh/copied.txt").write_text(s)
+p.write_text(s)
+PY_BOOK_TEST
+    expect_format_failure "book-$mutation"
+done
+
 # Ordinary paired files retain their original parity path without an exception.
 reset_format_inputs
 rm "$FORMAT_DB/randname.txt" "$FORMAT_DB/zh/randname.txt"

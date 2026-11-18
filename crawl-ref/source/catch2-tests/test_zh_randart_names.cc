@@ -17,6 +17,9 @@
 #include "options.h"
 #include "player.h"
 #include "random.h"
+#include "randbook.h"
+#include "spl-util.h"
+#include "spl-book.h"
 #include "unwind.h"
 #include "stringutil.h"
 #include "syscalls.h"
@@ -429,4 +432,71 @@ TEST_CASE("replay frozen randart display names", "[.artefact-name-replay]")
         ++count;
     }
     CHECK(count == 1380);
+}
+
+// Use the real level-book constructor for both review evidence and regressions.
+static void r53_level_books(FILE *output, bool check_chinese)
+{
+    RandartNameLocale locale;
+    init_properties();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.experience_level = 27;
+    you.your_name = "Mingo";
+    for (int god : {GOD_NO_GOD, GOD_SIF_MUNA, GOD_XOM})
+        for (int level = 1; level <= 9; ++level)
+            for (int seed = 0; seed < 16; ++seed)
+            {
+                rng::subgenerator fixed(seed, 0x53b00c);
+                item_def book;
+                book.base_type = OBJ_BOOKS;
+                book.quantity = 1;
+                book.orig_monnum = -god;
+                REQUIRE(make_book_level_randart(book, level));
+                const string title = book.props[ARTEFACT_NAME_KEY].get_string();
+                CAPTURE(god, level, seed, title);
+                if (check_chinese)
+                {
+                    CHECK(title.find('@') == string::npos);
+                    CHECK(title.find("TOO MUCH RECURSION") == string::npos);
+                    // Proper names may be Latin; the title itself must be localized.
+                    CHECK(std::any_of(title.begin(), title.end(),
+                                      [](unsigned char c) { return c >= 128; }));
+                }
+                if (output)
+                {
+                    string spells;
+                    for (spell_type spell : spells_in_book(book))
+                        spells += make_stringf("%d,", static_cast<int>(spell));
+                    book.flags |= ISFLAG_IDENTIFIED;
+                    fprintf(output, "%d\t%d\t%d\t%s\t%llu\t%s\t%s\n",
+                            god, level, seed, sample_field(title).c_str(),
+                            static_cast<unsigned long long>(rng::peek_uint64()),
+                            spells.c_str(), sample_field(book.name(DESC_PLAIN)).c_str());
+                }
+            }
+}
+
+TEST_CASE("R53 level book production samples", "[.r53-books-dump]")
+{
+    const char *output = getenv("R53_BOOK_OUT");
+    REQUIRE(output);
+    const char *language = getenv("R53_BOOK_LANG");
+    REQUIRE(language);
+    const bool chinese = string(language) == "zh";
+    TranslationFixture translation(chinese ? lang_t::ZH : lang_t::EN,
+                                   chinese ? "zh" : nullptr);
+    FILE *file = fopen(output, "w");
+    REQUIRE(file);
+    r53_level_books(file, false);
+    fclose(file);
+}
+
+TEST_CASE("R53 level books resolve localized production roots",
+          "[zh-translation][r53-books]")
+{
+    ZhTranslationFixture translation;
+    r53_level_books(nullptr, true);
 }

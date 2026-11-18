@@ -1070,6 +1070,15 @@ def textdb_rows(path, snapshot=None):
     return entries
 
 
+
+def validate_level_book_keys(english, chinese):
+    """Stable's sole extra book pool predates R53 and has a live owner query."""
+    en_keys = {entry.canonical_key for entry in english}
+    zh_keys = {entry.canonical_key for entry in chinese}
+    if en_keys - zh_keys or zh_keys - en_keys != {"forgecraft owner"}:
+        raise ValueError("randbook keys must match EN plus Forgecraft owner")
+
+
 def physical_candidates(entry):
     """Parse TextDB weighted variants with the production blank-line grammar."""
     lines = entry.value.splitlines()
