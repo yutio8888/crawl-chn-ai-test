@@ -1067,6 +1067,13 @@ def textdb_rows(path, snapshot=None):
     return entries
 
 
+def validate_level_book_keys(english, chinese):
+    """Trunk's book pools have exact localized key parity."""
+    if ({entry.canonical_key for entry in english}
+            != {entry.canonical_key for entry in chinese}):
+        raise ValueError("randbook keys must match EN")
+
+
 def physical_candidates(entry):
     """Parse TextDB weighted variants with the production blank-line grammar."""
     lines = entry.value.splitlines()
