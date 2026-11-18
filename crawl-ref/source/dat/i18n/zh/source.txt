@@ -55069,7 +55069,7 @@ randart divine esteem|of %1$s %2$s
 Your apostles are already by your side.
 你的使徒们已在你的身边。
 %%%%
-Your apostles is already by your side.
+Your apostle is already by your side.
 你的使徒已在你的身边。
 %%%%
 shop name type|Messages 'n'
