@@ -331,7 +331,7 @@ Temporal Distortion ability
 %%%%
 Slouch ability
 
-对视线中每个移动速度比你快的造成伤害，速度差异越大，造成的伤害越大。
+对视线中每个移动速度比你快的怪物造成伤害，速度差异越大，造成的伤害越大。
 %%%%
 Step From Time ability
 
