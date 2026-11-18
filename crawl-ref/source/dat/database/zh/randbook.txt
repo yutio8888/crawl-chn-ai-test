@@ -170,7 +170,7 @@ w:15
 @_book_plant_animal_@
 
 w:20
-@_number_or_qualifier_@ @_thing_names_@
+@_number_or_qualifier_@@_thing_names_@
 
 w:4
 @_profession_name_@
@@ -574,7 +574,7 @@ moderate level book
 
 @_the_book_magic_@高级步骤
 
-更多的@_book_magic_@
+更多@_book_magic_@
 
 娴熟的@_book_magic_@
 
@@ -582,7 +582,7 @@ moderate level book
 
 @_the_book_magic_@进一步研习
 
-提升你的@_book_magic_@
+提升@_book_magic_@
 
 实用@_book_magic_@
 
@@ -738,11 +738,11 @@ _testament_noun_
 # 困难等级（等级 7-9）
 _difficult level book owner_
 
-@_the_book_magic_@，第 @level@ 部分
+@_the_book_magic_@，第@level@部分
 
-@_the_book_magic_@，第 @level@ 卷
+@_the_book_magic_@，第@level@卷
 
-一本@book_name@ 至高法术
+一本@book_name@至高法术
 
 @_the_book_magic_@详尽指南
 
@@ -766,7 +766,7 @@ _difficult level book owner_
 
 @_the_book_magic_@的终极指南
 
-@_the_book_magic_@的全面理解
+全面理解@_the_book_magic_@
 %%%%
 difficult level book
 
@@ -1441,7 +1441,7 @@ Necromancy
 亡灵
 
 w:200
-@_Evil_adjective_@ @_Evil_noun_@
+@_Evil_adjective_@@_Evil_noun_@
 %%%%
 _Evil_adjective_
 
@@ -3393,11 +3393,11 @@ _the_book_magic_
 
 @_occult_adjective_@真理
 
-隐士的传承
+隐士传承
 
 神秘史
 
-魔法师的技艺
+魔法师技艺
 
 法师之心
 
@@ -3409,7 +3409,7 @@ _the_book_magic_
 
 古人的智慧
 
-巫师的智慧
+巫师智慧
 
 力量之言
 
@@ -3467,7 +3467,7 @@ w:2
 
 意志之术
 
-巫术
+女巫法术
 
 巫术技艺
 

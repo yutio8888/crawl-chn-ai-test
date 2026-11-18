@@ -774,7 +774,7 @@ static string _gen_randbook_name(string subject, string owner,
 
         if (disc1 != disc2)
         {
-            name += T_(" and ");
+            name += C_("randbook conjunction", " and ");
             type_name = getRandNameString(spelltype_long_name_en(disc2));
 
             if (type_name.empty())
