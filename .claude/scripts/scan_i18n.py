@@ -2093,6 +2093,12 @@ def _mprf_melee_member_offsets(masked: str, header: str):
         closing = _find_matching_brace(code, opening)
         return (opening, closing) if closing is not None else None
 
+    def five_string_slots(key):
+        cleaned = key.replace('%%', '')
+        slots = re.findall(r'%([1-5])\$s', cleaned)
+        return (sorted(slots) == list('12345')
+                and '%' not in re.sub(r'%[1-5]\$s', '', cleaned))
+
     setter, renderer = body('set_attack_verb'), body('announce_hit')
     if not setter or not renderer:
         return set()
@@ -2108,6 +2114,15 @@ def _mprf_melee_member_offsets(masked: str, header: str):
             continue
         if (inside(pos, renderer) and re.match(r'\s*\.c_str\(\)', suffix)
                 and _mprf_direct_format(masked, pos, format_spans)):
+            opening = next(call for start, end, call in format_spans
+                           if start <= pos < end)
+            closing = _find_matching_paren(masked, opening)
+            if closing is None:
+                return set()
+            args = _split_call_args(masked, opening + 1, closing)
+            index = _mprf_format_arg_index('mprf_p', args, masked, opening)
+            if len(args) - index - 1 != 5:
+                return set()
             sink_count += 1
             continue
         assignment = re.match(r'\s*=\s*C_\s*\(', suffix)
@@ -2121,6 +2136,8 @@ def _mprf_melee_member_offsets(masked: str, header: str):
         if not re.match(r'\s*;', code[call_end:]):
             return set()
         if key is not None:
+            if not five_string_slots(key):
+                return set()
             offsets.add(call_start)
             continue
         opening = code.find('(', call_start)
@@ -2164,7 +2181,8 @@ def _mprf_melee_member_offsets(masked: str, header: str):
                 elif _mprf_decode_literal_token(text.strip()) == "":
                     continue
                 elif (parsed and parsed[0:2] == ('NC_', 'melee hit')
-                      and parsed[2] and not masked[parsed[3]:row_close].strip()):
+                      and parsed[2] and five_string_slots(parsed[2])
+                      and not masked[parsed[3]:row_close].strip()):
                     offsets.add(position)
                 else:
                     return set()

@@ -321,9 +321,36 @@ do_format() {
             en_count=$(grep -c '^%%%%$' "$en_file" 2>/dev/null || echo 0)
             zh_count=$(grep -c '^%%%%$' "$zh_file" 2>/dev/null || echo 0)
 
+            # Book key membership is checked even when block counts agree.
+            if [ "$basename" = "randbook.txt" ]; then
+                if python3 - "$SCRIPT_DIR" "$en_file" "$zh_file" \
+                        "$en_count" "$zh_count" <<'PY_BOOK'
+import sys
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+from audit_item_name_inventory import textdb_rows, validate_level_book_keys
+try:
+    validate_level_book_keys(textdb_rows(Path(sys.argv[2])),
+                             textdb_rows(Path(sys.argv[3])))
+    if int(sys.argv[5]) - int(sys.argv[4]) != 1:
+        raise ValueError("unexpected randbook separator delta")
+except (OSError, RuntimeError, ValueError) as error:
+    print(f"  randbook.txt localized key contract: {error}", file=sys.stderr)
+    raise SystemExit(1)
+PY_BOOK
+                then
+                    echo "  ✅ randbook.txt: existing Forgecraft owner ZH-only pool (EN: $en_count, ZH: $zh_count)"
+                else
+                    echo "  ❌ randbook.txt: key/block contract mismatch"
+                    issues=$((issues + 1))
+                    violations_found=true
+                fi
+                continue
+            fi
+
             if [ "$en_count" != "$zh_count" ]; then
                 # RandartDB accepts localized-only keys in its existing input
-                # files. D-C-121's nine pools are the sole block-count exception;
+                # files. D-C-121's nine pools have an exact block-count contract;
                 # reuse their audited identities, parser, and exact metrics.
                 if [ "$basename" = "randname.txt" ] && \
                     python3 - "$SCRIPT_DIR" "$en_file" "$zh_file" \
@@ -356,28 +383,6 @@ except (OSError, RuntimeError, ValueError) as error:
 PY_RANDART
                 then
                     echo "  ✅ randname.txt: nine approved D-C-121 ZH-only pools (EN: $en_count, ZH: $zh_count)"
-                    continue
-                fi
-                # R53: retain the existing live Forgecraft owner pool only.
-                # All English book keys must now have Chinese entries.
-                if [ "$basename" = "randbook.txt" ] && \
-                    python3 - "$SCRIPT_DIR" "$en_file" "$zh_file" \
-                        "$en_count" "$zh_count" <<'PY_BOOK'
-import sys
-from pathlib import Path
-sys.path.insert(0, sys.argv[1])
-from audit_item_name_inventory import textdb_rows, validate_level_book_keys
-try:
-    if int(sys.argv[5]) - int(sys.argv[4]) != 1:
-        raise ValueError("separator delta is not one")
-    validate_level_book_keys(textdb_rows(Path(sys.argv[2])),
-                             textdb_rows(Path(sys.argv[3])))
-except (OSError, RuntimeError, ValueError) as error:
-    print(f"  randbook.txt localized key contract: {error}", file=sys.stderr)
-    raise SystemExit(1)
-PY_BOOK
-                then
-                    echo "  ✅ randbook.txt: existing Forgecraft owner ZH-only pool (EN: $en_count, ZH: $zh_count)"
                     continue
                 fi
                 echo "  ❌ $basename: %%%% count mismatch (EN: $en_count, ZH: $zh_count)"

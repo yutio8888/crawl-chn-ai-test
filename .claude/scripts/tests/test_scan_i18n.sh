@@ -643,6 +643,11 @@ print('baseline offsets',len(safe));assert safe
 mutations=[
  ('plain formatter',raw.replace('mprf_p(hit_format.c_str(),','mprf(hit_format.c_str(),'),header),
  ('non-format argument',raw.replace('mprf_p(hit_format.c_str(),','mprf_p(\"%s\", hit_format.c_str(),'),header),
+ ('four sink arguments',raw.replace('mprf_p(hit_format.c_str(),\n                       defender->name(DESC_THE).c_str(),','mprf_p(hit_format.c_str(),',1),header),
+ ('six sink arguments',raw.replace('mprf_p(hit_format.c_str(),','mprf_p(hit_format.c_str(), "extra",',1),header),
+ ('missing positional slot',raw.replace('You spit %1$s like the proverbial pig%2$s%3$s%4$s%5$s', 'You spit %1$s like the proverbial pig%2$s%3$s%4$s', 1),header),
+ ('sixth positional slot',raw.replace('You spit %1$s like the proverbial pig%2$s%3$s%4$s%5$s', 'You spit %1$s like the proverbial pig%2$s%3$s%4$s%6$s', 1),header),
+ ('wrong positional type',raw.replace('You spit %1$s like the proverbial pig%2$s%3$s%4$s%5$s', 'You spit %1$s like the proverbial pig%2$s%3$s%4$s%5$d', 1),header),
  ('escaping member',raw.replace('void melee_attack::announce_hit()\n{','void melee_attack::announce_hit()\n{\n    auto escaped = hit_format;'),header),
  ('extra plain use',raw+'\nvoid other() { mprf(hit_format.c_str()); }\n',header),
  ('unknown assignment',raw.replace('hit_format.clear();','hit_format = external_format();'),header),

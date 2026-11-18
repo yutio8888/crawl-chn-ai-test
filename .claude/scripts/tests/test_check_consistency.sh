@@ -308,6 +308,19 @@ PY_BOOK_TEST
     expect_format_failure "book-$mutation"
 done
 
+reset_book_inputs
+python3 - "$FORMAT_DB/zh/randbook.txt" <<'PY_EQUAL_BOOK'
+from pathlib import Path
+import re, sys
+p = Path(sys.argv[1])
+s = p.read_text().replace("starting level book\n", "wrong level book\n", 1)
+s = re.sub(r"(?m)^Forgecraft owner\n.*?^%%%%\n", "", s, count=1, flags=re.S)
+p.write_text(s)
+PY_EQUAL_BOOK
+test "$(grep -c '^%%%%$' "$FORMAT_DB/randbook.txt")" -eq "$(grep -c '^%%%%$' "$FORMAT_DB/zh/randbook.txt")"
+expect_format_failure book-equal-count-wrong-key
+grep -q 'randbook.txt localized key contract' "$TMP_ROOT/format-book-equal-count-wrong-key.out"
+
 # Ordinary paired files retain their original parity path without an exception.
 reset_format_inputs
 rm "$FORMAT_DB/randname.txt" "$FORMAT_DB/zh/randname.txt"
