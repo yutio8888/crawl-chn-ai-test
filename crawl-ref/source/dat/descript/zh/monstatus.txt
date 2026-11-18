@@ -383,7 +383,7 @@ petrifying slowly monstatus
 petrified monstatus
 
 这个生物无法移动、行动、格挡或闪避攻击。由于变成了石头，它受到的伤害
-减少50%，免疫负能量和毒素，但变得容易被瓦解伤害。
+减少50%，免疫负能量和毒素，但变得易受解构伤害。
 
 [[high-tier stab monstatus]]
 %%%%
@@ -594,10 +594,10 @@ touched by paradox monstatus
 %%%%
 unable to see you monstatus
 
-这个生物因为你隐身而看不到你。它对你的命中率大幅降低，无法进行借机攻击，
+这个生物因为你处于隐形状态而看不到你。它对你的命中率大幅降低，无法进行借机攻击，
 施放的法术有时可能会瞄准错误的位置。
 
-它也可能会踉跄而行，最终失去对你的追踪，尤其是智力低下的生物。
+它也可能会踉跄而行，最终失去对你的追踪，尤其是在它智力低下时。
 
 [[low-tier stab monstatus]]
 %%%%

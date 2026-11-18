@@ -2399,3 +2399,51 @@ TEST_CASE("R52 real level books do not duplicate the subject connector",
         CHECK(title.find("之之路") == string::npos);
     }
 }
+
+TEST_CASE("R52 help key columns align after markup and CJK rendering",
+          "[zh-translation][zh-help][r52][r52-help-columns]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([saved_locale] {
+        setlocale(LC_CTYPE, saved_locale.c_str());
+    });
+#if defined(UNIX) && !defined(__ANDROID__)
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    REQUIRE(strwidth("中文") == 4);
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    struct help_case { const char *key; int column; int rows; };
+    const help_case cases[] = {
+        {"spell-library", 10, 4},
+        {"interlevel-travel.branch.prompt", 8, 8},
+        {"interlevel-travel.depth.prompt", 8, 7},
+    };
+    for (const auto &c : cases)
+    {
+        int rows = 0;
+        for (const string &raw : split_string("\n", getHelpString(c.key), false))
+        {
+            const string line = formatted_string::parse_string(raw).tostring();
+            const size_t colon = line.find(language == lang_t::ZH ? "：" : ":");
+            if (raw.find("<w>") == string::npos || colon == string::npos)
+                continue;
+            CAPTURE(c.key, language, raw, line);
+            CHECK(strwidth(line.substr(0, colon)) == c.column);
+            ++rows;
+        }
+        CHECK(rows == c.rows);
+    }
+    const string skill_help = getHelpString("skill-menu");
+    const string continuation = language == lang_t::ZH ? "数值越高" : "experience is needed";
+    bool found = false;
+    for (const string &raw : split_string("\n", skill_help, false))
+    {
+        if (raw.find(continuation) != string::npos)
+        {
+            CHECK(raw.substr(0, 14) == string(14, ' '));
+            found = true;
+        }
+    }
+    CHECK(found);
+}
