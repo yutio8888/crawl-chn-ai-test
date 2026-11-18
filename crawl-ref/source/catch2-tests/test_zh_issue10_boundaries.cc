@@ -5193,6 +5193,10 @@ TEST_CASE("R52 automatic god gifts translate only at the item display sink",
     const string label = language == lang_t::ZH ? "神赐" : "god gift";
     CHECK(gift.name(DESC_PLAIN).find("{" + label + "}") != string::npos);
     CHECK(gift.inscription == before_inscription);
+    CHECK(gift.name(DESC_PLAIN, false, false, true, false, false)
+              .find("{god gift}") != string::npos);
+    CHECK(item_english_name(gift).find("{god gift}") != string::npos);
+
     CHECK(gift.orig_monnum == -GOD_OKAWARU);
     CHECK(gift.name(DESC_DBNAME).find("gift") == string::npos);
     gift.inscription = "god gift, @q1";
