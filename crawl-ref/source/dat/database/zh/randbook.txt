@@ -170,7 +170,7 @@ w:15
 @_book_plant_animal_@
 
 w:20
-@_number_or_qualifier_@ @_thing_names_@
+@_number_or_qualifier_@@_thing_names_@
 
 w:4
 @_profession_name_@
@@ -465,11 +465,11 @@ w:2
 
 为@_beginners_@准备的@_the_subject_@
 
-@_the_subject_@，第 @level@ 部分
+@_the_subject_@，第@level@部分
 
-@_the_subject_@，第 @level@ 卷
+@_the_subject_@，第@level@卷
 
-一本@book_name@ 入门法术
+一本@book_name@入门法术
 
 @_the_subject_@初级教程
 
@@ -525,9 +525,9 @@ easy level book
 
 @_the_subject_@简易步骤
 
-@_the_subject_@，第 @level@ 部分
+@_the_subject_@，第@level@部分
 
-@_the_subject_@，第 @level@ 卷
+@_the_subject_@，第@level@卷
 
 @_the_subject_@初级读本
 
@@ -543,7 +543,7 @@ easy level book
 
 @_the_subject_@进阶研习
 
-成功的@_subject_@实践
+成功运用@_subject_@
 
 日常@_subject_@
 
@@ -562,11 +562,11 @@ w:2
 # 中等等级（等级 4-6）
 moderate level book
 
-@_the_subject_@，第 @level@ 部分
+@_the_subject_@，第@level@部分
 
-@_the_subject_@，第 @level@ 卷
+@_the_subject_@，第@level@卷
 
-一本@book_name@ 法术
+一本@book_name@法术
 
 高级@_subject_@
 
@@ -580,7 +580,7 @@ moderate level book
 
 @_the_subject_@进一步步骤
 
-提升你的@_subject_@
+提升@_subject_@
 
 实用@_subject_@
 
@@ -736,11 +736,11 @@ _testament_noun_
 # 困难等级（等级 7-9）
 _difficult level book owner_
 
-@_the_subject_@，第 @level@ 部分
+@_the_subject_@，第@level@部分
 
-@_the_subject_@，第 @level@ 卷
+@_the_subject_@，第@level@卷
 
-一本@book_name@ 至高法术
+一本@book_name@至高法术
 
 @_the_subject_@详尽指南
 
@@ -764,7 +764,7 @@ _difficult level book owner_
 
 @_the_subject_@的终极指南
 
-@_the_subject_@的全面理解
+全面理解@_the_subject_@
 %%%%
 difficult level book
 
@@ -1467,7 +1467,7 @@ Necromancy
 亡灵
 
 w:200
-@_Evil_adjective_@ @_Evil_noun_@
+@_Evil_adjective_@@_Evil_noun_@
 %%%%
 _Evil_adjective_
 
@@ -3445,13 +3445,13 @@ Random
 
 @_occult_adjective_@真理
 
-隐士的传承
+隐士传承
 
 玄秘史话
 
-魔术师的手艺
+魔术师手艺
 
-法师的心智
+法师心智
 
 言语之力
 
@@ -3461,7 +3461,7 @@ Random
 
 古人的智慧
 
-巫师的智慧
+巫师智慧
 
 力量之言
 
