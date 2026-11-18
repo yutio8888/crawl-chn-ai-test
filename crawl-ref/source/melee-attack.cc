@@ -3026,7 +3026,7 @@ void melee_attack::set_attack_verb(int damage)
                           ? C_("attack verb", slice_desc[choice][0])
                           : T_(slice_desc[choice][0]);
             verb_degree = T_(slice_desc[choice][1]);
-                hit_format = C_("melee hit", slice_desc[choice][2]);
+            hit_format = C_("melee hit", slice_desc[choice][2]);
         }
         break;
 
