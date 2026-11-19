@@ -1,0 +1,9 @@
+Release tag: 0.34.1-zh5-1-018
+Commit: 11454133cea2f05db1a3870492f049ec9e869432
+Included: Windows Tiles; Windows Console; Linux Console x86_64; macOS Tiles; Android
+Artifacts:
+- stone_soup-0.34.1-zh5-1-018-tiles-win32.zip: sha256:be71cba9617396e66ac8f8f066a1ef88a6974f4e08cb81b04acc2fb79b8450cd
+- stone_soup-0.34.1-zh5-1-018-console-win32.zip: sha256:40ee3a600ac2b99e92af0f5e0042e0990054e9e96a3304e20bc9cc1e50c38c74
+- stone_soup-0.34.1-zh5-1-018-console-linux-x86_64.zip: sha256:ba228ce52f840d7be1a4f1de13c2f461136e864e3137d852993ff11899b5d0f1
+- stone_soup-0.34.1-zh5-1-018-tiles-macosx.dmg: sha256:2d7cd0edafa2a3d81b22a0ea04d7fb90d0be2ac7a7172a407679dd0541121444
+- stone_soup-0.34.1-zh5-1-018-android.apk: sha256:d44676f339b208dc50b16691e1d153b6bde895e40e95641c1427d31de74d3c81
