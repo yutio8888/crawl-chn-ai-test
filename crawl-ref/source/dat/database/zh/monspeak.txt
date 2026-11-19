@@ -1512,7 +1512,7 @@ _Pikel_rare_
 
 @The_monster@ 说："你会在悲叹河冻僵！" @player_only@
 
-@The_monster@ 说："你会在铁城生锈！" @player_only@
+@The_monster@ 说："你会在迪斯生锈！" @player_only@
 
 VISUAL:@The_monster@ 检查着 @possessive@钱袋，皱起眉头。
 

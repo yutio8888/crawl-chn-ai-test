@@ -84,7 +84,7 @@ Conf status
 %%%%
 Contam status
 
-你散发着诱变辐射。它可能随时间造成变异（通常是负面变异），
+你正因诱变辐射而发光。它可能随时间造成变异（通常是负面变异），
 甚至会在不稳定魔法猛烈爆炸时对你造成伤害。此外，发光会阻止隐形并降低潜行。
 {{
     local dmg = you.contam_max_damage();
@@ -630,16 +630,24 @@ Recall status
 %%%%
 Water status
 {{
-    local verb = you.flying() and "飞越" or
-                 you.race() == "Merfolk" and "游在" or "站在"
     local feat = view.feature_at(0, 0):gsub("_", " ")
+    local water
 
-    if feat ~= "深水" and feat ~= "浅水" then
-        feat = "水面"
-        verb = "越过"
+    if feat == "deep water" then
+        water = "深水"
+    elseif feat == "shallow water" then
+        water = "浅水"
+    else
+        return "你正越过水面。"
     end
 
-    return "你正" .. verb .. "" .. feat .. "。"
+    if you.flying() then
+        return "你正飞越" .. water .. "。"
+    elseif you.race() == "Merfolk" then
+        return "你正在" .. water .. "中游泳。"
+    else
+        return "你正站在" .. water .. "中。"
+    end
 }}
 %%%%
 Attr status
