@@ -255,7 +255,7 @@ Cause Fear spell
 Chain of Chaos spell
 
 创造一个纯混沌能量的弧，以不可预知的效果攻击周围的生物。
-能量弧可能触及施法者，但不会伤害他。
+能量弧可能触及施法者，但不会对其造成伤害。
 %%%%
 Chain Lightning spell
 
@@ -434,7 +434,7 @@ Drain Life spell
 %%%%
 Drain Magic spell
 
-使目标的魔力泄到空中，就像他们被反魔法武器击中一样。
+使目标的法力泄到空中，就像他们被反魔法武器击中一样。
 %%%%
 Dream Dust spell
 
@@ -1830,8 +1830,10 @@ Mud Breath spell
 %%%%
 Mutagenic Gaze spell
 
-使目标体内积累诱变能量，最终可能达到足以造成有害变异或不稳定魔法能量
-爆炸的程度。该法术需要视线，但无需直达射线。
+使目标体内积累诱变能量，最终达到足以造成有害变异或不稳定魔法能量
+爆炸的程度。
+
+该法术需要视线，但无需直达射线。
 %%%%
 Nazja's All-Purpose Tempering spell
 

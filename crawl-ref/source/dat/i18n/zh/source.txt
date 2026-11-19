@@ -3493,7 +3493,7 @@ chance to pacify: <<1%%
 安抚几率：<<1%%
 %%%%
 channel magic (%d%%)
-魔法引导（%d%%）
+法力引导（%d%%）
 %%%%
 Chaos surges forth from %s of flesh, awakening new unlife!
 混沌从%s的肉体中涌出，唤醒了新的亡灵！
@@ -6053,7 +6053,7 @@ remembered their ancestor %s as %s.
 将先祖%s铭记为%s。
 %%%%
 remove
-摘下
+卸下
 %%%%
 remove some of your equipment
 卸下部分装备
@@ -8851,7 +8851,7 @@ You are not yet ready to recite again.
 你还没准备好再次吟诵。
 %%%%
 you are on fire
-你着火了！
+你着火了
 %%%%
 You are out of cards!
 你没有牌了！
@@ -26060,7 +26060,7 @@ Conducts for god: %s\n
 神明戒律：%s\n
 %%%%
 Piety from conduct\n
-戒律获得的虔诚值\n
+通过行为获得的虔诚值\n
 %%%%
 Conduct
 戒律
@@ -26417,7 +26417,7 @@ Zin %1$s %2$s %3$s.
 辛恩%1$s了%2$s%3$s。
 %%%%
 blessed with holy wrath
-以圣怒祝福
+以圣光祝福
 %%%%
 bloodied with pain
 以痛苦染血
@@ -33510,13 +33510,13 @@ Invent Gizmo
 发明装置
 %%%%
 Brand Weapon With Distortion
-扭曲烙印武器
+扭曲铭印武器
 %%%%
 Brand Weapon With Holy Wrath
-圣怒烙印武器
+圣光铭印武器
 %%%%
 Brand Weapon With Pain
-痛苦烙印武器
+痛苦铭印武器
 %%%%
 Brand Self #1
 自我烙印 #1
@@ -33537,7 +33537,7 @@ Blood for Blood
 以血还血
 %%%%
 Channel Magic
-魔力引导
+法力引导
 %%%%
 Convert to Beogh
 皈依比欧弗
@@ -37202,7 +37202,7 @@ made a ring of doors, pushed %d %s out
 创造了一圈门，把%d个%s推了出去
 %%%%
 makes %s trip over %s own %s.
-让%1$s被%2$s%3$s绊倒了。
+让%1$s被自己的%3$s绊倒了。
 %%%%
 out of sight
 视线之外
@@ -37214,7 +37214,7 @@ shards
 碎片
 %%%%
 smacks %s with %s own %s.
-用%2$s%3$s扇了%1$s。
+用%1$s自己的%3$s扇了%1$s一下。
 %%%%
 something (%d)
 某物（%d）
@@ -40026,7 +40026,7 @@ a magic seal in the Gauntlet prevents this spell from working.
 试炼场中的魔法封印阻止了此法术生效。
 %%%%
 you must imprint a weapon on your paragon first! (Use the Imprint Weapon ability)
-你必须先给典范烙印武器！（使用烙印武器能力）
+你必须先给白金典范烙印武器！（使用烙印武器能力）
 %%%%
 One of the many lords of Pandemonium, 
 众多万魔殿领主之一，
@@ -49916,7 +49916,7 @@ skill title|Bringer of Disorder
 混乱使者
 %%%%
 skill title|Hopelessly Reckless
-无可救药的鲁莽
+无可救药的鲁莽者
 %%%%
 skill title|Calamity-Blessed
 灾祸眷顾者
@@ -50609,7 +50609,7 @@ Do you wish to have %s corrupted with distortion?
 你希望让%s受到扭曲的腐化吗？
 %%%%
 Do you wish to have %s blessed with holy wrath?
-你希望让%s受到圣怒的祝福吗？
+你希望让%s受到圣光的祝福吗？
 %%%%
 Do you wish to donate about half of your money?
 你希望捐献约一半的金钱吗？
@@ -51179,16 +51179,16 @@ You feel the corruptions in your body subside somewhat.
 你感到体内的变异侵蚀有所减轻。
 %%%%
 You quiver from the blow and a flood of jellies pours out from you!
-你因重击而战栗，大量水母从你体内涌出！
+你因重击而战栗，大量果冻怪从你体内涌出！
 %%%%
 You quiver from the blow and a jelly pops out!
-你因重击而战栗，一只水母冒了出来！
+你因重击而战栗，一只果冻怪冒了出来！
 %%%%
 You quiver from the blast and a flood of jellies pours out from you!
-你因冲击而战栗，大量水母从你体内涌出！
+你因冲击而战栗，大量果冻怪从你体内涌出！
 %%%%
 You quiver from the blast and a jelly pops out!
-你因冲击而战栗，一只水母冒了出来！
+你因冲击而战栗，一只果冻怪冒了出来！
 %%%%
 Your wings won't fit in that.
 那件装备容不下你的翅膀。
