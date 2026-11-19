@@ -1056,7 +1056,11 @@ static void _train_distributed_skills(bool simu)
     {
         const pair<int, int> cost = _gnoll_total_skill_cost();
         const int max_cost = div_round_up(cost.first, cost.second);
-        if (you.skill_points_available < max_cost)
+        // If every trained skill has hit 27, nothing can absorb a point:
+        // _level_up_check() has zeroed the training and the cost is zero.
+        // Without this guard the loop would spin forever holding the same
+        // skill points (and hang every later gain of experience).
+        if (cost.first <= 0 || you.skill_points_available < max_cost)
             break;
 
         int actual_cost = div_rand_round(cost.first, cost.second);

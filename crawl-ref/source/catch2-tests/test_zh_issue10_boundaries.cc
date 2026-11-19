@@ -5427,3 +5427,58 @@ TEST_CASE("Quiver keyhelp fits narrow rows and keeps the full focus switch",
     CHECK(std::count(plain.begin(), plain.end(), 'x')
           == static_cast<int>(message.size()));
 }
+
+TEST_CASE("sync regression: gnoll distributed training exits when every skill is maxed",
+          "[zh-translation][sync-regression][gnoll-training]")
+{
+    issue10_world world;
+    no_notes suppress_notes;
+    init_mut_index();
+    you.mutation[MUT_DISTRIBUTED_TRAINING] = 1;
+    you.train.init(TRAINING_DISABLED);
+    you.train_alt.init(TRAINING_DISABLED);
+    for (skill_type sk = SK_FIRST_SKILL; sk < NUM_SKILLS; ++sk)
+    {
+        if (is_removed_skill(sk))
+            continue;
+        you.skills[sk] = MAX_SKILL_LEVEL;
+        you.skill_points[sk] = skill_exp_needed(MAX_SKILL_LEVEL, sk);
+        you.training[sk] = 0;
+    }
+    you.skill_points_available = 5000;
+    // Nothing is trainable; this must return instead of spinning.
+    train_skills();
+    CHECK(you.skill_points_available == 5000);
+    CHECK(you.skills[SK_FIGHTING] == MAX_SKILL_LEVEL);
+    CHECK(you.training[SK_FIGHTING] == 0);
+}
+
+TEST_CASE("sync regression: gnoll distributed training stops after the last skill maxes",
+          "[zh-translation][sync-regression][gnoll-training]")
+{
+    issue10_world world;
+    no_notes suppress_notes;
+    init_mut_index();
+    you.mutation[MUT_DISTRIBUTED_TRAINING] = 1;
+    you.train.init(TRAINING_DISABLED);
+    you.train_alt.init(TRAINING_DISABLED);
+    you.training.init(0);
+    for (skill_type sk = SK_FIRST_SKILL; sk < NUM_SKILLS; ++sk)
+    {
+        if (is_removed_skill(sk) || sk == SK_FIGHTING)
+            continue;
+        you.skills[sk] = 0;
+        you.skill_points[sk] = 0;
+    }
+    you.skills[SK_FIGHTING] = MAX_SKILL_LEVEL - 1;
+    you.skill_points[SK_FIGHTING] = skill_exp_needed(MAX_SKILL_LEVEL, SK_FIGHTING) - 1;
+    you.training[SK_FIGHTING] = 100;
+    you.train[SK_FIGHTING] = TRAINING_ENABLED;
+    you.skill_points_available = 5000;
+    // The one trained skill reaches 27 in this call; the loop must then stop
+    // rather than retrying with a zero training cost.
+    train_skills();
+    CHECK(you.skills[SK_FIGHTING] == MAX_SKILL_LEVEL);
+    CHECK(you.training[SK_FIGHTING] == 0);
+    CHECK(you.skill_points_available < 5000);
+}
