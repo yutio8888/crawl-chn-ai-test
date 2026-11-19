@@ -500,7 +500,7 @@ tutorial4 meph_reminder
 tutorial4 aiming_clouds
 
 施放迷瘴云时，毒烟会覆盖一片区域；瞄准时，你会看到它影响的范围。
-设法将多个敌人捕在一片云中，以更有效地利用你的魔法。
+设法将多个敌人笼罩在同一片云中，以更有效地利用你的魔法。
 %%%%
 tutorial4 forget_spell
 
@@ -532,7 +532,7 @@ tutorial4 order_allies
 tutorial4 heavy_armour
 
 # 待办事项：将脱下拆分为单独的项目。
-重甲确实会妨碍施法。试着装备护甲、盾牌
+重甲确实会妨碍施法。试着穿上那件环甲、装备鸢盾
 （通过<input>$cmd[CMD_EQUIP]</input><localtiles>或<input>点击</input>它们</localtiles>），
 并通过<input>$cmd[CMD_DISPLAY_SPELLS]</input><localtiles>或<input>鼠标悬停</input>
 在你已记忆的法术上</localtiles>，来比较你的施法失败率。
