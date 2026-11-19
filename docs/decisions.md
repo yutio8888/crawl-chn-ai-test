@@ -4348,6 +4348,33 @@ glossary 仅补明此 trance 消息的机制作用域，仍保留一般恍惚、
 - **Affected files**: 中文 source、descript 与 randbook 的有界消费者；
   glossary 及生成伴随文件；实际受影响的测试／工具期望。
 
+### D-C-112 — contamination 与 mutagenic radiation 分离
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-11（稳定线回补 2026-11-19，见 D-C-126）
+- **Choice**: `contamination / magic contamination / magical contamination
+  → 魔法污染`；`mutagenic radiation → 诱变辐射`。
+  HUD 的 `Contam`、紧凑 `Cont ` 以及污染程度／污染伤害等短标签可简称“污染”；
+  `status|Contam` 和完整 `Contam:` 标题使用“魔法污染”。
+- **Rejected**: 所有 contamination 均译为“诱变辐射”（把污染误译为辐射，
+  并将英文两个不同概念混为同一机制名）。
+- **Source**: 用户确认；`player.cc` 的污染累积与衰减机制、`output.cc` 的
+  Contam 百分比 HUD，以及英文 `dat/descript/{status,spells}.txt`。
+- **Rationale**: contamination 是可累积并随时间消退的魔法量，采用“魔法污染”
+  能直接对应数值、状态、施法代价与消退过程。当前英文描述资产仅在
+  `Contam status` 与 `Yara's Violent Unravelling spell` 中明确使用
+  `mutagenic radiation`，这两处保留“诱变辐射”，不反向用它替代机制名。
+- **Scope / boundaries**: 统一中文 catalog、状态、物品、法术、云雾、地形、
+  神罚和神器描述中的 contamination；替代旧 Contamination 译法及 D-C-096
+  中将 mutagenic radiation 复用为机制名的依据。D-C-096 的“诱变”词根及
+  诱变光芒、诱变能量、诱变排水口等其他复合词不变；英文明确使用
+  magical radiation、irradiate 等的辐射描述不按 contamination 替换。
+  英文协议、查找键与法术专名不变。
+- **Affected files**: `crawl-ref/source/dat/i18n/zh/source.txt`、
+  `crawl-ref/source/dat/descript/zh/{status,items,spells,clouds,features,gods,unrand}.txt`、
+  `docs/glossary.md`、`docs/glossary.utf8`、`docs/decisions.md`。
+
 ### D-C-113 — 玩家鬼魂括注后缀 ghost
 
 - **Type**: C — Terminology clarification
@@ -4489,3 +4516,70 @@ R19–R21 的全文检索确认项按消费者处理：MP 的恢复、储量、�
 - **2026-11-17 四项短写补记（维护者批准）**: 中文随机神器专用池将 `展翅飞翔 → 飞翔`、`永无止境的 → 无尽的`、`一百万 → 百万`；职业称谓采用 `理发师兼外科医生 → 外科理发师`。保留“的”、数量、量词、笑话与完整神名，不改其他长名或属性缩写。
 - **职业池作用域**: 原 `rand_arm.txt` 的 `_profession_name_` 同时供随机书名使用，故原条目及书名消费者保持原样。在 `randname.txt` 新增第九个中文专用池 `_randart_profession_name_`：按原顺序逐项复制原职业池的 50 个候选及权重，仅改上述职业称谓；只切换 `armour` 的两处引用及其递归神器消费者。原有英文键/词库不动，新中文私有键是为满足维护者“书名不变”的要求，由主 agent 批准的有界实施例外，既有精确池指标/门禁相应扩展。`rand_all.txt` 的 `_number_or_qualifier_` 仍供书名使用，其中旧措辞保留。
 - **概率与 RNG 边界**: 候选顺序、权重和每次池查找的抽取次数不变；但中文短写可以跨过既有 25 列名称重试阈值，例如 `深深令人不安的理发师兼外科医生` 为 30 列，短写为 `深深令人不安的外科理发师` 后为 24 列，会改变该组合的重试分支。主 agent 按既有 B4 边界接受这一内在差异，不新增兼容算法。每线固定种子 1380 件对照只出现四个预期名称修改，属性、后续 RNG 状态及英文完整输出一致；这不是对所有中文组合 RNG 一致的保证。沿用 B4：`items()` 内差异留在物品子生成器，外部直接 `make_item_randart()` 则推进当前活动 RNG。只影响新生成名，不迁移旧存档，不改引号、存储和查询隔离。
+
+### D-C-122 — 怪物信息特殊名称引号暂不扩展（D-1）
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-19
+- **Source**: 维护者批准 D-1：`mon-info.cc` 的「」特殊名称标记本轮维持现状。编号与 trunk 一一对应。
+- **Scope**: 不修改 `mon-info.cc` 或其他 C++ 显示代码，不扩大独特/特殊怪物名称的「」覆盖面。
+- **Keep**: 存储、查询与英文身份边界不变；后续若扩展须另行决定。
+
+### D-C-123 — 抗性免疫限定 rFire∞ / rCold∞ / rElec∞ 的正文写法（D-2，trunk 专用）
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-19
+- **Source**: 维护者批准 D-2；本编号保留以与 trunk 一一对应。
+- **Stable**: `chn-0.34.1-base` 的中文资产中 `rFire∞` / `rCold∞` / `rElec∞` 0 命中（相关神器/变异说明仅存在于 trunk），本线无对应文本、无改动。
+
+### D-C-124 — 变异旧裸键与 flail 武器名对齐（D-3）
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-19
+- **Source**: 维护者批准 D-3。
+- **Mutations**: SourceDB 无语境旧键 `acidic bite`、`molten scales`、`repulsion field`、`shaggy fur`、`sharp scales`、`thin skeletal structure`、`tough skin` 对齐 `mutation|...` 与 glossary：酸性撕咬、熔融鳞片、排斥力场、浓密皮毛、锐利鳞片、纤细骨骼、硬化表皮。同一变异的说明消费者同步：熔融鳞片三级说明、排斥力场三级说明、`Your shaggy fur recedes somewhat.`。
+- **Keep (mutations)**: `razor-sharp scales` 说明保留“锋利鳞片”；`thin skeletal structure` / `tough skin` 各级正文为自然描述句保留；获得／扩展／消退 molten scales 的“熔岩般的鳞片”自然叙述保留（与 trunk 一致）。
+- **Flail**: `flail` → 链枷（SourceDB 武器名、`dire flail` 物品说明、Edmund 怪物说明），与 `dire flail` 双头链枷同根。`quotes.txt` 文学引文中的“连枷”保留；因 reject= 扫描无法按文件区分作用域，不设 reject= 标记。
+
+### D-C-125 — 随机书名中文模板“的”去重规则（D-4）
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-19
+- **Source**: 维护者批准 D-4；仅修改 `dat/database/zh/randbook.txt`，不改 `randbook.cc`。
+- **Cause**: `_book_owner_prefix()` 生成“%s的”，其后又叠加带“的”的学派形容词池与等级书模板。
+- **Rule (stable)**: 11 个 `<School> adj` 池（稳定线同样含 `forgecraft adj`）改为不带“的”的 2–4 字定语词干直接接学派名词；单字结果补成双字，“般／被…／令人…／…响”短语改为紧凑词干。`_occult_adjective_` 与 `_last_or_lost_` 改为词干；`starting/easy/moderate level book` 与 `_difficult level book owner_` 中跟随拥有者叠加的“的”改为直连或“之”。`_book_adjective_` 保留“的”（独立外观）；拥有者及施法者所有格“的”保留。
+- **Keep**: `%%%%`、`w:N`、条目数量与全部 `@...@` 不变；英文词库、生成算法与旧存档书名不迁移，中文抽样因值长度不同可能变化。trunk 另行处理的 `_Evil_*` 等池不在本线本轮范围。
+
+### D-C-126 — Contamination 回补与全局清理（D-5）
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-19
+- **Source**: 维护者批准 D-5；回补 D-C-112 至稳定线。
+- **Change**: 稳定线 descript（features/gods/items/unrand）与 SourceDB 的 contamination 机制处“诱变辐射”改为“魔法污染”；`Contam:` 完整标题“魔法污染:”，紧凑 HUD `Cont ` 为“污染”；`魔法能量污染` 统一为“魔法污染”。glossary 的 Contamination / mutagenic radiation / Contam Dmg 按 D-C-112 更新。
+- **Keep**: 英文明确写 mutagenic radiation 的 `Contam status` 与 `Yara's Violent Unravelling spell` 保留“诱变辐射”；magical radiation 等辐射描述不按 contamination 替换。
+
+### D-C-127 — quiver 动作／槽位统一为“快捷动作”（D-6）
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-19
+- **Source**: 维护者批准 D-6。
+- **Scope**: CMD_QUIVER_ITEM 相关动作／槽位语境：命令帮助弹药行（含 `<console>` 变体）的“装填”→“设为快捷动作”，`tutorial.txt` 两处命令列表的调整/使用快捷动作说明；其余提示与命令说明此前已为快捷动作。
+- **Removal**: 删除 SourceDB 已失效的旧自动战斗帮助键（`attack nearest monster` 版本）；`command.cc` 现用 `attack a suitable target` 键。
+- **Keep**: 物理颤抖、怪物 `quivering %s` → 备有%s、`quotes.txt` 字面箭袋不改；不设 reject= 扫描。
+
+### D-C-128 — cleave / Fire+ / Vehumet powers 对齐（D-7）
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-19
+- **Source**: 维护者批准 D-7。
+- **Cleave**: SourceDB `; cleaves`、`cleave`、`status|Cleave` → 顺劈，`status|cleaving` → 顺劈中，`Your cleaving frenzy subsides.` → 你的顺劈狂热平息了；unrand 铭文 `reach-cleave` / `reach-cleave, Poleaxe` → 远距顺劈；Call Canine Familiar 说明“顺劈相邻敌人”。`electrical cleaving` 保留“电流横扫”（D-C-098）；稳定线无 `(Cleave)` 怪物攻击表标记。
+- **Fire+**: `Fire+` / `Fire++` → 着火+ / 着火++，与 `status|Fire+` / `status|Fire++` 一致。
+- **Vehumet**: `Vehumet powers` 第三句改为“增加这些破坏性法术的射程”。
+- **Keep / boundaries**: 历史审查快照和冻结评审不回写；严格台账仅由生成器同步必要字段。

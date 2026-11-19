@@ -235,6 +235,7 @@ Cigotuvi's Putrefaction	西格图维之腐烂	domain=spells; source=EN/ZH; 备�
 Cinder Acolyte	灰烬侍僧	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 claws	利爪	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Cleansing Flame	净化之焰	domain=spells; source=EN/ZH; 备注=✅
+cleave	顺劈	domain=core; source=EN/ZH; 依据 / 作用域=斧类武器顺劈机制：武器属性、状态灯 Cleave、cleaving 状态、unrand 铭文 reach-cleave（远距顺劈）及魔宠攻击描述；electrical cleaving 仍按 D-C-098 为电流横扫；decision=D-C-128
 clever	聪慧	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Cloud	云	domain=magic; source=EN/ZH; 状态=✅ 已确认（现行 `X Cloud` 后缀系列 8 项；另有 4 项已移除兼容记录）
 Cloud Cone	云雾锥	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；非 `X Cloud` 后缀成员，暂缓术语；恢复时复审
@@ -261,7 +262,8 @@ Conjure Living Spells	召唤活体法术	domain=spells; source=EN/ZH; 备注=✅
 Conjurer	咒法师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Constriction	束缚	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Construct Spike Launcher	构建尖刺发射器	domain=spells; source=EN/ZH; 备注=✅
-Contamination	诱变辐射	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Contam Dmg	污染伤害	domain=status; source=EN/ZH; 依据 / 作用域=form 伤害短标签；flux:special_damage_name；魔法污染简称；裁决 [D-C-112]、[D-C-126]
+Contamination	魔法污染	domain=status; source=EN/ZH; Scope / comment=contamination / magic contamination / magical contamination 的累积、消退机制；HUD 短标签可简称“污染”；裁决 [D-C-112]、[D-C-126]
 Control Teleport	控制传送	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审；修正中文倒装
 Control Undead	控制亡灵	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审；修正中文倒装
 Control Winds	控风术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
@@ -419,7 +421,10 @@ Fire cloud	火云	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 
 Fire Elementalist	火元素使	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Fire Magic	火焰系	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-101
 Fire Storm	火焰风暴	domain=spells; source=EN/ZH; 备注=✅；9 级大范围定点火焰爆炸，并留下短暂火旋涡
+Fire+	着火+	domain=core; source=EN/ZH; 依据 / 作用域=着火状态强度短标签；与 status|Fire+ 一致；decision=D-C-128
+Fire++	着火++	domain=core; source=EN/ZH; 依据 / 作用域=着火状态强度短标签；与 status|Fire++ 一致；decision=D-C-128
 Fireball	火球	domain=spells; source=EN/ZH; 备注=✅；投掷会爆炸的火焰球
+flail	链枷	domain=core; source=EN/ZH; 依据 / 作用域=武器基础类型及其机制、物品与怪物描述；与 dire flail → 双头链枷 同词根；弃用连枷（仅限机制与武器描述；quotes.txt 文学引文保留连枷，故不设机器 reject 标记）；decision=D-C-124
 Flame	火焰	domain=magic; source=EN/ZH; 状态=✅ 已确认（7 项现行；另有 3 项已移除兼容；复合标题允许“焰／烈焰”）
 Flame Tongue	火焰之舌	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Flame Wave	火焰波	domain=spells; source=EN/ZH; 备注=✅
@@ -722,6 +727,7 @@ mutagenic fog	诱变雾气	domain=status; source=EN/ZH; 依据 / 作用域=云�
 Mutagenic Gaze	变异凝视	domain=spells; source=EN/ZH; 备注=✅；已定稿的固定法术名例外；正文 mutagenic energy 使用“诱变能量”；decision=D-C-096
 mutagenic glow	诱变光芒	domain=status; source=EN/ZH; 依据 / 作用域=魔法污染的发光描述；与 mutagenic radiation 同词根；decision=D-C-096；reject=变异光芒
 mutagenic power	诱变力量	domain=status; source=EN/ZH; 依据 / 作用域=四肢增强效果的力量；区别发生的变异（mutation）；decision=D-C-096；reject=突变能量
+mutagenic radiation	诱变辐射	domain=status; source=EN/ZH; 依据 / 作用域=仅用于英文明确写出 mutagenic radiation 的字面辐射；不作 Contamination 的机制名；保留 D-C-096 的诱变词根；裁决 [D-C-112]
 mutation	变异	domain=status; source=EN/ZH; 依据 / 作用域=游戏机制名词；药水、变异列表及记录；生物学引文保留突变；decision=D-C-114
 mutters	咕哝道	domain=dialogue; source=EN/ZH; 适用角色=疯狂角色（Crazy Yiuf）
 naga	纳迦	domain=species; source=EN/ZH; 裁决=[D-A-012]; 复合格式=纳迦 + 职业（纳迦法师、纳迦神射手）
@@ -833,6 +839,7 @@ Qazlal	卡兹拉尔	domain=gods; source=EN/ZH; 类型=音译
 quarterstaff	长棍	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
 Quicksilver Bolt	水银箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 quill talisman	棘刺护符	domain=items; source=EN/ZH; Scope / comment=talisman; decision=D-B-020
+quiver	快捷动作	domain=core; source=EN/ZH; 依据 / 作用域=快捷动作栏／命令、提示与教程中的 quiver 名词及 quivered；弃用箭袋、已装填、预备动作；物理颤抖义 quiver、quotes.txt 字面箭袋及怪物“备有%s”不在此列；decision=D-C-127
 quiver resource|magic	法力	domain=core; source=EN/ZH; 注意事项=MP不足提示的资源参数；decision=D-C-115；reject=魔法
 Rakshasa Summon	召唤罗刹	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Rampage	冲锋	domain=core; source=EN/ZH; 注意事项=攻击时自动向敌人移动一步

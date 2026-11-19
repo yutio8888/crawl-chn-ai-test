@@ -247,7 +247,7 @@ tutorial2 exit
   <input>$cmd[CMD_PICKUP]</input> 捡起物品
   <input>$cmd[CMD_EQUIP]</input>装备物品<localtiles>
   你也可以在你的物品栏中<input>点击</input>武器进行装备。</localtiles>
-  <input>$cmd[CMD_QUIVER_ITEM]</input> 调整你的弹药
+  <input>$cmd[CMD_QUIVER_ITEM]</input> 调整你的快捷动作
 
 <yellow>怪物</yellow><localtiles>
   <input>鼠标悬停</input> 查看怪物
@@ -255,8 +255,8 @@ tutorial2 exit
   <input>$cmd[CMD_LOOK_AROUND]</input> 查看怪物
   <input>$cmd[CMD_LOOK_AROUND]$cmd[CMD_TARGET_DESCRIBE]</input> 查看详细描述</nomouse>
   <input>$cmd[CMD_PRIMARY_ATTACK]</input> 用所持武器射击
-  <input>$cmd[CMD_FIRE]$cmd[CMD_TARGET_SELECT]</input> 向一个被瞄准的怪物射出弹药
-  <input>Shift+Tab</input>, <input>p</input> 向一个最近的怪物发射弹药
+  <input>$cmd[CMD_FIRE]$cmd[CMD_TARGET_SELECT]</input> 向预先瞄准的怪物使用快捷动作
+  <input>Shift+Tab</input>, <input>p</input> 向最近的怪物使用快捷动作
   <input>$cmd[CMD_FIRE]$cmd[CMD_TARGET_CYCLE_FORWARD]</input> 瞄准另一个怪物<localtiles>
   你还可以通过<input>点击</input>它来发射飞弹，然后用<input>回车</input>确认目标。</localtiles>
 
@@ -563,7 +563,7 @@ tutorial4 exit
   <input>$cmd[CMD_CAST_SPELL]</input>  施法<localtiles>
   你也可以通过<w>记忆标签页</w>学习新的法术。
   你可以通过<input>左击</input>施放已记忆的法术，并通过<input>鼠标悬停</input>或<input>右击</input>阅读说明和查看法术成功率。</localtiles>
-  <input>$cmd[CMD_QUIVER_ITEM]</input> 调整你的弹药
+  <input>$cmd[CMD_QUIVER_ITEM]</input> 调整你的快捷动作
 
   <input>$cmd[CMD_REST]</input>  最多休息100回合以恢复生命值和法力
   <input>$cmd[CMD_SHOUT]</input>  命令友军

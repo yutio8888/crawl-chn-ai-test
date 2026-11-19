@@ -188,6 +188,16 @@
 | Spider Nest | 蜘蛛巢穴 | 分支名；沿用 catalog 与 branches；不缩写为“蜘蛛巢”；decision=D-C-096 |
 | encumbrance rating | 负重等级 | 护甲对施法等的阻碍参数；不是物品重量或背包负重；弃用“负重评级／负担等级”；decision=D-C-096 |
 
+### D-1..D-7 术语对齐（D-C-124 / D-C-126..D-C-128 稳定线）
+
+| EN | ZH | 依据 / 作用域 |
+|----|----|---------------|
+| flail | 链枷 | 武器基础类型及其机制、物品与怪物描述；与 dire flail → 双头链枷 同词根；弃用连枷（仅限机制与武器描述；quotes.txt 文学引文保留连枷，故不设机器 reject 标记）；decision=D-C-124 |
+| quiver | 快捷动作 | 快捷动作栏／命令、提示与教程中的 quiver 名词及 quivered；弃用箭袋、已装填、预备动作；物理颤抖义 quiver、quotes.txt 字面箭袋及怪物“备有%s”不在此列；decision=D-C-127 |
+| cleave | 顺劈 | 斧类武器顺劈机制：武器属性、状态灯 Cleave、cleaving 状态、unrand 铭文 reach-cleave（远距顺劈）及魔宠攻击描述；electrical cleaving 仍按 D-C-098 为电流横扫；decision=D-C-128 |
+| Fire+ | 着火+ | 着火状态强度短标签；与 status\|Fire+ 一致；decision=D-C-128 |
+| Fire++ | 着火++ | 着火状态强度短标签；与 status\|Fire++ 一致；decision=D-C-128 |
+
 ### 常用状态与效果
 
 | EN | ZH | 注意事项 |
@@ -548,7 +558,7 @@
 | Poison | 中毒 | status; source=status.txt |
 | Confusion | 混乱 | status; source=status.txt |
 | hexed | 被支配 | ENCH_HEXED 支配状态，非学派名；仅精确键校验，随机书名 Hexed 按普通形容词处理；decision=D-C-110 |
-| Contamination | 诱变辐射 | status; source=status.txt |
+| Contamination | 魔法污染 | contamination / magic contamination / magical contamination 的累积、消退机制；HUD 短标签可简称“污染”；裁决 [D-C-112]、[D-C-126] |
 | Drain | 衰竭 | status; source=status.txt |
 | Slow | 减速 | status; source=status.txt |
 | Paralysis | 麻痹 | status; source=status.txt |
@@ -586,6 +596,8 @@
 | mutagenic energy / mutagenic energies | 诱变能量 | 普通能量描述，包括 Mutagenic Gaze 法术正文；弃用“变异能量／突变能量”；decision=D-C-096；reject=变异能量／突变能量 |
 | mutagenic power | 诱变力量 | 四肢增强效果的力量；区别发生的变异（mutation）；decision=D-C-096；reject=突变能量 |
 | mutagenic glow | 诱变光芒 | 魔法污染的发光描述；与 mutagenic radiation 同词根；decision=D-C-096；reject=变异光芒 |
+| mutagenic radiation | 诱变辐射 | 仅用于英文明确写出 mutagenic radiation 的字面辐射；不作 Contamination 的机制名；保留 D-C-096 的诱变词根；裁决 [D-C-112] |
+| Contam Dmg | 污染伤害 | form 伤害短标签；flux:special_damage_name；魔法污染简称；裁决 [D-C-112]、[D-C-126] |
 | mutagenic fog | 诱变雾气 | 云类型及鬃毛药水云、怪物状态描述；弃用“致变雾气／变异雾气”；decision=D-C-096；reject=致变雾气／变异雾气 |
 | mutation | 变异 | 游戏机制名词；药水、变异列表及记录；生物学引文保留突变；decision=D-C-114 |
 
