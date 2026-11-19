@@ -24521,13 +24521,13 @@ Large bone plates spread over more of your arms.
 巨大的骨板蔓延到你手臂的更多部位。
 %%%%
 Molten scales cover your body completely.
-熔融鳞片完全覆盖了你的身体。
+熔岩般的鳞片完全覆盖了你的身体。
 %%%%
 Molten scales grow over part of your body.
-熔融鳞片覆盖了你身体的一部分。
+熔岩般的鳞片覆盖了你身体的一部分。
 %%%%
 Molten scales spread over more of your body.
-熔融鳞片蔓延到你身体的更多部位。
+熔岩般的鳞片蔓延到你身体的更多部位。
 %%%%
 Murder takes root in your soul.
 杀戮在你灵魂中扎下了根。
@@ -25931,10 +25931,10 @@ Your melee attacks are strengthened by primal bloodlust.
 你的近战攻击被原始嗜血所增强。
 %%%%
 Your molten scales disappear.
-你的熔融鳞片消失了。
+你熔岩般的鳞片消失了。
 %%%%
 Your molten scales recede somewhat.
-你的熔融鳞片有所消退。
+你熔岩般的鳞片有所消退。
 %%%%
 Your mouth dries to ashes.
 你的嘴干如灰烬。
@@ -28446,10 +28446,10 @@ reach+
 远距+
 %%%%
 reach-cleave
-远距劈砍
+远距顺劈
 %%%%
 reach-cleave, Poleaxe
-远距劈砍，长柄斧
+远距顺劈，长柄斧
 %%%%
 shock,
 电击，
@@ -40578,7 +40578,7 @@ Menu
 <w>/ 方向</w>、<w>Shift-方向</w>：长距离移动\n<w>* 方向</w>、<w>Ctrl-方向</w>：原地攻击\n
 %%%%
 <brown>(</brown> : missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
-<brown>(</brown>：弹药（<w>%</w>设为快捷、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
+<brown>(</brown>：弹药（<w>%</w>设为快捷动作、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
 %%%%
 </lightcyan> : books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pick up to add to library)
 </lightcyan>：书籍（<w>%</w>记忆、<w>%</w>施法、<w>%</w>强制施法、\n    捡起以添加至法术库）
@@ -40599,7 +40599,7 @@ Memorise spells and view spell\n    library (get books to add to it)
 <console><cyan>)</cyan> ：</console>手持武器（<w>%</w>持）
 %%%%
 <console><brown>(</brown> : </console>missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
-<console><brown>(</brown> ：</console>弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
+<console><brown>(</brown> ：</console>弹药（<w>%</w>设为快捷动作、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
 %%%%
 <console><cyan>[</cyan> : </console>armour (<w>%</w>ear and <w>%</w>ake off)
 <console><cyan>[</cyan> ：</console>护甲（<w>%</w>穿上和<w>%</w>脱下）
@@ -49432,10 +49432,10 @@ Doom
 厄运 
 %%%%
 Contam: 
-魔法污染: 
+魔法污染:
 %%%%
 Cont 
-辐射 
+污染
 %%%%
 form melding|All Headgear
 全部头部装备
