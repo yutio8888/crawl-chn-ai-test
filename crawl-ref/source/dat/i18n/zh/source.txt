@@ -49916,7 +49916,7 @@ skill title|Bringer of Disorder
 混乱使者
 %%%%
 skill title|Hopelessly Reckless
-无可救药的鲁莽
+无可救药的鲁莽者
 %%%%
 skill title|Calamity-Blessed
 灾祸眷顾者
