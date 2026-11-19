@@ -585,7 +585,7 @@
 | Stagehand's Sword | 舞台工之剑 | unrand.txt；伪装为戏剧道具的机关剑；不凭空设立人名；decision=D-C-095 |
 | Hana's Scimitar | 哈娜之弯刀 | unrand.txt；雅拉弟子的所有格专名；decision=D-C-095 |
 | arcane splint mail | 奥术条板甲 | unrand.txt；古老条板式护甲；splint 不误作夹板医疗器械；decision=D-C-095 |
-| bone scales | 骨鳞甲 | unrand.txt；骨龙躯干制成，内部 pearl dragon 身份不改变显示名；decision=D-C-095 |
+| bone dragon armour | 骨龙甲 | unrand.txt；骨龙躯干制成，内部 pearl dragon 身份不改变显示名；上游 9cbd9afba78 将 bone scales 更名；decision=D-C-129（取代 D-C-095 该行译名） |
 | Forgewarden's cuirass | 锻炉守卫胸甲 | unrand.txt；宗教图案胸甲；不把内部 plate 身份当显示名；decision=D-C-095 |
 | ghost crab claws | 幽灵螃蟹爪 | art-data.txt / unrand.txt；复用 ghost crab 实体，保留 claws 意象；decision=D-C-095 |
 | RageSunder | 怒裂 | art-data.txt；连击积蓄的强化劈砍；显示铭文／特效标签，内部属性不改名；decision=D-C-095 |

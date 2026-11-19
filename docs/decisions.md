@@ -4704,6 +4704,7 @@ glossary 仅补明此 trance 消息的机制作用域，仍保留一般恍惚、
 | D-C-106 | draconian shifter | 龙人移位者；空间移位，区别身体变形 | active |
 | D-C-101 | Spell school display names | 全称统一为系；法术列表两字简称；闪避说明消歧 | active |
 | D-C-100 | GENDER_NEUTRAL singular pronouns | 他 / 他的 / 他自己 / 他；移除 ZH 中性先祖 neuter 映射 | active |
+| D-C-129 | Upstream sync bone dragon armour rename | bone scales→bone dragon armour，「骨龙甲」；技能经验调试行 | active |
 
 
 ### D-C-099 — 2026-10-22 trunk 同步中的 Tranquillity 拼写修正
@@ -5151,3 +5152,27 @@ R19–R21 的全文检索确认项按消费者处理：MP 的恢复、储量、�
 - **Cleave**: SourceDB `; cleaves`、`cleave`、`status|Cleave` → 顺劈，`status|cleaving` → 顺劈中；`describe.cc` 怪物攻击表标记 `(Cleave)` → （顺劈）；unrand 键 `reach-cleave` / `reach-cleave, Poleaxe` → 远距顺劈（表示同时攻击触及范围内所有敌人的顺劈机制标签，非自然动词）：完整键 `reach-cleave, Poleaxe` 来自 `art-data.txt` 该条目的 INSCRIP，经 `describe.cc` 的 `T_(entry->inscrip)` 显示为“远距顺劈，长柄斧”；单独键 `reach-cleave` 由同一条目的 `DBRAND: Reach-Cleave:` 经 `_format_dbrand()` 拆出属性标题，再经 `describe.cc` 的 `T_(brand[0])` 与 `database.cc` 的小写化查找显示为“远距顺劈”；Call Canine Familiar 说明“顺劈相邻敌人”，与 D-C-109 词根一致。`electrical cleaving` 保留“电流横扫”（D-C-098）；其他自然动作叙述（如“劈砍”）不在本项范围。
 - **Fire+**: `Fire+` / `Fire++` 及 `status|Fire+` / `status|Fire++` → 着火+ / 着火++，与 status `Fire` 着火同根。
 - **Vehumet**: `Vehumet powers` 第三句改为“增加这些破坏性法术的射程”，与前句及 SourceDB 能力说明一致。
+
+### D-C-129 — 上游 9cbd9afba78 同步：bone dragon armour 更名与技能经验调试行
+
+- **Type**: C — Upstream rename alignment
+- **Status**: active
+- **Date**: 2026-11-19
+- **Source**: 上游 `ecd2bd72d73..9cbd9afba78`，其中 `e8f38cbe0d` 将 unrand `bone scales` 更名为
+  `bone dragon armour`（`art-data.txt` 的 `ENUM` 由 `BONE_SCALES` 改为 `BONE_DRAGON_ARMOUR`，
+  `OBJ` 仍为 `OBJ_ARMOUR/ARM_PEARL_DRAGON_ARMOUR`，+6/负担 +7/`SPARM_DEATH`/`SLAY +3`/`SH +6`
+  等机制字段不变）；`d49963632c` 等技能系统重构以 `skill_exp_spent` 取代 `you.total_experience`，
+  巫师 `=` 命令调试行由 `Total experience` 改为 `Skill experience spent`。
+- **Rule**:
+  1. 显示名统一为 `bone dragon armour` →「骨龙甲」；`dat/descript/zh/unrand.txt` 条目键、
+     `dat/i18n/zh/source.txt` 名称键及 `glossary.md` items 行同步更名。
+  2. 长说明「半缝半拆的骨龙躯干…不死之力」内容不变；「骨龙」实体词沿用现有
+     `bone dragon → 骨龙`，不用底层 pearl dragon 身份改写显示。
+  3. 巫师调试行改为「技能费用等级：%d  已消耗技能经验：%d  下一费用等级所需经验：%d  技能费用：%d」，
+     与 `you.skill_exp_spent` 语义一致；其他技能界面文案不改。
+- **Keep**: 旧译名「骨鳞甲」只保留在历史账本/冻结证据与旧存档显示快照中，不迁移；
+  其他 `dragon scales`（龙鳞甲）系列、`pearl dragon scales` 与 `ghost crab claws` 等条目不改；
+  内部枚举、Tile 键与英文身份不翻译。
+- **Supersedes / narrows**: 取代 D-C-095 中 `bone scales` 单行的译名与键名；D-C-095 其余条目继续有效。
+- **Verification**: 术语上下文 digest `0713804be4c1a7bec95948e56dc70971279386bb2baeef343625455205509769`；
+  `verify_zh.sh --profile ci`、物品/世界审核台账再生成与独立代码/译文审核见同步 PR。

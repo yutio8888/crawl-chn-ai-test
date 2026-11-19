@@ -2381,7 +2381,7 @@ private:
 };
 #endif
 
-void skill_menu(int flag, int exp)
+void skill_menu(int flag)
 {
     if (flag & SKMF_EXPERIENCE && !trainable_skills())
     {
@@ -2393,8 +2393,6 @@ void skill_menu(int flag, int exp)
 
     // notify the player again
     you.received_noskill_warning = false;
-
-    you.exp_available += exp;
 
 #ifndef __ANDROID__
     bool done = false;

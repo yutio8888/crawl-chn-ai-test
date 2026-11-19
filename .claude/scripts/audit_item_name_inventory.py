@@ -1574,7 +1574,7 @@ def unrand_rows(db, source_db, base_db, base_source_db, review_base):
         "boreal bulwark",
         "amulet of the air", "amulet of tranquillity", "arcane splint mail",
         "armour of talos",  # Full item rereview: approved source-name repair.
-        'athame "fimbulwinter"', "bone scales", "coolibah bardiche",
+        'athame "fimbulwinter"', "bone dragon armour", "coolibah bardiche",
         "fire dragon occultist's scales", "forgewarden's cuirass",
         "ghost crab claws", 'giant spiked club "carina at dusk"',
         "hana's scimitar", "ice dragon arcanist's scales",

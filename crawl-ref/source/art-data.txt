@@ -2091,14 +2091,14 @@ BOOL:    elec
 DESCRIP: Corona: Enemies hit by the wearer's projectiles are outlined in light.
 
 # This is internally a pds so small/large species can acquire and use it
-ENUM:    BONE_SCALES
-NAME:    bone scales
+ENUM:    BONE_DRAGON_ARMOUR
+NAME:    bone dragon armour
 OBJ:     OBJ_ARMOUR/ARM_PEARL_DRAGON_ARMOUR
 BASE_ENCUMBRANCE: +7
 PLUS:    +6
 COLOUR:  ETC_BONE
-TILE:    urand_bone_scales
-TILE_EQ: BONE_SCALES
+TILE:    urand_bone_dragon_armour
+TILE_EQ: BONE_DRAGON_ARMOUR
 BRAND:   SPARM_DEATH
 SLAY:    +3
 SH:      +6
@@ -2128,7 +2128,7 @@ STR:     +4
 SLAY:    +4
 COLOUR:  ETC_MAGIC
 TILE:    urand_crab_claws
-TILE_EQ: GLOVE_GREEN
+TILE_EQ: GLOVE_CRAB_CLAWS
 BOOL:    evil, enh_necro, special
 DESCRIP: Mist:   It may create clouds of spectral mist when the wearer attacks
  or casts spells, and grants immunity from such clouds. Necromancy spells have
