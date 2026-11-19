@@ -76,6 +76,8 @@
 #include <functional>
 #include <tuple>
 
+const char *remaining_gold_suffix(int gold);
+
 namespace
 {
 // Reuse the real allocator and the small lit-floor fixture convention from
