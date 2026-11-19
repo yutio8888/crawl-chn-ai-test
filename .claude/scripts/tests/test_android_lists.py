@@ -155,14 +155,19 @@ int main() {
 #include <cstdio>
 #include <string>
 using namespace std;
+const char* C_(const char* context, const char* key) {
+    assert(string(context) == "autopickup state");
+    return key;
+}
 struct { bool small=true; bool is_using_small_layout() { return small; } } tiles;
-enum { CMD_MENU_CYCLE_MODE };
-string menu_keyhelp_cmd(int) { return "[!]"; }
-string pad_more_with(string left, string right) { return left + right; }
-template<typename... Args> string make_stringf(const char* format, Args... args) {
-    char buffer[2048];
-    snprintf(buffer, sizeof(buffer), format, args...);
-    return buffer;
+// Desktop formatting is covered with the real TextDB in Catch2. Check
+// that leaving the compact layout forwards the current menu state to it.
+constexpr int MIN_COLS = 79;
+string action_menu_keyhelp(const string &message, bool items, bool spells,
+                           bool abilities, bool focused, int width) {
+    assert(message == "No actions available.");
+    assert(items && spells && abilities && focused && width == MIN_COLS);
+    return "desktop footer";
 }
 struct ActionSelectMenu {
     enum class Focus { NONE, ITEM, SPELL, ABIL };
@@ -183,10 +188,7 @@ int main() {
     menu.more_message = "No actions available.";
     assert(menu.get_keyhelp(true) == "No actions available.\nFocus mode: on");
     tiles.small = false;
-    const auto legacy = menu.get_keyhelp(true);
-    for (const auto& text : {"No actions available.", "Inventory", "All spells",
-                             "All abilities", "Focus mode", "off|<w>on</w>"})
-        assert(legacy.find(text) != string::npos);
+    assert(menu.get_keyhelp(true) == "desktop footer");
 }
 ''')
 
