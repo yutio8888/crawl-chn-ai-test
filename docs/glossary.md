@@ -239,6 +239,7 @@
 | `potion full name\|magic` | 法力 | 恢复MP的药水词根；与普通magic分离；decision=D-C-115；reject=魔法 |
 | potion of magic / potions of magic | 法力药水 | 恢复MP的药水全称；lookup键不改；decision=D-C-115；reject=魔法药水 |
 | `quiver resource\|magic` | 法力 | MP不足提示的资源参数；decision=D-C-115；reject=魔法 |
+| quiver / quivered action | 快捷动作 | 仅限 CMD_QUIVER_ITEM 动作／槽位语境（选择、循环、触发、教程与命令说明）；物理颤抖（颤抖/战栗/震颤）、怪物“备有%s”与引文中的实体箭袋不改；因英文 quiver 同时出现在引文与颤抖语境，不设 reject= 扫描；decision=D-C-127 |
 | `drained resource\|magic` | 法力 | 反魔法汲取的资源参数；decision=D-C-115；reject=魔法／魔力 |
 | character dump / char dump | 角色报告 | 生成、浏览、导出结果、教程及载入报告文件的显示名；文件与命令身份不改；decision=D-C-115；reject=角色转储 |
 | cast | 施法（通用）/ 吟诵（仪式）/ 咏唱（神圣） | 按语境选择 |
@@ -437,6 +438,9 @@
 | `spell resistance\|rNeg` | 负能量抗性 | 法术详情；避免沿用紧凑面板缩写；decision=D-C-101 |
 | `spell resistance\|rCorr` | 腐蚀抗性 | 法术详情；避免沿用紧凑面板缩写；decision=D-C-101 |
 | `spell resistance\|rSteam` | 蒸汽抗性 | 法术详情；避免沿用紧凑面板缩写；decision=D-C-101 |
+| rFire∞ | 火抗∞ | 正文中“没有 rFire∞ 的敌人”等免疫限定；使用数学无穷大 U+221E，前后不加空格；decision=D-C-123 |
+| rCold∞ | 冰抗∞ | 正文中“没有 rCold∞ 的敌人”等免疫限定；使用 U+221E；decision=D-C-123 |
+| rElec∞ | 电抗∞ | 正文中“没有 rElec∞ 的敌人”等免疫限定；使用 U+221E；decision=D-C-123 |
 | attack of opportunity / attacks of opportunity | 借机攻击 | player invis desc 与 blind／unable to see you 怪物状态；不译为普通的措手不及伤害；decision=D-C-096 |
 
 
@@ -498,6 +502,7 @@
 | broad axe | 阔刃斧 | weapon; decision=D-B-018 |
 | dragon-coil talisman | 盘龙护符 | talisman; decision=D-B-018 |
 | dire flail | 双头链枷 | weapon; decision=D-B-017 |
+| flail | 链枷 | weapon；武器名、物品与怪物说明统一；quotes.txt 文学引文中的“连枷”保留，因英文引文含 flail，故不设 reject= 扫描；decision=D-C-124 |
 | falchion | 弯刃剑 | weapon; decision=D-B-018 |
 | flux bauble | 变形球 | bauble; decision=D-B-020 |
 | great mace | 巨型钉头锤 | weapon; decision=D-B-017 |
@@ -865,6 +870,8 @@
 | `status\|Fugue` | 赋格 | DUR_FUGUE状态灯；decision=D-C-115；reject=神游 |
 | Your fugue has ended. | 你的赋格结束了。 | DUR_FUGUE专用结束键；不涉及普通神游；decision=D-C-115；reject=神游 |
 | Fire | 着火 | status; source=status.txt |
+| Fire+ | 着火+ | 着火强度状态灯／状态名；与 Fire 着火同根；decision=D-C-128 |
+| Fire++ | 着火++ | 着火强度状态灯／状态名；与 Fire 着火同根；decision=D-C-128 |
 | Sick | 患病 | status; source=status.txt |
 | Corrosion | 腐蚀 | status; source=status.txt |
 | Frozen | 冰封 | status; source=status.txt |
@@ -936,7 +943,7 @@
 | `status\|Disguised` | 伪装 | 伪装状态灯；敌人无法察觉，攻击或施法会解除；短标签 `status\|perfectly disguised` → 完美伪装；decision=D-C-109 |
 | `status\|-Disguise` | -伪装 | 伪装冷却状态灯；保留负号；短标签 `status\|on disguise cooldown` → 伪装冷却中；decision=D-C-109 |
 | blessing | 祝福 | 佐姆赐予的长效增益统称；`blessing of X` → “X之祝福”；decision=D-C-109 |
-| cleave / cleaving | 顺劈 | 佐姆顺劈祝福与状态词根；沿用 status.txt 既有“顺劈”；decision=D-C-109 |
+| cleave / cleaving | 顺劈 | 佐姆顺劈祝福与状态词根；沿用 status.txt 既有“顺劈”；状态灯 Cleave、cleaving→顺劈中、攻击属性 ; cleaves 与 Call Canine Familiar 说明同步；electrical cleaving 仍按 D-C-098 译“电流横扫”；decision=D-C-109/D-C-128 |
 | guardian | 守卫 | 佐姆赐予的持久盟友及怪物标签；decision=D-C-109 |
 | minibane | 短暂灾祸 | 佐姆施加的超短时灾祸；消息后缀“（……但只持续很短时间）”；decision=D-C-109 |
 | floor lock | 封梯 | 佐姆锁死本层全部楼梯的机制；状态灯 Lock(%d)；decision=D-C-109 |

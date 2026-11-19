@@ -126,7 +126,7 @@ CMD_AUTOFIGHT
 %%%%
 CMD_AUTOFIGHT verbose
 
-用当前武器攻击射程内选定的敌对怪物，或向其接近。自动战斗设置还可允许使用能直接造成伤害的箭袋动作。
+用当前武器攻击射程内选定的敌对怪物，或向其接近。自动战斗设置还可允许使用能直接造成伤害的快捷动作。
 %%%%
 CMD_AUTOFIGHT_NOMOVE
 
@@ -134,7 +134,7 @@ CMD_AUTOFIGHT_NOMOVE
 %%%%
 CMD_AUTOFIGHT_NOMOVE verbose
 
-在不移动的前提下，用当前武器或可用的直接伤害箭袋动作攻击选定的敌对怪物，具体行为受自动战斗设置影响。
+在不移动的前提下，用当前武器或可用的直接伤害快捷动作攻击选定的敌对怪物，具体行为受自动战斗设置影响。
 %%%%
 CMD_WAIT
 
@@ -630,11 +630,11 @@ android command menu|Fire Item
 %%%%
 android command menu summary|Fire Item
 
-投掷或发射一件物品，不改变箭袋
+投掷或发射一件物品，不改变快捷动作
 %%%%
 android command menu|Quiver
 
-箭袋
+快捷动作
 %%%%
 android command menu summary|Quiver
 
@@ -754,15 +754,15 @@ CMD_TARGET_SELECT_FORCE_ENDPOINT
 %%%%
 CMD_TARGET_CYCLE_QUIVER_FORWARD
 
-下一个箭袋动作
+下一个快捷动作
 %%%%
 CMD_TARGET_CYCLE_QUIVER_BACKWARD
 
-上一个箭袋动作
+上一个快捷动作
 %%%%
 CMD_TARGET_SELECT_ACTION
 
-选择箭袋动作
+选择快捷动作
 %%%%
 CMD_TARGET_OBJ_CYCLE_FORWARD
 

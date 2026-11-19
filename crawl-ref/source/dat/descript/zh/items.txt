@@ -455,7 +455,7 @@ demon whip
 %%%%
 dire flail
 
-一把具有长刺和沉重头部的连枷。
+一把具有长刺和沉重头部的链枷。
 %%%%
 double sword
 
