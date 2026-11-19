@@ -42,6 +42,7 @@ void display_notes();
 void display_char_dump();
 string chardump_desc(const item_def& item);
 
+const char *gold_dump_have();
 string seed_description();
 string chardump_action_count_label(const string &action);
 

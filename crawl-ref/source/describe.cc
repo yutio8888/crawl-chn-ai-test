@@ -3322,8 +3322,8 @@ static vector<extra_feature_desc> _get_feature_extra_descs(const coord_def &pos)
     return ret;
 }
 
-static string _feat_action_desc(const vector<command_type>& actions,
-                                                dungeon_feature_type feat)
+string feature_action_desc(const vector<command_type>& actions,
+                           dungeon_feature_type feat)
 {
     static const map<command_type, const char*> act_str =
     {
@@ -3354,7 +3354,7 @@ static string _feat_action_desc(const vector<command_type>& actions,
             else
                 return string(T_(act_str.at(cmd)));
         },
-        T_(", or ")) + ".";
+        T_(", or "), Options.language == lang_t::ZH ? T_(",") : ", ") + T_(".");
 }
 
 static vector<command_type> _allowed_feat_actions(const coord_def &pos)
@@ -3781,7 +3781,7 @@ bool describe_feature_wide(const coord_def& pos, bool do_actions)
     if (!actions.empty())
     {
         const dungeon_feature_type feat = env.map_knowledge(pos).feat();
-        footer_text += formatted_string(_feat_action_desc(actions, feat));
+        footer_text += formatted_string(feature_action_desc(actions, feat));
         auto footer = make_shared<Text>();
         footer->set_text(footer_text);
         footer->set_margin_for_crt(1, 0, 0, 0);
@@ -3818,9 +3818,9 @@ bool describe_feature_wide(const coord_def& pos, bool do_actions)
                 || cmd == CMD_GO_UPSTAIRS && feat_is_gate(feat);
             if (special)
             {
-                label = _feat_action_desc({cmd}, feat);
-                if (!label.empty() && label.back() == '.')
-                    label.pop_back();
+                label = feature_action_desc({cmd}, feat);
+                // Button labels omit the localized sentence terminator.
+                strip_suffix(label, T_("."));
             }
             int key = 0;
             switch (cmd)
@@ -4005,7 +4005,7 @@ static vector<command_type> _allowed_actions(const item_def& item)
     return actions;
 }
 
-static string _actions_desc(const vector<command_type>& actions)
+string item_actions_desc(const vector<command_type>& actions)
 {
     // XX code duplication
     const map<command_type, string> act_str =
@@ -4037,7 +4037,7 @@ static string _actions_desc(const vector<command_type>& actions)
                                         return string(T_("qui(v)er"));
                                     return act_str.at(cmd);
                                 },
-                                T_(", or ")) + ".";
+                                T_(", or "), Options.language == lang_t::ZH ? T_(",") : ", ") + T_(".");
 }
 
 // Take a key and a list of commands and return the command from the list
@@ -4319,7 +4319,7 @@ command_type describe_item_popup(const item_def &item,
     {
         if (!spells.empty())
             footer_text.cprintf(T_("Select a spell, or "));
-        footer_text += formatted_string(_actions_desc(actions));
+        footer_text += formatted_string(item_actions_desc(actions));
         auto footer = make_shared<Text>();
         footer->set_text(footer_text);
         footer->set_margin_for_crt(1, 0, 0, 0);
@@ -4358,9 +4358,9 @@ command_type describe_item_popup(const item_def &item,
                 if (_get_action(key, actions) != cmd)
                     continue;
                 string label = cmd == CMD_QUIVER_ITEM && key == 'v'
-                    ? string(T_("qui(v)er")) : _actions_desc({cmd});
-                if (!label.empty() && label.back() == '.')
-                    label.pop_back();
+                    ? string(T_("qui(v)er")) : item_actions_desc({cmd});
+                // Button labels omit the localized sentence terminator.
+                strip_suffix(label, T_("."));
                 keyboard_candidates.push_back({std::move(label), key});
                 break;
             }

@@ -629,3 +629,5 @@ private:
     void remove_enchantment_effect(const mon_enchant &me, bool quiet = false);
     void apply_enchantment(const mon_enchant &me);
 };
+
+const char *remaining_gold_suffix(int gold);

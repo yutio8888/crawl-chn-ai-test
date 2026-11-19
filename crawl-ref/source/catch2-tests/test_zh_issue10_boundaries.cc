@@ -3,6 +3,8 @@
 #include "AppHdr.h"
 
 #include "areas.h"
+#include "chardump.h"
+#include "level-state-type.h"
 #include "melee-attack.h"
 #include "ranged-attack.h"
 #include "randbook.h"
@@ -2446,4 +2448,70 @@ TEST_CASE("R52 help key columns align after markup and CJK rendering",
         }
     }
     CHECK(found);
+}
+
+TEST_CASE("sticky flame survives a valid Beogh conversion offer",
+          "[zh-translation][p2-code]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    issue10_world world;
+    unwind_var<uint32_t> level_state(env.level_state, LSTATE_BEOGH);
+    you.hp = 30;
+    monster *priest = world.place(MONS_ORC_PRIEST, you.pos() + coord_def(1, 0));
+    priest->god = GOD_BEOGH;
+    priest->flags |= MF_PRIEST;
+    REQUIRE(can_convert_to_beogh());
+    init_duration_index();
+    you.duration[DUR_STICKY_FLAME] = 10;
+    for (auto row : {std::make_pair(7, "Fire"), std::make_pair(8, "Fire+"),
+                     std::make_pair(13, "Fire++")})
+    {
+        you.props[STICKY_FLAME_POWER_KEY] = row.first;
+        status_info info;
+        REQUIRE(fill_status_info(DUR_STICKY_FLAME, info));
+        CHECK(info.db_key == row.second);
+        CHECK(info.light_text == T_(row.second));
+    }
+}
+
+TEST_CASE("action footers and tile labels use the display punctuation",
+          "[zh-translation][p2-code]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    const bool feature = GENERATE(false, true);
+    const vector<command_type> commands = feature
+        ? vector<command_type>{CMD_OPEN_DOOR, CMD_CLOSE_DOOR, CMD_MAP_PREV_LEVEL}
+        : vector<command_type>{CMD_READ, CMD_DROP, CMD_INSCRIBE_ITEM};
+    const vector<string> words = feature
+        ? vector<string>{T_("(O)pen"), T_("(C)lose"), T_("([)view destination")}
+        : vector<string>{T_("(r)ead"), T_("(d)rop"), T_("(i)nscribe")};
+    const string comma = language == lang_t::ZH ? T_(",") : ", ";
+    const string period = language == lang_t::ZH ? "\xE3\x80\x82" : ".";
+    const vector<string> expected = {
+        words[0],
+        words[0] + T_(", or ") + words[1],
+        words[0] + comma + words[1] + T_(", or ") + words[2],
+    };
+    vector<command_type> actions;
+    for (size_t i = 0; i < commands.size(); ++i)
+    {
+        actions.push_back(commands[i]);
+        string label = feature ? feature_action_desc(actions, DNGN_FLOOR)
+                               : item_actions_desc(actions);
+        REQUIRE(label == expected[i] + period);
+        REQUIRE(strip_suffix(label, T_(".")));
+        CHECK(label == expected[i]);
+    }
+}
+
+TEST_CASE("remaining gold and the living gold dump select display affixes",
+          "[zh-translation][p2-code]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    CHECK(string(remaining_gold_suffix(1)).empty());
+    CHECK(string(remaining_gold_suffix(2)) == (language == lang_t::ZH ? "" : "s"));
+    CHECK(string(gold_dump_have()) == (language == lang_t::ZH ? "" : "have "));
 }

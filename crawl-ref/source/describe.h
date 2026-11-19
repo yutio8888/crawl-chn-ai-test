@@ -17,6 +17,9 @@
 #include "tag-version.h"
 #include "trap-type.h"
 
+string feature_action_desc(const vector<command_type>& actions, dungeon_feature_type feat);
+string item_actions_desc(const vector<command_type>& actions);
+
 struct monster_info;
 class formatted_string;
 
