@@ -5079,3 +5079,75 @@ R19–R21 的全文检索确认项按消费者处理：MP 的恢复、储量、�
 - **2026-11-17 四项短写补记（维护者批准）**: 中文随机神器专用池将 `展翅飞翔 → 飞翔`、`永无止境的 → 无尽的`、`一百万 → 百万`；职业称谓采用 `理发师兼外科医生 → 外科理发师`。保留“的”、数量、量词、笑话与完整神名，不改其他长名或属性缩写。
 - **职业池作用域**: 原 `rand_arm.txt` 的 `_profession_name_` 同时供随机书名使用，故原条目及书名消费者保持原样。在 `randname.txt` 新增第九个中文专用池 `_randart_profession_name_`：按原顺序逐项复制原职业池的 50 个候选及权重，仅改上述职业称谓；只切换 `armour` 的两处引用及其递归神器消费者。原有英文键/词库不动，新中文私有键是为满足维护者“书名不变”的要求，由主 agent 批准的有界实施例外，既有精确池指标/门禁相应扩展。`rand_all.txt` 的 `_number_or_qualifier_` 仍供书名使用，其中旧措辞保留。
 - **概率与 RNG 边界**: 候选顺序、权重和每次池查找的抽取次数不变；但中文短写可以跨过既有 25 列名称重试阈值，例如 `深深令人不安的理发师兼外科医生` 为 30 列，短写为 `深深令人不安的外科理发师` 后为 24 列，会改变该组合的重试分支。主 agent 按既有 B4 边界接受这一内在差异，不新增兼容算法。每线固定种子 1380 件对照只出现四个预期名称修改，属性、后续 RNG 状态及英文完整输出一致；这不是对所有中文组合 RNG 一致的保证。沿用 B4：`items()` 内差异留在物品子生成器，外部直接 `make_item_randart()` 则推进当前活动 RNG。只影响新生成名，不迁移旧存档，不改引号、存储和查询隔离。
+
+### D-C-122 — 怪物信息特殊名称引号暂不扩展（D-1）
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-19
+- **Source**: 维护者批准 D-1：`mon-info.cc` 的「」特殊名称标记本轮维持现状。
+- **Scope**: 不修改 `mon-info.cc` 或其他 C++ 显示代码，不扩大独特/特殊怪物名称的「」覆盖面；现行规则与 #418/#422 等既有实现保持原样。
+- **Keep**: 存储、查询与英文身份边界不变；后续若扩展须另行决定并补实际显示消费者与回归。
+
+### D-C-123 — 抗性免疫限定 rFire∞ / rCold∞ / rElec∞ 的正文写法（D-2）
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-19
+- **Source**: 维护者批准 D-2。
+- **Rule**: 中文正文中“没有 rX∞ 的敌人”统一写作“没有火抗∞/冰抗∞/电抗∞的敌人”；∞ 为数学无穷大 U+221E，不用 emoji，前后不留空格。
+- **Change**: `descript/zh/mutations.txt` 的 spark swarm mutation（火抗∞、电抗∞）；SourceDB 三条神器/变异说明（冰抗∞×2、火抗∞×1）。
+- **Keep**: 英文键与面板短标签、`spell resistance|rF` 等法术详情全称（D-C-101）不在本项改动范围。独立显示键 `rPois∞` 译作“毒免∞”，包括神器铭文（`art-data.txt` INSCRIP）与属性标题（DESCRIP）；毒素神器说明的完整句（“拥有rPois+/rPois∞的敌人”）保留字面 `rPois∞`，本项不改。
+
+### D-C-124 — 变异旧裸键与 flail 武器名对齐（D-3）
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-19
+- **Source**: 维护者批准 D-3。
+- **Mutations**: SourceDB 无语境旧键 `acidic bite`、`molten scales`、`repulsion field`、`shaggy fur`、`sharp scales`、`thin skeletal structure`、`tough skin` 对齐 `mutation|...` 与 glossary：酸性撕咬、熔融鳞片、排斥力场、浓密皮毛、锐利鳞片、纤细骨骼、硬化表皮。同一变异的说明消费者同步：熔融鳞片三级说明、排斥力场三级说明、`Your shaggy fur recedes somewhat.`。
+- **Keep (mutations)**: `razor-sharp scales` 说明保留“锋利鳞片”（英文 razor-sharp 的直译形容）；`thin skeletal structure` / `tough skin` 各级正文为自然描述句，保留现有“骨骼结构……纤细”“坚韧的皮肤”。获得／扩展／消退 molten scales 的自然叙述（如“熔岩般的鳞片完全覆盖了你的身体”“你熔岩般的鳞片有所消退”）按自然描述保留，不改为变异名。
+- **Flail**: `flail` → 链枷（SourceDB 武器名、`dire flail` 物品说明、Edmund 怪物说明），与 `dire flail` 双头链枷同根。`quotes.txt` 文学引文中的“连枷”保留。因英文引文同样含 flail，现有 reject= 扫描无法按文件区分作用域，本项不设 reject= 标记，作用域以 glossary 说明为准。
+
+### D-C-125 — 随机书名中文模板“的”去重规则（D-4）
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-19
+- **Source**: 维护者批准 D-4；仅修改 `dat/database/zh/randbook.txt`，不改 `randbook.cc`。
+- **Cause**: `_book_owner_prefix()` 生成“%s的”，其后又叠加带“的”的学派形容词池与等级书模板，常见“X的Y的Z的书”。
+- **Rule**:
+  1. 11 个 `<School> adj` 池（Air/Conjuration/Earth/Fire/Hexes/Ice/Necromancy/Alchemy/Summoning/Translocation/forgecraft）改为不带“的”的 2–4 字定语词干，直接与学派名词拼接（如“炽燃火焰”“凌空雷”）。
+  2. 等级书模板中位于主题之后、与拥有者“的”叠加的“的”改为直连、“之”或惯用书名语（如“@_the_subject_@终极@book_noun@”“@_subject_@之乐”“@_the_powerful_caster_@之@_last_or_lost_@@book_noun@”）。`_last_or_lost_`、`_occult_adjective_` 改为不带“的”的词干。
+  3. 为消除死灵学派（`@_Evil_adjective_@@_Evil_noun_@` 权重 200）叠加，`_Evil_adjective_` 同样改为词干；两条含“的”的死灵名词改为“洞开坟墓”“失窃灵魂”，`_powerful_caster_` 的“最伟大的木乃伊”改为“至伟木乃伊”。
+  4. `_book_adjective_` 保留原有“的”，仅用于独立 `book appearance` 外观显示。
+- **Keep**: `%%%%`、`w:N` 权重、条目数量与全部 `@...@` 占位符不变；英文词库、生成算法、RNG 与旧存档书名不迁移。专有短语“幽灵般的远距作用”保留。
+- **Verification**: 以与 `_gen_randbook_name()` 等价的离线拼装（同一种子、5000 例，含拥有者与四档难度）比较：改前含 ≥2 个“的”约 53%（≥3 个约 9%），改后 ≥2 个为 0.04%（2/5000，仅来自上述专有短语）。
+
+### D-C-126 — Contamination 残留复核（D-5）
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-19
+- **Source**: 维护者批准 D-5 复核。
+- **Result**: trunk 中文资产“诱变辐射”仅余 `descript/zh/spells.txt`（Yara's Violent Unravelling）与 `descript/zh/status.txt`（Contam 状态说明）两处，英文均字面写出 mutagenic radiation，按 D-C-112 保留；无遗漏，无改动。
+
+### D-C-127 — quiver 动作／槽位统一为“快捷动作”（D-6）
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-19
+- **Source**: 维护者批准 D-6。
+- **Scope**: 仅 CMD_QUIVER_ITEM 相关动作／槽位语境：`descript/zh/commands.txt`（自动战斗说明、Android 菜单与摘要、循环/选择命令）、`descript/zh/tutorial.txt`（命令列表与 tutorial4 spellquivering）、SourceDB `(q)uiver`、自动战斗帮助“触发快捷动作”、命令帮助弹药行（含 `<console>` 变体）CMD_QUIVER_ITEM 的“装填”→“设为快捷动作”及“没有可设为快捷动作的常规动作”。
+- **Removal**: 删除 SourceDB 已失效的旧自动战斗帮助键（`attack nearest monster` 版本）；`command.cc` 现用 `attack a suitable target` 键，其他含 quiver 的键均有现行消费者。
+- **Keep**: 物理颤抖（颤抖/战栗/震颤）、怪物 `quivering %s` → 备有%s、`quotes.txt` 字面箭袋不改。因英文 quiver 同时用于上述保留语境，不设 reject= 扫描。
+
+### D-C-128 — cleave / Fire+ / Vehumet powers 对齐（D-7）
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-19
+- **Source**: 维护者批准 D-7。
+- **Cleave**: SourceDB `; cleaves`、`cleave`、`status|Cleave` → 顺劈，`status|cleaving` → 顺劈中；`describe.cc` 怪物攻击表标记 `(Cleave)` → （顺劈）；unrand 键 `reach-cleave` / `reach-cleave, Poleaxe` → 远距顺劈（表示同时攻击触及范围内所有敌人的顺劈机制标签，非自然动词）：完整键 `reach-cleave, Poleaxe` 来自 `art-data.txt` 该条目的 INSCRIP，经 `describe.cc` 的 `T_(entry->inscrip)` 显示为“远距顺劈，长柄斧”；单独键 `reach-cleave` 由同一条目的 `DBRAND: Reach-Cleave:` 经 `_format_dbrand()` 拆出属性标题，再经 `describe.cc` 的 `T_(brand[0])` 与 `database.cc` 的小写化查找显示为“远距顺劈”；Call Canine Familiar 说明“顺劈相邻敌人”，与 D-C-109 词根一致。`electrical cleaving` 保留“电流横扫”（D-C-098）；其他自然动作叙述（如“劈砍”）不在本项范围。
+- **Fire+**: `Fire+` / `Fire++` 及 `status|Fire+` / `status|Fire++` → 着火+ / 着火++，与 status `Fire` 着火同根。
+- **Vehumet**: `Vehumet powers` 第三句改为“增加这些破坏性法术的射程”，与前句及 SourceDB 能力说明一致。

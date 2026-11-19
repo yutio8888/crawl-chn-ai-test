@@ -2312,7 +2312,7 @@ comfort your suffering allies
 12（箭毒）
 %%%%
 ; cleaves
-；横扫
+；顺劈
 %%%%
 ; reaches
 ；远程攻击
@@ -3580,7 +3580,7 @@ Clearing travel trail.
 正在清除旅行轨迹。
 %%%%
 cleave
-横扫
+顺劈
 %%%%
 closed
 关闭的
@@ -4210,7 +4210,7 @@ Fixed Theme
 固定主题
 %%%%
 flail
-连枷
+链枷
 %%%%
 flame
 火焰
@@ -11965,10 +11965,10 @@ Aug
 增强
 %%%%
 Fire++
-强火焰
+着火++
 %%%%
 Fire+
-火焰+
+着火+
 %%%%
 Bribe
 贿赂
@@ -19066,7 +19066,7 @@ acid resistance
 酸蚀抗性
 %%%%
 acidic bite
-酸蚀咬击
+酸性撕咬
 %%%%
 acrobatic
 杂技
@@ -19342,7 +19342,7 @@ mnemnophage
 噬忆
 %%%%
 molten scales
-熔岩鳞片
+熔融鳞片
 %%%%
 multi-lived
 多条命
@@ -19465,7 +19465,7 @@ renounce scrolls
 放弃卷轴
 %%%%
 repulsion field
-排斥场
+排斥力场
 %%%%
 retaliatory headbutt
 报复性头槌
@@ -19492,10 +19492,10 @@ sense surroundings
 感知环境
 %%%%
 shaggy fur
-蓬松毛发
+浓密皮毛
 %%%%
 sharp scales
-锋利鳞片
+锐利鳞片
 %%%%
 slime shroud
 黏液护罩
@@ -19561,7 +19561,7 @@ thin metallic scales
 薄金属鳞片
 %%%%
 thin skeletal structure
-薄骨骼结构
+纤细骨骼
 %%%%
 time-warped blood
 时间扭曲之血
@@ -19570,7 +19570,7 @@ torment resistance
 折磨抗性
 %%%%
 tough skin
-坚韧皮肤
+硬化表皮
 %%%%
 translucent skin
 半透明皮肤
@@ -19810,7 +19810,7 @@ You are completely covered in large bone plates. (SH +8)
 你完全覆盖着大型骨板。（盾挡+8）
 %%%%
 You are completely covered in molten scales. (AC +4, rF+)
-你完全覆盖着熔岩鳞片。（防御+4，火抗+）
+你完全覆盖着熔融鳞片。（防御+4，火抗+）
 %%%%
 You are completely covered in razor-sharp scales. (AC +3, Slay +3)
 你完全覆盖着锋利鳞片。（防御+3，杀戮+3）
@@ -19939,7 +19939,7 @@ You are mostly covered in large bone plates. (SH +6)
 你大部分覆盖着大型骨板。（盾挡+6）
 %%%%
 You are mostly covered in molten scales. (AC +3)
-你大部分覆盖着熔岩鳞片。（防御+3）
+你大部分覆盖着熔融鳞片。（防御+3）
 %%%%
 You are mostly covered in razor-sharp scales. (AC +2, Slay +2)
 你大部分覆盖着锋利鳞片。（防御+2，杀戮+2）
@@ -19975,7 +19975,7 @@ You are partially covered in large bone plates. (SH +4)
 你部分覆盖着大型骨板。（盾挡+4）
 %%%%
 You are partially covered in molten scales. (AC +2)
-你部分覆盖着熔岩鳞片。（防御+2）
+你部分覆盖着熔融鳞片。（防御+2）
 %%%%
 You are partially covered in razor-sharp scales. (AC +1, Slay +1)
 你部分覆盖着锋利鳞片。（防御+1，杀戮+1）
@@ -20053,13 +20053,13 @@ You are strongly in touch with the powers of death.
 你与死亡的力量深度相通。
 %%%%
 You are surrounded by a mild repulsion field. (EV +2)
-你被一个温和的排斥场包围。（闪避+2）
+你被一个温和的排斥力场包围。（闪避+2）
 %%%%
 You are surrounded by a moderate repulsion field. (EV +3)
-你被一个中等的排斥场包围。（闪避+3）
+你被一个中等的排斥力场包围。（闪避+3）
 %%%%
 You are surrounded by a strong repulsion field. (EV +4, RMsl)
-你被一个强大的排斥场包围。（闪避+4，排斥飞弹）
+你被一个强大的排斥力场包围。（闪避+4，排斥飞弹）
 %%%%
 You are surrounded by an aura of silence.
 你被一个沉默光环包围。
@@ -28046,7 +28046,7 @@ Your servants grow eager to unleash destruction.
 你的仆从们渴望释放毁灭。
 %%%%
 Your shaggy fur recedes somewhat.
-你的蓬松毛发有所消退。
+你的浓密皮毛有所消退。
 %%%%
 Your sharp scales disappear.
 你锐利的鳞片消失了。
@@ -28706,7 +28706,7 @@ If you quaff this potion your AC would be %d.
 (u)卸下
 %%%%
 (q)uiver
-(q)箭袋
+(q)快捷动作
 %%%%
 (w)ear
 (w)穿戴
@@ -30636,10 +30636,10 @@ reach+
 远距+
 %%%%
 reach-cleave
-远距劈砍
+远距顺劈
 %%%%
 reach-cleave, Poleaxe
-远距劈砍，长柄斧
+远距顺劈，长柄斧
 %%%%
 shock,
 电击，
@@ -31986,16 +31986,16 @@ Whenever you inflict a negative status on an enemy, you also fully poison it. Th
 每当你对敌人施加负面状态时，还会使其承受完整强度的中毒效果。拥有rPois+的敌人只会轻度中毒，拥有rPois∞的敌人则完全不会中毒。
 %%%%
 Whenever you deal cold damage to an enemy without rCold∞, you inflict some doom upon it. Sufficient doom upon those who do not defy fate as you do will eventually result in long amounts of slowing, weakness, vitrification, blinding, or heavy draining.
-每当你对没有rCold∞的敌人造成寒冷伤害时，就会对其施加一些厄运。对于不像你这样违抗命运的目标，累积足够的厄运最终会造成持续很久的减速、虚弱、玻璃化、致盲，或严重衰竭。
+每当你对没有冰抗∞的敌人造成寒冷伤害时，就会对其施加一些厄运。对于不像你这样违抗命运的目标，累积足够的厄运最终会造成持续很久的减速、虚弱、玻璃化、致盲，或严重衰竭。
 %%%%
 Whenever you deal fire damage to an enemy without rFire∞, you may briefly leave it exposed, making it take increased damage for non-attack sources, less capable of dodging non-attack projectiles, and mildly reducing its Willpower.
-每当你对没有rFire∞的敌人造成火焰伤害时，都可能使其短暂暴露，令其受到更多来自非攻击来源的伤害，更难躲避非攻击类投射物，并略微降低其意志力。
+每当你对没有火抗∞的敌人造成火焰伤害时，都可能使其短暂暴露，令其受到更多来自非攻击来源的伤害，更难躲避非攻击类投射物，并略微降低其意志力。
 %%%%
 It increases the success rate of your Fire Magic spells.
 它提高你的火焰系法术的成功率。
 %%%%
 Whenever you deal cold damage to an enemy without rCold∞, you may briefly leave it exposed, making it take increased damage for non-attack sources, less capable of dodging non-attack projectiles, and mildly reducing its Willpower.
-每当你对没有rCold∞的敌人造成寒冷伤害时，都可能使其短暂暴露，令其受到更多来自非攻击来源的伤害，更难躲避非攻击类投射物，并略微降低其意志力。
+每当你对没有冰抗∞的敌人造成寒冷伤害时，都可能使其短暂暴露，令其受到更多来自非攻击来源的伤害，更难躲避非攻击类投射物，并略微降低其意志力。
 %%%%
 It increases the success rate of your Ice Magic spells.
 它提高你的寒冰系法术的成功率。
@@ -38165,7 +38165,7 @@ Poison%s and paralysis/slowing
 中毒%s与麻痹/减速
 %%%%
 (Cleave)
-（劈砍）
+（顺劈）
 %%%%
  (if damage dealt)
 （若造成伤害）
@@ -40608,7 +40608,7 @@ status|Channel
 引导
 %%%%
 status|Cleave
-横扫
+顺劈
 %%%%
 status|Cloud
 云雾
@@ -40713,10 +40713,10 @@ status|Fire
 着火
 %%%%
 status|Fire+
-火焰+
+着火+
 %%%%
 status|Fire++
-火焰++
+着火++
 %%%%
 status|Flay
 剥皮
@@ -41169,7 +41169,7 @@ status|chanting a vengeful prayer
 吟唱复仇祈祷
 %%%%
 status|cleaving
-横扫中
+顺劈中
 %%%%
 status|confused
 混乱
@@ -43439,11 +43439,8 @@ Menu
 <w>/ Dir.</w>, <w>Shift-Dir.</w>: long walk\n<w>* Dir.</w>, <w>Ctrl-Dir.</w> : attack without move \n
 <w>/ 方向</w>、<w>Shift-方向</w>：长距离移动\n<w>* 方向</w>、<w>Ctrl-方向</w>：原地攻击\n
 %%%%
-<h>Autofight:\n<w>Tab</w>          : attack nearest monster,\n               moving if necessary\n<w>Shift-Tab</w>, <w>p</w> : trigger quivered action;\n               if targeted, aims at\n               nearest monster\n
-<h>自动战斗：\n<w>Tab</w>          ：攻击最近的怪物，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发已装填的动作；\n               若需要目标，则瞄准\n               最近的怪物\n
-%%%%
 <brown>(</brown> : missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
-<brown>(</brown>：弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
+<brown>(</brown>：弹药（<w>%</w>设为快捷动作、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
 %%%%
 </lightcyan> : books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pick up to add to library)
 </lightcyan>：书籍（<w>%</w>记忆、<w>%</w>施法、<w>%</w>强制施法、\n    捡起以添加至法术库）
@@ -43464,7 +43461,7 @@ Memorise spells and view spell\n    library (get books to add to it)
 <console><cyan>)</cyan> ：</console>手持武器（<w>%</w>持）
 %%%%
 <console><brown>(</brown> : </console>missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
-<console><brown>(</brown> ：</console>弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
+<console><brown>(</brown> ：</console>弹药（<w>%</w>设为快捷动作、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
 %%%%
 <console><cyan>[</cyan> : </console>armour (<w>%</w>ear and <w>%</w>ake off)
 <console><cyan>[</cyan> ：</console>护甲（<w>%</w>穿上和<w>%</w>脱下）
@@ -50048,7 +50045,7 @@ rest or wait
 休息或等待
 %%%%
 <h>Autofight:\n<w>Tab</w>          : attack a suitable target,\n               moving if necessary\n<w>Shift-Tab</w>, <w>p</w> : trigger quivered action;\n               automatically select\n               a target if needed\n
-<h>自动战斗：\n<w>Tab</w>          ：攻击合适的目标，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发箭袋动作；\n               必要时自动\n               选择目标\n
+<h>自动战斗：\n<w>Tab</w>          ：攻击合适的目标，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发快捷动作；\n               必要时自动\n               选择目标\n
 %%%%
 <console><lightred>percent</lightred> : </console>talismans (<w>%</w>: equip)
 <console><lightred>percent</lightred>：</console>护符（<w>%</w>：装备）
@@ -54675,7 +54672,7 @@ You are confused and cannot control your aim.
 你陷入混乱，无法控制瞄准方向。
 %%%%
 <lightred>No regular actions available to quiver.</lightred>
-<lightred>没有可预备的常规动作。</lightred>
+<lightred>没有可设为快捷动作的常规动作。</lightred>
 %%%%
 You breathe a blast of explosive embers.
 你喷出一股爆裂余烬。
