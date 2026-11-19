@@ -9,10 +9,10 @@ tutorial death
 
 你死了……
 
-在地牢爬行者中，死亡是一个令人悲伤却又常见的事情。
-注意，通常情况下你可以做一些事情来活下去，
-比如使用某些物品、逃跑、在战斗之间休息，或是干脆回避战斗。
-继续努力，最终你会成功的！
+在《地牢爬行》中，死亡虽然令人遗憾，但乃家常便饭。
+不过，通常都有办法让你活下来，
+比如使用物品、逃跑、在战斗间隙休息，或是干脆避开战斗。
+继续尝试吧，你终会获胜！
 
 %%%%
 ##############################################
@@ -31,7 +31,7 @@ tutorial1 go_on
 tutorial1 diagonal
 
 :nowrap
-斜向移动的话，可以通过<input>数字键盘</input>（试着打开/关闭NumLock键）<localtiles>，</localtiles> <console>或</console><input>vi键位</input><console>.</console><localtiles>，或是<input>鼠标</input>。</localtiles>
+斜向移动可以使用<input>数字键盘</input>（可尝试开关NumLock键）<localtiles></localtiles><console></console>或<input>vi键位</input><console></console><localtiles>，或<input>鼠标</input></localtiles>。
 
   数字键盘：  <w>7 8 9</w>        vi键位：<w>   $cmd[CMD_MOVE_UP_LEFT] $cmd[CMD_MOVE_UP] $cmd[CMD_MOVE_UP_RIGHT]</w><localtiles>    鼠标：     <w>点击</w>地面</localtiles>
                \|/                     \|/
@@ -62,9 +62,9 @@ tutorial1 levelmap
 %%%%
 tutorial1 autoexplore
 
-手动探索久了可能会觉得乏味，不妨让游戏自动探索。
-试着按下<input>$cmd[CMD_EXPLORE]</input><localtiles>，
-或点击“自动探索”，小地图下方的命令栏中的第一个按钮</localtiles>。
+手动探索久了难免乏味，不妨试试自动探索。
+按下<input>$cmd[CMD_EXPLORE]</input><localtiles>，
+或点击小地图下方命令栏中的第一个按钮“自动探索”</localtiles>。
 %%%%
 tutorial1 exclusion
 
@@ -205,11 +205,11 @@ tutorial2 boomerangs
 %%%%
 tutorial2 throwing
 
-要朝一个怪物投掷回旋镖，可以通过<input>$cmd[CMD_FIRE]</input><localtiles>
-或在物品栏面板中<input>点击</input>它们</localtiles>。
-要射向被自动瞄准的怪物，按<input>$cmd[CMD_TARGET_SELECT]</input>
-或<input>回车</input>。你也可以跳过这个，
-按<input>Shift+Tab</input>或<input>p</input>，向最近的怪物射击。
+要向怪物投掷回旋镖，请按<input>$cmd[CMD_FIRE]</input><localtiles>
+或在物品栏面板中<input>点击</input>回旋镖</localtiles>。
+按<input>$cmd[CMD_TARGET_SELECT]</input>或<input>回车</input>
+即可攻击自动锁定的目标。你也可以跳过瞄准步骤，
+直接按<input>Shift+Tab</input>或<input>p</input>攻击最近的怪物。
 %%%%
 tutorial2 wield_bow
 
@@ -280,7 +280,7 @@ tutorial3 armour
 %%%%
 tutorial3 autopickup
 
-某些种类的物品<tiles>，周围有一个绿框，</tiles>你在踩上时它能被自动拾取。
+某些类型的物品<tiles>（带有绿框标记）</tiles>在你走上去时会自动拾取。
 %%%%
 tutorial3 scroll
 
