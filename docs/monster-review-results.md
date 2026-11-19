@@ -1,8 +1,8 @@
 # Issue #24 怪物翻译全量复审结果
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
-- 术语表 SHA-256：`60c245630789be4b439d259cd304f5c328c9df480cde4101990d25d95e3cdee1`
-- 清单 SHA-256：`b7cee4596c614d271cbbdbcc37fcac0c94f34c023c8125b11e7289fbf23b6b2a`
+- 术语表 SHA-256：`0713804be4c1a7bec95948e56dc70971279386bb2baeef343625455205509769`
+- 清单 SHA-256：`fea1cf25560c3c2893f19dee079fcae34a93a192e6312e0530aa9dd43883b332`
 - 身份总数：816（现行 692；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -502,7 +502,7 @@
 | `monster:MONS_PLAYER_ILLUSION` | current; exposure=ordinary; name=player illusion→玩家幻象; genus=MONS_PLAYER_ILLUSION; species=MONS_PLAYER_ILLUSION; data=crawl-ref/source/dat/mons/player-illusion.yaml; desc=N/A | keep |
 | `monster:MONS_PLAYER_GHOST` | current; exposure=ordinary; name=player ghost→玩家鬼魂; genus=MONS_PHANTOM; species=MONS_PLAYER_GHOST; data=crawl-ref/source/dat/mons/player-ghost.yaml; desc=EN/ZH | adjust: display name corrected |
 | `monster:MONS_BALL_LIGHTNING` | current; exposure=ordinary; name=ball lightning→球形闪电; genus=MONS_BALL_LIGHTNING; species=MONS_BALL_LIGHTNING; data=crawl-ref/source/dat/mons/ball-lightning.yaml; desc=EN/ZH | keep |
-| `monster:MONS_ORB_OF_DESTRUCTION` | current; exposure=ordinary; name=orb of destruction→毁灭法球; genus=MONS_ORB_OF_DESTRUCTION; species=MONS_ORB_OF_DESTRUCTION; data=crawl-ref/source/dat/mons/orb-of-destruction.yaml; desc=EN/ZH | keep |
+| `monster:MONS_ORB_OF_DESTRUCTION` | current; exposure=ordinary; name=orb of destruction→毁灭法球; genus=MONS_ORB_OF_DESTRUCTION; species=MONS_ORB_OF_DESTRUCTION; data=crawl-ref/source/dat/mons/orb-of-destruction.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_PILLAR_OF_SALT` | current; exposure=ordinary; name=pillar of salt→盐柱; genus=MONS_PILLAR_OF_SALT; species=MONS_PILLAR_OF_SALT; data=crawl-ref/source/dat/mons/pillar-of-salt.yaml; desc=EN/ZH | keep |
 | `monster:MONS_HELL_LORD` | current; exposure=internal_or_special; name=hell lord→地狱领主; genus=MONS_HELL_LORD; species=MONS_HELL_LORD; data=crawl-ref/source/dat/mons/hell-lord.yaml; desc=N/A | keep |
 | `monster:MONS_MERGED_SLIME_CREATURE` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |

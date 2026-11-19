@@ -783,7 +783,7 @@ HINT_SEEN_MONSTER_TILES
 %%%%
 HINT_SEEN_MONSTER_CONSOLE
 
-$1 是一个怪物，通常用字母表示。一些典型的早期怪物看起来像 <brown>r</brown>、<green>l</green>、<brown>K</brown> 或 <lightgrey>g</lightgrey>。
+$1是怪物，在字符模式下通常用字母表示。常见早期怪物有 <brown>r</brown>、<green>l</green>、<brown>K</brown>、<lightgrey>g</lightgrey> 等。
 %%%%
 HINT_LEARN_ABOUT_MONSTER_CONSOLE
 
@@ -965,7 +965,7 @@ HINT_MAGICAL_STAFF_WITH_TROG
 %%%%
 HINT_DESCRIBE_MISCELLANEOUS_ITEM
 
-杂项物品有时蕴藏着魔法力量，可以通过 <w>$cmd[CMD_EVOKE]</w> 激活物品来利用。
+杂项物品有时蕴藏着魔力，可按 <w>$cmd[CMD_EVOKE]</w> 激活。
 %%%%
 HINT_DESCRIBE_TRAP_SHAFT
 

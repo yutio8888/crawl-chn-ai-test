@@ -3616,10 +3616,10 @@ condenser vane
 凝聚之翼
 %%%%
 Confirm with . or Enter, or press
-用 . 或回车确认，或按?或*列出所有法术。
+按 . 或回车确认，或按 ? 或 * 列出所有法术。
 %%%%
 Confirm with . or Enter, or press ? or * to list all spells.
-用 . 或回车确认，或按?或*列出所有法术。
+按 . 或回车确认，或按 ? 或 * 列出所有法术。
 %%%%
 Conjurations
 咒法系
@@ -7542,7 +7542,7 @@ The potion freezes solid before it can reach you!
 药水在到达你之前就冻成了固体！
 %%%%
 The power of Zot manifests... and reveals the %s gem was a mimic! It cackles and vanishes.
-佐特的力量显现……并揭示%s宝石是个拟态怪！它嘎嘎笑着消失了。
+佐特的力量显现……%s宝石竟是拟态怪伪装的！它怪笑着消失了。
 %%%%
 The priest grants you succour and welcomes you into the fold.
 祭司给予你援助，欢迎你加入教团。
@@ -13580,7 +13580,7 @@ Hints Mode for Dungeon Crawl
 地牢爬行提示模式
 %%%%
 A mostly normal game mode that provides more advanced hints than the tutorial.
-一个基本正常的游戏模式，提供比教程更高级的提示。
+接近常规流程的游戏模式，会提供比教程更进阶的提示。
 %%%%
 Dungeon Descent
 地牢下行
@@ -43383,7 +43383,7 @@ Travel to: %s\nYou cannot afford this item; travel there anyway? (y/N)
 \n当前终端选项（详情请参阅选项指南）：\n    `<w>allow_extended_colours</w>`：%d%s\n    `<w>bold_brightens_foreground</w>`：%d        `<w>blink_brightens_background</w>`：%d\n    `<w>best_effort_brighten_foreground</w>`：%d  `<w>best_effort_brighten_background</w>`：%d\n\n
 %%%%
 <h>Dungeon Crawl Help\n\nPress one of the following keys to\nobtain more information on a certain\naspect of Dungeon Crawl.\n<w>?</w>: List of commands\n<w>^</w>: Quickstart Guide
-<h>地牢爬行帮助\n\n按以下键之一以获取\n关于地牢爬行某个方面的\n更多信息。\n<w>?</w>：命令列表\n<w>^</w>：快速入门指南
+<h>地牢爬行帮助\n\n请按以下按键，\n查看《地牢爬行》各方面的\n详细说明。\n<w>?</w>：命令列表\n<w>^</w>：快速入门指南
 %%%%
 <darkgrey>:: Browse character notes</darkgrey>\n<darkgrey>#: Browse character dump</darkgrey>
 <darkgrey>:: 浏览角色笔记</darkgrey>\n<darkgrey>#: 浏览角色报告</darkgrey>

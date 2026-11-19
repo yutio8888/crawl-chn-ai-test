@@ -98,8 +98,8 @@ protection (protect) weapon ego
 %%%%
 reaping (reap) weapon ego
 
-任何被它伤害的活着的、神圣的或恶魔类的敌人，在死亡时可能会被暂时复活为
-友好的幽灵，造成的伤害越多，概率越高。
+曾受此武器伤害的活物、神圣生物或恶魔在死亡时，可能会暂时复生为友方幽灵；
+此武器对其造成的伤害越高，复生概率就越高。
 %%%%
 rebuke (rebuke) weapon ego
 
@@ -302,8 +302,8 @@ shadows (Shadows) armour ego
 %%%%
 sniping (Snipe) armour ego
 
-它对失去行动能力的目标使用远程和投掷武器时，伤害增加50%。
-失去行动能力的目标包括：睡眠、麻痹、石化、混乱或被网住的目标。
+当你使用远程或投掷武器攻击失去行动能力的目标时，造成的伤害额外提高50%。
+失去行动能力包括处于睡眠、麻痹、石化、混乱或被网困住的状态。
 %%%%
 spirit shield (Spirit) armour ego
 
@@ -365,7 +365,7 @@ disjunction (disjunct) missile ego
 %%%%
 dispersal (disperse) missile ego
 
-它使被击中的目标进行闪烁，且倾向于向远离你的方向闪烁。
+它会使被命中的目标发生闪烁，且倾向于闪向远离你的方向。
 %%%%
 poisoned (poison) missile ego
 
