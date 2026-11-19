@@ -638,7 +638,7 @@ Water status
     elseif feat == "shallow water" then
         water = "浅水"
     else
-        return "你正位于水面上。"
+        return "你正越过水面。"
     end
 
     if you.flying() then
