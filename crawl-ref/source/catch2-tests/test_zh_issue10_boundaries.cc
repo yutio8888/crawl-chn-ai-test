@@ -11,6 +11,7 @@
 #include "map-knowledge.h"
 #include "map-cell.h"
 #include "macro.h"
+#include "menu.h"
 #include "terrain.h"
 #include "output.h"
 #include "view.h"
@@ -5323,6 +5324,9 @@ TEST_CASE("Quiver keyhelp fits narrow rows and keeps the full focus switch",
     const bool zh = language == lang_t::ZH;
     TranslationFixture translation(language, zh ? "zh" : nullptr);
     const bool focused = GENERATE(false, true);
+    // ActionSelectMenu::get_keyhelp passes MIN_COLS (79), the terminal
+    // minimum and pad_more_with's default. At 55 columns the helper must
+    // move the complete switch, including its keycap, onto its own row.
     const int width = GENERATE(MIN_COLS, 55);
     const string message = GENERATE(string(), string(100, 'x'));
     const string footer = quiver::action_menu_keyhelp(message, true, true,
@@ -5330,8 +5334,15 @@ TEST_CASE("Quiver keyhelp fits narrow rows and keeps the full focus switch",
     for (const auto &line : split_string("\n", footer, false))
         CHECK(formatted_string::parse_string(line).width() <= width);
     const string plain = formatted_string::parse_string(footer).tostring();
-    CHECK(plain.find(zh ? "聚焦模式：关闭|开启" : "Focus mode: off|on")
-          != string::npos);
+    const string keycap = formatted_string::parse_string(
+        menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE)).tostring();
+    REQUIRE(keycap == "[!]");
+    const string focus_switch = keycap + (zh ? " 聚焦模式：关闭|开启"
+                                             : " Focus mode: off|on");
+    if (width == 55)
+        CHECK(ends_with(plain, "\n" + focus_switch));
+    else
+        CHECK(plain.find(focus_switch) != string::npos);
     for (const char *hint : {zh ? "[*/%] 物品栏" : "[*/%] Inventory",
                              zh ? "[&] 所有法术" : "[&] All spells",
                              zh ? "[^] 所有能力" : "[^] All abilities"})

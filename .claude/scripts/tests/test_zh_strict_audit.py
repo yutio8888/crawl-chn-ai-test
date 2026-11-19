@@ -10,6 +10,30 @@ AUDIT = Path(__file__).resolve().parents[1] / 'zh_strict_audit.py'
 
 
 class StrictAuditTest(unittest.TestCase):
+    def test_key_names_need_a_shortcut_context(self):
+        sys.path.insert(0, str(AUDIT.parent))
+        self.addCleanup(sys.path.remove, str(AUDIT.parent))
+        from zh_strict_audit import strict_mixed_cn_en
+
+        examples = {
+            '你必须 escape。': ['escape'],
+            '回到 home。': ['home'],
+            '到了 end。': ['end'],
+            'home - 家的意思。': ['home'],
+            '正文 tab、del、backspace。': ['tab', 'del', 'backspace'],
+            '<w>go home</w> 和 <input>the end</input>': ['home', 'the', 'end'],
+            '[ctrl-p] 日志': [],
+            '<w>Home</w>：本页': [],
+            '<input>Shift+Tab</input> 切换': [],
+            '按 ESC 或 Ctrl+Shift-X，ESC退出': [],
+            'Bksp - 返回，切换 NumLock': [],
+            '[Tab] 后的 tab 仍要检查': ['tab'],
+        }
+        for value, expected in examples.items():
+            with self.subTest(value=value):
+                self.assertEqual(strict_mixed_cn_en(value, actionable_only=True),
+                                 expected)
+
     def test_actionable_cli_preserves_candidates_and_default_report(self):
         with TemporaryDirectory() as tmp:
             root = Path(tmp)

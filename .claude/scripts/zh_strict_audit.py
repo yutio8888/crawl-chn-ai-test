@@ -79,12 +79,31 @@ _COMMENT_LINE = re.compile(r'^\s*#.*$', re.MULTILINE)
 _CONFIG_TOKEN = re.compile(
     r'(?<![A-Za-z0-9_])(?:CMD_[A-Z0-9_]+|auto_[a-z0-9_]+|'
     r'\.crawlrc|init\.txt|morgue)(?![A-Za-z0-9_])')
-_KEY_NAMES = set('esc escape tab ctrl shift alt del home end pgup pgdn '
-                 'numlock bksp backspace'.split())
-_INPUT_SHORTCUT = re.compile(
-    r'<input>(?:(?:ctrl|shift|alt)[+-])*(?:[a-z0-9]|space|return|enter|'
-    r'insert|up|down|left|right|(?:left|right|middle)-click)</input>',
-    re.IGNORECASE)
+# A key name may also be an ordinary English word. Match complete shortcut
+# expressions in keycaps, or require an explicit key gesture in running text.
+_MODIFIER = r'(?:ctrl|alt|shift)'
+_KEY = (r'(?:escape|esc|tab|del|home|end|pgup|pgdn|numlock|bksp|backspace|'
+        r'space|return|enter|insert|up|down|(?:left|right|middle)-click|left|right|'
+        r'numpad[- ]?[0-9]|dir\.|方向键?|左键|右键|右击|左击|ctrl|alt|shift|'
+        r'\\{1,2}|[a-z0-9()])')
+_MOD_PREFIX = rf'{_MODIFIER}[ \t]*[+-][ \t]*'
+_CHORD = rf'(?:{_MOD_PREFIX})+{_KEY}'
+_STROKE = rf'(?:{_MOD_PREFIX})*{_KEY}'
+_KEY_LIST = rf'{_STROKE}(?:[ \t]*[/|、][ \t]*{_STROKE})*'
+_SHORTCUT = re.compile(
+    # Markup alone does not imply that the enclosed words are shortcuts.
+    rf'<(?P<tag>w|input)>[ \t]*{_KEY_LIST}[ \t]*</(?P=tag)>'
+    rf'|\[[ \t]*{_KEY_LIST}[ \t]*\]'
+    # Explicit key gestures, alternative bindings and shortcut legends.
+    rf'|(?:按[住下]?|方向键/|键</w>：等同于)[ \t]*{_KEY_LIST}(?![a-z0-9_])'
+    rf'|取消（{_KEY_LIST}）'
+    rf'|(?<![a-z0-9_])(?:{_KEY}、)?{_CHORD}(?![a-z0-9_])'
+    rf'|(?<![a-z0-9_]){_KEY_LIST}[ \t]*(?=键)'
+    r'|(?<![a-z0-9_])(?:esc(?:ape)?(?=[ \t]*(?:-[ \t]*)?(?:退出|取消))'
+    r'|tab(?=切换)|numlock(?![a-z0-9_]))'
+    r'|^[ \t]*bksp(?=[ \t]+-[ \t]+)',
+    re.IGNORECASE | re.ASCII | re.MULTILINE)
+
 # A dash introduces the credit. Book titles may wrap at any column and
 # translator credits can have a different indent from the author line.
 _QUOTE_CREDIT = re.compile(r'^[ \t]+[-—]')
@@ -134,14 +153,12 @@ def strict_mixed_cn_en(text: str, actionable_only=False, file_tag=None):
     if actionable_only:
         if file_tag == 'quotes.txt':
             text = _strip_quote_credits(text)
-        cleaned = strip_templates(_INPUT_SHORTCUT.sub(' ', _CONFIG_TOKEN.sub(' ', text)))
+        cleaned = strip_templates(_SHORTCUT.sub(' ', _CONFIG_TOKEN.sub(' ', text)))
 
     offenders = []
     for match in re.finditer(r'[A-Za-z]{3,}', cleaned):
         token = match.group()
         lower = token.lower()
-        if actionable_only and lower in _KEY_NAMES:
-            continue
         # The legacy whitelist includes rElec, but an inline immunity label
         # ending in infinity is a display candidate in the actionable report.
         immunity = actionable_only and cleaned.startswith('∞', match.end())
