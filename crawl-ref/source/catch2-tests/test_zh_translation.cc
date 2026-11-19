@@ -8508,7 +8508,7 @@ TEST_CASE("forms: vampire gaze renders localized reflexives with one or two eyes
         you = player();
         you.species = SP_HUMAN;
         you.form = transformation::vampire;
-        set_skill_level(SK_SHAPESHIFTING, 27, true);
+        set_skill_level(SK_SHAPESHIFTING, 27);
         scoped_monspeak_world world;
         monster* target = world.place(MONS_CYCLOPS);
         REQUIRE(target);
@@ -8692,7 +8692,7 @@ TEST_CASE("forms: talisman previews and mutation dumps localize form labels",
         set<string> variants;
         for (int skill : {17, 20, 25})
         {
-            set_skill_level(SK_SHAPESHIFTING, skill, true);
+            set_skill_level(SK_SHAPESHIFTING, skill);
             const int penalty = get_form()->get_body_ac_mult();
             const string fragment = penalty <= -45 ? "much less effective"
                                   : penalty < -20 ? "less effective"
@@ -10499,16 +10499,16 @@ TEST_CASE("monsters rereview: canonical ghost snapshots localize known titles wi
             scoped_monspeak_world world;
             // Ordinary, stat-dependent, species-template, conduct, and divine
             // selectors all use their real production conditions at death.
-            set_skill_level(SK_FIGHTING, 15, true);
+            set_skill_level(SK_FIGHTING, 15);
             if (scenario == 1)
-                set_skill_level(SK_UNARMED_COMBAT, 27, true);
+                set_skill_level(SK_UNARMED_COMBAT, 27);
             else if (scenario == 2)
-                set_skill_level(SK_LONG_BLADES, 21, true);
+                set_skill_level(SK_LONG_BLADES, 21);
             else if (scenario == 3)
                 you.experience_level = 18;
             else if (scenario == 4)
             {
-                set_skill_level(SK_SPELLCASTING, 20, true);
+                set_skill_level(SK_SPELLCASTING, 20);
                 you.religion = GOD_SIF_MUNA;
                 you.raw_piety = 160;
             }

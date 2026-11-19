@@ -3826,8 +3826,9 @@ TEST_CASE("interface rereview: real manual exhaustion keeps the Throwing joke an
         you.base_stats.init(10);
         you.experience_level = 1;
         you.skill_cost_level = 1;
-        you.total_experience = 0;
-        you.exp_available = calc_skill_cost(1);
+        you.skill_exp_spent = 0;
+        you.skill_points_available = 0;
+        gain_skill_experience(calc_skill_cost(1));
         you.auto_training = false;
         you.train.init(TRAINING_DISABLED);
         you.train[skill] = TRAINING_ENABLED;
@@ -3845,8 +3846,9 @@ TEST_CASE("interface rereview: real manual exhaustion keeps the Throwing joke an
             results.emplace_back(you.skill_points[skill], random2(1000000));
         }
         CHECK(you.skill_manual_points[skill] == 0);
-        CHECK(you.exp_available == 0);
-        CHECK(you.total_experience == calc_skill_cost(1));
+        CHECK(you.skill_points_available == 0);
+        CHECK(you.skill_exp_available == 0);
+        CHECK(you.skill_exp_spent == calc_skill_cost(1));
         CHECK(you.skill_points[skill] == 2);
     }
     REQUIRE(results.size() == 2);
@@ -4357,8 +4359,8 @@ TEST_CASE("legacy markers: bane preview agrees with actual addition without chan
     you.experience_level = 10;
     you.max_level = 10;
     you.experience = exp_needed(10);
-    you.total_experience = 10000;
-    you.skill_cost_level = calc_skill_cost_level(you.total_experience, 1);
+    you.skill_exp_spent = 10000;
+    you.skill_cost_level = calc_skill_cost_level(you.skill_exp_spent, 1);
     you.mutation[MUT_ACCURSED] = accursed ? 1 : 0;
     if (existing)
         REQUIRE(add_bane(BANE_LETHARGY, "test", 0, 100));

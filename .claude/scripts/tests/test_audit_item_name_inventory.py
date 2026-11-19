@@ -922,7 +922,7 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
             "STAGEHANDS_SWORD": "Stagehand's Sword",
             "HANAS_SCIMITAR": "Hana's Scimitar",
             "ARCANE_SPLINT": "arcane splint mail",
-            "BONE_SCALES": "bone scales",
+            "BONE_DRAGON_ARMOUR": "bone dragon armour",
             "FORGEWARDEN": "Forgewarden's cuirass",
             "CRAB_CLAWS": "ghost crab claws",
         }

@@ -221,7 +221,7 @@ Bolt of Magma	岩浆箭	domain=spells; source=EN/ZH; 备注=✅ 现行
 Bombard	炮击	domain=spells; source=EN/ZH; 备注=✅
 bombardier beetle	投弹甲虫	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 bone dragon	骨龙	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-bone scales	骨鳞甲	domain=items; source=EN/ZH; 依据 / 作用域=unrand.txt；骨龙躯干制成，内部 pearl dragon 身份不改变显示名；decision=D-C-095
+bone dragon armour	骨龙甲	domain=items; source=EN/ZH; 依据 / 作用域=unrand.txt；骨龙躯干制成，内部 pearl dragon 身份不改变显示名；上游 9cbd9afba78 将 bone scales 更名；decision=D-C-129（取代 D-C-095 该行译名）
 book full name|Necromancy	死灵术	domain=items; source=EN/ZH; Scope / comment=book context key; decision=D-B-020
 Borgnjor's Revivification	博格尼尔之复苏	domain=spells; source=EN/ZH; 备注=🆕；完全治愈仍活着的施法者，不会复活死者
 Borgnjor's Vile Clutch	博格尼尔之邪恶抓握	domain=spells; source=EN/ZH; 备注=✅

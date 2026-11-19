@@ -21819,8 +21819,8 @@ AC+3
 Acolyte
 侍僧
 %%%%
-Cost level: %d  Total experience: %d  Next cost level: %d Skill cost: %d
-技能费用等级：%d  总经验：%d  下一费用等级所需经验：%d  技能费用：%d
+Cost level: %d  Skill experience spent: %d  Next cost level: %d Skill cost: %d
+技能费用等级：%d  已消耗技能经验：%d  下一费用等级所需经验：%d  技能费用：%d
 %%%%
 Dex+3
 敏捷+3
@@ -30791,8 +30791,8 @@ blowgun of the Assassin
 bo
 棒
 %%%%
-bone scales
-骨鳞甲
+bone dragon armour
+骨龙甲
 %%%%
 boots of the spider
 蜘蛛之靴
