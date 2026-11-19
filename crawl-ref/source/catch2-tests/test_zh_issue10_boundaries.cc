@@ -62,6 +62,7 @@
 #include "random.h"
 #include "ranged-attack.h"
 #include "randbook.h"
+#include "quiver.h"
 #include "religion-enum.h"
 #include "spl-monench.h"
 #include "spl-cast.h"
@@ -5270,4 +5271,73 @@ TEST_CASE("R52 help key columns align after markup and CJK rendering",
         }
     }
     CHECK(found);
+}
+
+TEST_CASE("Speech addresses and possesses player and allied monster foes",
+          "[zh-translation][p1-foe-quiver]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const bool zh = language == lang_t::ZH;
+    TranslationFixture translation(language, zh ? "zh" : nullptr);
+    issue10_world world;
+    monster *speaker = world.place(MONS_ORC, coord_def(21, 20));
+    const string frame = zh ? "问 @foe,@「好？」" : "asks @foe,@ 'Well?'";
+    const auto speak = [&](const string &msg)
+    {
+        return do_mon_str_replacements(msg, *speaker);
+    };
+    CHECK(speak(frame) == (zh ? "问「好？」" : "asks, 'Well?'"));
+    CHECK(speak("@foe,@") == (zh ? "" : ","));
+    CHECK(speak("@foe_possessive@") == (zh ? "你的" : "your"));
+
+    const monster_type type = GENERATE(MONS_ORC, MONS_SIGMUND, MONS_AGNES);
+    monster *ally = world.place(type, coord_def(22, 20));
+    ally->base_attitude = ATT_FRIENDLY;
+    speaker->foe = ally->mindex();
+    const string name = ally->name(DESC_THE);
+    if (type == MONS_SIGMUND && zh)
+        REQUIRE(name.find("「西格蒙德」") != string::npos);
+    CHECK(speak(frame) == (zh ? "问" + name + "「好？」"
+                              : "asks " + name + ", 'Well?'"));
+    CHECK(speak("@foe_possessive@") == name + (zh ? "的" : "'s"));
+    if (zh && type == MONS_ORC)
+    {
+        ally->mname = "O'Brien";
+        ally->flags |= MF_NAME_REPLACE;
+        const string named = ally->name(DESC_THE);
+        REQUIRE(named.find("O'Brien") != string::npos);
+        CHECK(speak("@foe_possessive@") == named + "的");
+    }
+}
+
+TEST_CASE("Quiver keyhelp fits narrow rows and keeps the full focus switch",
+          "[zh-translation][p1-foe-quiver]")
+{
+    const string saved_locale = setlocale(LC_CTYPE, nullptr);
+    unwinder restore_locale([&] { setlocale(LC_CTYPE, saved_locale.c_str()); });
+#if defined(UNIX) && !defined(__ANDROID__)
+    REQUIRE(ensure_utf8_ctype());
+#endif
+    REQUIRE(strwidth("中文") == 4);
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    const bool zh = language == lang_t::ZH;
+    TranslationFixture translation(language, zh ? "zh" : nullptr);
+    const bool focused = GENERATE(false, true);
+    const int width = GENERATE(MIN_COLS, 55);
+    const string message = GENERATE(string(), string(100, 'x'));
+    const string footer = quiver::action_menu_keyhelp(message, true, true,
+                                                      true, focused, width);
+    for (const auto &line : split_string("\n", footer, false))
+        CHECK(formatted_string::parse_string(line).width() <= width);
+    const string plain = formatted_string::parse_string(footer).tostring();
+    CHECK(plain.find(zh ? "聚焦模式：关闭|开启" : "Focus mode: off|on")
+          != string::npos);
+    for (const char *hint : {zh ? "[*/%] 物品栏" : "[*/%] Inventory",
+                             zh ? "[&] 所有法术" : "[&] All spells",
+                             zh ? "[^] 所有能力" : "[^] All abilities"})
+    {
+        CHECK(plain.find(hint) != string::npos);
+    }
+    CHECK(std::count(plain.begin(), plain.end(), 'x')
+          == static_cast<int>(message.size()));
 }

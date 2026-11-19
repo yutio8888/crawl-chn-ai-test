@@ -4594,7 +4594,9 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
         msg = _replace_speech_tag(msg, " @at_foe@", "");
 
         msg = replace_all(msg, "@player_only@", "");
-        msg = replace_all(msg, " @foe,@", ",");
+        const string comma = Options.language == lang_t::ZH ? "" : ",";
+        msg = replace_all(msg, " @foe,@", comma);
+        msg = replace_all(msg, "@foe,@", comma);
 
         msg = replace_all(msg, "@player", "@foe");
         msg = replace_all(msg, "@Player", "@Foe");
@@ -4615,9 +4617,8 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
     }
     else
     {
-        string foe_name;
         const monster* m_foe = foe->as_monster();
-        foe_name = foe->name(DESC_THE);
+        const string foe_name = foe->name(DESC_THE);
 
         string prep = "at";
         if (s_type == S_SILENT || s_type == S_SHOUT || s_type == S_NORMAL_VOLUME)
@@ -4627,8 +4628,9 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
         msg = _replace_speech_tag(msg, " @to_foe@", " to @foe@");
         msg = _replace_speech_tag(msg, " @at_foe@", " at @foe@");
 
-        msg = replace_all(msg, "@foe,@", "@foe@,");
-        msg = replace_all(msg, "@foe_possessive@", "@foe@'s");
+        msg = replace_all(msg, "@foe,@",
+                          Options.language == lang_t::ZH ? "@foe@" : "@foe@,");
+        msg = replace_all(msg, "@foe_possessive@", apostrophise(foe_name));
         msg = replace_all(msg, "@foe@", foe_name);
         msg = replace_all(msg, "@Foe@", uppercase_first(foe_name));
 
