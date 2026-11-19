@@ -1,8 +1,8 @@
 # Issue #24 怪物翻译全量复审结果
 
 - 基线：`7e7e7e78f5ab7c7fc5f5ee458a205850510ad15c`
-- 术语表 SHA-256：`dcbfb16ac457e9506a5e634d171211d460652f42e2ba651ad950d15e719753ae`
-- 清单 SHA-256：`f8ec9bac08390f2a233f1724155228c32901e5eaeab9691eacbe67cf2270782c`
+- 术语表 SHA-256：`0b65fa532536051bebf94266bd81b829655b062aac2af5db97274016acda2a7c`
+- 清单 SHA-256：`7655874a663dfa074779c9c44fbfbdf66888a29308f0d47afca9d7301be30199`
 - 身份总数：795（现行 671；兼容枚举 124）
 - 证据规则：每行绑定 enum 身份、生命周期、暴露类型、现行中英名称、genus/species、生产数据文件及描述存在性；完整原始字段由同一清单命令生成的 JSON 提供。
 - 终态规则：兼容枚举没有现行 `dat/mons` 定义或显示消费者，统一记为 `defer implementation`；现行项逐项对照后，未改动者为 `keep`，名称改动为 `adjust`，描述改动为 `retranslate`。
@@ -502,7 +502,7 @@
 | `monster:MONS_PLAYER_ILLUSION` | current; exposure=ordinary; name=player illusion→玩家幻象; genus=MONS_PLAYER_ILLUSION; species=MONS_PLAYER_ILLUSION; data=crawl-ref/source/dat/mons/player-illusion.yaml; desc=N/A | keep |
 | `monster:MONS_PLAYER_GHOST` | current; exposure=ordinary; name=player ghost→玩家鬼魂; genus=MONS_PHANTOM; species=MONS_PLAYER_GHOST; data=crawl-ref/source/dat/mons/player-ghost.yaml; desc=EN/ZH | adjust: display name corrected |
 | `monster:MONS_BALL_LIGHTNING` | current; exposure=ordinary; name=ball lightning→球形闪电; genus=MONS_BALL_LIGHTNING; species=MONS_BALL_LIGHTNING; data=crawl-ref/source/dat/mons/ball-lightning.yaml; desc=EN/ZH | keep |
-| `monster:MONS_ORB_OF_DESTRUCTION` | current; exposure=ordinary; name=orb of destruction→毁灭法球; genus=MONS_ORB_OF_DESTRUCTION; species=MONS_ORB_OF_DESTRUCTION; data=crawl-ref/source/dat/mons/orb-of-destruction.yaml; desc=EN/ZH | keep |
+| `monster:MONS_ORB_OF_DESTRUCTION` | current; exposure=ordinary; name=orb of destruction→毁灭法球; genus=MONS_ORB_OF_DESTRUCTION; species=MONS_ORB_OF_DESTRUCTION; data=crawl-ref/source/dat/mons/orb-of-destruction.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_PILLAR_OF_SALT` | current; exposure=ordinary; name=pillar of salt→盐柱; genus=MONS_PILLAR_OF_SALT; species=MONS_PILLAR_OF_SALT; data=crawl-ref/source/dat/mons/pillar-of-salt.yaml; desc=EN/ZH | keep |
 | `monster:MONS_HELL_LORD` | current; exposure=internal_or_special; name=hell lord→地狱领主; genus=MONS_HELL_LORD; species=MONS_HELL_LORD; data=crawl-ref/source/dat/mons/hell-lord.yaml; desc=N/A | keep |
 | `monster:MONS_MERGED_SLIME_CREATURE` | compatibility_enum; exposure=N/A; current consumer=none; source=crawl-ref/source/monster-type.h | defer implementation: restore only with a current definition and display consumer |
@@ -784,7 +784,7 @@
 | `monster:MONS_CHONCHON` | current; exposure=ordinary; name=chonchon→飞头妖; genus=MONS_CHONCHON; species=MONS_CHONCHON; data=crawl-ref/source/dat/mons/chonchon.yaml; desc=EN/ZH | adjust: display name corrected |
 | `monster:MONS_KOBOLD_FLESHCRAFTER` | current; exposure=ordinary; name=kobold fleshcrafter→狗头人血肉匠师; genus=MONS_KOBOLD; species=MONS_KOBOLD; data=crawl-ref/source/dat/mons/kobold-fleshcrafter.yaml; desc=EN/ZH | keep |
 | `monster:MONS_PILE_OF_FLESH` | current; exposure=ordinary; name=pile of flesh→血肉堆; genus=MONS_PILE_OF_FLESH; species=MONS_PILE_OF_FLESH; data=crawl-ref/source/dat/mons/pile-of-flesh.yaml; desc=EN/ZH | retranslate: description corrected |
-| `monster:MONS_ZYKZYL` | current; exposure=ordinary; name=zykzyl→泽科齐尔; genus=MONS_ZYKZYL; species=MONS_ZYKZYL; data=crawl-ref/source/dat/mons/zykzyl.yaml; desc=EN/ZH | keep |
+| `monster:MONS_ZYKZYL` | current; exposure=ordinary; name=zykzyl→泽科齐尔; genus=MONS_ZYKZYL; species=MONS_ZYKZYL; data=crawl-ref/source/dat/mons/zykzyl.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_BOUNDLESS_TESSERACT` | current; exposure=ordinary; name=boundless tesseract→无界超立方体; genus=MONS_BOUNDLESS_TESSERACT; species=MONS_BOUNDLESS_TESSERACT; data=crawl-ref/source/dat/mons/boundless-tesseract.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ORB_OF_ENTROPY` | current; exposure=ordinary; name=orb of entropy→熵之球; genus=MONS_ORB_OF_ENTROPY; species=MONS_ORB_OF_ENTROPY; data=crawl-ref/source/dat/mons/orb-of-entropy.yaml; desc=EN/ZH | retranslate: description corrected |
 | `monster:MONS_ORB_OF_WINTER` | current; exposure=ordinary; name=orb of winter→寒冬之球; genus=MONS_ORB_OF_WINTER; species=MONS_ORB_OF_WINTER; data=crawl-ref/source/dat/mons/orb-of-winter.yaml; desc=EN/ZH | retranslate: description corrected |
