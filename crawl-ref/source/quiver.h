@@ -23,6 +23,8 @@ class preserve_quiver_slots;
 namespace quiver
 {
     void reset_state();
+    string action_menu_keyhelp(const string &message, bool items, bool spells,
+                               bool abilities, bool focused, int width);
 
     struct action : public enable_shared_from_this<action>
     {

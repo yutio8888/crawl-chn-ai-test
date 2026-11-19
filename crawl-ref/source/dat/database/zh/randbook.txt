@@ -3424,7 +3424,7 @@ _book_magic_
 
 @_occult_adjective_@力量
 
-@_occult_adjective_@理解
+@_occult_adjective_@精义
 
 @_occult_adjective_@智慧
 

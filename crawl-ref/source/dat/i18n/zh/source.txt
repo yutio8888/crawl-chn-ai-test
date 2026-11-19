@@ -34631,7 +34631,7 @@ made a ring of doors, pushed %d %s out
 创造了一圈门，把%d个%s推了出去
 %%%%
 makes %s trip over %s own %s.
-让%1$s被%2$s%3$s绊倒了。
+让%1$s被自己的%3$s绊倒了。
 %%%%
 out of sight
 视线之外
@@ -34643,7 +34643,7 @@ shards
 碎片
 %%%%
 smacks %s with %s own %s.
-用%2$s%3$s扇了%1$s。
+用%1$s自己的%3$s扇了%1$s一下。
 %%%%
 something (%d)
 某物（%d）
@@ -47428,7 +47428,7 @@ melee action|hit
 %%%%
 vault diagnostic list| and 
 
- 和
+和
 %%%%
 vault diagnostic list|, 
 
@@ -47436,7 +47436,7 @@ vault diagnostic list|,
 %%%%
 branch entrance list| and 
 
- 和
+和
 %%%%
 branch entrance list|, 
 
@@ -47476,7 +47476,7 @@ artefact property state|on
 %%%%
 wizard name matches| and 
 
- 和
+和
 %%%%
 wizard name matches|, 
 

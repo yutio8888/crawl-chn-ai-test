@@ -8973,7 +8973,7 @@ static string _overlay_foe_display(const actor &foe)
     {
         display = foe.name(DESC_YOUR);
         const string::size_type apostrophe = display.find("'");
-        if (apostrophe != string::npos)
+        if (Options.language != lang_t::ZH && apostrophe != string::npos)
             display.erase(apostrophe);
     }
     else

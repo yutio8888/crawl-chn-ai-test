@@ -2405,6 +2405,32 @@ namespace quiver
         return any_items_of_type(OSEL_QUIVER_ACTION);
     }
 
+    string action_menu_keyhelp(const string &message, bool items, bool spells,
+                               bool abilities, bool focused, int width)
+    {
+        string shortcuts;
+        if (items)
+            shortcuts += string(T_("[<w>*/%</w>] Inventory")) + " ";
+        if (spells)
+            shortcuts += string(T_("[<w>&</w>] All spells")) + " ";
+        if (abilities)
+            shortcuts += string(T_("[<w>^</w>] All abilities")) + " ";
+
+        const string off = C_("autopickup state", "off");
+        const string on = C_("autopickup state", "on");
+        const string state = make_stringf(focused ? "%s|<w>%s</w>"
+                                                  : "<w>%s</w>|%s",
+                                          off.c_str(), on.c_str());
+        const string mode = make_stringf(T_("%s %s: %s"),
+            menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE).c_str(), T_("Focus mode"),
+            state.c_str());
+
+        // Keep the complete mode switch together when it needs its own row.
+        if (formatted_string::parse_string(shortcuts + mode).width() > width)
+            trim_string_right(shortcuts) += "\n";
+        return get_linebreak_string(message + "\n" + shortcuts + mode, width);
+    }
+
     // note for editing this: Menu::action is defined and will take precedence
     // over quiver::action unless the quiver namespace is explicit.
     class ActionSelectMenu : public Menu
@@ -2471,34 +2497,15 @@ namespace quiver
                 // the state and any substantive message beside the list.
                 string status = more_message.empty() ? "" : more_message + "\n";
                 status += string(T_("Focus mode")) + ": "
-                          + (focus_mode == Focus::NONE ? T_("off") : T_("on"));
+                          + (focus_mode == Focus::NONE
+                              ? C_("autopickup state", "off")
+                              : C_("autopickup state", "on"));
                 return status;
             }
 #endif
-            string s = more_message + "\n";
-
-            if (any_items)
-                s += T_("[<w>*/%</w>] Inventory  ");
-            if (any_spells)
-                s += T_("[<w>&</w>] All spells  ");
-            if (any_abilities)
-                s += T_("[<w>^</w>] All abilities  ");
-
-
-            string off_str = T_("off");
-            string on_str = T_("on");
-            string mode = make_stringf(T_("%s %s: %s"),
-                menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE).c_str(),
-                T_("Focus mode"),
-                focus_mode == Focus::NONE
-                    ? make_stringf("<w>%s</w>|%s",
-                                   off_str.c_str(),
-                                   on_str.c_str()).c_str()
-                    : make_stringf("%s|<w>%s</w>",
-                                   off_str.c_str(),
-                                   on_str.c_str()).c_str());
-
-            return pad_more_with(s, mode);
+            return action_menu_keyhelp(more_message, any_items, any_spells,
+                                       any_abilities, focus_mode != Focus::NONE,
+                                       MIN_COLS);
         }
 
     protected:
