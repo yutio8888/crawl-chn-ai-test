@@ -311,9 +311,9 @@ Cigotuvi's Putrefaction	西格图维之腐烂	domain=spells; source=EN/ZH; 备�
 Cinder Acolyte	灰烬侍僧	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 claws	利爪	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Cleansing Flame	净化之焰	domain=spells; source=EN/ZH; 备注=✅
-cleave	顺劈	domain=status; source=EN/ZH; 依据 / 作用域=佐姆顺劈祝福与状态词根；沿用 status.txt 既有“顺劈”；状态灯 Cleave、cleaving→顺劈中、攻击属性 ; cleaves 与 Call Canine Familiar 说明同步；electrical cleaving 仍按 D-C-098 译“电流横扫”；decision=D-C-109/D-C-128
+cleave	顺劈	domain=status; source=EN/ZH; 依据 / 作用域=佐姆顺劈祝福与状态词根；沿用 status.txt 既有“顺劈”；状态灯 Cleave、cleaving→顺劈中、攻击属性 ; cleaves、怪物攻击表标记 (Cleave)→（顺劈）、神器铭文 reach-cleave→远距顺劈 与 Call Canine Familiar 说明同步；electrical cleaving 仍按 D-C-098 译“电流横扫”；decision=D-C-109/D-C-128
 Cleave+	顺劈+	domain=status; source=EN/ZH; 依据 / 作用域=佐姆顺劈祝福状态灯；沿用 Cleave status 的“顺劈”词根；decision=D-C-109
-cleaving	顺劈	domain=status; source=EN/ZH; 依据 / 作用域=佐姆顺劈祝福与状态词根；沿用 status.txt 既有“顺劈”；状态灯 Cleave、cleaving→顺劈中、攻击属性 ; cleaves 与 Call Canine Familiar 说明同步；electrical cleaving 仍按 D-C-098 译“电流横扫”；decision=D-C-109/D-C-128
+cleaving	顺劈	domain=status; source=EN/ZH; 依据 / 作用域=佐姆顺劈祝福与状态词根；沿用 status.txt 既有“顺劈”；状态灯 Cleave、cleaving→顺劈中、攻击属性 ; cleaves、怪物攻击表标记 (Cleave)→（顺劈）、神器铭文 reach-cleave→远距顺劈 与 Call Canine Familiar 说明同步；electrical cleaving 仍按 D-C-098 译“电流横扫”；decision=D-C-109/D-C-128
 clever	聪慧	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Cloud	云	domain=magic; source=EN/ZH; 状态=✅ 已确认（现行 `X Cloud` 后缀系列 8 项；另有 4 项已移除兼容记录）
 Cloud Cone	云雾锥	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；非 `X Cloud` 后缀成员，暂缓术语；恢复时复审

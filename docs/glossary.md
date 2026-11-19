@@ -943,7 +943,7 @@
 | `status\|Disguised` | 伪装 | 伪装状态灯；敌人无法察觉，攻击或施法会解除；短标签 `status\|perfectly disguised` → 完美伪装；decision=D-C-109 |
 | `status\|-Disguise` | -伪装 | 伪装冷却状态灯；保留负号；短标签 `status\|on disguise cooldown` → 伪装冷却中；decision=D-C-109 |
 | blessing | 祝福 | 佐姆赐予的长效增益统称；`blessing of X` → “X之祝福”；decision=D-C-109 |
-| cleave / cleaving | 顺劈 | 佐姆顺劈祝福与状态词根；沿用 status.txt 既有“顺劈”；状态灯 Cleave、cleaving→顺劈中、攻击属性 ; cleaves 与 Call Canine Familiar 说明同步；electrical cleaving 仍按 D-C-098 译“电流横扫”；decision=D-C-109/D-C-128 |
+| cleave / cleaving | 顺劈 | 佐姆顺劈祝福与状态词根；沿用 status.txt 既有“顺劈”；状态灯 Cleave、cleaving→顺劈中、攻击属性 ; cleaves、怪物攻击表标记 (Cleave)→（顺劈）、神器铭文 reach-cleave→远距顺劈 与 Call Canine Familiar 说明同步；electrical cleaving 仍按 D-C-098 译“电流横扫”；decision=D-C-109/D-C-128 |
 | guardian | 守卫 | 佐姆赐予的持久盟友及怪物标签；decision=D-C-109 |
 | minibane | 短暂灾祸 | 佐姆施加的超短时灾祸；消息后缀“（……但只持续很短时间）”；decision=D-C-109 |
 | floor lock | 封梯 | 佐姆锁死本层全部楼梯的机制；状态灯 Lock(%d)；decision=D-C-109 |

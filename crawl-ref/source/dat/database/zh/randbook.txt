@@ -425,7 +425,7 @@ _occult_adjective_
 
 超凡
 
-帷幕
+幕后
 %%%%
 # 等级相关命名
 _beginners_
@@ -597,7 +597,7 @@ w:2
 
 @_subject_@第二课程
 
-有用之@_subject_@
+应用@_subject_@
 
 w:2
 又一本@_the_subject_@@book_noun@
@@ -2742,9 +2742,9 @@ w:2
 
 坏死
 
-死后
+亡故
 
-身后
+殓后
 
 腐朽
 
@@ -3087,7 +3087,7 @@ forgecraft adj
 
 完工
 
-具体
+混凝
 
 构造
 
