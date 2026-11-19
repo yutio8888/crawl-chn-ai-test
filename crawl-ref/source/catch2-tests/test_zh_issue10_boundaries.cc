@@ -2473,7 +2473,7 @@ TEST_CASE("sticky flame survives a valid Beogh conversion offer",
         status_info info;
         REQUIRE(fill_status_info(DUR_STICKY_FLAME, info));
         CHECK(info.db_key == row.second);
-        CHECK(info.light_text == T_(row.second));
+        CHECK(info.light_text == C_("status", row.second));
     }
 }
 
