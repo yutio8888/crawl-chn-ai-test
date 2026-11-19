@@ -538,7 +538,7 @@ Freeze spell
 %%%%
 Freezing Cloud spell
 
-生成一大团致命的冰汽云。
+生成一大团致命的冰冻云。
 %%%%
 Frozen Ramparts spell
 

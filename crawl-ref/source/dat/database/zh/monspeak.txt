@@ -1144,7 +1144,7 @@ VISUAL:@The_monster@ 在原地转着圈。
 
 @The_monster@ 对 @foe@ 说："愿一千头骆驼的跳蚤在你的腋下安家。"
 
-@The_monster@ 对 @foe@ 纳闷道："你还在受够格妄想的困扰吗？"
+@The_monster@ 对 @foe@ 纳闷道："你还在幻想自己勉强够格吗？"
 
 @The_monster@ 对 @foe@ 说："愿你的屁股痒个不停，而你的 @_player_arms_@ 短得挠不到。"
 
@@ -1989,7 +1989,7 @@ w:50
 
 @The_monster@ 说："战利品都哪去了？"
 
-@The_monster@ 说："我现在觉得自己像个果冻三明治。"
+@The_monster@ 说："我现在真想吃个果冻三明治。"
 
 @The_monster@ 说："这地方简直是个坑。"
 
@@ -2194,7 +2194,7 @@ w:50
 
 @The_monster@ 说："是什么阻止守卫们自己偷走宝珠？"
 
-@The_monster@ 说："希望我不会在这下面遇到冰宝珠！"
+@The_monster@ 说："希望我不会在这下面遇到寒冰球！"
 
 @The_monster@ 说："你带寒冰戒指了吗？"
 
@@ -2248,9 +2248,9 @@ w:50
 
 @The_monster@ 说："呕，你一身瘴气！"
 
-@The_monster@ 说："我讨厌可怜虫。"
+@The_monster@ 说："我讨厌亡骸。"
 
-@The_monster@ 说："要挖多深才能有源源不断的可怜虫？"
+@The_monster@ 说："要挖多深才能有源源不断的亡骸？"
 
 @The_monster@ 说："你一定很爱痛苦。我讨厌它。"
 
@@ -4565,7 +4565,7 @@ _Zenata_rare_
 
 @The_monster@喃喃道："我能听见她的低语……但她已经死了。她已经死了！"
 
-@The_monster@说："我会把他们带回来。然后他们会向我展示……一切……"
+@The_monster@说："我会把逝者带回来。归来之后，便会向我展示……一切……"
 %%%%
 _axioms_of_law_
 

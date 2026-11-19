@@ -63,7 +63,7 @@ spreading flames cloud
 %%%%
 steam cloud
 
-一团灼热的蒸汽云。在其中的生物会轻微受伤，火抗属性会大大抵消伤害。
+一团灼热的蒸汽云。在其中的生物会轻微受伤，火焰抗性会进一步减轻这种伤害。
 %%%%
 ink cloud
 
@@ -126,7 +126,7 @@ spectral mist cloud
 acidic fog cloud
 
 一团腐蚀肉身的酸液云雾，对身处其中的生物造成伤害并施加腐蚀。
-酸蚀抗性可完全免疫其效果。
+腐蚀抗性可完全免疫其效果。
 %%%%
 thunder cloud
 
