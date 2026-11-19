@@ -18,6 +18,9 @@
 
 struct monster_info;
 
+string feature_action_desc(const vector<command_type>& actions, dungeon_feature_type feat);
+string item_actions_desc(const vector<command_type>& actions);
+
 // If you add any more description types, remember to also
 // change item_description in externs.h
 enum item_description_type
