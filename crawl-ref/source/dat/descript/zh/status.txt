@@ -1222,7 +1222,14 @@ Mistmane status
 %%%%
 Cleave+ status
 
-你获得 +5 杀戮加成，且近战攻击能够顺劈。此外，你的武器还会额外带有{{return you.xom_bonus_brand()}}铭印效果（除非它原本就已经是{{return you.xom_bonus_brand()}}铭印效果）。
+{{
+    local brand = you.xom_bonus_brand()
+    if not brand or brand == "" or brand == "None" then
+        return "你获得 +5 杀戮加成，且近战攻击能够顺劈。此外，你的武器还会额外带有一种随机铭印效果（除非它原本就已经具有该铭印效果）。"
+    end
+    return "你获得 +5 杀戮加成，且近战攻击能够顺劈。此外，你的武器还会额外带有"
+        .. brand .. "铭印效果（除非它原本就已经是" .. brand .. "铭印效果）。"
+}}
 
 %%%%
 Reach+ status
