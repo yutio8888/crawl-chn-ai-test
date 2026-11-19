@@ -13,6 +13,7 @@
 #include "feature.h"
 #include "files.h"
 #include "initfile.h"
+#include "macro.h"
 #include "mutation.h"
 #include "options.h"
 #ifdef USE_TILE_LOCAL
@@ -49,6 +50,7 @@ bool initialise_catch_environment()
     Options.language = lang_t::EN;
     Options.lang_name = nullptr;
     clua.init_libraries();
+    init_keybindings();
     init_show_table();
     init_mut_index();
     i18n_cache_clear();
