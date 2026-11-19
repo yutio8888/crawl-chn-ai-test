@@ -669,20 +669,21 @@ bool fill_status_info(int status, status_info& inf)
         if (intensity >= 13)
         {
             inf.light_colour = LIGHTRED;
-            inf.light_text = "Fire++";
+            inf.light_text = C_("status", "Fire++");
             inf.db_key     = "Fire++";
         }
         else if (intensity > 7)
         {
-            inf.light_text = "Fire+";
+            inf.light_text = C_("status", "Fire+");
             inf.db_key     = "Fire+";
         }
         else
         {
-            inf.light_text = "Fire";
+            inf.light_text = C_("status", "Fire");
             inf.db_key     = "Fire";
         }
     }
+    break;
 
     case STATUS_BEOGH:
         if (env.level_state & LSTATE_BEOGH && can_convert_to_beogh())

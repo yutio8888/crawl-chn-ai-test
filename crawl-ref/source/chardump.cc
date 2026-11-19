@@ -384,13 +384,18 @@ static void _sdump_visits(dump_params &par)
     text += "\n";
 }
 
+const char *gold_dump_have()
+{
+    return Options.language == lang_t::ZH ? "" : "have ";
+}
+
 static void _sdump_gold(dump_params &par)
 {
     string &text(par.text);
 
     int lines = 0;
 
-    const char* have = "have ";
+    const char* have = gold_dump_have();
     if (par.se) // you died -> past tense
         have = "";
 

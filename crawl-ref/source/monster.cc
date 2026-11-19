@@ -6274,6 +6274,11 @@ int monster::reach_range(bool include_weapon) const
     return range;
 }
 
+const char *remaining_gold_suffix(int gold)
+{
+    return Options.language != lang_t::ZH && gold != 1 ? "s" : "";
+}
+
 void monster::steal_item_from_player()
 {
     if (confused())
@@ -6412,7 +6417,7 @@ void monster::steal_item_from_player()
 
         you.del_gold(stolen_amount);
         mprf_p(T_("You now have %1$d gold piece%2$s."),
-             you.gold, you.gold != 1 ? "s" : "");
+             you.gold, remaining_gold_suffix(you.gold));
 
         return;
     }
