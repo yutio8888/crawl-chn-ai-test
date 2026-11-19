@@ -290,7 +290,7 @@ p = root / "zh/randbook.txt"
 s = p.read_text()
 mutation = sys.argv[2]
 if mutation == "missing":
-    # Keep the separator delta one: missing EN root plus an unauthorized key.
+    # Keep the separator delta zero: missing EN root plus an unauthorized key.
     s = s.replace("starting level book\n", "missing-root\n", 1)
 elif mutation == "renamed":
     s = s.replace("Hexes owner\n", "unapproved owner\n", 1)
