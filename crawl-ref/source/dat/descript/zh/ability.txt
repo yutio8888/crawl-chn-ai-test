@@ -138,7 +138,7 @@ Brand Weapon With Pain ability
 Receive Forbidden Knowledge ability
 
 赐予你最强大、最邪恶的死灵法术：鬼魂缠身、博格尼尔之复苏、虫群侵扰和死亡之门。
-你必须在这个礼物和痛楚武器印记之间二选一，而且任何一个礼物只能收到一次。
+你必须在这个礼物和为武器赋予痛苦铭印之间二选一，而且任何一个礼物都只能获得一次。
 %%%%
 # 伊莱德莱姆努尔
 Recall Undead Harvest ability
@@ -373,9 +373,9 @@ Shatter The Chains ability
 # 哥萨戈
 Purchase Blessing ability
 
-向哥萨戈祈求购买一组药水的效果。
-（这些效果会立即直接施加于祈求者，而不会提供实体药水，也无需像普通药水那样饮用。）
-哥萨戈每次会提出三组方案，价格各不相同。
+请求哥萨戈以公道市价赐予你治疗或强化。每次调用此能力时，
+都会提供三组随机祝福（效果类似于药水），价格各不相同。
+交易有风险：一旦展示商品，你便无法退出而必须购买其中之一。
 %%%%
 Call Merchant ability
 
@@ -462,7 +462,7 @@ Sacrifice Artifice ability
 Sacrifice Love ability
 
 舍弃爱，使所有的生物变得敌对，甚至那些由你创造的。
-只有属于法术残留物且无法独立行动的生物，例如毁灭球和灵体武器，才能保持友好。
+只有属于法术残留物且无法独立行动的生物，例如毁灭法球和灵体武器，才能保持友好。
 %%%%
 Sacrifice Courage ability
 

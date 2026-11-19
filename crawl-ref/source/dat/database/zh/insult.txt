@@ -568,7 +568,7 @@ insult general adj2
 
 沼泽里冒出来的
 
-嘴唇松垮耷拉的
+信口开河的
 
 扁脑袋的
 
@@ -588,7 +588,7 @@ insult general adj2
 
 半张脸的
 
-反应伶俐的
+急躁蠢笨的
 
 树篱底下生的
 
@@ -670,7 +670,7 @@ insult general adj2
 
 米象脑袋的
 
-嘬胡言乱语的
+满嘴胡话的
 %%%%
 insult dwarf adj2
 
@@ -845,7 +845,7 @@ insult general noun
 
 猪尿脬
 
-熏鲱鱼
+浮肿蠢货
 
 野猪崽
 
@@ -875,7 +875,7 @@ insult general noun
 
 遮裆布
 
-暴脾气灯笼
+臭脸扫兴鬼
 
 坏脾气佬
 
@@ -1003,7 +1003,7 @@ insult general noun
 
 娼妇
 
-浮上来的家伙
+地表佬
 
 游贩
 

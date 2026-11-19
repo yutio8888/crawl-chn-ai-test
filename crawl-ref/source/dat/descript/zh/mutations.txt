@@ -470,7 +470,7 @@ word of chaos mutation
 %%%%
 freezing cloud immunity mutation
 
-你免疫冰汽云。
+你免疫冰冻云。
 %%%%
 flame cloud immunity mutation
 
@@ -567,9 +567,9 @@ nimble swimmer mutation
 %%%%
 divine attributes mutation
 
-当你与其他物种相比，无论是在数值还是在发育程度的掌控上，
-神圣属性都显著提升了你的属性增益（力量、智力和敏捷）。
-每过三级，你可以选一个属性，提升四点。
+你的神圣血统使你在升级时获得的属性成长（力量、智力与敏捷）远超其他物种，
+无论在数值上还是对成长方向的掌控上都是如此。
+每升三级，你可选择一项属性提升四点。
 %%%%
 tentacles mutation
 
@@ -684,7 +684,7 @@ inability to use devices mutation
 hated by all mutation
 
 你被所有怪物憎恨，无法以任何方式获得暂时或永久的盟友。
-简单、没有意识的魔法造物，比如幽灵武器、毁灭球和作战球则不受此影响。
+简单、没有意识的魔法造物，比如灵体武器、毁灭法球和战斗法球，则不受此影响。
 %%%%
 cowardly mutation
 
@@ -905,9 +905,9 @@ armoured shell mutation
 %%%%
 artefact enchanting mutation
 
-你可以对随机生成的神器使用武器附魔卷轴和护甲附魔卷轴。
+你可以对随机生成的神器使用武器铭印卷轴、武器附魔卷轴和护甲附魔卷轴。
 
-附魔等级不能超过同类普通物品通常可达到的上限，特别奇异的神器则完全无法附魔。
+这无法使其附魔等级超过同类普通物品通常可达到的上限，特别奇异的神器则完全无法受其影响。
 %%%%
 blade parry mutation
 
