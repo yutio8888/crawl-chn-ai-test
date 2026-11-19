@@ -5097,7 +5097,7 @@ R19–R21 的全文检索确认项按消费者处理：MP 的恢复、储量、�
 - **Source**: 维护者批准 D-2。
 - **Rule**: 中文正文中“没有 rX∞ 的敌人”统一写作“没有火抗∞/冰抗∞/电抗∞的敌人”；∞ 为数学无穷大 U+221E，不用 emoji，前后不留空格。
 - **Change**: `descript/zh/mutations.txt` 的 spark swarm mutation（火抗∞、电抗∞）；SourceDB 三条神器/变异说明（冰抗∞×2、火抗∞×1）。
-- **Keep**: 英文键与面板短标签、`spell resistance|rF` 等法术详情全称（D-C-101）不在本项改动范围。`rPois∞` 仅 HUD 标签键译“毒免∞”；毒素相关神器说明正文（“拥有rPois+/rPois∞的敌人”）保留字面 `rPois∞`，本项不改。
+- **Keep**: 英文键与面板短标签、`spell resistance|rF` 等法术详情全称（D-C-101）不在本项改动范围。独立显示键 `rPois∞` 译作“毒免∞”，包括神器铭文（`art-data.txt` INSCRIP）与属性标题（DESCRIP）；毒素神器说明的完整句（“拥有rPois+/rPois∞的敌人”）保留字面 `rPois∞`，本项不改。
 
 ### D-C-124 — 变异旧裸键与 flail 武器名对齐（D-3）
 
@@ -5148,6 +5148,6 @@ R19–R21 的全文检索确认项按消费者处理：MP 的恢复、储量、�
 - **Status**: active
 - **Date**: 2026-11-19
 - **Source**: 维护者批准 D-7。
-- **Cleave**: SourceDB `; cleaves`、`cleave`、`status|Cleave` → 顺劈，`status|cleaving` → 顺劈中；`describe.cc` 怪物攻击表标记 `(Cleave)` → （顺劈）；unrand 铭文 `reach-cleave` / `reach-cleave, Poleaxe` → 远距顺劈（唯一消费者为 art-data.txt INSCRIP，表示同时攻击触及范围内所有敌人的顺劈机制标签，非自然动词）；Call Canine Familiar 说明“顺劈相邻敌人”，与 D-C-109 词根一致。`electrical cleaving` 保留“电流横扫”（D-C-098）；其他自然动作叙述（如“劈砍”）不在本项范围。
+- **Cleave**: SourceDB `; cleaves`、`cleave`、`status|Cleave` → 顺劈，`status|cleaving` → 顺劈中；`describe.cc` 怪物攻击表标记 `(Cleave)` → （顺劈）；unrand 键 `reach-cleave` / `reach-cleave, Poleaxe` → 远距顺劈（表示同时攻击触及范围内所有敌人的顺劈机制标签，非自然动词）：完整键 `reach-cleave, Poleaxe` 来自 `art-data.txt` 该条目的 INSCRIP，经 `describe.cc` 的 `T_(entry->inscrip)` 显示为“远距顺劈，长柄斧”；单独键 `reach-cleave` 由同一条目的 `DBRAND: Reach-Cleave:` 经 `_format_dbrand()` 拆出属性标题，再经 `describe.cc` 的 `T_(brand[0])` 与 `database.cc` 的小写化查找显示为“远距顺劈”；Call Canine Familiar 说明“顺劈相邻敌人”，与 D-C-109 词根一致。`electrical cleaving` 保留“电流横扫”（D-C-098）；其他自然动作叙述（如“劈砍”）不在本项范围。
 - **Fire+**: `Fire+` / `Fire++` 及 `status|Fire+` / `status|Fire++` → 着火+ / 着火++，与 status `Fire` 着火同根。
 - **Vehumet**: `Vehumet powers` 第三句改为“增加这些破坏性法术的射程”，与前句及 SourceDB 能力说明一致。
