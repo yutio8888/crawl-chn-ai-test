@@ -1504,7 +1504,7 @@ _Pikel_rare_
 
 @The_monster@ 说："你会在悲叹河冻僵！" @player_only@
 
-@The_monster@ 说："你会在铁城生锈！" @player_only@
+@The_monster@ 说："你会在迪斯生锈！" @player_only@
 
 VISUAL:@The_monster@ 检查着 @possessive@钱袋，皱起眉头。
 
@@ -1516,7 +1516,7 @@ VISUAL:@The_monster@ 检查着 @possessive@钱袋，皱起眉头。
 
 @The_monster@ 说："反正我相信他们会被善待的。"
 
-@The_monster@ 说："我敢肯定兽人矿山就在这附近的某个地方……"
+@The_monster@ 说："我敢肯定兽人矿坑就在这附近的某个地方……"
 
 @The_monster@ 说："我就知道该带张地图来。"
 
@@ -7199,6 +7199,7 @@ w:20
 w:20
 @_deck_of_summoning_line_@
 
+w:10
 @_deck_of_punishment_line_@
 
 w:5

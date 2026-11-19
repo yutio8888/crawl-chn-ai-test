@@ -513,7 +513,7 @@ A gate to the Vaults
 %%%%
 A transporter
 
-一道通往本层另一处的单向传送门。使用传送器时，
+一台通往本层另一处的单向传送器。使用传送器时，
 相邻的盟友和怪物也会随你一起到达另一端。
 %%%%
 A transporter landing site
