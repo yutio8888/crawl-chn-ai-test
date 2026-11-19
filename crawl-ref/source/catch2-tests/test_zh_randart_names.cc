@@ -462,6 +462,7 @@ static void r53_level_books(FILE *output, bool check_chinese)
                 {
                     CHECK(title.find('@') == string::npos);
                     CHECK(title.find("TOO MUCH RECURSION") == string::npos);
+                    CHECK(strip_cjk_spaces(title) == title);
                     // Proper names may be Latin; the title itself must be localized.
                     CHECK(std::any_of(title.begin(), title.end(),
                                       [](unsigned char c) { return c >= 128; }));
