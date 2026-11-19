@@ -194,7 +194,7 @@ int main() {
 
     def test_item_quiver_footer_preserves_setting_action_and_overloaded_keys(self):
         source = (ROOT / "crawl-ref/source/describe.cc").read_text()
-        footer = regression.block_after(source, "static string _actions_desc")
+        footer = regression.block_after(source, "string item_actions_desc")
         # Include the opening brace in the anchor: describe.cc also has a
         # forward declaration, which must not select a later unrelated body.
         dispatch = regression.block_after(
@@ -236,7 +236,7 @@ string comma_separated_fn(Iterator first, Iterator last, F fn,
     return result;
 }
 enum command_type ''' + commands + r''';
-static string _actions_desc(const vector<command_type>& actions)
+string item_actions_desc(const vector<command_type>& actions)
 ''' + footer + r'''
 static command_type _get_action(int key, vector<command_type> actions)
 ''' + dispatch + r'''
@@ -252,10 +252,10 @@ int main() {
         // Chinese joins use the enumeration comma (identity T_ double here).
         const string sep = chinese ? "," : ", ";
         const string last = chinese ? "," : ", or ";
-        assert(_actions_desc(potion) == "(q)uaff" + sep + v + last + "(d)rop.");
-        assert(_actions_desc(scroll) == "(r)ead" + last + q + ".");
-        assert(_actions_desc(wand) == "e(v)oke" + last + q + ".");
-        assert(_actions_desc({CMD_QUIVER_ITEM}) == q + ".");
+        assert(item_actions_desc(potion) == "(q)uaff" + sep + v + last + "(d)rop.");
+        assert(item_actions_desc(scroll) == "(r)ead" + last + q + ".");
+        assert(item_actions_desc(wand) == "e(v)oke" + last + q + ".");
+        assert(item_actions_desc({CMD_QUIVER_ITEM}) == q + ".");
         assert(_get_action('q', potion) == CMD_QUAFF);
         assert(_get_action('v', potion) == CMD_QUIVER_ITEM);
         assert(_get_action('Q', potion) == CMD_QUAFF);
