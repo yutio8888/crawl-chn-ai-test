@@ -31,7 +31,7 @@ tutorial1 go_on
 tutorial1 diagonal
 
 :nowrap
-斜向移动可以使用<input>数字键盘</input>（可尝试开关NumLock键）<localtiles>、</localtiles><console>或</console><input>vi键位</input><console>。</console><localtiles>或<input>鼠标</input>。</localtiles>
+斜向移动可以使用<input>数字键盘</input>（可尝试开关NumLock键）<localtiles>、</localtiles><nomouse>或</nomouse><input>vi键位</input><nomouse>。</nomouse><localtiles>或<input>鼠标</input>。</localtiles>
 
   数字键盘：  <w>7 8 9</w>        vi键位：<w>   $cmd[CMD_MOVE_UP_LEFT] $cmd[CMD_MOVE_UP] $cmd[CMD_MOVE_UP_RIGHT]</w><localtiles>    鼠标：     <w>点击</w>地面</localtiles>
                \|/                     \|/
