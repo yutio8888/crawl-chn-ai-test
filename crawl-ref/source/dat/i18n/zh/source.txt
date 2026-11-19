@@ -2234,7 +2234,7 @@ barrage of energy
 12（箭毒）
 %%%%
 ; cleaves
-；横扫
+；顺劈
 %%%%
 ; reaches
 ；远程攻击
@@ -3460,7 +3460,7 @@ Clearing travel trail.
 正在清除旅行轨迹。
 %%%%
 cleave
-横扫
+顺劈
 %%%%
 closed
 关闭的
@@ -4060,7 +4060,7 @@ Fixed Theme
 固定主题
 %%%%
 flail
-连枷
+链枷
 %%%%
 flame
 火焰
@@ -8413,7 +8413,7 @@ You are cold-blooded and may be slowed by cold attacks.
 你是冷血动物，可能被寒冷攻击减速。
 %%%%
 you are contaminated with a potentially lethal amount of magic
-你受到的诱变辐射可能致命
+你受到的魔法污染可能致命
 %%%%
 You are covering ground slowly.
 你移动缓慢。
@@ -11425,10 +11425,10 @@ Aug
 增强
 %%%%
 Fire++
-强火焰
+着火++
 %%%%
 Fire+
-火焰+
+着火+
 %%%%
 Bribe
 贿赂
@@ -18307,7 +18307,7 @@ acid resistance
 酸蚀抗性
 %%%%
 acidic bite
-酸蚀咬击
+酸性撕咬
 %%%%
 acrobatic
 杂技
@@ -18568,7 +18568,7 @@ mnemnophage
 噬忆
 %%%%
 molten scales
-熔岩鳞片
+熔融鳞片
 %%%%
 multi-lived
 多条命
@@ -18691,7 +18691,7 @@ renounce scrolls
 放弃卷轴
 %%%%
 repulsion field
-排斥场
+排斥力场
 %%%%
 retaliatory headbutt
 报复性头槌
@@ -18718,10 +18718,10 @@ sense surroundings
 感知环境
 %%%%
 shaggy fur
-蓬松毛发
+浓密皮毛
 %%%%
 sharp scales
-锋利鳞片
+锐利鳞片
 %%%%
 slime shroud
 黏液护罩
@@ -18781,7 +18781,7 @@ thin metallic scales
 薄金属鳞片
 %%%%
 thin skeletal structure
-薄骨骼结构
+纤细骨骼
 %%%%
 time-warped blood
 时间扭曲之血
@@ -18790,7 +18790,7 @@ torment resistance
 折磨抗性
 %%%%
 tough skin
-坚韧皮肤
+硬化表皮
 %%%%
 translucent skin
 半透明皮肤
@@ -19003,7 +19003,7 @@ You are completely covered in large bone plates. (SH +8)
 你完全覆盖着大型骨板。（盾挡+8）
 %%%%
 You are completely covered in molten scales. (AC +4, rF+)
-你完全覆盖着熔岩鳞片。（防御+4，火抗+）
+你完全覆盖着熔融鳞片。（防御+4，火抗+）
 %%%%
 You are completely covered in razor-sharp scales. (AC +3, Slay +3)
 你完全覆盖着锋利鳞片。（防御+3，杀戮+3）
@@ -19132,7 +19132,7 @@ You are mostly covered in large bone plates. (SH +6)
 你大部分覆盖着大型骨板。（盾挡+6）
 %%%%
 You are mostly covered in molten scales. (AC +3)
-你大部分覆盖着熔岩鳞片。（防御+3）
+你大部分覆盖着熔融鳞片。（防御+3）
 %%%%
 You are mostly covered in razor-sharp scales. (AC +2, Slay +2)
 你大部分覆盖着锋利鳞片。（防御+2，杀戮+2）
@@ -19168,7 +19168,7 @@ You are partially covered in large bone plates. (SH +4)
 你部分覆盖着大型骨板。（盾挡+4）
 %%%%
 You are partially covered in molten scales. (AC +2)
-你部分覆盖着熔岩鳞片。（防御+2）
+你部分覆盖着熔融鳞片。（防御+2）
 %%%%
 You are partially covered in razor-sharp scales. (AC +1, Slay +1)
 你部分覆盖着锋利鳞片。（防御+1，杀戮+1）
@@ -19246,13 +19246,13 @@ You are strongly in touch with the powers of death.
 你与死亡的力量深度相通。
 %%%%
 You are surrounded by a mild repulsion field. (EV +2)
-你被一个温和的排斥场包围。（闪避+2）
+你被一个温和的排斥力场包围。（闪避+2）
 %%%%
 You are surrounded by a moderate repulsion field. (EV +3)
-你被一个中等的排斥场包围。（闪避+3）
+你被一个中等的排斥力场包围。（闪避+3）
 %%%%
 You are surrounded by a strong repulsion field. (EV +4, RMsl)
-你被一个强大的排斥场包围。（闪避+4，排斥飞弹）
+你被一个强大的排斥力场包围。（闪避+4，排斥飞弹）
 %%%%
 You are surrounded by an aura of silence.
 你被一个沉默光环包围。
@@ -21406,7 +21406,7 @@ Your blood armour dries and flakes away.
 你的血甲干燥并剥落了。
 %%%%
 Your cleaving frenzy subsides.
-你的劈砍狂暴消退了。
+你的顺劈狂热平息了。
 %%%%
 Your dimensional bullseye dissipates.
 你的维度靶心消散了。
@@ -23029,7 +23029,7 @@ You feel magically purified.
 你感觉被魔法净化了。
 %%%%
 You feel your magical contamination recede slightly.
-你感觉魔法能量污染略微减轻了。
+你感觉魔法污染略微减轻了。
 %%%%
 You feel briefly invigorated.
 你短暂地感到精力充沛。
@@ -24521,13 +24521,13 @@ Large bone plates spread over more of your arms.
 巨大的骨板蔓延到你手臂的更多部位。
 %%%%
 Molten scales cover your body completely.
-熔岩般的鳞片完全覆盖了你的身体。
+熔融鳞片完全覆盖了你的身体。
 %%%%
 Molten scales grow over part of your body.
-熔岩般的鳞片覆盖了你身体的一部分。
+熔融鳞片覆盖了你身体的一部分。
 %%%%
 Molten scales spread over more of your body.
-熔岩般的鳞片蔓延到你身体的更多部位。
+熔融鳞片蔓延到你身体的更多部位。
 %%%%
 Murder takes root in your soul.
 杀戮在你灵魂中扎下了根。
@@ -25931,10 +25931,10 @@ Your melee attacks are strengthened by primal bloodlust.
 你的近战攻击被原始嗜血所增强。
 %%%%
 Your molten scales disappear.
-你熔岩般的鳞片消失了。
+你的熔融鳞片消失了。
 %%%%
 Your molten scales recede somewhat.
-你熔岩般的鳞片有所消退。
+你的熔融鳞片有所消退。
 %%%%
 Your mouth dries to ashes.
 你的嘴干如灰烬。
@@ -26018,7 +26018,7 @@ Your servants grow eager to unleash destruction.
 你的仆从们渴望释放毁灭。
 %%%%
 Your shaggy fur recedes somewhat.
-你的蓬松毛发有所消退。
+你的浓密皮毛有所消退。
 %%%%
 Your sharp scales disappear.
 你锐利的鳞片消失了。
@@ -26297,7 +26297,7 @@ It protects you from confusion, rage, mesmerisation and fear.
 保护你免受混乱、狂暴、迷魂和恐惧。
 %%%%
 It causes magical contamination when unequipped.
-卸下时造成诱变辐射。
+卸下时造成魔法污染。
 %%%%
 It protects you from missiles.
 保护你免受投射物伤害。
@@ -26405,7 +26405,7 @@ It restores some MP whenever you drink a potion and also enhances your alchemy s
 饮用任何药水时恢复部分法力，同时增强你的炼金系法术。
 %%%%
 It reduces the duration of hostile enchantments and decays magical contamination more quickly.
-缩短敌对附魔的持续时间，并加快诱变辐射的消退速度。
+缩短敌对附魔的持续时间，并加快魔法污染的消退速度。
 %%%%
 %sIt %s%s your willpower.
 %s%s%s你的意志力。
@@ -26789,7 +26789,7 @@ Your servitor can be imbued with this spell.\n
 你的仆从可以被赋予此法术。\n
 %%%%
 This inflicts up to 40% magical contamination when cast by you.\n
-由你施放时，此法术会造成至多40%的诱变辐射。\n
+由你施放时，此法术会造成至多40%的魔法污染。\n
 %%%%
 You can sustain at most 
 你最多可以维持
@@ -28353,7 +28353,7 @@ Zealotry,
 狂热，
 %%%%
 ^Contam
-^诱变辐射
+^魔法污染
 %%%%
 ^Drain
 ^衰竭
@@ -37818,7 +37818,7 @@ status|Channel
 引导
 %%%%
 status|Cleave
-横扫
+顺劈
 %%%%
 status|Cloud
 云雾
@@ -37830,7 +37830,7 @@ status|Constr
 束缚
 %%%%
 status|Contam
-诱变辐射
+魔法污染
 %%%%
 status|Corona
 光晕
@@ -38376,7 +38376,7 @@ status|chanting a vengeful prayer
 吟唱复仇祈祷
 %%%%
 status|cleaving
-横扫中
+顺劈中
 %%%%
 status|confused
 混乱
@@ -40577,11 +40577,8 @@ Menu
 <w>/ Dir.</w>, <w>Shift-Dir.</w>: long walk\n<w>* Dir.</w>, <w>Ctrl-Dir.</w> : attack without move \n
 <w>/ 方向</w>、<w>Shift-方向</w>：长距离移动\n<w>* 方向</w>、<w>Ctrl-方向</w>：原地攻击\n
 %%%%
-<h>Autofight:\n<w>Tab</w>          : attack nearest monster,\n               moving if necessary\n<w>Shift-Tab</w>, <w>p</w> : trigger quivered action;\n               if targeted, aims at\n               nearest monster\n
-<h>自动战斗：\n<w>Tab</w>          ：攻击最近的怪物，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发快捷动作；\n               若需要目标，则瞄准\n               最近的怪物\n
-%%%%
 <brown>(</brown> : missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
-<brown>(</brown>：弹药（<w>%</w>装填、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
+<brown>(</brown>：弹药（<w>%</w>设为快捷、<w>%</w>发射、<w>%</w>/<w>%</w>切换）
 %%%%
 </lightcyan> : books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pick up to add to library)
 </lightcyan>：书籍（<w>%</w>记忆、<w>%</w>施法、<w>%</w>强制施法、\n    捡起以添加至法术库）
@@ -43570,7 +43567,7 @@ Doom:
 %%%%
 Contam:
 
-诱变辐射:
+魔法污染:
 %%%%
 *WIZARD*
 
@@ -48536,7 +48533,7 @@ form melding|All Weapons and Armour
 %%%%
 Drinking this will reduce your magical contamination.
 
-喝下它会减轻你的诱变辐射。
+喝下它会减轻你的魔法污染。
 %%%%
 randbook subject|%1$s%2$s of %3$s
 
@@ -49435,7 +49432,7 @@ Doom
 厄运 
 %%%%
 Contam: 
-诱变辐射: 
+魔法污染: 
 %%%%
 Cont 
 辐射 

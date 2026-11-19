@@ -4348,6 +4348,33 @@ glossary 仅补明此 trance 消息的机制作用域，仍保留一般恍惚、
 - **Affected files**: 中文 source、descript 与 randbook 的有界消费者；
   glossary 及生成伴随文件；实际受影响的测试／工具期望。
 
+### D-C-112 — contamination 与 mutagenic radiation 分离
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-11（稳定线回补 2026-11-19，见 D-C-122）
+- **Choice**: `contamination / magic contamination / magical contamination
+  → 魔法污染`；`mutagenic radiation → 诱变辐射`。
+  HUD 的 `Contam`、紧凑 `Cont ` 以及污染程度／污染伤害等短标签可简称“污染”；
+  `status|Contam` 和完整 `Contam:` 标题使用“魔法污染”。
+- **Rejected**: 所有 contamination 均译为“诱变辐射”（把污染误译为辐射，
+  并将英文两个不同概念混为同一机制名）。
+- **Source**: 用户确认；`player.cc` 的污染累积与衰减机制、`output.cc` 的
+  Contam 百分比 HUD，以及英文 `dat/descript/{status,spells}.txt`。
+- **Rationale**: contamination 是可累积并随时间消退的魔法量，采用“魔法污染”
+  能直接对应数值、状态、施法代价与消退过程。当前英文描述资产仅在
+  `Contam status` 与 `Yara's Violent Unravelling spell` 中明确使用
+  `mutagenic radiation`，这两处保留“诱变辐射”，不反向用它替代机制名。
+- **Scope / boundaries**: 统一中文 catalog、状态、物品、法术、云雾、地形、
+  神罚和神器描述中的 contamination；替代旧 Contamination 译法及 D-C-096
+  中将 mutagenic radiation 复用为机制名的依据。D-C-096 的“诱变”词根及
+  诱变光芒、诱变能量、诱变排水口等其他复合词不变；英文明确使用
+  magical radiation、irradiate 等的辐射描述不按 contamination 替换。
+  英文协议、查找键与法术专名不变。
+- **Affected files**: `crawl-ref/source/dat/i18n/zh/source.txt`、
+  `crawl-ref/source/dat/descript/zh/{status,items,spells,clouds,features,gods,unrand}.txt`、
+  `docs/glossary.md`、`docs/glossary.utf8`、`docs/decisions.md`。
+
 ### D-C-113 — 玩家鬼魂括注后缀 ghost
 
 - **Type**: C — Terminology clarification
@@ -4489,3 +4516,18 @@ R19–R21 的全文检索确认项按消费者处理：MP 的恢复、储量、�
 - **2026-11-17 四项短写补记（维护者批准）**: 中文随机神器专用池将 `展翅飞翔 → 飞翔`、`永无止境的 → 无尽的`、`一百万 → 百万`；职业称谓采用 `理发师兼外科医生 → 外科理发师`。保留“的”、数量、量词、笑话与完整神名，不改其他长名或属性缩写。
 - **职业池作用域**: 原 `rand_arm.txt` 的 `_profession_name_` 同时供随机书名使用，故原条目及书名消费者保持原样。在 `randname.txt` 新增第九个中文专用池 `_randart_profession_name_`：按原顺序逐项复制原职业池的 50 个候选及权重，仅改上述职业称谓；只切换 `armour` 的两处引用及其递归神器消费者。原有英文键/词库不动，新中文私有键是为满足维护者“书名不变”的要求，由主 agent 批准的有界实施例外，既有精确池指标/门禁相应扩展。`rand_all.txt` 的 `_number_or_qualifier_` 仍供书名使用，其中旧措辞保留。
 - **概率与 RNG 边界**: 候选顺序、权重和每次池查找的抽取次数不变；但中文短写可以跨过既有 25 列名称重试阈值，例如 `深深令人不安的理发师兼外科医生` 为 30 列，短写为 `深深令人不安的外科理发师` 后为 24 列，会改变该组合的重试分支。主 agent 按既有 B4 边界接受这一内在差异，不新增兼容算法。每线固定种子 1380 件对照只出现四个预期名称修改，属性、后续 RNG 状态及英文完整输出一致；这不是对所有中文组合 RNG 一致的保证。沿用 B4：`items()` 内差异留在物品子生成器，外部直接 `make_item_randart()` 则推进当前活动 RNG。只影响新生成名，不迁移旧存档，不改引号、存储和查询隔离。
+
+### D-C-122 — D-1..D-7 术语对齐与随机书名命名规则（稳定线）
+
+- **Type**: C — Terminology clarification
+- **Status**: active
+- **Date**: 2026-11-19
+- **Source**: 维护者批准的 D-1..D-7 确认决策；本条为 `chn-0.34.1-base` 落地记录。
+- **D-1**: `mon-info.cc` 的怪物名「」引号本轮维持现状，不扩展到新的怪物类别，不改 C++。
+- **D-2**: `rFire∞` / `rCold∞` / `rElec∞` 在稳定线 catalog 中 0 命中（仅 trunk 有），本线无需修改。
+- **D-3**: 旧裸键 `acidic bite`、`molten scales`、`repulsion field`、`shaggy fur`、`sharp scales`、`thin skeletal structure`、`tough skin` 对齐 `mutation|...` 与 glossary（酸性撕咬、熔融鳞片、排斥力场、浓密皮毛、锐利鳞片、纤细骨骼、硬化表皮）；同一变异的覆盖描述及获得/消退消息中仍用旧名称的“熔岩鳞片／熔岩般的鳞片”“排斥场”“蓬松毛发”同步。英文不同的 razor-sharp 及自然描述句（坚韧的皮肤、骨骼结构纤细）不机械替换。`flail → 链枷`，用于武器基础类型及机制、物品、怪物描述；`quotes.txt` 文学引文保留连枷。因术语检查器的 `reject=` 扫描不含引文例外，glossary 只文字注明弃用连枷，不设机器 reject 标记。
+- **D-4**: `randbook.txt` 命名规则：11 个 `<School> adj` 池（含稳定线已有的 `forgecraft adj`）去除机械尾“的”，改为 2–4 字定语词干直接接学派名词；单字结果补成双字（如 电→电气、砷→含砷），“般／被…／令人…／…响”等短语改为紧凑词干。`_occult_adjective_` 与 `_last_or_lost_` 同样去“的”；`starting/easy/moderate level book` 与 `_difficult level book owner_` 中跟随拥有者“%s的”而叠加的“的”改为直接修饰或“之”。`_book_adjective_` 用于独立外观，保留“的”；拥有者所有格“%s的”与 `difficult level book` 中强调施法者所有格的“的”保留。只改中文值，键、`%%%%`、`w:N` 与 `@…@` 占位符不变；C++ 与英文不变，已有书名不迁移，中文抽样序列因值不同的递归长度可能变化。
+- **D-5**: 回补 D-C-112，将稳定线所有 contamination 机制处的“诱变辐射”改为“魔法污染”；英文明确写 mutagenic radiation 的 `Contam status` 与 `Yara's Violent Unravelling spell` 保留“诱变辐射”。
+- **D-6**: quiver 名词统一为“快捷动作”（帮助弹药行的 `%uiver` 键改“设为快捷”，教程的调整/发射快捷动作说明同步）；删除 `command.cc` 已不再使用的旧 Autofight `attack nearest monster` 键。物理颤抖义、`quotes.txt` 字面箭袋、怪物“备有%s”保留。
+- **D-7**: `cleave → 顺劈`（武器属性、`status|Cleave`、`status|cleaving`、顺劈狂热消退消息、Call Canine Familiar 描述）；`electrical cleaving → 电流横扫`（D-C-098）保留。`Fire+ / Fire++ → 着火+ / 着火++`，与 status 键一致。Vehumet powers 描述“增加咒法系法术的射程”对齐为“增加这些破坏性法术的射程”。
+- **Keep / boundaries**: 历史审查快照和冻结评审不回写；严格台账仅由生成器同步必要字段。`reach-cleave` 的“远距劈砍”等相邻措辞未纳入本轮。
