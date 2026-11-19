@@ -1555,7 +1555,7 @@ LUAFN(you_jademantle_crystals_desc)
 
 LUAFN(you_xom_bonus_brand)
 {
-    if (you.attribute[ATTR_XOM_BLESSING] = XOM_BLESSING_CLEAVE)
+    if (you.attribute[ATTR_XOM_BLESSING] == XOM_BLESSING_CLEAVE)
         lua_pushstring(ls, brand_type_name(static_cast<brand_type>(you.props[XOM_CLEAVE_BRAND_KEY].get_int()), false));
     else
         lua_pushstring(ls, "None");

@@ -5274,6 +5274,79 @@ TEST_CASE("R52 help key columns align after markup and CJK rendering",
     CHECK(found);
 }
 
+TEST_CASE("action footers and tile labels use the display punctuation",
+          "[zh-translation][p2-code]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    const bool feature = GENERATE(false, true);
+    const vector<command_type> commands = feature
+        ? vector<command_type>{CMD_OPEN_DOOR, CMD_CLOSE_DOOR, CMD_MAP_PREV_LEVEL}
+        : vector<command_type>{CMD_READ, CMD_DROP, CMD_INSCRIBE_ITEM};
+    const vector<string> words = feature
+        ? vector<string>{T_("(O)pen"), T_("(C)lose"), T_("([)view destination")}
+        : vector<string>{T_("(r)ead"), T_("(d)rop"), T_("(i)nscribe")};
+    const string comma = language == lang_t::ZH ? T_(",") : ", ";
+    const string period = language == lang_t::ZH ? "\xE3\x80\x82" : ".";
+    const string last = !feature && language == lang_t::ZH ? comma : T_(", or ");
+    const vector<string> expected = {
+        words[0],
+        words[0] + last + words[1],
+        words[0] + comma + words[1] + last + words[2],
+    };
+    vector<command_type> actions;
+    for (size_t i = 0; i < commands.size(); ++i)
+    {
+        actions.push_back(commands[i]);
+        string label = feature ? feature_action_desc(actions, DNGN_FLOOR)
+                               : item_actions_desc(actions);
+        REQUIRE(label == expected[i] + period);
+        REQUIRE(strip_suffix(label, T_(".")));
+        CHECK(label == expected[i]);
+    }
+}
+
+TEST_CASE("reading Xom's bonus brand and status preserves the blessing",
+          "[zh-translation][p2-code]")
+{
+    const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
+    TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
+    unwind_var<int> restore_blessing(you.attribute[ATTR_XOM_BLESSING]);
+    const bool had_brand = you.props.exists(XOM_CLEAVE_BRAND_KEY);
+    const CrawlStoreValue saved_brand = had_brand
+        ? you.props[XOM_CLEAVE_BRAND_KEY] : CrawlStoreValue();
+    unwinder restore_brand([&] {
+        if (had_brand)
+            you.props[XOM_CLEAVE_BRAND_KEY] = saved_brand;
+        else
+            you.props.erase(XOM_CLEAVE_BRAND_KEY);
+    });
+    you.props[XOM_CLEAVE_BRAND_KEY] = int(SPWPN_CONCUSSION);
+    for (int blessing : {XOM_DID_NOTHING, XOM_BLESSING_CLEAVE})
+    {
+        you.attribute[ATTR_XOM_BLESSING] = blessing;
+        const string expected = blessing == XOM_BLESSING_CLEAVE
+            ? brand_type_name(SPWPN_CONCUSSION, false) : "None";
+        lua_State *ls = clua.state();
+        lua_stack_cleaner restore_stack(ls);
+        REQUIRE(clua.execstring("return you.xom_bonus_brand()", "p2-code", 1) == 0);
+        REQUIRE(lua_isstring(ls, -1));
+        CHECK(string(lua_tostring(ls, -1)) == expected);
+        REQUIRE(you.attribute[ATTR_XOM_BLESSING] == blessing);
+
+        const string description = getLongDescription("cleave+ status");
+        REQUIRE_FALSE(description.empty());
+        CHECK(description.find("{{") == string::npos);
+        if (blessing == XOM_BLESSING_CLEAVE)
+            CHECK(description.find(brand_type_name(SPWPN_CONCUSSION, false)) != string::npos);
+        if (language == lang_t::ZH)
+            CHECK(description.find("None") == string::npos);
+        else if (blessing == XOM_DID_NOTHING)
+            CHECK(description.find("None") != string::npos);
+        CHECK(you.attribute[ATTR_XOM_BLESSING] == blessing);
+    }
+}
+
 TEST_CASE("Speech addresses and possesses player and allied monster foes",
           "[zh-translation][p1-foe-quiver]")
 {
