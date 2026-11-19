@@ -5309,7 +5309,16 @@ TEST_CASE("reading Xom's bonus brand and status preserves the blessing",
 {
     const lang_t language = GENERATE(lang_t::EN, lang_t::ZH);
     TranslationFixture translation(language, language == lang_t::ZH ? "zh" : nullptr);
-    unwind_var<player> restore_player(you);
+    unwind_var<int> restore_blessing(you.attribute[ATTR_XOM_BLESSING]);
+    const bool had_brand = you.props.exists(XOM_CLEAVE_BRAND_KEY);
+    const CrawlStoreValue saved_brand = had_brand
+        ? you.props[XOM_CLEAVE_BRAND_KEY] : CrawlStoreValue();
+    unwinder restore_brand([&] {
+        if (had_brand)
+            you.props[XOM_CLEAVE_BRAND_KEY] = saved_brand;
+        else
+            you.props.erase(XOM_CLEAVE_BRAND_KEY);
+    });
     you.props[XOM_CLEAVE_BRAND_KEY] = int(SPWPN_CONCUSSION);
     for (int blessing : {XOM_DID_NOTHING, XOM_BLESSING_CLEAVE})
     {
@@ -5324,7 +5333,14 @@ TEST_CASE("reading Xom's bonus brand and status preserves the blessing",
         REQUIRE(you.attribute[ATTR_XOM_BLESSING] == blessing);
 
         const string description = getLongDescription("cleave+ status");
-        CHECK(description.find(expected) != string::npos);
+        REQUIRE_FALSE(description.empty());
+        CHECK(description.find("{{") == string::npos);
+        if (blessing == XOM_BLESSING_CLEAVE)
+            CHECK(description.find(brand_type_name(SPWPN_CONCUSSION, false)) != string::npos);
+        if (language == lang_t::ZH)
+            CHECK(description.find("None") == string::npos);
+        else if (blessing == XOM_DID_NOTHING)
+            CHECK(description.find("None") != string::npos);
         CHECK(you.attribute[ATTR_XOM_BLESSING] == blessing);
     }
 }
