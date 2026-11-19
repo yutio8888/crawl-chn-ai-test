@@ -104,6 +104,7 @@ re-entry trigger：仅当 TAG_MAJOR_VERSION 变更或遗留存档路径重新激
   断言测试；精确候选 OID 摘要由编排者记录于 Issue #42 评论（重建命令可复现）
 - 碰撞修复说明：首轮以普通键 `Wrath→神怒` 落地被 `verify_zh.sh` 静态完整性检查拦截（canonical `wrath` 双定义：铭印键 5061 `wrath→狂怒` + 新键 9382 `Wrath→神怒`）；运行时 SourceDB 键全小写规范化，二者同键。改用语境键后碰撞消除（`card name|wrath` 与 `wrath` 规范键不同），武器铭印 `wrath→狂怒` 不受影响。
 - 验证：`verify_zh.sh --profile translation` 0 blocking；`--profile code` 0 blocking（含 i18n 提取/键覆盖：`card name|Wrath` 被识别）；`test_card_inventory` 32 测试全绿（含覆盖/拒绝/竞争/替换变异夹具）。
+- 2026-11-19 后续：按“不额外描述英文原文未强调的机制”原则，删去 Velocity 牌描述中的“（并可能移除自身的减速效果）”，现为“抽出此牌可以让盟友获得极大的速度，或让敌人严重迟缓。”；同批 Vitriol 牌“酸箭草”统一为“奥克罗布植物”。
 
 ## 覆盖证明
 
