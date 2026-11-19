@@ -21,7 +21,7 @@ Usage:
   python3 .claude/scripts/zh_strict_audit.py \\
       [--source-txt crawl-ref/source/dat/i18n/zh/source.txt] \\
       [--descript-dir crawl-ref/source/dat/descript/zh] \\
-      [--json] [--limit N]
+      [--json] [--limit N] [--actionable-only]
 
 Output: grouped candidate report (file, key, kind, sample) to stdout.
 """
@@ -75,6 +75,56 @@ _STRIP_PATTERNS = [
 _COMMENT_LINE = re.compile(r'^\s*#.*$', re.MULTILINE)
 
 
+# Identifiers use ASCII boundaries even when embedded in Chinese prose.
+_CONFIG_TOKEN = re.compile(
+    r'(?<![A-Za-z0-9_])(?:CMD_[A-Z0-9_]+|auto_[a-z0-9_]+|'
+    r'\.crawlrc|init\.txt|morgue)(?![A-Za-z0-9_])')
+# A key name may also be an ordinary English word. Match complete shortcut
+# expressions in keycaps, or require an explicit key gesture in running text.
+_MODIFIER = r'(?:ctrl|alt|shift)'
+_KEY = (r'(?:escape|esc|tab|del|home|end|pgup|pgdn|numlock|bksp|backspace|'
+        r'space|return|enter|insert|up|down|(?:left|right|middle)-click|left|right|'
+        r'numpad[- ]?[0-9]|dir\.|方向键?|左键|右键|右击|左击|ctrl|alt|shift|'
+        r'\\{1,2}|[a-z0-9()])')
+_MOD_PREFIX = rf'{_MODIFIER}[ \t]*[+-][ \t]*'
+_CHORD = rf'(?:{_MOD_PREFIX})+{_KEY}'
+_STROKE = rf'(?:{_MOD_PREFIX})*{_KEY}'
+_KEY_LIST = rf'{_STROKE}(?:[ \t]*[/|、][ \t]*{_STROKE})*'
+_SHORTCUT = re.compile(
+    # Markup alone does not imply that the enclosed words are shortcuts.
+    rf'<(?P<tag>w|input)>[ \t]*{_KEY_LIST}[ \t]*</(?P=tag)>'
+    rf'|\[[ \t]*{_KEY_LIST}[ \t]*\]'
+    # Explicit key gestures, alternative bindings and shortcut legends.
+    rf'|(?:按[住下]?|方向键/|键</w>：等同于)[ \t]*{_KEY_LIST}(?![a-z0-9_])'
+    rf'|取消（{_KEY_LIST}）'
+    rf'|(?<![a-z0-9_])(?:{_KEY}、)?{_CHORD}(?![a-z0-9_])'
+    rf'|(?<![a-z0-9_]){_KEY_LIST}[ \t]*(?=键)'
+    r'|(?<![a-z0-9_])(?:esc(?:ape)?(?=[ \t]*(?:-[ \t]*)?(?:退出|取消))'
+    r'|tab(?=切换)|numlock(?![a-z0-9_]))'
+    r'|^[ \t]*bksp(?=[ \t]+-[ \t]+)',
+    re.IGNORECASE | re.ASCII | re.MULTILINE)
+
+# A dash introduces the credit. Book titles may wrap at any column and
+# translator credits can have a different indent from the author line.
+_QUOTE_CREDIT = re.compile(r'^[ \t]+[-—]')
+_CREDIT_CONTINUATION = re.compile(r'^(?:[ \t]{5,}\S|[ \t]*trans\.)', re.IGNORECASE)
+
+
+def _strip_quote_credits(text):
+    body = []
+    credit = ''
+    for line in text.splitlines():
+        wrapped_title = credit.count('"') % 2 or credit.count('_') % 2
+        if _QUOTE_CREDIT.match(line):
+            credit = line
+        elif line.strip() and credit and (wrapped_title or _CREDIT_CONTINUATION.match(line)):
+            credit += '\n' + line
+        else:
+            credit = ''
+            body.append(line)
+    return '\n'.join(body)
+
+
 def _iscjk(cp: int) -> bool:
     """CJK ideographs, kana, hangul, and CJK/fullwidth punctuation."""
     return ((0x3000 <= cp <= 0x30FF) or
@@ -94,36 +144,36 @@ def strip_templates(text: str) -> str:
     return out
 
 
-def strict_mixed_cn_en(text: str):
+def strict_mixed_cn_en(text: str, actionable_only=False, file_tag=None):
     """Like the former runtime mixed-CN/EN rule but returns the offending English tokens and
     uses only the STRICT_WHITELIST. Operates on template-stripped text."""
     cleaned = strip_templates(text)
     if not any(_iscjk(ord(c)) for c in cleaned):
         return []
+    if actionable_only:
+        if file_tag == 'quotes.txt':
+            text = _strip_quote_credits(text)
+        cleaned = strip_templates(_SHORTCUT.sub(' ', _CONFIG_TOKEN.sub(' ', text)))
+
     offenders = []
-    i = 0
-    while i < len(cleaned):
-        c = cleaned[i]
-        if c.isascii() and c.isalpha():
-            j = i + 1
-            while j < len(cleaned) and cleaned[j].isascii() and cleaned[j].isalpha():
-                j += 1
-            token = cleaned[i:j]
-            if len(token) >= 3 and token.lower() not in STRICT_WHITELIST:
-                offenders.append(token)
-            i = j
-        else:
-            i += 1
+    for match in re.finditer(r'[A-Za-z]{3,}', cleaned):
+        token = match.group()
+        lower = token.lower()
+        # The legacy whitelist includes rElec, but an inline immunity label
+        # ending in infinity is a display candidate in the actionable report.
+        immunity = actionable_only and cleaned.startswith('∞', match.end())
+        if lower not in STRICT_WHITELIST or immunity and lower == 'relec':
+            offenders.append(token)
     return offenders
 
 
-def audit_entries(entries, file_tag):
+def audit_entries(entries, file_tag, actionable_only=False):
     """Run strict checks over a {key: value} mapping. Returns candidate dicts."""
     candidates = []
     for key, value in entries.items():
         if not value:
             continue
-        offenders = strict_mixed_cn_en(value)
+        offenders = strict_mixed_cn_en(value, actionable_only, file_tag)
         if offenders:
             candidates.append({
                 'file': file_tag,
@@ -141,6 +191,8 @@ def main():
                     default='crawl-ref/source/dat/i18n/zh/source.txt')
     ap.add_argument('--descript-dir',
                     default='crawl-ref/source/dat/descript/zh')
+    ap.add_argument('--actionable-only', action='store_true',
+                    help='filter shortcut, configuration and citation noise')
     ap.add_argument('--json', action='store_true')
     ap.add_argument('--limit', type=int, default=0,
                     help='max candidates to print per file (0 = all)')
@@ -150,7 +202,7 @@ def main():
 
     if os.path.exists(args.source_txt):
         entries = parse_source_txt(args.source_txt)
-        all_candidates += audit_entries(entries, 'source.txt')
+        all_candidates += audit_entries(entries, 'source.txt', args.actionable_only)
 
     if os.path.isdir(args.descript_dir):
         for name in sorted(os.listdir(args.descript_dir)):
@@ -158,7 +210,7 @@ def main():
                 continue
             path = os.path.join(args.descript_dir, name)
             entries = parse_source_txt(path)
-            all_candidates += audit_entries(entries, name)
+            all_candidates += audit_entries(entries, name, args.actionable_only)
 
     if args.json:
         import json
