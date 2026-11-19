@@ -367,7 +367,7 @@ CMD_GAME_MENU
 %%%%
 CMD_GAME_MENU verbose
 
-显示这个游戏的菜单。
+显示游戏内菜单。
 %%%%
 CMD_CHARACTER_DUMP
 
