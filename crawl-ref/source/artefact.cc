@@ -1847,11 +1847,13 @@ string get_gizmo_name(const item_def &item)
             materializeMiscStringRecipe(fields[4], translated);
         if (adjective.empty())
             return fallback;
+        // Chinese gizmo parts are joined without ASCII spaces.
+        const char * const space = translated ? "" : " ";
         if (style == 2)
-            return adjective + " " + noun;
+            return adjective + space + noun;
         if (style == 3)
-            return modifier + adjective + " " + noun;
-        return adjective + " " + modifier + noun;
+            return modifier + adjective + space + noun;
+        return adjective + space + modifier + noun;
     }
     default:
         return fallback;
