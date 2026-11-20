@@ -2461,7 +2461,11 @@ public:
                     altar_name = "TSO";
                 else
                     altar_name  = god_name(god);
-                char god_initial = god == GOD_SHINING_ONE ? '1'   : altar_name.at(0);
+                // Hotkeys use the English god name: the localised name may
+                // begin with a multibyte UTF-8 sequence.
+                const string god_en = _god_name_en(god);
+                char god_initial = god == GOD_SHINING_ONE || god_en.empty()
+                                   ? '1' : god_en[0];
 
                 level_pos altar_target = nearest_altars[god];
 

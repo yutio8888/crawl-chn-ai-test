@@ -1754,6 +1754,85 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: adjective gizmo styles join Chinese parts without spaces",
+                 "[zh-translation][gizmo]")
+{
+    rng::subgenerator scoped_rng(0x2900290029002901ULL,
+                                 0x29c09c09c09c09c1ULL);
+    const misc_string_recipe noun = selectMiscStringRecipe("gizmo_noun");
+    const misc_string_recipe modifier =
+        selectMiscStringRecipe("gizmo_modifier");
+    const misc_string_recipe adjective =
+        selectMiscStringRecipe("gizmo_adjective");
+    REQUIRE_FALSE(noun.locator.empty());
+    REQUIRE_FALSE(modifier.locator.empty());
+    REQUIRE_FALSE(adjective.locator.empty());
+
+    const string zh_noun = materializeMiscStringRecipe(noun.locator, true);
+    const string zh_mod = materializeMiscStringRecipe(modifier.locator, true);
+    const string zh_adj =
+        materializeMiscStringRecipe(adjective.locator, true);
+    const string en_noun = materializeMiscStringRecipe(noun.locator, false);
+    const string en_mod = materializeMiscStringRecipe(modifier.locator, false);
+    const string en_adj =
+        materializeMiscStringRecipe(adjective.locator, false);
+
+    const struct
+    {
+        char style;
+        string zh;
+        string en;
+    } cases[] = {
+        { '2', zh_adj + zh_noun, en_adj + " " + en_noun },
+        { '3', zh_mod + zh_adj + zh_noun, en_mod + en_adj + " " + en_noun },
+        { '4', zh_adj + zh_mod + zh_noun, en_adj + " " + en_mod + en_noun },
+    };
+
+    for (const auto &c : cases)
+    {
+        CAPTURE(c.style);
+        item_def item;
+        item.base_type = OBJ_GIZMOS;
+        item.quantity = 1;
+        item.rnd = 1;
+        // A distinct stored name proves both languages render the recipe.
+        item.props[ARTEFACT_NAME_KEY].get_string() = "fallback gizmo";
+        item.props[GIZMO_NAME_RECIPE_KEY].get_string() =
+            string("v1|") + c.style + "|" + noun.locator + "|"
+            + modifier.locator + "|" + adjective.locator + "|";
+
+        Options.language = lang_t::ZH;
+        Options.lang_name = "zh";
+        const string zh = get_gizmo_name(item);
+        REQUIRE(zh == c.zh);
+        REQUIRE(zh.find(' ') == string::npos);
+
+        Options.language = lang_t::EN;
+        Options.lang_name = nullptr;
+        REQUIRE(get_gizmo_name(item) == c.en);
+        REQUIRE(c.en.find(' ') != string::npos);
+
+        {
+            // Chinese mode without Chinese TextDB inputs falls back to the
+            // English components, which must keep their word separator.
+            Options.language = lang_t::ZH;
+            Options.lang_name = "zz-no-textdb";
+            databaseSystemInit();
+            unwinder restore_textdb([]()
+            {
+                Options.language = lang_t::ZH;
+                Options.lang_name = "zh";
+                databaseSystemInit();
+            });
+            REQUIRE(get_gizmo_name(item) == c.en);
+        }
+    }
+
+    Options.language = lang_t::ZH;
+    Options.lang_name = "zh";
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: graffiti production preserves every root and display RNG",
                  "[zh-translation][graffiti][issue-66][rng]")
 {
