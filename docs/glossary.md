@@ -935,6 +935,7 @@
 | `Guardian` | 守卫 | 佐姆守卫祝福状态灯；区别一般“守护者”描述；decision=D-C-109 |
 | `Spellstride` | 法术阔步 | 佐姆法术阔步祝福状态灯；冲锋时消耗法力沿途生成活体射线法术；decision=D-C-109 |
 | `Troupe` | 剧团 | 佐姆人偶剧团祝福状态灯；需极短标签；decision=D-C-109 |
+| `Troupe+` | 剧团+ | 佐姆人偶剧团祝福状态灯变体：待赐予人偶数大于 1 时加“+”，旁侧计数由状态正文说明；沿用 `Cleave+`/`Reach+` 的加号词根；decision=D-C-109/D-C-130 |
 | `status\|Battleshape` | 战形 | 佐姆混沌战斗形态祝福状态灯短标签（2 字）；与 battlesphere 战斗法球同构词；完整词根见“战斗形态”；decision=D-C-109 |
 | battleshape | 战斗形态 | 佐姆祝福与怪物正文词根；与 battlesphere 战斗法球同构词；decision=D-C-109 |
 | `Protean` | 千变 | 佐姆千变形态祝福状态灯；低血量时迸出渴望之肉盟友；decision=D-C-109 |

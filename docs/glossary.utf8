@@ -1500,6 +1500,7 @@ Trog	特洛格	domain=gods; source=EN/ZH; 类型=音译; 裁决=[D-A-002]
 Trog's Hand	特洛格之手	domain=spells; source=EN/ZH; 备注=✅；提供强力恢复与意志力
 troll	巨魔	domain=species; source=EN/ZH; 复合格式=巨魔 + 职业
 Troupe	剧团	domain=status; source=EN/ZH; 依据 / 作用域=佐姆人偶剧团祝福状态灯；需极短标签；decision=D-C-109
+Troupe+	剧团+	domain=status; source=EN/ZH; 依据 / 作用域=佐姆人偶剧团祝福状态灯变体：待赐予人偶数大于 1 时加“+”，旁侧计数由状态正文说明；沿用 `Cleave+`/`Reach+` 的加号词根；decision=D-C-109/D-C-130
 Tukima's Dance	图基玛之舞	domain=spells; source=EN/ZH; 备注=✅；活化敌方武器使其倒戈
 Twisted Resurrection	扭曲复活	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 two hats	双帽	domain=mutations; source=EN/ZH; 依据 / 作用域=form 伪变异／特征标签；serpent:fakemuts；不声称是可遗传突变；decision=D-C-098
