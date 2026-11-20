@@ -2405,11 +2405,9 @@ static void _xom_change_scenery(int /*sever*/)
     vector<string> effects, terse;
     if (fountains_blood > 0)
     {
-        string fountains = make_stringf(
-                 T_("%s fountain%s start%s gushing blood"),
-                 fountains_blood == 1 ? "a" : "some",
-                 fountains_blood == 1 ? ""  : "s",
-                 fountains_blood == 1 ? "s" : "");
+        string fountains = fountains_blood == 1
+            ? T_("a fountain starts gushing blood")
+            : T_("some fountains start gushing blood");
 
         if (effects.empty())
             fountains = uppercase_first(fountains);

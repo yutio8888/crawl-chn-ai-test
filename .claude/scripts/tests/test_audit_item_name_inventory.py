@@ -1554,13 +1554,40 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         previous = MODULE.parse_review_results_v3(
             MODULE.revision_snapshot(QUALITY_M1_BUILDER_BASELINE).read(
                 "docs/item-extended-review-results.md"))
+        # Wave 2 translated the untranslated gizmo suffixes/modifiers and
+        # disambiguated articulation, so these 27 rows move from keep to
+        # adjust; their pre-review Chinese is unchanged.
+        wave2_adjusted_gizmos = {
+            "gizmo:gizmo_adjective:0008", "gizmo:gizmo_adjective:0138",
+            "gizmo:gizmo_adjective:0139", "gizmo:gizmo_adjective:0140",
+            "gizmo:gizmo_adjective:0142", "gizmo:gizmo_adjective:0146",
+            "gizmo:gizmo_adjective:0150", "gizmo:gizmo_adjective:0153",
+            "gizmo:gizmo_adjective:0154", "gizmo:gizmo_adjective:0155",
+            "gizmo:gizmo_adjective:0157", "gizmo:gizmo_adjective:0159",
+            "gizmo:gizmo_adjective:0161", "gizmo:gizmo_adjective:0162",
+            "gizmo:gizmo_adjective:0163", "gizmo:gizmo_adjective:0164",
+            "gizmo:gizmo_adjective:0165", "gizmo:gizmo_adjective:0166",
+            "gizmo:gizmo_modifier:0014", "gizmo:gizmo_modifier:0018",
+            "gizmo:gizmo_modifier:0021", "gizmo:gizmo_modifier:0023",
+            "gizmo:gizmo_modifier:0044", "gizmo:gizmo_modifier:0061",
+            "gizmo:gizmo_modifier:0119", "gizmo:gizmo_modifier:0180",
+            "gizmo:gizmo_noun:0164",
+        }
+        seen = set()
         for row in previous:
             if row["identity"].startswith("gizmo:"):
                 current = rows[row["identity"]]
                 self.assertEqual(row["decision"]["pre_review_chinese"],
                                  current["pre_review_chinese"])
-                self.assertEqual(row["decision"]["terminal_conclusion"],
-                                 current["terminal_conclusion"])
+                if row["identity"] in wave2_adjusted_gizmos:
+                    seen.add(row["identity"])
+                    self.assertEqual("keep",
+                                     row["decision"]["terminal_conclusion"])
+                    self.assertEqual("adjust", current["terminal_conclusion"])
+                else:
+                    self.assertEqual(row["decision"]["terminal_conclusion"],
+                                     current["terminal_conclusion"])
+        self.assertEqual(wave2_adjusted_gizmos, seen)
 
     def test_existing_item_writer_preserves_notice_only_glossary_provenance(self):
         payload, _ = MODULE.build_extended_inventory_v3()

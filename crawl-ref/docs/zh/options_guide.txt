@@ -140,7 +140,7 @@ Crawl 选项指南
                 tile_player_tile, tile_weapon_offsets, tile_shield_offsets,
                 tile_grinch, tile_web_mouse_control,
                 tile_web_mobile_input_helper
-4-  角色记录。
+4-  角色报告。
 4-a     保存。
                 dump_on_save
 4-b     物品与击杀。
@@ -467,7 +467,7 @@ save_dir = saves/
         解释。
 
 morgue_dir = morgues/
-        写入死亡记录文件（morgue*.txt 和 morgue*.lst）及角色记录文件的目录。
+        写入死亡记录文件（morgue*.txt 和 morgue*.lst）及角色报告文件的目录。
         相对路径会以 `crawl_dir` 的值为基准进行解释。
 
 macro_dir = <path>
@@ -2238,19 +2238,19 @@ tile_web_mobile_input_helper = auto
         移动设备上启用虚拟键盘。设为 true 或 false 时，手动启用或禁用该
         输入栏。设为 auto 时，只在带有触摸屏的设备上显示。
 
-4-  角色记录。
+4-  角色报告。
 =============
 
 4-a     保存。
 -------------
 
 dump_on_save = true
-        设为 true 时，保存游戏会自动创建或更新角色记录。
+        设为 true 时，保存游戏会自动创建或更新角色报告。
 
 4-b     物品与击杀。
 -----------------
 
-角色记录或死亡记录文件的末尾，会列出角色活动期间死亡的所有怪物。默认情况
+角色报告或死亡记录文件的末尾，会列出角色活动期间死亡的所有怪物。默认情况
 下，死亡的怪物分成三组：
    击败的生物    -- 角色杀死的怪物
    连带击杀      -- 友方怪物造成的击杀
@@ -2267,7 +2267,7 @@ dump_kill_places = (none | all | single)
         'single' 则采用默认方式，只为单次击杀显示击杀地点。
 
 dump_item_origins = artefacts
-        游戏会记住你在哪里找到物品。如果希望角色记录列出物品来源记忆，可用
+        游戏会记住你在哪里找到物品。如果希望角色报告列出物品来源记忆，可用
         此选项选择要标注哪些物品。可用的选择器为：
                 artefacts, ego_arm, ego_weap, jewellery, runes,
                 staves, books, all, none。
@@ -2281,7 +2281,7 @@ dump_item_origin_price = -1
         按价格选择。
 
 dump_message_count = 20
-        角色记录文件中显示的最后几条消息的数量。
+        角色报告文件中显示的最后几条消息的数量。
 
 dump_order  = header,hiscore,stats,misc,apostles,inventory,skills,spells,
 dump_order += overview,mutations,messages,screenshot,monlist,kills,
@@ -2296,7 +2296,7 @@ dump_order += notes,screenshots,vaults,skill_gains,action_counts
         Crawl 的主干构建（不包括发行版或预发布测试版）默认启用
         "turns_by_place" 一节，并把它放在记录末尾。
 
-        为了让角色记录更美观，可以加入：
+        为了让角色报告更美观，可以加入：
             dump_order += -
         在各节之间放置分隔线。
 
@@ -2318,7 +2318,7 @@ dump_order += notes,screenshots,vaults,skill_gains,action_counts
 4-c     笔记。
 -------------
 
-Crawl 可以在游戏期间自动记录特定事件。可以在角色记录或死亡记录文件中阅读
+Crawl 可以在游戏期间自动记录特定事件。可以在角色报告或死亡记录文件中阅读
 这些内容。以下选项用于调整此行为。
 会记录以下事件：
         - 获得或失去一个等级

@@ -28,7 +28,7 @@ gizmo_adjective
 
 铰接
 
-铰接
+关节
 
 非对称
 
@@ -305,16 +305,16 @@ gizmo_adjective
 
 @gizmo_modifier@轴向
 
-@gizmo_modifier@bolic
+@gizmo_modifier@双曲
 
-@gizmo_modifier@boloid
+@gizmo_modifier@拟球
 
-@gizmo_modifier@choric
+@gizmo_modifier@和声
 
 @gizmo_modifier@控制
 
 # 从“涡轮封装器”的“hydrocoptic”反向构词
-@gizmo_modifier@coptic
+@gizmo_modifier@旋流
 
 @gizmo_modifier@耦合
 
@@ -322,7 +322,7 @@ gizmo_adjective
 
 @gizmo_modifier@循环
 
-@gizmo_modifier@dermic
+@gizmo_modifier@表层
 
 @gizmo_modifier@动态
 
@@ -330,39 +330,39 @@ gizmo_adjective
 
 @gizmo_modifier@功能
 
-@gizmo_modifier@genic
+@gizmo_modifier@生成
 
 @gizmo_modifier@级
 
 @gizmo_modifier@图形
 
-@gizmo_modifier@gravic
+@gizmo_modifier@重力
 
-@gizmo_modifier@lytic
+@gizmo_modifier@裂解
 
-@gizmo_modifier@matic
+@gizmo_modifier@自控
 
 @gizmo_modifier@度量
 
-@gizmo_modifier@meric
+@gizmo_modifier@聚合
 
 @gizmo_modifier@相位
 
-@gizmo_modifier@scopic
+@gizmo_modifier@观测
 
 @gizmo_modifier@静态
 
-@gizmo_modifier@strophic
+@gizmo_modifier@回转
 
-@gizmo_modifier@thetic
+@gizmo_modifier@合成
 
-@gizmo_modifier@tonic
+@gizmo_modifier@张力
 
-@gizmo_modifier@topic
+@gizmo_modifier@同位
 
-@gizmo_modifier@tronic
+@gizmo_modifier@电子
 
-@gizmo_modifier@tropic
+@gizmo_modifier@向性
 
 %%%%
 gizmo_noun
@@ -715,7 +715,7 @@ gizmo_noun
 
 @gizmo_modifier@成形器
 
-@gizmo_modifier@lator
+@gizmo_modifier@激励器
 
 @gizmo_modifier@溶解器
 
@@ -759,7 +759,7 @@ gizmo_modifier
 生长
 
 # 《闻起来像涅槃》
-bargle
+巴格
 
 气压
 
@@ -767,18 +767,18 @@ bargle
 
 深
 
-beepo
+哔哔
 
 苯
 
 双
 
-bingo
+宾果
 
 生物
 
 # 黑客俚语
-bogo
+波戈
 
 美
 
@@ -820,7 +820,7 @@ bogo
 
 贯穿
 
-dingle
+叮当
 
 十二
 
@@ -855,7 +855,7 @@ dingle
 吉
 
 # 当然，指地精或与地精有关
-gobbo
+地精
 
 角
 
@@ -971,7 +971,7 @@ gobbo
 
 神经
 
-nico
+尼科
 
 硝基
 
@@ -1094,7 +1094,7 @@ nico
 四
 
 # 纪念已故的萨格·西蒙斯（《远方》）
-thago
+萨戈
 
 奇迹
 
