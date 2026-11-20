@@ -53651,6 +53651,9 @@ The world spins around you as you enter the gateway.
 Troupe
 剧团
 %%%%
+Troupe+
+剧团+
+%%%%
 Vines sprout from %s and you feel ready to entangle everything with %s.
 藤蔓从%s上抽芽生长，你觉得准备好用%s纠缠一切了。
 %%%%
@@ -53669,8 +53672,8 @@ Xom grants you chaotic knowledge of %s.
 Xom locks all of the stairs on the floor! (Kill monsters to unlock them again.)
 佐姆锁上了这一层所有的楼梯！（杀死怪物才能重新解锁。）
 %%%%
-Xom raises dopplegangers of enemies you slay yourself.
-佐姆会为你亲手斩杀的敌人唤起二重身。
+Xom raises dopplegangers of enemies you slay.
+佐姆会为你斩杀的敌人唤起二重身。
 %%%%
 Xom returns %s to life.
 佐姆使%s复活了。

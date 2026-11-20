@@ -5176,3 +5176,30 @@ R19–R21 的全文检索确认项按消费者处理：MP 的恢复、储量、�
 - **Supersedes / narrows**: 取代 D-C-095 中 `bone scales` 单行的译名与键名；D-C-095 其余条目继续有效。
 - **Verification**: 术语上下文 digest `0713804be4c1a7bec95948e56dc70971279386bb2baeef343625455205509769`；
   `verify_zh.sh --profile ci`、物品/世界审核台账再生成与独立代码/译文审核见同步 PR。
+
+### D-C-130 — 上游 b9a05d6564 同步：佐姆人偶剧团计数与封梯救援消息
+
+- **Type**: C — Upstream content intake
+- **Status**: active
+- **Date**: 2026-11-20
+- **Source**: 上游 `9cbd9afba78..b9a05d6564`（Xom 人偶剧团、封梯与救援重做）。
+- **Choice**:
+  1. 状态灯 `Troupe+`（`status.cc` `_describe_xom_blessing`，待赐予人偶数 > 1 时）→「剧团+」，
+     与 `Troupe`「剧团」同根，沿用 `Cleave+`/`Reach+` 加号写法；旁侧 `(+N)` 计数含义由
+     `Troupe+ status` 描述正文说明。
+  2. `Troupe status` / `Troupe+ status`（`dat/descript/status.txt`）→
+     「当有形体的敌人被斩杀时，一旦战斗结束，佐姆就会按它们的模样赐予你人偶。」
+     及补充「（此状态旁的数字表示当前有多少个人偶正等待赐予。）」；英文删去 `yourself`
+     是上游让宠物击杀也计入人偶，中文相应删去「亲手」。
+  3. `Xom raises dopplegangers of enemies you slay.` →「佐姆会为你斩杀的敌人唤起二重身。」
+     同步上游删去 `yourself`，术语 `doppleganger → 二重身` 不变（D-C-109）。
+  4. 新建 `dat/database/zh/godspeak.txt` 条目 `Xom floor lock rescue` 三条随机台词；
+     `Xom sneaky congratulations` 补入上游新增第 2 条台词。术语沿用 `floor lock → 封梯`、
+     `troupe → 剧团`、`mannequin → 人偶`（D-C-109）。
+- **Keep**: `Indomitable`/`Exegesis`/`mannequin timer`/`battleshape cooldown`/`protean cooldown`/
+  `Xom fake banish` 等 `duration-data.h` 新增字段是巫师模式状态名与内部计时器键，不作显示翻译；
+  `DUR_XOM_FAKE_BANISH` 无结束消息，内部枚举与存档身份不变；`most pitiful` 期盼魔领主描述属性
+  既有路径不改。
+- **Affected files**: `crawl-ref/source/dat/i18n/zh/source.txt`、
+  `crawl-ref/source/dat/database/zh/godspeak.txt`、`crawl-ref/source/dat/descript/zh/status.txt`、
+  `docs/glossary.md`、`docs/glossary.utf8`。

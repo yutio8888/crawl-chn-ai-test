@@ -183,7 +183,7 @@ class GodInventoryAuditTest(unittest.TestCase):
             {
                 "god_descriptions": 82,
                 "god_longnames": 23,
-                "godspeak": 214,
+                "godspeak": 215,
             },
             self.payload["textdb_counts"],
         )

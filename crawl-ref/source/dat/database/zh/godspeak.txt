@@ -1840,6 +1840,17 @@ Xom sneaky congratulations
 
 “你可真是个机灵的小玩具！”
 
+“我早该想到这一招的。”
+
+%%%%
+Xom floor lock rescue
+
+“你一个人在那边看着挺孤单的，所以我给你带了几个朋友来。”
+
+佐姆给你挪了一些同伴过来。
+
+“总躲在角落里可不利于身心健康。”
+
 %%%%
 Xom knowledge
 

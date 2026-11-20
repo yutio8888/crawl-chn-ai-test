@@ -1672,7 +1672,10 @@ static void _describe_xom_blessing(status_info& inf)
         {
             const int count = you.props.exists(XOM_MANNEQUIN_TROUPE)
                                 ? you.props[XOM_MANNEQUIN_TROUPE].get_vector().size() : 0;
-            inf.light_text = T_("Troupe");
+            inf.light_text = count > 1 ? T_("Troupe+") : T_("Troupe");
+            // Publish the raw English stem so the status-light description
+            // lookup reaches the matching status.txt entry.
+            inf.db_key = count > 1 ? "Troupe+" : "Troupe";
             string count_msg = make_stringf(T_("<lightblue>(+%d)</lightblue>"), count);
             inf.light_text_formatted = make_stringf(T_("<red>T<yellow>r<green>o<cyan>u<lightblue>p<magenta>e %s"),
                                                     count > 0 ? count_msg.c_str() : "");
