@@ -29,11 +29,11 @@ mayhem passive
 %%%%
 repel missiles passive
 
-你会偏转飞弹，从而更容易避开它们。
+你会排斥飞弹，从而更容易避开它们。
 %%%%
 reflection passive
 
-你将被格挡的远程攻击，返给攻击者。
+你会将被成功格挡的远程攻击反射回攻击者。
 %%%%
 acrobat passive
 

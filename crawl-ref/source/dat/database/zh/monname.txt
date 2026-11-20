@@ -1693,8 +1693,6 @@ _japanese_male_name_
 
 大作
 
-英子
-
 英太郎
 
 文人
@@ -1714,6 +1712,8 @@ _japanese_male_name_
 隼太
 
 秀隆
+
+光
 
 久雄
 

@@ -5,7 +5,7 @@ acid (acid) weapon ego
 %%%%
 antimagic (antimagic) weapon ego
 
-它可以减少你的法力，并干扰它所击中生物的咒语和魔法能力。
+它可以减少你的法力，并干扰它所击中生物的法术和魔法能力。
 天生能力和神赐能力不受影响。
 %%%%
 chaos (chaos) weapon ego
@@ -123,7 +123,7 @@ sundering (sunder) weapon ego
 valour (valour) weapon ego
 
 当使用者的生命值高于最大生命值的80%时，它在击中敌人时会发射一道能量束。
-卸下它时会短暂削弱使用者。
+卸下它时会使使用者短暂陷入虚弱状态。
 %%%%
 vampirism (vamp) weapon ego
 
@@ -223,7 +223,7 @@ intelligence (Int+3) armour ego
 %%%%
 invisibility (+Inv) armour ego
 
-激活后，它可以赋予你暂时的隐身能力，但也会消耗你的最大生命值。
+激活后，它可以赋予你暂时的隐身能力，但也会使你因衰竭而降低生命上限。
 %%%%
 light (Light) armour ego
 
@@ -294,7 +294,7 @@ resonance (Resonance) armour ego
 %%%%
 see invisible (SInv) armour ego
 
-它可以让你看见隐形的物体。
+它可以让你看见隐形的事物。
 %%%%
 shadows (Shadows) armour ego
 

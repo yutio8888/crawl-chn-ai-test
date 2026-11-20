@@ -288,7 +288,7 @@ meal
 %%%%
 generic_insult
 
-@insult_adjective1@@insult_adjective2@@insult_noun@
+@insult_adjective1@、@insult_adjective2@@insult_noun@
 %%%%
 insult_adjective1
 
@@ -666,7 +666,7 @@ insult general adj2
 
 饱经风霜的
 
-满嘴日漫宅腔的
+满嘴二次元黑话的
 
 米象脑袋的
 

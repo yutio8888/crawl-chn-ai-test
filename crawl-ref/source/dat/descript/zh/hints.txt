@@ -101,7 +101,6 @@ HINT_SEEN_FIRST_OBJECT
 
 物品进入物品栏后，<localtiles>用一次<input>Shift-左键单击</input>即可把它丢下。每当你用<input>右键单击</input>物品时</localtiles><console>按<input>$cmd[CMD_DROP]</input>即可把它丢下。每当你在物品栏（<input>$cmd[CMD_DISPLAY_INVENTORY]</input>）中查看物品时</console>，都能阅读它的属性和描述。
 %%%%
-%%%%
 HINT_ABYSS
 
 哎呀，你落入深渊了！深渊是个特殊的地方：你无法记住或绘出走过的区域；这里到处都是危险的怪物，你很可能会死。
@@ -169,7 +168,7 @@ HINT_CONVERT
 
 要查看你的神祇所喜爱和厌恶的行为，以及你当前的宗教地位和神赐能力，请按
 <input>$cmd[CMD_DISPLAY_RELIGION]</input><localtiles>，或在你的头像上按
-<input>Shift-right-click</input></localtiles>。
+<input>Shift+右键单击</input></localtiles>。
 %%%%
 HINT_CONVERT Ashenzari
 
@@ -221,7 +220,7 @@ HINT_FUMBLING_SHALLOW_WATER
 %%%%
 HINT_GAINED_MAGICAL_SKILL
 
-精通一个魔法"学派"会使学习和施放该学派的法术变得更容易。
+精通一个魔法“学派”会使学习和施放该学派的法术变得更容易。
 许多法术属于几个学派的组合，在这种情况下，这些学派的平均技能水平
 将决定施法成功率和威力。
 %%%%
@@ -355,7 +354,7 @@ HINT_MULTI_PICKUP
 %%%%
 HINT_NEED_HEALING
 
-如果你的生命值或法力不足，而且没有必须立刻移动的理由，可以休息片刻。最好先退到已经探索过并清除了怪物的区域；在已探索区域的边缘休息，更容易被游荡的怪物打断。按 <w>$cmd[CMD_REST]</w> 或 <w>shift-numpad-5</w><localtiles>，也可以点击“休息”按钮</localtiles>来休息。
+如果你的生命值或法力不足，而且没有必须立刻移动的理由，可以休息片刻。最好先退到已经探索过并清除了怪物的区域；在已探索区域的边缘休息，更容易被游荡的怪物打断。按 <w>$cmd[CMD_REST]</w> 或 <w>Shift+数字小键盘 5</w><localtiles>，也可以点击“休息”按钮</localtiles>来休息。
 %%%%
 HINT_NEED_HEALING_INVIS
 
@@ -463,7 +462,7 @@ HINT_SEEN_DOOR
 %%%%
 HINT_SEEN_ESCAPE_HATCH
 
-这<console>‘$1’</console>是逃生舱口。和楼梯类似，你可以分别用 <w>$cmd[CMD_GO_UPSTAIRS]</w> 和 <w>$cmd[CMD_GO_DOWNSTAIRS]</w> 离开当前楼层<localtiles>（也可以<w>单击</w>舱口）</localtiles>；但与楼梯不同，逃生舱口只能单向通行，因此向下使用时要小心！
+这<console>‘$1’</console>是逃生口。和楼梯类似，你可以分别用 <w>$cmd[CMD_GO_UPSTAIRS]</w> 和 <w>$cmd[CMD_GO_DOWNSTAIRS]</w> 离开当前楼层<localtiles>（也可以<w>单击</w>逃生口）</localtiles>；但与楼梯不同，逃生口只能单向通行，因此向下使用时要小心！
 %%%%
 HINT_SEEN_GOLD
 
@@ -687,7 +686,7 @@ HINT_DESCRIBE_MAGICAL_STAFF
 %%%%
 HINT_DESCRIBE_TRAP_PLATE
 
-这些讨厌的构造会造成一系列令人不快的效果。你无法通过从陷阱上方飞过来避免触发；它们的魔法构造仍会使其生效。
+这些讨厌的装置会造成一系列令人不快的效果。你无法通过从陷阱上方飞过来避免触发；其魔法构造仍会使其生效。
 %%%%
 HINT_DESCRIBE_TRAP_WEB
 
@@ -739,7 +738,7 @@ HINT_DESCRIBE_DISTRACTED_MONSTER
 %%%%
 HINT_REST_BETWEEN_FIGHTS
 
-记得在战斗之间休息，以满生命值和法力进入未探索区域。最好先退到已经探索过并清除了怪物的区域；在已探索区域的边缘休息，更容易被游荡的怪物打断。按 <w>5</w> 或 <w>Shift-numpad 5</w><tiles>，也可以<w>点击休息按钮</w></tiles>来休息。
+记得在战斗之间休息，以满生命值和法力进入未探索区域。最好先退到已经探索过并清除了怪物的区域；在已探索区域的边缘休息，更容易被游荡的怪物打断。按 <w>5</w> 或 <w>Shift+数字小键盘 5</w><tiles>，也可以<w>点击休息按钮</w></tiles>来休息。
 %%%%
 HINT_EXCOMMUNICATED
 
@@ -933,7 +932,7 @@ HINT_DESCRIBE_SCROLL
 %%%%
 HINT_DESCRIBE_JEWELLERY
 
-可以按 <w>$cmd[CMD_WEAR_JEWELLERY]</w> 戴上首饰，再按 <w>$cmd[CMD_REMOVE_JEWELLERY]</w> 卸下<tiles>；在 Tiles 中，也可以单击物品栏中的该物品来完成任一操作</tiles>。
+可以按 <w>$cmd[CMD_WEAR_JEWELLERY]</w> 戴上首饰，再按 <w>$cmd[CMD_REMOVE_JEWELLERY]</w> 卸下<tiles>；在贴图版中，也可以单击物品栏中的该物品来完成任一操作</tiles>。
 %%%%
 HINT_JEWELLERY_HAS_RESIST
 
@@ -973,15 +972,15 @@ HINT_DESCRIBE_TRAP_SHAFT
 %%%%
 HINT_DESCRIBE_DOWNSTAIRS
 
-你可以顺梯而下进入下一层（更深处）（<w>$cmd[CMD_GO_DOWNSTAIRS]</w>）。要回到这一层，请站在上楼梯上按 <w>$cmd[CMD_GO_UPSTAIRS]</w>。<tiles>在 Tiles 中，无论上楼还是下楼，都可以单击<w>鼠标左键</w>来完成。</tiles>
+你可以沿楼梯向下（<w>$cmd[CMD_GO_DOWNSTAIRS]</w>），进入更深的下一层。要回到这一层，请站在上楼梯上按 <w>$cmd[CMD_GO_UPSTAIRS]</w>。<tiles>在贴图版中，无论上楼还是下楼，都可以单击<w>鼠标左键</w>来完成。</tiles>
 %%%%
 HINT_DESCRIBE_UPSTAIRS
 
-你可以顺梯而上进入上一层（更浅处）（<w>$cmd[CMD_GO_UPSTAIRS]</w>）。这很适合撤退或寻找安全的休息地点，因为上一层的怪物较少，而本层的怪物除非紧挨着你，否则无法跟随你上楼。要回到这一层，请站在下楼梯上按 <w>$cmd[CMD_GO_DOWNSTAIRS]</w>。<tiles>在 Tiles 中，两种操作都可以直接单击<w>鼠标左键</w>来完成。</tiles>
+你可以沿楼梯向上（<w>$cmd[CMD_GO_UPSTAIRS]</w>），进入更浅的上一层。这很适合撤退或寻找安全的休息地点，因为上一层的怪物较少，而本层的怪物除非紧挨着你，否则无法跟随你上楼。要回到这一层，请站在下楼梯上按 <w>$cmd[CMD_GO_DOWNSTAIRS]</w>。<tiles>在贴图版中，两种操作都可以直接单击<w>鼠标左键</w>来完成。</tiles>
 %%%%
 HINT_DESCRIBE_ESCAPE_HATCH
 
-上下逃生舱口分别可以用 <w>$cmd[CMD_GO_UPSTAIRS]</w> 和 <w>$cmd[CMD_GO_DOWNSTAIRS]</w> 来快速离开当前楼层。注意，你通常无法立即返回。
+上下逃生口分别可以用 <w>$cmd[CMD_GO_UPSTAIRS]</w> 和 <w>$cmd[CMD_GO_DOWNSTAIRS]</w> 来快速离开当前楼层。注意，你通常无法立即返回。
 %%%%
 HINT_DESCRIBE_CLOSED_DOOR
 
