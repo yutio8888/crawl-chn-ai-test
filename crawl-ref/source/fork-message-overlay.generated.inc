@@ -3395,7 +3395,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"} },
                         { "actor" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} expels a string of sticky webbing."}, {"zh", "NONE", "${actor}吐出一缕黏性蛛网。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} expels a string of sticky webbing."}, {"zh", "NONE", "${actor}喷出一缕黏糊糊的蛛网。"} } },
                     },
                         {},
                         {  },
@@ -5142,14 +5142,14 @@ const catalog_source &generated_monspell_catalog()
                                 "mon.cast.march_of_sorrows_boris.rolls_out_laments.v1",
                                 "materialization-v1|variants=1|27:march of sorrows boris cast:1:0|lua=0|sites=1|27:march of sorrows boris cast:1:0:2:0",
                             {
-                              { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} rolls out ${possessive} victims' laments."}, {"zh", "NONE", "${actor}铺展开${possessive}受害者的挽歌。"} } },
+                              { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} rolls out ${possessive} victims' laments."}, {"zh", "NONE", "${actor}倾泻出${possessive}受害者的哀歌。"} } },
                             },
                             },
                             {
                                 "mon.cast.march_of_sorrows_boris.rolls_out_suffering.v1",
                                 "materialization-v1|variants=1|27:march of sorrows boris cast:1:0|lua=0|sites=1|27:march of sorrows boris cast:1:0:2:1",
                             {
-                              { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} rolls out ${possessive} victims' suffering."}, {"zh", "NONE", "${actor}铺展开${possessive}受害者的苦难。"} } },
+                              { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} rolls out ${possessive} victims' suffering."}, {"zh", "NONE", "${actor}倾泻出${possessive}受害者的苦难。"} } },
                             },
                             },
                         },
@@ -7589,7 +7589,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"} },
                         { "actor" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} beckons forth its champion."}, {"zh", "NONE", "${actor}召唤出其冠军斗士。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} beckons forth its champion."}, {"zh", "NONE", "${actor}召来麾下的勇士。"} } },
                     },
                         {},
                         {  },

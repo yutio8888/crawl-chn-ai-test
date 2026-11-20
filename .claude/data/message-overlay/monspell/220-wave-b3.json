@@ -203,7 +203,7 @@
           "behavior": { "implies_gesture": false, "audible": false },
           "templates": [
             { "language": "en", "relation": "NONE", "pattern": "${actor} beckons forth its champion." },
-            { "language": "zh", "relation": "NONE", "pattern": "${actor}召唤出其冠军斗士。" }
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}召来麾下的勇士。" }
           ]
         }],
         "materialization_cases": [],
