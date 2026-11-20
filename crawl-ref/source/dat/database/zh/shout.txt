@@ -112,11 +112,11 @@ SOUND:@The_monster@发出令人毛骨悚然的呻吟。
 %%%%
 __GURGLE unseen
 
-SOUND:你听到可怕的咯咯声！
+SOUND:你听到可怕的咕噜声！
 %%%%
 __GURGLE seen
 
-SOUND:@The_monster@发出可怕的咯咯声！
+SOUND:@The_monster@发出可怕的咕噜声！
 %%%%
 __CROAK unseen
 

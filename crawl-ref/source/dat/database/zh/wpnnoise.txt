@@ -753,7 +753,7 @@ _common_speaking_no_tension_
 
 @The_weapon@喊道：“无战不欢！”
 
-@The_weapon@叫道：“要作战，不要做爱！”
+@The_weapon@叫道：“要战斗，不要寻欢！”
 
 @The_weapon@喊道：“你当然不能说我迟钝！”
 
@@ -1196,7 +1196,7 @@ w:20
 
 @The_weapon@@_screams_@：“我是佐特之剑！”
 
-@The_weapon@@_screams_@，“我是佐特符文和亮光！”
+@The_weapon@@_screams_@：“我即符文与光辉！”
 
 @The_weapon@@_screams_@：“我爱你们所有人！我送给你们的礼物便是末日决战！”
 
@@ -1275,7 +1275,7 @@ w:1
 # 民谣
 @The_weapon@唱道：“老麦克唐纳有个农场……”
 
-@The_weapon@唱道：“砰！去追黄鼠狼。”
+@The_weapon@唱道：“砰！黄鼠狼蹦出来了。”
 
 # 甲壳虫乐队
 @The_weapon@唱道：“欧布拉第，欧布拉达，日子总是要过……”
@@ -1296,9 +1296,9 @@ w:1
 @The_weapon@唱道：“为欢笑而杀，为泪水而杀……”
 
 # 瑞典民歌
-@The_weapon@唱道：“玫瑰和鼠尾草来了，可爱的薄荷来了，香脂也来了……”
+@The_weapon@唱道：“来吧，玫瑰或鼠尾草，来吧，娇艳薄荷，来吧，香蜂草……”
 
-@The_weapon@唱道：“兽人得了金矿，我得的却是矿井……”
+@The_weapon@唱道：“兽人占了金矿，我却掉进了坑……”
 
 @The_weapon@唱道：“我们曾欢笑，我们曾快乐，我们在阳光下斩杀恶魔……”
 
@@ -1313,7 +1313,7 @@ _real_song_low_tension_
 @The_weapon@唱道：“随他去，顺其自然……”
 
 # 《铃儿响叮当》，歪曲
-@The_weapon@唱道：“今晚滑血多快乐，把滑血歌儿唱！”
+@The_weapon@唱道：“今晚策马高唱杀戮之歌多快乐！”
 
 # 难民营乐队
 @The_weapon@唱道：“这首歌将我温柔处死……”

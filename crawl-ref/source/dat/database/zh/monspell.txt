@@ -84,7 +84,7 @@ unseen Blinkbolt cast
 %%%%
 branch summon cast prefix
 
-@The_monster@召唤出生物，他们来自
+@The_monster@召唤出生物，源自
 %%%%
 Cantrip cast
 

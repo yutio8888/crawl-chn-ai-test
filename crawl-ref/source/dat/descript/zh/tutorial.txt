@@ -258,7 +258,7 @@ tutorial2 exit
   <input>$cmd[CMD_FIRE]$cmd[CMD_TARGET_SELECT]</input> 对预先选定的怪物使用快捷动作
   <input>Shift+Tab</input>, <input>p</input> 对最近的怪物使用快捷动作
   <input>$cmd[CMD_FIRE]$cmd[CMD_TARGET_CYCLE_FORWARD]</input> 瞄准另一个怪物<localtiles>
-  你还可以通过<input>点击</input>它来发射飞弹，然后用<input>回车</input>确认目标。</localtiles>
+  你还可以通过<input>点击</input>它来发射投射物，然后用<input>回车</input>确认目标。</localtiles>
 
 <yellow>休息</yellow>
   <input>$cmd[CMD_WAIT]</input>  等待并休息一回合
