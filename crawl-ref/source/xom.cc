@@ -6214,7 +6214,6 @@ static bool _ensure_player_is_not_stuck()
             mon_list.push_back(*mi);
 
     shuffle_array(mon_list);
-    int sum = count;
 
     for (monster* mon : mon_list)
     {
@@ -6222,8 +6221,11 @@ static bool _ensure_player_is_not_stuck()
         if (find_habitable_spot_near(you.pos(), mon->type, LOS_RADIUS, spot))
         {
             mon->move_to(spot, MV_TRANSLOCATION);
-            sum += _xom_floor_lock_value(*mon);
-            if (sum >= you.attribute[ATTR_XOM_FLOOR_LOCK])
+            // Recompute from scratch: the starting count already includes any
+            // monsters that were reachable before we moved one, so adding this
+            // monster's value to it would count some of them twice.
+            count = _count_reachable_monsters(true);
+            if (count >= you.attribute[ATTR_XOM_FLOOR_LOCK])
             {
                 god_speaks(GOD_XOM, _get_xom_speech("floor lock rescue").c_str());
                 return true;

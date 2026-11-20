@@ -3649,6 +3649,10 @@ void mons_pacify(monster& mon, mon_attitude_type att, bool no_xp)
     if (mon.type == MONS_FLAYED_GHOST)
         end_flayed_effect(&mon);
 
+    // Xom's floor lock counts hostile monsters that stop being threats, so
+    // credit the pacified monster before its base attitude turns neutral.
+    xom_maybe_reduce_floor_lock(mon);
+
     // Make the monster permanently neutral.
     mon.base_attitude = att;
     mon.flags |= MF_WAS_NEUTRAL;
@@ -3672,8 +3676,6 @@ void mons_pacify(monster& mon, mon_attitude_type att, bool no_xp)
                               : mon.pronoun(PRONOUN_POSSESSIVE).c_str())).c_str());
         monster_drop_things(&mon, false, item_is_horn_of_geryon);
     }
-
-    xom_maybe_reduce_floor_lock(mon);
 
     // End constriction.
     mon.stop_constricting_all();
