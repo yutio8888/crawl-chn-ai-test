@@ -1811,6 +1811,21 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         Options.lang_name = nullptr;
         REQUIRE(get_gizmo_name(item) == c.en);
         REQUIRE(c.en.find(' ') != string::npos);
+
+        {
+            // Chinese mode without Chinese TextDB inputs falls back to the
+            // English components, which must keep their word separator.
+            Options.language = lang_t::ZH;
+            Options.lang_name = "zz-no-textdb";
+            databaseSystemInit();
+            unwinder restore_textdb([]()
+            {
+                Options.language = lang_t::ZH;
+                Options.lang_name = "zh";
+                databaseSystemInit();
+            });
+            REQUIRE(get_gizmo_name(item) == c.en);
+        }
     }
 
     Options.language = lang_t::ZH;
