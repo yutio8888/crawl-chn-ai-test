@@ -18,8 +18,10 @@ release issue 中；首个正式版的
   使用的 `CCC`（先 `git fetch --tags origin`，再以 `git tag -l '0.34.1-zh*'` 为准），
   不得移动或复用任何已有标签；
   旧规则下的 `0.34.1-zh1` 至 `0.34.1-zh4` 同样作为历史标签保留。
-- 正式平台：Windows Tiles、macOS Tiles、Android。
-- Linux 仍保留日常 CI 编译验证，不进入正式版资产范围。
+- 正式平台：稳定线（`chn-0.34.1-base`）为 Windows Tiles、Windows Console（ASCII／字符版）、
+  Linux Console x86_64、macOS Tiles、Android（五平台、七项资产，以稳定线工作流为准）；
+  trunk 预发布线（`chn-trunk`）当前分发 Windows Tiles、macOS Tiles、Android（三平台、
+  五项资产），Linux Console 保留日常 CI 编译验证，不进入 trunk 资产范围。
 
 `crawl-ref/source/util/gen_ver.pl` 将合法的 `-zhA-B-CCC` 版本识别为正式版，而不是
 上游 alpha/beta/rc 预发布版；为保证历史标签仍可复现构建，它也继续识别旧的
@@ -32,11 +34,10 @@ release issue 中；首个正式版的
 `.github/workflows/ci.yml` 会先用严格正则拒绝不合法标签，再执行以下门禁：
 
 1. 运行工具测试、静态 ZH CI、Catch2、帮助系统运行时测试和完整 L1+L2+L3 运行时；
-2. 构建 Windows Tiles ZIP、macOS Tiles ad-hoc 签名 DMG，以及由项目密钥签名的四 ABI
-   Android APK；Linux Console 继续作为独立 CI 质量信号，不阻塞草稿 Release；
-3. 验证 Windows ZIP、macOS DMG 与 Android APK 形成精确的封闭集合；DMG 在 macOS
-   runner 上挂载，APK 作为 ZIP 独立校验路径与成员，并用 `apksigner verify` 复核下载后
-   的最终文件签名；
+2. 构建对应分支范围的分发包（`chn-trunk` 为 Windows Tiles ZIP、macOS Tiles ad-hoc 签名 DMG
+   及四 ABI Android APK，Linux Console 作为独立 CI 质量信号；`chn-0.34.1-base` 另含
+   Windows Console ZIP 与 Linux Console x86_64 ZIP 且均阻塞草稿 Release）；
+3. 验证全部平台构建产物形成精确的封闭集合；DMG 在 macOS runner 上挂载，APK 作为 ZIP 独立校验路径与成员，并用 `apksigner verify` 复核下载后的最终文件签名；
 4. 检查归档路径安全、成员唯一性、平台主程序、中文 TextDB、设置文件、许可证，以及
    Tiles 包中的 Maple 字体和 OFL 许可证；`i18n/zh`、
    `database/zh`、`descript/zh` 三棵运行时中文数据树会从标签 checkout 完整枚举，数据、
@@ -92,8 +93,9 @@ APK 的 `res/` 普通资源文件按 Android 的精确路径查找语义区分�
 - 标签触发的全部正式发布门禁 job 成功；因 runner 未接单而取消的 job 按现有机制
   重跑通过，不跳过、不绕过；
 - 候选身份正确：标签、准确提交 SHA 与 `RELEASE-MANIFEST.txt` 一致；
-- 用 `sha256sum -c SHA256SUMS` 复核三个下载文件，资产只有 Windows ZIP、macOS DMG、
-  Android APK、`SHA256SUMS` 和 `RELEASE-MANIFEST.txt`，共五项；
+- 用 `sha256sum -c SHA256SUMS` 复核全部下载文件，且资产集合与对应分支封闭范围一致
+  （trunk 为 Windows Tiles ZIP、macOS DMG、Android APK、`SHA256SUMS` 与 `RELEASE-MANIFEST.txt`
+  共五项；稳定线另含 Windows Console ZIP 与 Linux Console ZIP 共七项）；
 - Android APK 的包名、应用名、`versionName` 与签名可验证，签名证书与此前同线
   已发布版本一致；
 - 发布说明列明玩家可见变化、支持平台、已知问题、延期项目、准确提交 SHA、已做的

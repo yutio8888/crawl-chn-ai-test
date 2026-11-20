@@ -117,8 +117,9 @@
 
 ## 历史归档（historical / evidence）
 
-[archive/README.md](archive/README.md) 列出翻译质量实验、Android UI 审计和 2026-11
-上游 issue 分析的原始用途。归档保留当时的结论与证据边界，不作为当前实施授权。
+[archive/README.md](archive/README.md) 列出翻译质量实验、Android UI 审计、2026-11
+上游 issue 分析、译文抽样与术语消费点归档，以及各 trunk 预发布的门禁凭证记录。
+归档保留当时的结论与证据边界，不作为当前实施授权。
 
 [2026-11 上游 issue 分析与修复](archive/upstream-issue-triage-2026-11/report.md)
 汇总 44 个近三个月 issue 的结论、13 个本地修复与验证摘要；逐项证据见同目录

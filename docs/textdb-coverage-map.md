@@ -59,7 +59,7 @@ inventory 工具（`monflee`、`miscast`、`monspell`、`wpnnoise`、`graffiti`�
 | misc/montitle | ✅ | #71（#24 怪物实体域扩展；复用 unique-monster identity provenance） | #71 / #73，合并 `aa8e6275ce` |
 | misc/gizmo | ✅ | #29（539 个有限语法组件；最终程序化名称明确不可有限枚举） | docs/item-extended-review-results.md |
 | misc/miscname | ✅ | #87 | docs/miscname-review-results.md；exact-Git MiscDB inventory，10 identities，152/150 baseline variants → 152/152 candidate variants |
-| quotes/quotes.txt | ✅ | #72（复用 #3 及怪物/法术专名证据） | 465 identities；386 keep / 79 adjust；远端 CI `32450858787` success |
+| quotes/quotes.txt | ✅ | #72（复用 #3 及怪物/法术专名证据） | docs/quotes-review-results.md（465 identities；386 keep / 79 adjust；远端 CI `32450858787` success） |
 | **randart/randname/randbook/rand_all/rand_arm/rand_wpn** | ⚠️ | #29 覆盖"随机神器/gizmo 按有限命名组件和生成规则证明覆盖"；无独立 randart 账本 | #29 关闭评论 |
 | misc/godname | ✅ | #25（"神祇生产身份、显示名和称号：…godname.txt"） | #25 |
 | speak|misc/monname、speak|misc/colourname | ⚠️ | 依赖证据：被 #25（Beogh 使徒/祖先名）、#66/#67（graffiti/decorlines 作者与颜色 token）消费；无独立家族账本，作为依赖族记录 | #66/#67 账本中的 external-token 绑定 |
