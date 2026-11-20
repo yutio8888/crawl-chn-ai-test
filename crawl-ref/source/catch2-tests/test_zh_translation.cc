@@ -1158,12 +1158,38 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         Options.lang_name = "zh";
         const string zh = get_gizmo_name(item);
         REQUIRE(zh == c.zh);
+        REQUIRE(zh != c.en);
         REQUIRE(zh.find(' ') == string::npos);
 
         Options.language = lang_t::EN;
         Options.lang_name = nullptr;
         REQUIRE(get_gizmo_name(item) == c.en);
         REQUIRE(get_gizmo_name(item).find(' ') != string::npos);
+
+        {
+            // A ZH session without TextDB inputs materializes English words,
+            // which must keep the English word separator.
+            struct textdb_fallback_guard
+            {
+                textdb_fallback_guard()
+                {
+                    Options.language = lang_t::ZH;
+                    Options.lang_name = "zz-no-textdb";
+                    databaseSystemInit();
+                }
+                ~textdb_fallback_guard()
+                {
+                    Options.language = lang_t::ZH;
+                    Options.lang_name = "zh";
+                    databaseSystemInit();
+                }
+            } fallback;
+            const string fallback_name = get_gizmo_name(item);
+            REQUIRE(fallback_name == c.en);
+            REQUIRE(fallback_name != "fallback gizmo");
+            REQUIRE(fallback_name.find(' ') != string::npos);
+        }
+        REQUIRE(get_gizmo_name(item) == c.zh);
     }
     Options.language = lang_t::ZH;
     Options.lang_name = "zh";
