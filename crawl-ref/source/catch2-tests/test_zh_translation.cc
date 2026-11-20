@@ -1795,7 +1795,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         item.base_type = OBJ_GIZMOS;
         item.quantity = 1;
         item.rnd = 1;
-        item.props[ARTEFACT_NAME_KEY].get_string() = c.en;
+        // A distinct stored name proves both languages render the recipe.
+        item.props[ARTEFACT_NAME_KEY].get_string() = "fallback gizmo";
         item.props[GIZMO_NAME_RECIPE_KEY].get_string() =
             string("v1|") + c.style + "|" + noun.locator + "|"
             + modifier.locator + "|" + adjective.locator + "|";
