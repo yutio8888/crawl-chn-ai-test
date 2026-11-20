@@ -1090,7 +1090,7 @@ scroll of noise
 %%%%
 scroll of poison
 
-这张卷轴能让空气中弥漫毒气，使视野内每一处无人占据的空间都充满毒烟。
+这张卷轴能让空气中弥漫毒气，使视野内每一处空地都充满毒烟。
 %%%%
 scroll of revelation
 

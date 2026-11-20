@@ -175,8 +175,8 @@ HINT_CONVERT
 你刚刚皈依了 <w>{{ return crawl.t_(you.god()) }}</w>。当你做出取悦新神祇的事情时，虔诚值（神眷）会增加，并会随时间逐渐降低。
 
 要查看你的神祇所喜爱和厌恶的行为，以及你当前的宗教地位和神赐能力，请按
-<input>$cmd[CMD_DISPLAY_RELIGION]</input><localtiles>，或按住
-<input>Shift</input> 并<input>右键单击</input>你的头像</localtiles>。
+<input>$cmd[CMD_DISPLAY_RELIGION]</input><localtiles>，或在你的头像上
+<input>Shift+右键单击</input></localtiles>。
 %%%%
 HINT_CONVERT Ashenzari
 

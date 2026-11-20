@@ -372,7 +372,7 @@ March of Sorrows Boris cast
 @The_monster@[释放|抛洒]出其受害者的悲伤。
 
 w:5
-@The_monster@细数着其受害者的[哀歌|痛苦]。
+@The_monster@让受害者的[哀号|苦痛]滚滚而出。
 %%%%
 Cantrip Dissolution cast
 
@@ -1211,7 +1211,7 @@ Sticks to Snakes cast
 %%%%
 Summon Mortal Champion fravashi cast
 
-@The_monster@召唤出它的凡人冠军。
+@The_monster@召来麾下的勇士！
 %%%%
 Throw Bolas cast
 

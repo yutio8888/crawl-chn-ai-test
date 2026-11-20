@@ -216,7 +216,7 @@ interlevel-travel.depth.prompt
 interlevel-travel.altar.prompt
 
 <h>跨层移动（移动到某一祭坛）：
- 使用快捷键（神祇英文名的首字母；光辉者以1代替）
+ 使用快捷键（神祇名称的首字母；光辉者以1代替）
  选择要前往的祭坛。
 
  选择一位神祇后，你会开始前往最近的相应神祇祭坛。
