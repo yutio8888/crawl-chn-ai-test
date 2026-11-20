@@ -469,7 +469,7 @@ word of chaos mutation
 %%%%
 freezing cloud immunity mutation
 
-你免疫冰汽云。
+你免疫冰冻云。
 %%%%
 flame cloud immunity mutation
 
@@ -506,7 +506,7 @@ innate caster mutation
 你无法从书本习得法术。取而代之的是，随着你经验的增加，
 越来越高级的法术从你炽热的内心中涌现。
 这些法术是不可预知的，且不受你皈依的神影响。
-你无法训练特定的法术流派——要么同时都进行训练，要么一个都不进行训练。
+你无法训练特定的法术学派——要么同时都进行训练，要么一个都不进行训练。
 %%%%
 hp casting mutation
 
@@ -566,8 +566,8 @@ nimble swimmer mutation
 %%%%
 divine attributes mutation
 
-当你与其他物种相比，无论是在数值还是在发育程度的掌控上，
-神圣属性都显著提升了你的属性增益（力量、智力和敏捷）。
+与其他物种相比，你的神圣血统使你在升级时获得的属性增益（力量、智力和敏捷）大幅提高，
+无论是增益数值还是你对自身成长的掌控程度皆是如此。
 每过三级，你可以选一个属性，提升四点。
 %%%%
 tentacles mutation
@@ -685,7 +685,7 @@ inability to use devices mutation
 hated by all mutation
 
 你被所有怪物憎恨，无法以任何方式获得暂时或永久的盟友。
-简单、没有意识的魔法造物，比如幽灵武器、毁灭球和作战球则不受此影响。
+简单、没有意识的魔法造物，比如灵体武器、毁灭法球和战斗法球则不受此影响。
 %%%%
 cowardly mutation
 

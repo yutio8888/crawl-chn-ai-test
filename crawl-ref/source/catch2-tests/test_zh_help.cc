@@ -830,12 +830,12 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 
     lua_fixture.set_god("Makhleb");
     const string makhleb_pact = getLongDescription("pact status");
-    CHECK(makhleb_pact.find("作为他们的工具履行誓言") != string::npos);
+    CHECK(makhleb_pact.find("作为祂的工具履行誓言") != string::npos);
     CHECK(makhleb_pact.find("战斗、流血") == string::npos);
     lua_fixture.set_god("No God");
     const string other_pact = getLongDescription("pact status");
     CHECK(other_pact.find("战斗、流血") != string::npos);
-    CHECK(other_pact.find("作为他们的工具履行誓言") == string::npos);
+    CHECK(other_pact.find("作为祂的工具履行誓言") == string::npos);
 
     const string eel = getLongDescription("eel talisman");
     INFO("dynamic item eel talisman: " << eel);

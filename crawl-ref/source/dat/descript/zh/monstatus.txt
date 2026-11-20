@@ -309,7 +309,7 @@ magic disrupted monstatus
 %%%%
 magic-sapped monstatus
 
-这个生物的魔法通道被污染了。每当它施放法术时，其魔法会被严重打断，
+这个生物动用魔法的能力受到了污染。每当它施放法术时，其魔法会被严重打断，
 使其后续施放的法术很可能失败。
 %%%%
 marked with the sign of ruin monstatus
