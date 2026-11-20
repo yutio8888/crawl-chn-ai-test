@@ -282,7 +282,7 @@ _graffiti_changed_or_compared_religions_
 
 @_graffiti_author_any_@皈依了@random_god@
 
-@_graffiti_author_any_@@_graffiti_religion_better_or_worse_@，相比@_graffiti_author_any_@而言
+@_graffiti_author_any_@比@_graffiti_author_any_@@_graffiti_religion_better_or_worse_@
 
 @_graffiti_author_any_@其实是个无神论者
 
@@ -334,11 +334,11 @@ w:1
 %%%%
 _graffiti_class_remedial_
 
-@random_skill@补习课，由@_graffiti_professor_@教授
+一堂由@_graffiti_professor_@教授的@random_skill@补习课
 
-@random_skill_magic@补习课，由@_graffiti_professor_magic_type_@@_graffiti_professor_@教授
+一堂由@_graffiti_professor_magic_type_@@_graffiti_professor_@教授的@random_skill_magic@补习课
 
-@random_skill_mundane@补习课，由@_graffiti_professor_mundane_type_@@_graffiti_professor_@教授
+一堂由@_graffiti_professor_mundane_type_@@_graffiti_professor_@教授的@random_skill_mundane@补习课
 
 w:2
 一堂由@_graffiti_professor_evocations_type_@@_graffiti_professor_@教授的魔力释放补习课
@@ -353,7 +353,7 @@ w:2
 一堂由@_graffiti_professor_necromancy_type_@@_graffiti_professor_@教授的死灵系补习课
 
 w:2
-@random_skill_magic@补习课，由@_graffiti_professor_necromancy_type_@@_graffiti_professor_@教授
+一堂由@_graffiti_professor_necromancy_type_@@_graffiti_professor_@教授的@random_skill_magic@补习课
 %%%%
 _graffiti_duplicate_
 
@@ -433,7 +433,7 @@ _graffiti_happened_reason_
 
 是更大阴谋的一部分
 
-是"普洛格"阴谋集团所为
+是“普洛格”阴谋集团所为
 
 是自己造成的
 
@@ -692,7 +692,7 @@ _graffiti_relative_or_quality_
 
 配偶们
 
-一位家长
+父母之一
 
 双亲
 
@@ -834,7 +834,7 @@ _graffiti_short_saying_
 
 @_graffiti_changed_or_compared_religions_@
 
-一切生命始于‘普洛格’，也终于‘普洛格’
+一切生命始于“普洛格”，也终于“普洛格”
 
 w:2
 @_graffiti_changed_names_@

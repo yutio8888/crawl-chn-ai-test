@@ -13,7 +13,7 @@ repulsion field mutation
 
 你被排斥力场围绕，这会提供少量闪避。
 这个变异每升一级会提供更多闪避。
-此变异达到第三级时还会偏转飞弹，大幅提高你应对这类攻击时的闪避。
+此变异达到第三级时还会排斥飞弹，大幅提高你应对这类攻击时的闪避。
 %%%%
 icy blue scales mutation
 
@@ -448,7 +448,7 @@ black mark mutation
 %%%%
 aura of silence mutation
 
-你被沉默光环所围绕。与你相邻的生物无法发出任何声音。
+你被沉默光环围绕。与你相邻的生物无法发出任何声音。
 这会阻止大多数形式的施法和祈祷，但恶魔的魔法是无声的，不受此影响。
 %%%%
 bedevilling mutation
@@ -626,7 +626,7 @@ jelly sensing items mutation
 %%%%
 jelly absorbing missiles mutation
 
-当你被飞弹击中时（比如箭或弩箭），你身上的果冻怪可能会吞掉它，并进行一定治疗。
+当你被投射物击中时（比如箭或弩箭），你身上的果冻怪可能会吞掉它，并为你恢复一些生命。
 %%%%
 otherworldly mutation
 
@@ -797,7 +797,7 @@ Gehenna destruction mutation
 %%%%
 Mark of Annihilation mutation
 
-你的“地狱仆从”能力替换为“湮灭之球”：可发射缓慢移动的高浓度毁灭球体，
+你的“地狱仆从”能力替换为“湮灭之球”：可发射缓慢移动、蕴含强烈毁灭之力的球体，
 引爆后将结合你专精的毁灭属性，造成大范围爆炸。
 
 （你的湮灭之球释放{{
@@ -1242,7 +1242,7 @@ steam response mutation
 stinger hair mutation
 
 你的头发由长而灵活、如水母般的触须构成。每当你发动近战攻击时，
-它们会抽打玩家周围 2 格内随机选取的数个可见敌人，并尝试使其中毒。
+它们会抽打你周围 2 格内随机选取的数个可见敌人，并尝试使其中毒。
 
 一次能影响的敌人数量随变形术技能提高。
 %%%%

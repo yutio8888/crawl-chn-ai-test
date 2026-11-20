@@ -796,7 +796,7 @@ Vehumet welcome
 %%%%
 Wu Jian welcome
 
-门派有言：践行智慧和战斗之路！
+无间门派说道：践行智慧和战斗之路！
 %%%%
 Xom newgame
 
@@ -1259,7 +1259,7 @@ Xom gloves slot
 %%%%
 Xom good hyper enchant monster
 
-"见证一位真正的 [英雄|冠军] 崛起！"
+"见证一位真正的[英雄|勇士]崛起！"
 
 佐姆要求在战斗中获得崇高的荣耀！
 
@@ -1485,7 +1485,7 @@ Xom scenery cache_of_fruit
 
 佐姆不小心掉了一些点心。
 
-佐姆准备了任何地方能找到的最优质的水果品种，然后掉了它们。
+佐姆备好了世上能找到的最优良的水果品种，然后把它们丢在地上。
 
 %%%%
 Xom scenery cache_of_meat
@@ -1585,14 +1585,14 @@ Xom underfoot general
 
 @The_feature@ 在你的脚下短暂地移动了。
 
-一个不可察觉的精灵轻拂过你身旁的 @the_feature@。
+一个不可察觉的灵体轻拂过你身旁的 @the_feature@。
 
 %%%%
 Xom underfoot water
 
 @The_feature@ 短暂地从你身边退开了。
 
-一个不可察觉的精灵在你身旁的 @the_feature@ 中激起了涟漪。
+一个不可察觉的灵体在你身旁的 @the_feature@ 中激起了涟漪。
 
 %%%%
 Xom wave of despair

@@ -131,7 +131,7 @@ necromancy miscast monster
 
 @The_monster@猛烈地抽搐着
 
-@The_monster@停顿下来，显得心烦意乱
+@The_monster@停了下来，看上去心神大乱
 
 @The_monster@的身影短暂地暗淡下去
 
@@ -179,7 +179,7 @@ translocation miscast player
 
 空间朝自身扭曲折叠
 
-你周围的空间呈现出[弯曲|扭曲]之势，[疯狂地|]翻涌着
+你周围的空间[疯狂地|][弯曲|扭曲]起来
 %%%%
 translocation miscast monster
 
@@ -199,7 +199,7 @@ translocation miscast monster
 %%%%
 translocation miscast unseen
 
-某种东西周围的空间发生了不可思议的扭曲
+某物周围的空间不可思议地扭曲起来
 
 一块空无一物的空间扭曲变形
 
@@ -231,7 +231,7 @@ fire miscast monster
 
 @the_monster@周围的空气迸发出灼热的能量
 
-昏暗的火焰掠过@the_monster_possessive@周身
+黯淡的火焰在@the_monster_possessive@身上起伏流动
 
 火焰从@the_monster_possessive@@hands@旋卷而出
 
@@ -343,7 +343,7 @@ air miscast unseen
 
 放电凭空爆发
 
-一处地点周围的空气疯狂扭曲
+空气围绕着某处疯狂扭转
 %%%%
 earth miscast player
 
