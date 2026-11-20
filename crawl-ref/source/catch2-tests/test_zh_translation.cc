@@ -1148,7 +1148,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         item.base_type = OBJ_GIZMOS;
         item.quantity = 1;
         item.rnd = 1;
-        item.props[ARTEFACT_NAME_KEY].get_string() = c.en;
+        // A sentinel distinct from c.en proves recipe rendering ran.
+        item.props[ARTEFACT_NAME_KEY].get_string() = "fallback gizmo";
         item.props[GIZMO_NAME_RECIPE_KEY].get_string() =
             make_stringf("v1|%d|", c.style) + noun.locator + "|"
             + modifier.locator + "|" + adjective.locator + "|";

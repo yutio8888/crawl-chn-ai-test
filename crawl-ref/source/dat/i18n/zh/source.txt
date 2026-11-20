@@ -37164,7 +37164,7 @@ Your stasis prevents you from being paralysed, but everything else in sight stop
 静止状态阻止了你被麻痹，但你视野中的一切都在停止移动！
 %%%%
  Ashenzari will withdraw the offered vision and curse!
-艾申扎利将收回赐予的视野并施加诅咒！
+艾申扎利将收回所赐的幻象和诅咒！
 %%%%
  doubts 
 质疑
