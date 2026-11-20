@@ -1211,7 +1211,7 @@ Sticks to Snakes cast
 %%%%
 Summon Mortal Champion fravashi cast
 
-@The_monster@召唤出其凡人冠军。
+@The_monster@召来麾下的勇士！
 %%%%
 Throw Bolas cast
 

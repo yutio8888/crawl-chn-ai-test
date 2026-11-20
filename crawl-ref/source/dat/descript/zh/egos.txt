@@ -223,7 +223,7 @@ intelligence (Int+3) armour ego
 %%%%
 invisibility (+Inv) armour ego
 
-激活后，它可以赋予你暂时的隐身能力，但也会使你的最大生命值暂时降低。
+激活后，它可以赋予你暂时的隐身能力，但也会使你因衰竭而降低生命上限。
 %%%%
 light (Light) armour ego
 

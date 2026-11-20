@@ -1713,6 +1713,8 @@ _japanese_male_name_
 
 秀隆
 
+光
+
 久雄
 
 一雄
