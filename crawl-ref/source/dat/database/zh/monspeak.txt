@@ -65,7 +65,7 @@ VISUAL:@The_monster_possessive@双眼开始发出红色的光芒。
 @The_monster@ 低声念了句什么。
 VISUAL:@The_monster_possessive@双手开始疯狂地闪烁。
 
-VISUAL:@The_monster@ 突然被苍白的 @_spell_colour_@ 光芒所笼罩。
+VISUAL:@The_monster@ 突然笼罩在苍白的 @_spell_colour_@ 光芒中。
 %%%%
 _Sigmund_rare_
 @The_monster@ 问 @foe,@「你喜欢我吗？」
@@ -3495,7 +3495,7 @@ _truckle_
 
 屈服
 
-皈依
+归顺
 
 投降
 
@@ -6384,7 +6384,7 @@ _spell_colour_
 _suck_up_address_
 
 
-哦
+哦，
 
 
 
@@ -6393,15 +6393,15 @@ _suck_up_address_
 _suck_up_adj1_
 
 
-雄辩的
+雄辩
 
 
 
-显赫的
+显赫
 
 
 
-伟大的
+伟大
 %%%%
 _suck_up_noun_
 
@@ -6431,19 +6431,19 @@ _suck_up_noun_
 _vassalage_
 
 
-臣服
+向你称臣
 
 
 
-效劳
+为你效劳
 
 
 
-服役
+供你驱使
 
 
 
-效忠
+向你效忠
 %%%%
 _wails_
 
@@ -7809,7 +7809,7 @@ friendly Boris timeout
 holy_being_pacification
 
 
-VISUAL:@The_monster@被你神圣的光环所安抚。
+VISUAL:@The_monster@被你神圣的光环安抚了。
 %%%%
 holy_being_pacification_humanoid
 w:5
@@ -8202,7 +8202,7 @@ _friendly_imp_greeting
 
 @The_monster@说道："让我们@_cause_or_spread_@@_mayhem_@！"
 
-@The_monster@说道："我@_truckle_@于您的@_vassalage_@，@_suck_up_address_@@_suck_up_adj1_@且@_suck_up_adj2_@@_suck_up_noun_@！"
+@The_monster@说道："我@_truckle_@，甘愿@_vassalage_@，@_suck_up_address_@@_suck_up_adj1_@而@_suck_up_adj2_@@_suck_up_noun_@！"
 
 w:300
 __NONE
@@ -8210,7 +8210,7 @@ __NONE
 Air Magic player ghost
 
 
-VISUAL:@The_monster@ 被一阵火花所包围。
+VISUAL:@The_monster@ 被一阵火花包围。
 
 
 @The_monster@ 说："我对这场战斗充满了激情。"
@@ -9243,7 +9243,7 @@ Translocations player ghost
 VISUAL:@The_monster@ 在现实中忽隐忽现。
 
 
-VISUAL:@The_monster@ 被一团传送能量所环绕。
+VISUAL:@The_monster@ 被一团传送能量环绕。
 
 
 VISUAL:@The_monster@ 朝 @foe@ 眨了眨眼。
@@ -9378,7 +9378,7 @@ Vehumet player ghost
 @The_monster@ 威胁道："地狱火是用完了，但你还是得完蛋。"
 
 
-@The_monster@ 说："彻底毁灭的执行者不会被死亡所阻挡。"
+@The_monster@ 说："彻底毁灭的执行者不会被死亡阻挡。"
 
 
 @The_monster@ 夸口道："解决了你之后，我会研究出一个吞噬世界的法术。"

@@ -257,7 +257,7 @@ unseen Acid Splash cast
 %%%%
 Ensnare natural cast
 
-@The_monster@排出一串黏性的网。
+@The_monster@喷出一串黏糊糊的蛛网。
 %%%%
 unseen Ensnare natural cast
 
@@ -369,10 +369,10 @@ Weakening Gaze cast
 %%%%
 March of Sorrows Boris cast
 
-@The_monster@[发|投射]出其受害者的悲伤。
+@The_monster@[释放|抛洒]出其受害者的悲伤。
 
 w:5
-@The_monster@朗诵着其受害者的[挽歌|痛苦]。
+@The_monster@让受害者的[哀号|苦痛]滚滚而出。
 %%%%
 Cantrip Dissolution cast
 
@@ -1211,7 +1211,7 @@ Sticks to Snakes cast
 %%%%
 Summon Mortal Champion fravashi cast
 
-@The_monster@召唤出其冠军斗士。
+@The_monster@召来麾下的勇士！
 %%%%
 Throw Bolas cast
 

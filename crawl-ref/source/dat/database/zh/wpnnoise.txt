@@ -1156,7 +1156,7 @@ _SCREAM_
 
 @The_weapon@@_screams_@：“让我们进行劈砍！”
 
-@The_weapon@@_screams_@：“你别死在我面前@CAPS@ @player_name@！”
+@The_weapon@@_screams_@：“你现在可不准死，@CAPS@ @player_name@！”
 
 @The_weapon@@_screams_@：“这是痛苦的颜色！”
 
@@ -1176,7 +1176,7 @@ w:20
 @The_weapon@@_screams_@：“我打破了魔法！”
 
 # 致命化的（五声音阶的杀戮）
-@The_weapon@@_screams_@：“[@CAPS@ @_kind_of_scales_@音阶的|音阶不和谐的]杀戮！”
+@The_weapon@@_screams_@：“[@CAPS@ @_kind_of_scales_@音阶的|不和谐的]杀戮！”
 
 # 使用@player_genus@而不是@player_species@或@player_name@，
 # 表示剑对角色的关心程度很低。
