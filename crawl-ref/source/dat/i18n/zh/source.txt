@@ -1865,7 +1865,7 @@ barrage of energy
 %s召唤了一些%s！
 %%%%
 %s swap%s places with %s!
-%s与%s交换了%s！
+%1$s%2$.0s与%3$s交换了位置！
 %%%%
 %s swoops through the air toward %s!
 %s从空中扑向%s！
@@ -27819,7 +27819,7 @@ You cannot leave the Vaults without holding a Rune of Zot, and the runes within 
 未持有佐特符文便无法离开宝库，而其中的符文守卫森严。继续吗？
 %%%%
 Really go through this one-way escape hatch?
-确定要穿过这个单向逃生舱口吗？
+确定要穿过这个单向逃生口吗？
 %%%%
 Really dive through this shaft in the floor?
 确定要跳入地面的竖井吗？
@@ -34315,8 +34315,11 @@ Stack %s
 %s enemies
 %s敌人
 %%%%
-%s fountain%s start%s gushing blood
-喷泉开始涌出鲜血
+a fountain starts gushing blood
+一座喷泉开始涌出鲜血
+%%%%
+some fountains start gushing blood
+几座喷泉开始涌出鲜血
 %%%%
 %s mutation
 %s突变
@@ -34976,7 +34979,7 @@ Killed %s%s
 死于%s%s
 %%%%
 Killed by their own %s
-被自身的%s所杀
+被自己的%s杀死
 %%%%
 Killed by triggering %s
 因触发%s而死亡
@@ -35114,7 +35117,7 @@ You have just %d turns in %s to find a new floor before Zot consumes you.
 \n\n此%s有%d层深。
 %%%%
 \n\nThis branch contains the entrance%s to %s.
-\n\n此分支包含通往%2$s的入口%1$s。
+\n\n%1$.0s这一分支内有通往%2$s的入口。
 %%%%
 between levels %d and %d of 
 在第%d层到第%d层之间的
@@ -37161,7 +37164,7 @@ Your stasis prevents you from being paralysed, but everything else in sight stop
 静止状态阻止了你被麻痹，但你视野中的一切都在停止移动！
 %%%%
  Ashenzari will withdraw the offered vision and curse!
-阿申扎里将收回赐予的视野并施加诅咒！
+艾申扎利将收回赐予的视野并施加诅咒！
 %%%%
  doubts 
 质疑
@@ -40635,7 +40638,7 @@ You feel yourself growing ill in the presence of %s.
 你在%s面前感到身体不适。
 %%%%
 \nIf you bind an item with this curse Ashenzari will enhance the following skills:\n
-\n如果你用此诅咒绑定一件物品，阿莎扎丽将强化以下技能：\n
+\n如果你用此诅咒绑定一件物品，艾申扎利将强化以下技能：\n
 %%%%
 \nIf you make this sacrifice, your powers granted by Ru will become stronger in proportion to the value of the sacrifice, and you may gain new powers as well.\n\nSacrifices cannot be taken back.\n
 \n如果你做出此牺牲，入赐予你的力量将根据牺牲的价值变强，你可能还会获得新的力量。\n\n牺牲不可撤销。\n
@@ -51389,5 +51392,4 @@ god gift
 神赐
 %%%%
 randbook conjunction| and 
-
 以及

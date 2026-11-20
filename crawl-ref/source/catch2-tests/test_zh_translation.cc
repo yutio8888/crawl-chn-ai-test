@@ -1103,6 +1103,72 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: adjective gizmo styles join Chinese parts without spaces",
+                 "[zh-translation][gizmo]")
+{
+    rng::subgenerator scoped_rng(0x2a002a002a002a00ULL,
+                                 0x2ac0ac0ac0ac0ac0ULL);
+    const misc_string_recipe noun = selectMiscStringRecipe("gizmo_noun");
+    const misc_string_recipe modifier =
+        selectMiscStringRecipe("gizmo_modifier");
+    const misc_string_recipe adjective =
+        selectMiscStringRecipe("gizmo_adjective");
+    REQUIRE_FALSE(noun.locator.empty());
+    REQUIRE_FALSE(modifier.locator.empty());
+    REQUIRE_FALSE(adjective.locator.empty());
+
+    const string zh_noun = materializeMiscStringRecipe(noun.locator, true);
+    const string zh_modifier =
+        materializeMiscStringRecipe(modifier.locator, true);
+    const string zh_adjective =
+        materializeMiscStringRecipe(adjective.locator, true);
+    REQUIRE_FALSE(zh_noun.empty());
+    REQUIRE_FALSE(zh_modifier.empty());
+    REQUIRE_FALSE(zh_adjective.empty());
+
+    struct style_case
+    {
+        int style;
+        string zh;
+        string en;
+    };
+    const style_case cases[] = {
+        { 2, zh_adjective + zh_noun,
+          adjective.english + " " + noun.english },
+        { 3, zh_modifier + zh_adjective + zh_noun,
+          modifier.english + adjective.english + " " + noun.english },
+        { 4, zh_adjective + zh_modifier + zh_noun,
+          adjective.english + " " + modifier.english + noun.english },
+    };
+
+    for (const style_case &c : cases)
+    {
+        CAPTURE(c.style);
+        item_def item;
+        item.base_type = OBJ_GIZMOS;
+        item.quantity = 1;
+        item.rnd = 1;
+        item.props[ARTEFACT_NAME_KEY].get_string() = c.en;
+        item.props[GIZMO_NAME_RECIPE_KEY].get_string() =
+            make_stringf("v1|%d|", c.style) + noun.locator + "|"
+            + modifier.locator + "|" + adjective.locator + "|";
+
+        Options.language = lang_t::ZH;
+        Options.lang_name = "zh";
+        const string zh = get_gizmo_name(item);
+        REQUIRE(zh == c.zh);
+        REQUIRE(zh.find(' ') == string::npos);
+
+        Options.language = lang_t::EN;
+        Options.lang_name = nullptr;
+        REQUIRE(get_gizmo_name(item) == c.en);
+        REQUIRE(get_gizmo_name(item).find(' ') != string::npos);
+    }
+    Options.language = lang_t::ZH;
+    Options.lang_name = "zh";
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: graffiti production preserves every root and display RNG",
                  "[zh-translation][graffiti][issue-66][rng]")
 {
