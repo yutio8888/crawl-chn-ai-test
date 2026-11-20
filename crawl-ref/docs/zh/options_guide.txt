@@ -88,7 +88,7 @@ Crawl 选项指南
                 action_panel_font_size, show_resist_percent
 3-i     颜色（消息与菜单）。
                 menu_colour, message_colour
-3-j     发射栏、发射与弹药。
+3-j     快捷动作、发射与弹药。
                 fire_items_start, fire_order, fire_order_spell,
                 fire_order_ability, fail_severity_to_quiver,
                 quiver_menu_focus
@@ -997,7 +997,7 @@ easy_confirm = (none | safe | all)
 simple_targeting = false
         设为 true 时，爆炸和反弹箭类法术会禁用智能瞄准，自动瞄准射程内最近
         的怪物，而不会尝试寻找既能影响多个怪物又能避开玩家的位置。此设置
-        既适用于使用魔杖时的目标选择，也适用于装入发射栏的法术自动选取目标。
+        既适用于使用魔杖时的目标选择，也适用于设为快捷动作的法术自动选取目标。
 
 force_spell_targeter = hailstorm, starburst, frozen ramparts, ignition,
                        eringya's noxious bog, anguish, cause fear, alistair's
@@ -1215,11 +1215,11 @@ autofight_warning = 0
         零的值都会禁用此项检查。
 
 autofight_fires = false
-        如果发射栏中装有能直接伤害敌人的可发射动作，普通的 CMD_AUTOFIGHT
+        如果快捷动作是能直接伤害敌人的可发射动作，普通的 CMD_AUTOFIGHT
         （默认键位为 tab）会对近战范围外的敌人触发该动作。若未启用此选项，
         CMD_AUTOFIGHT 只会触发当前持用的发射武器（弓、弩或投石索）。如果
-        发射栏中的动作能直接造成伤害但目标超出射程，你会向敌人移动。如果
-        发射栏中的动作不直接造成伤害，CMD_AUTOFIGHT 会完全忽略它。若要彻底
+        快捷动作能直接造成伤害但目标超出射程，你会向敌人移动。如果
+        快捷动作不直接造成伤害，CMD_AUTOFIGHT 会完全忽略它。若要彻底
         防止移动，请绑定 CMD_AUTOFIGHT_NOMOVE 而非 CMD_AUTOFIGHT。（旧名称：
         `autofight_throw`。）
 
@@ -1247,7 +1247,7 @@ autofight_prompt_range = true
         显示提示，而不是只有真正尝试攻击时才显示。
 
 automagic_enable = false
-        启用旧版自动施法系统的选项；建议新玩家直接使用装入发射栏的法术。
+        启用旧版自动施法系统的选项；建议新玩家直接使用设为快捷动作的法术。
         设为 true 时，自动战斗（即默认键位中的 tab）会对目标施放指定栏位中
         的法术。初始法术栏位为 a。（已弃用）
 
@@ -1662,7 +1662,7 @@ menu_colour ^= <match>:<colour>:<regex>, <colour>:<regex>, ...
             shop          （商店菜单）
             stash         （Ctrl-F 的搜索结果）
             description   （\ 画面）
-            stats         （主画面属性面板中持用／装入发射栏的物品）
+            stats         （主画面属性面板中持用／设为快捷动作的物品）
             resists       （% 画面中的物品）
 
         可用的非物品相关值如下；这些值必须明确指定 `match`：
@@ -1719,18 +1719,18 @@ message_colour ^= <colour>:<channel>:<regex>, <colour>:<regex>, ...
         如果完全不想看见某条消息，可以将其静音：
              message_colour += mute:You start resting
 
-3-j     发射栏、发射与弹药。
+3-j     快捷动作、发射与弹药。
 ---------------------------
 
 fire_items_start = a
-        设置通过发射栏循环选择要发射的弹射物时，第一个纳入考虑的背包物品。
+        设置通过快捷动作循环选择要发射的弹射物时，第一个纳入考虑的背包物品。
         默认值为 a。
 
 fire_order  = launcher, throwing, inscribed, spell, evokable, ability
         （有序列表选项）
-        控制循环切换发射栏时各种动作的顺序。类型应以逗号分隔，越靠前的项目
-        优先级越高。未列出的动作类型不会在循环切换发射栏时使用。此选项还会
-        影响游戏开始时的自动装入发射栏。
+        控制循环切换快捷动作时各种动作的顺序。类型应以逗号分隔，越靠前的项目
+        优先级越高。未列出的动作类型不会在循环切换快捷动作时使用。此选项还会
+        影响游戏开始时自动设定的快捷动作。
 
         'launcher' 指发射当前持用的远程武器（即弩、弓、投石索）；'throwing'
         指所有投掷弹药。可以按名称指定某种投掷弹药（'javelin'、'boomerang'、
@@ -1758,18 +1758,18 @@ fire_order_ability -= berserk
         autofight_fires。
 
 fail_severity_to_quiver = 2
-        从发射栏循环和自动装入发射栏中排除施法失误等级不低于此值的法术。
-        使用 -1 可以从自动装入发射栏中完全排除法术。各施法失误数值的说明见
+        从快捷动作循环和自动设为快捷动作中排除施法失误等级不低于此值的法术。
+        使用 -1 可以从自动设为快捷动作中完全排除法术。各施法失误数值的说明见
         fail_severity_to_confirm。
 
 launcher_autoquiver = true
-        设为 true 时，持用发射武器会把发射栏切换到该武器；设为 false 时，
-        持用发射武器不会改变发射栏。（仍可通过 tab 或 `v` 发射。）
+        设为 true 时，持用发射武器会把快捷动作切换到该武器；设为 false 时，
+        持用发射武器不会改变快捷动作。（仍可通过 tab 或 `v` 发射。）
 
 quiver_menu_focus = false (persistent)
-        设为 true 时，发射栏菜单会以“专注”模式打开；动作字母取自物品／法术／
+        设为 true 时，快捷动作菜单会以“专注”模式打开；动作字母取自物品／法术／
         能力的字母，并且一次只能选择其中一类。否则可以从菜单选择任何动作，
-        但此菜单中的字母并不固定。此选项会持久保存，因此发射栏菜单中的当前值
+        但此菜单中的字母并不固定。此选项会持久保存，因此快捷动作菜单中的当前值
         会跨局保存并自动重新载入，除非明确设置了该值。
 
 3-k     消息频道。
