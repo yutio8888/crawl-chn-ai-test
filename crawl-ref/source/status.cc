@@ -1672,7 +1672,7 @@ static void _describe_xom_blessing(status_info& inf)
         {
             const int count = you.props.exists(XOM_MANNEQUIN_TROUPE)
                                 ? you.props[XOM_MANNEQUIN_TROUPE].get_vector().size() : 0;
-            inf.light_text = T_("Troupe");
+            inf.light_text = count > 1 ? T_("Troupe+") : T_("Troupe");
             string count_msg = make_stringf(T_("<lightblue>(+%d)</lightblue>"), count);
             inf.light_text_formatted = make_stringf(T_("<red>T<yellow>r<green>o<cyan>u<lightblue>p<magenta>e %s"),
                                                     count > 0 ? count_msg.c_str() : "");
