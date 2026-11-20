@@ -282,7 +282,7 @@ _graffiti_changed_or_compared_religions_
 
 @_graffiti_author_any_@皈依了@random_god@
 
-@_graffiti_author_any_@@_graffiti_religion_better_or_worse_@，相比@_graffiti_author_any_@而言
+@_graffiti_author_any_@比@_graffiti_author_any_@@_graffiti_religion_better_or_worse_@
 
 @_graffiti_author_any_@其实是个无神论者
 
