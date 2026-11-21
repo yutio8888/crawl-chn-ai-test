@@ -51,6 +51,8 @@
 
 | 文档 | 状态 |
 |---|---|
+| [archive/README.md](archive/README.md) | 历史审核消费点快照与各稳定版发布前门禁归档索引 |
+| [releases/](releases/) | 稳定版各候选面向玩家的正式发布说明（`0.34.1-zh5-1-011` 起） |
 | [issue120-scanner-preproc-report.md](issue120-scanner-preproc-report.md) | Issue #120（扫描器完整预处理）的探针与已实施的方案 2；后续状态见该 Issue |
 | [translation-quality-migration-plan.md](translation-quality-migration-plan.md) 及 M0/M1 报告 | 翻译质量评审实验；M1 工具仍在 `audit_item_name_inventory.py` 中，M2 未获授权 |
 | [review-recovery-history.md](review-recovery-history.md) | 已退役审查控制面的只读归档，不授予任何合并权限 |
