@@ -18676,7 +18676,7 @@ protean grace
 百变灵巧
 %%%%
 reduced AC
-降低防御
+降低护甲值
 %%%%
 reduced EV
 降低闪避
@@ -18826,7 +18826,7 @@ yellow scales
 （冷血）
 %%%%
 AC +
-防御 +
+护甲值 +
 %%%%
 blade armour
 刃甲
@@ -18865,7 +18865,7 @@ A frigid envelope surrounds you and freezes all who hurt you.
 一层寒气包裹环绕着你，冻结所有伤害你的人。
 %%%%
 A meltable icy envelope protects you from harm. (AC +
-一层可融化的冰封包裹保护你免受伤害。（防御+
+一层可融化的冰封包裹保护你免受伤害。（护甲值+
 %%%%
 A meltable shield of frost defends you. (SH +
 一层可融化的冰霜护盾保护你。（盾挡+
@@ -18877,7 +18877,7 @@ A shield forms around you when casting spells or using Invocations. (SH +7)
 当你施放法术或使用祈祷时，周围会形成一个护盾。（盾挡+7）
 %%%%
 A thick, meltable icy envelope protects you from harm. (AC +
-一层厚实可融化的冰封包裹保护你免受伤害。（防御+
+一层厚实可融化的冰封包裹保护你免受伤害。（护甲值+
 %%%%
 A weak demonic guardian rushes to your aid.
 一个弱小的恶魔守护者冲来援助你。
@@ -18952,13 +18952,13 @@ When low on magic, you restore magic in place of health.
 当法力不足时，你会恢复法力而非生命。
 %%%%
 When seriously injured, your blood forms armour. (AC +
-当你严重受伤时，血液会形成护甲。（防御+
+当你严重受伤时，血液会形成护甲。（护甲值+
 %%%%
 When seriously injured, your blood forms thick armour. (AC +
-当你严重受伤时，血液会形成厚实的护甲。（防御+
+当你严重受伤时，血液会形成厚实的护甲。（护甲值+
 %%%%
 When seriously injured, your blood forms very thick armour. (AC +
-当你严重受伤时，血液会形成非常厚实的护甲。（防御+
+当你严重受伤时，血液会形成非常厚实的护甲。（护甲值+
 %%%%
 When you translocate, a monster is sometimes pulled along with you.
 当你位移时，有时会将一个怪物一起拉过去。
@@ -18994,43 +18994,43 @@ You are completely attuned to the shadows.
 你完全与暗影同调。
 %%%%
 You are completely covered in icy blue scales. (AC +4, rC+)
-你完全覆盖着冰蓝鳞片。（防御+4，冰抗+）
+你完全覆盖着冰蓝鳞片。（护甲值+4，冰抗+）
 %%%%
 You are completely covered in iridescent scales. (AC +6)
-你完全覆盖着虹彩鳞片。（防御+6）
+你完全覆盖着虹彩鳞片。（护甲值+6）
 %%%%
 You are completely covered in large bone plates. (SH +8)
 你完全覆盖着大型骨板。（盾挡+8）
 %%%%
 You are completely covered in molten scales. (AC +4, rF+)
-你完全覆盖着熔融鳞片。（防御+4，火抗+）
+你完全覆盖着熔融鳞片。（护甲值+4，火抗+）
 %%%%
 You are completely covered in razor-sharp scales. (AC +3, Slay +3)
-你完全覆盖着锋利鳞片。（防御+3，杀戮+3）
+你完全覆盖着锋利鳞片。（护甲值+3，杀戮+3）
 %%%%
 You are completely covered in rugged brown scales. (AC +3, +7% HP)
-你完全覆盖着粗糙褐鳞。（防御+3，+7%生命）
+你完全覆盖着粗糙褐鳞。（护甲值+3，+7%生命）
 %%%%
 You are completely covered in sharp spines.
 你完全覆盖着锋利的尖刺。
 %%%%
 You are completely covered in slimy green scales. (AC +4, rPois)
-你完全覆盖着黏滑绿鳞。（防御+4，毒抗）
+你完全覆盖着黏滑绿鳞。（护甲值+4，毒抗）
 %%%%
 You are completely covered in thin metallic scales. (AC +4, rElec)
-你完全覆盖着薄金属鳞片。（防御+4，电抗）
+你完全覆盖着薄金属鳞片。（护甲值+4，电抗）
 %%%%
 You are completely covered in yellow scales. (AC +4, rCorr)
-你完全覆盖着黄色鳞片。（防御+4，酸抗）
+你完全覆盖着黄色鳞片。（护甲值+4，酸抗）
 %%%%
 You are covered in fur. (AC +1)
-你覆盖着毛发。（防御+1）
+你覆盖着毛发。（护甲值+1）
 %%%%
 You are covered in slimy tendrils that may disarm your opponents.
 你覆盖着黏液卷须，可能缴械对手。
 %%%%
 You are covered in thick fur. (AC +2)
-你覆盖着浓密毛发。（防御+2）
+你覆盖着浓密毛发。（护甲值+2）
 %%%%
 You are darkly shadowed, frequently releasing foul flame when damaged in melee.
 你被深沉的阴影笼罩，在近战受伤时经常会释放污秽火焰。
@@ -19123,34 +19123,34 @@ You are missing an eye, making it more difficult to aim.
 你缺少一只眼睛，瞄准更加困难。
 %%%%
 You are mostly covered in icy blue scales. (AC +3)
-你大部分覆盖着冰蓝鳞片。（防御+3）
+你大部分覆盖着冰蓝鳞片。（护甲值+3）
 %%%%
 You are mostly covered in iridescent scales. (AC +4)
-你大部分覆盖着虹彩鳞片。（防御+4）
+你大部分覆盖着虹彩鳞片。（护甲值+4）
 %%%%
 You are mostly covered in large bone plates. (SH +6)
 你大部分覆盖着大型骨板。（盾挡+6）
 %%%%
 You are mostly covered in molten scales. (AC +3)
-你大部分覆盖着熔融鳞片。（防御+3）
+你大部分覆盖着熔融鳞片。（护甲值+3）
 %%%%
 You are mostly covered in razor-sharp scales. (AC +2, Slay +2)
-你大部分覆盖着锋利鳞片。（防御+2，杀戮+2）
+你大部分覆盖着锋利鳞片。（护甲值+2，杀戮+2）
 %%%%
 You are mostly covered in rugged brown scales. (AC +2, +5% HP)
-你大部分覆盖着粗糙褐鳞。（防御+2，+5%生命）
+你大部分覆盖着粗糙褐鳞。（护甲值+2，+5%生命）
 %%%%
 You are mostly covered in sharp spines.
 你大部分覆盖着锋利的尖刺。
 %%%%
 You are mostly covered in slimy green scales. (AC +3)
-你大部分覆盖着黏滑绿鳞。（防御+3）
+你大部分覆盖着黏滑绿鳞。（护甲值+3）
 %%%%
 You are mostly covered in thin metallic scales. (AC +3)
-你大部分覆盖着薄金属鳞片。（防御+3）
+你大部分覆盖着薄金属鳞片。（护甲值+3）
 %%%%
 You are mostly covered in yellow scales. (AC +3)
-你大部分覆盖着黄色鳞片。（防御+3）
+你大部分覆盖着黄色鳞片。（护甲值+3）
 %%%%
 You are occasionally teleported next to monsters.
 你偶尔会被传送到怪物旁边。
@@ -19159,34 +19159,34 @@ You are often teleported next to monsters.
 你经常会被传送到怪物旁边。
 %%%%
 You are partially covered in icy blue scales. (AC +2)
-你部分覆盖着冰蓝鳞片。（防御+2）
+你部分覆盖着冰蓝鳞片。（护甲值+2）
 %%%%
 You are partially covered in iridescent scales. (AC +2)
-你部分覆盖着虹彩鳞片。（防御+2）
+你部分覆盖着虹彩鳞片。（护甲值+2）
 %%%%
 You are partially covered in large bone plates. (SH +4)
 你部分覆盖着大型骨板。（盾挡+4）
 %%%%
 You are partially covered in molten scales. (AC +2)
-你部分覆盖着熔融鳞片。（防御+2）
+你部分覆盖着熔融鳞片。（护甲值+2）
 %%%%
 You are partially covered in razor-sharp scales. (AC +1, Slay +1)
-你部分覆盖着锋利鳞片。（防御+1，杀戮+1）
+你部分覆盖着锋利鳞片。（护甲值+1，杀戮+1）
 %%%%
 You are partially covered in rugged brown scales. (AC +1, +3% HP)
-你部分覆盖着粗糙褐鳞。（防御+1，+3%生命）
+你部分覆盖着粗糙褐鳞。（护甲值+1，+3%生命）
 %%%%
 You are partially covered in sharp spines.
 你部分覆盖着锋利的尖刺。
 %%%%
 You are partially covered in slimy green scales. (AC +2)
-你部分覆盖着黏滑绿鳞。（防御+2）
+你部分覆盖着黏滑绿鳞。（护甲值+2）
 %%%%
 You are partially covered in thin metallic scales. (AC +2)
-你部分覆盖着薄金属鳞片。（防御+2）
+你部分覆盖着薄金属鳞片。（护甲值+2）
 %%%%
 You are partially covered in yellow scales. (AC +2)
-你部分覆盖着黄色鳞片。（防御+2）
+你部分覆盖着黄色鳞片。（护甲值+2）
 %%%%
 You are powered by pain.
 你被痛苦所赋能。
@@ -19594,7 +19594,7 @@ You have extremely sharp teeth.
 你有极其锋利的牙齿。
 %%%%
 You have extremely tough skin. (AC +3)
-你拥有极其坚韧的皮肤。（防御+3）
+你拥有极其坚韧的皮肤。（护甲值+3）
 %%%%
 You have great hidden genetic potential.
 你拥有巨大的隐藏基因潜力。
@@ -19648,7 +19648,7 @@ You have terrible hidden genetic defects.
 你拥有可怕的隐藏基因缺陷。
 %%%%
 You have tough skin. (AC +1)
-你拥有坚韧的皮肤。（防御+1）
+你拥有坚韧的皮肤。（护甲值+1）
 %%%%
 You have very sharp fingernails.
 你有非常锋利的指甲。
@@ -19660,7 +19660,7 @@ You have very slow reflexes. (EV -15)
 你的反应非常迟钝。（闪避-15）
 %%%%
 You have very tough skin. (AC +2)
-你拥有非常坚韧的皮肤。（防御+2）
+你拥有非常坚韧的皮肤。（护甲值+2）
 %%%%
 You heal very quickly.
 你恢复得非常快。
@@ -19759,13 +19759,13 @@ You stampede swiftly towards enemies and can push them backward.
 你向敌人猛冲，可以将他们推回去。
 %%%%
 You take considerably more damage. (AC -15)
-你受到相当多的伤害。（防御-15）
+你受到相当多的伤害。（护甲值-15）
 %%%%
 You take more damage. (AC -10)
-你受到更多伤害。（防御-10）
+你受到更多伤害。（护甲值-10）
 %%%%
 You take slightly more damage. (AC -5)
-你受到稍微更多的伤害。（防御-5）
+你受到稍微更多的伤害。（护甲值-5）
 %%%%
 You thrive by killing the living.
 你通过杀戮活物而茁壮成长。
@@ -19846,7 +19846,7 @@ Your four strong arms can wield two-handed weapons with a shield.
 你的四条强壮手臂可以持盾使用双手武器。
 %%%%
 Your gelatinous body deflects attacks. (AC +3, EV +3)
-你凝胶般的身体偏转攻击。（防御+3，闪避+3）
+你凝胶般的身体偏转攻击。（护甲值+3，闪避+3）
 %%%%
 Your guardian grows in power.
 你的守护者力量增长了。
@@ -19921,7 +19921,7 @@ Your paws help you pounce on unaware monsters.
 你的爪垫帮助你扑向毫无防备的怪物。
 %%%%
 Your pliable body absorbs attacks. (AC +2, EV +2)
-你柔韧的身体吸收攻击。（防御+2，闪避+2）
+你柔韧的身体吸收攻击。（护甲值+2，闪避+2）
 %%%%
 Your presence sometimes corrodes or deforms those you injure.
 你的存在有时会腐蚀或变形你伤害的人。
@@ -19933,10 +19933,10 @@ Your rate of healing slows.
 你的恢复速度变慢。
 %%%%
 Your rubbery body absorbs attacks. (AC +1, EV +1)
-你橡胶般的身体吸收攻击。（防御+1，闪避+1）
+你橡胶般的身体吸收攻击。（护甲值+1，闪避+1）
 %%%%
 Your scales are fused with iron. (AC + 5)
-你的鳞片与铁融合。（防御+5）
+你的鳞片与铁融合。（护甲值+5）
 %%%%
 Your shed blood may rise up to attack you as a group.
 你流出的血液可能会成群地起来攻击你。
@@ -19981,7 +19981,7 @@ Your spells are much harder to cast, but much more powerful.
 你的法术施放困难得多，但威力强得多。
 %%%%
 Your stone body is resiliant and immune to petrification. (AC +
-你的石质身体坚韧且免疫石化。（防御+
+你的石质身体坚韧且免疫石化。（护甲值+
 %%%%
 Your system is resistant to poisons. (rPois+)
 你的身体对毒素有抗性。（毒抗+）
@@ -19996,7 +19996,7 @@ Your tail ends in a wickedly sharp and venomous barb.
 你的尾巴末端是一根极其锋利的毒刺。
 %%%%
 Your thick and shaggy fur keeps you warm. (AC +3, rC+)
-你浓密蓬松的毛发让你保持温暖。（防御+3，冰抗+）
+你浓密蓬松的毛发让你保持温暖。（护甲值+3，冰抗+）
 %%%%
 Your touch may inflict irresistible damage on your foes.
 你的触碰可能对敌人造成不可抵抗的伤害。
