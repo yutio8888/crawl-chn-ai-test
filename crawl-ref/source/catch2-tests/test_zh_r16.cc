@@ -7,6 +7,7 @@
 #include "mon-cast.h"
 #include "player.h"
 #include "status.h"
+#include "stringutil.h"
 #include "syscalls.h"
 #include "unwind.h"
 
@@ -67,5 +68,58 @@ TEST_CASE("Vertigo display is distinct from Dazed and retains English identities
         CHECK(string(T_("dazed")) == (zh ? "眩晕" : "dazed"));
         CHECK(string(T_("You snap out of the daze."))
               == (zh ? "你从眩晕中清醒过来。" : "You snap out of the daze."));
+    }
+}
+
+TEST_CASE("Teleport and blink refusal reasons are translated for anchor and tree form",
+          "[zh-translation][r16][no-tele-reason]")
+{
+    init_properties();
+    init_duration_index();
+    unwind_var<player> restore_player(you);
+    for (lang_t language : {lang_t::EN, lang_t::ZH})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        const string anchor = zh ? "被维度锚定锁住了"
+                                 : "locked down by a dimension anchor";
+        const string roots = zh ? "被自己的树根固定在原地"
+                                : "held in place by your roots";
+        const string both = anchor + T_(" and ") + roots;
+        for (bool blinking : {true, false})
+        {
+            const string expected_prefix = zh
+                ? (blinking ? "你无法闪烁，因为你" : "你无法传送，因为你")
+                : (blinking ? "You cannot blink because you are "
+                            : "You cannot teleport because you are ");
+            const string end = zh ? "。" : ".";
+            CAPTURE(language, blinking);
+
+            you = player();
+            you.duration[DUR_DIMENSION_ANCHOR] = 100;
+            CHECK(you.no_tele_reason(blinking) == expected_prefix + anchor + end);
+            CHECK(you.no_tele_reason(blinking, false).empty());
+
+            you = player();
+            you.form = transformation::tree;
+            CHECK(you.no_tele_reason(blinking) == expected_prefix + roots + end);
+            CHECK(you.no_tele_reason(blinking, false).empty());
+
+            you.duration[DUR_DIMENSION_ANCHOR] = 100;
+            const string reason = you.no_tele_reason(blinking);
+            CHECK(reason == expected_prefix + both + end);
+            // Spell uselessness callers lowercase the first character; the
+            // Chinese sentence must survive that unchanged.
+            if (zh)
+                CHECK(lowercase_first(reason) == reason);
+            if (zh)
+            {
+                for (const char *english : {"locked down", "dimension anchor",
+                                            "held in place", "roots"})
+                {
+                    CHECK(reason.find(english) == string::npos);
+                }
+            }
+        }
     }
 }
