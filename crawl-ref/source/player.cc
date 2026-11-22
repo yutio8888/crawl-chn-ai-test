@@ -7372,10 +7372,10 @@ string player::no_tele_reason(bool blinking, bool temp) const
     vector<string> problems;
 
     if (temp && duration[DUR_DIMENSION_ANCHOR])
-        problems.emplace_back("locked down by a dimension anchor");
+        problems.emplace_back(T_("locked down by a dimension anchor"));
 
     if (temp && form == transformation::tree)
-        problems.emplace_back("held in place by your roots");
+        problems.emplace_back(T_("held in place by your roots"));
 
     vector<const item_def *> notele_items;
     if (has_notele_item(&notele_items))
@@ -7416,7 +7416,8 @@ string player::no_tele_reason(bool blinking, bool temp) const
     return make_stringf(T_("You cannot %s because you are %s."),
                         blinking ? T_("blink") : T_("teleport"),
                         comma_separated_line(problems.begin(),
-                                             problems.end()).c_str());
+                                             problems.end(), T_(" and "),
+                                             T_(", ")).c_str());
 }
 
 /**

@@ -29234,6 +29234,12 @@ this branch contains the %s rune%s of zot.
 wearing %s %s preventing teleportation
 穿着%s件防止传送的%s
 %%%%
+locked down by a dimension anchor
+被维度锚定锁住了
+%%%%
+held in place by your roots
+被自己的树根固定在原地
+%%%%
 you cannot %s because you are %s.
 你无法%s，因为你%s。
 %%%%
