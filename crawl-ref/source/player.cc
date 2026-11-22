@@ -1930,8 +1930,8 @@ int player_spec_death()
 {
     int sd = 0;
 
-    if (you.wearing(OBJ_STAVES, STAFF_NECROMANCY))
-        sd += 1 + you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT);
+    if (int staff = you.wearing(OBJ_STAVES, STAFF_NECROMANCY))
+        sd += staff + you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT);
 
     sd += you.get_mutation_level(MUT_NECRO_ENHANCER);
 
@@ -1946,8 +1946,8 @@ int player_spec_fire()
 {
     int sf = 0;
 
-    if (you.wearing(OBJ_STAVES, STAFF_FIRE))
-        sf += 1 + you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT);
+    if (int staff = you.wearing(OBJ_STAVES, STAFF_FIRE))
+        sf += staff + you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT);
 
     sf += you.wearing_ego(OBJ_ARMOUR, SPARM_FIRE);
     sf += you.wearing_ego(OBJ_ARMOUR, SPARM_PYROMANIA);
@@ -1964,8 +1964,8 @@ int player_spec_cold()
 {
     int sc = 0;
 
-    if (you.wearing(OBJ_STAVES, STAFF_COLD))
-        sc += 1 + you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT);
+    if (int staff = you.wearing(OBJ_STAVES, STAFF_COLD))
+        sc += staff + you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT);
 
     sc += you.wearing_ego(OBJ_ARMOUR, SPARM_ICE);
 
@@ -1982,8 +1982,8 @@ int player_spec_earth()
     int se = 0;
 
     // Staves
-    if (you.wearing(OBJ_STAVES, STAFF_EARTH))
-        se += 1 + you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT);
+    if (int staff = you.wearing(OBJ_STAVES, STAFF_EARTH))
+        se += staff + you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT);
 
     se += you.wearing_ego(OBJ_ARMOUR, SPARM_EARTH);
 
@@ -2000,8 +2000,8 @@ int player_spec_air()
     int sa = 0;
 
     // Staves
-    if (you.wearing(OBJ_STAVES, STAFF_AIR))
-        sa += 1 + you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT);
+    if (int staff = you.wearing(OBJ_STAVES, STAFF_AIR))
+        sa += staff + you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT);
 
     sa += you.wearing_ego(OBJ_ARMOUR, SPARM_AIR);
 
@@ -2017,8 +2017,8 @@ int player_spec_conj()
 {
     int sc = 0;
 
-    if (you.wearing(OBJ_STAVES, STAFF_CONJURATION))
-        sc += 1 + you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT);
+    if (int staff = you.wearing(OBJ_STAVES, STAFF_CONJURATION))
+        sc += staff + you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT);
 
     sc += you.scan_artefacts(ARTP_ENHANCE_CONJ);
 
@@ -2050,15 +2050,15 @@ int player_spec_alchemy()
 {
     int sp = 0;
 
-    if (you.wearing(OBJ_STAVES, STAFF_ALCHEMY))
-        sp += 1 + you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT);
+    if (int staff = you.wearing(OBJ_STAVES, STAFF_ALCHEMY))
+        sp += staff + you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT);
 
     sp += you.wearing_jewellery(AMU_CHEMISTRY);
 
     sp += you.scan_artefacts(ARTP_ENHANCE_ALCHEMY);
 
     if (you.unrand_equipped(UNRAND_OLGREB))
-        sp += 1 + you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT);;
+        sp += 1 + you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT);
 
     return sp;
 }
