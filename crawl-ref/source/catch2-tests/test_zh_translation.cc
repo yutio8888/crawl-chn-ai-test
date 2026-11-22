@@ -9230,3 +9230,123 @@ TEST_CASE_METHOD(ZhTranslationFixture, "artefact name cores reach actual monster
         CHECK(line.find("{勇武") == string::npos);
     }
 }
+
+TEST_CASE("no_tele_reason translates dimension anchor and tree-form reasons",
+          "[zh-translation][no-tele-reason]")
+{
+    init_properties();
+    init_spell_descs();
+    unwind_var<player> restore_player(you);
+    unwind_var<bool> testing(crawl_state.test, true);
+    rng::subgenerator scoped_rng(481, 481);
+    const auto equip_notele = [](int inv_slot, object_class_type base_type,
+                                 int sub_type, equipment_slot slot)
+    {
+        item_def &item = you.inv[inv_slot];
+        item.base_type = base_type;
+        item.sub_type = sub_type;
+        item.quantity = 1;
+        item.rnd = 1;
+        item.link = inv_slot;
+        item.pos = ITEM_IN_INVENTORY;
+        REQUIRE(make_item_randart(item, true));
+        for (int prop = 0; prop < ART_PROPERTIES; ++prop)
+            artefact_set_property(item, static_cast<artefact_prop_type>(prop), 0);
+        artefact_set_property(item, ARTP_PREVENT_TELEPORTATION, 1);
+        item.flags |= ISFLAG_IDENTIFIED;
+        equip_item(slot, inv_slot, false, true);
+        return &item;
+    };
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        const string anchor_reason = zh ? "被维度锚定锁住了"
+                                        : "locked down by a dimension anchor";
+        const string roots_reason = zh ? "被自己的树根固定在原地"
+                                       : "held in place by your roots";
+        // The shared ZH joiner is " 以及" (TextDB trims trailing spaces).
+        const string and_sep = zh ? " 以及" : " and ";
+        const string comma_sep = zh ? "、" : ", ";
+        REQUIRE(string(T_(" and ")) == and_sep);
+        REQUIRE(string(T_(", ")) == comma_sep);
+        // 0: anchor; 1: tree form; 2: both; 3: anchor plus -Tele weapon and
+        // amulet, which exercises the list comma as well as the final "and".
+        for (int kind = 0; kind < 4; ++kind)
+        {
+            you = player();
+            you.species = SP_HUMAN;
+            you.hp = you.hp_max = 100;
+            you.on_current_level = true;
+            you.set_position(coord_def(20, 20));
+            const bool anchored = kind != 1;
+            const bool tree = kind == 1 || kind == 2;
+            if (anchored)
+                you.duration[DUR_DIMENSION_ANCHOR] = 50;
+            if (tree)
+                you.form = transformation::tree;
+
+            string reasons;
+            string permanent;
+            if (kind == 3)
+            {
+                const item_def *weapon = equip_notele(0, OBJ_WEAPONS,
+                                                      WPN_DAGGER, SLOT_WEAPON);
+                const item_def *amulet = equip_notele(1, OBJ_JEWELLERY,
+                                                      AMU_REGENERATION,
+                                                      SLOT_AMULET);
+                const string wielding = zh
+                    ? "持握着" + weapon->name(DESC_A)
+                    : "wielding " + weapon->name(DESC_A);
+                const string wearing = zh
+                    ? "穿着" + amulet->name(DESC_A)
+                    : "wearing " + amulet->name(DESC_A);
+                reasons = anchor_reason + comma_sep + wielding + and_sep
+                          + wearing;
+                permanent = wielding + and_sep + wearing;
+            }
+            else if (anchored && tree)
+                reasons = anchor_reason + and_sep + roots_reason;
+            else
+                reasons = anchored ? anchor_reason : roots_reason;
+
+            for (bool blinking : {true, false})
+            {
+                const string action = blinking ? (zh ? "闪烁" : "blink")
+                                               : (zh ? "传送" : "teleport");
+                const auto sentence = [&](const string &why)
+                {
+                    return zh ? "你无法" + action + "，因为你" + why + "。"
+                              : "You cannot " + action + " because you are "
+                                + why + ".";
+                };
+                const string reason = you.no_tele_reason(blinking);
+                const string untimed = you.no_tele_reason(blinking, false);
+                CAPTURE(language, kind, blinking, reason, untimed);
+                CHECK(reason == sentence(reasons));
+                CHECK(you.no_tele(blinking));
+                // Anchor and roots are temporary; only the items remain.
+                CHECK(untimed == (permanent.empty() ? "" : sentence(permanent)));
+                if (zh)
+                {
+                    CHECK(reason.find(", ") == string::npos);
+                    for (const char *leak : {"locked", "anchor", "held",
+                                             "roots", "because", " and "})
+                    {
+                        CHECK(reason.find(leak) == string::npos);
+                    }
+                }
+            }
+
+            // Spell-uselessness consumers pass the reason through
+            // lowercase_first(); it must not disturb the Chinese text.
+            const string blink_spell = spell_uselessness_reason(SPELL_BLINK,
+                                                                true, true,
+                                                                true);
+            CAPTURE(language, kind, blink_spell);
+            CHECK(blink_spell == lowercase_first(you.no_tele_reason(true)));
+            if (zh)
+                CHECK(blink_spell == you.no_tele_reason(true));
+        }
+    }
+}
