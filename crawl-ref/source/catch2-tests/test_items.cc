@@ -13,6 +13,7 @@
 #include "unwind.h"
 #include "player-equip.h"
 #include "potion-type.h"
+#include "item-use.h"
 #include "player.h"
 
 #include "test_player_fixture.h"
@@ -190,6 +191,27 @@ TEST_CASE_METHOD( MockPlayerYouTestsFixture,
 
 TEST_CASE("armour_prop_test", "[single-file]"){
     REQUIRE(armour_prop(ARM_SCALE_MAIL, PARM_AC) == 6);
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "Repeated armour enchantment keeps the enchant tile",
+                 "[single-file][zh-translation][sync-regression][armour-enchant-tile]")
+{
+    item_def helmet = simple_create_item(OBJ_ARMOUR, ARM_HELMET);
+    REQUIRE(enchant_armour(helmet, true));
+    REQUIRE(helmet.props.exists(ITEM_TILE_NAME_KEY));
+    const string enchanted =
+        helmet.props[ITEM_TILE_NAME_KEY].get_string();
+    const short enchanted_index =
+        helmet.props[ITEM_TILE_KEY].get_short();
+
+    // Enchanting again must not build a nonexistent "*_ENCH_ENCH" name and
+    // let bind_item_tile() discard the tile props.
+    REQUIRE(enchant_armour(helmet, true));
+    REQUIRE(helmet.props.exists(ITEM_TILE_NAME_KEY));
+    CHECK(helmet.props[ITEM_TILE_NAME_KEY].get_string() == enchanted);
+    REQUIRE(helmet.props.exists(ITEM_TILE_KEY));
+    CHECK(helmet.props[ITEM_TILE_KEY].get_short() == enchanted_index);
 }
 
 TEST_CASE_METHOD(MockPlayerYouTestsFixture,

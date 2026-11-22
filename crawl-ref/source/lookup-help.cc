@@ -551,7 +551,11 @@ static bool _mutation_filter(string key, string /*body*/)
     if (!strip_suffix(key, " mutation"))
         return true;
 
-    return starts_with(key, "potion of"); // hack alert!
+    // Keep form/talisman pseudo-mutations browsable: _describe_mutation()
+    // falls back to their canonical TextDB bodies instead of erroring, so the
+    // upstream fix for that error (hide them) is unnecessary here. Only the
+    // potion entry has no real mutation description and stays hidden.
+    return starts_with(key, "potion of");
 }
 
 static bool _bane_filter(string key, string /*body*/)
