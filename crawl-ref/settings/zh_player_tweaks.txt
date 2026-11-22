@@ -8,6 +8,7 @@
 ## 已有 ready()：放在 include 前会自动串接；放在后面请调用 zh_tweaks_ready()（见文末）。
 ##
 ## v1.3 运行时校验基线：chn-trunk 4ea2a78c73（Linux SDL Tiles）。
+## v1.4 法杖去重在 Linux 控制台版与 SDL Tiles 实测（见 §改编说明 八）。
 ## 改编原则见文末「§改编说明」。
 ################################################################################
 
@@ -36,6 +37,13 @@ CONFIG.open_skills_on_start = false
 -- 强制拾取，而 Lua 返回 true 会覆盖 autopickup_exceptions。
 -- 改成 true 则恢复"只捡比当前更好的盾"策略。
 CONFIG.autopickup_shields = false
+
+-- 本局已经拿到过的基础（非神器）法杖，不再自动拾取同种法杖。默认 true。
+-- 拿到过即算数：仍在背包/已装备，或后来丢弃、失去，都不再捡同种基础法杖。
+-- 神器法杖仍走优先拾取，也不会把同种基础法杖记为"已拿到过"。
+-- 改成 false 则交回游戏默认拾取规则。
+-- 个别种类想再捡：在游戏内 `\` 菜单把它设为强制拾取，菜单设置优先于本规则。
+CONFIG.skip_obtained_base_staves = true
 }
 
 
@@ -295,6 +303,57 @@ function zh_tweaks_shield_decision(current_weapon, shield, shield_skill)
   return nil
 end
 
+-- 本局拿到过的基础法杖：英文 subtype -> true。
+-- 按角色存档（chk_lua_save），死亡/新建角色时随 Lua 状态一起清空。
+-- 读档先执行存档里的 Lua 再重读本文件，所以这里只能补建，不能清空。
+ZH_TWEAKS.obtained_staves = ZH_TWEAKS.obtained_staves or {}
+
+local function is_base_staff(it)
+  return it.class(true) == "magical staff" and not it.artefact
+end
+
+-- 扫描装备与背包，记录其中的基础法杖。
+function zh_tweaks_sync_obtained_staves()
+  local seen = ZH_TWEAKS.obtained_staves
+  for _, it in ipairs(items.inventory()) do
+    if is_base_staff(it) then
+      local sub_type = it.subtype()
+      if sub_type then seen[sub_type] = true end
+    end
+  end
+end
+
+-- 基础法杖拾取策略：false=不拾取 / nil=不表态（交回游戏规则）。
+-- obtained 缺省为本局记录；自测时可传入自己的表。
+-- 神器法杖由 pickup_equipment 的神器优先规则先行处理，这里不表态。
+function zh_tweaks_staff_decision(staff, obtained)
+  if not CONFIG.skip_obtained_base_staves then return nil end
+  if staff.artefact then return nil end
+  local sub_type = staff.subtype()
+  -- 未鉴定：交回游戏（踩上时游戏会先鉴定再判断是否拾取）。
+  if sub_type == nil then return nil end
+  if (obtained or ZH_TWEAKS.obtained_staves)[sub_type] then return false end
+  return nil
+end
+
+-- 存档钩子：返回读档时执行的 Lua。键排序，%q 转义，只写本模板的表。
+function zh_tweaks_save_obtained_staves()
+  zh_tweaks_sync_obtained_staves()
+  local keys = {}
+  for sub_type in pairs(ZH_TWEAKS.obtained_staves) do
+    if type(sub_type) == "string" then keys[#keys + 1] = sub_type end
+  end
+  table.sort(keys)
+  local out = {}
+  out[1] = "ZH_TWEAKS = ZH_TWEAKS or {}\n"
+  out[2] = "ZH_TWEAKS.obtained_staves = {}\n"
+  for _, sub_type in ipairs(keys) do
+    out[#out + 1] = string.format("ZH_TWEAKS.obtained_staves[%q] = true\n",
+                                  sub_type)
+  end
+  return table.concat(out)
+end
+
 local function pickup_equipment(it, name)
   local class = it.class(true)
 
@@ -304,6 +363,13 @@ local function pickup_equipment(it, name)
 
   -- 神器永远捡
   if it.artefact then return true end
+
+  if class == "magical staff" then
+    if not CONFIG.skip_obtained_base_staves then return end
+    -- 先同步：同一格两把同种法杖、或自动探索中连捡时，ready() 还没来得及运行。
+    zh_tweaks_sync_obtained_staves()
+    return zh_tweaks_staff_decision(it)
+  end
 
   if class == "weapon" then
     local currentWeapon = items.equipped_at("weapon")
@@ -347,6 +413,19 @@ for _, func in ipairs(chk_force_autopickup) do
   if func == ZH_TWEAKS.pickup_wrapper then registered = true end
 end
 if not registered then add_autopickup_func(ZH_TWEAKS.pickup_wrapper) end
+
+-- 存档钩子同样用稳定包装器并去重。出错时不写本表，避免拖垮其他存档钩子。
+ZH_TWEAKS.save_impl = zh_tweaks_save_obtained_staves
+ZH_TWEAKS.save_wrapper = ZH_TWEAKS.save_wrapper or function()
+  local ok, res = pcall(ZH_TWEAKS.save_impl)
+  if ok and type(res) == "string" then return res end
+  return ""
+end
+local save_registered = false
+for _, func in ipairs(chk_lua_save) do
+  if func == ZH_TWEAKS.save_wrapper then save_registered = true end
+end
+if not save_registered then table.insert(chk_lua_save, ZH_TWEAKS.save_wrapper) end
 }
 
 
@@ -357,7 +436,7 @@ if not registered then add_autopickup_func(ZH_TWEAKS.pickup_wrapper) end
 local didRun = false
 function note_version()
   if didRun then return end
-  crawl.take_note("zh_player_tweaks.txt [v1.3]")
+  crawl.take_note("zh_player_tweaks.txt [v1.4]")
   didRun = true
 end
 }
@@ -369,6 +448,7 @@ function zh_tweaks_ready()
   if ZH_TWEAKS.dispatching and ZH_TWEAKS.did_ready then return end
   if ZH_TWEAKS.dispatching then ZH_TWEAKS.did_ready = true end
   announce_damage()
+  zh_tweaks_sync_obtained_staves()
   note_version()
 end
 if ready ~= ZH_TWEAKS.ready_wrapper then ZH_TWEAKS.user_ready = ready end
@@ -744,7 +824,7 @@ note_monsters += 吸血鬼骑士,亵渎侍者,幽灵蛾
 ##
 ## END
 ################################################################################
-: rc_scs("Successfully initialized zh_player_tweaks.txt [v1.3]")
+: rc_scs("Successfully initialized zh_player_tweaks.txt [v1.4]")
 : crawl.enable_more(true)
 
 ################################################################################
@@ -861,3 +941,18 @@ note_monsters += 吸血鬼骑士,亵渎侍者,幽灵蛾
 #   删除已不可选种族和已移除物品条件，旧 Ogre 大石块条件使用现名 Oni；
 #   noise/amnesia 卷轴仍存在，保留。
 #   本模板面向中文界面；不会将全部消息规则转换成英文。
+#
+# 八、v1.4 基础法杖去重拾取
+#
+#   CONFIG.skip_obtained_base_staves = true（默认）：本局拿到过某种基础
+#   （非神器）法杖后，同种基础法杖的拾取回调返回 false；之后丢弃或失去
+#   也照样跳过。决策函数 zh_tweaks_staff_decision 可单独自测。
+#   · 神器法杖仍先返回 true，且不会把同种基础法杖记为已拿到过。
+#   · 禁止/无用物品照旧不表态；未鉴定法杖交回游戏默认流程。
+#   · ready()、评估基础法杖前和存档前扫描 items.inventory() 同步记录，
+#     覆盖同一格两把同种法杖、自动探索中连捡的情况。
+#   · 记录用 chk_lua_save 存入角色存档（不用 c_persist，不跨角色）。
+#     读档顺序是先执行存档 Lua、再重读本文件，因此重读只补建记录表；
+#     存档钩子与拾取包装器一样用稳定包装器并去重。
+#   · 想再捡某种基础法杖：`\` 菜单设为强制拾取（AP_FORCE_ON），它在
+#     C++ 里先于 Lua 回调生效；或把开关改为 false 恢复游戏默认规则。
