@@ -195,7 +195,7 @@ TEST_CASE("armour_prop_test", "[single-file]"){
 
 TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                  "Repeated armour enchantment keeps the enchant tile",
-                 "[single-file][upstream-1400eb02e2]")
+                 "[single-file][zh-translation][sync-regression][armour-enchant-tile]")
 {
     item_def helmet = simple_create_item(OBJ_ARMOUR, ARM_HELMET);
     REQUIRE(enchant_armour(helmet, true));
