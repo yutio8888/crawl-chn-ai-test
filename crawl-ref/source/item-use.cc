@@ -2593,12 +2593,17 @@ bool enchant_armour(item_def &arm, bool quiet)
 
     arm.plus++;
 
-    // Make sure newly enchanted items appear as such.
-    string new_tile_name = make_stringf("%s_ENCH", tile_main_name(tileidx_item(arm)));
-    tileidx_t dummy;
-    if (tile_main_index(new_tile_name.c_str(), &dummy))
+    // Make sure newly enchanted items appear as such, but only when an
+    // enchant-only variant of the current tile actually exists. Otherwise
+    // replace nothing: a second enchantment would look for "..._ENCH_ENCH"
+    // and bind_item_tile() would discard both tile props, and a custom
+    // vault tile would be lost on the first enchantment.
+    const string enchanted_tile = make_stringf("%s_ENCH",
+                                               tile_main_name(tileidx_item(arm)));
+    tileidx_t enchanted_tile_index;
+    if (tile_main_index(enchanted_tile.c_str(), &enchanted_tile_index))
     {
-        arm.props[ITEM_TILE_NAME_KEY] = new_tile_name;
+        arm.props[ITEM_TILE_NAME_KEY] = enchanted_tile;
         bind_item_tile(arm);
     }
     item_set_appearance(arm);
