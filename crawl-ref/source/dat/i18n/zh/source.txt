@@ -31490,6 +31490,12 @@ the sanctuary denies %s grip on your mind.
 this branch contains the %s rune%s of zot.
 这个分支包含%s佐特符文%.0s。
 %%%%
+locked down by a dimension anchor
+被维度锚定锁住了
+%%%%
+held in place by your roots
+被自己的树根固定在原地
+%%%%
 wearing %s %s preventing teleportation
 穿着%s件防止传送的%s
 %%%%
