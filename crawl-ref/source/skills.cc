@@ -1146,6 +1146,8 @@ static void _train_skills(const bool simu)
                 skill_weights[sk] = 0;
 #ifdef DEBUG_DIAGNOSTICS
             total_gain[sk] += gain;
+#else
+            UNUSED(gain);
 #endif
         }
 
@@ -1162,6 +1164,8 @@ static void _train_skills(const bool simu)
             _level_up_check(sk, simu);
 #ifdef DEBUG_DIAGNOSTICS
             total_gain[sk] += gain;
+#else
+            UNUSED(gain);
 #endif
         }
 
