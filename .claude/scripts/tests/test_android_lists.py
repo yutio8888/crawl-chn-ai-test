@@ -1190,6 +1190,136 @@ int main() {
 }
 """)
 
+    def test_android_custom_skill_target_parses_validates_and_reprompts(self):
+        source = (ROOT / "crawl-ref/source/skill-menu.cc").read_text()
+        fmt = regression.block_after(source, "static string _format_skill_target(int target)\n{")
+        parse = regression.block_after(source, "static int _parse_android_skill_target(")
+        read = regression.block_after(source, "static int _android_read_custom_skill_target(")
+        regression.TargetingSafetyTests.run_cpp(self, r"""
+#include <cassert>
+#include <clocale>
+#include <cstdarg>
+#include <cstdio>
+#include <cstring>
+#include <deque>
+#include <string>
+#include <vector>
+using namespace std;
+#define T_(s) (s)
+enum { CK_ESCAPE = -1001 };
+enum skill_type { SK_DODGING };
+struct { bool seen_hups = false; } crawl_state;
+const char *skill_name(skill_type) { return "Dodging"; }
+string make_stringf(const char *format, ...)
+{
+    char buf[512];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buf, sizeof(buf), format, args);
+    va_end(args);
+    return buf;
+}
+string trimmed_string(string s)
+{
+    s.erase(0, s.find_first_not_of(' '));
+    s.erase(s.find_last_not_of(' ') + 1);
+    return s;
+}
+// Scripted popup line editor: records the prompt and prefill it was given.
+struct Reply { int ret; string text; };
+deque<Reply> replies;
+vector<string> prompts, fills;
+vector<bool> numeric;
+int msgwin_get_line(string prompt, char *buf, int len, void *, const string &fill,
+                    bool numeric_input)
+{
+    prompts.push_back(prompt);
+    fills.push_back(fill);
+    numeric.push_back(numeric_input);
+    assert(!replies.empty());
+    Reply r = replies.front();
+    replies.pop_front();
+    snprintf(buf, len, "%s", r.text.c_str());
+    return r.ret;
+}
+static string _format_skill_target(int target)
+""" + fmt + r"""
+static int _parse_android_skill_target(const string &input)
+""" + parse + r"""
+static int _android_read_custom_skill_target(skill_type sk, int current,
+                                             int old_target)
+""" + read + r"""
+int main() {
+    // Integers and one decimal place; '.' or ',' separators; padding.
+    assert(_parse_android_skill_target("6") == 60);
+    assert(_parse_android_skill_target("8.5") == 85);
+    assert(_parse_android_skill_target(" 20,5 ") == 205);
+    assert(_parse_android_skill_target("12.") == 120);
+    assert(_parse_android_skill_target(".5") == 5);
+    assert(_parse_android_skill_target("0") == 0);
+    assert(_parse_android_skill_target("27.0") == 270);
+    assert(_parse_android_skill_target("30") == 300); // range is the caller's
+    for (const char *bad : {"", " ", ".", "8.25", "1.2.3", "-1", "+3", "abc",
+                            "8a", "1 2", "1000"})
+    {
+        assert(_parse_android_skill_target(bad) == -1);
+    }
+
+    // Each rejection explains itself and keeps the typed text; the first
+    // valid entry wins. Number input is always requested.
+    replies = {{0, "abc"}, {0, "30"}, {0, "1.7"}, {0, "8.25"}, {0, "8.5"}};
+    assert(_android_read_custom_skill_target(SK_DODGING, 17, 0) == 85);
+    assert(prompts.size() == 5);
+    assert(fills[0] == "" && fills[1] == "abc" && fills[4] == "8.25");
+    assert(prompts[0].find("Enter a skill target for Dodging") == 0);
+    assert(prompts[0].find("Current level: 1.7") != string::npos);
+    assert(prompts[1].find("Enter a number such as 8 or 8.5") == 0);
+    assert(prompts[2].find("must be 27 or below") != string::npos);
+    assert(prompts[3].find("higher than the current level") != string::npos);
+    assert(prompts[4].find("Enter a number such as 8 or 8.5") == 0);
+    for (bool n : numeric)
+        assert(n);
+
+    // The old target is prefilled; 0 clears; Escape or an empty line backs
+    // out.
+    prompts.clear(); fills.clear();
+    replies = {{0, "0"}};
+    assert(_android_read_custom_skill_target(SK_DODGING, 50, 85) == 0);
+    assert(fills[0] == "8.5");
+    replies = {{CK_ESCAPE, "9"}};
+    assert(_android_read_custom_skill_target(SK_DODGING, 50, 0) == -1);
+    replies = {{0, "  "}};
+    assert(_android_read_custom_skill_target(SK_DODGING, 50, 0) == -1);
+    // Exactly 27.0 is accepted; a target equal to the level is not.
+    replies = {{0, "27"}};
+    assert(_android_read_custom_skill_target(SK_DODGING, 269, 0) == 270);
+    replies = {{0, "5"}, {CK_ESCAPE, ""}};
+    assert(_android_read_custom_skill_target(SK_DODGING, 50, 0) == -1);
+}
+""")
+
+    def test_android_skill_target_uses_target_met_level(self):
+        source = (ROOT / "crawl-ref/source/skill-menu.cc").read_text()
+        read = regression.block_after(source, "int SkillMenu::read_skill_target(skill_type sk)")
+        android = read[:read.index("#else")]
+        # 0.34.1 keeps a single training target per skill.
+        self.assertIn("_android_pick_skill_target(sk)", android)
+        self.assertIn("you.set_training_target(sk, chosen);", android)
+        pick = regression.block_after(source, "static int _android_pick_skill_target(")
+        self.assertIn("you.get_training_target(sk)", pick)
+        # Presets compare with the level target_met() uses.
+        self.assertIn("const int current = you.skill(sk, 10, false, false);", pick)
+        self.assertIn('new MenuEntry(T_("Custom target..."),', pick)
+        self.assertIn('new MenuEntry(T_("Clear target"), MEL_ITEM, 1, \'-\');', pick)
+        # Backing out of the editor returns to the preset list.
+        self.assertRegex(pick, r"while \(true\)\s*\{\s*SkillTargetMenu menu;")
+        zh = (ROOT / "crawl-ref/source/dat/i18n/zh/source.txt").read_text()
+        for key in ("Custom target...", "Current level: %s",
+                    "Enter a target up to 27.0, or 0 to clear it.",
+                    "Enter a number such as 8 or 8.5, with at most one decimal place.",
+                    "The target must be higher than the current level."):
+            self.assertIn("\n" + key + "\n", zh)
+
 
 if __name__ == "__main__":
     unittest.main()

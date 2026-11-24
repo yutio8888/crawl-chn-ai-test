@@ -38,6 +38,7 @@
 #include "unwind.h"
 #include "database.h"
 #ifdef __ANDROID__
+#include "message.h"
 #include "outer-menu.h"
 #include "syscalls.h"
 #endif
@@ -994,22 +995,105 @@ public:
     }
 };
 
-// The inline editor below runs its own line_reader loop outside the ui::
-// widget tree, so the Android input context never leaves NAVIGATION and the
-// compact keyboard stays up with no digits on it; the full keyboard's numeric
-// layout has no decimal point either. Offer the useful targets as an ordinary
-// menu instead, which already scrolls and labels itself for touch.
-// Returns a target in tenths, or -1 if the player cancelled.
-static int _android_pick_skill_target(skill_type sk, int old_target)
+/// Parse a typed skill target into tenths: digits with at most one decimal
+/// place. '.', ',' and the locale's decimal marker are all accepted, because
+/// IMEs and keyboards differ in which one they offer. Returns -1 if invalid;
+/// range checks are left to the caller.
+static int _parse_android_skill_target(const string &input)
 {
-    const int level = you.skills[sk];
+    const string text = trimmed_string(input);
+    const char locale_point = *std::localeconv()->decimal_point;
+    int whole = 0, tenths = 0, int_digits = 0, frac_digits = 0;
+    bool point = false;
+    for (char ch : text)
+    {
+        if (ch >= '0' && ch <= '9')
+        {
+            if (!point)
+            {
+                // Three digits already exceed the 27.0 maximum; stopping
+                // here keeps the value from overflowing.
+                if (++int_digits > 3)
+                    return -1;
+                whole = whole * 10 + (ch - '0');
+            }
+            else
+            {
+                if (++frac_digits > 1)
+                    return -1;
+                tenths = ch - '0';
+            }
+        }
+        else if ((ch == '.' || ch == ',' || ch == locale_point) && !point)
+            point = true;
+        else
+            return -1;
+    }
+    if (!int_digits && !frac_digits)
+        return -1;
+    return whole * 10 + tenths;
+}
+
+/// Ask for an arbitrary target with the ui:: popup line editor, which puts
+/// Android into its NUMBER input context (digit keyboard with a decimal
+/// point, or a decimal system IME). Invalid entries are explained and asked
+/// again with the typed text kept. Returns tenths (0 clears), or -1 if the
+/// player backed out.
+static int _android_read_custom_skill_target(skill_type sk, int current,
+                                             int old_target)
+{
+    string error;
+    string fill = old_target > 0 ? _format_skill_target(old_target) : "";
+    while (true)
+    {
+        string prompt;
+        if (!error.empty())
+            prompt += error + "\n";
+        prompt += make_stringf(T_("Enter a skill target for %s: "),
+                               skill_name(sk));
+        prompt += "\n" + make_stringf(T_("Current level: %s"),
+                                      _format_skill_target(current).c_str());
+        prompt += "\n" + string(T_("Enter a target up to 27.0, or 0 to clear it."));
+
+        char buf[16] = "";
+        const int ret = msgwin_get_line(prompt, buf, sizeof(buf), nullptr,
+                                        fill, true);
+        if (ret == CK_ESCAPE || crawl_state.seen_hups
+            || trimmed_string(buf).empty())
+        {
+            return -1;
+        }
+
+        fill = buf;
+        const int target = _parse_android_skill_target(buf);
+        if (target < 0)
+            error = T_("Enter a number such as 8 or 8.5, with at most one decimal place.");
+        else if (target > 270)
+            error = T_("Your training target must be 27 or below!");
+        else if (target > 0 && target <= current)
+            error = T_("The target must be higher than the current level.");
+        else
+            return target;
+    }
+}
+
+// Touch players pick a common target from an ordinary menu (which already
+// scrolls and labels itself for touch), or choose "Custom target..." to type
+// any value; the desktop inline EditableTextItem lives in the invisible
+// PrecisionMenu backend on Android. Returns tenths, or -1 if cancelled.
+static int _android_pick_skill_target(skill_type sk)
+{
+    const int old_target = you.get_training_target(sk);
+    // Compare against the level that target_met() checks, so a preset is
+    // never already reached (e.g. under skill boosts).
+    const int current = you.skill(sk, 10, false, false);
     static const int presets[] = {50, 100, 140, 180, 220, 270};
-    const int next = (level + 1) * 10;
+    const int next = (current / 10 + 1) * 10;
 
     vector<int> targets;
-    auto push = [&targets, level](int tenths)
+    auto push = [&targets, current](int tenths)
     {
-        if (tenths <= level * 10 || tenths > 270)
+        if (tenths <= current || tenths > 270)
             return;
         // The candidates are generated in ascending order, so an adjacent
         // match is the only possible duplicate.
@@ -1034,37 +1118,57 @@ static int _android_pick_skill_target(skill_type sk, int old_target)
     if (targets.empty() && old_target <= 0)
         return -1;
 
-    SkillTargetMenu menu;
-    menu.set_tag("skill_target");
-    menu.set_title(new MenuEntry(make_stringf(
-        T_("Enter a skill target for %s: "), skill_name(sk)), MEL_TITLE));
-    menu_letter hotkey;
-    for (int tenths : targets)
+    static const intptr_t custom_target = -2;
+    while (true)
     {
-        MenuEntry *entry = new MenuEntry(_format_skill_target(tenths),
-                                         MEL_ITEM, 1, hotkey++);
-        entry->data = (void *)(intptr_t) tenths;
-        menu.add_entry(entry);
-    }
-    if (old_target > 0)
-    {
-        MenuEntry *entry = new MenuEntry(T_("Clear target"), MEL_ITEM, 1, '-');
-        entry->data = (void *)(intptr_t) 0;
-        menu.add_entry(entry);
-    }
+        SkillTargetMenu menu;
+        menu.set_tag("skill_target");
+        menu.set_title(new MenuEntry(make_stringf(
+                T_("Enter a skill target for %s: "), skill_name(sk))
+            + "\n" + make_stringf(T_("Current level: %s"),
+                                  _format_skill_target(current).c_str()),
+            MEL_TITLE));
+        menu_letter hotkey;
+        for (int tenths : targets)
+        {
+            MenuEntry *entry = new MenuEntry(_format_skill_target(tenths),
+                                             MEL_ITEM, 1, hotkey++);
+            entry->data = (void *)(intptr_t) tenths;
+            menu.add_entry(entry);
+        }
+        if (!targets.empty())
+        {
+            MenuEntry *entry = new MenuEntry(T_("Custom target..."),
+                                             MEL_ITEM, 1, '=');
+            entry->data = (void *) custom_target;
+            menu.add_entry(entry);
+        }
+        if (old_target > 0)
+        {
+            MenuEntry *entry = new MenuEntry(T_("Clear target"), MEL_ITEM, 1, '-');
+            entry->data = (void *)(intptr_t) 0;
+            menu.add_entry(entry);
+        }
 
-    vector<MenuEntry *> selection = menu.show();
-    if (selection.empty())
-        return -1;
-    return (int)(intptr_t) selection[0]->data;
+        vector<MenuEntry *> selection = menu.show();
+        if (selection.empty() || crawl_state.seen_hups)
+            return -1;
+        const intptr_t chosen = (intptr_t) selection[0]->data;
+        if (chosen != custom_target)
+            return (int) chosen;
+        const int typed = _android_read_custom_skill_target(sk, current,
+                                                            old_target);
+        // Backing out of the editor returns to the choices, not the skills.
+        if (typed >= 0)
+            return typed;
+    }
 }
 #endif
 
 int SkillMenu::read_skill_target(skill_type sk)
 {
 #ifdef __ANDROID__
-    const int chosen = _android_pick_skill_target(sk,
-                                                  you.get_training_target(sk));
+    const int chosen = _android_pick_skill_target(sk);
     if (chosen < 0)
     {
         cancel_set_target();
