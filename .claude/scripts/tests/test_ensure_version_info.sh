@@ -68,6 +68,8 @@ git -C "$SEED" remote add origin "$REMOTE"
 git -C "$SEED" push -q origin HEAD:refs/heads/main "refs/tags/$TAG" "refs/tags/0.34-a0"
 
 git clone -q "$REMOTE" "$BUILD"
+git -C "$BUILD" config user.email test@example.invalid
+git -C "$BUILD" config user.name test
 git -C "$BUILD" checkout -q "$COMMIT"
 
 # Reproduce actions/checkout replacing the annotated tag object with a direct
@@ -109,6 +111,16 @@ if [[ "$(<"$BUILD/crawl-ref/source/util/release_ver")" == "$TAG" ]]; then
 else
     fail "release_ver contains the exact release tag"
 fi
+
+# Higher lightweight or non-X.Y-aN alpha names must not displace 0.34-a0.
+git -C "$BUILD" tag "0.35-a0" "$COMMIT"
+git -C "$BUILD" tag -a "0.35-a0-extra" -m extra "$COMMIT"
+expect_success "stable gate ignores lightweight and non-standard alpha tags" \
+    run_tag_build "$TAG" "$COMMIT"
+git -C "$BUILD" tag -a "0.35-a1" -m alpha "$COMMIT"
+expect_failure "stable gate rejects a reachable annotated 0.35 alpha" \
+    run_tag_build "$TAG" "$COMMIT"
+git -C "$BUILD" tag -d "0.35-a0" "0.35-a0-extra" "0.35-a1" >/dev/null
 
 WRONG_COMMIT="0000000000000000000000000000000000000000"
 expect_failure "tag pointing at another commit is rejected" \

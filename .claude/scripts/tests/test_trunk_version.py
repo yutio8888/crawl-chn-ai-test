@@ -72,6 +72,45 @@ class TrunkVersionTest(unittest.TestCase):
         self.tag('0.35-a0')
         return self.commit()
 
+    def dated_git(self, offset, *args):
+        base = int(self.git('log', '-1', '--format=%ct', self.alpha_commit))
+        stamp = f'@{base + offset} +0000'
+        env = self.env.copy()
+        env.update(GIT_AUTHOR_DATE=stamp, GIT_COMMITTER_DATE=stamp)
+        return self.run_cmd(['git', *args], env=env).stdout
+
+    def dated_commit(self, offset, message):
+        self.dated_git(offset, 'commit', '--allow-empty', '-qm', message)
+        return self.git('rev-parse', 'HEAD').strip()
+
+    def merged_new_alpha_history(self):
+        """chn-trunk shape on which `git describe --abbrev=0` picks 0.35-a0.
+
+        Upstream x and y share a committer date. The earlier sync merge queues
+        x before y, so describe pops x without 0.36-a0's reachability flag and
+        charges x, 0.35-a0 and the base commits to 0.36-a0's depth estimate.
+        """
+        for offset in range(1, 5):
+            self.dated_commit(offset, f'base {offset}')
+        self.git('branch', 'trunk')
+        self.dated_commit(10, 'upstream 0.35-a0')
+        self.tag('0.35-a0')
+        self.dated_commit(20, 'upstream')
+        self.dated_commit(30, 'upstream x')
+        self.git('branch', 'synced')
+        self.dated_commit(30, 'upstream y, same committer date as x')
+        self.dated_commit(40, 'upstream')
+        new_alpha = self.dated_commit(100, 'upstream 0.36-a0')
+        self.tag('0.36-a0')
+        self.git('checkout', '-q', 'trunk')
+        self.dated_commit(15, 'trunk before the new alpha')
+        self.dated_commit(25, 'trunk before the new alpha')
+        self.dated_git(50, 'merge', '-q', '--no-ff', '--no-edit', 'synced')
+        self.dated_commit(60, 'trunk before the new alpha')
+        self.dated_git(110, 'merge', '-q', '--no-ff', '--no-edit', '0.36-a0')
+        head = self.dated_commit(120, 'trunk after the new alpha')
+        return new_alpha, head
+
     def ensure(self, tag=None, *, commit=None, ok=True, fetch=False):
         env = self.env.copy()
         env['GITHUB_REF_TYPE'] = 'tag' if tag else 'branch'
@@ -177,6 +216,86 @@ class TrunkVersionTest(unittest.TestCase):
         self.tag('0.36-trunk-001')
         result = self.ensure('0.36-trunk-001', ok=False)
         self.assertIn('differs from upstream 0.35-a0', result.stderr)
+
+    def test_merged_new_alpha_wins_over_git_describe_depth_heuristic(self):
+        new_alpha, head = self.merged_new_alpha_history()
+        self.run_cmd(['git', 'merge-base', '--is-ancestor', '0.35-a0', new_alpha])
+        self.assertLess(int(self.git('rev-list', '--count', 'HEAD', '^0.36-a0')),
+                        int(self.git('rev-list', '--count', 'HEAD', '^0.35-a0')))
+        # Native `git describe` tie-breaking on equal committer dates varies
+        # across Git versions (e.g., Git 2.39 returns 0.35-a0 here while
+        # Git 2.56 returns 0.36-a0); version-independent describe divergence
+        # is asserted in test_highest_reachable_alpha_wins_when_lower_alpha_is_closer_by_describe.
+
+        # Noise: reachable lightweight and non-standard alpha names, plus a
+        # higher annotated alpha that is not reachable from the candidate.
+        self.tag('0.99-a0', annotated=False)
+        self.tag('0.99-a0-extra')
+        self.tag('1.0-a0x')
+        self.git('checkout', '-q', '-b', 'unmerged', new_alpha)
+        self.commit()
+        self.tag('0.98-a0')
+        self.git('checkout', '-q', 'trunk')
+        self.assertEqual('commit', self.git('cat-file', '-t', '0.99-a0').strip())
+
+        self.tag('0.36-trunk-001')
+        self.ensure('0.36-trunk-001', commit=head)
+        self.assertEqual('0.36-trunk-001\n', (self.util / 'release_ver').read_text())
+        self.assert_version('0.36-trunk-001')
+
+        self.commit()
+        tag = '0.35-trunk-016'
+        self.tag(tag)
+        (self.util / 'release_ver').write_text('sentinel\n')
+        result = self.ensure(tag, ok=False)
+        self.assertIn('trunk major version 0.35 differs from upstream 0.36-a0',
+                      result.stderr)
+        self.assertEqual('sentinel\n', (self.util / 'release_ver').read_text())
+
+    def test_highest_reachable_alpha_wins_when_lower_alpha_is_closer_by_describe(self):
+        # Guarantee git describe picks the lower alpha by genuine commit
+        # distance on every Git version, while ensure_version_info.sh still
+        # resolves the highest reachable annotated alpha tag.
+        base_branch = self.git('rev-parse', '--abbrev-ref', 'HEAD').strip()
+        self.tag('0.35-a0')
+        self.git('checkout', '-q', '-b', 'alpha36')
+        self.commit()
+        self.tag('0.36-a0')
+        self.git('checkout', '-q', base_branch)
+        for _ in range(5):
+            self.commit()
+        self.tag('0.35-a1')
+        self.git('merge', '-q', '--no-ff', '--no-edit', 'alpha36')
+        head = self.commit()
+
+        self.assertLess(int(self.git('rev-list', '--count', 'HEAD', '^0.35-a1')),
+                        int(self.git('rev-list', '--count', 'HEAD', '^0.36-a0')))
+        self.assertEqual('0.35-a1', self.git(
+            'describe', '--abbrev=0', '--match', '*-a[0-9]*', 'HEAD').strip())
+
+        self.tag('0.36-trunk-001')
+        self.ensure('0.36-trunk-001', commit=head)
+        self.assertEqual('0.36-trunk-001\n', (self.util / 'release_ver').read_text())
+        self.assert_version('0.36-trunk-001')
+
+        self.commit()
+        self.tag('0.35-trunk-016')
+        result = self.ensure('0.35-trunk-016', ok=False)
+        self.assertIn('trunk major version 0.35 differs from upstream 0.36-a0',
+                      result.stderr)
+
+    def test_only_lightweight_or_nonstandard_alpha_tags_fail_closed(self):
+        self.tag('0.99-a0', annotated=False)
+        self.tag('0.99-a0-extra')
+        self.tag('0.35-trunk-001')
+        result = self.ensure('0.35-trunk-001', ok=False)
+        self.assertIn('cannot find an annotated upstream alpha tag', result.stderr)
+        result = self.ensure(ok=False)
+        self.assertIn('cannot find an annotated upstream alpha tag for HEAD', result.stderr)
+        self.assertEqual('0.34.1-zh5-1-001\n', (self.util / 'release_ver').read_text())
+        result = self.run_cmd(['perl', 'util/gen_ver.pl', 'build.h'],
+                              cwd=self.source, ok=False)
+        self.assertIn("Can't find an annotated upstream alpha tag", result.stderr)
 
     def test_missing_alpha_fails_without_release_ver_fallback(self):
         self.tag('0.35-trunk-001')
