@@ -177,7 +177,12 @@ public class DCSSKeyboardConfigurationTest {
                                     new String[6], new int[6]);
                             measureKeyboard(keyboard, width);
                             assertEquals(height, keyboard.getHeight());
+                            // Number prompts open on digits with a decimal
+                            // point and their own Enter key.
+                            assertEquals(View.VISIBLE,
+                                    keyboard.findViewById(R.id.keyboard_numeric).getVisibility());
                             assertVisibleLabelsFit(keyboard);
+                            assertTouchTarget(keyboard.findViewById(R.id.key_num_enter));
                             assertTouchTarget(keyboard.findViewById(R.id.key_context_2));
                             // Leave a usable native view even on a shorter portrait
                             // display; fitting text must not put controls off-screen.
@@ -213,6 +218,7 @@ public class DCSSKeyboardConfigurationTest {
                     int[] requests = {0};
                     keyboard.setSystemKeyboardAction(() -> ++requests[0]);
                     List<Integer> sentKeys = new ArrayList<>();
+                    StringBuilder committed = new StringBuilder();
                     keyboard.setInputConnection(new BaseInputConnection(keyboard, true) {
                         @Override
                         public boolean sendKeyEvent(KeyEvent event) {
@@ -221,12 +227,33 @@ public class DCSSKeyboardConfigurationTest {
                             }
                             return true;
                         }
+
+                        @Override
+                        public boolean commitText(CharSequence text, int position) {
+                            committed.append(text);
+                            return true;
+                        }
                     });
                     for (int textContext : new int[] {DCSSKeyboard.CONTEXT_TEXT,
                             DCSSKeyboard.CONTEXT_NUMBER}) {
                         keyboard.setInputContext(textContext, 0, new String[6], new int[6]);
-                        assertEquals(View.VISIBLE,
-                                keyboard.findViewById(R.id.keyboard_lower).getVisibility());
+                        boolean number = textContext == DCSSKeyboard.CONTEXT_NUMBER;
+                        assertEquals(View.VISIBLE, keyboard.findViewById(number
+                                ? R.id.keyboard_numeric : R.id.keyboard_lower).getVisibility());
+                        if (number) {
+                            // A decimal target is typed and confirmed without
+                            // leaving the digit layout.
+                            keyboard.findViewById(R.id.key_num_1).performClick();
+                            keyboard.findViewById(R.id.key_num_dot).performClick();
+                            keyboard.findViewById(R.id.key_num_5).performClick();
+                            keyboard.findViewById(R.id.key_num_enter).performClick();
+                            assertEquals("1.5", committed.toString());
+                            assertEquals(Arrays.asList(KeyEvent.KEYCODE_ENTER), sentKeys);
+                            assertEquals(View.VISIBLE, keyboard.findViewById(
+                                    R.id.keyboard_numeric).getVisibility());
+                            committed.setLength(0);
+                            sentKeys.clear();
+                        }
                         for (int key : new int[] {R.id.key_mobile_expand, R.id.key_shift_lower,
                                 R.id.key_ctrl_upper, R.id.key_123_ctrl}) {
                             keyboard.updateLayout(keyboard.findViewById(key));
