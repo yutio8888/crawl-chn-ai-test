@@ -4164,10 +4164,24 @@ int choose_ability_menu(const vector<talent>& talents)
 {
     // TODO: refactor this into a proper subclass
     ToggleableMenu abil_menu(MF_SINGLESELECT | MF_ANYPRINTABLE
-            | MF_NO_WRAP_ROWS | MF_TOGGLE_ACTION | MF_ARROWS_SELECT
+            | MF_TABLE_ROWS | MF_TOGGLE_ACTION | MF_ARROWS_SELECT
             | MF_INIT_HOVER);
 
     abil_menu.set_highlighter(nullptr);
+#ifdef __ANDROID__
+    // Touch rows: name, then labelled cost and failure (no column headings).
+    auto talent_row = [](const talent& tal)
+    {
+        return touch_table_row(ability_name(tal.which), {
+            {T_("Cost"), trimmed_string(make_cost_description(tal.which))},
+            {T_("Failure"), failure_rate_to_string(tal.fail)},
+        });
+    };
+    abil_menu.set_title(new ToggleableMenuEntry(T_("Ability - use which?"),
+                            T_("Ability - describe which?"), MEL_TITLE),
+                        true, true);
+#else
+    auto talent_row = [](const talent& tal) { return describe_talent(tal); };
     // Build column headers aligned with data columns:
     // name(32) | cost(32) | failure(12)
     {
@@ -4194,6 +4208,7 @@ int choose_ability_menu(const vector<talent>& talents)
             true, true);
 #endif
     }
+#endif
     abil_menu.set_tag("ability");
     abil_menu.add_toggle_from_command(CMD_MENU_CYCLE_MODE);
     abil_menu.add_toggle_from_command(CMD_MENU_CYCLE_MODE_REVERSE);
@@ -4228,8 +4243,8 @@ int choose_ability_menu(const vector<talent>& talents)
         else
         {
             ToggleableMenuEntry* me =
-                new ToggleableMenuEntry(describe_talent(talents[i]),
-                                        describe_talent(talents[i]),
+                new ToggleableMenuEntry(talent_row(talents[i]),
+                                        talent_row(talents[i]),
                                         MEL_ITEM, 1, talents[i].hotkey);
             me->data = &numbers[i];
             me->add_tile(tile_def(tileidx_ability(talents[i].which)));
@@ -4256,8 +4271,8 @@ int choose_ability_menu(const vector<talent>& talents)
             if (talents[i].is_invocation)
             {
                 ToggleableMenuEntry* me =
-                    new ToggleableMenuEntry(describe_talent(talents[i]),
-                                            describe_talent(talents[i]),
+                    new ToggleableMenuEntry(talent_row(talents[i]),
+                                            talent_row(talents[i]),
                                             MEL_ITEM, 1, talents[i].hotkey);
                 me->data = &numbers[i];
                 me->add_tile(tile_def(tileidx_ability(talents[i].which)));

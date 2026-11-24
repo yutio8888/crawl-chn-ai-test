@@ -586,6 +586,11 @@ protected:
             : (T_("(Show)    "));
 
         const string prefix = make_stringf(T_("Spells %s"), act_str);
+#ifdef __ANDROID__
+        // Touch rows label each value themselves (see update_entries), so
+        // the reading-size title carries no column headings to misalign.
+        return formatted_string(trimmed_string(prefix));
+#else
         const int pw = strwidth(prefix);
         // Tiles: +4 for 1-char indent vs 5-char prefix. Console: both use 5.
 #ifdef USE_TILE_LOCAL
@@ -601,6 +606,7 @@ protected:
                                 : chop_string(T_("Failure"), 9).c_str(),
             T_("Level"));
         return formatted_string::parse_string(header);
+#endif
     }
 
 private:
@@ -815,6 +821,48 @@ private:
         }
     }
 
+#ifdef __ANDROID__
+    // The desktop row is an 80-column table (name 32, school 26, failure 9 or
+    // 13, level). At Android reading size it wrapped at the column padding,
+    // splitting each spell over three misaligned lines. Show the name, then
+    // the same values as labelled fields.
+    static string _touch_row(const sortable_spell& spell, colour_t colour,
+                             bool show_enkindle)
+    {
+        const string col = colour_to_str(colour);
+        const string fail_col = colour_to_str(spell.fail_rate_colour);
+        string failure;
+        // Divine Exegesis has no failure column, as on desktop.
+        if (you.divine_exegesis)
+            failure = "";
+        else if (show_enkindle && spell_can_be_enkindled(spell.spell))
+        {
+            failure = make_stringf(
+                T_("<%s>%d%%</%s><darkgrey> (%d%%)</darkgrey>"),
+                fail_col.c_str(), failure_rate_to_int(spell.raw_fail),
+                fail_col.c_str(),
+                failure_rate_to_int(raw_spell_fail(spell.spell, true)));
+        }
+        else
+        {
+            failure = make_stringf("<%s>%s</%s>", fail_col.c_str(),
+                        failure_rate_to_string(spell.raw_fail).c_str(),
+                        fail_col.c_str());
+        }
+        const string name = make_stringf("<%s>%s</%s>", col.c_str(),
+                                         spell.name.c_str(), col.c_str());
+        const string school = make_stringf("<%s>%s</%s>", col.c_str(),
+                                           spell.school.c_str(), col.c_str());
+        return touch_table_row(name, {
+            // School names identify themselves; an unlabelled list keeps
+            // two-school rows to two lines on a portrait phone.
+            {"", school},
+            {T_("Failure"), failure},
+            {T_("Level"), to_string(spell.difficulty)},
+        });
+    }
+#endif
+
     // Update the list of spells. If show_hidden is true, show only hidden
     // ones; otherwise, show only non-hidden ones.
     void update_entries()
@@ -864,6 +912,9 @@ private:
                                                 : entry_colour(spell);
 
             ostringstream desc;
+#ifdef __ANDROID__
+            desc << _touch_row(spell, colour, show_enkindle);
+#else
             desc << "<" << colour_to_str(colour) << ">";
 
             desc << left;
@@ -896,6 +947,7 @@ private:
             }
 
             desc << spell.difficulty;
+#endif
 
             MenuEntry* me = new MenuEntry(desc.str(), MEL_ITEM, 1,
                     // don't add a hotkey if you can't memorise/cast it
@@ -956,7 +1008,9 @@ public:
                 spell_levels_str += " ";
         }
 
-#ifdef USE_TILE_LOCAL
+#if defined(USE_TILE_LOCAL) && !defined(__ANDROID__)
+        // Android rows are wrapped to the popup instead; a CRT-width minimum
+        // would push the popup past a portrait screen's edges.
         FontWrapper *font = tiles.get_crt_font();
         int title_width = font->string_width(calc_title());
         m_ui.vbox->min_size().width = 38 + title_width + 10;
