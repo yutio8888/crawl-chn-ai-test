@@ -5710,8 +5710,17 @@ read a scroll
 Reading this right now
 现在阅读
 %%%%
-Really %s while wielding %s?
-确定要%s同时手持%s？
+Really %s while wielding nothing?
+确定要空手%s吗？
+%%%%
+Really %1$s while wielding %2$s?
+确定要持握%2$s%1$s吗？
+%%%%
+weapon check verb|attack
+攻击
+%%%%
+weapon check verb|charge
+冲锋
 %%%%
 Really %s%s %s%s?%s
 确定要%s%s %s%s？%s
@@ -22687,7 +22696,7 @@ Really quaff the %s?%s
 真的要饮用%s吗？%s
 %%%%
 Really quaff with monsters nearby while wearing %s?
-附近有怪物，确定要装备着%s饮用吗？
+附近有怪物，确定要在穿戴%s时饮用吗？
 %%%%
 Set which quick action?
 要设置哪个快捷动作？
@@ -23437,7 +23446,7 @@ Plunk!
 扑通！
 %%%%
 Really go berserk while wielding %s?
-你真的要在持握%s的情况下狂暴吗？
+确定要持握%s进入狂暴吗？
 %%%%
 Your spell capacity is full; you lost the previous spell.
 你的法术容量已满；你失去了之前的法术。

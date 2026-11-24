@@ -19,6 +19,8 @@
 #include "mon-util.h"
 #include "options.h"
 #include "place.h"
+#include "spl-cast.h"
+#include "spl-transloc.h"
 #include "stringutil.h"
 #include "test_zh_fixture.h"
 #include "unwind.h"
@@ -168,4 +170,109 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             ? "真的要在自己附近制造冰冻云吗？"
             : "Really conjure a freezing cloud near yourself?"));
     }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "Weapon-check prompts are complete sentences in both locales",
+                 "[zh-translation][issue6][weapon-check]")
+{
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.species = SP_HUMAN;
+    you.set_position(coord_def(20, 20));
+    unwind_var<decltype(crawl_state.disables)> restore_disables(crawl_state.disables);
+    crawl_state.disables.set(DIS_CONFIRMATIONS, false);
+    // The production yesno hook records the final prompt and declines it, so
+    // received_weapon_warning stays unset and every case prompts again.
+    REQUIRE(clua.execstring(
+        "weapon_check_old_prompt_hook = c_answer_prompt; "
+        "c_answer_prompt = function(s) weapon_check_prompt = s; return false end") == 0);
+    struct restore_prompt_hook
+    {
+        ~restore_prompt_hook()
+        {
+            clua.execstring("c_answer_prompt = weapon_check_old_prompt_hook; "
+                            "weapon_check_old_prompt_hook = nil; "
+                            "weapon_check_prompt = nil");
+        }
+    } restore_hook;
+    auto take_prompt = []()
+    {
+        REQUIRE(clua.execstring("local s = weapon_check_prompt; "
+                                "weapon_check_prompt = nil; return s",
+                                "weapon_check", 1) == 0);
+        lua_State *ls = clua;
+        const string prompt = lua_isstring(ls, -1) ? lua_tostring(ls, -1) : "";
+        lua_pop(ls, 1);
+        return prompt;
+    };
+    auto add_dagger = [](int slot)
+    {
+        item_def &dagger = you.inv[slot];
+        dagger.base_type = OBJ_WEAPONS;
+        dagger.sub_type = WPN_DAGGER;
+        dagger.quantity = 1;
+        dagger.link = slot;
+        dagger.pos = ITEM_IN_INVENTORY;
+        return &dagger;
+    };
+    const coord_def charge_target = you.pos() + coord_def(3, 0);
+
+    // Unarmed, untrained in Unarmed Combat, with a usable melee weapon packed.
+    add_dagger(0);
+    REQUIRE_FALSE(you.weapon());
+    REQUIRE(you.skill(SK_UNARMED_COMBAT) == 0);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        CHECK_FALSE(wielded_weapon_check());
+        CHECK(take_prompt() == (zh ? "确定要空手攻击吗？"
+                                   : "Really attack while wielding nothing?"));
+        // The Electric Charge call site supplies its own verb.
+        CHECK(electric_charge(you, 50, false, charge_target) == spret::abort);
+        CHECK(take_prompt() == (zh ? "确定要空手冲锋吗？"
+                                   : "Really charge while wielding nothing?"));
+    }
+
+    // A wielded weapon inscribed against attacking.
+    you.equipment.update();
+    item_def *primary = &you.inv[0];
+    you.equipment.add(*primary, SLOT_WEAPON);
+    primary->inscription = "!a";
+    REQUIRE(you.weapon() == primary);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        const string name = primary->name(DESC_YOUR);
+        CHECK_FALSE(wielded_weapon_check());
+        CHECK(take_prompt() == (zh ? "确定要持握" + name + "攻击吗？"
+                                   : "Really attack while wielding " + name + "?"));
+        CHECK(electric_charge(you, 50, false, charge_target) == spret::abort);
+        CHECK(take_prompt() == (zh ? "确定要持握" + name + "冲锋吗？"
+                                   : "Really charge while wielding " + name + "?"));
+        CHECK_FALSE(berserk_check_wielded_weapon());
+        CHECK(take_prompt() == (zh ? "确定要持握" + name + "进入狂暴吗？"
+                                   : "Really go berserk while wielding " + name + "?"));
+    }
+
+    // Dual wielding names both weapons.
+    you.mutation[MUT_WIELD_OFFHAND] = 1;
+    you.equipment.update();
+    item_def *offhand = add_dagger(1);
+    you.equipment.add(*offhand, SLOT_WEAPON);
+    REQUIRE(you.offhand_weapon() == offhand);
+    for (lang_t language : {lang_t::ZH, lang_t::EN})
+    {
+        TranslationFixture mode(language, language == lang_t::ZH ? "zh" : nullptr);
+        const bool zh = language == lang_t::ZH;
+        const string first = primary->name(DESC_YOUR);
+        const string second = offhand->name(DESC_YOUR);
+        CHECK_FALSE(wielded_weapon_check());
+        CHECK(take_prompt() == (zh
+            ? "确定要持握" + first + "和" + second + "攻击吗？"
+            : "Really attack while wielding " + first + " and " + second + "?"));
+    }
+    CHECK_FALSE(you.received_weapon_warning);
 }
