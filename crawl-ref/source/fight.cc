@@ -936,11 +936,11 @@ static bool _rangedness_matches(const item_def *weapon, const item_def *offhand)
     return (!weapon || is_melee_weapon(*weapon)) == is_melee_weapon(*offhand);
 }
 
+// Callers handle the unarmed case with its own complete prompt.
 static string _describe_weapons(const item_def *weapon,
                                 const item_def *offhand)
 {
-    if (!weapon && !offhand)
-        return T_("None");
+    ASSERT(weapon || offhand);
     if (!weapon)
         return offhand->name(DESC_YOUR).c_str();
     if (!offhand)
@@ -983,14 +983,24 @@ bool wielded_weapon_check(string attack_verb)
     if (!primary_bad && !offhand_bad && !_missing_weapon(weapon, offhand))
         return true;
 
-    string wpn_desc = _describe_weapons(weapon, offhand);
+    // attack_verb is an English internal value (marked NC_ at the call
+    // site); translate it only here, at the display sink.
+    const string verb = attack_verb.empty()
+        ? C_("weapon check verb", "attack")
+        : C_("weapon check verb", attack_verb.c_str());
 
     string prompt;
-    prompt = make_stringf(
-        T_("Really %s while wielding %s?"),
-        attack_verb.size() ? attack_verb.c_str()
-                           : (T_("attack")),
-        wpn_desc.c_str());
+    if (!weapon && !offhand)
+    {
+        prompt = make_stringf(T_("Really %s while wielding nothing?"),
+                              verb.c_str());
+    }
+    else
+    {
+        const string wpn_desc = _describe_weapons(weapon, offhand);
+        prompt = make_stringf_p(T_("Really %1$s while wielding %2$s?"),
+                                verb.c_str(), wpn_desc.c_str());
+    }
     if (penance)
         prompt += T_(" This could place you under penance!");
 
