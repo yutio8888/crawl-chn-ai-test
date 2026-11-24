@@ -129,8 +129,11 @@ release issue。若发现阻塞问题，保留 Release 与 CI 原始证据，修
 
 - 标签格式为 `X.Y-trunk-NNN`，`NNN` 是三位序号 `001`–`999`，在同一 `X.Y` 下递增，
   不移动或复用已有标签。序号用尽时停止发布，另行决定下一步，不回收编号。
-- `X.Y` 必须等于候选提交可达的最近上游 annotated a 标签的主版本号；例如
-  `0.35-a0` 对应 `0.35-trunk-001`。CI 从 `https://github.com/crawl/crawl` 只读取回
+- `X.Y` 必须等于候选提交可达的上游 annotated a 标签中版本号最高者的主版本号；
+  只计名称精确为 `X.Y-aN` 的 annotated 标签，轻量标签和其他后缀不计。例如
+  `0.36-a0` 对应 `0.36-trunk-001`。不用 `git describe --abbrev=0` 选取：
+  它的按日期遍历深度估计在 `chn-trunk` 历史上会把已合入 `0.36-a0` 的提交误判为
+  `0.35-a0`。CI 从 `https://github.com/crawl/crawl` 只读取回
   a 标签；取回失败、没有可达 a 标签或主版本不匹配时失败，不回退到稳定版版本串。
 - 一个提交最多有一个 trunk 标签。打标签前先执行
   `git tag --points-at <commit> --list '*-trunk-*'`，确认输出为空；同时查看该 `X.Y`
