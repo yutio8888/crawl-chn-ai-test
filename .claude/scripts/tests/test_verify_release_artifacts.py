@@ -202,10 +202,13 @@ class ReleaseArtifactTest(unittest.TestCase):
         source_root=None,
         real_dmg=False,
         real_apk_signature=False,
+        dmg_evidence=None,
     ) -> None:
         original_validate_dmg = MODULE._validate_dmg
         original_validate_apk_signature = MODULE._validate_apk_signature
-        if not real_dmg:
+        if dmg_evidence is not None:
+            MODULE._validate_dmg = self._forbid_local_dmg_validation
+        elif not real_dmg:
             MODULE._validate_dmg = self._validate_dmg_fixture
         if not real_apk_signature:
             MODULE._validate_apk_signature = lambda path, apksigner: None
@@ -218,10 +221,37 @@ class ReleaseArtifactTest(unittest.TestCase):
                 self.root / "SHA256SUMS",
                 self.root / "RELEASE-MANIFEST.txt",
                 self.apksigner,
+                dmg_evidence,
             )
         finally:
             MODULE._validate_dmg = original_validate_dmg
             MODULE._validate_apk_signature = original_validate_apk_signature
+
+    def _forbid_local_dmg_validation(self, path, rule, source_root) -> None:
+        self.fail("evidence mode must not mount the DMG locally")
+
+    def _dmg_rule(self):
+        return next(item for item in self.rules if item.archive_type == "dmg")
+
+    def _write_dmg_evidence(self, *, commit=COMMIT) -> Path:
+        rule = self._dmg_rule()
+        evidence = self.root / "evidence" / f"{rule.filename}.verification.txt"
+        evidence.parent.mkdir(exist_ok=True)
+        if evidence.exists():
+            evidence.unlink()
+        original_validate_dmg = MODULE._validate_dmg
+        MODULE._validate_dmg = self._validate_dmg_fixture
+        try:
+            MODULE.verify_dmg(
+                self.artifacts / rule.filename,
+                self.source_root,
+                TAG,
+                commit,
+                evidence,
+            )
+        finally:
+            MODULE._validate_dmg = original_validate_dmg
+        return evidence
 
     def assert_rejected(self, pattern: str, **kwargs) -> None:
         with self.assertRaisesRegex(MODULE.ReleaseArtifactError, pattern):
@@ -821,6 +851,261 @@ class ReleaseArtifactTest(unittest.TestCase):
             self.assert_rejected("hdiutil detach failed", real_dmg=True)
         self.assertEqual(3, len(calls))
         self.assertEqual("detach", calls[2][1])
+
+    def test_dmg_only_runs_full_mac_checks_and_writes_bound_evidence(self) -> None:
+        rule = self._dmg_rule()
+        dmg = self.artifacts / rule.filename
+        mounted_fixture = self.dmg_fixtures / f"{rule.filename}.mounted"
+        evidence = self.root / "dmg.verification.txt"
+        calls = []
+
+        def fake_run(args, **kwargs):
+            calls.append(args)
+            if args[0] == "codesign":
+                if args[1] == "--verify":
+                    return subprocess.CompletedProcess(args, 0, "", "")
+                return subprocess.CompletedProcess(
+                    args, 0, "", "Signature=adhoc"
+                )
+            if args[1] == "attach":
+                mount_root = Path(args[args.index("-mountpoint") + 1])
+                shutil.copytree(mounted_fixture, mount_root, dirs_exist_ok=True)
+                return subprocess.CompletedProcess(args, 0, "", "")
+            mount_root = Path(args[-1])
+            for child in mount_root.iterdir():
+                if child.is_dir() and not child.is_symlink():
+                    shutil.rmtree(child)
+                else:
+                    child.unlink()
+            return subprocess.CompletedProcess(args, 0, "", "")
+
+        with mock.patch.object(MODULE.subprocess, "run", side_effect=fake_run):
+            MODULE.verify_dmg(dmg, self.source_root, TAG, COMMIT, evidence)
+
+        self.assertEqual(
+            [
+                ("hdiutil", "attach"),
+                ("codesign", "--verify"),
+                ("codesign", "--display"),
+                ("hdiutil", "detach"),
+            ],
+            [tuple(call[:2]) for call in calls],
+        )
+        digest = MODULE._sha256(dmg)
+        self.assertEqual(
+            "DCSS macOS DMG verification evidence v1\n"
+            f"Release tag: {TAG}\n"
+            f"Commit: {COMMIT}\n"
+            f"File: {rule.filename}\n"
+            f"SHA-256: {digest}\n"
+            f"Verified: {MODULE.DMG_EVIDENCE_CHECKS}\n",
+            evidence.read_text(encoding="utf-8"),
+        )
+
+        self._validate(dmg_evidence=evidence)
+        self.assertIn(
+            f"{digest}  {rule.filename}\n",
+            (self.root / "SHA256SUMS").read_text(),
+        )
+        evidence_manifest = (self.root / "RELEASE-MANIFEST.txt").read_bytes()
+        self._validate()
+        self.assertEqual(
+            evidence_manifest, (self.root / "RELEASE-MANIFEST.txt").read_bytes()
+        )
+
+    def test_dmg_only_failures_never_write_evidence(self) -> None:
+        rule = self._dmg_rule()
+        dmg = self.artifacts / rule.filename
+        evidence = self.root / "dmg.verification.txt"
+
+        def verify(path=dmg, *, tag=TAG, commit=COMMIT, validator=None):
+            original_validate_dmg = MODULE._validate_dmg
+            MODULE._validate_dmg = validator or self._validate_dmg_fixture
+            try:
+                MODULE.verify_dmg(path, self.source_root, tag, commit, evidence)
+            finally:
+                MODULE._validate_dmg = original_validate_dmg
+
+        cases = []
+        renamed = self.root / "stone_soup-other-tiles-macosx.dmg"
+        shutil.copy2(dmg, renamed)
+        cases.append(("DMG filename mismatch", {"path": renamed}))
+        cases.append(("release tag", {"tag": "0.34.1-zh5"}))
+        cases.append(("commit", {"commit": "A" * 40}))
+
+        def mutate_payload(path, rule, source_root):
+            path.write_bytes(path.read_bytes() + b"tampered")
+
+        cases.append(
+            ("DMG changed while it was being validated",
+             {"validator": mutate_payload})
+        )
+        for pattern, kwargs in cases:
+            with self.subTest(pattern=pattern):
+                with self.assertRaisesRegex(MODULE.ReleaseArtifactError, pattern):
+                    verify(**kwargs)
+                self.assertFalse(evidence.exists())
+        self._write_valid_set()
+
+        mounted = self.dmg_fixtures / f"{rule.filename}.mounted"
+        (mounted / rule.required_files[0]).unlink()
+        with self.assertRaisesRegex(
+            MODULE.ReleaseArtifactError, "missing required file"
+        ):
+            verify()
+        self.assertFalse(evidence.exists())
+        self._write_valid_set()
+
+        outside = self.root / "outside.dmg"
+        dmg.replace(outside)
+        dmg.symlink_to(outside)
+        with self.assertRaisesRegex(
+            MODULE.ReleaseArtifactError, "not a regular file"
+        ):
+            verify()
+        self.assertFalse(evidence.exists())
+        dmg.unlink()
+        outside.replace(dmg)
+
+        evidence.write_text("stale\n", encoding="utf-8")
+        with self.assertRaisesRegex(
+            MODULE.ReleaseArtifactError, "evidence already exists"
+        ):
+            verify()
+        self.assertEqual("stale\n", evidence.read_text(encoding="utf-8"))
+
+    def test_dmg_evidence_mode_rejects_tampering_and_identity_drift(self) -> None:
+        rule = self._dmg_rule()
+        dmg = self.artifacts / rule.filename
+        evidence = self._write_dmg_evidence()
+        self._validate(dmg_evidence=evidence)
+        valid = evidence.read_text(encoding="utf-8")
+
+        original_dmg = dmg.read_bytes()
+        dmg.write_bytes(original_dmg[:-1] + bytes([original_dmg[-1] ^ 1]))
+        self.assert_rejected(
+            "DMG SHA-256 does not match verification evidence",
+            dmg_evidence=evidence,
+        )
+        dmg.write_bytes(original_dmg)
+
+        other_tag = "0.34.1-zh5-1-002"
+        mutations = (
+            ("evidence tag mismatch",
+             valid.replace(f"Release tag: {TAG}", f"Release tag: {other_tag}")),
+            ("evidence commit mismatch",
+             valid.replace(f"Commit: {COMMIT}", f"Commit: {'b' * 40}")),
+            ("evidence filename mismatch",
+             valid.replace(f"File: {rule.filename}",
+                           f"File: {rule.filename.replace(TAG, other_tag)}")),
+            ("evidence is malformed",
+             valid.replace(f"File: {rule.filename}\n", "")),
+            ("DMG SHA-256 does not match",
+             valid.replace(MODULE._sha256(dmg), "0" * 64)),
+            ("DMG SHA-256 does not match",
+             valid.replace(MODULE._sha256(dmg), MODULE._sha256(dmg).upper())),
+            ("evidence is malformed",
+             valid.replace("evidence v1", "evidence v2")),
+            ("evidence is malformed",
+             valid.replace("Verified: hdiutil", "Verified: skipped hdiutil")),
+            ("evidence is malformed", valid + "Extra: line\n"),
+            ("evidence is malformed", valid.replace("\n", "\r\n")),
+            ("evidence is malformed", valid.rstrip("\n")),
+            ("evidence is malformed",
+             valid + f"Release tag: {other_tag}\n"),
+        )
+        for pattern, text in mutations:
+            with self.subTest(pattern=pattern, text=text):
+                evidence.write_text(text, encoding="utf-8", newline="")
+                self.assert_rejected(pattern, dmg_evidence=evidence)
+
+        evidence.write_bytes(b"\xff\xfe")
+        self.assert_rejected("evidence is unreadable", dmg_evidence=evidence)
+
+        evidence.unlink()
+        self.assert_rejected(
+            "evidence is missing or unsafe", dmg_evidence=evidence
+        )
+        target = self.root / "evidence-target.txt"
+        target.write_text(valid, encoding="utf-8")
+        evidence.symlink_to(target)
+        self.assert_rejected(
+            "evidence is missing or unsafe", dmg_evidence=evidence
+        )
+        evidence.unlink()
+
+        stale = self._write_dmg_evidence(commit="c" * 40)
+        self.assert_rejected("evidence commit mismatch", dmg_evidence=stale)
+
+    def test_dmg_evidence_mode_keeps_closed_world_and_other_platform_checks(
+        self,
+    ) -> None:
+        evidence = self._write_dmg_evidence()
+        moved = self.artifacts / evidence.name
+        shutil.copy2(evidence, moved)
+        self.assert_rejected("artifact set mismatch", dmg_evidence=moved)
+        moved.unlink()
+
+        for rule in self.rules:
+            if rule.archive_type == "dmg":
+                continue
+            with self.subTest(archive=rule.filename):
+                payloads = self._payloads(rule)
+                changed = dict(payloads)
+                changed[rule.content_sources[0].member if rule.content_sources
+                        else rule.required_files[-1]] = b""
+                self._rewrite(rule, changed)
+                self.assertRaises(
+                    MODULE.ReleaseArtifactError,
+                    self._validate,
+                    dmg_evidence=evidence,
+                )
+                self._rewrite(rule, payloads)
+
+        with mock.patch.object(
+            MODULE.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess([], 1, "", "DOES NOT VERIFY"),
+        ):
+            self.assert_rejected(
+                "Android APK signature is invalid",
+                real_apk_signature=True,
+                dmg_evidence=evidence,
+            )
+
+    def test_cli_modes_reject_ambiguous_or_incomplete_arguments(self) -> None:
+        rule = self._dmg_rule()
+        base = [
+            sys.executable, "-I", str(SCRIPT),
+            "--source-root", str(self.source_root),
+            "--tag", TAG, "--commit", COMMIT,
+        ]
+        release = [
+            "--artifacts-dir", str(self.artifacts),
+            "--checksums", str(self.root / "SHA256SUMS"),
+            "--manifest", str(self.root / "RELEASE-MANIFEST.txt"),
+            "--apksigner", str(self.apksigner),
+        ]
+        dmg_only = [
+            "--dmg-only", str(self.artifacts / rule.filename),
+            "--evidence-out", str(self.root / "out.txt"),
+        ]
+        for pattern, extra in (
+            ("requires --evidence-out", dmg_only[:2]),
+            ("cannot be combined", dmg_only + release[:2]),
+            ("cannot be combined",
+             dmg_only + ["--dmg-evidence", str(self.root / "e.txt")]),
+            ("--evidence-out requires --dmg-only", release + dmg_only[2:]),
+            ("release mode requires", release[:6]),
+        ):
+            with self.subTest(pattern=pattern):
+                result = subprocess.run(
+                    base + extra, capture_output=True, text=True, check=False
+                )
+                self.assertEqual(2, result.returncode, result.stderr)
+                self.assertIn(pattern, result.stderr)
+                self.assertFalse((self.root / "out.txt").exists())
+                self.assertFalse((self.root / "SHA256SUMS").exists())
 
     def test_corrupt_archives_are_rejected(self) -> None:
         zip_rule = self.rules[0]

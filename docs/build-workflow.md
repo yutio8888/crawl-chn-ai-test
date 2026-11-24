@@ -55,8 +55,12 @@ The build produces an ad-hoc-signed Apple application DMG under
 `mac-app-zips/`. The signature seals the final assembled bundle so macOS can
 launch it, but it is not an Apple Developer signature and does not provide
 notarization.
-GitHub Actions uploads the versioned DMG as the `macos-tiles-app` artifact and
-includes it in tagged draft Releases after closed-world artifact validation.
+GitHub Actions fully validates the versioned DMG on the macOS runner
+(`verify_release_artifacts.py --dmg-only`), uploads it as the `macos-tiles-app`
+artifact together with its SHA-256 verification evidence
+(`macos-tiles-dmg-evidence`), and includes it in tagged draft Releases after the
+Linux release job's closed-world artifact validation matches the downloaded DMG
+to that evidence.
 Because this release profile has no Apple Developer signing or notarization,
 macOS Gatekeeper may require the user to choose “Open” from the app's
 Control-click menu or “Open Anyway” in System Settings → Privacy & Security.
