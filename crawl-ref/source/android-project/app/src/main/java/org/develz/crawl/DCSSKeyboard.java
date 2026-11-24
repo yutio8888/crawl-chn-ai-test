@@ -256,6 +256,8 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
         initKey(R.id.key_num_equal);
         initKey(R.id.key_num_quest);
         initKey(R.id.key_num_0);
+        initKey(R.id.key_num_dot);
+        initKey(R.id.key_num_enter);
         initKey(R.id.key_abc);
 
         // Initialize buttons - mobile compact keyboard
@@ -399,6 +401,10 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
             if (layout.getVisibility() == View.VISIBLE) return layout;
         }
         return keyboardLower;
+    }
+
+    private View textLayout(int context) {
+        return context == CONTEXT_NUMBER ? keyboardNumeric : keyboardLower;
     }
 
     private void showLayout(View selected) {
@@ -767,12 +773,16 @@ public class DCSSKeyboard extends DCSSKeyboardBase implements View.OnClickListen
             // Keep grid geometry stable while removing gameplay-only actions.
             findViewById(id).setVisibility(gameplay ? View.VISIBLE : View.INVISIBLE);
         }
-        if (text && !wasText) {
-            layoutBeforeText = selectedLayout();
-            manualFullBeforeText = manualFull;
+        if (text) {
+            if (!wasText) {
+                layoutBeforeText = selectedLayout();
+                manualFullBeforeText = manualFull;
+            }
             // The entry is visible immediately even if the previous manual
-            // layout was numeric, Ctrl or uppercase.
-            showLayout(keyboardLower);
+            // layout was numeric, Ctrl or uppercase. Number prompts (counts,
+            // skill targets) open on the digit layout, which has a decimal
+            // point and Enter; "abc" still reaches the letters.
+            showLayout(textLayout(context));
             return;
         }
         if (!text && wasText && layoutBeforeText != null) {

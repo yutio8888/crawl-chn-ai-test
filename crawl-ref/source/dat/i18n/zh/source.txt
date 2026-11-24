@@ -37549,6 +37549,21 @@ Engulfed by %s%s %s
 Enter a skill target for %s: 
 为%s输入技能目标：
 %%%%
+Custom target...
+自定义目标……
+%%%%
+Current level: %s
+当前等级：%s
+%%%%
+Enter a target up to 27.0, or 0 to clear it.
+输入不超过 27.0 的目标；输入 0 清除目标。
+%%%%
+Enter a number such as 8 or 8.5, with at most one decimal place.
+请输入数字，如 8 或 8.5，最多一位小数。
+%%%%
+The target must be higher than the current level.
+目标必须高于当前等级。
+%%%%
 Enter for "%s"
 按回车搜索"%s"
 %%%%

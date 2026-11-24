@@ -391,6 +391,15 @@ static bool _has_hotkey_prefix(const string &s)
     bool plus = (s[3] == '-' || s[3] == '+' || s[3] == '#');
     return let && plus && s[0] == ' ' && s[2] == ' ' && s[4] == ' ';
 }
+
+// Touch rows keep every wrapped line beside the hotkey column. Entries that
+// have no hotkey but keep its five-cell blank preface (indent_no_hotkeys)
+// indent their continuation lines the same way.
+static bool _has_text_prefix(const string &s, bool touch_rows)
+{
+    return _has_hotkey_prefix(s)
+           || touch_rows && s.size() >= 5 && s.compare(0, 5, "     ") == 0;
+}
 #endif
 
 void UIMenu::do_layout(int mw, int num_columns, bool just_checking)
@@ -484,7 +493,8 @@ void UIMenu::do_layout(int mw, int num_columns, bool just_checking)
                 {
                     formatted_string text;
                     // TODO: refactor to use _get_text_preface
-                    if (_has_hotkey_prefix(entry.text.tostring()))
+                    if (_has_text_prefix(entry.text.tostring(),
+                                         uses_touch_rows()))
                     {
                         formatted_string header = entry.text.chop(5);
                         text_sx += m_font_entry->string_width(header);
@@ -1170,26 +1180,19 @@ void UIMenu::pack_buffers()
         }
         else
         {
-            const int ty = entry.y + max(entry_h-32, 0)/2;
-            for (const tile_def &tile : entry.tiles)
-            {
-                // NOTE: This is not perfect. Tiles will be drawn
-                // sorted by texture first, e.g. you can never draw
-                // a dungeon tile over a monster tile.
-                const auto tex = get_tile_texture(tile.tile);
-                m_tile_buf[tex].add(tile.tile, entry_x + item_pad, ty, 0, 0, false, tile.ymax, 1, 1);
-            }
-
+            const bool touch_rows = uses_touch_rows();
             const int text_indent = m_draw_tiles ? 38 : 0;
             int text_sx = entry_x + text_indent + item_pad;
-            int text_sy = entry.y + (entry_h - m_font_entry->char_height())/2;
+            // A single line, and any hotkey on a desktop row, is centred.
+            const int line_sy = entry.y + (entry_h - m_font_entry->char_height())/2;
 
-            // Split off and render any hotkey prefix first
-            formatted_string text;
-            if (_has_hotkey_prefix(entry.text.tostring()))
+            // Split off any hotkey prefix first
+            formatted_string text, header;
+            const bool has_prefix = _has_text_prefix(entry.text.tostring(),
+                                                     touch_rows);
+            if (has_prefix)
             {
-                formatted_string header = entry.text.chop(5);
-                m_text_buf.add(header, text_sx, text_sy);
+                header = entry.text.chop(5);
                 text_sx += m_font_entry->string_width(header);
                 text = entry.text;
                 // remove hotkeys. As Enne said above, this is a monstrosity.
@@ -1199,16 +1202,35 @@ void UIMenu::pack_buffers()
             else
                 text += entry.text;
 
-            // Line wrap and render the remaining text
+            // Line wrap the remaining text
             int w = max(1, entry_ex-text_sx - pad_right);
             int h = m_font_entry->char_height();
             h *= m_menu->is_set(MF_NO_WRAP_ROWS) ? 1 : 2;
-            if (uses_touch_rows())
+            if (touch_rows)
                 h = max(h, entry_h - 2*item_pad);
             formatted_string split = m_font_entry->split(text, w, h);
             int string_height = m_font_entry->string_height(split);
-            text_sy = entry.y + (entry_h - string_height)/2;
+            const int text_sy = entry.y + (entry_h - string_height)/2;
 
+            // Multi-line touch rows read from their first line: keep the
+            // hotkey beside the name and the icon level with the text block
+            // instead of centring both on a detail line.
+            const int ty = touch_rows && string_height > 32
+                           ? text_sy : entry.y + max(entry_h-32, 0)/2;
+            for (const tile_def &tile : entry.tiles)
+            {
+                // NOTE: This is not perfect. Tiles will be drawn
+                // sorted by texture first, e.g. you can never draw
+                // a dungeon tile over a monster tile.
+                const auto tex = get_tile_texture(tile.tile);
+                m_tile_buf[tex].add(tile.tile, entry_x + item_pad, ty, 0, 0, false, tile.ymax, 1, 1);
+            }
+
+            if (has_prefix)
+            {
+                m_text_buf.add(header, entry_x + text_indent + item_pad,
+                               touch_rows ? text_sy : line_sy);
+            }
             m_text_buf.add(split, text_sx, text_sy);
         }
 
@@ -1453,6 +1475,30 @@ string pad_more_with_esc(const string &s)
     return pad_more_with(s, menu_keyhelp_cmd(CMD_MENU_EXIT)
         + (T_(" exit")));
 }
+
+#ifdef __ANDROID__
+/// Format a fixed-column table entry for an Android touch list: the name on
+/// its own line, then "label value" fields. Font splitting breaks lines only
+/// at ASCII spaces, so a no-break space ties each label to its value and a
+/// narrow screen wraps whole fields instead of padded columns.
+string touch_table_row(const string &name,
+                       const vector<pair<string, string>> &fields)
+{
+    static const string no_break_space = "\xc2\xa0"; // U+00A0
+    string details;
+    for (const auto &field : fields)
+    {
+        if (field.second.empty())
+            continue;
+        if (!details.empty())
+            details += "  ";
+        if (!field.first.empty())
+            details += field.first + no_break_space;
+        details += field.second;
+    }
+    return details.empty() ? name : name + "\n" + details;
+}
+#endif
 
 string menu_keyhelp_cmd(command_type cmd)
 {
