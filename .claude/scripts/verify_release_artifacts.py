@@ -27,6 +27,20 @@ ZH_DATA_TREES = (
 )
 ANDROID_ABIS = ("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
 ANDROID_LIBRARIES = ("libmain.so", "libpcre.so")
+DMG_EVIDENCE_HEADER = "DCSS macOS DMG verification evidence v1"
+DMG_EVIDENCE_CHECKS = (
+    "hdiutil attach -readonly; closed mounted tree; ZH data trees; "
+    "content sources; codesign --verify --deep --strict; "
+    "codesign --display Signature=adhoc"
+)
+DMG_EVIDENCE_RE = re.compile(
+    re.escape(DMG_EVIDENCE_HEADER) + "\n"
+    "Release tag: (?P<tag>[^\r\n]*)\n"
+    "Commit: (?P<commit>[^\r\n]*)\n"
+    "File: (?P<file>[^\r\n]*)\n"
+    "SHA-256: (?P<sha256>[^\r\n]*)\n"
+    "Verified: " + re.escape(DMG_EVIDENCE_CHECKS) + r"\n\Z"
+)
 
 
 class ReleaseArtifactError(RuntimeError):
@@ -750,6 +764,109 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _validate_identity(tag: str, commit: str) -> None:
+    if RELEASE_TAG_RE.fullmatch(tag) is None:
+        raise ReleaseArtifactError(
+            "release tag must match '0.34.1-zhA-B-CCC' with A and B >= 1 "
+            "and CCC in the range 001-999"
+        )
+    if COMMIT_RE.fullmatch(commit) is None:
+        raise ReleaseArtifactError("commit must be a lowercase 40-character SHA-1")
+
+
+def _validate_source_root(source_root: Path) -> None:
+    if source_root.is_symlink() or not source_root.is_dir():
+        raise ReleaseArtifactError(
+            f"source root does not exist or is unsafe: {source_root}"
+        )
+
+
+def _dmg_evidence_text(tag: str, commit: str, filename: str, digest: str) -> str:
+    return (
+        f"{DMG_EVIDENCE_HEADER}\n"
+        f"Release tag: {tag}\n"
+        f"Commit: {commit}\n"
+        f"File: {filename}\n"
+        f"SHA-256: {digest}\n"
+        f"Verified: {DMG_EVIDENCE_CHECKS}\n"
+    )
+
+
+def verify_dmg(
+    dmg_path: Path,
+    source_root: Path,
+    tag: str,
+    commit: str,
+    evidence_path: Path,
+) -> None:
+    """Fully validate one DMG on macOS and write its SHA-256 evidence."""
+    _validate_identity(tag, commit)
+    _validate_source_root(source_root)
+    rule = next(
+        item
+        for item in release_rules(tag, source_root)
+        if item.archive_type == "dmg"
+    )
+    if dmg_path.name != rule.filename:
+        raise ReleaseArtifactError(
+            f"DMG filename mismatch; expected={rule.filename!r}, "
+            f"actual={dmg_path.name!r}"
+        )
+    if dmg_path.is_symlink() or not dmg_path.is_file():
+        raise ReleaseArtifactError(
+            f"{dmg_path.name}: DMG is missing or not a regular file"
+        )
+    if evidence_path.exists() or evidence_path.is_symlink():
+        raise ReleaseArtifactError(
+            f"DMG verification evidence already exists: {evidence_path}"
+        )
+    digest = _sha256(dmg_path)
+    _validate_dmg(dmg_path, rule, source_root)
+    if _sha256(dmg_path) != digest:
+        raise ReleaseArtifactError(
+            f"{dmg_path.name}: DMG changed while it was being validated"
+        )
+    with evidence_path.open("x", encoding="utf-8") as stream:
+        stream.write(_dmg_evidence_text(tag, commit, rule.filename, digest))
+
+
+def _validate_dmg_evidence(
+    path: Path, evidence_path: Path, tag: str, commit: str
+) -> None:
+    if evidence_path.is_symlink() or not evidence_path.is_file():
+        raise ReleaseArtifactError(
+            f"{path.name}: DMG verification evidence is missing or unsafe: "
+            f"{evidence_path}"
+        )
+    try:
+        text = evidence_path.read_bytes().decode("utf-8")
+    except (OSError, UnicodeDecodeError) as error:
+        raise ReleaseArtifactError(
+            f"{path.name}: DMG verification evidence is unreadable: {error}"
+        ) from error
+    match = DMG_EVIDENCE_RE.fullmatch(text)
+    if match is None:
+        raise ReleaseArtifactError(
+            f"{path.name}: DMG verification evidence is malformed"
+        )
+    for key, expected, label in (
+        ("tag", tag, "tag"),
+        ("commit", commit, "commit"),
+        ("file", path.name, "filename"),
+    ):
+        if match[key] != expected:
+            raise ReleaseArtifactError(
+                f"{path.name}: DMG verification evidence {label} mismatch; "
+                f"expected={expected!r}, actual={match[key]!r}"
+            )
+    digest = _sha256(path)
+    if match["sha256"] != digest:
+        raise ReleaseArtifactError(
+            f"{path.name}: DMG SHA-256 does not match verification evidence; "
+            f"expected={match['sha256']!r}, actual={digest!r}"
+        )
+
+
 def validate_release(
     artifacts_dir: Path,
     source_root: Path,
@@ -758,22 +875,20 @@ def validate_release(
     checksums_path: Path,
     manifest_path: Path,
     apksigner: Path,
+    dmg_evidence: Path | None = None,
 ) -> None:
-    if RELEASE_TAG_RE.fullmatch(tag) is None:
-        raise ReleaseArtifactError(
-            "release tag must match '0.34.1-zhA-B-CCC' with A and B >= 1 "
-            "and CCC in the range 001-999"
-        )
-    if COMMIT_RE.fullmatch(commit) is None:
-        raise ReleaseArtifactError("commit must be a lowercase 40-character SHA-1")
+    """Validate the closed release set and write SHA256SUMS and the manifest.
+
+    Without ``dmg_evidence`` the DMG is mounted and code-sign checked locally,
+    which requires macOS. With it, the DMG bytes must match the evidence that
+    ``--dmg-only`` wrote on the macOS build runner for this tag and commit.
+    """
+    _validate_identity(tag, commit)
     if not artifacts_dir.is_dir():
         raise ReleaseArtifactError(
             f"artifact directory does not exist: {artifacts_dir}"
         )
-    if source_root.is_symlink() or not source_root.is_dir():
-        raise ReleaseArtifactError(
-            f"source root does not exist or is unsafe: {source_root}"
-        )
+    _validate_source_root(source_root)
 
     entries = list(artifacts_dir.iterdir())
     symlinks = sorted(path.name for path in entries if path.is_symlink())
@@ -811,7 +926,10 @@ def validate_release(
         if rule.archive_type == "zip":
             _validate_zip(path, rule, source_root)
         elif rule.archive_type == "dmg":
-            _validate_dmg(path, rule, source_root)
+            if dmg_evidence is None:
+                _validate_dmg(path, rule, source_root)
+            else:
+                _validate_dmg_evidence(path, dmg_evidence, tag, commit)
         elif rule.archive_type == "apk":
             _validate_apk(path, rule, source_root)
             _validate_apk_signature(path, apksigner)
@@ -835,30 +953,77 @@ def validate_release(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--artifacts-dir", type=Path, required=True)
     parser.add_argument("--source-root", type=Path, required=True)
     parser.add_argument("--tag", required=True)
     parser.add_argument("--commit", required=True)
-    parser.add_argument("--checksums", type=Path, required=True)
-    parser.add_argument("--manifest", type=Path, required=True)
-    parser.add_argument("--apksigner", type=Path, required=True)
+    parser.add_argument(
+        "--dmg-only",
+        type=Path,
+        help="fully validate this DMG on macOS and write --evidence-out",
+    )
+    parser.add_argument("--evidence-out", type=Path)
+    parser.add_argument("--artifacts-dir", type=Path)
+    parser.add_argument("--checksums", type=Path)
+    parser.add_argument("--manifest", type=Path)
+    parser.add_argument("--apksigner", type=Path)
+    parser.add_argument(
+        "--dmg-evidence",
+        type=Path,
+        help="accept the DMG by its --dmg-only evidence instead of mounting it",
+    )
     args = parser.parse_args()
+    release_options = {
+        "--artifacts-dir": args.artifacts_dir,
+        "--checksums": args.checksums,
+        "--manifest": args.manifest,
+        "--apksigner": args.apksigner,
+        "--dmg-evidence": args.dmg_evidence,
+    }
+    if args.dmg_only is not None:
+        conflicting = [name for name, value in release_options.items() if value]
+        if conflicting:
+            parser.error(f"--dmg-only cannot be combined with {conflicting}")
+        if args.evidence_out is None:
+            parser.error("--dmg-only requires --evidence-out")
+    else:
+        if args.evidence_out is not None:
+            parser.error("--evidence-out requires --dmg-only")
+        missing = [
+            name
+            for name, value in release_options.items()
+            if value is None and name != "--dmg-evidence"
+        ]
+        if missing:
+            parser.error(f"release mode requires {missing}")
     try:
-        validate_release(
-            args.artifacts_dir,
-            args.source_root,
-            args.tag,
-            args.commit,
-            args.checksums,
-            args.manifest,
-            args.apksigner,
-        )
+        if args.dmg_only is not None:
+            verify_dmg(
+                args.dmg_only,
+                args.source_root,
+                args.tag,
+                args.commit,
+                args.evidence_out,
+            )
+        else:
+            validate_release(
+                args.artifacts_dir,
+                args.source_root,
+                args.tag,
+                args.commit,
+                args.checksums,
+                args.manifest,
+                args.apksigner,
+                args.dmg_evidence,
+            )
     except ReleaseArtifactError as error:
         parser.error(str(error))
-    print(
-        f"OK: validated Windows Tiles/Console, Linux Console, macOS, and Android release artifacts "
-        f"for {args.tag}"
-    )
+    if args.dmg_only is not None:
+        print(f"OK: validated macOS DMG {args.dmg_only.name} for {args.tag}")
+    else:
+        print(
+            f"OK: validated Windows Tiles/Console, Linux Console, macOS, and Android release artifacts "
+            f"for {args.tag}"
+        )
     return 0
 
 
