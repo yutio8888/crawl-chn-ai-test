@@ -8,6 +8,7 @@ on:
   pull_request:
     branches:
       - chn-0.34.1-base
+      - chn-0.35-base
       - chn-trunk
   schedule:
     - cron: '17 18 * * 0'

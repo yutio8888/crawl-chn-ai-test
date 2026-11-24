@@ -384,6 +384,10 @@ class AgentDocumentationTests(unittest.TestCase):
         triggers = workflow[True]
         self.assertIn("0.34.1-zh[0-9]*-[0-9]*-[0-9][0-9][0-9]",
                       triggers["push"]["tags"])
+        self.assertEqual(
+            ["chn-0.34.1-base", "chn-0.35-base", "chn-trunk"],
+            triggers["pull_request"]["branches"],
+        )
 
         make_dry_run = subprocess.run(
             [
