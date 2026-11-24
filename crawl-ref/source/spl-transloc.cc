@@ -771,8 +771,11 @@ static bool _displace_charge_blocker(actor& agent, coord_def pos)
 spret electric_charge(actor& agent, int powc, bool fail, const coord_def &target)
 {
     // Check for unholy weapons, breadswinging, etc
-    if (agent.is_player() && !wielded_weapon_check("charge"))
+    if (agent.is_player()
+        && !wielded_weapon_check(NC_("weapon check verb", "charge")))
+    {
         return spret::abort;
+    }
 
     coord_def dest_pos = get_electric_charge_landing_spot(agent, target);
 
