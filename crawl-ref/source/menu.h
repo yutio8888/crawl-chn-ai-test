@@ -285,6 +285,15 @@ enum MenuFlag
     MF_PAGED_INVENTORY = 0x200000,   ///< uses left/right to switch between different inventory categories
 };
 
+// Fixed-column tables (abilities, spell casting) stay on one line per entry
+// on desktop. Android touch lists cannot fit those columns at reading size, so
+// they omit MF_NO_WRAP_ROWS and format entries with touch_table_row().
+#ifdef __ANDROID__
+static constexpr int MF_TABLE_ROWS = 0;
+#else
+static constexpr int MF_TABLE_ROWS = MF_NO_WRAP_ROWS;
+#endif
+
 class UIMenu;
 class UIMenuPopup;
 class UIShowHide;
@@ -577,5 +586,9 @@ formatted_string pad_more_with(formatted_string s,
 string pad_more_with(const string &s, const string &pad, int min_width=MIN_COLS);
 string pad_more_with_esc(const string &s);
 string menu_keyhelp_cmd(command_type cmd);
+#ifdef __ANDROID__
+string touch_table_row(const string &name,
+                       const vector<pair<string, string>> &fields);
+#endif
 string menu_keyhelp_select_keys();
 string hyphenated_hotkey_letters(int how_many, char first);

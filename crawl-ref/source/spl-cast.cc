@@ -116,8 +116,45 @@ void surge_power_wand(const int mp_cost)
     }
 }
 
+#ifdef __ANDROID__
+// Android touch rows: the casting menu's two 80-column table views did not fit
+// a portrait popup at reading size. Keep each view's values, labelled, below
+// the spell name. The title carries no column headings (see list_spells).
+static string _spell_touch_row(spell_type spell, bool transient,
+                               const vector<pair<string, string>> &fields)
+{
+    int highlight = spell_highlight_by_utility(spell, COL_UNKNOWN, transient);
+    if (you.duration[DUR_ENKINDLED] && highlight == COL_UNKNOWN
+        && spell_can_be_enkindled(spell))
+    {
+        highlight = LIGHTCYAN;
+    }
+    const string col = colour_to_str(highlight);
+    vector<pair<string, string>> coloured;
+    for (const auto &field : fields)
+    {
+        coloured.emplace_back(field.first, field.second.empty() ? ""
+            : make_stringf("<%s>%s</%s>", col.c_str(), field.second.c_str(),
+                           col.c_str()));
+    }
+    return touch_table_row(make_stringf("<%s>%s</%s>", col.c_str(),
+                                        spell_title(spell), col.c_str()),
+                           coloured);
+}
+#endif
+
 static string _spell_base_description(spell_type spell, bool transient)
 {
+#ifdef __ANDROID__
+    // The failure string carries its own colour; the spell colour wrapper
+    // only replaces the default colour of untagged text.
+    return _spell_touch_row(spell, transient, {
+        // Unlabelled like the library: school names identify themselves.
+        {"", spell_schools_string(spell, Options.language == lang_t::ZH)},
+        {T_("Failure"), spell_failure_rate_string(spell, false)},
+        {T_("Level"), to_string(spell_difficulty(spell))},
+    });
+#else
     ostringstream desc;
 
     int highlight =  spell_highlight_by_utility(spell, COL_UNKNOWN, transient);
@@ -155,10 +192,20 @@ static string _spell_base_description(spell_type spell, bool transient)
     desc << "</" << colour_to_str(highlight) <<">";
 
     return desc.str();
+#endif
 }
 
 static string _spell_extra_description(spell_type spell, bool transient)
 {
+#ifdef __ANDROID__
+    const string damage = spell_damage_string(spell, false, -1, true);
+    return _spell_touch_row(spell, transient, {
+        {T_("Power"), trimmed_string(spell_power_string(spell))},
+        {T_("Damage"), damage.length() ? damage : T_("N/A")},
+        {T_("Range"), trimmed_string(spell_range_string(spell))},
+        {T_("Noise"), trimmed_string(spell_noise_string(spell, 10))},
+    });
+#else
     ostringstream desc;
 
     int highlight =  spell_highlight_by_utility(spell, COL_UNKNOWN, transient);
@@ -182,6 +229,7 @@ static string _spell_extra_description(spell_type spell, bool transient)
     desc << "</" << colour_to_str(highlight) <<">";
 
     return desc.str();
+#endif
 }
 
 class SpellMenuEntry : public ToggleableMenuEntry
@@ -210,7 +258,7 @@ class SpellMenu : public ToggleableMenu
 public:
     SpellMenu()
         : ToggleableMenu(MF_SINGLESELECT | MF_ANYPRINTABLE
-            | MF_NO_WRAP_ROWS | MF_ALLOW_FORMATTING
+            | MF_TABLE_ROWS | MF_ALLOW_FORMATTING
             | MF_ARROWS_SELECT | MF_INIT_HOVER) {}
 protected:
     command_type get_command(int keyin) override
@@ -293,6 +341,12 @@ int list_spells(bool toggle_with_I, bool transient, bool viewing,
     const string titlestring = spell_list_title(real_action);
 
     {
+#ifdef __ANDROID__
+        // Touch rows label their own values; headings would only wrap.
+        const string touch_title = trimmed_string(titlestring);
+        ToggleableMenuEntry* me =
+            new ToggleableMenuEntry(touch_title, touch_title, MEL_TITLE);
+#else
         // Build column headers aligned with data columns.
         // Data columns: name(32) power(10) damage(10) range(8) noise(14)
         // Default view: name(32) schools(padded to 58) fail_rate(9) level
@@ -319,6 +373,7 @@ int list_spells(bool toggle_with_I, bool transient, bool viewing,
 
         ToggleableMenuEntry* me =
             new ToggleableMenuEntry(default_header, toggle_header, MEL_TITLE);
+#endif
         spell_menu.set_title(me, true, true);
     }
     spell_menu.set_highlighter(nullptr);

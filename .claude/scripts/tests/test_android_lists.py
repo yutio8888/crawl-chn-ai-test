@@ -486,6 +486,7 @@ int main() {
         row_layout = regression.block_after(menu, "void UIMenu::do_layout")
         touch_rows = regression.block_after(menu, "bool uses_touch_rows() const")
         hotkey_prefix = regression.block_after(menu, "static bool _has_hotkey_prefix")
+        text_prefix = regression.block_after(menu, "static bool _has_text_prefix")
         scroller_size = regression.block_after(ui, "SizeReq Scroller::_get_preferred_size")
         scroller_allocation = regression.block_after(ui, "void Scroller::_allocate_region")
         scroller_allocation = scroller_allocation[:scroller_allocation.index("#ifdef USE_TILE_LOCAL")] + "}"
@@ -582,6 +583,8 @@ struct { int apply_game_scale(int value) { return value / Options.game_scale; } 
 float jni_get_display_density() { return 1; }
 bool _has_hotkey_prefix(const string& s)
 ''' + hotkey_prefix + r'''
+bool _has_text_prefix(const string& s, bool touch_rows)
+''' + text_prefix + r'''
 template<typename... Args> string make_stringf(const char* format, Args... args) {
     char buffer[1024];
     snprintf(buffer, sizeof(buffer), format, args...);
@@ -844,6 +847,7 @@ int main() {
         layout = regression.block_after(source, "void UIMenu::do_layout")
         touch = regression.block_after(source, "bool uses_touch_rows() const")
         prefix = regression.block_after(source, "static bool _has_hotkey_prefix")
+        text_prefix = regression.block_after(source, "static bool _has_text_prefix")
         regression.TargetingSafetyTests.run_cpp(self, r'''
 #pragma GCC diagnostic ignored "-Wparentheses"
 #define USE_TILE_LOCAL
@@ -907,6 +911,8 @@ float density = 1;
 float jni_get_display_density() { return density; }
 bool _has_hotkey_prefix(const string& s)
 ''' + prefix + r'''
+bool _has_text_prefix(const string& s, bool touch_rows)
+''' + text_prefix + r'''
 struct UIMenu {
     struct Item { int x=0, y=0, row=0, column=0; formatted_string text;
                   vector<int> tiles; bool heading=false; };
@@ -952,6 +958,21 @@ int main() {
     ui.item_info[1].text = formatted_string(" c - A\nLevel 5\nTarget 10\nApt 1");
     ui.do_layout(1000, 1);
     assert(ui.row_heights[2] - ui.row_heights[1] >= 4 * font.char_height());
+    // Table rows (touch_table_row) are exactly a name and a detail line when
+    // both fit, not one line per padded column.
+    density = 1; Options.game_scale = 1;
+    ui.item_info[1].text = formatted_string(" d - Spark\nType Fire  Failure 9%  Level 1");
+    ui.do_layout(1000, 1);
+    assert(ui.row_heights[2] - ui.row_heights[1]
+           == max(48, 2 * font.char_height()) + 2 * UIMenu::item_pad);
+    // An entry without a hotkey but with the blank preface wraps beside the
+    // hotkey column exactly like a lettered row.
+    ui.item_info[1].text = formatted_string(" e - " + string(100, 'L'));
+    ui.do_layout(200, 1);
+    const int lettered = ui.row_heights[2] - ui.row_heights[1];
+    ui.item_info[1].text = formatted_string("     " + string(100, 'L'));
+    ui.do_layout(200, 1);
+    assert(ui.row_heights[2] - ui.row_heights[1] == lettered);
     // Fixed-column screens retain their one-line height instead of growing.
     menu.flags = MF_NO_WRAP_ROWS;
     ui.do_layout(200, 1);
@@ -1106,6 +1127,198 @@ int main() {
     assert(!menu.process_key(CK_ESCAPE) && dispatched.back() == CK_ESCAPE);
 }
 ''')
+
+
+    def test_table_menus_use_labelled_touch_rows_on_android(self):
+        menu_h = (ROOT / "crawl-ref/source/menu.h").read_text()
+        menu = (ROOT / "crawl-ref/source/menu.cc").read_text()
+        book = (ROOT / "crawl-ref/source/spl-book.cc").read_text()
+        cast = (ROOT / "crawl-ref/source/spl-cast.cc").read_text()
+        ability = (ROOT / "crawl-ref/source/ability.cc").read_text()
+        decks = (ROOT / "crawl-ref/source/decks.cc").read_text()
+        # Fixed-column tables drop MF_NO_WRAP_ROWS (tiny CRT text, 80 columns)
+        # only on Android; desktop keeps the exact flag.
+        self.assertRegex(menu_h, r"#ifdef __ANDROID__\s*static constexpr int "
+                         r"MF_TABLE_ROWS = 0;\s*#else\s*static constexpr int "
+                         r"MF_TABLE_ROWS = MF_NO_WRAP_ROWS;\s*#endif")
+        self.assertIn("| MF_TABLE_ROWS | MF_ALLOW_FORMATTING", cast)
+        self.assertIn("| MF_TABLE_ROWS | MF_TOGGLE_ACTION | MF_ARROWS_SELECT", ability)
+        # The spell library is a touch list that previously wrapped its padded
+        # columns; on Android its rows and title come from labelled fields.
+        update = regression.block_after(book, "void update_entries()")
+        self.assertIn("desc << _touch_row(spell, colour, show_enkindle);", update)
+        title = regression.block_after(book, "virtual formatted_string calc_title()")
+        self.assertRegex(title, r"(?s)#ifdef __ANDROID__.*return formatted_string\("
+                         r"trimmed_string\(prefix\)\);\s*#else")
+        # Its CRT-width minimum must not force the popup past a phone's edges.
+        self.assertIn("#if defined(USE_TILE_LOCAL) && !defined(__ANDROID__)\n"
+                      "        // Android rows are wrapped", book)
+        for name in ("_spell_base_description", "_spell_extra_description"):
+            body = regression.block_after(cast, "static string %s(" % name)
+            self.assertIn("return _spell_touch_row(spell, transient, {", body)
+        # Deck lists are short (24-cell name + count) and keep their table.
+        self.assertEqual(2, decks.count("| MF_NO_WRAP_ROWS | MF_TOGGLE_ACTION"))
+
+        # Multi-line touch rows keep the hotkey on the name line and the icon
+        # level with the text block; desktop rows keep their centring.
+        pack = regression.block_after(menu, "void UIMenu::pack_buffers()")
+        self.assertIn("touch_rows ? text_sy : line_sy", pack)
+        self.assertIn("const int ty = touch_rows && string_height > 32\n"
+                      "                           ? text_sy : entry.y + max(entry_h-32, 0)/2;",
+                      pack)
+        row = regression.block_after(menu, "string touch_table_row(")
+        regression.TargetingSafetyTests.run_cpp(self, r"""
+#include <cassert>
+#include <string>
+#include <utility>
+#include <vector>
+using namespace std;
+string touch_table_row(const string &name,
+                       const vector<pair<string, string>> &fields)
+""" + row + r"""
+int main() {
+    const string nbsp = "\xc2\xa0";
+    // Name line, then fields; label and value are tied by a no-break space
+    // so font splitting (ASCII spaces only) wraps between whole fields.
+    assert(touch_table_row("Spark", {{"", "Fire/Air"}, {"Failure", "9%"},
+                                     {"Level", "1"}})
+           == "Spark\nFire/Air  Failure" + nbsp + "9%  Level" + nbsp + "1");
+    // Empty values (e.g. no failure under Divine Exegesis) are omitted.
+    assert(touch_table_row("Spark", {{"Failure", ""}, {"Level", "1"}})
+           == "Spark\nLevel" + nbsp + "1");
+    assert(touch_table_row("Spark", {}) == "Spark");
+}
+""")
+
+    def test_android_custom_skill_target_parses_validates_and_reprompts(self):
+        source = (ROOT / "crawl-ref/source/skill-menu.cc").read_text()
+        fmt = regression.block_after(source, "static string _format_skill_target(int target)\n{")
+        parse = regression.block_after(source, "static int _parse_android_skill_target(")
+        read = regression.block_after(source, "static int _android_read_custom_skill_target(")
+        regression.TargetingSafetyTests.run_cpp(self, r"""
+#include <cassert>
+#include <clocale>
+#include <cstdarg>
+#include <cstdio>
+#include <cstring>
+#include <deque>
+#include <string>
+#include <vector>
+using namespace std;
+#define T_(s) (s)
+enum { CK_ESCAPE = -1001 };
+enum skill_type { SK_DODGING };
+struct { bool seen_hups = false; } crawl_state;
+const char *skill_name(skill_type) { return "Dodging"; }
+string make_stringf(const char *format, ...)
+{
+    char buf[512];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buf, sizeof(buf), format, args);
+    va_end(args);
+    return buf;
+}
+string trimmed_string(string s)
+{
+    s.erase(0, s.find_first_not_of(' '));
+    s.erase(s.find_last_not_of(' ') + 1);
+    return s;
+}
+// Scripted popup line editor: records the prompt and prefill it was given.
+struct Reply { int ret; string text; };
+deque<Reply> replies;
+vector<string> prompts, fills;
+vector<bool> numeric;
+int msgwin_get_line(string prompt, char *buf, int len, void *, const string &fill,
+                    bool numeric_input)
+{
+    prompts.push_back(prompt);
+    fills.push_back(fill);
+    numeric.push_back(numeric_input);
+    assert(!replies.empty());
+    Reply r = replies.front();
+    replies.pop_front();
+    snprintf(buf, len, "%s", r.text.c_str());
+    return r.ret;
+}
+static string _format_skill_target(int target)
+""" + fmt + r"""
+static int _parse_android_skill_target(const string &input)
+""" + parse + r"""
+static int _android_read_custom_skill_target(skill_type sk, int current,
+                                             int old_target)
+""" + read + r"""
+int main() {
+    // Integers and one decimal place; '.' or ',' separators; padding.
+    assert(_parse_android_skill_target("6") == 60);
+    assert(_parse_android_skill_target("8.5") == 85);
+    assert(_parse_android_skill_target(" 20,5 ") == 205);
+    assert(_parse_android_skill_target("12.") == 120);
+    assert(_parse_android_skill_target(".5") == 5);
+    assert(_parse_android_skill_target("0") == 0);
+    assert(_parse_android_skill_target("27.0") == 270);
+    assert(_parse_android_skill_target("30") == 300); // range is the caller's
+    for (const char *bad : {"", " ", ".", "8.25", "1.2.3", "-1", "+3", "abc",
+                            "8a", "1 2", "1000"})
+    {
+        assert(_parse_android_skill_target(bad) == -1);
+    }
+
+    // Each rejection explains itself and keeps the typed text; the first
+    // valid entry wins. Number input is always requested.
+    replies = {{0, "abc"}, {0, "30"}, {0, "1.7"}, {0, "8.25"}, {0, "8.5"}};
+    assert(_android_read_custom_skill_target(SK_DODGING, 17, 0) == 85);
+    assert(prompts.size() == 5);
+    assert(fills[0] == "" && fills[1] == "abc" && fills[4] == "8.25");
+    assert(prompts[0].find("Enter a skill target for Dodging") == 0);
+    assert(prompts[0].find("Current level: 1.7") != string::npos);
+    assert(prompts[1].find("Enter a number such as 8 or 8.5") == 0);
+    assert(prompts[2].find("must be 27 or below") != string::npos);
+    assert(prompts[3].find("higher than the current level") != string::npos);
+    assert(prompts[4].find("Enter a number such as 8 or 8.5") == 0);
+    for (bool n : numeric)
+        assert(n);
+
+    // The old target is prefilled; 0 clears; Escape or an empty line backs
+    // out.
+    prompts.clear(); fills.clear();
+    replies = {{0, "0"}};
+    assert(_android_read_custom_skill_target(SK_DODGING, 50, 85) == 0);
+    assert(fills[0] == "8.5");
+    replies = {{CK_ESCAPE, "9"}};
+    assert(_android_read_custom_skill_target(SK_DODGING, 50, 0) == -1);
+    replies = {{0, "  "}};
+    assert(_android_read_custom_skill_target(SK_DODGING, 50, 0) == -1);
+    // Exactly 27.0 is accepted; a target equal to the level is not.
+    replies = {{0, "27"}};
+    assert(_android_read_custom_skill_target(SK_DODGING, 269, 0) == 270);
+    replies = {{0, "5"}, {CK_ESCAPE, ""}};
+    assert(_android_read_custom_skill_target(SK_DODGING, 50, 0) == -1);
+}
+""")
+
+    def test_android_skill_target_uses_target_met_level(self):
+        source = (ROOT / "crawl-ref/source/skill-menu.cc").read_text()
+        read = regression.block_after(source, "int SkillMenu::read_skill_target(skill_type sk)")
+        android = read[:read.index("#else")]
+        # 0.34.1 keeps a single training target per skill.
+        self.assertIn("_android_pick_skill_target(sk)", android)
+        self.assertIn("you.set_training_target(sk, chosen);", android)
+        pick = regression.block_after(source, "static int _android_pick_skill_target(")
+        self.assertIn("you.get_training_target(sk)", pick)
+        # Presets compare with the level target_met() uses.
+        self.assertIn("const int current = you.skill(sk, 10, false, false);", pick)
+        self.assertIn('new MenuEntry(T_("Custom target..."),', pick)
+        self.assertIn('new MenuEntry(T_("Clear target"), MEL_ITEM, 1, \'-\');', pick)
+        # Backing out of the editor returns to the preset list.
+        self.assertRegex(pick, r"while \(true\)\s*\{\s*SkillTargetMenu menu;")
+        zh = (ROOT / "crawl-ref/source/dat/i18n/zh/source.txt").read_text()
+        for key in ("Custom target...", "Current level: %s",
+                    "Enter a target up to 27.0, or 0 to clear it.",
+                    "Enter a number such as 8 or 8.5, with at most one decimal place.",
+                    "The target must be higher than the current level."):
+            self.assertIn("\n" + key + "\n", zh)
 
 
 if __name__ == "__main__":
