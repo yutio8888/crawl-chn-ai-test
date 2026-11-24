@@ -37,20 +37,33 @@ release issue 中；首个正式版的
 2. 构建对应分支范围的分发包（`chn-trunk` 为 Windows Tiles ZIP、macOS Tiles ad-hoc 签名 DMG
    及四 ABI Android APK，Linux Console 作为独立 CI 质量信号；`chn-0.34.1-base` 另含
    Windows Console ZIP 与 Linux Console x86_64 ZIP 且均阻塞草稿 Release）；
-3. 验证全部平台构建产物形成精确的封闭集合；DMG 在 macOS runner 上挂载，APK 作为 ZIP 独立校验路径与成员，并用 `apksigner verify` 复核下载后的最终文件签名；
-4. 检查归档路径安全、成员唯一性、平台主程序、中文 TextDB、设置文件、许可证，以及
+3. `build_macos_tiles`（`macos-latest`）在上传前用 `--dmg-only` 对 DMG 完成全量校验：
+   `hdiutil attach -readonly` 挂载，按标签提交的 `git archive` 干净源码树核对封闭目录、
+   三棵中文数据树、字体、设置与许可证，再执行 `codesign --verify --deep --strict` 及
+   `codesign --display`（须为 `Signature=adhoc`）；全部通过且校验前后 DMG 字节不变后，
+   才写出绑定标签、40 位提交 SHA、精确文件名与 SHA-256 的校验凭证，并作为
+   `macos-tiles-dmg-evidence` 与 `macos-tiles-app` 一同上传；
+4. `release_draft`（`ubuntu-latest`，不再等待 macOS runner）下载全部平台产物，验证其形成
+   精确的封闭集合：Windows ZIP 与 APK 在本 job 内完整校验，APK 作为 ZIP 独立校验路径与
+   成员，并用固定的 Android build-tools `36.0.0` `apksigner verify` 复核下载后的最终文件
+   签名；macOS DMG 以 `--dmg-evidence` 核对下载文件的 SHA-256 及凭证中的标签、提交与文件名，
+   凭证缺失、格式不符或任一字段不一致都会失败；
+5. 检查归档路径安全、成员唯一性、平台主程序、中文 TextDB、设置文件、许可证，以及
    Tiles 包中的 Maple 字体和 OFL 许可证；`i18n/zh`、
    `database/zh`、`descript/zh` 三棵运行时中文数据树会从标签 checkout 完整枚举，数据、
    设置、字体和许可证内容必须与源文件一致（Windows 文本按打包行为归一化 CRLF）；
    APK 内三棵树位于 `assets/dat/...`，并须精确包含 `arm64-v8a`、`armeabi-v7a`、`x86`、
    `x86_64` 的 `libmain.so` 与 `libpcre.so`；
-5. 生成 `SHA256SUMS` 与绑定标签、40 位提交 SHA、平台范围的
+6. 生成 `SHA256SUMS` 与绑定标签、40 位提交 SHA、平台范围的
    `RELEASE-MANIFEST.txt`；
-6. 仅创建一次 GitHub 草稿 Release。
+7. 仅创建一次 GitHub 草稿 Release。
 
 校验器是 `.claude/scripts/verify_release_artifacts.py`。缺少文件、空文件、未知产物、
 内容漂移、不可执行主程序、重复/大小写冲突成员、路径穿越、符号链接、特殊归档成员或
 损坏归档，以及 APK 缺少签名、ABI 或关键 native library 都会使发布失败。
+DMG 校验凭证只在全量校验成功后生成，且拒绝覆盖已有文件；不传 `--dmg-evidence` 时
+校验器仍在本机直接挂载并 `codesign` 校验 DMG（需要 macOS），在 Linux 上缺少
+`hdiutil` 会失败而不会跳过。
 APK 的 `res/` 普通资源文件按 Android 的精确路径查找语义区分大小写，允许 AAPT2
 资源路径缩名产生的 `res/2F.xml` / `res/2f.xml` 等不同文件；精确重名、目录冲突及
 其他命名空间的大小写冲突仍会失败。Windows ZIP 与 macOS DMG 不使用此例外。
