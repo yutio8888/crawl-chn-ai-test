@@ -222,9 +222,10 @@ class TrunkVersionTest(unittest.TestCase):
         self.run_cmd(['git', 'merge-base', '--is-ancestor', '0.35-a0', new_alpha])
         self.assertLess(int(self.git('rev-list', '--count', 'HEAD', '^0.36-a0')),
                         int(self.git('rev-list', '--count', 'HEAD', '^0.35-a0')))
-        # The fixture must reproduce the native describe bug being replaced.
-        self.assertEqual('0.35-a0', self.git(
-            'describe', '--abbrev=0', '--match', '*-a[0-9]*', 'HEAD').strip())
+        # Native `git describe` tie-breaking on equal committer dates varies
+        # across Git versions (e.g., Git 2.39 returns 0.35-a0 here while
+        # Git 2.56 returns 0.36-a0); version-independent describe divergence
+        # is asserted in test_highest_reachable_alpha_wins_when_lower_alpha_is_closer_by_describe.
 
         # Noise: reachable lightweight and non-standard alpha names, plus a
         # higher annotated alpha that is not reachable from the candidate.
@@ -250,6 +251,38 @@ class TrunkVersionTest(unittest.TestCase):
         self.assertIn('trunk major version 0.35 differs from upstream 0.36-a0',
                       result.stderr)
         self.assertEqual('sentinel\n', (self.util / 'release_ver').read_text())
+
+    def test_highest_reachable_alpha_wins_when_lower_alpha_is_closer_by_describe(self):
+        # Guarantee git describe picks the lower alpha by genuine commit
+        # distance on every Git version, while ensure_version_info.sh still
+        # resolves the highest reachable annotated alpha tag.
+        base_branch = self.git('rev-parse', '--abbrev-ref', 'HEAD').strip()
+        self.tag('0.35-a0')
+        self.git('checkout', '-q', '-b', 'alpha36')
+        self.commit()
+        self.tag('0.36-a0')
+        self.git('checkout', '-q', base_branch)
+        for _ in range(5):
+            self.commit()
+        self.tag('0.35-a1')
+        self.git('merge', '-q', '--no-ff', '--no-edit', 'alpha36')
+        head = self.commit()
+
+        self.assertLess(int(self.git('rev-list', '--count', 'HEAD', '^0.35-a1')),
+                        int(self.git('rev-list', '--count', 'HEAD', '^0.36-a0')))
+        self.assertEqual('0.35-a1', self.git(
+            'describe', '--abbrev=0', '--match', '*-a[0-9]*', 'HEAD').strip())
+
+        self.tag('0.36-trunk-001')
+        self.ensure('0.36-trunk-001', commit=head)
+        self.assertEqual('0.36-trunk-001\n', (self.util / 'release_ver').read_text())
+        self.assert_version('0.36-trunk-001')
+
+        self.commit()
+        self.tag('0.35-trunk-016')
+        result = self.ensure('0.35-trunk-016', ok=False)
+        self.assertIn('trunk major version 0.35 differs from upstream 0.36-a0',
+                      result.stderr)
 
     def test_only_lightweight_or_nonstandard_alpha_tags_fail_closed(self):
         self.tag('0.99-a0', annotated=False)
