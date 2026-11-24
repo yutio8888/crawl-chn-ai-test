@@ -344,13 +344,38 @@ class AgentDocumentationTests(unittest.TestCase):
         }, set(release["needs"]))
         self.assertEqual({
             "windows-tiles", "macos-tiles-app", "android-release-apk",
-
+            "macos-tiles-dmg-evidence",
         }, {
             step["with"]["name"] for step in release["steps"]
             if step.get("uses", "").startswith("actions/download-artifact@")
         })
+        # The DMG is mounted and code-sign checked on the macOS build runner;
+        # the Linux release job binds the downloaded bytes to that evidence.
+        self.assertEqual("ubuntu-latest", release["runs-on"])
+        macos = jobs["build_macos_tiles"]
+        self.assertEqual("macos-latest", macos["runs-on"])
+        macos_names = [step.get("name") for step in macos["steps"]]
+        verify_index = macos_names.index("Verify macOS DMG and write evidence")
+        self.assertLess(verify_index, macos_names.index("Upload macOS tiles app"))
+        self.assertLess(
+            verify_index,
+            macos_names.index("Upload macOS DMG verification evidence"),
+        )
+        verify_run = macos["steps"][verify_index]["run"]
+        self.assertIn("--dmg-only", verify_run)
+        self.assertIn("--evidence-out", verify_run)
+        self.assertIn('git archive --format=tar "$GITHUB_SHA"', verify_run)
+        self.assertEqual(
+            {"macos-tiles-app", "macos-tiles-dmg-evidence"},
+            {
+                step["with"]["name"] for step in macos["steps"]
+                if step.get("uses", "").startswith("actions/upload-artifact@")
+            },
+        )
         release_run = "\n".join(step.get("run", "") for step in release["steps"])
         self.assertIn("verify_release_artifacts.py", release_run)
+        self.assertIn("--dmg-evidence", release_run)
+        self.assertIn("build-tools/36.0.0/apksigner", release_run)
         self.assertIn("--draft --verify-tag", release_run)
         self.assertIn("Expected 5 release assets", release_run)
         self.assertNotIn("gh release upload", release_run)
@@ -359,6 +384,10 @@ class AgentDocumentationTests(unittest.TestCase):
         triggers = workflow[True]
         self.assertIn("0.34.1-zh[0-9]*-[0-9]*-[0-9][0-9][0-9]",
                       triggers["push"]["tags"])
+        self.assertEqual(
+            ["chn-0.34.1-base", "chn-0.35-base", "chn-trunk"],
+            triggers["pull_request"]["branches"],
+        )
 
         make_dry_run = subprocess.run(
             [
