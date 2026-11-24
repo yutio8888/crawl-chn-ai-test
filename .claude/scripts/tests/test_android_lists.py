@@ -564,6 +564,7 @@ int main() {
         row_layout = regression.block_after(menu, "void UIMenu::do_layout")
         touch_rows = regression.block_after(menu, "bool uses_touch_rows() const")
         hotkey_prefix = regression.block_after(menu, "static bool _has_hotkey_prefix")
+        text_prefix = regression.block_after(menu, "static bool _has_text_prefix")
         scroller_size = regression.block_after(ui, "SizeReq Scroller::_get_preferred_size")
         scroller_allocation = regression.block_after(ui, "void Scroller::_allocate_region")
         scroller_allocation = scroller_allocation[:scroller_allocation.index("#ifdef USE_TILE_LOCAL")] + "}"
@@ -660,6 +661,8 @@ struct { int apply_game_scale(int value) { return value / Options.game_scale; } 
 float jni_get_display_density() { return 1; }
 bool _has_hotkey_prefix(const string& s)
 ''' + hotkey_prefix + r'''
+bool _has_text_prefix(const string& s, bool touch_rows)
+''' + text_prefix + r'''
 template<typename... Args> string make_stringf(const char* format, Args... args) {
     char buffer[1024];
     snprintf(buffer, sizeof(buffer), format, args...);
@@ -922,6 +925,7 @@ int main() {
         layout = regression.block_after(source, "void UIMenu::do_layout")
         touch = regression.block_after(source, "bool uses_touch_rows() const")
         prefix = regression.block_after(source, "static bool _has_hotkey_prefix")
+        text_prefix = regression.block_after(source, "static bool _has_text_prefix")
         regression.TargetingSafetyTests.run_cpp(self, r'''
 #pragma GCC diagnostic ignored "-Wparentheses"
 #define USE_TILE_LOCAL
@@ -985,6 +989,8 @@ float density = 1;
 float jni_get_display_density() { return density; }
 bool _has_hotkey_prefix(const string& s)
 ''' + prefix + r'''
+bool _has_text_prefix(const string& s, bool touch_rows)
+''' + text_prefix + r'''
 struct UIMenu {
     struct Item { int x=0, y=0, row=0, column=0; formatted_string text;
                   vector<int> tiles; bool heading=false; };
@@ -1030,6 +1036,21 @@ int main() {
     ui.item_info[1].text = formatted_string(" c - A\nLevel 5\nTarget 10\nApt 1");
     ui.do_layout(1000, 1);
     assert(ui.row_heights[2] - ui.row_heights[1] >= 4 * font.char_height());
+    // Table rows (touch_table_row) are exactly a name and a detail line when
+    // both fit, not one line per padded column.
+    density = 1; Options.game_scale = 1;
+    ui.item_info[1].text = formatted_string(" d - Spark\nType Fire  Failure 9%  Level 1");
+    ui.do_layout(1000, 1);
+    assert(ui.row_heights[2] - ui.row_heights[1]
+           == max(48, 2 * font.char_height()) + 2 * UIMenu::item_pad);
+    // An entry without a hotkey but with the blank preface wraps beside the
+    // hotkey column exactly like a lettered row.
+    ui.item_info[1].text = formatted_string(" e - " + string(100, 'L'));
+    ui.do_layout(200, 1);
+    const int lettered = ui.row_heights[2] - ui.row_heights[1];
+    ui.item_info[1].text = formatted_string("     " + string(100, 'L'));
+    ui.do_layout(200, 1);
+    assert(ui.row_heights[2] - ui.row_heights[1] == lettered);
     // Fixed-column screens retain their one-line height instead of growing.
     menu.flags = MF_NO_WRAP_ROWS;
     ui.do_layout(200, 1);
@@ -1184,6 +1205,68 @@ int main() {
     assert(!menu.process_key(CK_ESCAPE) && dispatched.back() == CK_ESCAPE);
 }
 ''')
+
+
+    def test_table_menus_use_labelled_touch_rows_on_android(self):
+        menu_h = (ROOT / "crawl-ref/source/menu.h").read_text()
+        menu = (ROOT / "crawl-ref/source/menu.cc").read_text()
+        book = (ROOT / "crawl-ref/source/spl-book.cc").read_text()
+        cast = (ROOT / "crawl-ref/source/spl-cast.cc").read_text()
+        ability = (ROOT / "crawl-ref/source/ability.cc").read_text()
+        decks = (ROOT / "crawl-ref/source/decks.cc").read_text()
+        # Fixed-column tables drop MF_NO_WRAP_ROWS (tiny CRT text, 80 columns)
+        # only on Android; desktop keeps the exact flag.
+        self.assertRegex(menu_h, r"#ifdef __ANDROID__\s*static constexpr int "
+                         r"MF_TABLE_ROWS = 0;\s*#else\s*static constexpr int "
+                         r"MF_TABLE_ROWS = MF_NO_WRAP_ROWS;\s*#endif")
+        self.assertIn("| MF_TABLE_ROWS | MF_ALLOW_FORMATTING", cast)
+        self.assertIn("| MF_TABLE_ROWS | MF_TOGGLE_ACTION | MF_ARROWS_SELECT", ability)
+        # The spell library is a touch list that previously wrapped its padded
+        # columns; on Android its rows and title come from labelled fields.
+        update = regression.block_after(book, "void update_entries()")
+        self.assertIn("desc << _touch_row(spell, colour, show_enkindle);", update)
+        title = regression.block_after(book, "virtual formatted_string calc_title()")
+        self.assertRegex(title, r"(?s)#ifdef __ANDROID__.*return formatted_string\("
+                         r"trimmed_string\(prefix\)\);\s*#else")
+        # Its CRT-width minimum must not force the popup past a phone's edges.
+        self.assertIn("#if defined(USE_TILE_LOCAL) && !defined(__ANDROID__)\n"
+                      "        // Android rows are wrapped", book)
+        for name in ("_spell_base_description", "_spell_extra_description"):
+            body = regression.block_after(cast, "static string %s(" % name)
+            self.assertIn("return _spell_touch_row(spell, transient, {", body)
+        # Deck lists are short (24-cell name + count) and keep their table.
+        self.assertEqual(2, decks.count("| MF_NO_WRAP_ROWS | MF_TOGGLE_ACTION"))
+
+        # Multi-line touch rows keep the hotkey on the name line and the icon
+        # level with the text block; desktop rows keep their centring.
+        pack = regression.block_after(menu, "void UIMenu::pack_buffers()")
+        self.assertIn("touch_rows ? text_sy : line_sy", pack)
+        self.assertIn("const int ty = touch_rows && string_height > 32\n"
+                      "                           ? text_sy : entry.y + max(entry_h-32, 0)/2;",
+                      pack)
+        row = regression.block_after(menu, "string touch_table_row(")
+        regression.TargetingSafetyTests.run_cpp(self, r"""
+#include <cassert>
+#include <string>
+#include <utility>
+#include <vector>
+using namespace std;
+string touch_table_row(const string &name,
+                       const vector<pair<string, string>> &fields)
+""" + row + r"""
+int main() {
+    const string nbsp = "\xc2\xa0";
+    // Name line, then fields; label and value are tied by a no-break space
+    // so font splitting (ASCII spaces only) wraps between whole fields.
+    assert(touch_table_row("Spark", {{"", "Fire/Air"}, {"Failure", "9%"},
+                                     {"Level", "1"}})
+           == "Spark\nFire/Air  Failure" + nbsp + "9%  Level" + nbsp + "1");
+    // Empty values (e.g. no failure under Divine Exegesis) are omitted.
+    assert(touch_table_row("Spark", {{"Failure", ""}, {"Level", "1"}})
+           == "Spark\nLevel" + nbsp + "1");
+    assert(touch_table_row("Spark", {}) == "Spark");
+}
+""")
 
 
 if __name__ == "__main__":
