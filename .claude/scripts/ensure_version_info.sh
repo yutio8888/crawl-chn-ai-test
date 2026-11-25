@@ -32,6 +32,23 @@ elif [[ $# != 0 ]]; then
     die "usage: ensure_version_info.sh [--fetch-upstream-tags]"
 fi
 
+# Print the highest-versioned annotated X.Y-aN tag reachable from $1. Do not use
+# `git describe --abbrev=0`: its date-ordered depth estimate loses reachability
+# across equal-date upstream commits already queued by an earlier sync merge,
+# so on chn-trunk it reports 0.35-a0 although 0.36-a0 is merged.
+resolve_upstream_alpha_tag() {
+    local refs type ref
+    refs=$(git for-each-ref --merged="$1" --sort=-v:refname \
+        --format='%(objecttype) %(refname)' 'refs/tags/*-a[0-9]*') || return 1
+    while read -r type ref; do
+        if [[ "$type" == tag && "$ref" =~ ^refs/tags/([0-9]+\.[0-9]+-a[0-9]+)$ ]]; then
+            printf '%s\n' "${BASH_REMATCH[1]}"
+            return 0
+        fi
+    done <<< "$refs"
+    return 1
+}
+
 describe_flags=(--match '*-a[0-9]*' --match '*-trunk-[0-9][0-9][0-9]')
 trunk_tag_re='^[0-9]+\.[0-9]+-trunk-(00[1-9]|0[1-9][0-9]|[1-9][0-9]{2})$'
 
@@ -71,7 +88,7 @@ if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
     [[ "$described" == "$tag" ]] \
         || die "git describe resolved $described, expected $tag"
 
-    alpha_tag=$(git describe --abbrev=0 --match '*-a[0-9]*' "$commit" 2>/dev/null) \
+    alpha_tag=$(resolve_upstream_alpha_tag "$commit") \
         || die "cannot find an annotated upstream alpha tag for $commit"
     [[ "$alpha_tag" =~ ^([0-9]+\.[0-9]+)-a[0-9]+$ ]] \
         || die "invalid upstream alpha tag $alpha_tag"
@@ -87,7 +104,7 @@ if [[ "${GITHUB_REF_TYPE:-}" == "tag" ]]; then
     printf '%s\n' "$tag" > "$release_ver"
     echo "Prepared release version $tag at $commit"
 else
-    git describe --abbrev=0 --match '*-a[0-9]*' HEAD >/dev/null 2>&1 \
+    resolve_upstream_alpha_tag HEAD >/dev/null \
         || die "cannot find an annotated upstream alpha tag for HEAD"
     version=$(git describe "${describe_flags[@]}" 2>/dev/null) \
         || die "cannot describe development version"

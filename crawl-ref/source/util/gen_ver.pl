@@ -28,7 +28,10 @@ my $describe_flags = $ENV{GIT_DESCRIBE_FLAGS}
 my $in_git = `git rev-parse --is-inside-work-tree 2> $nullfile`;
 if ($in_git)
 {
-    `git describe --abbrev=0 --match '*-a[0-9]*' $mergebase 2> $nullfile`
+    # Same rule as ensure_version_info.sh: a reachable annotated X.Y-aN tag.
+    my $target = $mergebase ne "" ? $mergebase : "HEAD";
+    grep { m{^tag refs/tags/[0-9]+\.[0-9]+-a[0-9]+$} }
+        `git for-each-ref --merged=$target --format='%(objecttype) %(refname)' 'refs/tags/*-a[0-9]*' 2> $nullfile`
         or die "Error: Can't find an annotated upstream alpha tag.\n"
             . "Run `git fetch upstream --tags` or "
             . "`bash .claude/scripts/ensure_version_info.sh --fetch-upstream-tags`.\n";
