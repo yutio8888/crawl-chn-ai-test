@@ -427,7 +427,8 @@ void OGLStateManager::bind_texture(unsigned int texture)
 
 bool OGLStateManager::load_texture(unsigned char *pixels, unsigned int width,
                                    unsigned int height, MipMapOptions mip_opt,
-                                   int xoffset, int yoffset)
+                                   int xoffset, int yoffset,
+                                   TextureFormat tex_fmt)
 {
     // Discard errors from earlier GL work so the result only describes this
     // texture upload.
@@ -435,14 +436,16 @@ bool OGLStateManager::load_texture(unsigned char *pixels, unsigned int width,
         ;
     bool errors = false;
 
-    // Assumptions...
+    const bool is_alpha = (tex_fmt == TEX_FMT_ALPHA);
+    const GLenum texture_format = is_alpha ? GL_ALPHA : GL_RGBA;
 #ifdef __ANDROID__
-    const GLenum bpp = GL_RGBA;
+    const GLenum bpp = texture_format;
 #else
-    const unsigned int bpp = 4;
+    const GLint bpp = is_alpha ? GL_ALPHA : 4;
 #endif
-    const GLenum texture_format = GL_RGBA;
     const GLenum format = GL_UNSIGNED_BYTE;
+    if (is_alpha)
+        pixelstore_unpack_alignment(1);
     // Also assume that the texture is already bound using bind_texture
 
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);

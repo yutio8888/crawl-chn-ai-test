@@ -36,56 +36,9 @@ static const char* CJK_CANDIDATES[] = {
     "dat/tiles/MapleMono-NF-CN-Regular.ttf",
 };
 
-static void _choose_atlas_grid(unsigned int cell_width,
-                               unsigned int cell_height,
-                               unsigned int max_texture_size,
-                               unsigned int &columns,
-                               unsigned int &rows)
+static unsigned int _tex_format_bpp(TextureFormat fmt)
 {
-    columns = 0;
-    rows = 0;
-    unsigned int best_capacity = 0;
-    unsigned int best_long_side = UINT_MAX;
-    unsigned int best_side_difference = UINT_MAX;
-
-    for (unsigned int candidate_columns = 1;
-         candidate_columns <= MAX_GLYPH_COLUMNS;
-         candidate_columns *= 2)
-    {
-        const unsigned int width = candidate_columns * cell_width;
-        if (width > max_texture_size)
-            continue;
-
-        for (unsigned int candidate_rows = 1;
-             candidate_rows <= MAX_GLYPH_COLUMNS;
-             candidate_rows *= 2)
-        {
-            const unsigned int height = candidate_rows * cell_height;
-            if (height > max_texture_size)
-                continue;
-
-            const size_t bytes = size_t(width) * height * 4;
-            if (bytes > FONT_ATLAS_BYTE_BUDGET)
-                continue;
-
-            const unsigned int capacity = candidate_columns * candidate_rows;
-            const unsigned int long_side = max(width, height);
-            const unsigned int side_difference = width > height
-                                               ? width - height
-                                               : height - width;
-            if (capacity > best_capacity
-                || (capacity == best_capacity && long_side < best_long_side)
-                || (capacity == best_capacity && long_side == best_long_side
-                    && side_difference < best_side_difference))
-            {
-                columns = candidate_columns;
-                rows = candidate_rows;
-                best_capacity = capacity;
-                best_long_side = long_side;
-                best_side_difference = side_difference;
-            }
-        }
-    }
+    return (fmt == TEX_FMT_ALPHA) ? 1 : 4;
 }
 
 #if 0
@@ -120,9 +73,10 @@ FontWrapper* FontWrapper::create()
 }
 
 FTFontWrapper::FTFontWrapper() :
-    m_atlas(nullptr),
+    n_subst(0),
     m_max_advance(0, 0),
     m_min_offset(0),
+    m_ascender(0),
     charsz(1,1),
     m_ft_width(0),
     m_ft_height(0),
@@ -131,22 +85,19 @@ FTFontWrapper::FTFontWrapper() :
     m_atlas_capacity(0),
     m_max_width(0),
     m_max_height(0),
+    m_tex_format(TEX_FMT_ALPHA),
     ttf(nullptr),
     face(nullptr),
     cjk_face(nullptr),
     cjk_ttf(nullptr),
     pixels(nullptr),
-    fsize(0),
-    m_atlas_clock(0),
-    m_atlas_generation(0),
-    m_peak_glyphs(0)
+    fsize(0)
 {
     m_buf = GLShapeBuffer::create(true, true);
 }
 
 FTFontWrapper::~FTFontWrapper()
 {
-    delete[] m_atlas;
     delete[] pixels;
     delete m_buf;
     if (face)
@@ -159,8 +110,7 @@ FTFontWrapper::~FTFontWrapper()
 
 void FTFontWrapper::clear_pins()
 {
-    for (uint8_t &pin : m_pinned)
-        pin = 0;
+    m_atlas_cache.clear_pins();
 }
 
 /**
@@ -172,7 +122,7 @@ bool FTFontWrapper::configure_font()
 {
     // The texture is recreated below, invalidating every previously packed
     // FontBuffer even if glyphs happen to occupy the same slots afterward.
-    ++m_atlas_generation;
+    m_atlas_cache.bump_generation();
 
     FT_Error error;
     error = FT_Set_Pixel_Sizes(face,
@@ -220,88 +170,97 @@ bool FTFontWrapper::configure_font()
     while (charsz.y <= m_max_advance.y)
         charsz.y *= 2;
 
-    // Choose a power-of-two rectangular grid bounded by the driver, the
-    // per-font RGBA memory budget, and the historical 64x64 upper bound.
-    // Having to blow out 8-bit alpha values into full 32-bit textures is
-    // kind of frustrating, but not all OpenGL implementations support the
-    // "esoteric" ALPHA8 format and it's not like this texture is very large.
-
-    // [frogbotherer] I think we can get memory usage lower by blowing out
-    // the texture as a whole out to a power of 2, instead of each individual
-    // character. Also, whilst GLES baulks at ALPHA8, there might be some
-    // other compression format that we can use to get the size down a bit
+    // Prefer single-channel GL_ALPHA (1 byte/px, standard in both desktop
+    // fixed-function OpenGL and OpenGL ES 1.x under GL_MODULATE), cutting
+    // VRAM by 75% and granting up to 4x more CJK slots at high DPI within the
+    // same memory budget. Fall back cleanly to RGBA if a driver rejects it.
     const int driver_max_texture_size = opengl::max_texture_size();
-    _choose_atlas_grid(charsz.x, charsz.y,
-                       max(driver_max_texture_size, 0),
-                       m_atlas_columns, m_atlas_rows);
-    m_atlas_capacity = m_atlas_columns * m_atlas_rows;
-    if (m_atlas_capacity < RESERVED_GLYPHS)
-    {
-        die_noline("Font atlas cannot reserve required glyphs: %u slots "
-                   "available, %u required (cell %dx%d, max texture %d).\n",
-                   m_atlas_capacity, RESERVED_GLYPHS, charsz.x, charsz.y,
-                   driver_max_texture_size);
-    }
+    const unsigned int max_tex = max(driver_max_texture_size, 0);
 
+    m_tex_format = TEX_FMT_ALPHA;
+    unsigned int bpp = _tex_format_bpp(m_tex_format);
+    tilefont_internal::choose_atlas_grid(charsz.x, charsz.y, max_tex, bpp,
+                                         MAX_GLYPH_COLUMNS,
+                                         FONT_ATLAS_BYTE_BUDGET,
+                                         m_atlas_columns, m_atlas_rows);
+    m_atlas_capacity = m_atlas_columns * m_atlas_rows;
     m_ft_width  = m_atlas_columns * charsz.x;
     m_ft_height = m_atlas_rows * charsz.y;
 
-    delete[] pixels; // for repeated calls
-
-    pixels = new unsigned char[4 * charsz.x * charsz.y];
-    memset(pixels, 0, sizeof(unsigned char) * 4 * charsz.x * charsz.y);
-
-    dprintf("new font tex %d x %d x 4 = %dpx %d bytes\n",
-            m_ft_width, m_ft_height, m_ft_width * m_ft_height,
-            4 * m_ft_width * m_ft_height);
-
-    // initialise empty texture of correct size
     unwind_bool noscaling(Options.tile_filter_scaling, false);
-    if (!m_tex.load_texture(nullptr, m_ft_width, m_ft_height, MIPMAP_NONE))
+    bool allocated = (m_atlas_capacity >= RESERVED_GLYPHS)
+                     && m_tex.load_texture(nullptr, m_ft_width, m_ft_height,
+                                           MIPMAP_NONE, -1, -1, m_tex_format);
+    if (!allocated)
     {
-        die_noline("Failed to allocate font atlas texture (%u x %u).\n",
-                   m_ft_width, m_ft_height);
+        m_tex_format = TEX_FMT_RGBA;
+        bpp = _tex_format_bpp(m_tex_format);
+        tilefont_internal::choose_atlas_grid(charsz.x, charsz.y, max_tex, bpp,
+                                             MAX_GLYPH_COLUMNS,
+                                             FONT_ATLAS_BYTE_BUDGET,
+                                             m_atlas_columns, m_atlas_rows);
+        m_atlas_capacity = m_atlas_columns * m_atlas_rows;
+        if (m_atlas_capacity < RESERVED_GLYPHS)
+        {
+            die_noline("Font atlas cannot reserve required glyphs: %u slots "
+                       "available, %u required (cell %dx%d, max texture %d).\n",
+                       m_atlas_capacity, RESERVED_GLYPHS, charsz.x, charsz.y,
+                       driver_max_texture_size);
+        }
+        m_ft_width  = m_atlas_columns * charsz.x;
+        m_ft_height = m_atlas_rows * charsz.y;
+        if (!m_tex.load_texture(nullptr, m_ft_width, m_ft_height,
+                                MIPMAP_NONE, -1, -1, m_tex_format))
+        {
+            die_noline("Failed to allocate font atlas texture (%u x %u).\n",
+                       m_ft_width, m_ft_height);
+        }
     }
 
+    delete[] pixels; // for repeated calls
+
+    const size_t slot_bytes = size_t(bpp) * charsz.x * charsz.y;
+    pixels = new unsigned char[slot_bytes];
+    memset(pixels, 0, slot_bytes);
+
+    dprintf("new font tex %u x %u x %u = %upx %zu bytes\n",
+            m_ft_width, m_ft_height, bpp, m_ft_width * m_ft_height,
+            size_t(bpp) * m_ft_width * m_ft_height);
+
     m_glyphs.clear();
-    m_glyph_to_slot.clear();
-    m_atlas_clock = 0;
-
-    delete[] m_atlas;
-    m_atlas = new FontAtlasEntry[m_atlas_capacity];
-    m_pinned.assign(m_atlas_capacity, 0);
-
-    for (unsigned int i = 0; i < m_atlas_capacity; i++)
-        m_atlas[i] = FontAtlasEntry();
+    m_atlas_cache.reset(m_atlas_capacity, false);
 
     // Slot 0: full-white block (reserved, never evicted)
-    // used by colour_bar
-    m_atlas[0].reserved = true;
-    m_atlas[0].last_used = ++m_atlas_clock;
+    // used by colour_bar and text backgrounds (UV 0,0)
+    m_atlas_cache.reserve_slot(0, 0);
     {
-        for (int x = 0; x < m_max_advance.x; x++)
-            for (int y = 0; y < m_max_advance.y; y++)
+        const int fill_w = min(m_max_advance.x, charsz.x);
+        const int fill_h = min(m_max_advance.y, charsz.y);
+        for (int y = 0; y < fill_h; y++)
+            for (int x = 0; x < fill_w; x++)
             {
-                unsigned int idx = x + y * m_max_advance.x;
-                idx *= 4;
-                pixels[idx]     = 255;
-                pixels[idx + 1] = 255;
-                pixels[idx + 2] = 255;
-                pixels[idx + 3] = 255;
+                unsigned int idx = x + y * charsz.x;
+                if (m_tex_format == TEX_FMT_ALPHA)
+                    pixels[idx] = 255;
+                else
+                {
+                    idx *= 4;
+                    pixels[idx]     = 255;
+                    pixels[idx + 1] = 255;
+                    pixels[idx + 2] = 255;
+                    pixels[idx + 3] = 255;
+                }
             }
 
         bool success = m_tex.load_texture(pixels, charsz.x, charsz.y,
-                                          MIPMAP_NONE, 0, 0);
+                                          MIPMAP_NONE, 0, 0, m_tex_format);
         ASSERT(success);
     }
 
     // Slot 1: MISSING_CHAR (reserved, never evicted)
     {
         atlas_slot_t slot = 1;
-        m_atlas[slot].uchar = MISSING_CHAR;
-        m_atlas[slot].reserved = true;
-        m_atlas[slot].last_used = ++m_atlas_clock;
-        m_glyph_to_slot[MISSING_CHAR] = slot;
+        m_atlas_cache.reserve_slot(slot, MISSING_CHAR);
         load_glyph(slot, MISSING_CHAR);
     }
 
@@ -312,15 +271,11 @@ bool FTFontWrapper::configure_font()
     for (char c = 0x20; c < 0x7f; c++)
     {
         atlas_slot_t slot = next_slot++;
-        m_atlas[slot].uchar = c;
-        m_atlas[slot].reserved = true;
-        m_atlas[slot].last_used = ++m_atlas_clock;
-        m_glyph_to_slot[(char32_t)c] = slot;
+        m_atlas_cache.reserve_slot(slot, static_cast<char32_t>(c));
         load_glyph(slot, c);
     }
 
     clear_pins();
-    m_peak_glyphs = 0;
     return true;
 }
 
@@ -549,36 +504,40 @@ void FTFontWrapper::load_glyph(unsigned int c, char32_t uchar)
         ASSERT(bmp->pixel_mode == FT_PIXEL_MODE_GRAY);
         ASSERT(bmp->num_grays == 256);
 
-        // Horizontal offset stored in m_atlas and handled when drawing
-        const unsigned int offset_x = 0;
-        const unsigned int offset_y = 0;
-        memset(pixels, 0, sizeof(unsigned char) * 4 * charsz.x * charsz.y);
+        // Horizontal offset stored in glyph metrics and handled when drawing
+        const unsigned int bpp = _tex_format_bpp(m_tex_format);
+        memset(pixels, 0, size_t(bpp) * charsz.x * charsz.y);
 
         // Some fonts have wrong size info
         const ftint charw = bmp->width;
-        bmp->width = min(bmp->width, ftint(charsz.x));
-        bmp->rows = min(bmp->rows, ftint(charsz.y));
+        const ftint copy_w = min(bmp->width, ftint(charsz.x));
+        const ftint copy_h = min(bmp->rows, ftint(charsz.y));
 
-        for (ftint x = 0; x < bmp->width; x++)
-            for (ftint y = 0; y < bmp->rows; y++)
-            {
-                unsigned int idx = offset_x + x + (offset_y + y) * charsz.x;
-                idx *= 4;
-                if (x < bmp->width && y < bmp->rows)
+        if (m_tex_format == TEX_FMT_ALPHA)
+        {
+            for (ftint y = 0; y < copy_h; y++)
+                memcpy(pixels + y * charsz.x, bmp->buffer + charw * y, copy_w);
+        }
+        else
+        {
+            for (ftint y = 0; y < copy_h; y++)
+                for (ftint x = 0; x < copy_w; x++)
                 {
+                    unsigned int idx = (x + y * charsz.x) * 4;
                     unsigned char alpha = bmp->buffer[x + charw * y];
                     pixels[idx] = 255;
                     pixels[idx + 1] = 255;
                     pixels[idx + 2] = 255;
                     pixels[idx + 3] = alpha;
                 }
-            }
+        }
 
         unwind_bool noscaling(Options.tile_filter_scaling, false);
         bool success = m_tex.load_texture(pixels, charsz.x, charsz.y,
                             MIPMAP_NONE,
                             (c % m_atlas_columns) * charsz.x,
-                            (c / m_atlas_columns) * charsz.y);
+                            (c / m_atlas_columns) * charsz.y,
+                            m_tex_format);
         ASSERT(success);
     }
 }
@@ -592,62 +551,14 @@ unsigned int FTFontWrapper::map_unicode(char *ch)
 
 unsigned int FTFontWrapper::map_unicode(char32_t uchar)
 {
-    // Fast path: hash lookup for O(1) glyph-to-slot resolution.
-    auto it = m_glyph_to_slot.find(uchar);
-    if (it != m_glyph_to_slot.end())
+    const tilefont_internal::AtlasAcquireResult res =
+        m_atlas_cache.acquire(uchar, MISSING_CHAR);
+    if (res.needs_load)
     {
-        atlas_slot_t c = it->second;
-        m_atlas[c].last_used = ++m_atlas_clock;
-        m_pinned[c] = true;
-        return c;
+        load_glyph(res.slot, uchar);
+        n_subst++;
     }
-
-    // Miss — need to load this glyph into the atlas.
-    // Find an eviction candidate among unreserved, unpinned slots.
-    atlas_slot_t evict = m_atlas_capacity;
-    uint64_t oldest = UINT64_MAX;
-    for (atlas_slot_t i = 1; i < m_atlas_capacity; i++)
-    {
-        if (m_atlas[i].reserved || m_pinned[i])
-            continue;
-        if (m_atlas[i].last_used < oldest)
-        {
-            oldest = m_atlas[i].last_used;
-            evict = i;
-        }
-    }
-
-    if (evict == m_atlas_capacity)
-    {
-        // Never invalidate texture coordinates already emitted by this
-        // render batch. Missing glyph is preferable to corrupting the batch.
-        return m_glyph_to_slot.at(MISSING_CHAR);
-    }
-
-    // Remove the old glyph from the hash map before overwriting.
-    if (m_atlas[evict].uchar != 0)
-    {
-        m_glyph_to_slot.erase(m_atlas[evict].uchar);
-        // A live FontBuffer may retain UVs for the overwritten slot.
-        ++m_atlas_generation;
-    }
-
-    atlas_slot_t c = evict;
-
-    // Count newly-loaded distinct glyphs for peak tracking.
-    // Evictions replace existing entries so only increment when the
-    // target slot was truly empty (first load since configure_font).
-    if (!m_atlas[c].reserved && m_atlas[c].uchar == 0)
-        m_peak_glyphs++;
-
-    m_atlas[c].uchar = uchar;
-    m_atlas[c].last_used = ++m_atlas_clock;
-    m_glyph_to_slot[uchar] = c;
-    load_glyph(c, uchar);
-    m_pinned[c] = true;
-    n_subst++;
-
-    return c;
+    return res.slot;
 }
 
 void FTFontWrapper::render_textblock(unsigned int x_pos, unsigned int y_pos,
@@ -656,7 +567,7 @@ void FTFontWrapper::render_textblock(unsigned int x_pos, unsigned int y_pos,
                                      unsigned int width, unsigned int height,
                                      bool drop_shadow)
 {
-    if (!chars || !colours || !width || !height || !m_atlas)
+    if (!chars || !colours || !width || !height || m_atlas_cache.empty())
         return;
 
     clear_pins();
