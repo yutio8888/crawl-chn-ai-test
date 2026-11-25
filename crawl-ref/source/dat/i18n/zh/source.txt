@@ -49594,6 +49594,48 @@ feature note|Found %s.
 发现了%s。
 
 %%%%
+item discovery|Found %d items.
+发现了%d件物品。
+%%%%
+shop discovery|Found %d shops.
+发现了%d家商店。
+%%%%
+altar quantity|%d %s
+%d座%s
+%%%%
+altar discovery|Found %d altars.
+发现了%d座祭坛。
+%%%%
+portal quantity|%d %s
+%d处%s
+%%%%
+portal discovery|Found %d portals.
+发现了%d道传送门。
+%%%%
+stair quantity|%d %s
+%d处%s
+%%%%
+stair discovery|Found %d stairs.
+发现了%d处出入口。
+%%%%
+transporter quantity|%d %s
+%d个%s
+%%%%
+transporter discovery|Found %d transporters.
+发现了%d个传送器。
+%%%%
+runed door quantity|%d %s
+%d扇%s
+%%%%
+runed door discovery|Found %d runed doors.
+发现了%d扇符文门。
+%%%%
+runelight quantity|%d %s
+%d处%s
+%%%%
+runelight discovery|Found %d runelights.
+发现了%d处符文之光。
+%%%%
 Do you really want to enter wizard mode?
 你真的想进入巫师模式吗？
 
