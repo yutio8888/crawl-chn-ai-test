@@ -406,6 +406,7 @@ static void _annihilation_explode_setup(monster& globe, bolt& beam)
         ScopedLangEn canonical_language;
         beam.name = make_stringf("annihilating %s", beam.get_short_name().c_str());
     }
+    beam.animate = true;
 }
 
 static bool _iood_hit(monster& mon, const coord_def &pos, bool big_boom = false)
