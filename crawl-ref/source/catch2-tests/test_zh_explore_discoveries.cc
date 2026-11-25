@@ -132,6 +132,21 @@ namespace
         };
     }
 
+    // Adds a stack of stackable items (darts) to the other discoveries.
+    setup_fn with_darts(setup_fn others, int quantity)
+    {
+        return [others, quantity](explore_discoveries &ed, discovery_map &map)
+        {
+            others(ed, map);
+            item_def darts;
+            darts.base_type = OBJ_MISSILES;
+            darts.sub_type = MI_DART;
+            darts.quantity = quantity;
+            darts.pos = spot(40);
+            ed.found_item(spot(40), darts);
+        };
+    }
+
     // Runs every scenario in one forked headless child (the backend has no
     // teardown) and returns each scenario's message-log output.
     vector<string> run_discoveries(lang_t language,
@@ -254,6 +269,15 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                   WPN_DAGGER, WPN_LONG_SWORD, WPN_SCIMITAR, WPN_GREAT_SWORD,
                   WPN_HAND_AXE, WPN_WAR_AXE, WPN_SPEAR, WPN_HALBERD}),
          "发现了13件物品。", "Found twelve items."},
+        // A stack of stackable items is listed once and counts as one item,
+        // not as its stack size (5 darts here).
+        {with_darts(weapons({WPN_CLUB}), 5), "发现了棍棒、5 飞镖。",
+         "Found a club and 5 darts."},
+        {with_darts(weapons({WPN_CLUB, WPN_WHIP, WPN_MACE, WPN_FLAIL,
+                             WPN_DAGGER, WPN_LONG_SWORD, WPN_SCIMITAR,
+                             WPN_GREAT_SWORD, WPN_HAND_AXE, WPN_WAR_AXE,
+                             WPN_SPEAR, WPN_HALBERD}), 5),
+         "发现了13件物品。", "Found thirteen items."},
         // Same-named floor items merge into one stack name.
         {weapons({WPN_CLUB, WPN_CLUB}), "发现了2 棍棒。", "Found two clubs."},
     };
