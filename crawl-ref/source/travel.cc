@@ -5082,8 +5082,11 @@ void explore_discoveries::add_item(const item_def &i)
         if (cname == original_name(item.thing))
         {
             item.thing.quantity = orig_quantity + i.quantity;
+            // Chinese item stacks use Arabic counts ("2 棍棒"); the
+            // number_in_words() form ("二 棍棒") reads unnaturally.
             item.name = item.thing.name(DESC_A, false, false, true,
-                                        !is_stackable_item(i));
+                                        !is_stackable_item(i)
+                                        && Options.language != lang_t::ZH);
             return;
         }
         item.thing.quantity = orig_quantity;
@@ -5156,35 +5159,62 @@ template <class citer> bool explore_discoveries::has_duplicates(
     return false;
 }
 
+// Chinese has no plural nouns and needs a measure word between a count and
+// its noun, so each discovery category supplies whole translated phrases
+// (zh_summary: "Found %d <things>.", zh_quantity: "%d %s"). English keeps the
+// historic number_in_words() + pluralise() wording unchanged.
 template <class C> void explore_discoveries::say_any(
-    const C &coll, const char *category) const
+    const C &coll, const char *category, const char *zh_summary,
+    int zh_count) const
 {
     if (coll.empty())
         return;
 
     const int size = coll.size();
+    const bool zh = Options.language == lang_t::ZH;
 
     string plural = pluralise(category);
     if (size != 1)
         category = plural.c_str();
 
+    const auto say_summary = [&]()
+    {
+        if (zh)
+            mprf(zh_summary, zh_count >= 0 ? zh_count : size);
+        else
+            mprf(T_("Found %s %s."), number_in_words(size).c_str(), category);
+    };
+
     if (has_duplicates(coll.begin(), coll.end()))
     {
-        mprf(T_("Found %s %s."), number_in_words(size).c_str(), category);
+        say_summary();
         return;
     }
 
     const auto message = make_stringf(T_("Found %s."),
-                           comma_separated_line(coll.begin(), coll.end()).c_str());
+                           (zh ? comma_separated_line(coll.begin(), coll.end(),
+                                                      T_(","), T_(","))
+                               : comma_separated_line(coll.begin(), coll.end()))
+                           .c_str());
 
     if (formatted_string::parse_string(message).width() >= get_number_of_cols())
-        mprf(T_("Found %s %s."), number_in_words(size).c_str(), category);
+        say_summary();
     else
         mpr(message);
 }
 
+void explore_discoveries::say_features(
+    const vector< named_thing<int> > &v, const char *category,
+    const char *zh_quantity, const char *zh_summary) const
+{
+    int total = 0;
+    for (const named_thing<int> &nt : v)
+        total += nt.thing;
+    say_any(apply_quantities(v, zh_quantity), category, zh_summary, total);
+}
+
 vector<string> explore_discoveries::apply_quantities(
-    const vector< named_thing<int> > &v) const
+    const vector< named_thing<int> > &v, const char *zh_quantity) const
 {
     static const char *feature_plural_qualifiers[] =
     {
@@ -5192,11 +5222,17 @@ vector<string> explore_discoveries::apply_quantities(
         " from ", " back into ", nullptr
     };
 
+    const bool zh = Options.language == lang_t::ZH;
     vector<string> things;
     for (const named_thing<int> &nt : v)
     {
         if (nt.thing == 1)
             things.push_back(make_stringf_p(T_("a %1$s"), nt.name.c_str()));
+        else if (zh)
+        {
+            things.push_back(make_stringf(zh_quantity, nt.thing,
+                                          nt.name.c_str()));
+        }
         else
         {
             things.push_back(number_in_words(nt.thing)
@@ -5220,14 +5256,30 @@ bool explore_discoveries::stop_explore() const
     if (!es_flags)
         return marker_stop;
 
-    say_any(items, "item");
-    say_any(shops, "shop");
-    say_any(apply_quantities(altars), "altar");
-    say_any(apply_quantities(portals), "portal");
-    say_any(apply_quantities(stairs), "stair");
-    say_any(apply_quantities(transporters), "transporter");
-    say_any(apply_quantities(runed_doors), "runed door");
-    say_any(apply_quantities(runelights), "runelights");
+    // Merged non-stackable items ("2 棍棒") count individually; a stack of
+    // stackable items counts once, as it is listed once.
+    int item_count = 0;
+    for (const named_thing<item_def> &item : items)
+        item_count += is_stackable_item(item.thing) ? 1 : item.thing.quantity;
+    say_any(items, "item", C_("item discovery", "Found %d items."),
+            item_count);
+    say_any(shops, "shop", C_("shop discovery", "Found %d shops."));
+    say_features(altars, "altar", C_("altar quantity", "%d %s"),
+                 C_("altar discovery", "Found %d altars."));
+    say_features(portals, "portal", C_("portal quantity", "%d %s"),
+                 C_("portal discovery", "Found %d portals."));
+    // The stair list also holds escape hatches and portal gates here, so
+    // Chinese counts them as generic entrances/exits (处, 出入口).
+    say_features(stairs, "stair", C_("stair quantity", "%d %s"),
+                 C_("stair discovery", "Found %d stairs."));
+    say_features(transporters, "transporter",
+                 C_("transporter quantity", "%d %s"),
+                 C_("transporter discovery", "Found %d transporters."));
+    say_features(runed_doors, "runed door",
+                 C_("runed door quantity", "%d %s"),
+                 C_("runed door discovery", "Found %d runed doors."));
+    say_features(runelights, "runelights", C_("runelight quantity", "%d %s"),
+                 C_("runelight discovery", "Found %d runelights."));
 
     return true;
 }
