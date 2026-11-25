@@ -205,13 +205,21 @@ private:
     vector<string> marked_feats;
 
 private:
-    template <class C> void say_any(const C &coll, const char *category) const;
+    template <class C> void say_any(const C &coll, const char *category,
+                                    const char *zh_summary,
+                                    int zh_count = -1) const;
+    void say_features(const vector< named_thing<int> > &v,
+                      const char *category, const char *zh_quantity,
+                      const char *zh_summary,
+                      bool zh_always_count = false) const;
     template <class citer> bool has_duplicates(citer, citer) const;
 
     string cleaned_feature_description(const coord_def &) const;
     void add_item(const item_def &item);
     void add_stair(const named_thing<int> &stair, dungeon_feature_type feat);
-    vector<string> apply_quantities(const vector< named_thing<int> > &v) const;
+    vector<string> apply_quantities(const vector< named_thing<int> > &v,
+                                    const char *zh_quantity,
+                                    bool zh_always_count) const;
     bool merge_feature(vector< named_thing<int> > &v,
                        const named_thing<int> &feat) const;
 };
