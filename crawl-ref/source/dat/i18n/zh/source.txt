@@ -45984,7 +45984,7 @@ There is %s here.
 这里有%s。
 %%%%
 stair quantity|%d %s
-%d座%s
+%d处%s
 %%%%
 attack verb|gore
 顶撞
@@ -46096,6 +46096,54 @@ stone arch
 %%%%
 stair discovery|Found %d stairs.
 发现了%d座楼梯。
+%%%%
+item discovery|Found %d items.
+发现了%d件物品。
+%%%%
+shop discovery|Found %d shops.
+发现了%d家商店。
+%%%%
+altar quantity|%d %s
+%d座%s
+%%%%
+altar discovery|Found %d altars.
+发现了%d座祭坛。
+%%%%
+portal quantity|%d %s
+%d处%s
+%%%%
+portal discovery|Found %d portals.
+发现了%d道传送门。
+%%%%
+hatch quantity|%d %s
+%d处%s
+%%%%
+hatch discovery|Found %d hatches.
+发现了%d处逃生口。
+%%%%
+transporter quantity|%d %s
+%d个%s
+%%%%
+transporter discovery|Found %d transporters.
+发现了%d个传送器。
+%%%%
+runed door quantity|%d %s
+%d扇%s
+%%%%
+runed door discovery|Found %d runed doors.
+发现了%d扇符文门。
+%%%%
+runelight quantity|%d %s
+%d处%s
+%%%%
+runelight discovery|Found %d runelights.
+发现了%d处符文之光。
+%%%%
+mutation catalyst quantity|%d %s
+%d个%s
+%%%%
+mutation catalyst discovery|Found %d mutation catalysts.
+发现了%d个净化诱变催化器。
 %%%%
 damage source|water from %s
 来自%s的水流
