@@ -55189,3 +55189,12 @@ miss result|You%1$s miss %2$s%3$s.
 %%%%
 randbook conjunction| and 
 以及
+%%%%
+Your demonic ancestry asserts itself...
+你的恶魔血统开始显现……
+%%%%
+You are now level %d!
+你现在是%d级！
+%%%%
+Protean flesh bursts from your body and begins taking on the form of %s!
+千变血肉从你体内迸发而出，开始化为%s的形态！
