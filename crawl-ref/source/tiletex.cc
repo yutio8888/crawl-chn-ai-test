@@ -51,7 +51,8 @@ bool GenericTexture::load_texture(const char *filename,
 bool GenericTexture::load_texture(unsigned char *pixels, unsigned int new_width,
                                   unsigned int new_height,
                                   MipMapOptions mip_opt,
-                                  int offsetx, int offsety)
+                                  int offsetx, int offsety,
+                                  TextureFormat tex_fmt)
 {
     if (!new_width || !new_height)
         return false;
@@ -63,16 +64,25 @@ bool GenericTexture::load_texture(unsigned char *pixels, unsigned int new_width,
     // 2. we bind the texture name for writing
     // 3. load the texture with the actual tile sheet (or other texture data)
     //    in question
-    if (offsetx == -1 && offsety == -1)
+    const bool new_alloc = (offsetx == -1 && offsety == -1);
+    if (new_alloc)
     {
+        unload_texture();
         m_width = new_width;
         m_height = new_height;
         glmanager->generate_textures(1, &m_handle);
     }
 
     bind();
-    return glmanager->load_texture(pixels, new_width, new_height, mip_opt,
-                                   offsetx, offsety);
+    const bool ok = glmanager->load_texture(pixels, new_width, new_height,
+                                            mip_opt, offsetx, offsety, tex_fmt);
+    if (!ok && new_alloc)
+    {
+        unload_texture();
+        m_width = 0;
+        m_height = 0;
+    }
+    return ok;
 }
 
 void GenericTexture::bind() const

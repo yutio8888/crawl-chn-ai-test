@@ -14,6 +14,12 @@ enum MipMapOptions
     MIPMAP_MAX,
 };
 
+enum TextureFormat
+{
+    TEX_FMT_RGBA,
+    TEX_FMT_ALPHA,
+};
+
 // Arbitrary post-load texture processing
 typedef bool(*tex_proc_func)(unsigned char *pixels, unsigned int w,
     unsigned int h);
@@ -28,7 +34,8 @@ public:
                       tex_proc_func proc = nullptr,
                       bool force_power_of_two = true);
     bool load_texture(unsigned char *pixels, unsigned int w, unsigned int h,
-                      MipMapOptions mip_opt, int offsetx=-1, int offsety=-1);
+                      MipMapOptions mip_opt, int offsetx=-1, int offsety=-1,
+                      TextureFormat tex_fmt = TEX_FMT_RGBA);
     void unload_texture();
 
     unsigned int width() const { return m_width; }

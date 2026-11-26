@@ -32,7 +32,8 @@ public:
     virtual void bind_texture(unsigned int texture) override;
     virtual bool load_texture(unsigned char *pixels, unsigned int width,
                               unsigned int height, MipMapOptions mip_opt,
-                              int xoffset=-1, int yoffset=-1) override;
+                              int xoffset=-1, int yoffset=-1,
+                              TextureFormat tex_fmt = TEX_FMT_RGBA) override;
     int logical_to_device(int n) const override;
     int device_to_logical(int n, bool round=true) const override;
 protected:

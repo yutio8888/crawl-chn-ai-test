@@ -14,16 +14,24 @@ def read(path: str) -> str:
 
 checks = [
     ("font generation API",
-     "virtual uint64_t atlas_generation() const" in read("crawl-ref/source/tilefont.h")),
+     "virtual uint64_t atlas_generation() const" in read("crawl-ref/source/tilefont.h") and
+     "return m_atlas_cache.generation();" in read("crawl-ref/source/fontwrapper-ft.h")),
     ("configure invalidates cached UVs",
-     re.search(r"configure_font\(\).*?\+\+m_atlas_generation;",
+     re.search(r"configure_font\(\).*?m_atlas_cache\.bump_generation\(\);",
                read("crawl-ref/source/fontwrapper-ft.cc"), re.S) is not None),
     ("slot reuse invalidates cached UVs",
-     re.search(r"m_atlas\[evict\]\.uchar != 0.*?\+\+m_atlas_generation;",
+     re.search(r"m_entries\[victim\]\.uchar != 0.*?\+\+m_generation;",
+               read("crawl-ref/source/tilefont-internal.h"), re.S) is not None and
+     re.search(r"FTFontWrapper::map_unicode\(char32_t uchar\).*?"
+               r"m_atlas_cache\.acquire\(uchar, MISSING_CHAR\);",
                read("crawl-ref/source/fontwrapper-ft.cc"), re.S) is not None),
     ("all-pinned path uses missing glyph",
-     re.search(r"if \(evict == m_atlas_capacity\)\s*\{\s*.*?return "
-               r"m_glyph_to_slot\.at\(MISSING_CHAR\);\s*\}",
+     re.search(r"if \(victim == INVALID_ATLAS_SLOT\)\s*\{\s*.*?"
+               r"m_glyph_to_slot\.find\(missing_char\).*?"
+               r"res\.overflow_missing = true;\s*return res;\s*\}",
+               read("crawl-ref/source/tilefont-internal.h"), re.S) is not None and
+     re.search(r"FTFontWrapper::map_unicode\(char32_t uchar\).*?"
+               r"m_atlas_cache\.acquire\(uchar, MISSING_CHAR\);",
                read("crawl-ref/source/fontwrapper-ft.cc"), re.S) is not None),
     ("textblock starts a fresh pin batch",
      re.search(r"render_textblock\(.*?\{.*?clear_pins\(\);",

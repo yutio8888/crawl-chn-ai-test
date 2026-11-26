@@ -3,14 +3,14 @@
 #ifdef USE_TILE_LOCAL
 #ifdef USE_FT
 
-#include <map>
-#include <unordered_map>
 #include <vector>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#include "tilefont-internal.h"
 #include "tilefont.h"
+#include "tiletex.h"
 
 using std::vector;
 
@@ -22,7 +22,7 @@ constexpr size_t FONT_ATLAS_BYTE_BUDGET = 16 * 1024 * 1024;
 constexpr unsigned int RESERVED_GLYPHS = 2 + (0x7f - 0x20);
 
 // atlas slot identifier — uint16_t is sufficient for up to 65536 slots
-using atlas_slot_t = uint16_t;
+using atlas_slot_t = tilefont_internal::atlas_slot_t;
 
 struct HiDPIState;
 extern HiDPIState display_density;
@@ -47,7 +47,7 @@ public:
     virtual bool resize(unsigned int size) override;
     virtual uint64_t atlas_generation() const override
     {
-        return m_atlas_generation;
+        return m_atlas_cache.generation();
     }
     virtual void begin_font_buffer() override { clear_pins(); }
 
@@ -138,24 +138,10 @@ protected:
     FT_Face glyph_face(char32_t ch, FT_UInt &index) const;
     GlyphInfo& get_glyph_info(char32_t ch);
 
-    struct FontAtlasEntry
-    {
-        char32_t uchar = 0;
-        uint64_t last_used = 0;
-        bool reserved = false;
-    };
-    FontAtlasEntry *m_atlas;
-    // O(1) lookup: Unicode codepoint -> atlas slot
-    std::unordered_map<char32_t, atlas_slot_t> m_glyph_to_slot;
+    tilefont_internal::FontAtlasCache m_atlas_cache;
 
     // count of glyph loads in the current text block
     int n_subst;
-
-    // pin bitmap: prevents eviction of atlas slots used within a single
-    // render batch (render_string / render_tooltip / render_hover_string).
-    // Protects against font atlas LRU eviction corrupting glyphs that have
-    // already been recorded in FontBuffer vertex data.
-    vector<uint8_t> m_pinned;
 
     // clear all pin marks — call at the start of each widget render batch
     void clear_pins();
@@ -180,6 +166,7 @@ protected:
     int m_max_height;
 
     GenericTexture m_tex;
+    TextureFormat m_tex_format;
     GLShapeBuffer *m_buf;
 
     FT_Byte *ttf;
@@ -188,13 +175,6 @@ protected:
     FT_Byte *cjk_ttf;          // CJK font data (must survive until cjk_face is freed)
     unsigned char *pixels;
     unsigned int fsize;
-
-    // monotonic clock for last_used tracking in eviction scan
-    uint64_t m_atlas_clock;
-    // Incremented whenever existing texture coordinates may become stale.
-    uint64_t m_atlas_generation;
-    // peak number of distinct glyphs concurrently resident (0 = not tracking)
-    unsigned int m_peak_glyphs;
 };
 
 #endif // USE_FT
