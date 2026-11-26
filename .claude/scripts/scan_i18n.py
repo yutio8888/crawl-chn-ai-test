@@ -728,6 +728,2151 @@ def _severity(line: str) -> str:
 # Check if a line has T_() or C_() wrapping
 HAS_T_RE = re.compile(r'\b[TtCc]_\(\s*"')
 
+_SKIPPED_MSG_CHANNELS = frozenset({
+    'MSGCH_DIAGNOSTICS', 'MSGCH_DEBUG', 'MSGCH_ERROR',
+})
+_CHANNEL_IDENT_RE = re.compile(
+    r'^(?:[A-Za-z_]\w*(?:\.|->|::))*(?:'
+    r'(?:[A-Za-z0-9_]*_)?(?:channel|chan|mchan|msg_ch|msg_type)|ch'
+    r')(?:\s*\([^)]*\))?$',
+    re.I,
+)
+_CHANNEL_CAST_RE = re.compile(
+    r'^(?:static_cast\s*<\s*msg_channel_type\s*>|\(\s*msg_channel_type\s*\))'
+)
+_MSGCH_TOKEN_RE = re.compile(r'\bMSGCH_[A-Z0-9_]+\b')
+_PASSTHROUGH_MSG_FORMATTERS = frozenset({
+    'make_stringf', 'make_stringf_p', 'stringf',
+    'uppercase_first', 'lowercase_first', 'string',
+})
+_INT_PARAM_IDENT_RE = re.compile(
+    r'^(?:[A-Za-z_]\w*(?:\.|->|::))*(?:'
+    r'(?:[a-z0-9_]*_)?(?:param|god|religion|colour|color|col|'
+    r'dam|damage|level|lvl|mindex|mtype|mons_type)|'
+    r'[A-Z][A-Z0-9_]+'
+    r')$'
+)
+_INT_PARAM_CALL_RE = re.compile(
+    r'^(?:static_cast\s*<\s*(?:int|short|long|unsigned|signed|char|bool|msg_colour_type|'
+    r'god_type|mon_dam_level_type)\s*>|'
+    r'\(\s*(?:int|char|bool)\s*\)|'
+    r'(?:int|msg_colour|channel_to_colour)\s*\()'
+)
+_INT_LITERAL_RE = re.compile(
+    r"^[+-]?(?:0[xX][0-9a-fA-F](?:'?[0-9a-fA-F])*|0[bB][01](?:'?[01])*|\d(?:'?\d)*)[uUlL]*$"
+)
+_CHAR_LITERAL_RE = re.compile(r"^(?:u8|u|U|L)?'(?:[^'\\]|\\.)+'$")
+_BOOL_LITERAL_RE = re.compile(r'^(?:true|false)$')
+_QUALIFIED_CHANNEL_RE = re.compile(
+    r'^(?:::\s*)?(?:msg_channel_type\s*::\s*)?(MSGCH_[A-Z0-9_]+)$'
+)
+
+_HEX_DIGITS = frozenset('0123456789abcdefABCDEF')
+_NUM_TOKEN_CHARS = frozenset("0123456789abcdefABCDEFxXbBpPeE+-.'")
+_BIN_PREFIX_RE = re.compile(r"(?<![A-Za-z0-9_])0[bB][01]+(?:'[01]+)*$")
+_HEX_MANT_PREFIX_RE = re.compile(
+    r"(?<![A-Za-z0-9_])0[xX]"
+    r"(?:[0-9a-fA-F]+(?:'[0-9a-fA-F]+)*(?:\.[0-9a-fA-F]+(?:'[0-9a-fA-F]+)*)?"
+    r"|\.[0-9a-fA-F]+(?:'[0-9a-fA-F]+)*)$"
+)
+_HEX_EXP_PREFIX_RE = re.compile(
+    r"(?<![A-Za-z0-9_])0[xX]"
+    r"(?:[0-9a-fA-F]+(?:'[0-9a-fA-F]+)*(?:\.(?:[0-9a-fA-F]+(?:'[0-9a-fA-F]+)*)?)?"
+    r"|\.[0-9a-fA-F]+(?:'[0-9a-fA-F]+)*)[pP][+-]?[0-9]+(?:'[0-9]+)*$"
+)
+_DEC_PREFIX_RE = re.compile(
+    r"(?:(?<![A-Za-z0-9_.])[0-9]+(?:'[0-9]+)*"
+    r"(?:(?:\.[0-9]+(?:'[0-9]+)*)?(?:[eE][+-]?[0-9]+(?:'[0-9]+)*)?"
+    r"|\.[eE][+-]?[0-9]+(?:'[0-9]+)*)"
+    r"|(?<![0-9.])\.[0-9]+(?:'[0-9]+)*(?:[eE][+-]?[0-9]+(?:'[0-9]+)*)?)$"
+)
+
+
+def _match_raw_string(text: str, pos: int):
+    """Match a C++ raw string literal at `pos`, avoiding identifier suffixes."""
+    if pos >= len(text) or text[pos] not in 'RuUL':
+        return None
+    if pos > 0 and (text[pos - 1].isalnum() or text[pos - 1] == '_'):
+        return None
+    return CPP_RAW_STRING_RE.match(text, pos)
+
+
+def _is_cpp_digit_separator(text: str, pos: int) -> bool:
+    """True if `text[pos]` (`'`) is a C++14 numeric digit separator rather than a char literal."""
+    if pos <= 0 or pos + 1 >= len(text) or text[pos] != "'":
+        return False
+    prev_c = text[pos - 1]
+    next_c = text[pos + 1]
+    if prev_c not in _HEX_DIGITS or next_c not in _HEX_DIGITS:
+        return False
+    start = pos - 1
+    while start > 0 and text[start - 1] in _NUM_TOKEN_CHARS:
+        start -= 1
+    window = text[max(0, start - 1):pos]
+    if prev_c in '01' and next_c in '01' and _BIN_PREFIX_RE.search(window):
+        return True
+    if _HEX_MANT_PREFIX_RE.search(window):
+        return True
+    if prev_c.isdigit() and next_c.isdigit():
+        if _HEX_EXP_PREFIX_RE.search(window) or _DEC_PREFIX_RE.search(window):
+            return True
+    return False
+
+
+def _strip_outer_parens_span(expr: str, base_offset: int = 0):
+    """Return `(stripped_expr, new_base_offset)` after stripping whitespace and outer parens."""
+    lead = len(expr) - len(expr.lstrip())
+    base_offset += lead
+    expr = expr.strip()
+    while expr.startswith('(') and expr.endswith(')'):
+        if _find_matching_paren(expr, 0) == len(expr) - 1:
+            inner = expr[1:-1]
+            lead = len(inner) - len(inner.lstrip())
+            base_offset += 1 + lead
+            expr = inner.strip()
+        else:
+            break
+    return expr, base_offset
+
+
+def _strip_outer_parens(expr: str) -> str:
+    return _strip_outer_parens_span(expr, 0)[0]
+
+
+def _split_top_level_ternary(expr: str, base_offset: int = 0, *, with_offsets: bool = False):
+    """If `expr` is a top-level `cond ? a : b`, return `(a, b)` (or `((a, a_off), (b, b_off))`), else None."""
+    paren = bracket = brace = 0
+    in_str = in_chr = False
+    q_pos = None
+    ternary_depth = 0
+    i = 0
+    n = len(expr)
+    while i < n:
+        c = expr[i]
+        if in_str:
+            if c == '\\':
+                i += 2
+                continue
+            if c == '"':
+                in_str = False
+        elif in_chr:
+            if c == '\\':
+                i += 2
+                continue
+            if c == "'":
+                in_chr = False
+        else:
+            raw = _match_raw_string(expr, i)
+            if raw:
+                i = raw.end()
+                continue
+            if c == '"':
+                in_str = True
+            elif c == "'" and not _is_cpp_digit_separator(expr, i):
+                in_chr = True
+            elif c == '(':
+                paren += 1
+            elif c == ')':
+                paren -= 1
+            elif c == '[':
+                bracket += 1
+            elif c == ']':
+                bracket -= 1
+            elif c == '{':
+                brace += 1
+            elif c == '}':
+                brace -= 1
+            elif paren == 0 and bracket == 0 and brace == 0:
+                if c == '?':
+                    if q_pos is None:
+                        q_pos = i
+                    else:
+                        ternary_depth += 1
+                elif c == ':' and q_pos is not None:
+                    # Skip :: scope resolution operator
+                    if i + 1 < n and expr[i + 1] == ':':
+                        i += 2
+                        continue
+                    if ternary_depth == 0:
+                        a_raw = expr[q_pos + 1:i]
+                        b_raw = expr[i + 1:]
+                        if with_offsets:
+                            a_off = base_offset + q_pos + 1 + (len(a_raw) - len(a_raw.lstrip()))
+                            b_off = base_offset + i + 1 + (len(b_raw) - len(b_raw.lstrip()))
+                            return (a_raw.strip(), a_off), (b_raw.strip(), b_off)
+                        return a_raw.strip(), b_raw.strip()
+                    ternary_depth -= 1
+        i += 1
+    return None
+
+
+def _is_always_skipped_channel(expr: str, decl_index=None, call_pos: int = 0) -> bool:
+    """True only when every branch of `expr` is a skipped diagnostic/error channel."""
+    expr = _strip_outer_parens(expr)
+    m_cast = re.match(r'^static_cast\s*<\s*msg_channel_type\s*>\s*\((.*)\)$', expr, re.DOTALL)
+    if m_cast and _find_matching_paren(expr, expr.index('(')) == len(expr) - 1:
+        return _is_always_skipped_channel(m_cast.group(1), decl_index, call_pos)
+    m_c_cast = re.match(r'^\(\s*msg_channel_type\s*\)\s*(.+)$', expr, re.DOTALL)
+    if m_c_cast:
+        return _is_always_skipped_channel(m_c_cast.group(1), decl_index, call_pos)
+    m_ch = _QUALIFIED_CHANNEL_RE.match(expr)
+    if m_ch and m_ch.group(1) in _SKIPPED_MSG_CHANNELS:
+        return True
+    if decl_index is not None:
+        if _lookup_expr_decl_kind(expr, call_pos, decl_index) == 'skipped_channel':
+            return True
+    branches = _split_top_level_ternary(expr)
+    if branches is not None:
+        return (_is_always_skipped_channel(branches[0], decl_index, call_pos)
+                and _is_always_skipped_channel(branches[1], decl_index, call_pos))
+    return False
+
+
+def _top_level_string_runs(expression: str, base_offset: int = 0, covered_spans=None):
+    """Return concatenated unprotected string literals at top-level of `expression`.
+
+    - Top-level ternaries inspect only value branches (never the condition).
+    - Pass-through string formatters (`make_stringf`, `uppercase_first`,
+      `std::string`, etc.) unwrap into their format/message argument (arg 0)
+      and record their own call-head span into `covered_spans` when provided.
+    - Literals inside `[...]`, `{...}`, or other function calls (such as `T_(...)`,
+      `C_(...)`, or `you.props["key"]`) are excluded.
+    - Adjacent literals separated only by whitespace (including masked comments)
+      are joined into a single string.
+    """
+    e, base_offset = _strip_outer_parens_span(expression, base_offset)
+    if re.search(r'\.(?:c_str|str)\s*\(\s*\)$', e):
+        e = re.sub(r'\.(?:c_str|str)\s*\(\s*\)$', '', e)
+        e, base_offset = _strip_outer_parens_span(e, base_offset)
+    branches = _split_top_level_ternary(e, base_offset, with_offsets=True)
+    if branches is not None:
+        (a_text, a_off), (b_text, b_off) = branches
+        return (_top_level_string_runs(a_text, a_off, covered_spans)
+                + _top_level_string_runs(b_text, b_off, covered_spans))
+    if e.startswith('{') and e.endswith('}') and _find_matching_brace(e, 0) == len(e) - 1:
+        brace_args = _split_call_args(e, 1, len(e) - 1)
+        if not brace_args:
+            return []
+        arg0_text, arg0_off = brace_args[0]
+        return _top_level_string_runs(arg0_text, base_offset + arg0_off, covered_spans)
+
+    runs = []
+    cur_parts = []
+    prev_end = None
+    paren_stack = []
+    bracket = brace = 0
+    i = 0
+    n = len(e)
+    while i < n:
+        c = e[i]
+        raw = _match_raw_string(e, i)
+        if raw:
+            lit_text = raw.group('raw_body')
+            ancestors = tuple(name for name in paren_stack if name)
+            if bracket == 0 and brace == 0 and not ancestors:
+                if (cur_parts and prev_end is not None
+                        and e[prev_end:raw.start()].strip() == ''):
+                    cur_parts.append(lit_text)
+                else:
+                    if cur_parts:
+                        runs.append(''.join(cur_parts))
+                    cur_parts = [lit_text]
+                prev_end = raw.end()
+            else:
+                if cur_parts:
+                    runs.append(''.join(cur_parts))
+                    cur_parts = []
+                    prev_end = None
+            i = raw.end()
+            continue
+        if c == '"' or (c in 'uUL' and (i == 0 or not (e[i - 1].isalnum() or e[i - 1] == '_'))):
+            m = CPP_STRING_RE.match(e, i)
+            if m:
+                ancestors = tuple(name for name in paren_stack if name)
+                if bracket == 0 and brace == 0 and not ancestors:
+                    if (cur_parts and prev_end is not None
+                            and e[prev_end:m.start()].strip() == ''):
+                        cur_parts.append(m.group(1))
+                    else:
+                        if cur_parts:
+                            runs.append(''.join(cur_parts))
+                        cur_parts = [m.group(1)]
+                    prev_end = m.end()
+                else:
+                    if cur_parts:
+                        runs.append(''.join(cur_parts))
+                        cur_parts = []
+                        prev_end = None
+                i = m.end()
+                continue
+        if c == "'" and not _is_cpp_digit_separator(e, i):
+            i += 1
+            while i < n:
+                if e[i] == '\\':
+                    i += 2
+                    continue
+                if e[i] == "'":
+                    i += 1
+                    break
+                i += 1
+            continue
+        if c == '(':
+            prefix = e[:i].rstrip()
+            name_match = re.search(r'([A-Za-z_]\w*)$', prefix)
+            callee = name_match.group(1) if name_match else None
+            if (callee in _PASSTHROUGH_MSG_FORMATTERS
+                    and bracket == 0 and brace == 0
+                    and not any(paren_stack)):
+                before = prefix[:name_match.start()].rstrip()
+                if not (before.endswith('.') or before.endswith('->')):
+                    close_pos = _find_matching_paren(e, i)
+                    if close_pos is not None:
+                        if cur_parts:
+                            runs.append(''.join(cur_parts))
+                            cur_parts = []
+                            prev_end = None
+                        if covered_spans is not None:
+                            covered_spans.append(
+                                (base_offset + name_match.start(), base_offset + i + 1))
+                        call_args = _split_call_args(e, i + 1, close_pos)
+                        if call_args:
+                            arg0_text, arg0_off = call_args[0]
+                            runs.extend(_top_level_string_runs(
+                                arg0_text, base_offset + arg0_off, covered_spans))
+                        i = close_pos + 1
+                        continue
+            paren_stack.append(callee)
+        elif c == ')':
+            if paren_stack:
+                paren_stack.pop()
+        elif c == '[':
+            bracket += 1
+        elif c == ']':
+            if bracket > 0:
+                bracket -= 1
+        elif c == '{':
+            if bracket == 0 and brace == 0 and not any(paren_stack):
+                prefix = e[:i].rstrip()
+                name_match = re.search(r'([A-Za-z_]\w*)$', prefix)
+                callee = name_match.group(1) if name_match else None
+                if callee == 'string':
+                    before = prefix[:name_match.start()].rstrip()
+                    if not (before.endswith('.') or before.endswith('->')):
+                        close_pos = _find_matching_brace(e, i)
+                        if close_pos is not None:
+                            if cur_parts:
+                                runs.append(''.join(cur_parts))
+                                cur_parts = []
+                                prev_end = None
+                            call_args = _split_call_args(e, i + 1, close_pos)
+                            if call_args:
+                                arg0_text, arg0_off = call_args[0]
+                                runs.extend(_top_level_string_runs(
+                                    arg0_text, base_offset + arg0_off, covered_spans))
+                            i = close_pos + 1
+                            continue
+            brace += 1
+        elif c == '}':
+            if brace > 0:
+                brace -= 1
+        i += 1
+    if cur_parts:
+        runs.append(''.join(cur_parts))
+    return runs
+
+
+def _is_top_level_translated_expr(expr: str) -> bool:
+    """True if `expr` itself is a top-level T_(...)/C_(...) or ternary of them."""
+    e = _strip_outer_parens(expr)
+    if re.match(r'^(?:::\s*)?(?:T_|C_|t_|c_)\s*\(', e):
+        return True
+    branches = _split_top_level_ternary(e)
+    if branches is not None:
+        return (_is_top_level_translated_expr(branches[0])
+                or _is_top_level_translated_expr(branches[1]))
+    return False
+
+
+_CPP_TYPE_KEYWORDS = frozenset({
+    'const', 'volatile', 'signed', 'unsigned', 'short', 'long', 'int', 'char',
+    'bool', 'void', 'wchar_t', 'char16_t', 'char32_t', 'auto', 'static',
+    'extern', 'inline', 'constexpr', 'mutable', 'register', 'thread_local',
+    'struct', 'class', 'enum', 'union', 'typename', 'return', 'typedef',
+})
+
+_VAR_TYPE_DECL_RE = re.compile(
+    r'\b(?:'
+    r'(?P<channel>(?:(?:const|volatile)\s+)*msg_channel_type(?:\s+(?:const|volatile))*)'
+    r'|(?P<string>(?:(?:const|volatile)\s+)*(?:char(?:\s+(?:const|volatile))*\s*\*|(?:std::)?string)(?:\s+(?:const|volatile))*)'
+    r'|(?P<int>(?:(?:const|volatile)\s+)*(?:'
+    r'(?:(?:const|volatile|signed|unsigned)\s+)*char(?:\s+(?:const|volatile))*(?!\s*\*)'
+    r'|(?:signed|unsigned|short|long|int)(?:\s+(?:const|volatile|signed|unsigned|short|long|int))*\b(?!\s+char\b)'
+    r'|size_t|ssize_t|ptrdiff_t|u?int(?:8|16|32|64)_t'
+    r'|bool|wchar_t|char16_t|char32_t'
+    r'|god_type|msg_colour_type|mon_dam_level_type|monster_type|colour_t'
+    r')(?:\s+(?:const|volatile))*)'
+    r')\s*(?:(?P<ptr>[&*])\s*(?:(?:const|volatile)\s+)*)?(?:[A-Za-z_]\w*::)?(?P<name>[A-Za-z_]\w*)\b'
+)
+
+_AUTO_DECL_RE = re.compile(
+    r'\b(?:(?:const|constexpr|static|thread_local)\s+)*auto'
+    r'(?:\s+(?:const|volatile))?\s*(?:&&?|[*])?\s*(?P<name>[A-Za-z_]\w*)\s*'
+    r'(?P<op>=|\(|\{)'
+)
+
+
+def _mask_cpp_literals(masked_source: str) -> str:
+    """Blank raw/ordinary string and char literals while preserving exact offsets."""
+    out = list(masked_source)
+    i = 0
+    n = len(masked_source)
+    while i < n:
+        c = masked_source[i]
+        m = _match_raw_string(masked_source, i)
+        if m:
+            for j in range(i, m.end()):
+                if out[j] != '\n':
+                    out[j] = ' '
+            i = m.end()
+            continue
+        if c == '"':
+            m = CPP_STRING_RE.match(masked_source, i)
+            if m:
+                for j in range(i, m.end()):
+                    if out[j] != '\n':
+                        out[j] = ' '
+                i = m.end()
+                continue
+        if c == "'" and not _is_cpp_digit_separator(masked_source, i):
+            out[i] = ' '
+            i += 1
+            while i < n:
+                if masked_source[i] == '\\':
+                    if out[i] != '\n':
+                        out[i] = ' '
+                    i += 1
+                    if i < n and out[i] != '\n':
+                        out[i] = ' '
+                    i += 1
+                    continue
+                if masked_source[i] == "'":
+                    out[i] = ' '
+                    i += 1
+                    break
+                if out[i] != '\n':
+                    out[i] = ' '
+                i += 1
+            continue
+        i += 1
+    return ''.join(out)
+
+
+_PP_DIRECTIVE_LINE_RE = re.compile(r'^\s*#(?!\s*(?:define|undef)\b)')
+
+
+def _find_pp_directive_lines(code_only: str, line_offsets):
+    """Return 1-indexed line numbers of real `#...` directives from literal-masked `code_only`."""
+    n = len(code_only)
+    num_lines = len(line_offsets)
+    return {
+        ln for ln in range(1, num_lines + 1)
+        if _PP_DIRECTIVE_LINE_RE.match(
+            code_only[line_offsets[ln - 1]:(line_offsets[ln] if ln < num_lines else n)]
+        )
+    }
+
+
+def _blank_inactive_lines(text: str, line_offsets, inactive_lines,
+                          *, blank_pp_directives: bool = False) -> str:
+    """Replace lines in `inactive_lines` (and optionally real directives) with spaces, preserving offsets."""
+    if blank_pp_directives:
+        pp_lines = _find_pp_directive_lines(text, line_offsets)
+        inactive_lines = (inactive_lines | pp_lines) if inactive_lines else pp_lines
+    if not inactive_lines:
+        return text
+    out = list(text)
+    n = len(text)
+    num_lines = len(line_offsets)
+    for lineno in inactive_lines:
+        if 1 <= lineno <= num_lines:
+            s = line_offsets[lineno - 1]
+            e = line_offsets[lineno] if lineno < num_lines else n
+            for j in range(s, e):
+                if out[j] != '\n':
+                    out[j] = ' '
+    return ''.join(out)
+
+
+_USING_ALIAS_RE = re.compile(
+    r'\busing\s+(?P<alias>[A-Za-z_]\w*)\s*=\s*(?P<target>[^;{}]+);'
+)
+_TYPEDEF_ALIAS_RE = re.compile(
+    r'\btypedef\s+(?P<target>[^;{}]+?)\s+(?P<alias>[A-Za-z_]\w*)\s*(?P<arr>\[[^;{}]*\])?\s*;'
+)
+_ALIAS_CHANNEL_RE = re.compile(
+    r'^(?:(?:const|volatile)\s+)*msg_channel_type(?:\s+(?:const|volatile))*(?P<ptr>(?:\s*\*\s*(?:const|volatile)?)*)$'
+)
+_ALIAS_STRING_RE = re.compile(
+    r'^(?:(?:const|volatile)\s+)*(?:(?:std::)?string|char(?:\s+(?:const|volatile))*\s*\*)(?:\s+(?:const|volatile))*(?P<ptr>(?:\s*\*\s*(?:const|volatile)?)*)$'
+)
+_ALIAS_INT_RE = re.compile(
+    r'^(?:(?:const|volatile)\s+)*(?:'
+    r'(?:(?:const|volatile|signed|unsigned)\s+)*char(?:\s+(?:const|volatile))*(?!\s*\*)'
+    r'|(?:signed|unsigned|short|long|int)(?:\s+(?:const|volatile|signed|unsigned|short|long|int))*\b(?!\s+char\b)'
+    r'|size_t|ssize_t|ptrdiff_t|u?int(?:8|16|32|64)_t'
+    r'|bool|wchar_t|char16_t|char32_t'
+    r'|god_type|msg_colour_type|mon_dam_level_type|monster_type|colour_t'
+    r')(?:\s+(?:const|volatile))*(?P<ptr>(?:\s*\*\s*(?:const|volatile)?)*)$'
+)
+
+
+def _classify_alias_target(target: str, known_aliases):
+    """Classify a `using`/`typedef` target as `(direct_kind, elem_kind, is_char_base)` or None."""
+    t = re.sub(r'\s+', ' ', target.strip())
+    if not t:
+        return None
+    m = _ALIAS_CHANNEL_RE.match(t)
+    if m:
+        has_ptr = '*' in (m.group('ptr') or '')
+        return (None, 'channel', False) if has_ptr else ('channel', None, False)
+    m = _ALIAS_STRING_RE.match(t)
+    if m:
+        is_char = bool(re.search(r'\bchar\b', t))
+        has_ptr = '*' in (m.group('ptr') or '')
+        if has_ptr:
+            return (None, 'string', is_char)
+        return ('string', 'int' if is_char else None, is_char)
+    m = _ALIAS_INT_RE.match(t)
+    if m:
+        is_char = bool(re.search(r'\bchar\b', t))
+        has_ptr = '*' in (m.group('ptr') or '')
+        if has_ptr:
+            return (('string', 'int', True) if is_char else (None, 'int', False))
+        return ('int', None, is_char)
+    m_ref = re.match(
+        r'^(?:(?:const|volatile)\s+)*(?P<base>[A-Za-z_]\w*)(?:\s+(?:const|volatile))*(?P<ptr>(?:\s*\*\s*(?:const|volatile)?)*)$',
+        t,
+    )
+    if m_ref and m_ref.group('base') in known_aliases:
+        base_direct, base_elem, base_char = known_aliases[m_ref.group('base')]
+        has_ptr = '*' in (m_ref.group('ptr') or '')
+        if has_ptr:
+            return (None, base_direct or base_elem, base_char)
+        return (base_direct, base_elem, base_char)
+    return None
+
+
+def _collect_type_aliases(code_only: str):
+    """Collect `{alias_name: (direct_kind, elem_kind, is_char_base)}` from `using`/`typedef`."""
+    raw = []
+    for m in _USING_ALIAS_RE.finditer(code_only):
+        raw.append((m.start(), m.group('alias'), m.group('target'), False))
+    for m in _TYPEDEF_ALIAS_RE.finditer(code_only):
+        raw.append((m.start(), m.group('alias'), m.group('target'), bool(m.group('arr'))))
+    if not raw:
+        return {}
+    raw.sort(key=lambda item: item[0])
+    aliases = {}
+    for _, name, target, is_arr in raw:
+        if name in _CPP_TYPE_KEYWORDS:
+            continue
+        info = _classify_alias_target(target, aliases)
+        if info is not None:
+            d_kind, e_kind, is_char = info
+            if is_arr:
+                if is_char and d_kind == 'int':
+                    aliases[name] = ('string', 'int', True)
+                else:
+                    aliases[name] = (None, d_kind or e_kind, is_char)
+            else:
+                aliases[name] = (d_kind, e_kind, is_char)
+    return aliases
+
+
+def _collect_delim_scopes(code_only: str):
+    """Single-pass O(N) collector for `{...}` and `(...)` spans sorted by open offset."""
+    brace_spans = []
+    open_to_close = {}
+    brace_stack = []
+    paren_spans = []
+    paren_open_to_close = {}
+    paren_stack = []
+    for i, c in enumerate(code_only):
+        if c == '{':
+            brace_stack.append(len(brace_spans))
+            brace_spans.append([i, -1])
+        elif c == '}':
+            if brace_stack:
+                idx = brace_stack.pop()
+                brace_spans[idx][1] = i
+                open_to_close[brace_spans[idx][0]] = i
+        elif c == '(':
+            paren_stack.append(len(paren_spans))
+            paren_spans.append([i, -1])
+        elif c == ')':
+            if paren_stack:
+                idx = paren_stack.pop()
+                paren_spans[idx][1] = i
+                paren_open_to_close[paren_spans[idx][0]] = i
+    valid_braces = [(s, e) for s, e in brace_spans if e >= 0]
+    valid_parens = [(s, e) for s, e in paren_spans if e >= 0]
+    return valid_braces, open_to_close, valid_parens, paren_open_to_close
+
+
+def _find_stmt_or_block_end(code_only: str, start: int, limit: int, open_to_close):
+    """Find the end offset of a statement or `{ ... }` block (plus optional `else`) in literal-masked code."""
+    paren = 0
+    j = start
+    while j < limit:
+        c = code_only[j]
+        if c == '(':
+            paren += 1
+        elif c == ')' and paren > 0:
+            paren -= 1
+        elif paren == 0:
+            if c == '{' and j in open_to_close:
+                end = open_to_close[j]
+                m_else = re.match(r'^\s*else\b', code_only[end + 1:limit])
+                if m_else:
+                    else_end = _find_stmt_or_block_end(
+                        code_only, end + 1 + m_else.end(), limit, open_to_close)
+                    if else_end is not None:
+                        return else_end
+                return end
+            if c == ';':
+                end = j
+                m_else = re.match(r'^\s*else\b', code_only[end + 1:limit])
+                if m_else:
+                    else_end = _find_stmt_or_block_end(
+                        code_only, end + 1 + m_else.end(), limit, open_to_close)
+                    if else_end is not None:
+                        return else_end
+                return end
+        j += 1
+    return None
+
+
+def _resolve_decl_kinds(base_direct, base_elem, is_char_base: bool,
+                        ptr: str, is_array: bool):
+    """Compute `(direct_kind, elem_kind)` for one declarator given its base type and ptr/array modifiers."""
+    star_count = ptr.count('*')
+    if is_char_base:
+        # base is `char` (base_direct == 'int') or `char *` (base_direct == 'string')
+        indirection = star_count + (1 if base_direct == 'string' else 0) + (1 if is_array else 0)
+        if indirection == 0:
+            return ('int', None)
+        if indirection == 1:
+            return ('string', 'int')
+        return (None, 'string')
+    if star_count > 0 or is_array:
+        return (None, base_direct or base_elem)
+    return (base_direct, base_elem)
+
+
+def _iter_extra_declarators(code_only: str, after_first: int, limit: int,
+                            base_direct, base_elem, is_char_base: bool):
+    """Yield `(pos, ident, direct_kind, elem_kind)` for comma-separated declarators."""
+    paren = bracket = brace = 0
+    i = after_first
+    while i < limit:
+        c = code_only[i]
+        if c == '(':
+            paren += 1
+        elif c == ')':
+            if paren == 0:
+                break
+            paren -= 1
+        elif c == '[':
+            bracket += 1
+        elif c == ']':
+            if bracket > 0:
+                bracket -= 1
+        elif c == '{':
+            brace += 1
+        elif c == '}':
+            if brace == 0:
+                break
+            brace -= 1
+        elif paren == 0 and bracket == 0 and brace == 0:
+            if c == ';':
+                break
+            if c == ',':
+                m_next = re.match(
+                    r'^\s*(?P<ptr>[*&]+)?\s*(?:(?:const|volatile)\s+)*(?P<name>[A-Za-z_]\w*)\b',
+                    code_only[i + 1:limit],
+                )
+                if m_next:
+                    name = m_next.group('name')
+                    if name in _CPP_TYPE_KEYWORDS:
+                        i += 1
+                        continue
+                    ptr = m_next.group('ptr') or ''
+                    name_abs_start = i + 1 + m_next.start('name')
+                    name_abs_end = i + 1 + m_next.end('name')
+                    is_array = code_only[name_abs_end:limit].lstrip().startswith('[')
+                    d_kind, e_kind = _resolve_decl_kinds(
+                        base_direct, base_elem, is_char_base, ptr, is_array)
+                    if d_kind is not None or e_kind is not None:
+                        yield name_abs_start, name, d_kind, e_kind
+                    i = name_abs_end
+                    continue
+        i += 1
+
+
+def _find_init_expr_end(code_only: str, start: int) -> int:
+    """Find top-level `,` or `;` ending an `= init` expression in literal-masked code."""
+    paren = bracket = brace = 0
+    i = start
+    n = len(code_only)
+    while i < n:
+        c = code_only[i]
+        if c == '(':
+            paren += 1
+        elif c == ')' and paren > 0:
+            paren -= 1
+        elif c == '[':
+            bracket += 1
+        elif c == ']' and bracket > 0:
+            bracket -= 1
+        elif c == '{':
+            brace += 1
+        elif c == '}' and brace > 0:
+            brace -= 1
+        elif paren == 0 and bracket == 0 and brace == 0 and c in ',;':
+            return i
+        i += 1
+    return n
+
+
+_STRUCT_CLASS_OPEN_RE = re.compile(r'\b(?:struct|class|union)\b[^{;]*$')
+_NON_FUNC_SCOPE_OPEN_RE = re.compile(r'\b(?:namespace\b[^{;]*|extern\s*)$')
+
+
+def _index_var_type_decls(masked_source: str, code_only=None,
+                          line_offsets=None, inactive_lines=None):
+    """Index `msg_channel_type`, string/char*, int-param, alias, and `auto` declarations.
+
+    Returns `{'vars': {ident: [(decl_pos, scope_end, direct_kind, elem_kind), ...]},
+              'members': {ident: [(decl_pos, n, direct_kind, elem_kind), ...]}}`.
+    """
+    if code_only is None:
+        code_only = _mask_cpp_literals(masked_source)
+    if inactive_lines and line_offsets is not None:
+        code_only = _blank_inactive_lines(
+            code_only, line_offsets, inactive_lines, blank_pp_directives=True)
+    n = len(code_only)
+    brace_spans, open_to_close, paren_spans, paren_open_to_close = _collect_delim_scopes(code_only)
+
+    # Identify struct/class/union and namespace body brace starts.
+    struct_brace_starts = set()
+    namespace_brace_starts = set()
+    for b_start, _ in brace_spans:
+        prefix = code_only[max(0, b_start - 120):b_start]
+        if _STRUCT_CLASS_OPEN_RE.search(prefix):
+            struct_brace_starts.add(b_start)
+        elif _NON_FUNC_SCOPE_OPEN_RE.search(prefix):
+            namespace_brace_starts.add(b_start)
+
+    events = [('explicit', m.start(), m) for m in _VAR_TYPE_DECL_RE.finditer(code_only)]
+    events.extend(('auto', m.start(), m) for m in _AUTO_DECL_RE.finditer(code_only))
+
+    aliases = _collect_type_aliases(code_only)
+    if aliases:
+        alias_pat = '|'.join(re.escape(k) for k in sorted(aliases, key=len, reverse=True))
+        alias_decl_re = re.compile(
+            rf'\b(?:(?:const|volatile)\s+)*(?P<alias>{alias_pat})'
+            rf'(?:\s+(?:const|volatile))*\s*'
+            rf'(?P<ptr>[*&]+\s*(?:(?:const|volatile)\s+)*)?'
+            rf'(?:[A-Za-z_]\w*::)?(?P<name>[A-Za-z_]\w*)\b'
+        )
+        events.extend(('alias', m.start(), m) for m in alias_decl_re.finditer(code_only))
+
+    events.sort(key=lambda item: item[1])
+
+    vars_index = {}
+    members_index = {}
+    index = {'vars': vars_index, 'members': members_index}
+    bi = 0
+    pi = 0
+    active_braces = []
+    active_parens = []
+    nb = len(brace_spans)
+    np = len(paren_spans)
+
+    for tag, pos, m in events:
+        ident = m.group('name')
+        if ident in _CPP_TYPE_KEYWORDS:
+            continue
+
+        while bi < nb and brace_spans[bi][0] < pos:
+            b = brace_spans[bi]
+            bi += 1
+            if b[1] > pos:
+                active_braces.append(b)
+        while active_braces and active_braces[-1][1] <= pos:
+            active_braces.pop()
+
+        while pi < np and paren_spans[pi][0] < pos:
+            pr = paren_spans[pi]
+            pi += 1
+            if pr[1] > pos:
+                active_parens.append(pr)
+        while active_parens and active_parens[-1][1] <= pos:
+            active_parens.pop()
+
+        best_start, best_end = active_braces[-1] if active_braces else (-1, n)
+        enclosing_paren = (active_parens[-1]
+                           if active_parens and active_parens[-1][0] > best_start
+                           else None)
+        is_member_decl = (best_start in struct_brace_starts and enclosing_paren is None)
+
+        if enclosing_paren is not None and enclosing_paren[1] < best_end:
+            stmt_end = _find_stmt_or_block_end(
+                code_only, enclosing_paren[1] + 1, best_end, open_to_close)
+            scope_end = stmt_end if stmt_end is not None else best_end
+        else:
+            scope_end = best_end
+
+        if tag in ('explicit', 'alias'):
+            ptr = m.group('ptr') or ''
+            is_array = code_only[m.end():].lstrip().startswith('[')
+            if tag == 'explicit':
+                is_char_base = False
+                if m.group('channel'):
+                    base_direct, base_elem = 'channel', None
+                elif m.group('string'):
+                    is_char_base = bool(re.search(r'\bchar\b', m.group('string')))
+                    base_direct = 'string'
+                    base_elem = 'int' if is_char_base else None
+                else:
+                    is_char_base = bool(re.search(r'\bchar\b', m.group('int')))
+                    base_direct, base_elem = 'int', None
+                d_kind, e_kind = _resolve_decl_kinds(
+                    base_direct, base_elem, is_char_base, ptr, is_array)
+                # For `char *` comma multi-declarators, base type is `char` (not `char *`).
+                extra_base_direct = 'int' if is_char_base else base_direct
+                extra_base_elem = None if is_char_base else base_elem
+            else:
+                base_direct, base_elem, is_char_base = aliases[m.group('alias')]
+                d_kind, e_kind = _resolve_decl_kinds(
+                    base_direct, base_elem, is_char_base, ptr, is_array)
+                extra_base_direct, extra_base_elem = base_direct, base_elem
+
+            is_block_local = (
+                best_start != -1
+                and best_start not in struct_brace_starts
+                and best_start not in namespace_brace_starts
+                and enclosing_paren is None
+            )
+            decl_head = _decl_head_text(code_only, pos, m.end())
+            is_const_decl = bool(re.search(r'\b(?:const|constexpr)\b', decl_head))
+            is_extern_decl = bool(re.search(r'\bextern\b', decl_head))
+            is_static_storage = bool(re.search(r'\b(?:static|thread_local)\b', decl_head))
+            can_bound_writes = (
+                not is_member_decl
+                and enclosing_paren is None
+                and not is_extern_decl
+                and (is_const_decl or (is_block_local and not is_static_storage))
+            )
+            if d_kind == 'channel' and can_bound_writes:
+                after_id = m.end()
+                while after_id < scope_end and code_only[after_id] in ' \t\r\n':
+                    after_id += 1
+                exp_init = None
+                exp_init_end = after_id
+                if after_id < scope_end:
+                    ch_op = code_only[after_id]
+                    if ch_op == '=' and (after_id + 1 >= scope_end or code_only[after_id + 1] != '='):
+                        exp_init_end = _find_init_expr_end(code_only, after_id + 1)
+                        exp_init = masked_source[after_id + 1:exp_init_end].strip()
+                    elif ch_op == '(':
+                        cp = paren_open_to_close.get(after_id)
+                        if cp is not None and re.match(r'^\s*[;,]', code_only[cp + 1:]):
+                            exp_init = masked_source[after_id + 1:cp].strip()
+                            exp_init_end = cp + 1
+                    elif ch_op == '{':
+                        cp = open_to_close.get(after_id)
+                        if cp is not None:
+                            exp_init = masked_source[after_id + 1:cp].strip()
+                            exp_init_end = cp + 1
+                if (exp_init
+                        and _is_always_skipped_channel(exp_init, index, pos)
+                        and not _is_var_potentially_mutated(
+                            code_only, ident, exp_init_end, scope_end, is_const=is_const_decl)):
+                    d_kind = 'skipped_channel'
+
+            if d_kind is not None or e_kind is not None:
+                vars_index.setdefault(ident, []).append((pos, scope_end, d_kind, e_kind))
+                if is_member_decl:
+                    members_index.setdefault(ident, []).append((pos, n, d_kind, e_kind))
+
+            allow_multi = (
+                enclosing_paren is None
+                or bool(re.search(r'\bfor\s*$', code_only[:enclosing_paren[0]]))
+            )
+            if allow_multi:
+                for extra_pos, extra_ident, ex_d, ex_e in _iter_extra_declarators(
+                        code_only, m.end(), scope_end,
+                        extra_base_direct, extra_base_elem, is_char_base):
+                    vars_index.setdefault(extra_ident, []).append((extra_pos, scope_end, ex_d, ex_e))
+                    if is_member_decl:
+                        members_index.setdefault(extra_ident, []).append((extra_pos, n, ex_d, ex_e))
+            continue
+
+        # `auto` declaration
+        d_kind = None
+        op = m.group('op')
+        init_expr = None
+        init_end_pos = m.end()
+        if op == '=':
+            init_end = _find_init_expr_end(code_only, m.end())
+            init_expr = masked_source[m.end():init_end].strip()
+            init_end_pos = init_end
+        elif op == '(':
+            close_pos = paren_open_to_close.get(m.end() - 1)
+            if close_pos is not None:
+                trailing = code_only[close_pos + 1:]
+                if re.match(r'^\s*->\s*(?:const\s+)?msg_channel_type\b', trailing):
+                    d_kind = 'channel'
+                elif re.match(r'^\s*[;,]', trailing):
+                    init_expr = masked_source[m.end():close_pos].strip()
+                    init_end_pos = close_pos + 1
+        elif op == '{':
+            close_pos = open_to_close.get(m.end() - 1)
+            if close_pos is not None:
+                init_expr = masked_source[m.end():close_pos].strip()
+                init_end_pos = close_pos + 1
+
+        if d_kind is None and init_expr:
+            if _is_channel_arg(init_expr, index, pos):
+                is_block_local = (
+                    best_start != -1
+                    and best_start not in struct_brace_starts
+                    and best_start not in namespace_brace_starts
+                    and enclosing_paren is None
+                )
+                decl_head = _decl_head_text(code_only, pos, m.end())
+                is_const_decl = bool(re.search(r'\b(?:const|constexpr)\b', decl_head))
+                is_extern_decl = bool(re.search(r'\bextern\b', decl_head))
+                is_static_storage = bool(re.search(r'\b(?:static|thread_local)\b', decl_head))
+                is_ref_decl = '&' in decl_head
+                can_bound_writes = (
+                    not is_member_decl
+                    and enclosing_paren is None
+                    and not is_extern_decl
+                    and not is_ref_decl
+                    and (is_const_decl or (is_block_local and not is_static_storage))
+                )
+                if (can_bound_writes
+                        and _is_always_skipped_channel(init_expr, index, pos)
+                        and not _is_var_potentially_mutated(
+                            code_only, ident, init_end_pos, scope_end, is_const=is_const_decl)):
+                    d_kind = 'skipped_channel'
+                else:
+                    d_kind = 'channel'
+            elif (_top_level_string_runs(init_expr)
+                    or _is_top_level_translated_expr(init_expr)
+                    or re.search(r'\.(?:c_str|str|data)\s*\(', init_expr)
+                    or re.match(r'^(?:::\s*)?(?:std::)?string\s*[({]', init_expr)):
+                d_kind = 'string'
+            elif _is_int_param_arg(init_expr, index, pos):
+                d_kind = 'int'
+
+        if d_kind is not None:
+            vars_index.setdefault(ident, []).append((pos, scope_end, d_kind, None))
+            if is_member_decl:
+                members_index.setdefault(ident, []).append((pos, n, d_kind, None))
+    if '#' in code_only and 'define' in code_only:
+        _index_macro_param_kinds(masked_source, code_only, index)
+    return index
+
+
+def _decl_head_text(code_only: str, pos: int, end: int) -> str:
+    """Return the declaration prefix in `[stmt_start, end)` without crossing `#...` directives."""
+    lo = max(0, pos - 200)
+    start = max(
+        code_only.rfind(';', lo, pos),
+        code_only.rfind('{', lo, pos),
+        code_only.rfind('}', lo, pos),
+    ) + 1
+    line_start = code_only.rfind('\n', 0, start) + 1
+    # Walk back over any backslash-continued logical directive lines preceding `line_start`.
+    while line_start > 0:
+        prev_nl = code_only.rfind('\n', 0, line_start - 1)
+        prev_line = code_only[prev_nl + 1:line_start - 1]
+        if prev_line.rstrip(' \t\r').endswith('\\'):
+            line_start = prev_nl + 1
+        else:
+            break
+    window = code_only[line_start:end]
+    # Advance past any full logical preprocessor directive (including `\` line continuations),
+    # even when the declaration regex itself matched a trailing qualifier on that directive.
+    cut = start - line_start
+    for lm in re.finditer(
+            r'(?m)^[ \t]*#(?:[^\n\\]|\\[^\S\r\n]*\r?\n|\\.)*(?:\r?\n|$)', window):
+        if lm.end() > cut:
+            cut = lm.end()
+    return window[cut:]
+
+
+def _is_var_potentially_mutated(code_only: str, ident: str, after_pos: int,
+                                scope_end: int, *, is_const: bool = False) -> bool:
+    """Fail-closed check: True unless `ident` is provably never mutated in `[after_pos, scope_end)`."""
+    if after_pos >= scope_end:
+        return False
+    seg = code_only[after_pos:scope_end]
+    if is_const:
+        return 'const_cast' in seg
+    ident_re = re.compile(r'\b' + re.escape(ident) + r'\b')
+    for m in ident_re.finditer(seg):
+        before = seg[:m.start()]
+        after = seg[m.end():]
+        # Member accesses (`obj.ident` / `ptr->ident`) refer to a field, not this local.
+        if re.search(r'(?:\.|->)\s*$', before):
+            continue
+        # Provably safe read-only use: direct (optionally balanced-parenthesized) first arg of mpr*/dprf.
+        m_open = re.search(r'\b(?:mpr|mprf|mprf_nojoin|mprf_p|dprf)\s*\((\s*(?:\(\s*)*)$', before)
+        if m_open:
+            n_open = m_open.group(1).count('(')
+            m_close = re.match(r'^(\s*(?:\)\s*)*),', after)
+            if m_close and m_close.group(1).count(')') == n_open:
+                continue
+        # Provably safe read-only use: direct operand of `==` or `!=` (never crossing `)`).
+        if (re.match(r'^\s*(?:==|!=)', after)
+                and not re.search(r'(?<!&)&(?!&)\s*$', before)):
+            continue
+        if (re.search(r'(?:==|!=)\s*$', before)
+                and not re.match(r'^\s*(?:\)\s*)*=(?!=)', after)):
+            continue
+        # Any other use (assignment, `(ch) =`, reference binding, unknown call arg) may mutate.
+        return True
+    return False
+
+
+_PP_MACRO_EVENT_RE = re.compile(
+    r'^[ \t]*#[ \t]*(define|undef)[ \t]+([A-Za-z_]\w*)', re.MULTILINE)
+
+
+def _find_unescaped_macro_params(body: str, param_names: set) -> set:
+    """Return formal macro params used in `body` outside `#param` or `##` token pasting (C11 6.10.3.1)."""
+    if not param_names:
+        return set()
+    used = set()
+    i = 0
+    n = len(body)
+    while i < n:
+        c = body[i]
+        raw = _match_raw_string(body, i)
+        if raw:
+            i = raw.end()
+            continue
+        if c == '"':
+            i += 1
+            while i < n:
+                if body[i] == '\\':
+                    i += 2
+                    continue
+                if body[i] == '"':
+                    i += 1
+                    break
+                i += 1
+            continue
+        if c == "'" and not _is_cpp_digit_separator(body, i):
+            i += 1
+            while i < n:
+                if body[i] == '\\':
+                    i += 2
+                    continue
+                if body[i] == "'":
+                    i += 1
+                    break
+                i += 1
+            continue
+        if c.isalpha() or c == '_':
+            j = i + 1
+            while j < n and (body[j].isalnum() or body[j] == '_'):
+                j += 1
+            tok = body[i:j]
+            if tok in param_names:
+                prev = body[:i].rstrip(' \t')
+                nxt = body[j:].lstrip(' \t')
+                if not prev.endswith('#') and not nxt.startswith('##'):
+                    used.add(tok)
+            i = j
+            continue
+        i += 1
+    return used
+
+
+def _subst_macro_params(body: str, prescanned_map: dict, raw_map: dict,
+                        variadic_name=None, va_omitted: bool = False) -> str:
+    """Substitute formal macro parameters in `body`, handling `#param` stringification and `##` pasting."""
+    if not raw_map and '##' not in body:
+        return body
+    out = []
+    pending_paste = False
+    i = 0
+    n = len(body)
+
+    def _emit_chunk(val, next_pos: int):
+        nonlocal pending_paste
+        if val == '':
+            if pending_paste and not body[next_pos:].lstrip(' \t').startswith('##'):
+                pending_paste = False
+            return
+        if pending_paste:
+            pending_paste = False
+            if val is None:
+                # C11 6.10.3.3: token ## placemarker -> token; placemarker ## placemarker -> placemarker.
+                return
+            if out and out[-1] is None:
+                # C11 6.10.3.3: placemarker ## token -> token (no fusion with preceding tokens, keep blue-paint).
+                out.pop()
+                out.append(val)
+                return
+            lead = val[1:] if val.startswith('\x00') else val
+            if (out and (out[-1][-1].isalnum() or out[-1][-1] == '_')
+                    and lead and (lead[0].isalnum() or lead[0] == '_')):
+                # Only clear blue-paint on the two tokens actually fused by `##`.
+                out[-1] = re.sub(r'\x00([A-Za-z_]\w*)$', r'\1', out[-1])
+                val = lead
+        out.append(val)
+
+    while i < n:
+        c = body[i]
+        raw = _match_raw_string(body, i)
+        if raw:
+            _emit_chunk(body[i:raw.end()], raw.end())
+            i = raw.end()
+            continue
+        if c == '"':
+            j = i + 1
+            while j < n:
+                if body[j] == '\\':
+                    j += 2
+                    continue
+                if body[j] == '"':
+                    j += 1
+                    break
+                j += 1
+            _emit_chunk(body[i:j], j)
+            i = j
+            continue
+        if c == "'" and not _is_cpp_digit_separator(body, i):
+            j = i + 1
+            while j < n:
+                if body[j] == '\\':
+                    j += 2
+                    continue
+                if body[j] == "'":
+                    j += 1
+                    break
+                j += 1
+            _emit_chunk(body[i:j], j)
+            i = j
+            continue
+        if c == '#' and i + 1 < n and body[i + 1] == '#':
+            # Token-pasting operator `##`: strip horizontal whitespace on both sides,
+            # and handle GNU `, ## __VA_ARGS__` comma elision when variadic arg is omitted.
+            while out:
+                if out[-1] is None:
+                    break
+                stripped = out[-1].rstrip(' \t')
+                if stripped:
+                    out[-1] = stripped
+                    break
+                out.pop()
+            i += 2
+            while i < n and body[i] in ' \t':
+                i += 1
+            if variadic_name and va_omitted and out and out[-1] is not None and out[-1].endswith(','):
+                if (body.startswith(variadic_name, i)
+                        and (i + len(variadic_name) >= n
+                             or not (body[i + len(variadic_name)].isalnum()
+                                     or body[i + len(variadic_name)] == '_'))):
+                    out[-1] = out[-1][:-1]
+                    if not out[-1]:
+                        out.pop()
+                    i += len(variadic_name)
+                    pending_paste = False
+                    continue
+            pending_paste = True
+            continue
+        if c == '#':
+            k = i + 1
+            while k < n and body[k] in ' \t':
+                k += 1
+            if k < n and (body[k].isalpha() or body[k] == '_'):
+                m_end = k + 1
+                while m_end < n and (body[m_end].isalnum() or body[m_end] == '_'):
+                    m_end += 1
+                if body[k:m_end] in raw_map:
+                    _emit_chunk('"..."', m_end)
+                    i = m_end
+                    continue
+        if c.isalpha() or c == '_':
+            j = i + 1
+            while j < n and (body[j].isalnum() or body[j] == '_'):
+                j += 1
+            tok = body[i:j]
+            if tok in raw_map:
+                prev = body[:i].rstrip(' \t')
+                nxt = body[j:].lstrip(' \t')
+                if prev.endswith('##') or nxt.startswith('##'):
+                    raw_val = raw_map[tok].strip()
+                    _emit_chunk(raw_val if raw_val else None, j)
+                else:
+                    _emit_chunk(prescanned_map.get(tok, raw_map[tok]), j)
+            else:
+                _emit_chunk(tok, j)
+            i = j
+            continue
+        _emit_chunk(c, i + 1)
+        i += 1
+    return ''.join(chunk for chunk in out if chunk is not None)
+
+
+def _ends_with_active_fn_macro(expanded: str, env, expanding) -> bool:
+    """True when `expanded` ends with a live function-like macro identifier eligible for rescan."""
+    m_end = re.search(r'(\x00?)([A-Za-z_]\w*)\s*$', expanded)
+    if not m_end or m_end.group(1):
+        return False
+    tail_name = m_end.group(2)
+    if tail_name in expanding:
+        return False
+    return any(d['params'] is not None for d in env.get(tail_name, ()))
+
+
+def _record_macro_args(mdef, prescanned_args, index, call_pos: int, va_parts=None):
+    """Record observed channel/int argument kinds on a macro containing an `mpr*` call."""
+    if not mdef['has_mpr']:
+        return
+    params = mdef['params'] or ()
+    unescaped = mdef['unescaped_params']
+    for idx, pname in enumerate(params):
+        if pname is None or pname not in unescaped or idx >= len(prescanned_args):
+            continue
+        arg_text = prescanned_args[idx].replace('\x00', '')
+        if _is_channel_arg(arg_text, index, call_pos):
+            if _is_always_skipped_channel(arg_text, index, call_pos):
+                mdef['saw_skipped'].add(idx)
+            else:
+                mdef['saw_channel'].add(idx)
+                mdef['saw_non_skipped'].add(idx)
+        else:
+            mdef['saw_non_skipped'].add(idx)
+            if _is_int_param_arg(arg_text, index, call_pos):
+                mdef['saw_int'].add(idx)
+    variadic = mdef['variadic']
+    if variadic is not None and variadic in unescaped and va_parts:
+        va_idx = len(params)
+        va_parts = [p.replace('\x00', '') for p in va_parts]
+        first = va_parts[0]
+        if len(va_parts) == 1:
+            if _is_channel_arg(first, index, call_pos):
+                if _is_always_skipped_channel(first, index, call_pos):
+                    mdef['saw_skipped'].add(va_idx)
+                else:
+                    mdef['saw_channel'].add(va_idx)
+                    mdef['saw_non_skipped'].add(va_idx)
+            else:
+                mdef['saw_non_skipped'].add(va_idx)
+                if _is_int_param_arg(first, index, call_pos):
+                    mdef['saw_int'].add(va_idx)
+        elif (len(va_parts) == 2
+                and _is_channel_arg(first, index, call_pos)
+                and not _top_level_string_runs(va_parts[1])
+                and not _is_top_level_translated_expr(va_parts[1])
+                and _is_int_param_arg(va_parts[1], index, call_pos)):
+            if _is_always_skipped_channel(first, index, call_pos):
+                mdef['saw_skipped'].add(va_idx)
+            else:
+                mdef['saw_channel'].add(va_idx)
+                mdef['saw_non_skipped'].add(va_idx)
+
+
+def _expand_macro_invocation(mdef, raw_args, env, call_pos: int,
+                             expanding, depth: int, index, max_depth: int,
+                             arg_expanding=None) -> str:
+    """Expand a single macro definition at `call_pos` with C11 argument prescan and variadic support."""
+    if depth > max_depth:
+        return ''
+    prescan_exp = expanding if arg_expanding is None else arg_expanding
+    params = mdef['params']
+    variadic = mdef['variadic']
+    unescaped = mdef['unescaped_params']
+    if params is None:
+        subst = _subst_macro_params(mdef['body_masked'], {}, {})
+    else:
+        raw_map = {}
+        prescanned_map = {}
+        prescanned_list = []
+        for idx, pname in enumerate(params):
+            val = raw_args[idx] if idx < len(raw_args) else ''
+            if pname is not None:
+                raw_map[pname] = val
+                if pname in unescaped:
+                    exp_val = _expand_macro_text(
+                        val, env, call_pos, prescan_exp, depth + 1, index, max_depth)
+                else:
+                    exp_val = val
+                prescanned_map[pname] = exp_val
+                prescanned_list.append(exp_val)
+            else:
+                prescanned_list.append(val)
+        va_parts = None
+        va_omitted = False
+        if variadic is not None:
+            va_omitted = (
+                len(raw_args) <= len(params)
+                or (len(params) == 0 and len(raw_args) == 1 and raw_args[0] == '')
+            )
+            va_raw = '' if va_omitted else ', '.join(raw_args[len(params):])
+            raw_map[variadic] = va_raw
+            if variadic in unescaped:
+                va_exp = _expand_macro_text(
+                    va_raw, env, call_pos, prescan_exp, depth + 1, index, max_depth)
+                prescanned_map[variadic] = va_exp
+                if va_exp.strip():
+                    va_parts = [a.strip() for a, _ in _split_call_args(va_exp, 0, len(va_exp))]
+            else:
+                prescanned_map[variadic] = va_raw
+        _record_macro_args(mdef, prescanned_list, index, call_pos, va_parts=va_parts)
+        subst = _subst_macro_params(
+            mdef['body_masked'], prescanned_map, raw_map,
+            variadic_name=variadic, va_omitted=va_omitted)
+    return _expand_macro_text(
+        subst, env, call_pos, expanding | {mdef['name']}, depth + 1, index, max_depth)
+
+
+def _rescan_trailing_calls(cur_out: str, src: str, cur_end: int, limit: int,
+                           env, call_pos: int, caller_expanding, tail_expanding,
+                           depth: int, index, max_depth: int):
+    """While `cur_out` ends with an active fn-macro and `src[cur_end:limit]` starts with `(...)`, rescan.
+
+    Newly consumed arguments from `src` are prescanned in `caller_expanding` (C11 hideset
+    semantics), while the callee body keeps `tail_expanding` blue-painted.
+    """
+    steps = 0
+    while steps < max_depth:
+        m_end = re.search(r'(\x00?)([A-Za-z_]\w*)\s*$', cur_out)
+        if not m_end or m_end.group(1):
+            break
+        tail_name = m_end.group(2)
+        if tail_name in tail_expanding:
+            break
+        fn_defs = [d for d in env.get(tail_name, ()) if d['params'] is not None]
+        if not fn_defs:
+            break
+        k = cur_end
+        while k < limit and src[k] in ' \t\r\n':
+            k += 1
+        if k >= limit or src[k] != '(':
+            break
+        close_p = _find_matching_paren(src, k)
+        if close_p is None or close_p >= limit:
+            break
+        raw_args = [a.strip() for a, _ in _split_call_args(src, k + 1, close_p)]
+        expanded_last = ''
+        for d in fn_defs:
+            expanded_last = _expand_macro_invocation(
+                d, raw_args, env, call_pos, caller_expanding, depth + 1,
+                index, max_depth, arg_expanding=caller_expanding)
+        cur_out = cur_out[:m_end.start(2)] + expanded_last
+        cur_end = close_p + 1
+        tail_expanding = caller_expanding | {tail_name}
+        steps += 1
+    return cur_out, cur_end
+
+
+def _expand_macro_text(text: str, env, call_pos: int,
+                       expanding, depth: int, index, max_depth: int) -> str:
+    """Expand live macros inside `text` at `call_pos` (respecting literals and blue-paint guard)."""
+    if depth > max_depth or not env or not text:
+        return text
+    out = []
+    i = 0
+    n = len(text)
+    while i < n:
+        c = text[i]
+        raw = _match_raw_string(text, i)
+        if raw:
+            out.append(text[i:raw.end()])
+            i = raw.end()
+            continue
+        if c == '"':
+            j = i + 1
+            while j < n:
+                if text[j] == '\\':
+                    j += 2
+                    continue
+                if text[j] == '"':
+                    j += 1
+                    break
+                j += 1
+            out.append(text[i:j])
+            i = j
+            continue
+        if c == "'" and not _is_cpp_digit_separator(text, i):
+            j = i + 1
+            while j < n:
+                if text[j] == '\\':
+                    j += 2
+                    continue
+                if text[j] == "'":
+                    j += 1
+                    break
+                j += 1
+            out.append(text[i:j])
+            i = j
+            continue
+        if c == '\x00':
+            # Already blue-painted token (C11 6.10.3.4): copy verbatim without re-expanding.
+            j = i + 1
+            while j < n and (text[j].isalnum() or text[j] == '_'):
+                j += 1
+            out.append(text[i:j])
+            i = j
+            continue
+        if c.isalpha() or c == '_':
+            j = i + 1
+            while j < n and (text[j].isalnum() or text[j] == '_'):
+                j += 1
+            tok = text[i:j]
+            mdefs = env.get(tok)
+            if mdefs and tok in expanding:
+                # Permanently blue-paint suppressed macro name per C11 6.10.3.4.
+                out.append('\x00' + tok)
+                i = j
+                continue
+            if mdefs:
+                k = j
+                while k < n and text[k] in ' \t\r\n':
+                    k += 1
+                has_paren = (k < n and text[k] == '(')
+                fn_defs = [d for d in mdefs if d['params'] is not None]
+                obj_defs = [d for d in mdefs if d['params'] is None]
+                if has_paren and fn_defs:
+                    close_p = _find_matching_paren(text, k)
+                    if close_p is not None:
+                        raw_args = [a.strip() for a, _ in _split_call_args(text, k + 1, close_p)]
+                        next_expanding = expanding | {tok}
+                        expanded_last = ''
+                        max_end = close_p + 1
+                        for d in fn_defs:
+                            fn_out = _expand_macro_invocation(
+                                d, raw_args, env, call_pos, expanding, depth, index, max_depth)
+                            fn_out, fn_end = _rescan_trailing_calls(
+                                fn_out, text, close_p + 1, n,
+                                env, call_pos, expanding, next_expanding, depth, index, max_depth)
+                            expanded_last = fn_out
+                            if fn_end > max_end:
+                                max_end = fn_end
+                        out.append(expanded_last)
+                        i = max_end
+                        continue
+                if obj_defs:
+                    next_expanding = expanding | {tok}
+                    expanded_last = ''
+                    max_end = j
+                    for d in obj_defs:
+                        obj_out = _expand_macro_invocation(
+                            d, [], env, call_pos, expanding, depth, index, max_depth)
+                        obj_out, obj_end = _rescan_trailing_calls(
+                            obj_out, text, j, n,
+                            env, call_pos, expanding, next_expanding, depth, index, max_depth)
+                        expanded_last = obj_out
+                        if obj_end > max_end:
+                            max_end = obj_end
+                    out.append(expanded_last)
+                    i = max_end
+                    continue
+            out.append(tok)
+            i = j
+            continue
+        out.append(c)
+        i += 1
+    return ''.join(out)
+
+
+def _index_macro_param_kinds(masked_source: str, code_only: str, index):
+    """Infer channel/int parameter kinds for `#define` macros via forward preprocessor expansion."""
+    n = len(code_only)
+    events = []
+    has_mpr_macro = False
+    for em in _PP_MACRO_EVENT_RE.finditer(code_only):
+        ev_start = em.start()
+        kind = em.group(1)
+        macro_name = em.group(2)
+        pos = em.end()
+        if kind == 'undef':
+            ev_end = code_only.find('\n', pos)
+            ev_end = n if ev_end == -1 else ev_end + 1
+            events.append((ev_start, ev_end, 'undef', macro_name))
+            continue
+
+        # `#define`: immediately adjacent `(` means function-like, otherwise object-like
+        variadic = None
+        if pos < n and code_only[pos] == '(':
+            open_param = pos
+            p_pos = open_param + 1
+            close_param = None
+            param_line_start = open_param
+            while p_pos < n:
+                ch = code_only[p_pos]
+                if ch == ')':
+                    close_param = p_pos
+                    break
+                if ch == '\n':
+                    if not code_only[param_line_start:p_pos].rstrip(' \t\r').endswith('\\'):
+                        break
+                    param_line_start = p_pos + 1
+                p_pos += 1
+            if close_param is None:
+                continue
+            param_str = re.sub(r'\\\r?\n', ' ', code_only[open_param + 1:close_param]).strip()
+            if not param_str:
+                params = []
+            else:
+                raw_parts = [p.strip() for p in param_str.split(',')]
+                if raw_parts and raw_parts[-1] == '...':
+                    variadic = '__VA_ARGS__'
+                    raw_parts = raw_parts[:-1]
+                elif raw_parts and raw_parts[-1].endswith('...'):
+                    va_name = raw_parts[-1][:-3].strip()
+                    if re.fullmatch(r'[A-Za-z_]\w*', va_name):
+                        variadic = va_name
+                        raw_parts = raw_parts[:-1]
+                params = [
+                    p if re.fullmatch(r'[A-Za-z_]\w*', p) else None
+                    for p in raw_parts
+                ]
+            body_start = close_param + 1
+        else:
+            params = None
+            body_start = pos
+
+        body_end = code_only.find('\n', body_start)
+        if body_end == -1:
+            body_end = n
+        else:
+            line_start_cur = body_start
+            while body_end < n:
+                if not code_only[line_start_cur:body_end].rstrip(' \t\r').endswith('\\'):
+                    break
+                line_start_cur = body_end + 1
+                next_nl = code_only.find('\n', line_start_cur)
+                if next_nl == -1:
+                    body_end = n
+                    break
+                body_end = next_nl
+
+        body_code = re.sub(r'\\\r?\n', ' ', code_only[body_start:body_end])
+        body_masked = re.sub(r'\\\r?\n', ' ', masked_source[body_start:body_end])
+        has_mpr = bool(MPR_CALL_RE.search(body_code))
+        if has_mpr:
+            has_mpr_macro = True
+        param_name_set = {p for p in (params or ()) if p is not None}
+        if variadic is not None:
+            param_name_set.add(variadic)
+        mdef = {
+            'name': macro_name,
+            'params': params,
+            'variadic': variadic,
+            'unescaped_params': _find_unescaped_macro_params(body_masked, param_name_set),
+            'body_masked': body_masked,
+            'body_start': body_start,
+            'body_end': body_end,
+            'has_mpr': has_mpr,
+            'saw_channel': set(),
+            'saw_skipped': set(),
+            'saw_non_skipped': set(),
+            'saw_int': set(),
+        }
+        events.append((ev_start, body_end, 'define', mdef))
+
+    if not has_mpr_macro:
+        return
+
+    regex_cache = {}
+
+    def _scan_segment(seg_start: int, seg_end: int, env):
+        if seg_start >= seg_end or not env:
+            return
+        key = frozenset(env.keys())
+        pat = regex_cache.get(key)
+        if pat is None:
+            pat = re.compile(
+                r'\b(?:' + '|'.join(re.escape(nm) for nm in sorted(key)) + r')\b')
+            regex_cache[key] = pat
+        max_depth = min(400, max(64, len(env) * 2 + 8))
+        pos = seg_start
+        while pos < seg_end:
+            m = pat.search(code_only, pos, seg_end)
+            if not m:
+                break
+            tok = m.group(0)
+            mdefs = env[tok]
+            fn_defs = [d for d in mdefs if d['params'] is not None]
+            obj_defs = [d for d in mdefs if d['params'] is None]
+            k = m.end()
+            while k < seg_end and code_only[k] in ' \t\r\n':
+                k += 1
+            has_paren = (k < seg_end and code_only[k] == '(')
+            if has_paren and fn_defs:
+                close_p = _find_matching_paren(masked_source, k)
+                if close_p is not None and close_p < seg_end:
+                    raw_args = [a.strip() for a, _ in _split_call_args(masked_source, k + 1, close_p)]
+                    next_expanding = frozenset({tok})
+                    max_end = close_p + 1
+                    for d in fn_defs:
+                        fn_out = _expand_macro_invocation(
+                            d, raw_args, env, m.start(), frozenset(), 0, index, max_depth)
+                        _, fn_end = _rescan_trailing_calls(
+                            fn_out, masked_source, close_p + 1, seg_end,
+                            env, m.start(), frozenset(), next_expanding, 0, index, max_depth)
+                        if fn_end > max_end:
+                            max_end = fn_end
+                    pos = max_end
+                    continue
+            if obj_defs:
+                next_expanding = frozenset({tok})
+                max_end = m.end()
+                for d in obj_defs:
+                    obj_out = _expand_macro_invocation(
+                        d, [], env, m.start(), frozenset(), 0, index, max_depth)
+                    _, obj_end = _rescan_trailing_calls(
+                        obj_out, masked_source, m.end(), seg_end,
+                        env, m.start(), frozenset(), next_expanding, 0, index, max_depth)
+                    if obj_end > max_end:
+                        max_end = obj_end
+                pos = max_end
+                continue
+            pos = m.end()
+
+    env = {}
+    cursor = 0
+    for ev_start, ev_end, kind, payload in events:
+        if cursor < ev_start:
+            _scan_segment(cursor, ev_start, env)
+        if kind == 'define':
+            env.setdefault(payload['name'], []).append(payload)
+        else:
+            env.pop(payload, None)
+        cursor = max(cursor, ev_end)
+    if cursor < n:
+        _scan_segment(cursor, n, env)
+
+    vars_index = index['vars']
+    touched = set()
+    for _, _, kind, payload in events:
+        if kind != 'define' or not payload['has_mpr']:
+            continue
+        fixed_params = payload['params'] or ()
+        param_entries = list(enumerate(fixed_params))
+        if payload['variadic'] is not None:
+            param_entries.append((len(fixed_params), payload['variadic']))
+        if not param_entries:
+            continue
+        for idx, pname in param_entries:
+            if pname is None:
+                continue
+            if idx in payload['saw_channel']:
+                pkind = 'channel'
+            elif idx in payload['saw_skipped'] and idx not in payload['saw_non_skipped']:
+                pkind = 'skipped_channel'
+            elif idx in payload['saw_int']:
+                pkind = 'int'
+            else:
+                continue
+            vars_index.setdefault(pname, []).append(
+                (payload['body_start'], payload['body_end'], pkind, None))
+            touched.add(pname)
+    for pname in touched:
+        vars_index[pname].sort(key=lambda e: e[0])
+
+def _lookup_decl_kind(ident: str, pos: int, decl_index, *, want_elem: bool = False,
+                      member_access: bool = False):
+    """Return `'channel'`/`'string'`/`'int'` for the innermost declaration of `ident` visible at `pos`."""
+    table = decl_index.get('members' if member_access else 'vars', {})
+    entries = table.get(ident)
+    used_var_fallback = False
+    if not entries and member_access:
+        entries = decl_index.get('vars', {}).get(ident)
+        used_var_fallback = True
+    if not entries:
+        return None
+    result = None
+    for decl_pos, scope_end, direct_kind, elem_kind in entries:
+        if decl_pos > pos:
+            break
+        if pos < scope_end:
+            result = elem_kind if want_elem else direct_kind
+    if used_var_fallback and result == 'skipped_channel':
+        return 'channel'
+    return result
+
+
+def _strip_nested_delims_and_strings(expr: str) -> str:
+    """Return only top-level characters of `expr`, blanking nested (), [], {}, and strings."""
+    out = []
+    paren = bracket = brace = 0
+    in_str = in_chr = False
+    i = 0
+    n = len(expr)
+    while i < n:
+        c = expr[i]
+        if in_str:
+            if c == '\\':
+                i += 2
+                continue
+            if c == '"':
+                in_str = False
+            out.append(' ')
+        elif in_chr:
+            if c == '\\':
+                i += 2
+                continue
+            if c == "'":
+                in_chr = False
+            out.append(' ')
+        else:
+            raw = _match_raw_string(expr, i)
+            if raw:
+                out.extend(' ' * (raw.end() - i))
+                i = raw.end()
+                continue
+            if c == '"':
+                in_str = True
+                out.append(' ')
+            elif c == "'" and not _is_cpp_digit_separator(expr, i):
+                in_chr = True
+                out.append(' ')
+            elif c == '(':
+                paren += 1
+                out.append(' ')
+            elif c == ')':
+                if paren > 0:
+                    paren -= 1
+                out.append(' ')
+            elif c == '[':
+                bracket += 1
+                out.append(' ')
+            elif c == ']':
+                if bracket > 0:
+                    bracket -= 1
+                out.append(' ')
+            elif c == '{':
+                brace += 1
+                out.append(' ')
+            elif c == '}':
+                if brace > 0:
+                    brace -= 1
+                out.append(' ')
+            elif paren == 0 and bracket == 0 and brace == 0:
+                out.append(c)
+            else:
+                out.append(' ')
+        i += 1
+    return ''.join(out)
+
+
+def _find_matching_bracket(source: str, open_pos: int):
+    """Return matching `]` for `[` at `open_pos`, ignoring brackets in literals."""
+    depth = 0
+    state = 'code'
+    i = open_pos
+    n = len(source)
+    while i < n:
+        c = source[i]
+        if state == 'code':
+            raw = _match_raw_string(source, i)
+            if raw:
+                i = raw.end()
+                continue
+            if c == '"':
+                state = 'string'
+            elif c == "'" and not _is_cpp_digit_separator(source, i):
+                state = 'char'
+            elif c == '[':
+                depth += 1
+            elif c == ']':
+                depth -= 1
+                if depth == 0:
+                    return i
+        elif state in ('string', 'char'):
+            if c == '\\':
+                i += 2
+                continue
+            if (state == 'string' and c == '"') or (state == 'char' and c == "'"):
+                state = 'code'
+        i += 1
+    return None
+
+
+def _lookup_expr_decl_kind(e: str, call_pos: int, decl_index):
+    """Look up declared kind for `ident`, `*ident`, `ident(...)`, `ident[...]`, or `obj.member`."""
+    want_elem = False
+    member_access = False
+    cur = e
+    if cur.startswith('*'):
+        cur = _strip_outer_parens(cur[1:])
+        want_elem = True
+
+    # Strip trailing `[...]` subscripts (marks element lookup)
+    while cur.endswith(']'):
+        # Find matching `[` from left among top-level brackets
+        open_b = None
+        depth = 0
+        for idx in range(len(cur) - 1, -1, -1):
+            if cur[idx] == ']':
+                depth += 1
+            elif cur[idx] == '[':
+                depth -= 1
+                if depth == 0:
+                    open_b = idx
+                    break
+        if open_b is None or _find_matching_bracket(cur, open_b) != len(cur) - 1:
+            break
+        cur = cur[:open_b].rstrip()
+        want_elem = True
+
+    ident = None
+    m_mem = re.search(r'(?:\.|->)\s*([A-Za-z_]\w*)(?:\s*\([^()]*\))?$', cur)
+    if m_mem:
+        ident = m_mem.group(1)
+        member_access = True
+    else:
+        m_id = re.match(r'^([A-Za-z_]\w*)$', cur)
+        if m_id:
+            ident = m_id.group(1)
+        else:
+            m_call = re.match(r'^([A-Za-z_]\w*)\s*\(', cur)
+            if m_call and _find_matching_paren(cur, m_call.end() - 1) == len(cur) - 1:
+                ident = m_call.group(1)
+
+    if ident is None or decl_index is None:
+        return None
+    resolved = decl_index() if callable(decl_index) else decl_index
+    if not resolved:
+        return None
+    return _lookup_decl_kind(
+        ident, call_pos, resolved, want_elem=want_elem, member_access=member_access)
+
+
+def _is_channel_arg(expr: str, decl_index=None, call_pos: int = 0) -> bool:
+    """Heuristic for whether `args[0]` is a `msg_channel_type` argument."""
+    e = _strip_outer_parens(expr)
+    if not e:
+        return False
+    # Check ternary branches first so string literals in the condition
+    # (e.g. `mode == "debug" ? MSGCH_DIAGNOSTICS : MSGCH_WARN`) do not reject
+    # a channel expression.
+    branches = _split_top_level_ternary(e)
+    if branches is not None:
+        return (_is_channel_arg(branches[0], decl_index, call_pos)
+                or _is_channel_arg(branches[1], decl_index, call_pos))
+    if _top_level_string_runs(e) or _is_top_level_translated_expr(e):
+        return False
+    if re.search(r'\.(?:c_str|str|data)\s*\(', e):
+        return False
+    if _MSGCH_TOKEN_RE.search(e):
+        return True
+    if _CHANNEL_CAST_RE.match(e):
+        return True
+    kind = _lookup_expr_decl_kind(e, call_pos, decl_index)
+    if kind is not None:
+        return kind in ('channel', 'skipped_channel')
+    if _CHANNEL_IDENT_RE.match(e):
+        return True
+    return False
+
+
+def _split_top_level_arith_operands(expr: str):
+    """Split `expr` on top-level binary arithmetic/bitwise/shift operators (`+ - * / % & | ^ << >>`)."""
+    parts = []
+    paren = bracket = brace = 0
+    in_str = in_chr = False
+    start = 0
+    i = 0
+    n = len(expr)
+    while i < n:
+        c = expr[i]
+        if in_str:
+            if c == '\\':
+                i += 2
+                continue
+            if c == '"':
+                in_str = False
+        elif in_chr:
+            if c == '\\':
+                i += 2
+                continue
+            if c == "'":
+                in_chr = False
+        else:
+            raw = _match_raw_string(expr, i)
+            if raw:
+                i = raw.end()
+                continue
+            if c == '"':
+                in_str = True
+            elif c == "'" and not _is_cpp_digit_separator(expr, i):
+                in_chr = True
+            elif c == '(':
+                paren += 1
+            elif c == ')':
+                if paren > 0:
+                    paren -= 1
+            elif c == '[':
+                bracket += 1
+            elif c == ']':
+                if bracket > 0:
+                    bracket -= 1
+            elif c == '{':
+                brace += 1
+            elif c == '}':
+                if brace > 0:
+                    brace -= 1
+            elif paren == 0 and bracket == 0 and brace == 0:
+                nxt = expr[i + 1] if i + 1 < n else ''
+                op_len = 0
+                if (c == '<' and nxt == '<') or (c == '>' and nxt == '>'):
+                    if i + 2 >= n or expr[i + 2] != '=':
+                        op_len = 2
+                elif c in '+*/%^':
+                    if nxt not in (c, '=') and not (c == '*' and not expr[start:i].strip()):
+                        op_len = 1
+                elif c == '-':
+                    if nxt not in ('>', '-', '=') and expr[start:i].strip():
+                        op_len = 1
+                elif c in '&|':
+                    if nxt not in (c, '=') and expr[start:i].strip():
+                        op_len = 1
+                if op_len:
+                    left = expr[start:i].strip()
+                    if left:
+                        parts.append(left)
+                        start = i + op_len
+                        i = start
+                        continue
+        i += 1
+    tail = expr[start:].strip()
+    if tail:
+        parts.append(tail)
+    return parts
+
+
+def _is_string_operand(expr: str, decl_index=None, call_pos: int = 0) -> bool:
+    """True when `expr` is known to be a string/`char *` expression (rejects pointer/string `+`)."""
+    e = _strip_outer_parens(expr)
+    if not e:
+        return False
+    if _top_level_string_runs(e) or _is_top_level_translated_expr(e):
+        return True
+    if re.search(r'\.(?:c_str|str|data)\s*\(', e):
+        return True
+    return _lookup_expr_decl_kind(e, call_pos, decl_index) == 'string'
+
+
+def _is_int_param_arg(expr: str, decl_index=None, call_pos: int = 0) -> bool:
+    """Heuristic for whether `args[1]` is the `int param` in `mprf(ch, param, fmt, ...)`."""
+    e = _strip_outer_parens(expr)
+    if not e:
+        return False
+    branches = _split_top_level_ternary(e)
+    if branches is not None:
+        return (_is_int_param_arg(branches[0], decl_index, call_pos)
+                or _is_int_param_arg(branches[1], decl_index, call_pos))
+    if _top_level_string_runs(e) or _is_top_level_translated_expr(e):
+        return False
+    if re.search(r'\.(?:c_str|str|data)\s*\(', e):
+        return False
+    if (_INT_LITERAL_RE.match(e)
+            or _CHAR_LITERAL_RE.match(e)
+            or _BOOL_LITERAL_RE.match(e)):
+        return True
+    if _INT_PARAM_CALL_RE.match(e):
+        return True
+    kind = _lookup_expr_decl_kind(e, call_pos, decl_index)
+    if kind is not None:
+        return kind == 'int'
+    if _INT_PARAM_IDENT_RE.match(e):
+        return True
+    if re.search(r'(?:\.|->)(?:get_int|as_int|mindex)\s*\(\s*\)$', e):
+        return True
+    # Prefix/postfix increment/decrement (`++x`, `--x`, `x++`, `x--`) on known int operands.
+    if (e.startswith('++') or e.startswith('--')) and len(e) > 2:
+        return _is_int_param_arg(e[2:], decl_index, call_pos)
+    if (e.endswith('++') or e.endswith('--')) and len(e) > 2:
+        return _is_int_param_arg(e[:-2], decl_index, call_pos)
+    # Unary arithmetic/bitwise prefix (`-x`, `+x`, `~x`).
+    if len(e) >= 2 and e[0] in '+-~' and e[1] not in '+-=':
+        return _is_int_param_arg(e[1:], decl_index, call_pos)
+    # Only consider top-level binary arithmetic/bitwise/shift expressions outside
+    # subscripts/calls (so `formats[i + 1]` is NOT misclassified as an integer parameter,
+    # and pointer/string additions like `offset + (fmt)` or `a + b` are rejected).
+    operands = _split_top_level_arith_operands(e)
+    if len(operands) >= 2:
+        if any(_is_string_operand(op, decl_index, call_pos) for op in operands):
+            return False
+        if all(_is_int_param_arg(op, decl_index, call_pos) for op in operands):
+            return True
+        top = _strip_nested_delims_and_strings(e)
+        if re.search(r'(?:^|[^\w])\d+(?:[^\w]|$)', top):
+            return True
+    return False
+
+
+def _select_msg_format_arg(func_name: str, arg_pairs, decl_index=None, call_pos: int = 0):
+    """Select the `(text, start_offset)` message/format argument of an `mpr*`/`mprf*` call.
+
+    Follows the overloads in `mpr.h`:
+      - `mpr(text)` -> arg 0
+      - `mprf*(fmt, ...)` -> arg 0
+      - `mprf*(channel, fmt, ...)` -> arg 1
+      - `mprf*(channel, param, fmt, ...)` -> arg 2 (for mprf / mprf_p / mprf_nocap)
+    Returns `('SKIP', None)` when the channel is always skipped, or `(text, start)`
+    for the selected format argument, or `None` when no format argument exists.
+    """
+    if not arg_pairs:
+        return None
+    if func_name == 'mpr':
+        return arg_pairs[0]
+
+    arg0_text = arg_pairs[0][0]
+    if not _is_channel_arg(arg0_text, decl_index, call_pos):
+        return arg_pairs[0]
+
+    if _is_always_skipped_channel(arg0_text, decl_index, call_pos):
+        return ('SKIP', None)
+
+    if len(arg_pairs) < 2:
+        return None
+
+    arg1_text = arg_pairs[1][0]
+    # Overload (channel, int param, fmt, ...): when arg 1 is an int/enum channel
+    # parameter, arg 2 is always the format argument (literal, T_/C_, or dynamic).
+    if (len(arg_pairs) >= 3 and func_name != 'mprf_nojoin'
+            and not _top_level_string_runs(arg1_text)
+            and not _is_top_level_translated_expr(arg1_text)
+            and _is_int_param_arg(arg1_text, decl_index, call_pos)):
+        return arg_pairs[2]
+
+    # Overload (channel, fmt, ...): arg 1 is always the format argument (literal,
+    # T_/C_, pass-through formatter, or dynamic expression).
+    return arg_pairs[1]
+
+
+def _blank_code_line_splices(text: str) -> str:
+    """Replace backslash line-continuations outside string/char literals with spaces, preserving offsets."""
+    if '\\' not in text:
+        return text
+    out = list(text)
+    i = 0
+    n = len(text)
+    while i < n:
+        c = text[i]
+        raw = _match_raw_string(text, i)
+        if raw:
+            i = raw.end()
+            continue
+        if c == '"':
+            i += 1
+            while i < n:
+                if text[i] == '\\':
+                    i += 2
+                    continue
+                if text[i] == '"':
+                    i += 1
+                    break
+                i += 1
+            continue
+        if c == "'" and not _is_cpp_digit_separator(text, i):
+            i += 1
+            while i < n:
+                if text[i] == '\\':
+                    i += 2
+                    continue
+                if text[i] == "'":
+                    i += 1
+                    break
+                i += 1
+            continue
+        if c == '\\':
+            k = i + 1
+            while k < n and text[k] in ' \t':
+                k += 1
+            if k < n and text[k] == '\r':
+                k += 1
+            if k < n and text[k] == '\n':
+                out[i] = ' '
+                i = k + 1
+                continue
+        i += 1
+    return ''.join(out)
+
+
+def _extract_msg_literal(masked_source: str, line_offsets, lineno: int,
+                         decl_index=None, covered_fmt_spans=None, code_only=None):
+    """Extract an unprotected format-string literal from an `mpr*`/`mprf*` call on `lineno`.
+
+    Locates call starts in `code_only` (literals + comments masked) so examples
+    inside raw or ordinary string literals are never parsed as real calls.
+    Records only the call-head spans of pass-through formatters actually unwrapped
+    by `_top_level_string_runs` (plus the entire call span for skipped diagnostic
+    channels) into `covered_fmt_spans`, so nested formatters inside non-passthrough
+    helpers remain visible to the continuation-line scanner.
+    """
+    if code_only is None:
+        code_only = _mask_cpp_literals(masked_source)
+    line_start = line_offsets[lineno - 1]
+    line_end = (line_offsets[lineno] if lineno < len(line_offsets)
+                else len(masked_source))
+    code_line = code_only[line_start:line_end]
+    found_literal = None
+    fallback_literal = None
+    for m in MPR_CALL_RE.finditer(code_line):
+        func_name = m.group(0).split('(', 1)[0].strip()
+        if func_name not in ('mpr', 'mprf', 'mprf_nojoin', 'mprf_p'):
+            continue
+        open_pos = line_start + m.end() - 1
+        close_pos = _find_matching_paren(masked_source, open_pos)
+        if close_pos is None:
+            continue
+        call_body = masked_source[open_pos + 1:close_pos]
+        if '\\' in call_body:
+            clean_body = _blank_code_line_splices(call_body)
+            arg_pairs = [
+                (txt, open_pos + 1 + off)
+                for txt, off in _split_call_args(clean_body, 0, len(clean_body))
+            ]
+        else:
+            arg_pairs = _split_call_args(masked_source, open_pos + 1, close_pos)
+        selected = _select_msg_format_arg(
+            func_name, arg_pairs, decl_index=decl_index, call_pos=open_pos)
+        if selected is None:
+            continue
+        if selected == ('SKIP', None):
+            if covered_fmt_spans is not None:
+                covered_fmt_spans.append((open_pos, close_pos + 1))
+            continue
+        fmt_arg, fmt_start = selected
+        runs = _top_level_string_runs(
+            fmt_arg, base_offset=fmt_start, covered_spans=covered_fmt_spans)
+        if found_literal is not None:
+            continue
+        alpha_runs = [r for r in runs if r and has_alpha(r)]
+        if not alpha_runs:
+            continue
+        for r in alpha_runs:
+            if not is_format_only(r):
+                found_literal = r
+                break
+        if found_literal is None and fallback_literal is None:
+            fallback_literal = alpha_runs[0]
+    return found_literal if found_literal is not None else fallback_literal
+
 # Detect positional format specifiers: %1$s, %2$d, %3$f, etc.
 POSFMT_RE = re.compile(r'%(\d+)\$(?:[sdxcunfFeEgG]|l[du])')
 
@@ -1032,7 +3177,7 @@ CPP_STRING_RE = re.compile(
 
 
 CPP_RAW_STRING_RE = re.compile(
-    r'(?:u8|u|U|L)?R"(?P<delimiter>[^ ()\\\t\r\n]{0,16})\(.*?\)(?P=delimiter)"', re.DOTALL)
+    r'(?:u8|u|U|L)?R"(?P<delimiter>[^ ()\\\t\r\n]{0,16})\((?P<raw_body>.*?)\)(?P=delimiter)"', re.DOTALL)
 CPP_LITERAL_RE = re.compile(
     CPP_RAW_STRING_RE.pattern + '|' + CPP_STRING_RE.pattern
     + r"|(?:u8|u|U|L)?'(?:[^'\\]|\\.)*'", re.DOTALL)
@@ -1047,8 +3192,7 @@ def _mask_cpp_comments(source: str, *, raw_strings=False) -> str:
         c = source[i]
         nxt = source[i + 1] if i + 1 < len(source) else ''
         if state == 'code':
-            raw = (CPP_RAW_STRING_RE.match(source, i)
-                   if raw_strings and c in 'RuUL' else None)
+            raw = _match_raw_string(source, i) if raw_strings else None
             if raw:
                 i = raw.end()
                 continue
@@ -1064,7 +3208,7 @@ def _mask_cpp_comments(source: str, *, raw_strings=False) -> str:
                 continue
             if c == '"':
                 state = 'string'
-            elif c == "'":
+            elif c == "'" and not _is_cpp_digit_separator(source, i):
                 state = 'char'
         elif state == 'line-comment':
             if c == '\n':
@@ -1097,9 +3241,13 @@ def _find_matching_paren(source: str, open_pos: int):
     while i < len(source):
         c = source[i]
         if state == 'code':
+            raw = _match_raw_string(source, i)
+            if raw:
+                i = raw.end()
+                continue
             if c == '"':
                 state = 'string'
-            elif c == "'":
+            elif c == "'" and not _is_cpp_digit_separator(source, i):
                 state = 'char'
             elif c == '(':
                 depth += 1
@@ -1126,9 +3274,13 @@ def _find_matching_brace(source: str, open_pos: int):
     while i < len(source):
         c = source[i]
         if state == 'code':
+            raw = _match_raw_string(source, i)
+            if raw:
+                i = raw.end()
+                continue
             if c == '"':
                 state = 'string'
-            elif c == "'":
+            elif c == "'" and not _is_cpp_digit_separator(source, i):
                 state = 'char'
             elif c == '{':
                 depth += 1
@@ -1155,9 +3307,13 @@ def _find_statement_end(source: str, start: int, end: int):
     while i < end:
         c = source[i]
         if state == 'code':
+            raw = _match_raw_string(source, i)
+            if raw and raw.end() <= end:
+                i = raw.end()
+                continue
             if c == '"':
                 state = 'string'
-            elif c == "'":
+            elif c == "'" and not _is_cpp_digit_separator(source, i):
                 state = 'char'
             elif c == '(':
                 paren += 1
@@ -1194,9 +3350,13 @@ def _split_call_args(source: str, start: int, end: int):
     while i < end:
         c = source[i]
         if state == 'code':
+            raw = _match_raw_string(source, i)
+            if raw and raw.end() <= end:
+                i = raw.end()
+                continue
             if c == '"':
                 state = 'string'
-            elif c == "'":
+            elif c == "'" and not _is_cpp_digit_separator(source, i):
                 state = 'char'
             elif c == '(':
                 paren += 1
@@ -1295,7 +3455,7 @@ def _string_literals_with_call_ancestors(expression: str):
                                tuple(name for name in paren_stack if name)))
                 i = match.end()
                 continue
-        if c == "'":
+        if c == "'" and not _is_cpp_digit_separator(expression, i):
             i += 1
             while i < len(expression):
                 if expression[i] == '\\':
@@ -1587,12 +3747,24 @@ def cmd_missing_t(args):
             with open(filepath, "r", encoding="utf-8", errors="replace") as f:
                 lines = f.readlines()
 
-            debug_lines = build_debug_ranges(
-                lines, {'WIZARD'} if contracts_only else None)
-            comment_lines = build_comment_ranges(lines)
+            debug_lines = None
+            masked_source = None
+            code_only = None
+            line_offsets = None
+            decl_index = None
+            covered_fmt_spans = []
 
             if contracts_only:
                 source = ''.join(lines)
+                code_only = _mask_cpp_literals(
+                    _mask_cpp_comments(source, raw_strings=True))
+                code_lines = []
+                pos = 0
+                for src_line in lines:
+                    end_pos = pos + len(src_line)
+                    code_lines.append(code_only[pos:end_pos])
+                    pos = end_pos
+                debug_lines = build_debug_ranges(code_lines, {'WIZARD'})
                 contract_findings, contract_filtered = _scan_display_contracts(
                     source, rel_path, source_entries, contract_allowlist,
                     debug_lines, strict)
@@ -1601,38 +3773,120 @@ def cmd_missing_t(args):
                 continue
 
             for lineno, line in enumerate(lines, 1):
-                # Pre-filter: skip preprocessor directives
-                if SKIP_PP_RE.match(line):
-                    continue
-
-                # Skip diagnostic/error channels
-                if SKIP_CHANNEL_RE.search(line):
-                    continue
-
-                # Skip lines inside /* ... */ block comments or // comments
-                if lineno in comment_lines:
-                    continue
-
-                # Skip lines inside #ifdef DEBUG or #if 0 blocks
-                if not strict and lineno in debug_lines:
-                    # Still check MPR_CALL_RE to report as filtered in --show-filtered
-                    if show_filtered and MPR_CALL_RE.search(line):
-                        if not HAS_T_RE.search(line):
-                            stripped = strip_cpp_string_literal(line)
-                            if stripped and has_alpha(stripped):
-                                filtered.append((rel_path, lineno, stripped[:80],
-                                                _severity(line), 'debug-block'))
-                    continue
-
-                # Main check
+                # Fast-path: ignore lines that cannot start any scanned call
                 if not MPR_CALL_RE.search(line):
                     continue
-                if HAS_T_RE.search(line):
-                    continue
 
-                stripped = strip_cpp_string_literal(line)
-                if not stripped or not has_alpha(stripped):
+                # Lazily compute comment/literal-masked sources for accurate call discovery
+                if masked_source is None:
+                    full_source = ''.join(lines)
+                    masked_source = _mask_cpp_comments(full_source, raw_strings=True)
+                    code_only = _mask_cpp_literals(masked_source)
+                    line_offsets = []
+                    code_lines = []
+                    pos = 0
+                    for src_line in lines:
+                        line_offsets.append(pos)
+                        end_pos = pos + len(src_line)
+                        code_lines.append(code_only[pos:end_pos])
+                        pos = end_pos
+                    debug_lines = build_debug_ranges(code_lines)
+                    pp_lines = _find_pp_directive_lines(code_only, line_offsets)
+                    blank_lines = pp_lines if strict else (debug_lines | pp_lines)
+                    active_masked = _blank_inactive_lines(
+                        masked_source, line_offsets, blank_lines)
+                    active_code = _blank_inactive_lines(
+                        code_only, line_offsets, blank_lines)
+                    decl_cache = [None]
+                    def _get_decl_index(_ms=active_masked, _co=active_code,
+                                        _cache=decl_cache):
+                        if _cache[0] is None:
+                            _cache[0] = _index_var_type_decls(_ms, code_only=_co)
+                        return _cache[0]
+                    decl_index = _get_decl_index
+
+                l_start = line_offsets[lineno - 1]
+                l_end = (line_offsets[lineno] if lineno < len(line_offsets)
+                         else len(masked_source))
+                code_line = code_only[l_start:l_end]
+                # Skip real preprocessor directives (not raw-string lines starting with #)
+                if SKIP_PP_RE.match(code_line):
                     continue
+                if not MPR_CALL_RE.search(code_line):
+                    continue
+                masked_line = masked_source[l_start:l_end]
+
+                sev = _severity(code_line)
+                if sev == 'MSG':
+                    # Skip lines inside #ifdef DEBUG or #if 0 blocks
+                    if not strict and lineno in debug_lines:
+                        stripped = _extract_msg_literal(
+                            masked_source, line_offsets, lineno,
+                            decl_index=decl_index,
+                            covered_fmt_spans=covered_fmt_spans,
+                            code_only=code_only) or ""
+                        if show_filtered and stripped and has_alpha(stripped):
+                            filtered.append((rel_path, lineno, stripped[:80],
+                                            sev, 'debug-block'))
+                        continue
+                    stripped = _extract_msg_literal(
+                        active_masked, line_offsets, lineno,
+                        decl_index=decl_index,
+                        covered_fmt_spans=covered_fmt_spans,
+                        code_only=active_code) or ""
+                    if not stripped or not has_alpha(stripped):
+                        # If the same line also contains an uncovered non-MSG call
+                        # (e.g. `mpr(helper(make_stringf("the %s", name)))`), inspect it.
+                        uncovered_non_msg = [
+                            m for m in MPR_CALL_RE.finditer(code_line)
+                            if m.group(0).split('(', 1)[0].strip() not in (
+                                'mpr', 'mprf', 'mprf_nojoin', 'mprf_p')
+                            and not any(s <= l_start + m.start() < e
+                                        for s, e in covered_fmt_spans)
+                        ]
+                        if not uncovered_non_msg:
+                            continue
+                        same_line_found = None
+                        for um in uncovered_non_msg:
+                            u_open = l_start + um.end() - 1
+                            u_close = _find_matching_paren(masked_source, u_open)
+                            call_slice = (masked_source[l_start + um.start():u_close + 1]
+                                          if u_close is not None
+                                          else masked_source[l_start + um.start():l_end])
+                            if SKIP_CHANNEL_RE.search(call_slice) or HAS_T_RE.search(call_slice):
+                                continue
+                            u_lit = strip_cpp_string_literal(call_slice)
+                            if u_lit and has_alpha(u_lit) and not is_format_only(u_lit):
+                                same_line_found = (_severity(um.group(0)), u_lit)
+                                break
+                        if same_line_found is None:
+                            continue
+                        sev, stripped = same_line_found
+                else:
+                    # Skip continuation calls already analyzed as an enclosing MSG format arg
+                    if covered_fmt_spans:
+                        uncovered = [
+                            m for m in MPR_CALL_RE.finditer(code_line)
+                            if not any(s <= l_start + m.start() < e
+                                       for s, e in covered_fmt_spans)
+                        ]
+                        if not uncovered:
+                            continue
+                    # Non-MSG heuristics keep existing single-line behavior on comment-masked text
+                    if SKIP_CHANNEL_RE.search(masked_line):
+                        continue
+                    if not strict and lineno in debug_lines:
+                        if show_filtered and not HAS_T_RE.search(masked_line):
+                            stripped = strip_cpp_string_literal(masked_line)
+                            if stripped and has_alpha(stripped):
+                                filtered.append((rel_path, lineno, stripped[:80],
+                                                sev, 'debug-block'))
+                        continue
+                    if HAS_T_RE.search(masked_line):
+                        continue
+                    stripped = strip_cpp_string_literal(masked_line)
+                    if not stripped or not has_alpha(stripped):
+                        continue
 
                 # Allowlist check
                 if (rel_path, lineno) in allowlist:
@@ -1642,7 +3896,6 @@ def cmd_missing_t(args):
                     continue
 
                 # Format-only filter
-                sev = _severity(line)
                 if is_format_only(stripped):
                     if show_filtered:
                         filtered.append((rel_path, lineno, stripped[:80],
