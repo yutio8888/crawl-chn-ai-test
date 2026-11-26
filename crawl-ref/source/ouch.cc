@@ -467,7 +467,7 @@ void lose_level()
     you.experience_level--;
 
     mprf(MSGCH_WARN,
-         "You are now level %d!", you.experience_level);
+         T_("You are now level %d!"), you.experience_level);
 
     calc_hp();
     calc_mp();

@@ -51465,3 +51465,9 @@ god gift
 %%%%
 randbook conjunction| and 
 以及
+%%%%
+Your demonic ancestry asserts itself...
+你的恶魔血统开始显现……
+%%%%
+You are now level %d!
+你现在是%d级！
