@@ -3349,7 +3349,7 @@ void level_change(bool skip_attribute_increase)
                         if (!gave_message)
                         {
                             mprf(MSGCH_INTRINSIC_GAIN,
-                                 "Your demonic ancestry asserts itself...");
+                                 T_("Your demonic ancestry asserts itself..."));
 
                             gave_message = true;
                         }
