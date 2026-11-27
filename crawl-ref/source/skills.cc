@@ -1055,6 +1055,8 @@ static void _train_distributed_skills(bool simu)
     while (true)
     {
         const pair<int, int> cost = _gnoll_total_skill_cost();
+        if (cost.first <= 0)
+            break;
         const int max_cost = div_round_up(cost.first, cost.second);
         // If every trained skill has hit 27, nothing can absorb a point:
         // _level_up_check() has zeroed the training and the cost is zero.
