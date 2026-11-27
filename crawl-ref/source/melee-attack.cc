@@ -3041,7 +3041,7 @@ void melee_attack::set_attack_verb(int damage)
         else
             attack_verb = T_("clumsily bash");
 
-        if (you.weapon() && you.weapon()->sub_type == WPN_ATHAME
+        if (weapon && weapon->is_type(OBJ_WEAPONS, WPN_ATHAME)
             && target_debuff_count() > 0)
         {
             verb_degree = T_("balefully");
@@ -3099,7 +3099,7 @@ void melee_attack::set_attack_verb(int damage)
                 hit_format = C_("melee hit", pierce_desc[choice][2]);
             }
         }
-        if (you.weapon() && you.weapon()->sub_type == WPN_ATHAME
+        if (weapon && weapon->is_type(OBJ_WEAPONS, WPN_ATHAME)
             && target_debuff_count() > 0)
         {
             verb_degree = T_("balefully");

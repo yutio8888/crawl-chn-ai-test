@@ -6,11 +6,19 @@
 #include "l-libs.h"
 
 #include "cluautil.h"
-#include "god-conduct.h"
-#include "religion.h"
-#include "spl-util.h"
-#include "spl-zap.h"
+#include "coord.h"
 #include "describe.h"
+#include "env.h"
+#include "god-conduct.h"
+#include "los.h"
+#include "losparam.h"
+#include "map-knowledge.h"
+#include "quiver.h"
+#include "ray.h"
+#include "religion.h"
+#include "spl-cast.h"
+#include "spl-util.h"
+#include "terrain.h"
 
 /*** Is this spell memorised?
  * @tparam string spellname
@@ -96,74 +104,6 @@ LUAFN(l_spells_min_range)
     spell_type spell = spell_by_name(luaL_checkstring(ls, 1), false);
     PLUARET(integer, calc_spell_range(spell, 0, true));
 }
-
-
-/*** If this spell is aimed at (x,y), what path will it actually take?
- * @tparam string spell the name of the spell
- * @tparam int x coordinate to aim at, in player coordinates
- * @tparam int y coordinate to aim at, in player coordinates
- * @tparam[opt=0] int source_x coordinate of spell source, in player coordinates
- * @tparam[opt=0] int source_y coordinate of spell source, in player coordinates
- * @tparam[opt=true] boolean aimed_at_spot if true, aim at the target; if
- * false, shoot past it.
- * @treturn table|nil a table of {x,y} of the path the spell will take, in
- * player coordinates.
- * Nil is returned if the spell does not follow a path (eg. smite-targeted
- * spells) or if the spell has zero range.
- * @function path
- */
-LUAFN(l_spells_path)
-{
-    spell_type spell = spell_by_name(luaL_checkstring(ls, 1), false);
-    zap_type zap = spell_to_zap(spell);
-    int power = calc_spell_power(spell);
-    int range = calc_spell_range(spell, power, true);
-    // return nil for non-zap or zero-range spells
-    if (range <= 0 || zap >= NUM_ZAPS)
-    {
-        lua_pushnil(ls);
-        return 1;
-    }
-    coord_def a;
-    a.x = luaL_safe_checkint(ls, 2);
-    a.y = luaL_safe_checkint(ls, 3);
-    coord_def aim = player2grid(a);
-
-    coord_def s;
-    s.x = lua_isnumber(ls, 4) ? lua_tointeger(ls, 4) : 0;
-    s.y = lua_isnumber(ls, 5) ? lua_tointeger(ls, 5) : 0;
-    coord_def src = player2grid(s);
-
-    bolt beam;
-    beam.set_agent(&you);
-    beam.source = src;
-    beam.attitude = ATT_FRIENDLY;
-    zappy(zap, power, false, beam);
-    beam.set_is_tracer(true);
-    beam.range = range;
-    beam.target = aim;
-    beam.ex_size = 0;
-    beam.aimed_at_spot = true;
-    if (lua_isboolean(ls, 6))
-        beam.aimed_at_spot = lua_toboolean(ls, 6);
-    beam.path_taken.clear();
-    beam.fire();
-
-    lua_createtable(ls, beam.path_taken.size(), 0);
-    int index = 0;
-    for (auto g : beam.path_taken)
-    {
-        coord_def p = grid2player(g);
-        lua_createtable(ls, 2, 0);
-        lua_pushinteger(ls, p.x);
-        lua_rawseti(ls, -2, 1);
-        lua_pushinteger(ls, p.y);
-        lua_rawseti(ls, -2, 2);
-        lua_rawseti(ls, -2, ++index);
-    }
-    return 1;
-}
-
 
 /*** The failure rate of the spell as a number in [0,100].
  * @tparam string name
@@ -378,7 +318,6 @@ static const struct luaL_Reg spells_clib[] =
 {
     { "memorised"     , l_spells_memorised },
     { "letter"        , l_spells_letter },
-    { "path"          , l_spells_path },
     { "level"         , l_spells_level },
     { "mana_cost"     , l_spells_mana_cost },
     { "range"         , l_spells_range },
