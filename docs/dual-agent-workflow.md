@@ -116,4 +116,5 @@ record the clean candidate branch and commit range; route domains with
 `classify_reviewers.py` over that range. Merge requires applicable verification
 bound with `--base`/`--head` (or valid reused evidence), completed domain review,
 and applicable GitHub Actions CI. Role selection does not mandate a subagent
-or repeat whole-project verification.
+or repeat whole-project verification. Independent re-review obeys the round cap
+and convergence rules in `.agents/policies/review-contract.md`.
