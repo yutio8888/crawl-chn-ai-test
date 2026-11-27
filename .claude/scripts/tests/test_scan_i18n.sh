@@ -65,6 +65,82 @@ python3 "$SCAN_I18N" missing-t "$FIXTURES/missing-t/translated_sample.cc" > /tmp
 assert_output "missing-t: regression (no false positives)" \
     /tmp/actual_mt_reg.txt "$EXPECTED/missing-t_regression.txt"
 
+# ── missing-t multiline mprf ──
+MULTILINE_MT_DIR=$(mktemp -d)
+cat > "$MULTILINE_MT_DIR/multiline.cc" <<'EOF'
+void test_multiline()
+{
+    mprf(MSGCH_INTRINSIC_GAIN,
+         "Your demonic ancestry asserts itself...");
+    mprf(MSGCH_INTRINSIC_GAIN,
+         T_("Welcome back to level %d!"), 2);
+    mprf(T_(true
+         ? "Wrapped ternary."
+         : "Wrapped ternary."));
+    mprf(MSGCH_DIAGNOSTICS,
+         "Diagnostic message.");
+    // Translated replacement arg must not mask an unwrapped format string
+    mprf(MSGCH_INTRINSIC_GAIN,
+         "Your scales start turning %s.",
+         T_(species::scale_type(you.species)));
+    // Inline block comment before closing paren must not leak into next stmt
+    mpr(
+         already_translated /* owned text */);
+    auto id = "internal key";
+    // Inline block comment before real message must still be caught
+    mpr(
+         /* player warning */ "You fall!");
+    // Adjacent C++ string literals split across lines must concatenate
+    mprf(MSGCH_WARN, "%s "
+         "falls!", name);
+    // (channel, param, fmt) overload with subscripted prop key in param slot
+    mprf(MSGCH_WARN,
+         you.props["piety"].get_int(),
+         "Piety warning!");
+    // Dynamic format string must not promote replacement arg literal
+    mprf(localized_fmt.c_str(),
+         you.props["internal_key"].get_int());
+    // Mixed diagnostic/player-visible channel must not skip player warning
+    mprf(
+         is_diag ? MSGCH_DIAGNOSTICS : MSGCH_WARN,
+         "Mixed channel warning!");
+    // Call spanning more than 8 physical lines must still be caught
+    mprf(
+         cond1
+         ? MSGCH_WARN
+         : cond2
+         ? MSGCH_WARN
+         : cond3
+         ? MSGCH_WARN
+         : cond4
+         ? MSGCH_WARN
+         : MSGCH_PLAIN,
+         "Deep multiline warning!");
+}
+EOF
+set +e
+python3 "$SCAN_I18N" missing-t "$MULTILINE_MT_DIR" > "$MULTILINE_MT_DIR/out.txt" 2>&1
+MULTILINE_MT_RC=$?
+set -e
+assert_status "missing-t: multiline unwrapped mprf exits non-zero" 1 "$MULTILINE_MT_RC"
+assert_contains "missing-t: multiline unwrapped mprf flagged" \
+    '[MSG] multiline.cc:3  "Your demonic ancestry asserts itself..."' "$MULTILINE_MT_DIR/out.txt"
+assert_contains "missing-t: translated replacement arg does not mask format string" \
+    '[MSG] multiline.cc:13  "Your scales start turning %s."' "$MULTILINE_MT_DIR/out.txt"
+assert_contains "missing-t: inline block comment before literal still flagged" \
+    '[MSG] multiline.cc:21  "You fall!"' "$MULTILINE_MT_DIR/out.txt"
+assert_contains "missing-t: multiline adjacent literal concatenation flagged" \
+    '[MSG] multiline.cc:24  "%s falls!"' "$MULTILINE_MT_DIR/out.txt"
+assert_contains "missing-t: multiline (channel, prop-param, fmt) flagged" \
+    '[MSG] multiline.cc:27  "Piety warning!"' "$MULTILINE_MT_DIR/out.txt"
+assert_contains "missing-t: mixed diagnostic/visible channel flagged" \
+    '[MSG] multiline.cc:34  "Mixed channel warning!"' "$MULTILINE_MT_DIR/out.txt"
+assert_contains "missing-t: deep (>8 line) multiline mprf flagged" \
+    '[MSG] multiline.cc:38  "Deep multiline warning!"' "$MULTILINE_MT_DIR/out.txt"
+assert_contains "missing-t: multiline wrapped/diagnostic/dynamic-fmt calls exact count" \
+    'MSG: 7 candidates' "$MULTILINE_MT_DIR/out.txt"
+rm -rf "$MULTILINE_MT_DIR"
+
 # ── display contracts ──
 set +e
 PYTHONNOUSERSITE=1 python3 "$SCAN_I18N" missing-t "$FIXTURES/display-contracts/" \
