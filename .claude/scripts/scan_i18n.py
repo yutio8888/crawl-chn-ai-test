@@ -728,6 +728,159 @@ def _severity(line: str) -> str:
 # Check if a line has T_() or C_() wrapping
 HAS_T_RE = re.compile(r'\b[TtCc]_\(\s*"')
 
+# Lightweight heuristic helpers for multiline mpr*/mprf* calls.
+# Intentionally does NOT implement a C++ preprocessor or full type resolver.
+_MSG_TRANSLATED_PROVIDERS = TRANSLATED_VALUE_PROVIDERS | {'t_', 'c_'}
+_SKIPPED_MSG_CHANNELS = frozenset({
+    'MSGCH_DIAGNOSTICS', 'MSGCH_DEBUG', 'MSGCH_ERROR',
+})
+_MSGCH_TOKEN_RE = re.compile(r'\bMSGCH_[A-Z0-9_]+\b')
+_DYN_STR_EXPR_RE = re.compile(r'\.(?:c_str|str)\s*\(')
+_TRANSLATED_CALL_RE = re.compile(r'\b(?:T_|C_|t_|c_)\s*\(')
+
+
+def _is_skipped_channel_arg(expr: str) -> bool:
+    """True when `expr` mentions a skipped channel and no visible MSGCH_*."""
+    tokens = set(_MSGCH_TOKEN_RE.findall(expr))
+    return bool(tokens) and tokens.issubset(_SKIPPED_MSG_CHANNELS)
+
+
+def _direct_msg_string_runs(expression: str, *, include_protected: bool = False):
+    """Return concatenated C++ string literals in `expression` outside `[...]`.
+
+    Adjacent literals separated only by whitespace (including masked comments)
+    are joined into one string so `"%s " "falls!"` is not filtered as
+    format-only. When `include_protected` is False, literals inside
+    translation/DB provider calls (e.g. `T_(...)`) are skipped.
+    """
+    runs = []
+    cur_parts = []
+    prev_end = None
+    prev_ancestors = None
+    paren_stack = []
+    bracket = 0
+    i = 0
+    n = len(expression)
+    while i < n:
+        c = expression[i]
+        if c == '"':
+            m = CPP_STRING_RE.match(expression, i)
+            if m:
+                ancestors = tuple(name for name in paren_stack if name)
+                protected = any(name in _MSG_TRANSLATED_PROVIDERS
+                                for name in ancestors)
+                if bracket > 0 or (protected and not include_protected):
+                    if cur_parts:
+                        runs.append(''.join(cur_parts))
+                        cur_parts = []
+                        prev_end = None
+                        prev_ancestors = None
+                elif (cur_parts and prev_ancestors == ancestors
+                      and prev_end is not None
+                      and expression[prev_end:m.start()].strip() == ''):
+                    cur_parts.append(m.group(1))
+                    prev_end = m.end()
+                else:
+                    if cur_parts:
+                        runs.append(''.join(cur_parts))
+                    cur_parts = [m.group(1)]
+                    prev_end = m.end()
+                    prev_ancestors = ancestors
+                i = m.end()
+                continue
+        if c == "'":
+            i += 1
+            while i < n:
+                if expression[i] == '\\':
+                    i += 2
+                    continue
+                if expression[i] == "'":
+                    i += 1
+                    break
+                i += 1
+            continue
+        if c == '(':
+            prefix = expression[:i].rstrip()
+            name_match = re.search(r'([A-Za-z_]\w*)$', prefix)
+            paren_stack.append(name_match.group(1) if name_match else None)
+        elif c == ')':
+            if paren_stack:
+                paren_stack.pop()
+        elif c == '[':
+            bracket += 1
+        elif c == ']':
+            if bracket > 0:
+                bracket -= 1
+        i += 1
+    if cur_parts:
+        runs.append(''.join(cur_parts))
+    return runs
+
+
+def _has_direct_format_expr(expr: str) -> bool:
+    """True if `expr` has a direct string literal (outside `[...]`) or T_/C_."""
+    return bool(_direct_msg_string_runs(expr, include_protected=True)
+                or _TRANSLATED_CALL_RE.search(expr))
+
+
+def _select_msg_format_arg(func_name: str, args):
+    """Select the message/format argument of a multiline mpr*/mprf* call.
+
+    Returns None when the channel is skipped (diagnostic/debug/error) or when
+    the call uses a dynamic format expression with no literal format argument.
+    """
+    if not args:
+        return None
+    if func_name == 'mpr':
+        return args[0]
+
+    # mprf / mprf_p / mprf_nojoin:
+    #   (fmt, ...) | (channel, fmt, ...) | (channel, param, fmt, ...)
+    if _is_skipped_channel_arg(args[0]):
+        return None
+    if _has_direct_format_expr(args[0]):
+        return args[0]
+    if _DYN_STR_EXPR_RE.search(args[0]):
+        return None
+    if len(args) >= 2 and _has_direct_format_expr(args[1]):
+        return args[1]
+    if (len(args) >= 3 and func_name != 'mprf_nojoin'
+            and not _DYN_STR_EXPR_RE.search(args[1])
+            and _has_direct_format_expr(args[2])):
+        return args[2]
+    return None
+
+
+def _extract_multiline_msg_literal(masked_source: str, line_offsets, lineno: int):
+    """Extract an unprotected format-string literal from a multiline MSG call."""
+    line_start = line_offsets[lineno - 1]
+    line_end = (line_offsets[lineno] if lineno < len(line_offsets)
+                else len(masked_source))
+    masked_line = masked_source[line_start:line_end]
+    m = MPR_CALL_RE.search(masked_line)
+    if not m:
+        return None
+    func_name = m.group(0).split('(', 1)[0].strip()
+    if func_name not in ('mpr', 'mprf', 'mprf_nojoin', 'mprf_p'):
+        return None
+    open_pos = line_start + m.end() - 1
+    close_pos = _find_matching_paren(masked_source, open_pos)
+    if close_pos is None:
+        return None
+    args = [text for text, _
+            in _split_call_args(masked_source, open_pos + 1, close_pos)]
+    fmt_arg = _select_msg_format_arg(func_name, args)
+    if fmt_arg is None:
+        return None
+    runs = _direct_msg_string_runs(fmt_arg)
+    alpha_runs = [r for r in runs if r and has_alpha(r)]
+    if not alpha_runs:
+        return None
+    for r in alpha_runs:
+        if not is_format_only(r):
+            return r
+    return alpha_runs[0]
+
 # Detect positional format specifiers: %1$s, %2$d, %3$f, etc.
 POSFMT_RE = re.compile(r'%(\d+)\$(?:[sdxcunfFeEgG]|l[du])')
 
@@ -1590,6 +1743,8 @@ def cmd_missing_t(args):
             debug_lines = build_debug_ranges(
                 lines, {'WIZARD'} if contracts_only else None)
             comment_lines = build_comment_ranges(lines)
+            masked_source = None
+            line_offsets = None
 
             if contracts_only:
                 source = ''.join(lines)
@@ -1630,7 +1785,22 @@ def cmd_missing_t(args):
                 if HAS_T_RE.search(line):
                     continue
 
+                sev = _severity(line)
                 stripped = strip_cpp_string_literal(line)
+                if sev == 'MSG' and (not stripped or is_format_only(stripped)):
+                    if masked_source is None:
+                        full_source = ''.join(lines)
+                        masked_source = _mask_cpp_comments(
+                            full_source, raw_strings=True)
+                        line_offsets = []
+                        pos = 0
+                        for src_line in lines:
+                            line_offsets.append(pos)
+                            pos += len(src_line)
+                    ml_stripped = _extract_multiline_msg_literal(
+                        masked_source, line_offsets, lineno)
+                    if ml_stripped:
+                        stripped = ml_stripped
                 if not stripped or not has_alpha(stripped):
                     continue
 
@@ -1638,11 +1808,10 @@ def cmd_missing_t(args):
                 if (rel_path, lineno) in allowlist:
                     if show_filtered:
                         filtered.append((rel_path, lineno, stripped[:80],
-                                        _severity(line), 'allowlisted'))
+                                        sev, 'allowlisted'))
                     continue
 
                 # Format-only filter
-                sev = _severity(line)
                 if is_format_only(stripped):
                     if show_filtered:
                         filtered.append((rel_path, lineno, stripped[:80],

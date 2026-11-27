@@ -465,7 +465,7 @@ void lose_level()
     you.experience_level--;
 
     mprf(MSGCH_WARN,
-         "You are now level %d!", you.experience_level);
+         T_("You are now level %d!"), you.experience_level);
 
     calc_hp();
     calc_mp();
@@ -892,7 +892,7 @@ static void _maybe_spawn_aspiring_flesh()
     if (created)
     {
         mprf(MSGCH_FRIEND_SPELL,
-             "Protean flesh bursts from your body and begins taking on the form of %s!",
+             T_("Protean flesh bursts from your body and begins taking on the form of %s!"),
              mons_type_name(target, DESC_A).c_str());
         you.duration[DUR_XOM_PROTEAN_COOLDOWN] = random_range(120, 360);
     }
