@@ -530,22 +530,18 @@ static void _handle_cannon_fx(actor &act, const item_def &weapon, coord_def targ
         act.stumble_away_from(targ, N_("Mule's kick"));
 }
 
-static void _throw_noise(actor* act, const item_def &ammo)
+static void _throw_noise(actor* act, const item_def &item)
 {
     ASSERT(act); // XXX: change to actor &act
 
-    if (is_throwable(act, ammo))
+    if (!is_range_weapon(item))
         return;
 
-    const item_def* launcher = act->weapon();
-    if (launcher == nullptr || !is_range_weapon(*launcher))
-        return; // moooom, players are tossing their weapons again
-
-    string msg;
+    const char* msg   = nullptr;
     int noise = 5;
 
     // XXX: move both messages into item-prop.cc?
-    switch (launcher->sub_type)
+    switch (item.sub_type)
     {
     case WPN_SLING:
         msg = T_("You hear a sling whirr.");
@@ -567,16 +563,15 @@ static void _throw_noise(actor* act, const item_def &ammo)
         break;
 
     default:
-        die("Invalid launcher '%s'",
-                 launcher->name(DESC_PLAIN).c_str());
+        die("Invalid launcher '%s'", item.name(DESC_PLAIN).c_str());
         return;
     }
 
     if (act->is_player() || you.can_see(*act))
-        msg.clear();
+        msg = nullptr;
 
 
-    noisy(noise, act->pos(), msg.empty() ? nullptr : msg.c_str(), act->mid);
+    noisy(noise, act->pos(), msg, act->mid);
 }
 
 static vector<ranged_attack_beam> _construct_player_ranged_beams(item_def* throwing_weapon = nullptr)
