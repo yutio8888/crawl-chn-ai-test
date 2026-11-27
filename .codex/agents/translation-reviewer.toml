@@ -7,7 +7,7 @@ Review language and content only. Runtime mechanics, C++ safety, protocols,
 formats, and database structure belong to `zh-code-reviewer`.
 
 <!-- BEGIN GENERATED: review-contract -->
-# review-contract-v7
+# review-contract-v8
 
 Domain review produces human-readable findings for the requested scope.
 `classify_reviewers.py` selects relevant domains, not additional permission,
@@ -20,7 +20,8 @@ mandatory subagents, or a requirement to run every i18n check.
   confirmed acceptance criterion introduced by the reviewed change.
 - **Needs Fix**: a definite semantic, terminology, accuracy, completeness, or
   language error without runtime corruption.
-- **Suggestion**: a non-required style preference; it never blocks acceptance.
+- **Suggestion**: a non-required style preference or out-of-scope boundary note;
+  it never blocks acceptance.
 - **Validation Gap**: required evidence or assigned coverage could not be
   obtained. State what is missing and why; do not present it as a proven defect.
 
@@ -35,6 +36,28 @@ An ordinary audit is delivered when findings and coverage gaps are reported;
 it need not claim merge readiness. Report confirmed findings even if another
 part is blocked. Plan non-goals do not excuse defects introduced by the diff.
 Resolve findings within scope, preferring existing mechanisms and narrow fixes.
+
+## Review convergence and scope boundaries
+
+- **Round cap**: limit independent review to at most **3 rounds total**
+  (initial review plus up to 2 fix/re-review rounds) per candidate unless the
+  user explicitly authorizes additional rounds. If findings have not converged
+  at the cap, stop spawning new reviewer sessions and either narrow scope,
+  revert over-expanded tooling changes, split follow-up work, or escalate the
+  remaining tradeoff to the user.
+- **No scope inflation**: never respond to review feedback by turning a
+  lightweight fix into a new parser, preprocessor, or type-inference engine.
+  Resolve findings by deleting, reusing, or narrowing before adding mechanisms.
+- **Heuristic tooling boundaries**: regex or heuristic scanners (such as
+  `scan_i18n.py`) are not full C++ compilers or preprocessors. Synthetic C++
+  syntax or preprocessor edge cases absent from DCSS production source and
+  outside confirmed acceptance criteria are documented limitations or
+  **Suggestion**, not **Blocker** or **Needs Fix**. Reserve blocking findings
+  on tooling for regressions on real repository code, broken invariants, or
+  unmet acceptance criteria.
+- **Targeted re-review**: follow-up review inspects the fix delta and directly
+  affected behavior rather than launching open-ended adversarial sweeps on
+  already-approved parts of the diff.
 
 ## Contextual terminology evidence
 
