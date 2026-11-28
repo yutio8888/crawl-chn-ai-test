@@ -485,10 +485,10 @@
 | EN | ZH | Scope / comment |
 |----|----|----------------|
 | Xom's Arena | 佐姆竞技场 | 佐姆竞技场分支与传送门；Arena = 竞技场；键为 `Xom's Arena`；decision=D-C-109 |
-| berserk sage | 狂暴贤者 | 药水词根，完整名“potion of berserk sage → 狂暴贤者药水”；恢复法力并赋予聪慧，随后进入焦躁；decision=D-C-109 |
-| expedience | 权宜 | 药水词根，完整名“potion of expedience → 权宜药水”；短时间内接敌移动一步覆盖任意距离；decision=D-C-109 |
-| `scroll type\|frog` | 青蛙 | 卷轴词根，完整名“scroll of frog → 青蛙卷轴”；短时召唤青蛙同伴；与既有 `frog → 蛙` 区分；decision=D-C-109 |
-| plinking | 飞石 | 卷轴词根，完整名“scroll of plinking → 飞石卷轴”；持续数回合飞石骚扰；decision=D-C-109 |
+| berserk sage | 狂博 | 药水词根，完整名“potion of berserk sage → 狂博药水”；谐音原型“狂暴药水”（berserk rage），恢复法力并赋予聪慧，随后进入焦躁；decision=D-C-131 |
+| expedience | 经便 | 药水词根，完整名“potion of expedience → 经便药水”；谐音原型“经验药水”（experience）并保留权宜／便宜之义，短时间内接敌移动一步覆盖任意距离；decision=D-C-131 |
+| `scroll type\|frog` | 雨蛙 | 卷轴词根，完整名“scroll of frog → 雨蛙卷轴”；谐音原型“云雾卷轴”（fog），短时召唤蛙类同伴；与既有 `frog → 蛙` 区分；decision=D-C-131 |
+| plinking | 闪砾 | 卷轴与状态词根，完整名“scroll of plinking → 闪砾卷轴”，状态灯 `status\|Plink` 与短状态 `status\|plinking` 同译“闪砾”；谐音形近原型“闪烁卷轴”（blinking），持续数回合向敌人投掷石子砂砾；decision=D-C-131 |
 | gate leading to Xom's Arena | 通往佐姆竞技场的大门 | 佐姆竞技场入口地形描述；decision=D-C-109 |
 | mannequin | 人偶 | 剧场木制道具怪物；与人偶剧团 troupe 同词根；decision=D-C-109 |
 | air | 空气 | item display fragment; armour ego, book, staff; decision=D-B-020 |
@@ -928,8 +928,8 @@
 | `Cleave+` | 顺劈+ | 佐姆顺劈祝福状态灯；沿用 Cleave status 的“顺劈”词根；decision=D-C-109 |
 | `Reach+` | 延展+ | 佐姆延展祝福状态；近战攻击距离 +3；decision=D-C-109 |
 | `Lock (%d)` | 封梯(%d) | 佐姆封锁楼层楼梯状态；括号内为剩余解锁所需击杀数；decision=D-C-109 |
-| `Irate` | 焦躁 | 狂暴贤者药水后的倒计时状态；说明将很快进入狂暴；上游已把 Irrate 拼写修正为 Irate；decision=D-C-109 |
-| `Rampage+++` | 冲刺+++ | 权宜药水赋予的极速接敌状态；直线接敌一步覆盖任意距离；decision=D-C-109 |
+| `Irate` | 焦躁 | 狂博药水（potion of berserk sage）后的倒计时状态；说明将很快进入狂暴；上游已把 Irrate 拼写修正为 Irate；decision=D-C-109/D-C-131 |
+| `Rampage+++` | 冲刺+++ | 经便药水（potion of expedience）赋予的极速接敌状态；直线接敌一步覆盖任意距离；decision=D-C-109/D-C-131 |
 | `status\|Eisegesis` | 曲解 | 佐姆混沌曲解祝福状态灯短标签（2 字）；与 Divine Exegesis 的“释经”相对；完整词根见“曲解经文”；decision=D-C-109 |
 | eisegesis | 曲解经文 | 佐姆能力与祝福正文词根；`blessing of eisegesis`、状态描述同根；decision=D-C-109 |
 | `Guardian` | 守卫 | 佐姆守卫祝福状态灯；区别一般“守护者”描述；decision=D-C-109 |
