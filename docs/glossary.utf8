@@ -167,7 +167,7 @@ Benumbed	冻僵的	domain=core; source=EN/ZH; 依据 / 作用域=randbook.txt；
 Beogh	比欧弗	domain=gods; source=EN/ZH; 类型=音译
 Berserk	狂暴	domain=core; source=EN/ZH; 注意事项=近战加成但结束后减速 | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Berserk Other	狂暴他人	domain=spells; source=EN/ZH; 备注=✅；使附近一个盟友进入狂暴
-berserk sage	狂暴贤者	domain=items; source=EN/ZH; Scope / comment=药水词根，完整名“potion of berserk sage → 狂暴贤者药水”；恢复法力并赋予聪慧，随后进入焦躁；decision=D-C-109
+berserk sage	狂博	domain=items; source=EN/ZH; Scope / comment=药水词根，完整名“potion of berserk sage → 狂博药水”；谐音原型“狂暴药水”（berserk rage），恢复法力并赋予聪慧，随后进入焦躁；decision=D-C-131
 Berserker	狂战士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Berserker Rage	狂暴之怒	domain=spells; source=EN/ZH; 备注=✅
 Bestow Arms	赐予武器	domain=spells; source=EN/ZH; 备注=✅
@@ -535,7 +535,7 @@ Evocations	魔力释放	domain=core; source=EN/ZH; 注意事项=技能名；普�
 Excruciating Wounds	剧痛之伤	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
 executioner's axe	刽子手斧	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
 Exegesis	释经	domain=status; source=EN/ZH; 依据 / 作用域=status.txt；可低成本再次施放最近释经法术；decision=D-C-095
-expedience	权宜	domain=items; source=EN/ZH; Scope / comment=药水词根，完整名“potion of expedience → 权宜药水”；短时间内接敌移动一步覆盖任意距离；decision=D-C-109
+expedience	经便	domain=items; source=EN/ZH; Scope / comment=药水词根，完整名“potion of expedience → 经便药水”；谐音原型“经验药水”（experience）并保留权宜／便宜之义，短时间内接敌移动一步覆盖任意距离；decision=D-C-131
 experience	经验值	domain=core; source=EN/ZH
 Explosive Bolt	爆裂弩矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 exposed	暴露	domain=status; source=EN/ZH; 依据 / 作用域=monstatus.txt；更易遭非攻击伤害且意志降低；不译为防具破碎；decision=D-C-095
@@ -803,7 +803,7 @@ Invisibility	隐形	domain=core; source=EN/ZH; 注意事项=不可被看见 | do
 Invisibility	隐身术	domain=spells; source=EN/ZH; 备注=✅；使施法者隐形
 Invisibility Other	使他人隐形	domain=spells; source=EN/ZH; 备注=🆕；使附近盟友隐形
 Invocations	祈神	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
-Irate	焦躁	domain=status; source=EN/ZH; 依据 / 作用域=狂暴贤者药水后的倒计时状态；说明将很快进入狂暴；上游已把 Irrate 拼写修正为 Irate；decision=D-C-109
+Irate	焦躁	domain=status; source=EN/ZH; 依据 / 作用域=狂博药水（potion of berserk sage）后的倒计时状态；说明将很快进入狂暴；上游已把 Irrate 拼写修正为 Irate；decision=D-C-109/D-C-131
 Iron City	铁城	domain=core; source=EN/ZH; 注意事项=Dis 的别称；不增补源文未写的地名；decision=D-C-103
 Iron Shot	铁弹	domain=spells; source=EN/ZH; 备注=✅；`shot` 指重型金属弹体，不机械统一为“射击”
 Irradiate	辐射	domain=spells; source=EN/ZH; 备注=✅
@@ -1082,7 +1082,7 @@ Plasma Beam	等离子光束	domain=spells; source=EN/ZH; 备注=✅；电击束�
 Platinum Paragon	白金典范	domain=spells; source=EN/ZH; 备注=✅
 player ghost	玩家鬼魂	domain=core; source=EN/ZH
 pleads	恳求道	domain=dialogue; source=EN/ZH; 适用角色=濒死角色
-plinking	飞石	domain=items; source=EN/ZH; Scope / comment=卷轴词根，完整名“scroll of plinking → 飞石卷轴”；持续数回合飞石骚扰；decision=D-C-109
+plinking	闪砾	domain=items; source=EN/ZH; Scope / comment=卷轴与状态词根，完整名“scroll of plinking → 闪砾卷轴”，状态灯 `status|Plink` 与短状态 `status|plinking` 同译“闪砾”；谐音形近原型“闪烁卷轴”（blinking），持续数回合向敌人投掷石子砂砾；decision=D-C-131
 Poison	中毒	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Poison	毒素 / 毒 / 淬毒	domain=magic; source=EN/ZH; 状态=✅ 已确认（5 项现行；另有 4 项已移除兼容；`Spit Poison → 喷吐毒液`）
 Poison Arrow	毒箭	domain=spells; source=EN/ZH; 备注=✅；复用 Arrow 系列证据 | domain=spells; source=EN/ZH; 备注=✅
@@ -1133,7 +1133,7 @@ quivered action	快捷动作	domain=core; source=EN/ZH; 注意事项=仅限 CMD_
 RageSunder	怒裂	domain=items; source=EN/ZH; 依据 / 作用域=art-data.txt；连击积蓄的强化劈砍；显示铭文／特效标签，内部属性不改名；decision=D-C-095
 Rakshasa Summon	召唤罗刹	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Rampage	冲锋	domain=core; source=EN/ZH; 注意事项=攻击时自动向敌人移动一步
-Rampage+++	冲刺+++	domain=status; source=EN/ZH; 依据 / 作用域=权宜药水赋予的极速接敌状态；直线接敌一步覆盖任意距离；decision=D-C-109
+Rampage+++	冲刺+++	domain=status; source=EN/ZH; 依据 / 作用域=经便药水（potion of expedience）赋予的极速接敌状态；直线接敌一步覆盖任意距离；decision=D-C-109/D-C-131
 rampaging	冲锋	domain=items; source=EN/ZH; Scope / comment=armour ego; decision=D-B-020
 Random Bolt	随机箭矢	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；暂缓术语；恢复时复审
 Random Effects	随机效果	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容；暂缓术语；恢复时复审
@@ -1200,7 +1200,7 @@ Scattershot	散射术	domain=spells; source=EN/ZH; 备注=⚠️ 已移除兼容
 Scorch	烧焦	domain=spells; source=EN/ZH; 备注=✅
 scrapshell chimera	废铁壳奇美拉	domain=monsters; source=EN/ZH; 依据 / 作用域=monsters.txt；水生血肉与废铁甲壳融合；decision=D-C-095
 scroll	卷轴	domain=items; source=EN/ZH
-scroll type|frog	青蛙	domain=items; source=EN/ZH; Scope / comment=卷轴词根，完整名“scroll of frog → 青蛙卷轴”；短时召唤青蛙同伴；与既有 `frog → 蛙` 区分；decision=D-C-109
+scroll type|frog	雨蛙	domain=items; source=EN/ZH; Scope / comment=卷轴词根，完整名“scroll of frog → 雨蛙卷轴”；谐音原型“云雾卷轴”（fog），短时召唤蛙类同伴；与既有 `frog → 蛙` 区分；decision=D-C-131
 scroll-form	卷轴形态	domain=magic; source=EN/ZH; 依据 / 作用域=form 名称／伤害标签；walking-scroll:long_name；decision=D-C-098
 Sculpt Simulacrum	塑造拟像	domain=spells; source=EN/ZH; 备注=✅
 Seal Doors	封印门	domain=spells; source=EN/ZH; 备注=✅

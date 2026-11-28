@@ -1311,7 +1311,7 @@ Disguised status
 %%%%
 Plink status
 
-你正朝火线上的所有敌人投掷飞石。
+你正朝火线上的所有敌人投掷砂砾。
 %%%%
 -2ndWind status
 

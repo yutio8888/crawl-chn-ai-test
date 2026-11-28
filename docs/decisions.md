@@ -5203,3 +5203,20 @@ R19–R21 的全文检索确认项按消费者处理：MP 的恢复、储量、�
 - **Affected files**: `crawl-ref/source/dat/i18n/zh/source.txt`、
   `crawl-ref/source/dat/database/zh/godspeak.txt`、`crawl-ref/source/dat/descript/zh/status.txt`、
   `docs/glossary.md`、`docs/glossary.utf8`。
+
+### D-C-131 — 佐姆专属搞怪消耗品谐音译名定稿（狂博／经便／闪砾／雨蛙）
+
+- **Type**: C — Terminology revision (maintainer-approved pun localization)
+- **Status**: active
+- **Date**: 2026-11-28
+- **Source**: 维护者确认将佐姆（Xom）重做新增的 4 种专属搞怪消耗品（`xom.cc` `_xom_joke_consumable`）改译为保留英文原版谐音梗的中文译名，呼应其各自恶搞的经典消耗品原型。
+- **Choice**:
+  1. `berserk sage`（`item-name.cc` `POT_BERSERK_SAGE`）→「狂博」（完整名「狂博药水」），谐音原型 `berserk rage`「狂暴药水」并兼顾博学／贤哲之义。
+  2. `expedience`（`item-name.cc` `POT_EXPEDIENCE`）→「经便」（完整名「经便药水」），谐音原型 `experience`「经验药水」并兼顾权宜／便宜之义。
+  3. `plinking`（`item-name.cc` `SCR_PLINKING`）→「闪砾」（完整名「闪砾卷轴」），与原型 `blinking`「闪烁卷轴」首字相同且「砾／烁」形近，同时契合投掷石子砂砾的效果；状态灯 `status|Plink` 与短状态 `status|plinking`（`duration-data.h` `DUR_PLINKING`）同步定稿为「闪砾」，`Plink status` 描述（`dat/descript/zh/status.txt`）相应由「投掷飞石」改为「投掷砂砾」。
+  4. `scroll type|frog`（`item-name.cc` `SCR_FROG`）→「雨蛙」（完整名「雨蛙卷轴」），双字谐音原型 `fog`「云雾卷轴」且呼应气象意象与两栖动物本义。
+- **Supersedes / narrows**: 取代 D-C-109 中上述 4 种消耗品及 `DUR_PLINKING` 状态译名；D-C-109 其余条目继续有效。
+- **Keep**: 通用键 `frog → 蛙`、`miscast.txt` 失误风味句中的「飞石」与 `rand_wpn.txt` 武器名片段「权宜之计」均与佐姆搞怪消耗品无关，保持不变；4 种消耗品正文（`dat/descript/zh/items.txt`）及 `You are rapidly tossing pebbles at your foes.` 正文不提及旧名，保持不变。
+- **Affected files**: `crawl-ref/source/dat/i18n/zh/source.txt`、
+  `crawl-ref/source/dat/descript/zh/status.txt`、`docs/glossary.md`、`docs/glossary.utf8`、
+  `docs/decisions.md`、`docs/character-mechanics-review-results.md`。

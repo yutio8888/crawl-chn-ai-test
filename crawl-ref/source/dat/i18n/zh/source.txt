@@ -53850,7 +53850,7 @@ Your guardian avoids your attack.
 \n\n以你当前的盾牌值（SH），它有%d%%的几率反射爆炸性投射物，并有%d%%的几率反射针对你意志力的攻击及其他通常无法格挡的效果。
 %%%%
 berserk sage
-狂暴贤者
+狂博
 %%%%
 blessing of battleshape
 战斗形态之祝福
@@ -53877,7 +53877,7 @@ blessing of spellstride (%s)
 法术阔步之祝福（%s）
 %%%%
 expedience
-权宜
+经便
 %%%%
 flag long|maybe fake
 疑似假身
@@ -53901,7 +53901,7 @@ weapon verb|grow
 变
 %%%%
 plinking
-飞石
+闪砾
 %%%%
 weapon verb|quiver
 震颤
@@ -53970,16 +53970,16 @@ status|rampage+
 冲刺+
 %%%%
 status|Plink
-飞石
+闪砾
 %%%%
 status|plinking
-飞石
+闪砾
 %%%%
 status|stumbling
 踉跄
 %%%%
 scroll type|frog
-青蛙
+雨蛙
 %%%%
 Arena?
 竞技场？
